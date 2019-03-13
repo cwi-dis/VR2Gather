@@ -23,7 +23,7 @@ Scene to test the Point Clouds compoments developed by CWI.
 
 ### VO/Signals/Scenes/Signals
 
-Scene to test the signals unity bridge compoments developed by Viaccess-Orca.
+Scene to test the signals unity bridge compoments developed by Motion Spell.
 
 - How to run this test:
 	```
