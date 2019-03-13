@@ -21,7 +21,7 @@ Scene to test the Point Clouds compoments developed by CWI.
 	A point cloud from "StreamingAssets/pcl_frame1.ply" file.
 	```
 
-### VO/Signals/Scenes/Signals
+### MS/Signals/Scenes/Signals
 
 Scene to test the signals unity bridge compoments developed by Motion Spell.
 

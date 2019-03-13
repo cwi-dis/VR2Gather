@@ -17,8 +17,8 @@ public class UnitySignals : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", Application.dataPath + (Application.isEditor ? "/VO/Signals/Plugins" : "/Plugins"));
-        Environment.SetEnvironmentVariable("PATH", Application.dataPath + (Application.isEditor ? "/VO/Signals/Plugins" : "/Plugins"));
+        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", Application.dataPath + (Application.isEditor ? "/MS/Signals/Plugins" : "/Plugins"));
+        Environment.SetEnvironmentVariable("PATH", Application.dataPath + (Application.isEditor ? "/MS/Signals/Plugins" : "/Plugins"));
 
         handle = signals_unity_bridge_pinvoke.sub_create(StreamName);
         if (handle != IntPtr.Zero) {
