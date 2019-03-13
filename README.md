@@ -8,7 +8,7 @@ It currently uses Unity 2018.2.21f1 and runs on Windows 10.
 
 ### CWI/Scenes/PointClouds
 
-Scene to test the correct Point Clouds compoments developed by CWI.
+Scene to test the Point Clouds compoments developed by CWI.
 
 - How to run this test:
 	```
@@ -23,7 +23,7 @@ Scene to test the correct Point Clouds compoments developed by CWI.
 
 ### VO/Signals/Scenes/Signals
 
-Scene to test the correct signals unity bridge compoments developed by Viaccess-Orca.
+Scene to test the signals unity bridge compoments developed by Viaccess-Orca.
 
 - How to run this test:
 	```
