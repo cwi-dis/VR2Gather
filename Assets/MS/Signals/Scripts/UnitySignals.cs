@@ -17,6 +17,7 @@ public class UnitySignals : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        signals_unity_bridge_pinvoke.SetPaths();
         Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", Application.dataPath + (Application.isEditor ? "/MS/Signals/Plugins" : "/Plugins"));
         Environment.SetEnvironmentVariable("PATH", Application.dataPath + (Application.isEditor ? "/MS/Signals/Plugins" : "/Plugins"));
 
@@ -34,7 +35,8 @@ public class UnitySignals : MonoBehaviour {
         }else
             Debug.LogError("SUBD_ERROR: can't create streaming: " + StreamName);
     }
-	
+
+    
 	// Update is called once per frame
 	void Update () {
         if (Input.GetKey(KeyCode.Escape))

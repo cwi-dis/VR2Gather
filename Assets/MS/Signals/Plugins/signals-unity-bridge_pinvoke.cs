@@ -33,4 +33,15 @@ public class signals_unity_bridge_pinvoke {
     // If 'dst' is null, the frame will not be dequeued, but its size will be returned.
     [DllImport("signals-unity-bridge")]
     extern static public int sub_grab_frame(IntPtr handle, int streamIndex, System.IntPtr dst, int dstLen, ref FrameInfo info);
+
+
+    public static void SetPaths() {
+        _setPaths();
+    }
+
+    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
+        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName( path ) : "/Plugins";
+        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
+        Environment.SetEnvironmentVariable("PATH", path );
+    }
 }
