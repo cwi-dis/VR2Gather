@@ -655,8 +655,8 @@ PlayerSettings:
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 3
   cloudProjectId: 476445a7-a7f2-4e1f-b807-df9fbc030494
-  projectName: Unity-Signals
-  organizationId: gunder
+  projectName: TestBed
+  organizationId: xrlabbyentropy
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
