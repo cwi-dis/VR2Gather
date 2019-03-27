@@ -22,12 +22,25 @@ public class cwipc_util_pinvoke
     [DllImport("cwipc_util")]
     extern static private IntPtr cwipc_synthetic();
 
-    public static System.IntPtr GetPointCludStream() {
+    public static System.IntPtr GetPointCloudFromPly() {
 
 //        System.IntPtr src = cwipc_synthetic();
 //        return cwipc_source_get(src);
         System.IntPtr ptr = System.IntPtr.Zero;
         return cwipc_read(Application.streamingAssetsPath + "/pcl_frame1.ply", 0, ref ptr);
+    }
+
+    public static System.IntPtr GetPointCloudFromCWICPC()
+    {
+        var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/loot_vox10_1000.cwicpc");
+        Debug.Log(">>> bytes " + bytes.Length);
+        var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+
+        var pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        System.Int32 size = cwipc_get_uncompressed_size(pc);
+        Debug.Log(">>> size " + size );
+
+        return pc;
     }
 
     public static void UpdatePointBuffer(System.IntPtr pc, ref ComputeBuffer pointBuffer) {
