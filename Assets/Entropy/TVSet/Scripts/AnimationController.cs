@@ -13,7 +13,9 @@ public class AnimationController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if( Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
             animator.speed = 1;
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 }

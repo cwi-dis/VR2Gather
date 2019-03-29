@@ -1,0 +1,6 @@
+{
+  "TVMs": {
+    "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
+    "exchangeName": "transcoder_out"
+  }
+}

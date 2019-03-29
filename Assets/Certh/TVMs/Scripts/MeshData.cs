@@ -55,10 +55,6 @@ public class MeshData
 
 	public List<Color> VtxAttributes { get  { return m_VtxAttributes; } }
 
-	public List<byte[]> TextureData { get { return m_TextureData; } }
-
-	public TextureFormat TextureFormat { get{ return m_TextureFormat; } set { m_TextureFormat = value; } }
-
 	public void Clear()
 	{
 		m_TextureData.Clear ();

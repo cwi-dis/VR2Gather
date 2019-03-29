@@ -5,3 +5,4 @@ obj/
 Testbed.sln
 Assembly-CSharp.csproj
 .collabignore
+Exe/

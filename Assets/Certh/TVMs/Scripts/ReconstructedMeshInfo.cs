@@ -26,34 +26,21 @@ public struct MeshFrameHeader
 
 public struct ViewpointInfo
 {
-	public ViewpointInfo(Matrix4x4 extrinsics,Matrix4x4 colorIntrinsics,
-	                     Matrix4x4 depth2color, Matrix4x4 global2color)
-	{
-		this.Extrinsics = extrinsics;
-		this.ColorIntrinsics = colorIntrinsics;
-		this.Depth2Color = depth2color;
-		this.Global2Color = global2color;
-	}
 
 	public ViewpointInfo(Matrix4x4 colorIntrinsics,
 	                     Matrix4x4 global2color)
 	{
 		this.ColorIntrinsics = colorIntrinsics;
 		this.Global2Color = global2color;
-		this.Extrinsics = Matrix4x4.identity;
-		this.Depth2Color = Matrix4x4.identity;
 	}
 	
-	internal readonly Matrix4x4 Extrinsics;
 	internal readonly Matrix4x4 ColorIntrinsics;
-	internal readonly Matrix4x4 Depth2Color;
 	internal readonly Matrix4x4 Global2Color;
 }
 
 public struct ReconstructedMeshInfo
 {
-	internal VertexInfo VertexInfo { get; set; }
-	internal ViewpointInfo[] Viewpoints;
+	internal ViewpointInfo Viewpoint;
     internal long AcquisitionTimestamp { get; set; }
 	internal long KinectTimestamp { get; set; }
 }
