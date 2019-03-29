@@ -30,10 +30,10 @@ public class cwipc_util_pinvoke
         return cwipc_read(Application.streamingAssetsPath + "/pcl_frame1.ply", 0, ref ptr);
     }
 
-    public static System.IntPtr GetPointCloudFromCWICPC()
+    public static System.IntPtr GetPointCloudFromCWICPC(string filename)
     {
         float init = Time.realtimeSinceStartup;
-        var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/loot_vox10_1000.cwicpc");
+        var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/"+ filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         float read = Time.realtimeSinceStartup;
 

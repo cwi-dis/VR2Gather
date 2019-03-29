@@ -19,17 +19,22 @@ public class PointCloudTest : MonoBehaviour {
     public Color pointTint = Color.white;
     Color _pointTint = Color.clear;
 
-    void Start() {
-//        var pcs = cwipc_util_pinvoke.GetPointCloudFromPly();
-        var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC();
-        cwipc_util_pinvoke.UpdatePointBuffer( pcs, ref _pointBuffer );
+    IEnumerator Start() {
+        yield return null;
+        var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
+        cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref _pointBuffer);
+    }
+
+    void Update() {
+        if ( Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
     public Shader   _pointShader    = null;
     Material _pointMaterial;
 
     void OnRenderObject() {
-        if (_pointBuffer!=null && !_pointBuffer.IsValid()) return;
+        if (_pointBuffer==null || !_pointBuffer.IsValid()) return;
 
         var camera = Camera.current;
         if ((camera.cullingMask & (1 << gameObject.layer)) == 0) return;

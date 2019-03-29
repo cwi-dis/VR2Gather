@@ -176,6 +176,9 @@ public class ShowTVMs : MonoBehaviour
                 m_HasNew = false;
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
     Mesh mesh;

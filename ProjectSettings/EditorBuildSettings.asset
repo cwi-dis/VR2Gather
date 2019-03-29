@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Entropy/TVSet/Scenes/TVSet.unity
     guid: 1656a3666951e4447b34955859d242ab
+  - enabled: 0
+    path: Assets/Certh/TVMs/Scenes/ShowTVMs.unity
+    guid: 8c0cedf9843ccaf4b9b2ae85a56a66cc
+  - enabled: 1
+    path: Assets/CWI/Scenes/PointClouds.unity
+    guid: 0b9b371832b67104a84531030cb7de72
   m_configObjects: {}

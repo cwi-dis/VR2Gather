@@ -2,5 +2,8 @@
   "TVMs": {
     "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
     "exchangeName": "transcoder_out"
+  },
+  "PCs": {
+    "filename": "loot_vox10_1000.cwicpc"
   }
 }

@@ -5,11 +5,19 @@ using UnityEngine;
 [Serializable]
 public class Config {
     [Serializable]
-    public class CTVMs {
+    public class _TVMs
+    {
         public string connectionURI;
         public string exchangeName;
     };
-    public CTVMs TVMs;
+    public _TVMs TVMs;
+
+    [Serializable]
+    public class _PCs
+    {
+        public string filename;
+    };
+    public _PCs PCs;
 
     static Config _Instance;
     public static Config Instance {
