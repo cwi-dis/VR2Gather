@@ -32,13 +32,18 @@ public class cwipc_util_pinvoke
 
     public static System.IntPtr GetPointCloudFromCWICPC()
     {
+        float init = Time.realtimeSinceStartup;
         var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/loot_vox10_1000.cwicpc");
-        Debug.Log(">>> bytes " + bytes.Length);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        float read = Time.realtimeSinceStartup;
 
         var pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
-        System.Int32 size = cwipc_get_uncompressed_size(pc);
-        Debug.Log(">>> size " + size );
+        float decom1 = Time.realtimeSinceStartup;
+        pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        float decom2 = Time.realtimeSinceStartup;
+
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) + " decom2 " + (decom2 - decom1));
+        
 
         return pc;
     }

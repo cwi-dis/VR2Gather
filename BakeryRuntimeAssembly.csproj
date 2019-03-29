@@ -343,6 +343,15 @@
     <Reference Include="ZeroFormatter.Interfaces">
       <HintPath>C:/Projects/VRT/nativeclient-group/Testbed/Assets/Certh/TVMs/Plugins/ZeroFormatter.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="UnityFbxPrefab">
+      <HintPath>C:/Projects/VRT/nativeclient-group/Testbed/Assets/FbxExporters/UnityFbxPrefab.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityFbxExporterEditor">
+      <HintPath>C:/Projects/VRT/nativeclient-group/Testbed/Assets/FbxExporters/Editor/UnityFbxExporterEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityFbxSdk">
+      <HintPath>C:/Projects/VRT/nativeclient-group/Testbed/Assets/FbxExporters/Editor/FbxSdk/Plugins/UnityFbxSdk.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>C:/Users/Fernando/AppData/Local/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>

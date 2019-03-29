@@ -17,6 +17,7 @@ public class ShowTVMs : MonoBehaviour
     }
 
     void Awake() {
+        ReconstructionReceiver.SetPaths();
         ReconstructionReceiver.Init();
         clientID = (uint)ReconstructionReceiver.AddClient();
     }
