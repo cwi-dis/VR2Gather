@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class ShowTVMs : MonoBehaviour
-{
+public class ShowTVMs : MonoBehaviour {
     uint clientID;
-    static bool m_HasNew = false;
 
     public class MeshData {
         public Vector3[] Vertices;
@@ -33,18 +32,15 @@ public class ShowTVMs : MonoBehaviour
             Marshal.Copy(pIndices, Indices, 0, mesh.nTriangles * 3);
         }
 
-        public void Set(Mesh mesh)
-        {
-            mesh.vertices = meshData.Vertices;
-            mesh.normals = meshData.Normals;
-            mesh.colors = meshData.Attribs;
-
-            mesh.SetIndices(meshData.Indices, MeshTopology.Triangles, 0);
+        public void Set(Mesh mesh) {
+            mesh.vertices = Vertices;
+            mesh.normals = Normals;
+            mesh.colors = Attribs;
+            mesh.SetIndices(Indices, MeshTopology.Triangles, 0);
         }
     }
 
-    public class TextureData
-    {
+    public class TextureData {
         Texture2D texture;
         public byte[] texData;
         public int textureWidth;
@@ -61,16 +57,13 @@ public class ShowTVMs : MonoBehaviour
             Marshal.Copy(textureData.data, texData, 0, textureData.width * textureData.height * 3);
         }
 
-        public void Set(Material material)
-        {
-            if (texture != null && (texture.width != textureWidth || texture.height != textureHeight))
-            {
+        public void Set(Material material) {
+            if (texture != null && (texture.width != textureWidth || texture.height != textureHeight)) {
                 Texture2D.Destroy(texture);
                 texture = null;
             }
 
-            if (texture == null)
-            {
+            if (texture == null) {
                 texture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
                 material.SetTexture("Texture", texture);
                 material.SetInt("TextureWidth", textureWidth);
@@ -81,8 +74,7 @@ public class ShowTVMs : MonoBehaviour
         }
     }
 
-    public class InfoData
-    {
+    public class InfoData {
         Matrix4x4 ColorIntrinsics;
         Matrix4x4 Global2Color;
         public void Read(ReconstructionReceiver.DMesh mesh)
@@ -123,19 +115,56 @@ public class ShowTVMs : MonoBehaviour
         }
     }
 
+    public class TVMMeshData {
+        public uint id;
+        public bool isNew { get; private set; }
 
-    private static MeshData meshData = new MeshData();
-    private static TextureData textureData = new TextureData();
-    private static InfoData infoData = new InfoData();
+        public MeshData     meshData    = new MeshData();
+        public TextureData  textureData = new TextureData();
+        public InfoData     infoData    = new InfoData();
 
-
-
-    private static void OnMeshReceivedGlobalHandler(uint cID, ReconstructionReceiver.DMesh mesh) {
-        lock (meshData) {
+        public void Read(ReconstructionReceiver.DMesh mesh) {
             meshData.Read(mesh);
             textureData.Read(mesh);
             infoData.Read(mesh);
-            m_HasNew = true;
+            isNew = true;
+        }
+
+        Mesh            mesh;
+        MeshFilter      meshFilter;
+        MeshRenderer    meshRenderer;
+        Material        material;
+
+        public TVMMeshData(GameObject gameObject, Shader shader) {
+            mesh = new Mesh();
+            mesh.MarkDynamic();
+            meshFilter = gameObject.AddComponent<MeshFilter>();
+            meshFilter.mesh = mesh;
+            meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            material = new Material(shader);
+            meshRenderer.material = material;
+        }
+
+        public void UpdateMesh() {
+            mesh.Clear();
+
+            meshData.Set(mesh);
+            textureData.Set(material);
+            infoData.Set(material);
+            isNew = false;
+        }
+
+    }
+
+    static int TVMInstances = 0;
+
+    static List<TVMMeshData> meshDatas = new List<TVMMeshData>();
+
+    private static void OnMeshReceivedGlobalHandler(uint cID, ReconstructionReceiver.DMesh mesh) {
+        lock (meshDatas) {
+            for( int i=0;i< meshDatas.Count;++i)
+                if(meshDatas[i].id == cID)
+                    meshDatas[i].Read(mesh);
         }
     }
 
@@ -144,8 +173,9 @@ public class ShowTVMs : MonoBehaviour
     }
 
     void Awake() {
-        ReconstructionReceiver.Init();
+        if(TVMInstances==0) ReconstructionReceiver.Init();
         clientID = (uint)ReconstructionReceiver.AddClient();
+        TVMInstances++;
     }
 
     // Use this for initialization
@@ -155,6 +185,7 @@ public class ShowTVMs : MonoBehaviour
         ReconstructionReceiver.RegisterOnReceivedMeshCallBack(clientID, new ReconstructionReceiver.OnReceivedMesh(OnMeshReceivedGlobalHandler));
         ReconstructionReceiver.RegisterOnConnectionErrorCallBack(clientID, new ReconstructionReceiver.OnConnectionError(OnConnectionErrorHandler));
         ReconstructionReceiver.StartClient(clientID);
+        meshDatas.Add( new TVMMeshData(gameObject, shader) { id = clientID } );
     }
 
     void OnDisable() {
@@ -165,43 +196,22 @@ public class ShowTVMs : MonoBehaviour
         ReconstructionReceiver.RegisterOnReceivedMeshCallBack(clientID, null);
         ReconstructionReceiver.RegisterOnConnectionErrorCallBack(clientID, null);
         ReconstructionReceiver.StopClient(clientID);
-        ReconstructionReceiver.Shutdown();
+        TVMInstances--;
+        if(TVMInstances==0) ReconstructionReceiver.Shutdown();
     }
 
     public Shader shader;
     private void Update() {
-        lock (meshData) {
-            if (m_HasNew) {
-                CreateMesh();
-                m_HasNew = false;
-            }
+        lock (meshDatas) {
+            for (int i = 0; i < meshDatas.Count; ++i)
+                if (meshDatas[i].isNew) 
+                    meshDatas[i].UpdateMesh();
         }
-
+        
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
 
-    Mesh mesh;
-    MeshFilter meshFilter;
-    MeshRenderer meshRenderer;
-    Material material;
-    void CreateMesh() {
-        if (!mesh) {
-            mesh = new Mesh();
-            mesh.MarkDynamic();
-            meshFilter = gameObject.AddComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            material = new Material(shader);
-            meshRenderer.material = material;
-        }
-        else
-            mesh.Clear();
-
-        meshData.Set(mesh);
-        textureData.Set(material);
-        infoData.Set(material);
-    }
 
 
 }
