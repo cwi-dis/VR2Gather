@@ -6,11 +6,13 @@ Shader "Entropy/PointCloud"{
 	}
 		SubShader{
 			Tags { "RenderType" = "Opaque" }
-			Pass {
+			LOD 100
+
+		Pass {
 				Tags { "LightMode" = "ForwardBase" }
 				CGPROGRAM
 
-				#pragma target 5.0
+				#pragma target 4.0
 				#pragma vertex Vertex
 				#pragma geometry Geometry
 				#pragma fragment Fragment
@@ -64,31 +66,33 @@ Shader "Entropy/PointCloud"{
 				void Geometry(point Varyings input[1], inout TriangleStream<Varyings> outStream) {
 					float4 origin = input[0].position;
 					float2 extent = abs(UNITY_MATRIX_P._11_22  * _PointSize);
-
+#if SHADER_API_GLCORE	 
+					extent.x *= -1;
+#endif
 					// Copy the basic information.
 					Varyings o = input[0];
 					o.position.xzw = origin.xzw;
 
-					// Left side vertex
-					o.position.x = origin.x + extent.x;
-					o.position.y = origin.y ;
-					outStream.Append(o);
-
-					// Top vertex
-					o.position.x = origin.x ;
+					// Bottom side vertex
+					o.position.x = origin.x;
 					o.position.y = origin.y + extent.y;
 					outStream.Append(o);
 
-					// Right side vertex
-					o.position.x = origin.x;
-					o.position.y = origin.y - extent.y;
-					outStream.Append(o);
-					
-					// Bottom vertex
+					// Left vertex
 					o.position.x = origin.x - extent.x;
 					o.position.y = origin.y;
 					outStream.Append(o);
-					
+
+					// Right side vertex
+					o.position.x = origin.x + extent.x;
+					o.position.y = origin.y;
+					outStream.Append(o);
+
+					// Top vertex
+					o.position.x = origin.x;
+					o.position.y = origin.y - extent.y;
+					outStream.Append(o);
+
 					outStream.RestartStrip();
 				}
 
