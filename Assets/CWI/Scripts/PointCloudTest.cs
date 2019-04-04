@@ -6,11 +6,13 @@ using Unity.Collections;
 
 public class PointCloudTest : MonoBehaviour {
 
-    ComputeBuffer _pointBuffer;
+    ComputeBuffer pointBuffer;
+    Mesh mesh;
+
     void OnDisable() {
-        if (_pointBuffer != null) {
-            _pointBuffer.Release();
-            _pointBuffer = null;
+        if (pointBuffer != null) {
+            pointBuffer.Release();
+            pointBuffer = null;
         }
     }
 
@@ -20,9 +22,26 @@ public class PointCloudTest : MonoBehaviour {
     Color _pointTint = Color.clear;
 
     IEnumerator Start() {
+        if (SystemInfo.graphicsShaderLevel < 50) {
+            var mf = gameObject.AddComponent<MeshFilter>();
+            var mr = gameObject.AddComponent<MeshRenderer>();
+            mf.mesh = mesh = new Mesh();
+            if (pointMaterial == null)
+            {
+                pointMaterial = new Material(pointShader40);
+                pointMaterial.hideFlags = HideFlags.DontSave;
+            }
+            mr.material = pointMaterial;
+
+            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        }
         yield return null;
         var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
-        cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref _pointBuffer);
+
+        if (SystemInfo.graphicsShaderLevel < 50)
+            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref mesh);
+        else
+            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref pointBuffer);
     }
 
     void Update() {
@@ -30,11 +49,16 @@ public class PointCloudTest : MonoBehaviour {
             Application.Quit();
     }
 
-    public Shader   _pointShader    = null;
-    Material _pointMaterial;
+    public Shader pointShader = null;
+    public Shader pointShader40 = null;
+    Material pointMaterial;
 
     void OnRenderObject() {
-        if (_pointBuffer==null || !_pointBuffer.IsValid()) return;
+        return;
+
+        if (SystemInfo.graphicsShaderLevel < 50) return;
+
+        if (pointBuffer==null || !pointBuffer.IsValid()) return;
 
         var camera = Camera.current;
         if ((camera.cullingMask & (1 << gameObject.layer)) == 0) return;
@@ -43,17 +67,17 @@ public class PointCloudTest : MonoBehaviour {
 
         // TODO: Do view frustum culling here.
 
-        if (_pointMaterial == null) {
-            _pointMaterial = new Material(_pointShader);
-            _pointMaterial.hideFlags = HideFlags.DontSave;
-            _pointMaterial.SetBuffer("_PointBuffer", _pointBuffer);
+        if (pointMaterial == null) {
+            pointMaterial = new Material(pointShader);
+            pointMaterial.hideFlags = HideFlags.DontSave;
+            pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
         }
 
-        _pointMaterial.SetPass(0);
-        _pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
-        if (_pointTint != pointTint) { _pointTint = pointTint; _pointMaterial.SetColor("_Tint", _pointTint); }
-        if (_pointSize != pointSize) { _pointSize = pointSize; _pointMaterial.SetFloat("_PointSize", _pointSize); }
-        Graphics.DrawProcedural(MeshTopology.Points, _pointBuffer.count, 1);
+        pointMaterial.SetPass(0);
+        pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
+        if (_pointTint != pointTint) { _pointTint = pointTint; pointMaterial.SetColor("_Tint", _pointTint); }
+        if (_pointSize != pointSize) { _pointSize = pointSize; pointMaterial.SetFloat("_PointSize", _pointSize); }
+        Graphics.DrawProcedural(MeshTopology.Points, pointBuffer.count, 1);
     }
 
 }

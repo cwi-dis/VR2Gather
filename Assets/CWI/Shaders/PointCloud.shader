@@ -12,13 +12,13 @@ Shader "Entropy/PointCloud"{
 				Tags { "LightMode" = "ForwardBase" }
 				CGPROGRAM
 
-				#pragma target 4.0
+				#pragma target 5.0
 				#pragma vertex Vertex
 				#pragma geometry Geometry
 				#pragma fragment Fragment
 
 				#pragma multi_compile_fog
-				#pragma multi_compile _ UNITY_COLORSPACE_GAMMA
+				#pragma multi_compile _UNITY_COLORSPACE_GAMMA
 
 				#include "UnityCG.cginc"
 
@@ -66,7 +66,7 @@ Shader "Entropy/PointCloud"{
 				void Geometry(point Varyings input[1], inout TriangleStream<Varyings> outStream) {
 					float4 origin = input[0].position;
 					float2 extent = abs(UNITY_MATRIX_P._11_22  * _PointSize);
-#if SHADER_API_GLCORE	 
+#if SHADER_API_GLCORE || SHADER_API_METAL
 					extent.x *= -1;
 #endif
 					// Copy the basic information.

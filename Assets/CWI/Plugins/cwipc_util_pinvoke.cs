@@ -48,17 +48,55 @@ public class cwipc_util_pinvoke
         return pc;
     }
 
-    public static void UpdatePointBuffer(System.IntPtr pc, ref ComputeBuffer pointBuffer) {
+    public static void UpdatePointBuffer(System.IntPtr pc, ref ComputeBuffer pointBuffer)
+    {
         uint ts = cwipc_timestamp(pc);
         System.Int32 size = cwipc_get_uncompressed_size(pc);
-        unsafe {
+        unsafe
+        {
             var array = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.Temp);
 
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
-            int ret = cwipc_copy_uncompressed(pc, ptr, size );
+            int ret = cwipc_copy_uncompressed(pc, ptr, size);
 
-            if(pointBuffer==null) pointBuffer = new ComputeBuffer(ret, sizeof(float)*4 );
-            pointBuffer.SetData<byte>(array,0,0, size);
+            if (pointBuffer == null) pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
+            pointBuffer.SetData<byte>(array, 0, 0, size);
+
+            array.Dispose();
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)] // Also tried with Pack=1
+    public struct PointCouldVertex
+    {
+        public Vector3 vertex;
+        public Color32 color;
+    }
+
+    public static void UpdatePointBuffer(System.IntPtr pc, ref Mesh mesh)
+    {
+        uint ts = cwipc_timestamp(pc);
+        System.Int32 size = cwipc_get_uncompressed_size(pc);
+        unsafe
+        {
+            var sizeT = Marshal.SizeOf(typeof(PointCouldVertex));
+            var array = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.Temp);
+            System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
+            int ret = cwipc_copy_uncompressed(pc, ptr, size);
+
+            var points = new Vector3[array.Length];
+            var indices = new int[array.Length];
+            var colors = new Color32[array.Length];
+
+            for (int i = 0; i < array.Length; i++) {
+                points[i] = array[i].vertex;
+                indices[i] = i;
+                colors[i] = array[i].color;
+            }
+
+            mesh.vertices = points;
+            mesh.colors32 = colors;
+            mesh.SetIndices(indices, MeshTopology.Points, 0);
 
             array.Dispose();
         }
