@@ -54,8 +54,6 @@ public class PointCloudTest : MonoBehaviour {
     Material pointMaterial;
 
     void OnRenderObject() {
-        return;
-
         if (SystemInfo.graphicsShaderLevel < 50) return;
 
         if (pointBuffer==null || !pointBuffer.IsValid()) return;
