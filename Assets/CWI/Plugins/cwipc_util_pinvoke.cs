@@ -22,12 +22,19 @@ public class cwipc_util_pinvoke
     [DllImport("cwipc_util")]
     extern static private IntPtr cwipc_synthetic();
 
-    public static System.IntPtr GetPointCloudFromPly() {
+    public static System.IntPtr GetPointCloudFromPly(string filename) {
 
 //        System.IntPtr src = cwipc_synthetic();
 //        return cwipc_source_get(src);
         System.IntPtr ptr = System.IntPtr.Zero;
-        return cwipc_read(Application.streamingAssetsPath + "/pcl_frame1.ply", 0, ref ptr);
+        var rv = cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref ptr);
+        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + ptr);
+        if (ptr != System.IntPtr.Zero)
+        {
+            string errorMessage = Marshal.PtrToStringAuto(ptr);
+            Debug.LogError("cwipc_read returned error: " + errorMessage);
+        }
+        return rv;
     }
 
     public static System.IntPtr GetPointCloudFromCWICPC(string filename)

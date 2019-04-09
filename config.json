@@ -4,6 +4,8 @@
     "exchangeName": "transcoder_out"
   },
   "PCs": {
-    "filename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc"
+    "sourceType" : "cwicpcfile",
+    "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+    "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply"
   }
 }

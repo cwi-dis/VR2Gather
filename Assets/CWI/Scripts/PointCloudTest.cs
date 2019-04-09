@@ -8,6 +8,8 @@ public class PointCloudTest : MonoBehaviour {
 
     ComputeBuffer pointBuffer;
     Mesh mesh;
+    System.IntPtr pc;
+    System.IntPtr pcSource;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -21,8 +23,10 @@ public class PointCloudTest : MonoBehaviour {
     public Color pointTint = Color.white;
     Color _pointTint = Color.clear;
 
-    IEnumerator Start() {
-        if (SystemInfo.graphicsShaderLevel < 50) {
+    IEnumerator Start()
+    {
+        if (SystemInfo.graphicsShaderLevel < 50)
+        {
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh = new Mesh();
@@ -36,12 +40,44 @@ public class PointCloudTest : MonoBehaviour {
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
         yield return null;
-        var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
-
-        if (SystemInfo.graphicsShaderLevel < 50)
-            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref mesh);
+        pc = System.IntPtr.Zero;
+        pcSource = System.IntPtr.Zero;
+        if (Config.Instance.PCs.sourceType == "cwicpcfile")
+        {
+            pc = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+        }
+        else if (Config.Instance.PCs.sourceType == "plyfile")
+        {
+            pc = cwipc_util_pinvoke.GetPointCloudFromPly(Config.Instance.PCs.plyFilename);
+        }
+        else if (Config.Instance.PCs.sourceType == "cwicpcdir")
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        else if (Config.Instance.PCs.sourceType == "plydir")
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        else if (Config.Instance.PCs.sourceType == "synthetic")
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        else if (Config.Instance.PCs.sourceType == "realsense")
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
         else
-            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref pointBuffer);
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        if (pc != System.IntPtr.Zero)
+        {
+            if (SystemInfo.graphicsShaderLevel < 50)
+                cwipc_util_pinvoke.UpdatePointBuffer(pc, ref mesh);
+            else
+                cwipc_util_pinvoke.UpdatePointBuffer(pc, ref pointBuffer);
+
+        }
     }
 
     void Update() {

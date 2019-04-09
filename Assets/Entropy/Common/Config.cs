@@ -15,7 +15,11 @@ public class Config {
     [Serializable]
     public class _PCs
     {
-        public string filename;
+        public string sourceType;
+        public string cwicpcFilename;
+        public string cwicpcDirectory;
+        public string plyFilename;
+        public string plyDirectory;
     };
     public _PCs PCs;
 
