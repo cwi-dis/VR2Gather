@@ -8,8 +8,8 @@ public class PointCloudTest : MonoBehaviour {
 
     ComputeBuffer pointBuffer;
     Mesh mesh;
-    System.IntPtr pc;
-    System.IntPtr pcSource;
+    cwipc pc;
+    cwipc_source pcSource;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -40,17 +40,17 @@ public class PointCloudTest : MonoBehaviour {
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
         yield return null;
-        pc = System.IntPtr.Zero;
-        pcSource = System.IntPtr.Zero;
+        pc = null;
+        pcSource = null;
         if (Config.Instance.PCs.sourceType == "cwicpcfile")
         {
             pc = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
-            if (pc == System.IntPtr.Zero) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
+            if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "plyfile")
         {
             pc = cwipc_util_pinvoke.GetPointCloudFromPly(Config.Instance.PCs.plyFilename);
-            if (pc == System.IntPtr.Zero) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
+            if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "cwicpcdir")
         {
@@ -63,7 +63,7 @@ public class PointCloudTest : MonoBehaviour {
         else if (Config.Instance.PCs.sourceType == "synthetic")
         {
             pcSource = cwipc_util_pinvoke.getSynthetic();
-            if (pcSource == System.IntPtr.Zero)
+            if (pcSource == null)
             {
                 Debug.LogError("Cannot create synthetic pointcloud source");
             }
@@ -76,18 +76,18 @@ public class PointCloudTest : MonoBehaviour {
         {
             Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
         }
-        if (pcSource != System.IntPtr.Zero && pc == System.IntPtr.Zero)
+        if (pcSource != null && pc == null)
         {
             // We have a pointcloud source but no pointcloud yet. Get one.
-            pc = cwipc_util_pinvoke.getPointCloudFromSource(pcSource);
-            if (pc == System.IntPtr.Zero) Debug.LogError("Cannot get pointcloud from source");
+            pc = pcSource.get();
+            if (pc == null) Debug.LogError("Cannot get pointcloud from source");
         }
-        if (pc != System.IntPtr.Zero)
+        if (pc != null)
         {
             if (SystemInfo.graphicsShaderLevel < 50)
-                cwipc_util_pinvoke.UpdatePointBuffer(pc, ref mesh);
+                pc.copy_to_mesh(ref mesh);
             else
-                cwipc_util_pinvoke.UpdatePointBuffer(pc, ref pointBuffer);
+                pc.copy_to_pointbuffer(ref pointBuffer);
 
         }
     }
