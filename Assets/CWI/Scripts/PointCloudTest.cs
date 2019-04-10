@@ -95,6 +95,23 @@ public class PointCloudTest : MonoBehaviour {
     void Update() {
         if ( Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+        if (pcSource != null)
+        {
+            Debug.Log("xxxjack get new pc");
+            pc = pcSource.get();
+            if (pc == null)
+            { 
+                Debug.LogError("Cannot get pointcloud from source");
+            }
+            else
+            {
+                if (SystemInfo.graphicsShaderLevel < 50)
+                    pc.copy_to_mesh(ref mesh);
+                else
+                    pc.copy_to_pointbuffer(ref pointBuffer);
+            }
+        }
+
     }
 
     public Shader pointShader = null;
