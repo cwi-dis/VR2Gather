@@ -2,32 +2,34 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 
+internal class API_cwipc_util
+{
+    [DllImport("cwipc_util")]
+    internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage);
+    [DllImport("cwipc_util")]
+    internal extern static void cwipc_free(IntPtr pc);
+    [DllImport("cwipc_util")]
+    internal extern static uint cwipc_timestamp(IntPtr pc);
+    [DllImport("cwipc_util")]
+    internal extern static Int32 cwipc_get_uncompressed_size(IntPtr pc, uint dataVersion = 0x20190209);
+    [DllImport("cwipc_util")]
+    internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, Int32 size);
+    [DllImport("cwipc_util")]
+    internal extern static System.IntPtr cwipc_source_get(IntPtr src);
+    [DllImport("cwipc_util")]
+    internal extern static void cwipc_source_free(IntPtr src);
+    [DllImport("cwipc_util")]
+    internal extern static IntPtr cwipc_synthetic();
+}
 
 public class cwipc_util_pinvoke
 {
-    [DllImport("cwipc_util")]
-    extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage);
-    [DllImport("cwipc_util")]
-    extern static void cwipc_free(IntPtr pc);
-    [DllImport("cwipc_util")]
-    extern static uint cwipc_timestamp(IntPtr pc);
-    [DllImport("cwipc_util")]
-    extern static Int32 cwipc_get_uncompressed_size(IntPtr pc, uint dataVersion= 0x20190209);
-    [DllImport("cwipc_util")]
-    extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, Int32 size);
-    [DllImport("cwipc_util")]
-    extern static System.IntPtr cwipc_source_get(IntPtr src);
-    [DllImport("cwipc_util")]
-    extern static void cwipc_source_free(IntPtr src);
-    [DllImport("cwipc_util")]
-    extern static private IntPtr cwipc_synthetic();
-
-    public static System.IntPtr GetPointCloudFromPly(string filename) {
+        public static System.IntPtr GetPointCloudFromPly(string filename) {
 
 //        System.IntPtr src = cwipc_synthetic();
 //        return cwipc_source_get(src);
         System.IntPtr ptr = System.IntPtr.Zero;
-        var rv = cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref ptr);
+        var rv = API_cwipc_util.cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref ptr);
         Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + ptr);
         if (ptr != System.IntPtr.Zero)
         {
@@ -55,16 +57,26 @@ public class cwipc_util_pinvoke
         return pc;
     }
 
+    public static System.IntPtr getSynthetic()
+    {
+        return API_cwipc_util.cwipc_synthetic();
+    }
+
+    public static System.IntPtr getPointCloudFromSource(System.IntPtr pcsrc)
+    {
+        return API_cwipc_util.cwipc_source_get(pcsrc);
+    }
+
     public static void UpdatePointBuffer(System.IntPtr pc, ref ComputeBuffer pointBuffer)
     {
-        uint ts = cwipc_timestamp(pc);
-        System.Int32 size = cwipc_get_uncompressed_size(pc);
+        uint ts = API_cwipc_util.cwipc_timestamp(pc);
+        System.Int32 size = API_cwipc_util.cwipc_get_uncompressed_size(pc);
         unsafe
         {
             var array = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.Temp);
 
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
-            int ret = cwipc_copy_uncompressed(pc, ptr, size);
+            int ret = API_cwipc_util.cwipc_copy_uncompressed(pc, ptr, size);
 
             if (pointBuffer == null) pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
             pointBuffer.SetData<byte>(array, 0, 0, size);
@@ -82,14 +94,14 @@ public class cwipc_util_pinvoke
 
     public static void UpdatePointBuffer(System.IntPtr pc, ref Mesh mesh)
     {
-        uint ts = cwipc_timestamp(pc);
-        System.Int32 size = cwipc_get_uncompressed_size(pc);
+        uint ts = API_cwipc_util.cwipc_timestamp(pc);
+        System.Int32 size = API_cwipc_util.cwipc_get_uncompressed_size(pc);
         unsafe
         {
             var sizeT = Marshal.SizeOf(typeof(PointCouldVertex));
             var array = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.Temp);
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
-            int ret = cwipc_copy_uncompressed(pc, ptr, size);
+            int ret = API_cwipc_util.cwipc_copy_uncompressed(pc, ptr, size);
 
             var points = new Vector3[array.Length];
             var indices = new int[array.Length];

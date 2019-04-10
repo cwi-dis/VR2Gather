@@ -45,10 +45,12 @@ public class PointCloudTest : MonoBehaviour {
         if (Config.Instance.PCs.sourceType == "cwicpcfile")
         {
             pc = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+            if (pc == System.IntPtr.Zero) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "plyfile")
         {
             pc = cwipc_util_pinvoke.GetPointCloudFromPly(Config.Instance.PCs.plyFilename);
+            if (pc == System.IntPtr.Zero) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "cwicpcdir")
         {
@@ -60,7 +62,11 @@ public class PointCloudTest : MonoBehaviour {
         }
         else if (Config.Instance.PCs.sourceType == "synthetic")
         {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+            pcSource = cwipc_util_pinvoke.getSynthetic();
+            if (pcSource == System.IntPtr.Zero)
+            {
+                Debug.LogError("Cannot create synthetic pointcloud source");
+            }
         }
         else if (Config.Instance.PCs.sourceType == "realsense")
         {
@@ -69,6 +75,12 @@ public class PointCloudTest : MonoBehaviour {
         else
         {
             Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        if (pcSource != System.IntPtr.Zero && pc == System.IntPtr.Zero)
+        {
+            // We have a pointcloud source but no pointcloud yet. Get one.
+            pc = cwipc_util_pinvoke.getPointCloudFromSource(pcSource);
+            if (pc == System.IntPtr.Zero) Debug.LogError("Cannot get pointcloud from source");
         }
         if (pc != System.IntPtr.Zero)
         {
