@@ -54,7 +54,11 @@ public class PointCloudTest : MonoBehaviour {
         }
         else if (Config.Instance.PCs.sourceType == "cwicpcdir")
         {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+            pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create compressed directory pointcloud source");
+            }
         }
         else if (Config.Instance.PCs.sourceType == "plydir")
         {
@@ -62,15 +66,19 @@ public class PointCloudTest : MonoBehaviour {
         }
         else if (Config.Instance.PCs.sourceType == "synthetic")
         {
-            pcSource = cwipc_util_pinvoke.getSynthetic();
+            pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
             if (pcSource == null)
             {
                 Debug.LogError("Cannot create synthetic pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "realsense")
+        else if (Config.Instance.PCs.sourceType == "realsense2")
         {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+            pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create realsense2 pointcloud source");
+            }
         }
         else
         {

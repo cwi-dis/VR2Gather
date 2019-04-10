@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
@@ -20,6 +21,12 @@ internal class API_cwipc_util
     internal extern static void cwipc_source_free(IntPtr src);
     [DllImport("cwipc_util")]
     internal extern static IntPtr cwipc_synthetic();
+}
+
+internal class API_cwipc_realsense2
+{
+    [DllImport("cwipc_realsense2")]
+    internal extern static IntPtr cwipc_realsense2(ref System.IntPtr errorMessage);
 }
 
 public class cwipc
@@ -62,6 +69,7 @@ public class cwipc
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
             int ret = API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
 
+            // xxxjack I don't trust this, what if new pointclouds are bigger?
             if (pointBuffer == null) pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
             pointBuffer.SetData<byte>(array, 0, 0, size);
 
@@ -145,18 +153,54 @@ internal class cwipc_source_impl : cwipc_source
     }
 }
 
+internal class source_from_cwicpc_dir : cwipc_source
+{
+    Queue<string> allFilenames;
+
+    internal source_from_cwicpc_dir(string dirname)
+    {
+        allFilenames = new Queue<string>(System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname));
+    }
+
+    public void free()
+    { 
+    }
+
+    public cwipc get()
+    {
+        if (allFilenames.Count == 0) return null;
+        string filename = allFilenames.Dequeue();
+        Debug.Log("xxxjack now reading " + filename);
+        float init = Time.realtimeSinceStartup;
+        var bytes = System.IO.File.ReadAllBytes(filename);
+        var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        float read = Time.realtimeSinceStartup;
+
+        var pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        float decom1 = Time.realtimeSinceStartup;
+        pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        float decom2 = Time.realtimeSinceStartup;
+
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) + " decom2 " + (decom2 - decom1));
+
+
+        return new cwipc(pc);
+
+    }
+}
+
 public class cwipc_util_pinvoke
 {
         public static cwipc GetPointCloudFromPly(string filename) {
 
 //        System.IntPtr src = cwipc_synthetic();
 //        return cwipc_source_get(src);
-        System.IntPtr ptr = System.IntPtr.Zero;
-        var rv = API_cwipc_util.cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref ptr);
-        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + ptr);
-        if (ptr != System.IntPtr.Zero)
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        var rv = API_cwipc_util.cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref errorPtr);
+        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + errorPtr);
+        if (errorPtr != System.IntPtr.Zero)
         {
-            string errorMessage = Marshal.PtrToStringAuto(ptr);
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
             Debug.LogError("cwipc_read returned error: " + errorMessage);
         }
         return new cwipc(rv);
@@ -180,10 +224,28 @@ public class cwipc_util_pinvoke
         return new cwipc(pc);
     }
 
-    public static cwipc_source getSynthetic()
+    public static cwipc_source sourceFromSynthetic()
     {
         var rv = API_cwipc_util.cwipc_synthetic();
         if (rv == System.IntPtr.Zero) return null;
         return new cwipc_source_impl(rv);
+    }
+
+    public static cwipc_source sourceFromRealsense2()
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        var rv = API_cwipc_realsense2.cwipc_realsense2(ref errorPtr);
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            Debug.LogError("cwipc_realsense2 returned error: " + errorMessage);
+        }
+        if (rv == System.IntPtr.Zero) return null;
+        return new cwipc_source_impl(rv);
+    }
+
+    public static cwipc_source sourceFromCompressedDir(string dirname)
+    {
+        return new source_from_cwicpc_dir(dirname);
     }
 }
