@@ -110,11 +110,17 @@ public class cwipc
     }
 }
 
-public class cwipc_source
+public interface cwipc_source
+{
+    void free();
+    cwipc get();
+}
+
+internal class cwipc_source_impl : cwipc_source
 {
     System.IntPtr obj;
 
-    internal cwipc_source(System.IntPtr _obj)
+    internal cwipc_source_impl(System.IntPtr _obj)
     {
         obj = _obj;
     }
@@ -178,6 +184,6 @@ public class cwipc_util_pinvoke
     {
         var rv = API_cwipc_util.cwipc_synthetic();
         if (rv == System.IntPtr.Zero) return null;
-        return new cwipc_source(rv);
+        return new cwipc_source_impl(rv);
     }
 }
