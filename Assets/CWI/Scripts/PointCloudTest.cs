@@ -44,12 +44,12 @@ public class PointCloudTest : MonoBehaviour {
         pcSource = null;
         if (Config.Instance.PCs.sourceType == "cwicpcfile")
         {
-            pc = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+            pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
             if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "plyfile")
         {
-            pc = cwipc_util_pinvoke.GetPointCloudFromPly(Config.Instance.PCs.plyFilename);
+            pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
             if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
         }
         else if (Config.Instance.PCs.sourceType == "cwicpcdir")
@@ -62,7 +62,11 @@ public class PointCloudTest : MonoBehaviour {
         }
         else if (Config.Instance.PCs.sourceType == "plydir")
         {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+            pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create ply directory pointcloud source");
+            }
         }
         else if (Config.Instance.PCs.sourceType == "synthetic")
         {
@@ -103,9 +107,24 @@ public class PointCloudTest : MonoBehaviour {
     void Update() {
         if ( Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
-        if (pcSource != null)
+        // If we have a pointcloud source and it is at end-of-file we delete it
+        if (pcSource != null && pcSource.eof())
+        {
+            Debug.Log("cwipc_source end-of-file. Deleting source.");
+            pcSource.free();
+            pcSource = null;
+        }
+        // If we have a pointcloud source and it has a pointcloud available we get the new pointcloud
+        if (pcSource != null && pcSource.available(false))
         {
             Debug.Log("xxxjack get new pc");
+            // Free the previous pointcloud, if there was one
+            if (pc != null)
+            {
+                pc.free();
+                pc = null;
+            }
+            // Get the new pointcloud
             pc = pcSource.get();
             if (pc == null)
             { 
@@ -113,6 +132,7 @@ public class PointCloudTest : MonoBehaviour {
             }
             else
             {
+                // Copy the pointcloud to a mesh or a pointbuffer
                 if (SystemInfo.graphicsShaderLevel < 50)
                     pc.copy_to_mesh(ref mesh);
                 else

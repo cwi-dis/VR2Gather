@@ -4,9 +4,10 @@
     "exchangeName": "transcoder_out"
   },
   "PCs": {
-    "sourceType" : "realsense2",
+    "sourceType" : "cwicpcdir",
     "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
     "cwicpcDirectory": "../../../installed/lootCwicpc",
-    "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply"
+    "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+    "plyDirectory": "../../../installed/lootPly"
   }
 }

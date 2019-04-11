@@ -15,10 +15,16 @@ internal class API_cwipc_util
     internal extern static System.IntPtr cwipc_get_uncompressed_size(IntPtr pc, uint dataVersion = 0x20190209);
     [DllImport("cwipc_util")]
     internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, System.IntPtr size);
+
     [DllImport("cwipc_util")]
     internal extern static System.IntPtr cwipc_source_get(IntPtr src);
     [DllImport("cwipc_util")]
+    internal extern static bool cwipc_source_eof(IntPtr src);
+    [DllImport("cwipc_util")]
+    internal extern static bool cwipc_source_available(IntPtr src, bool available);
+    [DllImport("cwipc_util")]
     internal extern static void cwipc_source_free(IntPtr src);
+
     [DllImport("cwipc_util")]
     internal extern static IntPtr cwipc_synthetic();
 }
@@ -121,6 +127,8 @@ public class cwipc
 public interface cwipc_source
 {
     void free();
+    bool eof();
+    bool available(bool wait);
     cwipc get();
 }
 
@@ -131,6 +139,18 @@ internal class cwipc_source_impl : cwipc_source
     internal cwipc_source_impl(System.IntPtr _obj)
     {
         obj = _obj;
+    }
+
+    public bool eof()
+    {
+        if (obj == System.IntPtr.Zero) return true;
+        return API_cwipc_util.cwipc_source_eof(obj);
+    }
+
+    public bool available(bool wait)
+    {
+        if (obj == System.IntPtr.Zero) return false;
+        return API_cwipc_util.cwipc_source_available(obj, wait);
     }
 
     public void free()
@@ -163,7 +183,17 @@ internal class source_from_cwicpc_dir : cwipc_source
     }
 
     public void free()
-    { 
+    {
+    }
+
+    public bool eof()
+    {
+        return allFilenames.Count == 0;
+    }
+
+    public bool available(bool wait)
+    {
+        return allFilenames.Count != 0;
     }
 
     public cwipc get()
@@ -189,9 +219,51 @@ internal class source_from_cwicpc_dir : cwipc_source
     }
 }
 
+internal class source_from_ply_dir : cwipc_source
+{
+    Queue<string> allFilenames;
+
+    internal source_from_ply_dir(string dirname)
+    {
+        allFilenames = new Queue<string>(System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname));
+    }
+
+    public void free()
+    {
+    }
+
+    public bool eof()
+    {
+        return allFilenames.Count == 0;
+    }
+
+    public bool available(bool wait)
+    {
+        return allFilenames.Count != 0;
+    }
+
+
+    public cwipc get()
+    {
+        if (allFilenames.Count == 0) return null;
+        string filename = allFilenames.Dequeue();
+        Debug.Log("xxxjack now reading " + filename);
+        return null;
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        var rv = API_cwipc_util.cwipc_read(filename, 0, ref errorPtr);
+        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + errorPtr);
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            Debug.LogError("cwipc_read returned error: " + errorMessage);
+        }
+        return new cwipc(rv);
+    }
+}
+
 public class cwipc_util_pinvoke
 {
-        public static cwipc GetPointCloudFromPly(string filename) {
+        public static cwipc getOnePointCloudFromPly(string filename) {
 
 //        System.IntPtr src = cwipc_synthetic();
 //        return cwipc_source_get(src);
@@ -206,7 +278,7 @@ public class cwipc_util_pinvoke
         return new cwipc(rv);
     }
 
-    public static cwipc GetPointCloudFromCWICPC(string filename)
+    public static cwipc getOnePointCloudFromCWICPC(string filename)
     {
         float init = Time.realtimeSinceStartup;
         var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/"+ filename);
@@ -247,5 +319,10 @@ public class cwipc_util_pinvoke
     public static cwipc_source sourceFromCompressedDir(string dirname)
     {
         return new source_from_cwicpc_dir(dirname);
+    }
+
+    public static cwipc_source sourceFromPlyDir(string dirname)
+    {
+        return new source_from_ply_dir(dirname);
     }
 }
