@@ -35,6 +35,13 @@ internal class API_cwipc_realsense2
     internal extern static IntPtr cwipc_realsense2(ref System.IntPtr errorMessage);
 }
 
+
+internal class API_cwipc_codec
+{
+    [DllImport("cwipc_codec")]
+    internal extern static IntPtr cwipc_decompress(IntPtr compFrame, int len);
+}
+
 public class cwipc
 {
     System.IntPtr obj;
@@ -200,18 +207,16 @@ internal class source_from_cwicpc_dir : cwipc_source
     {
         if (allFilenames.Count == 0) return null;
         string filename = allFilenames.Dequeue();
-        Debug.Log("xxxjack now reading " + filename);
+        Debug.Log("xxxjack source_from_cwicpc_dir now reading " + filename);
         float init = Time.realtimeSinceStartup;
         var bytes = System.IO.File.ReadAllBytes(filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         float read = Time.realtimeSinceStartup;
 
-        var pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
         float decom1 = Time.realtimeSinceStartup;
-        pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
-        float decom2 = Time.realtimeSinceStartup;
 
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) + " decom2 " + (decom2 - decom1));
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
@@ -247,11 +252,9 @@ internal class source_from_ply_dir : cwipc_source
     {
         if (allFilenames.Count == 0) return null;
         string filename = allFilenames.Dequeue();
-        Debug.Log("xxxjack now reading " + filename);
-        return null;
+        Debug.Log("xxxjack source_from_ply_dir now reading " + filename);
         System.IntPtr errorPtr = System.IntPtr.Zero;
         var rv = API_cwipc_util.cwipc_read(filename, 0, ref errorPtr);
-        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + errorPtr);
         if (errorPtr != System.IntPtr.Zero)
         {
             string errorMessage = Marshal.PtrToStringAuto(errorPtr);
@@ -269,7 +272,6 @@ public class cwipc_util_pinvoke
 //        return cwipc_source_get(src);
         System.IntPtr errorPtr = System.IntPtr.Zero;
         var rv = API_cwipc_util.cwipc_read(Application.streamingAssetsPath + "/" + filename, 0, ref errorPtr);
-        Debug.Log("xxxjack cwipc_read returned " + rv + ",errorptr " + errorPtr);
         if (errorPtr != System.IntPtr.Zero)
         {
             string errorMessage = Marshal.PtrToStringAuto(errorPtr);
@@ -285,12 +287,10 @@ public class cwipc_util_pinvoke
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         float read = Time.realtimeSinceStartup;
 
-        var pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
+        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
         float decom1 = Time.realtimeSinceStartup;
-        pc = cwipc_codec_pinvoke.cwipc_decompress(ptr, bytes.Length);
-        float decom2 = Time.realtimeSinceStartup;
 
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) + " decom2 " + (decom2 - decom1));
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) );
         
 
         return new cwipc(pc);

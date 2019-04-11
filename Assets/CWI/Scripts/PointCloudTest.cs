@@ -10,6 +10,7 @@ public class PointCloudTest : MonoBehaviour {
     Mesh mesh;
     cwipc pc;
     cwipc_source pcSource;
+    float pcSourceStartTime;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -90,6 +91,7 @@ public class PointCloudTest : MonoBehaviour {
         }
         if (pcSource != null && pc == null)
         {
+            pcSourceStartTime = Time.realtimeSinceStartup;
             // We have a pointcloud source but no pointcloud yet. Get one.
             pc = pcSource.get();
             if (pc == null) Debug.LogError("Cannot get pointcloud from source");
@@ -111,13 +113,14 @@ public class PointCloudTest : MonoBehaviour {
         if (pcSource != null && pcSource.eof())
         {
             Debug.Log("cwipc_source end-of-file. Deleting source.");
+            float now = Time.realtimeSinceStartup;
+            Debug.Log("cwipc_source produced pointclouds for " + (now - pcSourceStartTime) + " seconds");
             pcSource.free();
             pcSource = null;
         }
         // If we have a pointcloud source and it has a pointcloud available we get the new pointcloud
         if (pcSource != null && pcSource.available(false))
         {
-            Debug.Log("xxxjack get new pc");
             // Free the previous pointcloud, if there was one
             if (pc != null)
             {
