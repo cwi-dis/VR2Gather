@@ -764,6 +764,9 @@
     <None Include="Assets\FbxExporters\LICENSE.txt" />
     <None Include="Assets\FbxExporters\README.txt" />
     <None Include="Assets\FbxExporters\RELEASE_NOTES.txt" />
+    <None Include="Assets\Fonts\OpenSans\FontLicense.txt" />
+    <None Include="Assets\Lobby\Documentation.txt" />
+    <None Include="Assets\Lobby\Instruction.txt" />
     <None Include="Assets\Tools\Bakery\BakeryMetaPass.cginc" />
     <None Include="Assets\Tools\Bakery\examples\shaders\Baked_Normal_Maps_meta.shader" />
     <None Include="Assets\Tools\Bakery\examples\shaders\Baked_Normal_Maps_terrain_meta.shader" />

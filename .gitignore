@@ -6,3 +6,4 @@ Testbed.sln
 Assembly-CSharp.csproj
 .collabignore
 Exe/
+Builds/

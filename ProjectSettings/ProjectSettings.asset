@@ -650,13 +650,13 @@ PlayerSettings:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
-    Collab: 1
+    Collab: 0
     UNet: 1
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 3
-  cloudProjectId: 476445a7-a7f2-4e1f-b807-df9fbc030494
-  projectName: TestBed
-  organizationId: xrlabbyentropy
+  cloudProjectId: 23aacb40-1797-4db2-ba9d-949f22b6d899
+  projectName: PointClouds
+  organizationId: marcmartos_i2cat
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
