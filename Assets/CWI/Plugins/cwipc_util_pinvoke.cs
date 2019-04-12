@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Net.Sockets;
+using System.Linq;
 using UnityEngine;
 
 internal class API_cwipc_util
@@ -264,6 +266,85 @@ internal class source_from_ply_dir : cwipc_source
     }
 }
 
+internal class source_from_cwicpc_socket : cwipc_source
+{
+    string hostname;
+    int port;
+    bool failed;
+
+    internal source_from_cwicpc_socket(string _hostname, int _port)
+    {
+        hostname = _hostname;
+        port = _port;
+        failed = false;
+    }
+
+    public void free()
+    {
+    }
+
+    public bool eof()
+    {
+        return failed;
+    }
+
+    public bool available(bool wait)
+    {
+        return !failed;
+    }
+
+    public cwipc get()
+    {
+        float init = Time.realtimeSinceStartup;
+        if (failed) return null;
+        TcpClient clt = null;
+        try
+        {
+            clt = new TcpClient(hostname, port);
+        } catch(SocketException)
+        {
+            Debug.LogError("connection error");
+        }
+        if (clt == null)
+        {
+            failed = true;
+            return null;
+        }
+        List<byte> allData = new List<byte>();
+        using (NetworkStream stream = clt.GetStream())
+        {
+            Byte[] data = new Byte[1024];
+
+            do
+            {
+                int numBytesRead = stream.Read(data, 0, data.Length);
+
+                if (numBytesRead == data.Length)
+                {
+                    allData.AddRange(data);
+                }
+                else if (numBytesRead > 0)
+                {
+                    allData.AddRange(data.Take(numBytesRead));
+                }
+            } while (stream.DataAvailable);
+        }
+        byte[] bytes = allData.ToArray();
+        var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        float read = Time.realtimeSinceStartup;
+
+        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        float decom1 = Time.realtimeSinceStartup;
+
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
+
+
+        return new cwipc(pc);
+
+    }
+}
+
+
 public class cwipc_util_pinvoke
 {
         public static cwipc getOnePointCloudFromPly(string filename) {
@@ -319,6 +400,11 @@ public class cwipc_util_pinvoke
     public static cwipc_source sourceFromCompressedDir(string dirname)
     {
         return new source_from_cwicpc_dir(dirname);
+    }
+
+    public static cwipc_source sourceFromNetwork(string hostname, int port)
+    {
+        return new source_from_cwicpc_socket(hostname, port);
     }
 
     public static cwipc_source sourceFromPlyDir(string dirname)

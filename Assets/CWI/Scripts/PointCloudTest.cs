@@ -85,6 +85,14 @@ public class PointCloudTest : MonoBehaviour {
                 Debug.LogError("Cannot create realsense2 pointcloud source");
             }
         }
+        else if (Config.Instance.PCs.sourceType == "network")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create compressed network pointcloud source");
+            }
+        }
         else
         {
             Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);

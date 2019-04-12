@@ -20,6 +20,8 @@ public class Config {
         public string cwicpcDirectory;
         public string plyFilename;
         public string plyDirectory;
+        public string networkHost;
+        public int networkPort;
     };
     public _PCs PCs;
 
