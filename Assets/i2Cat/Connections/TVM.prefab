@@ -19,8 +19,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4830053523329406}
-  - component: {fileID: 114852460591187304}
   - component: {fileID: 114780639732049234}
+  - component: {fileID: 114852460591187304}
   m_Layer: 0
   m_Name: TVM
   m_TagString: Untagged

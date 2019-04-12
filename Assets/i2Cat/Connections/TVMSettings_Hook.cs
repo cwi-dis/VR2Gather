@@ -8,6 +8,8 @@ using System.Net.Sockets;
 
 public class TVMSettings_Hook : LobbyHook {
 
+    public LobbyPlayer myLobby;
+
     public static string LocalIPAddress()
     {
         IPHostEntry host;
@@ -18,16 +20,25 @@ public class TVMSettings_Hook : LobbyHook {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
                 localIP = ip.ToString();
-                break;
+                if (localIP.StartsWith("192.168")) break;
             }
         }
         return localIP;
     }
 
     void Start()
-    {
-        Debug.Log(NetworkManager.singleton.networkAddress);
-        Debug.Log(LocalIPAddress()); 
+    {       
+        myLobby.OnMyName(LocalIPAddress());
+
+        #region Debugs
+        Debug.Log("IP: " + LocalIPAddress());
+        Debug.Log("Name: " + myLobby.playerName);
+        string uri = "amqp://tofis:tofis@";
+        string IP = myLobby.playerName;
+        uri += IP;
+        uri += ":5672";
+        Debug.Log("URL: " + uri);
+        #endregion
     }
 
     public override void OnLobbyServerSceneLoadedForPlayer(NetworkManager manager, GameObject lobbyPlayer, GameObject gamePlayer)
@@ -36,7 +47,7 @@ public class TVMSettings_Hook : LobbyHook {
         ShowTVMs tvm = gamePlayer.GetComponent<ShowTVMs>();
 
         string uri = "amqp://tofis:tofis@";
-        string IP = NetworkManager.singleton.networkAddress;
+        string IP = lobby.playerName;
         uri += IP;
         uri += ":5672";
 

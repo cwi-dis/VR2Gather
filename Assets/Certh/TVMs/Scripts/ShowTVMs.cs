@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
-public class ShowTVMs : MonoBehaviour {
+public class ShowTVMs : NetworkBehaviour {
     uint clientID;
+    [SyncVar]
     public string connectionURI;
     public string exchangeName;
 
@@ -184,6 +186,7 @@ public class ShowTVMs : MonoBehaviour {
     void Start() {
         ReconstructionReceiver.SetConnectionURI(clientID, connectionURI);
         ReconstructionReceiver.SetExchangeName(clientID, exchangeName);
+        Debug.Log("Start: " + connectionURI);
         ReconstructionReceiver.RegisterOnReceivedMeshCallBack(clientID, new ReconstructionReceiver.OnReceivedMesh(OnMeshReceivedGlobalHandler));
         ReconstructionReceiver.RegisterOnConnectionErrorCallBack(clientID, new ReconstructionReceiver.OnConnectionError(OnConnectionErrorHandler));
         ReconstructionReceiver.StartClient(clientID);
@@ -209,7 +212,7 @@ public class ShowTVMs : MonoBehaviour {
                 if (meshDatas[i].isNew) 
                     meshDatas[i].UpdateMesh();
         }
-        
+
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
     }
