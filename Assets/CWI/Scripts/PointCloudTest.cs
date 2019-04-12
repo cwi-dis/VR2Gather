@@ -8,6 +8,7 @@ public class PointCloudTest : MonoBehaviour {
 
     ComputeBuffer pointBuffer;
     Mesh mesh;
+    bool useMesh = true;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -22,7 +23,9 @@ public class PointCloudTest : MonoBehaviour {
     Color _pointTint = Color.clear;
 
     IEnumerator Start() {
-        if (SystemInfo.graphicsShaderLevel < 50) {
+        // useMesh = SystemInfo.graphicsShaderLevel < 50;
+        if (useMesh)
+        {
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh = new Mesh();
@@ -36,9 +39,10 @@ public class PointCloudTest : MonoBehaviour {
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
         yield return null;
-        var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
+        var pcs = cwipc_util_pinvoke.GetPointCloudFromPly();
+        //var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
 
-        if (SystemInfo.graphicsShaderLevel < 50)
+        if (useMesh)
             cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref mesh);
         else
             cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref pointBuffer);
@@ -54,7 +58,7 @@ public class PointCloudTest : MonoBehaviour {
     Material pointMaterial;
 
     void OnRenderObject() {
-        if (SystemInfo.graphicsShaderLevel < 50) return;
+        if (useMesh) return;
 
         if (pointBuffer==null || !pointBuffer.IsValid()) return;
 
