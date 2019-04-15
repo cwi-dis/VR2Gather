@@ -84,10 +84,13 @@ public class cwipc
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
             int ret = API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
 
-            // xxxjack I don't trust this, what if new pointclouds are bigger?
-            if (pointBuffer == null) pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
+            // Attempt by Jack to fix the pointbuffer allocation
+            if (pointBuffer == null || pointBuffer.count < ret)
+            {
+                if (pointBuffer != null) pointBuffer.Release();
+                pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
+            }
             pointBuffer.SetData<byte>(array, 0, 0, size);
-
             array.Dispose();
         }
     }

@@ -172,8 +172,8 @@ public class PointCloudTest : MonoBehaviour {
         if (pointMaterial == null) {
             pointMaterial = new Material(pointShader);
             pointMaterial.hideFlags = HideFlags.DontSave;
-            pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
         }
+        pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
 
         pointMaterial.SetPass(0);
         pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
