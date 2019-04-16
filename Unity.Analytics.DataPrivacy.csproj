@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F8379054-16B4-43D4-B56B-D8594FAB8090}</ProjectGuid>
+    <ProjectGuid>{D6E266C6-3D1F-28C8-9FEB-2A01E44DBF77}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AssemblyName>BakeryEditorAssembly.dll</AssemblyName>
+    <AssemblyName>Unity.Analytics.DataPrivacy.dll</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <TargetFrameworkProfile></TargetFrameworkProfile>
     <CompilerResponseFile></CompilerResponseFile>
-    <UnityProjectType>Editor:5</UnityProjectType>
+    <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2018.3.12f1</UnityVersion>
     <RootNamespace></RootNamespace>
@@ -156,9 +156,6 @@
     </Reference>
     <Reference Include="Managed/UnityEngine/UnityEngine.SharedInternalsModule">
       <HintPath>D:\unityhub\2018.3.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.SharedInternalsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="Managed/UnityEngine/UnityEngine.SpatialTrackingModule">
-      <HintPath>D:\unityhub\2018.3.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.SpatialTrackingModule.dll</HintPath>
     </Reference>
     <Reference Include="Managed/UnityEngine/UnityEngine.SpriteMaskModule">
       <HintPath>D:\unityhub\2018.3.12f1\Editor\Data\Managed/UnityEngine/UnityEngine.SpriteMaskModule.dll</HintPath>
@@ -696,34 +693,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="BakeryRuntimeAssembly.csproj">
-      <Project>{BB253F01-F0B8-173B-5863-125DB80D7319}</Project>
-      <Name>BakeryRuntimeAssembly</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftBuildGraphics.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftBuildLights.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftClearMenu.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftCreateMenu.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftDDS.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftDirectLightInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftErrorCodes.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLightingDataGen.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLightmappedPrefabInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLightmapsStorageInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLightMeshInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLMGroupInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftLMGroupSelectorInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftModelPostProcessor.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftPlayMode2EditorUpdater.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftPointLightInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftRenderLightmap.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftSceneView.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftShaderTweaks.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftSkyLightInspector.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftTextureProcessor.cs" />
-    <Compile Include="Assets\Editor\x64\Bakery\scripts\ftUVGBufferGen.cs" />
+    <Compile Include="Packages\com.unity.analytics\DataPrivacy\AssemblyInfo.cs" />
+    <Compile Include="Packages\com.unity.analytics\DataPrivacy\DataPrivacy.cs" />
+    <Compile Include="Packages\com.unity.analytics\DataPrivacy\DataPrivacyButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\CWI\Shaders\PointCloud.shader" />
