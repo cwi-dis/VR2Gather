@@ -362,6 +362,7 @@ internal class source_from_sub : cwipc_source
         streamNumber = _streamNumber;
 
         // xxxjack wrong: signals_unity_bridge_pinvoke.SetPaths();
+        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", Config.Instance.PCs.subFOLDERPATH);
 
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero)
