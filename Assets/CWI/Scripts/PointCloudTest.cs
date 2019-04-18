@@ -93,6 +93,14 @@ public class PointCloudTest : MonoBehaviour {
                 Debug.LogError("Cannot create compressed network pointcloud source");
             }
         }
+        else if (Config.Instance.PCs.sourceType == "sub")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
+            }
+        }
         else
         {
             Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);

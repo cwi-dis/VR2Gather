@@ -22,6 +22,8 @@ public class Config {
         public string plyDirectory;
         public string networkHost;
         public int networkPort;
+        public string subURL;
+        public int subStreamNumber;
     };
     public _PCs PCs;
 

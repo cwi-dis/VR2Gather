@@ -304,7 +304,8 @@ internal class source_from_cwicpc_socket : cwipc_source
         try
         {
             clt = new TcpClient(hostname, port);
-        } catch(SocketException)
+        }
+        catch (SocketException)
         {
             Debug.LogError("connection error");
         }
@@ -334,6 +335,89 @@ internal class source_from_cwicpc_socket : cwipc_source
         }
         byte[] bytes = allData.ToArray();
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        float read = Time.realtimeSinceStartup;
+
+        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        float decom1 = Time.realtimeSinceStartup;
+
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
+
+
+        return new cwipc(pc);
+
+    }
+}
+
+internal class source_from_sub : cwipc_source
+{
+    string url;
+    int streamNumber;
+    bool failed;
+    IntPtr subHandle;
+
+    internal source_from_sub(string _url, int _streamNumber)
+    {
+        failed = true;
+        url = _url;
+        streamNumber = _streamNumber;
+
+        // xxxjack wrong: signals_unity_bridge_pinvoke.SetPaths();
+
+        subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
+        if (subHandle == IntPtr.Zero)
+        {
+            Debug.LogError("sub_create failed");
+            return;
+        }
+        bool ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
+        if (!ok)
+        {
+            Debug.LogError("sub_play failed for " + url);
+            return;
+        }
+        failed = false;
+    }
+
+    public void free()
+    {
+        if (subHandle != IntPtr.Zero)
+        {
+            signals_unity_bridge_pinvoke.sub_destroy(subHandle);
+            subHandle = IntPtr.Zero;
+            failed = true; // Not really failed, but reacts the same (nothing will work anymore)
+        }
+    }
+
+    public bool eof()
+    {
+        return failed;
+    }
+
+    public bool available(bool wait)
+    {
+        return !failed;
+    }
+
+    public cwipc get()
+    {
+        signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
+        float init = Time.realtimeSinceStartup;
+        if (failed) return null;
+        int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
+        if (bytesNeeded == 0)
+        {
+            Debug.Log("xxxjack no data available for sub");
+            return null;
+        }
+        byte[] bytes = new byte[bytesNeeded];
+        IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, ptr, bytesNeeded, ref info);
+        if (bytesRead != bytesNeeded)
+        {
+            Debug.LogError("sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+            return null;
+        }
+        
         float read = Time.realtimeSinceStartup;
 
         var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
@@ -408,6 +492,10 @@ public class cwipc_util_pinvoke
     public static cwipc_source sourceFromNetwork(string hostname, int port)
     {
         return new source_from_cwicpc_socket(hostname, port);
+    }
+    public static cwipc_source sourceFromSUB(string url, int streamNumber)
+    {
+        return new source_from_sub(url, streamNumber);
     }
 
     public static cwipc_source sourceFromPlyDir(string dirname)

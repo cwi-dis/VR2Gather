@@ -4,12 +4,14 @@
     "exchangeName": "transcoder_out"
   },
   "PCs": {
-    "sourceType" : "network",
+    "sourceType" : "realsense2",
     "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
     "cwicpcDirectory": "../../../installed/lootCwicpc",
     "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
     "plyDirectory": "../../../installed/lootPly",
     "networkHost": "localhost",
-    "networkPort": 4303
+    "networkPort": 4303,
+	"subURL": "http://localhost:8000/pcl2dash.mpd",
+	"subStreamNumber": 0
   }
 }
