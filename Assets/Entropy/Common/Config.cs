@@ -24,7 +24,6 @@ public class Config {
         public int networkPort;
         public string subURL;
         public int subStreamNumber;
-        public string subFOLDERPATH;
     };
     public _PCs PCs;
 

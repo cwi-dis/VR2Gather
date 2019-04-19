@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Net.Sockets;
 using System.Linq;
+using System.Text;
+using System.IO;
 using UnityEngine;
 
 internal class API_cwipc_util
@@ -42,6 +44,14 @@ internal class API_cwipc_codec
 {
     [DllImport("cwipc_codec")]
     internal extern static IntPtr cwipc_decompress(IntPtr compFrame, int len);
+}
+
+internal class API_kernel
+{
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+    internal static extern IntPtr GetModuleHandle(string lpModuleName);
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+    internal static extern int GetModuleFileName(IntPtr hModule, StringBuilder modulePath, int nSize);
 }
 
 public class cwipc
@@ -361,22 +371,46 @@ internal class source_from_sub : cwipc_source
         url = _url;
         streamNumber = _streamNumber;
 
-        // xxxjack wrong: signals_unity_bridge_pinvoke.SetPaths();
-        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", Config.Instance.PCs.subFOLDERPATH);
-
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero)
         {
             Debug.LogError("sub_create failed");
             return;
         }
-        bool ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
+        bool ok = setup_sub_environment();
+        if (!ok)
+        {
+            Debug.LogError("setup_sub_environment failed");
+            return;
+        }
+
+        ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
         if (!ok)
         {
             Debug.LogError("sub_play failed for " + url);
             return;
         }
         failed = false;
+    }
+
+    internal bool setup_sub_environment()
+    {
+        IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
+        if (hMod == IntPtr.Zero)
+        {
+            Debug.LogError("Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
+            return false;
+        }
+        StringBuilder modPath = new StringBuilder(255);
+        int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
+        if (rv < 0)
+        {
+            Debug.LogError("Cannot get filename for signals-unity-bridge, GetModuleFileName returned " + rv);
+            //return false;
+        }
+        string dirName = Path.GetDirectoryName(modPath.ToString());
+        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
+        return true;
     }
 
     public void free()
