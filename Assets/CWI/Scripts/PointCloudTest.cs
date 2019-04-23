@@ -8,6 +8,9 @@ public class PointCloudTest : MonoBehaviour {
 
     ComputeBuffer pointBuffer;
     Mesh mesh;
+    cwipc pc;
+    cwipc_source pcSource;
+    float pcSourceStartTime;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -21,8 +24,10 @@ public class PointCloudTest : MonoBehaviour {
     public Color pointTint = Color.white;
     Color _pointTint = Color.clear;
 
-    IEnumerator Start() {
-        if (SystemInfo.graphicsShaderLevel < 50) {
+    IEnumerator Start()
+    {
+        if (SystemInfo.graphicsShaderLevel < 50)
+        {
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh = new Mesh();
@@ -36,17 +41,124 @@ public class PointCloudTest : MonoBehaviour {
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
         yield return null;
-        var pcs = cwipc_util_pinvoke.GetPointCloudFromCWICPC(Config.Instance.PCs.filename);
-
-        if (SystemInfo.graphicsShaderLevel < 50)
-            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref mesh);
+        pc = null;
+        pcSource = null;
+        if (Config.Instance.PCs.sourceType == "cwicpcfile")
+        {
+            pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+            if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
+        }
+        else if (Config.Instance.PCs.sourceType == "plyfile")
+        {
+            pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
+            if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
+        }
+        else if (Config.Instance.PCs.sourceType == "cwicpcdir")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create compressed directory pointcloud source");
+            }
+        }
+        else if (Config.Instance.PCs.sourceType == "plydir")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create ply directory pointcloud source");
+            }
+        }
+        else if (Config.Instance.PCs.sourceType == "synthetic")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create synthetic pointcloud source");
+            }
+        }
+        else if (Config.Instance.PCs.sourceType == "realsense2")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create realsense2 pointcloud source");
+            }
+        }
+        else if (Config.Instance.PCs.sourceType == "network")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create compressed network pointcloud source");
+            }
+        }
+        else if (Config.Instance.PCs.sourceType == "sub")
+        {
+            pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
+            if (pcSource == null)
+            {
+                Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
+            }
+        }
         else
-            cwipc_util_pinvoke.UpdatePointBuffer(pcs, ref pointBuffer);
+        {
+            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        }
+        if (pcSource != null && pc == null)
+        {
+            pcSourceStartTime = Time.realtimeSinceStartup;
+            // We have a pointcloud source but no pointcloud yet. Get one.
+            pc = pcSource.get();
+            if (pc == null) Debug.LogError("Cannot get pointcloud from source");
+        }
+        if (pc != null)
+        {
+            if (SystemInfo.graphicsShaderLevel < 50)
+                pc.copy_to_mesh(ref mesh);
+            else
+                pc.copy_to_pointbuffer(ref pointBuffer);
+
+        }
     }
 
     void Update() {
         if ( Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+        // If we have a pointcloud source and it is at end-of-file we delete it
+        if (pcSource != null && pcSource.eof())
+        {
+            Debug.Log("cwipc_source end-of-file. Deleting source.");
+            float now = Time.realtimeSinceStartup;
+            Debug.Log("cwipc_source produced pointclouds for " + (now - pcSourceStartTime) + " seconds");
+            pcSource.free();
+            pcSource = null;
+        }
+        // If we have a pointcloud source and it has a pointcloud available we get the new pointcloud
+        if (pcSource != null && pcSource.available(false))
+        {
+            // Free the previous pointcloud, if there was one
+            if (pc != null)
+            {
+                pc.free();
+                pc = null;
+            }
+            // Get the new pointcloud
+            pc = pcSource.get();
+            if (pc == null)
+            { 
+                Debug.LogError("Cannot get pointcloud from source");
+            }
+            else
+            {
+                // Copy the pointcloud to a mesh or a pointbuffer
+                if (SystemInfo.graphicsShaderLevel < 50)
+                    pc.copy_to_mesh(ref mesh);
+                else
+                    pc.copy_to_pointbuffer(ref pointBuffer);
+            }
+        }
+
     }
 
     public Shader pointShader = null;
@@ -68,8 +180,8 @@ public class PointCloudTest : MonoBehaviour {
         if (pointMaterial == null) {
             pointMaterial = new Material(pointShader);
             pointMaterial.hideFlags = HideFlags.DontSave;
-            pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
         }
+        pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
 
         pointMaterial.SetPass(0);
         pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
