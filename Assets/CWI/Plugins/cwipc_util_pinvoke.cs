@@ -370,17 +370,22 @@ internal class source_from_sub : cwipc_source
         failed = true;
         url = _url;
         streamNumber = _streamNumber;
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        signals_unity_bridge_pinvoke.SetPaths();
+        bool ok;
+#else
+        bool ok = setup_sub_environment();
+        if (!ok)
+        {
+            Debug.LogError("setup_sub_environment failed");
+            return;
+        }
+#endif
 
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero)
         {
             Debug.LogError("sub_create failed");
-            return;
-        }
-        bool ok = setup_sub_environment();
-        if (!ok)
-        {
-            Debug.LogError("setup_sub_environment failed");
             return;
         }
 
@@ -395,6 +400,7 @@ internal class source_from_sub : cwipc_source
 
     internal bool setup_sub_environment()
     {
+
         IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
         if (hMod == IntPtr.Zero)
         {

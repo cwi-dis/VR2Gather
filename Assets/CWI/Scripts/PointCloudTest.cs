@@ -43,6 +43,7 @@ public class PointCloudTest : MonoBehaviour {
         yield return null;
         pc = null;
         pcSource = null;
+
         if (Config.Instance.PCs.sourceType == "cwicpcfile")
         {
             pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
