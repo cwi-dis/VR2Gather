@@ -370,17 +370,12 @@ internal class source_from_sub : cwipc_source
         failed = true;
         url = _url;
         streamNumber = _streamNumber;
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-        signals_unity_bridge_pinvoke.SetPaths();
-        bool ok;
-#else
         bool ok = setup_sub_environment();
         if (!ok)
         {
             Debug.LogError("setup_sub_environment failed");
             return;
         }
-#endif
 
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero)
