@@ -41,77 +41,115 @@ public class ShowTVMs : MonoBehaviour {
     }
 
     public class TextureData {
-        Texture2D texture;
-        public byte[] texData;
-        public int textureWidth;
-        public int textureHeight;
+        public struct Texture
+        {
+            Texture2D    texture;
+            IntPtr       ptrData;
+            int          width;
+            int          height;
+            int          lenght;
+            int          parameterID;
+
+
+            public void Read(ReconstructionReceiver.Texture data)
+            {
+                if (ptrData == IntPtr.Zero) {
+                    width = data.width;
+                    height = data.height;
+                    lenght = width * height * 3;
+                    ptrData = Marshal.AllocHGlobal(lenght);
+                }
+                CopyMemory(ptrData, data.data, lenght);
+            }
+
+            public void Set(int id, Material material)
+            {
+                if (texture == null) {
+                    texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+                    texture.wrapMode = TextureWrapMode.Clamp;
+                    if (parameterID == 0) parameterID = Shader.PropertyToID("Texture" + id);
+                }
+                material.SetTexture(parameterID, texture);
+                texture.LoadRawTextureData(ptrData, lenght);
+                texture.Apply(false);
+            }
+        };
+        Texture[] textures;
+
+        [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+        public static extern void CopyMemory(IntPtr dest, IntPtr src, int count);
 
         public void Read(ReconstructionReceiver.DMesh mesh) {
+            // mesh.nTextures
+
             IntPtr pointer = mesh.textures;
-            var textureData = (ReconstructionReceiver.Texture)Marshal.PtrToStructure(pointer, typeof(ReconstructionReceiver.Texture));
-            if (textureWidth != textureData.width && textureHeight != textureData.height) {
-                textureWidth = textureData.width;
-                textureHeight = textureData.height;
-                texData = new byte[textureWidth * textureHeight * 3];
+            if (textures == null) textures = new Texture[mesh.nTextures];
+            for (int i = 0; i < textures.Length; ++i) {
+                textures[i].Read( Marshal.PtrToStructure< ReconstructionReceiver.Texture>(pointer) );
+                pointer = new IntPtr((long)pointer + Marshal.SizeOf(typeof(ReconstructionReceiver.Texture)));
             }
-            Marshal.Copy(textureData.data, texData, 0, textureData.width * textureData.height * 3);
         }
 
         public void Set(Material material) {
-            if (texture != null && (texture.width != textureWidth || texture.height != textureHeight)) {
-                Texture2D.Destroy(texture);
-                texture = null;
-            }
-
-            if (texture == null) {
-                texture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGB24, false);
-                material.SetTexture("Texture", texture);
-                material.SetInt("TextureWidth", textureWidth);
-                material.SetInt("TextureHeight", textureHeight);
-            }
-            texture.LoadRawTextureData(texData);
-            texture.Apply(false);
+            for (int i = 0; i < textures.Length; ++i) 
+                textures[i].Set(i, material);
         }
     }
 
     public class InfoData {
-        Matrix4x4 ColorIntrinsics;
-        Matrix4x4 Global2Color;
-        public void Read(ReconstructionReceiver.DMesh mesh)
+        public struct Matrices
         {
+            int intrinsicID;
+            int global2LocalID;
+            Matrix4x4 Intrinsics;
+            Matrix4x4 Global2Local;
+
+            static float[] tmp1 = new float[16];
+            static float[] tmp2 = new float[16];
+
+
+            public void Read(IntPtr pIntrinsics, IntPtr pGlobal2Local)
+            {
+                Marshal.Copy(pIntrinsics, tmp1, 0, 16);
+                Marshal.Copy(pGlobal2Local, tmp2, 0, 16);
+
+                for (int k = 0; k < 4; k++) {
+                    // transposed
+                    Intrinsics.SetColumn(k, new Vector4(tmp1[0 * 4 + k], tmp1[1 * 4 + k], tmp1[2 * 4 + k], tmp1[3 * 4 + k]));
+                    Global2Local.SetColumn(k, new Vector4(tmp2[0 * 4 + k], tmp2[1 * 4 + k], tmp2[2 * 4 + k], tmp2[3 * 4 + k]));
+                }
+            }
+
+            public void Set(int id, Material material)
+            {
+                if (global2LocalID == 0) {
+                    global2LocalID = Shader.PropertyToID("Global2Local" + id);
+                    intrinsicID = Shader.PropertyToID("Intrinsics" + id);
+                }
+                material.SetMatrix(global2LocalID, Global2Local);
+                material.SetMatrix(intrinsicID, Intrinsics);
+            }
+
+        }
+        Matrices[] matrices;
+        public void Read(ReconstructionReceiver.DMesh mesh){
             // mesh.acquisitionTimestamp;
             // mesh.kinectTimestamp;
 
-            IntPtr[] pIntrinsics = new IntPtr[1];
-            IntPtr[] pGlobal2LocalColor = new IntPtr[1];
+            if (matrices == null) matrices = new Matrices[mesh.nTextures];
 
-            Marshal.Copy(mesh.intrinsics, pIntrinsics, 0, 1);
-            Marshal.Copy(mesh.global2LocalColor, pGlobal2LocalColor, 0, 1);
+            IntPtr[] pIntrinsics = new IntPtr[mesh.nTextures];
+            IntPtr[] pGlobal2Local = new IntPtr[mesh.nTextures];
+            Marshal.Copy(mesh.intrinsics, pIntrinsics, 0, mesh.nTextures); // Copy de nTextures pointers to the matrix.
+            Marshal.Copy(mesh.global2LocalColor, pGlobal2Local, 0, mesh.nTextures);
 
-            float[] intrinsics = new float[16];
-            float[] global2LocalColor = new float[16];
-
-            Marshal.Copy(pIntrinsics[0], intrinsics, 0, 16);
-            Marshal.Copy(pGlobal2LocalColor[0], global2LocalColor, 0, 16);
-            Matrix4x4 intr = new Matrix4x4();
-            Matrix4x4 g2c = new Matrix4x4();
-            for (int k = 0; k < 4; k++) {
-                // transposed
-                intr.SetColumn(k, new Vector4(intrinsics[0 * 4 + k], intrinsics[1 * 4 + k], intrinsics[2 * 4 + k], intrinsics[3 * 4 + k]));
-                g2c.SetColumn(k, new Vector4(global2LocalColor[0 * 4 + k], global2LocalColor[1 * 4 + k], global2LocalColor[2 * 4 + k], global2LocalColor[3 * 4 + k]));
-            }
-            // convert from meters to mm
-            g2c.m03 *= 1000;
-            g2c.m13 *= 1000;
-            g2c.m23 *= 1000;
-
-            ColorIntrinsics = intr;
-            Global2Color = g2c;
+            for (int i = 0; i < matrices.Length; i++)
+                matrices[i].Read(pIntrinsics[i], pGlobal2Local[i]);
         }
 
         public void Set(Material material) {
-            material.SetMatrix("Global2LocalColor", Global2Color);
-            material.SetMatrix("Intrinsics", ColorIntrinsics);
+            for (int i = 0; i < matrices.Length; i++)
+                matrices[i].Set(i, material);
         }
     }
 
