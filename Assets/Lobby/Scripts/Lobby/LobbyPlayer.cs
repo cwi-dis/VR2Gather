@@ -17,6 +17,8 @@ namespace Prototype.NetworkLobby
 
         public Button colorButton;
         public InputField nameInput;
+        public InputField uriInput;
+        public InputField exchangeInput;
         public Button readyButton;
         public Button waitingPlayerButton;
         public Button removePlayerButton;
@@ -29,6 +31,10 @@ namespace Prototype.NetworkLobby
         public string playerName = "";
         [SyncVar(hook = "OnMyColor")]
         public Color playerColor = Color.white;
+        [SyncVar(hook = "OnMyURI")]
+        public string playerURI = "";
+        [SyncVar(hook = "OnMyExchange")]
+        public string playerExchange = "";
 
         public Color OddRowColor = new Color(250.0f / 255.0f, 250.0f / 255.0f, 250.0f / 255.0f, 1.0f);
         public Color EvenRowColor = new Color(180.0f / 255.0f, 180.0f / 255.0f, 180.0f / 255.0f, 1.0f);
@@ -64,6 +70,8 @@ namespace Prototype.NetworkLobby
             //will be created with the right value currently on server
             OnMyName(playerName);
             OnMyColor(playerColor);
+            OnMyURI(playerURI);
+            OnMyExchange(playerExchange);
         }
 
         public override void OnStartAuthority()
@@ -89,6 +97,8 @@ namespace Prototype.NetworkLobby
         void SetupOtherPlayer()
         {
             nameInput.interactable = false;
+            uriInput.interactable = false;
+            exchangeInput.interactable = false;
             removePlayerButton.interactable = NetworkServer.active;
 
             ChangeReadyButtonColor(NotReadyColor);
@@ -102,6 +112,8 @@ namespace Prototype.NetworkLobby
         void SetupLocalPlayer()
         {
             nameInput.interactable = true;
+            uriInput.interactable = true;
+            exchangeInput.interactable = true;
             remoteIcone.gameObject.SetActive(false);
             localIcone.gameObject.SetActive(true);
 
@@ -122,9 +134,17 @@ namespace Prototype.NetworkLobby
             //we switch from simple name display to name input
             colorButton.interactable = true;
             nameInput.interactable = true;
+            uriInput.interactable = true;
+            exchangeInput.interactable = true;
 
             nameInput.onEndEdit.RemoveAllListeners();
             nameInput.onEndEdit.AddListener(OnNameChanged);
+
+            uriInput.onEndEdit.RemoveAllListeners();
+            uriInput.onEndEdit.AddListener(OnURIChanged);
+
+            exchangeInput.onEndEdit.RemoveAllListeners();
+            exchangeInput.onEndEdit.AddListener(OnExchangeChanged);
 
             colorButton.onClick.RemoveAllListeners();
             colorButton.onClick.AddListener(OnColorClicked);
@@ -162,6 +182,8 @@ namespace Prototype.NetworkLobby
                 readyButton.interactable = false;
                 colorButton.interactable = false;
                 nameInput.interactable = false;
+                uriInput.interactable = false;
+                exchangeInput.interactable = false;
             }
             else
             {
@@ -173,6 +195,8 @@ namespace Prototype.NetworkLobby
                 readyButton.interactable = isLocalPlayer;
                 colorButton.interactable = isLocalPlayer;
                 nameInput.interactable = isLocalPlayer;
+                uriInput.interactable = isLocalPlayer;
+                exchangeInput.interactable = isLocalPlayer;
             }
         }
 
@@ -195,6 +219,18 @@ namespace Prototype.NetworkLobby
             colorButton.GetComponent<Image>().color = newColor;
         }
 
+        public void OnMyURI(string newURI)
+        {
+            playerURI = newURI;
+            uriInput.text = playerURI;
+        }
+
+        public void OnMyExchange(string newExchange)
+        {
+            playerExchange = newExchange;
+            exchangeInput.text = playerExchange;
+        }
+
         //===== UI Handler
 
         //Note that those handler use Command function, as we need to change the value on the server not locally
@@ -212,6 +248,16 @@ namespace Prototype.NetworkLobby
         public void OnNameChanged(string str)
         {
             CmdNameChanged(str);
+        }
+
+        public void OnURIChanged(string str)
+        {
+            CmdURIChanged(str);
+        }
+
+        public void OnExchangeChanged(string str)
+        {
+            CmdExchangeChanged(str);
         }
 
         public void OnRemovePlayerClick()
@@ -289,6 +335,18 @@ namespace Prototype.NetworkLobby
         public void CmdNameChanged(string name)
         {
             playerName = name;
+        }
+
+        [Command]
+        public void CmdURIChanged(string uri)
+        {
+            playerURI = uri;
+        }
+
+        [Command]
+        public void CmdExchangeChanged(string exchange)
+        {
+            playerExchange = exchange;
         }
 
         //Cleanup thing when get destroy (which happen when client kick or disconnect)

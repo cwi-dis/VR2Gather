@@ -28,7 +28,8 @@ public class TVMSettings_Hook : LobbyHook {
 
     void Start()
     {       
-        myLobby.OnMyName(LocalIPAddress());
+        myLobby.OnMyURI(LocalIPAddress());
+        myLobby.OnMyExchange("");
 
         #region Debugs
         Debug.Log("IP: " + LocalIPAddress());
@@ -44,14 +45,15 @@ public class TVMSettings_Hook : LobbyHook {
     public override void OnLobbyServerSceneLoadedForPlayer(NetworkManager manager, GameObject lobbyPlayer, GameObject gamePlayer)
     {
         LobbyPlayer lobby = lobbyPlayer.GetComponent<LobbyPlayer>();
-        ShowTVMs tvm = gamePlayer.GetComponent<ShowTVMs>();
+        ShowTVMs tvm = gamePlayer.GetComponentInChildren<ShowTVMs>();
 
         string uri = "amqp://tofis:tofis@";
-        string IP = lobby.playerName;
+        string IP = lobby.playerURI;
         uri += IP;
         uri += ":5672";
 
         tvm.connectionURI = uri;
+        tvm.exchangeName = lobby.playerExchange;
 
         //base.OnLobbyServerSceneLoadedForPlayer(manager, lobbyPlayer, gamePlayer);
     }

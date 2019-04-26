@@ -8,6 +8,7 @@ public class ShowTVMs : NetworkBehaviour {
     uint clientID;
     [SyncVar]
     public string connectionURI;
+    [SyncVar]
     public string exchangeName;
 
     public class MeshData {
