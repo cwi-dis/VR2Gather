@@ -3,6 +3,11 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using Unity.Collections;
 
+public enum SourceType
+{
+    RealSense2, Network, CwipcFile, PlyFile, CwicpcDir, PlyDir, Synthetic, SUB
+}
+
 
 public class PointCloudTest : MonoBehaviour {
 
@@ -11,6 +16,7 @@ public class PointCloudTest : MonoBehaviour {
     cwipc pc;
     cwipc_source pcSource;
     float pcSourceStartTime;
+    public SourceType sourceType;
 
     void OnDisable() {
         if (pointBuffer != null) {
@@ -43,68 +49,80 @@ public class PointCloudTest : MonoBehaviour {
         yield return null;
         pc = null;
         pcSource = null;
-        if (Config.Instance.PCs.sourceType == "cwicpcfile")
-        {
-            pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
-            if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
+
+        switch (sourceType) {
+            case SourceType.RealSense2:
+                pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
+                if (pcSource == null) Debug.LogError("Cannot create realsense2 pointcloud source");
+                break;
+            case SourceType.Network:
+                pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
+                if (pcSource == null) Debug.LogError("Cannot create compressed network pointcloud source");
+                break;
+            case SourceType.CwipcFile:
+                pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+                if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
+                break;
+            case SourceType.PlyFile:
+                pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
+                if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
+                break;
+            case SourceType.CwicpcDir:
+                pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
+                if (pcSource == null) Debug.LogError("Cannot create compressed directory pointcloud source");
+                break;
+            case SourceType.PlyDir:
+                pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
+                if (pcSource == null) Debug.LogError("Cannot create ply directory pointcloud source");
+                break;
+            case SourceType.Synthetic:
+                pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
+                if (pcSource == null)  Debug.LogError("Cannot create synthetic pointcloud source");
+                break;
+            case SourceType.SUB:
+                pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
+                if (pcSource == null) Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
+                break;
+            default:
+                Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+                break;
         }
-        else if (Config.Instance.PCs.sourceType == "plyfile")
-        {
-            pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
-            if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
-        }
-        else if (Config.Instance.PCs.sourceType == "cwicpcdir")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create compressed directory pointcloud source");
-            }
-        }
-        else if (Config.Instance.PCs.sourceType == "plydir")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create ply directory pointcloud source");
-            }
-        }
-        else if (Config.Instance.PCs.sourceType == "synthetic")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create synthetic pointcloud source");
-            }
-        }
-        else if (Config.Instance.PCs.sourceType == "realsense2")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create realsense2 pointcloud source");
-            }
-        }
-        else if (Config.Instance.PCs.sourceType == "network")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create compressed network pointcloud source");
-            }
-        }
-        else if (Config.Instance.PCs.sourceType == "sub")
-        {
-            pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
-            if (pcSource == null)
-            {
-                Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
-            }
-        }
-        else
-        {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
-        }
+
+        //if (Config.Instance.PCs.sourceType == "cwicpcfile") {
+        //    pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
+        //    if (pc == null) Debug.LogError("GetPointCloudFromCWICPC did not return a pointcloud");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "plyfile") {
+        //    pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
+        //    if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "cwicpcdir") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
+        //    if (pcSource == null) Debug.LogError("Cannot create compressed directory pointcloud source");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "plydir") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
+        //    if (pcSource == null) Debug.LogError("Cannot create ply directory pointcloud source");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "synthetic") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
+        //    if (pcSource == null) Debug.LogError("Cannot create synthetic pointcloud source");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "realsense2") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
+        //    if (pcSource == null) Debug.LogError("Cannot create realsense2 pointcloud source");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "network") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
+        //    if (pcSource == null) Debug.LogError("Cannot create compressed network pointcloud source");
+        //}
+        //else if (Config.Instance.PCs.sourceType == "sub") {
+        //    pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
+        //    if (pcSource == null) Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
+        //}
+        //else {
+        //    Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+        //}
         if (pcSource != null && pc == null)
         {
             pcSourceStartTime = Time.realtimeSinceStartup;
@@ -188,6 +206,10 @@ public class PointCloudTest : MonoBehaviour {
         if (_pointTint != pointTint) { _pointTint = pointTint; pointMaterial.SetColor("_Tint", _pointTint); }
         if (_pointSize != pointSize) { _pointSize = pointSize; pointMaterial.SetFloat("_PointSize", _pointSize); }
         Graphics.DrawProcedural(MeshTopology.Points, pointBuffer.count, 1);
+    }
+
+    private void OnGUI() {
+        GUILayout.Label((Time.frameCount / Time.time).ToString());
     }
 
 }
