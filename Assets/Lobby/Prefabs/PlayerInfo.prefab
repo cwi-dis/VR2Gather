@@ -1163,10 +1163,10 @@ MonoBehaviour:
   removePlayerButton: {fileID: 11443358}
   localIcone: {fileID: 153088}
   remoteIcone: {fileID: 189178}
-  playerName: 192.168.10.109
+  playerName: 
   playerColor: {r: 1, g: 1, b: 1, a: 1}
-  playerURI: 192.168.10.109
-  playerExchange: gianluca
+  playerURI: 
+  playerExchange: 
   OddRowColor: {r: 0.98039216, g: 0.98039216, b: 0.98039216, a: 1}
   EvenRowColor: {r: 0.7058824, g: 0.7058824, b: 0.7058824, a: 1}
 --- !u!1 &159926
@@ -1701,7 +1701,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 72608058059800740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -2102,7 +2102,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 1, g: 0.9647059, b: 0, a: 1}
-  m_Text: 
+  m_Text: Exchange Name
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2243,7 +2243,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 1, g: 0.9647059, b: 0, a: 1}
-  m_Text: 192.168.10.109
+  m_Text: Connection URI
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0

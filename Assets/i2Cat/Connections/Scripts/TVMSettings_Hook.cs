@@ -27,9 +27,10 @@ public class TVMSettings_Hook : LobbyHook {
     }
 
     void Start()
-    {       
-        myLobby.OnMyURI(LocalIPAddress());
-        myLobby.OnMyExchange("");
+    {
+        //myLobby.OnMyURI(LocalIPAddress());
+        myLobby.OnMyURI("Connection URI");
+        myLobby.OnMyExchange("Exchange Name");
 
         #region Debugs
         Debug.Log("IP: " + LocalIPAddress());
