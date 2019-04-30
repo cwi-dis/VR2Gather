@@ -4,6 +4,14 @@
     "exchangeName": "transcoder_out"
   },
   "PCs": {
-    "filename": "loot_vox10_1000.cwicpc"
+    "sourceType" : "sub",
+    "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+    "cwicpcDirectory": "../../../installed/lootCwicpc",
+    "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+    "plyDirectory": "../../../installed/lootPly",
+    "networkHost": "localhost",
+    "networkPort": 4303,
+	"subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
+	"subStreamNumber": 0
   }
 }

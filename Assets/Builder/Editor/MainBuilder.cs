@@ -6,7 +6,7 @@ public class MainBuilder {
         BuildTarget buildTarget = BuildTarget.StandaloneWindows;
         switch (options[3].ToUpper()) {
             case "WINDOWS":
-                buildTarget = BuildTarget.StandaloneWindows;
+                buildTarget = BuildTarget.StandaloneWindows64;
                 break;
             case "OSX":
                 buildTarget = BuildTarget.StandaloneOSX;

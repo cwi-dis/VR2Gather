@@ -48,5 +48,6 @@ public class signals_unity_bridge_pinvoke {
         path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName( path ) : "/Plugins";
         Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
         Environment.SetEnvironmentVariable("PATH", path );
+        
     }
 }
