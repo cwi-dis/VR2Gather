@@ -43,7 +43,11 @@ internal class API_cwipc_realsense2
 internal class API_cwipc_codec
 {
     [DllImport("cwipc_codec")]
-    internal extern static IntPtr cwipc_decompress(IntPtr compFrame, int len);
+    internal extern static IntPtr cwipc_new_decoder();
+
+    [DllImport("cwipc_codec")]
+    internal extern static void cwipc_decoder_feed(IntPtr dec, IntPtr compFrame, int len);
+
 }
 
 internal class API_kernel
@@ -58,17 +62,20 @@ public class cwipc
 {
     System.IntPtr obj;
 
-    internal cwipc(System.IntPtr _obj) {
+    internal cwipc(System.IntPtr _obj)
+    {
         obj = _obj;
     }
 
-    public void free() {
+    public void free()
+    {
         if (obj == System.IntPtr.Zero) return;
         API_cwipc_util.cwipc_free(obj);
         obj = System.IntPtr.Zero;
     }
 
-    public UInt64 timestamp() {
+    public UInt64 timestamp()
+    {
         if (obj == System.IntPtr.Zero)
         {
             Debug.LogError("cwipc.obj == NULL");
@@ -195,10 +202,16 @@ internal class cwipc_source_impl : cwipc_source
 internal class source_from_cwicpc_dir : cwipc_source
 {
     Queue<string> allFilenames;
+    IntPtr decoder;
 
     internal source_from_cwicpc_dir(string dirname)
     {
         allFilenames = new Queue<string>(System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname));
+        decoder = API_cwipc_codec.cwipc_new_decoder();
+        if (decoder == IntPtr.Zero)
+        {
+            Debug.LogError("Cannot create cwipc_new_decoder");
+        }
     }
 
     public void free()
@@ -215,13 +228,32 @@ internal class source_from_cwicpc_dir : cwipc_source
         return allFilenames.Count != 0;
     }
 
-    public cwipc get() {
+    public cwipc get()
+    {
         if (allFilenames.Count == 0) return null;
+        if (decoder == IntPtr.Zero) return null;
         string filename = allFilenames.Dequeue();
-
+        Debug.Log("xxxjack source_from_cwicpc_dir now reading " + filename);
+        float init = Time.realtimeSinceStartup;
         var bytes = System.IO.File.ReadAllBytes(filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        float read = Time.realtimeSinceStartup;
+        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
+        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        if (!ok)
+        {
+            Debug.LogError("cwipc_decoder: no pointcloud available");
+            return null;
+        }
+        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        if (pc == null)
+        {
+            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            return null;
+        }
+        float decom1 = Time.realtimeSinceStartup;
+
+        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
@@ -274,12 +306,19 @@ internal class source_from_cwicpc_socket : cwipc_source
     string hostname;
     int port;
     bool failed;
+    IntPtr decoder;
 
     internal source_from_cwicpc_socket(string _hostname, int _port)
     {
         hostname = _hostname;
         port = _port;
         failed = false;
+        decoder = API_cwipc_codec.cwipc_new_decoder();
+        if (decoder == IntPtr.Zero)
+        {
+            Debug.LogError("Cannot create cwipc_new_decoder");
+        }
+
     }
 
     public void free()
@@ -337,7 +376,19 @@ internal class source_from_cwicpc_socket : cwipc_source
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         float read = Time.realtimeSinceStartup;
 
-        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
+        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        if (!ok)
+        {
+            Debug.LogError("cwipc_decoder: no pointcloud available");
+            return null;
+        }
+        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        if (pc == null)
+        {
+            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            return null;
+        }
         float decom1 = Time.realtimeSinceStartup;
 
         Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
@@ -354,23 +405,24 @@ internal class source_from_sub : cwipc_source
     int streamNumber;
     bool failed;
     IntPtr subHandle;
+    IntPtr decoder;
 
     internal source_from_sub(string _url, int _streamNumber)
     {
         failed = true;
         url = _url;
         streamNumber = _streamNumber;
-        bool ok = setup_sub_environment();
-        if (!ok)
-        {
-            Debug.LogError("setup_sub_environment failed");
-            return;
-        }
 
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero)
         {
             Debug.LogError("sub_create failed");
+            return;
+        }
+        bool ok = setup_sub_environment();
+        if (!ok)
+        {
+            Debug.LogError("setup_sub_environment failed");
             return;
         }
 
@@ -380,12 +432,18 @@ internal class source_from_sub : cwipc_source
             Debug.LogError("sub_play failed for " + url);
             return;
         }
+        decoder = API_cwipc_codec.cwipc_new_decoder();
+        if (decoder == IntPtr.Zero)
+        {
+            Debug.LogError("Cannot create cwipc_new_decoder");
+            return;
+        }
+
         failed = false;
     }
 
     internal bool setup_sub_environment()
     {
-
         IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
         if (hMod == IntPtr.Zero)
         {
@@ -446,7 +504,19 @@ internal class source_from_sub : cwipc_source
         
         float read = Time.realtimeSinceStartup;
 
-        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
+        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        if (!ok)
+        {
+            Debug.LogError("cwipc_decoder: no pointcloud available");
+            return null;
+        }
+        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        if (pc == null)
+        {
+            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            return null;
+        }
         float decom1 = Time.realtimeSinceStartup;
 
         Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
@@ -480,8 +550,25 @@ public class cwipc_util_pinvoke
         var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/"+ filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         float read = Time.realtimeSinceStartup;
+        IntPtr decoder = API_cwipc_codec.cwipc_new_decoder();
+        if (decoder == IntPtr.Zero)
+        {
+            Debug.LogError("Cannot create cwipc_new_decoder");
+        }
 
-        var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
+        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
+        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        if (!ok)
+        {
+            Debug.LogError("cwipc_decoder: no pointcloud available");
+            return null;
+        }
+        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        if (pc == null)
+        {
+            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            return null;
+        }
         float decom1 = Time.realtimeSinceStartup;
 
         Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) );
