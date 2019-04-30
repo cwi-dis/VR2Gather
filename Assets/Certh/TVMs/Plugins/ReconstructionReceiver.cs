@@ -89,8 +89,7 @@ public class ReconstructionReceiver {
     }
 
     private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
-        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName(path) : "/Plugins";
+        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName(path) : UnityEngine.Application.dataPath + "/Plugins";
         Environment.SetEnvironmentVariable("PATH", path);
-        Debug.Log(">>> PATH " + path);
     }
 }
