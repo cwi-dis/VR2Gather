@@ -58,20 +58,17 @@ public class cwipc
 {
     System.IntPtr obj;
 
-    internal cwipc(System.IntPtr _obj)
-    {
+    internal cwipc(System.IntPtr _obj) {
         obj = _obj;
     }
 
-    public void free()
-    {
+    public void free() {
         if (obj == System.IntPtr.Zero) return;
         API_cwipc_util.cwipc_free(obj);
         obj = System.IntPtr.Zero;
     }
 
-    public UInt64 timestamp()
-    {
+    public UInt64 timestamp() {
         if (obj == System.IntPtr.Zero)
         {
             Debug.LogError("cwipc.obj == NULL");
@@ -218,20 +215,13 @@ internal class source_from_cwicpc_dir : cwipc_source
         return allFilenames.Count != 0;
     }
 
-    public cwipc get()
-    {
+    public cwipc get() {
         if (allFilenames.Count == 0) return null;
         string filename = allFilenames.Dequeue();
-        Debug.Log("xxxjack source_from_cwicpc_dir now reading " + filename);
-        float init = Time.realtimeSinceStartup;
+
         var bytes = System.IO.File.ReadAllBytes(filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        float read = Time.realtimeSinceStartup;
-
         var pc = API_cwipc_codec.cwipc_decompress(ptr, bytes.Length);
-        float decom1 = Time.realtimeSinceStartup;
-
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
