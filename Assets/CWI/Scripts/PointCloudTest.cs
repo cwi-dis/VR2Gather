@@ -2,20 +2,35 @@
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Unity.Collections;
-
+using System.Threading.Tasks;
+using System.Threading;
 
 public class PointCloudTest : MonoBehaviour {
 
+    bool bUseMesh;
     ComputeBuffer pointBuffer;
+    int pointCount = 0;
     Mesh mesh;
-    cwipc pc;
+    cwipc pc = null;
     cwipc_source pcSource;
     float pcSourceStartTime;
+    bool stopTask = false;
 
-    void OnDisable() {
-        if (pointBuffer != null) {
+    void Awake() {
+        bUseMesh = SystemInfo.graphicsShaderLevel < 50;
+    }
+
+    void OnDisable()
+    {
+        if (pointBuffer != null)
+        {
             pointBuffer.Release();
             pointBuffer = null;
+        }
+        if (pcSource != null)
+        {
+            pcSource.free();
+            pcSource = null;
         }
     }
 
@@ -24,13 +39,14 @@ public class PointCloudTest : MonoBehaviour {
     public Color pointTint = Color.white;
     Color _pointTint = Color.clear;
 
-    IEnumerator Start()
+    void Start()
     {
-        if (SystemInfo.graphicsShaderLevel < 50)
+        if (bUseMesh)
         {
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh = new Mesh();
+            mf.mesh.MarkDynamic();
             if (pointMaterial == null)
             {
                 pointMaterial = new Material(pointShader40);
@@ -40,10 +56,10 @@ public class PointCloudTest : MonoBehaviour {
 
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
-        yield return null;
+        
         pc = null;
         pcSource = null;
-
+        /*
         if (Config.Instance.PCs.sourceType == "cwicpcfile")
         {
             pc = cwipc_util_pinvoke.getOnePointCloudFromCWICPC(Config.Instance.PCs.cwicpcFilename);
@@ -54,7 +70,8 @@ public class PointCloudTest : MonoBehaviour {
             pc = cwipc_util_pinvoke.getOnePointCloudFromPly(Config.Instance.PCs.plyFilename);
             if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
         }
-        else if (Config.Instance.PCs.sourceType == "cwicpcdir")
+        else */
+        if (Config.Instance.PCs.sourceType == "cwicpcdir")
         {
             pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
             if (pcSource == null)
@@ -106,60 +123,48 @@ public class PointCloudTest : MonoBehaviour {
         {
             Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
         }
-        if (pcSource != null && pc == null)
-        {
-            pcSourceStartTime = Time.realtimeSinceStartup;
-            // We have a pointcloud source but no pointcloud yet. Get one.
-            pc = pcSource.get();
-            if (pc == null) Debug.LogError("Cannot get pointcloud from source");
-        }
-        if (pc != null)
-        {
-            if (SystemInfo.graphicsShaderLevel < 50)
-                pc.copy_to_mesh(ref mesh);
-            else
-                pc.copy_to_pointbuffer(ref pointBuffer);
 
-        }
+        asyncTask();
     }
 
-    void Update() {
-        if ( Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
-        // If we have a pointcloud source and it is at end-of-file we delete it
-        if (pcSource != null && pcSource.eof())
+    async Task asyncTask()
+    {
+        while (!stopTask)
         {
-            Debug.Log("cwipc_source end-of-file. Deleting source.");
-            float now = Time.realtimeSinceStartup;
-            Debug.Log("cwipc_source produced pointclouds for " + (now - pcSourceStartTime) + " seconds");
-            pcSource.free();
-            pcSource = null;
+            lock (this)
+            {
+                if (pc == null)
+                {
+                    pc = pcSource.get();
+                    if (bUseMesh) pc.getVertexArray();
+                    else pc.getByteArray();
+                    var ts = pc.timestamp(); // 
+                }
+            }
+            await Task.Delay(1000 / 30 );
         }
-        // If we have a pointcloud source and it has a pointcloud available we get the new pointcloud
-        if (pcSource != null && pcSource.available(false))
+    }
+    
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            stopTask = true;
+            Application.Quit();
+        }
+
+        if (pcSource != null && pcSource.eof())
+            stopTask = true;
+
+        lock (this)
         {
-            // Free the previous pointcloud, if there was one
             if (pc != null)
             {
+                // Copy the pointcloud to a mesh or a pointbuffer
+                if (bUseMesh) pc.load_to_mesh(ref mesh);
+                else pointCount = pc.load_to_pointbuffer(ref pointBuffer);
                 pc.free();
                 pc = null;
             }
-            // Get the new pointcloud
-            pc = pcSource.get();
-            if (pc == null)
-            { 
-                Debug.LogError("Cannot get pointcloud from source");
-            }
-            else
-            {
-                // Copy the pointcloud to a mesh or a pointbuffer
-                if (SystemInfo.graphicsShaderLevel < 50)
-                    pc.copy_to_mesh(ref mesh);
-                else
-                    pc.copy_to_pointbuffer(ref pointBuffer);
-            }
         }
-
     }
 
     public Shader pointShader = null;
@@ -167,9 +172,9 @@ public class PointCloudTest : MonoBehaviour {
     Material pointMaterial;
 
     void OnRenderObject() {
-        if (SystemInfo.graphicsShaderLevel < 50) return;
+        if (bUseMesh) return;
 
-        if (pointBuffer==null || !pointBuffer.IsValid()) return;
+        if (pointCount == 0 || pointBuffer ==null || !pointBuffer.IsValid() ) return;
 
         var camera = Camera.current;
         if ((camera.cullingMask & (1 << gameObject.layer)) == 0) return;
@@ -188,7 +193,7 @@ public class PointCloudTest : MonoBehaviour {
         pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
         if (_pointTint != pointTint) { _pointTint = pointTint; pointMaterial.SetColor("_Tint", _pointTint); }
         if (_pointSize != pointSize) { _pointSize = pointSize; pointMaterial.SetFloat("_PointSize", _pointSize); }
-        Graphics.DrawProcedural(MeshTopology.Points, pointBuffer.count, 1);
+        Graphics.DrawProcedural(MeshTopology.Points, pointCount, 1);
     }
 
 }

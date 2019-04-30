@@ -61,6 +61,8 @@ internal class API_kernel
 public class cwipc
 {
     System.IntPtr obj;
+    Unity.Collections.NativeArray<byte> byteArray;
+    Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
 
     internal cwipc(System.IntPtr _obj)
     {
@@ -71,6 +73,8 @@ public class cwipc
     {
         if (obj == System.IntPtr.Zero) return;
         API_cwipc_util.cwipc_free(obj);
+        if (byteArray.Length != 0) byteArray.Dispose();
+        if (vertexArray.Length != 0) vertexArray.Dispose();
         obj = System.IntPtr.Zero;
     }
 
@@ -84,29 +88,36 @@ public class cwipc
         return API_cwipc_util.cwipc_timestamp(obj);
     }
 
-    public void copy_to_pointbuffer(ref ComputeBuffer pointBuffer)
-    {
-        if (obj == System.IntPtr.Zero)
-        {
-            Debug.LogError("cwipc.obj == NULL");
+    public void getByteArray() {
+        if (obj == System.IntPtr.Zero) {
+            Debug.Log("cwipc.obj == NULL");
+            return;
         }
-        int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
-        unsafe
-        {
-            var array = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.Temp);
+        
+        unsafe {
+            int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
+            if (byteArray.Length != 0) byteArray.Dispose();
+            byteArray = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.TempJob);
+            System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+            API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
+        }
+    }
 
-            System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
-            int ret = API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
-
+    public int load_to_pointbuffer(ref ComputeBuffer pointBuffer) {
+        int size = byteArray.Length;
+        if (size == 0) return 0;
+        int ret = size / 16;
+        unsafe {
             // Attempt by Jack to fix the pointbuffer allocation
-            if (pointBuffer == null || pointBuffer.count < ret)
-            {
+            if (pointBuffer == null || pointBuffer.count < size) {
                 if (pointBuffer != null) pointBuffer.Release();
-                pointBuffer = new ComputeBuffer(ret, sizeof(float) * 4);
+                pointBuffer = new ComputeBuffer((int)(ret * 1.4f), sizeof(float) * 4);
             }
-            pointBuffer.SetData<byte>(array, 0, 0, size);
-            array.Dispose();
+            pointBuffer.SetData<byte>(byteArray, 0, 0, size);
+            byteArray.Dispose();
+
         }
+        return ret;
     }
 
     [StructLayout(LayoutKind.Sequential)] // Also tried with Pack=1
@@ -116,38 +127,44 @@ public class cwipc
         public Color32 color;
     }
 
-    public void copy_to_mesh(ref Mesh mesh)
+    public void getVertexArray()
     {
         if (obj == System.IntPtr.Zero)
         {
-            Debug.LogError("cwipc.obj == NULL");
+            Debug.Log("cwipc.obj == NULL");
+            return;
         }
-        int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
+
         unsafe
         {
+            int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
             var sizeT = Marshal.SizeOf(typeof(PointCouldVertex));
-            var array = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.Temp);
-            System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(array);
+            vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.TempJob);
+            System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
             int ret = API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
-
-            var points = new Vector3[array.Length];
-            var indices = new int[array.Length];
-            var colors = new Color32[array.Length];
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                points[i] = array[i].vertex;
-                indices[i] = i;
-                colors[i] = array[i].color;
-            }
-
-            mesh.vertices = points;
-            mesh.colors32 = colors;
-            mesh.SetIndices(indices, MeshTopology.Points, 0);
-
-            array.Dispose();
         }
     }
+
+    public void load_to_mesh(ref Mesh mesh)
+    {
+        var points = new Vector3[vertexArray.Length];
+        var indices = new int[vertexArray.Length];
+        var colors = new Color32[vertexArray.Length];
+
+        for (int i = 0; i < vertexArray.Length; i++)
+        {
+            points[i] = vertexArray[i].vertex;
+            indices[i] = i;
+            colors[i] = vertexArray[i].color;
+        }
+        mesh.Clear();
+        mesh.vertices = points;
+        mesh.colors32 = colors;
+        mesh.SetIndices(indices, MeshTopology.Points, 0);
+
+        vertexArray.Dispose();
+    }
+
 }
 
 public interface cwipc_source
@@ -201,12 +218,15 @@ internal class cwipc_source_impl : cwipc_source
 
 internal class source_from_cwicpc_dir : cwipc_source
 {
-    Queue<string> allFilenames;
-    IntPtr decoder;
+    string[]    allFilenames;
+    int         currentFile;
+    IntPtr      decoder;
 
     internal source_from_cwicpc_dir(string dirname)
     {
-        allFilenames = new Queue<string>(System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname));
+        currentFile = 0;
+        allFilenames = System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname);
+
         decoder = API_cwipc_codec.cwipc_new_decoder();
         if (decoder == IntPtr.Zero)
         {
@@ -220,40 +240,37 @@ internal class source_from_cwicpc_dir : cwipc_source
 
     public bool eof()
     {
-        return allFilenames.Count == 0;
+        return allFilenames.Length == 0;
     }
 
     public bool available(bool wait)
     {
-        return allFilenames.Count != 0;
+        return allFilenames.Length != 0;
     }
 
     public cwipc get()
     {
-        if (allFilenames.Count == 0) return null;
-        if (decoder == IntPtr.Zero) return null;
-        string filename = allFilenames.Dequeue();
-        Debug.Log("xxxjack source_from_cwicpc_dir now reading " + filename);
-        float init = Time.realtimeSinceStartup;
+        if (decoder == IntPtr.Zero) {
+            Debug.LogError("cwipc_decoder: no decoder available");
+            return null;
+        }
+
+        string filename = allFilenames[currentFile];
+        currentFile = (currentFile + 1) % allFilenames.Length;
+
         var bytes = System.IO.File.ReadAllBytes(filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        float read = Time.realtimeSinceStartup;
         API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
-        if (!ok)
-        {
+        if (!ok) {
             Debug.LogError("cwipc_decoder: no pointcloud available");
             return null;
         }
         var pc = API_cwipc_util.cwipc_source_get(decoder);
-        if (pc == null)
-        {
+        if (pc == null) {
             Debug.LogError("cwipc_decoder: did not return a pointcloud");
             return null;
         }
-        float decom1 = Time.realtimeSinceStartup;
-
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
@@ -337,7 +354,6 @@ internal class source_from_cwicpc_socket : cwipc_source
 
     public cwipc get()
     {
-        float init = Time.realtimeSinceStartup;
         if (failed) return null;
         TcpClient clt = null;
         try
@@ -374,7 +390,6 @@ internal class source_from_cwicpc_socket : cwipc_source
         }
         byte[] bytes = allData.ToArray();
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        float read = Time.realtimeSinceStartup;
 
         API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
@@ -389,9 +404,6 @@ internal class source_from_cwicpc_socket : cwipc_source
             Debug.LogError("cwipc_decoder: did not return a pointcloud");
             return null;
         }
-        float decom1 = Time.realtimeSinceStartup;
-
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
@@ -413,16 +425,17 @@ internal class source_from_sub : cwipc_source
         url = _url;
         streamNumber = _streamNumber;
 
-        subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-        if (subHandle == IntPtr.Zero)
-        {
-            Debug.LogError("sub_create failed");
-            return;
-        }
         bool ok = setup_sub_environment();
         if (!ok)
         {
             Debug.LogError("setup_sub_environment failed");
+            return;
+        }
+
+        subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
+        if (subHandle == IntPtr.Zero)
+        {
+            Debug.LogError("sub_create failed");
             return;
         }
 
@@ -485,7 +498,6 @@ internal class source_from_sub : cwipc_source
     public cwipc get()
     {
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-        float init = Time.realtimeSinceStartup;
         if (failed) return null;
         int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
         if (bytesNeeded == 0)
@@ -502,7 +514,6 @@ internal class source_from_sub : cwipc_source
             return null;
         }
         
-        float read = Time.realtimeSinceStartup;
 
         API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
@@ -517,9 +528,6 @@ internal class source_from_sub : cwipc_source
             Debug.LogError("cwipc_decoder: did not return a pointcloud");
             return null;
         }
-        float decom1 = Time.realtimeSinceStartup;
-
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read));
 
 
         return new cwipc(pc);
@@ -546,10 +554,8 @@ public class cwipc_util_pinvoke
 
     public static cwipc getOnePointCloudFromCWICPC(string filename)
     {
-        float init = Time.realtimeSinceStartup;
         var bytes = System.IO.File.ReadAllBytes(Application.streamingAssetsPath + "/"+ filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        float read = Time.realtimeSinceStartup;
         IntPtr decoder = API_cwipc_codec.cwipc_new_decoder();
         if (decoder == IntPtr.Zero)
         {
@@ -569,9 +575,6 @@ public class cwipc_util_pinvoke
             Debug.LogError("cwipc_decoder: did not return a pointcloud");
             return null;
         }
-        float decom1 = Time.realtimeSinceStartup;
-
-        Debug.Log(">>> read " + (read - init) + " decom " + (decom1 - read) );
         
 
         return new cwipc(pc);
