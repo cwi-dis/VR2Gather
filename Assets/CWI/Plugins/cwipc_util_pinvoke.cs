@@ -439,8 +439,7 @@ internal class source_from_sub : cwipc_source
         float init = Time.realtimeSinceStartup;
         if (failed) return null;
         int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
-        if (bytesNeeded == 0)
-        {
+        if (bytesNeeded == 0) {
             Debug.Log("xxxjack no data available for sub");
             return null;
         }

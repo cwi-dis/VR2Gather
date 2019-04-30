@@ -29,9 +29,16 @@ public class PointCloudTest : MonoBehaviour {
     float _pointSize = 0;
     public Color pointTint = Color.white;
     Color _pointTint = Color.clear;
+    int fps = 30;
 
-    IEnumerator Start()
-    {
+    private void Awake() {
+        QualitySettings.maxQueuedFrames = fps;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = fps;
+    }
+
+    IEnumerator Start() {
+        Application.targetFrameRate = fps;
         if (SystemInfo.graphicsShaderLevel < 50)
         {
             var mf = gameObject.AddComponent<MeshFilter>();
@@ -141,6 +148,8 @@ public class PointCloudTest : MonoBehaviour {
     }
 
     void Update() {
+        if (Application.targetFrameRate != fps)
+            Application.targetFrameRate = fps;
         if ( Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
         // If we have a pointcloud source and it is at end-of-file we delete it
