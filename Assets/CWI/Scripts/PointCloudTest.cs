@@ -136,12 +136,16 @@ public class PointCloudTest : MonoBehaviour {
                 if (pc == null)
                 {
                     pc = pcSource.get();
-                    if (bUseMesh) pc.getVertexArray();
-                    else pc.getByteArray();
-                    var ts = pc.timestamp(); // 
+                    if (pc!=null)
+                    {
+                        if (bUseMesh) pc.getVertexArray();
+                        else pc.getByteArray();
+                        var ts = pc.timestamp(); // 
+                    }
                 }
             }
-            await Task.Delay(1000 / 30 );
+            if (pc != null)
+                await Task.Delay(1000 / 30 );
         }
     }
     

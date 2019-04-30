@@ -425,6 +425,7 @@ internal class source_from_sub : cwipc_source
         url = _url;
         streamNumber = _streamNumber;
 
+
         bool ok = setup_sub_environment();
         if (!ok)
         {
@@ -457,6 +458,8 @@ internal class source_from_sub : cwipc_source
 
     internal bool setup_sub_environment()
     {
+        signals_unity_bridge_pinvoke.SetPaths();
+
         IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
         if (hMod == IntPtr.Zero)
         {
@@ -502,7 +505,6 @@ internal class source_from_sub : cwipc_source
         int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
         if (bytesNeeded == 0)
         {
-            Debug.Log("xxxjack no data available for sub");
             return null;
         }
         byte[] bytes = new byte[bytesNeeded];
