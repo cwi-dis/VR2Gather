@@ -17,7 +17,7 @@ public class PointCloudTest : MonoBehaviour {
     bool stopTask = false;
 
     void Awake() {
-        bUseMesh = SystemInfo.graphicsShaderLevel < 50;
+        bUseMesh = Config.Instance.PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50;
     }
 
     void OnDisable()

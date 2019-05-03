@@ -15,6 +15,7 @@ public class Config {
     [Serializable]
     public class _PCs
     {
+        public bool forceMesh;
         public string sourceType;
         public string cwicpcFilename;
         public string cwicpcDirectory;

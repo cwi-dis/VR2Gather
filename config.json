@@ -4,6 +4,7 @@
     "exchangeName": "transcoder_out"
   },
   "PCs": {
+	"forceMesh": true,
     "sourceType" : "sub",
     "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
     "cwicpcDirectory": "../../../installed/lootCwicpc",
