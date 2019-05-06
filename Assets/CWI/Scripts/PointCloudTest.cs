@@ -129,23 +129,28 @@ public class PointCloudTest : MonoBehaviour {
 
     async Task asyncTask()
     {
+        var initTime = Time.realtimeSinceStartup;
         while (!stopTask)
         {
+            var tmp_pc = pcSource.get();
             lock (this)
             {
                 if (pc == null)
                 {
-                    pc = pcSource.get();
+                    pc = tmp_pc;
                     if (pc!=null)
                     {
                         if (bUseMesh) pc.getVertexArray();
                         else pc.getByteArray();
                         var ts = pc.timestamp(); // 
+                        var dif = Time.realtimeSinceStartup - initTime;
                     }
                 }
             }
             if (pc != null)
                 await Task.Delay(1000 / 30 );
+            else
+                await Task.Delay(1);
         }
     }
     
