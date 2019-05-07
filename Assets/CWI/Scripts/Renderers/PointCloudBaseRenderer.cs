@@ -5,43 +5,30 @@ using Unity.Collections;
 using System.Threading.Tasks;
 using System.Threading;
 
-public class PointCloudRenderer : MonoBehaviour {
+public class PointCloudBaseRenderer : MonoBehaviour {
+    public Shader               shader;
+    public Color                pointTint = Color.gray;
+    protected bool              stopTask = false;
+    protected Material          material;
+    protected PointCloudFrame   frameReady = null;
+    protected PCBaseReader      currentPCReader;
 
-    bool bUseMesh;
-    ComputeBuffer pointBuffer;
-    int pointCount = 0;
-    Mesh mesh;
-    PointCloudFrame frameReady = null;
-    PCBaseReader currentPCReader;
-    float pcSourceStartTime;
-    bool stopTask = false;
-    public Color pointTint = Color.gray;
+    public virtual void Init(Config._PCs cfg)
+    {
+    }
 
-    Material pointMaterial;
-
-
-    public void Init(Config._PCs cfg, Shader pointShader ) {
-        bUseMesh = cfg.forceMesh || SystemInfo.graphicsShaderLevel < 50;
-
+    protected void InternalInit(Config._PCs cfg, Shader pointShader ) {
         transform.position = new Vector3(cfg.position.x, cfg.position.y, cfg.position.z);
         transform.rotation = Quaternion.Euler(cfg.rotation);
         transform.localScale = cfg.scale;
 
-        if (pointMaterial == null) {
-            pointMaterial = new Material(pointShader);
-            pointMaterial.SetFloat("_PointSize", cfg.pointSize);
-            pointMaterial.SetColor("_Tint", pointTint);
-            pointMaterial.hideFlags = HideFlags.DontSave;
+        if (material == null) {
+            material = new Material(pointShader);
+            material.SetFloat("_PointSize", cfg.pointSize);
+            material.SetColor("_Tint", pointTint);
+            material.hideFlags = HideFlags.DontSave;
         }
 
-        if (bUseMesh) {
-            var mf = gameObject.AddComponent<MeshFilter>();
-            var mr = gameObject.AddComponent<MeshRenderer>();
-            mf.mesh = mesh = new Mesh();
-            mf.mesh.MarkDynamic();
-            mr.material = pointMaterial;
-            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        }
 
         frameReady = null;
         currentPCReader = null;
@@ -88,32 +75,34 @@ public class PointCloudRenderer : MonoBehaviour {
         asyncTask();
     }
 
-    async Task asyncTask() {
+    async Task asyncTask()
+    {
         var initTime = Time.realtimeSinceStartup;
-        while (!stopTask) {
+        while (!stopTask)
+        {
             var tmpFrame = currentPCReader.get();
             lock (this)
             {
                 if (frameReady == null)
                 {
                     frameReady = tmpFrame;
-                    if (frameReady!=null)
+                    if (frameReady != null)
                     {
-                        if (bUseMesh) frameReady.getVertexArray();
-                        else frameReady.getByteArray();
-                        var ts = frameReady.timestamp(); // 
+                        OnData();
+                        var ts = frameReady.timestamp();
                         var dif = Time.realtimeSinceStartup - initTime;
                     }
                 }
             }
             if (frameReady != null)
-                await Task.Delay(1000 / 30 );
+                await Task.Delay(1000 / 30);
             else
                 await Task.Delay(1);
         }
     }
-    
-    void Update() {
+
+
+    protected virtual void Update() {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             stopTask = true;
             Application.Quit();
@@ -124,40 +113,21 @@ public class PointCloudRenderer : MonoBehaviour {
 
         lock (this) {
             if (frameReady != null) {
-                // Copy the pointcloud to a mesh or a pointbuffer
-                if (bUseMesh)  frameReady.load_to_mesh(ref mesh);
-                else pointCount = frameReady.load_to_pointbuffer(ref pointBuffer);
+                OnUpdate();
                 frameReady.free();
                 frameReady = null;
             }
         }
     }
 
+    protected virtual void OnUpdate() { }
+    protected virtual void OnData() { }
 
-    void OnRenderObject() {
-        if (bUseMesh) return;
-        if (pointCount == 0 || pointBuffer ==null || !pointBuffer.IsValid() ) return;
-        var camera = Camera.current;
-        if ((camera.cullingMask & (1 << gameObject.layer)) == 0) return;
-        if (camera.name == "Preview Scene Camera") return;
-
-        // TODO: Do view frustum culling here.
-
-        pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
-        pointMaterial.SetPass(0);
-        pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
-        
-        Graphics.DrawProcedural(MeshTopology.Points, pointCount, 1);
-    }
-
-    void OnDisable() {
-        if (currentPCReader != null) {
+    public virtual void OnDisable() {
+        if (currentPCReader != null)
+        {
             currentPCReader.free();
             currentPCReader = null;
-        }
-        if (pointBuffer != null) {
-            pointBuffer.Release();
-            pointBuffer = null;
         }
     }
 

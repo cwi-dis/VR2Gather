@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PointCloudsMainController : MonoBehaviour
-{
-    public Shader pointShader = null;
-    public Shader pointShader40 = null;
-
+public class PointCloudsMainController : MonoBehaviour {
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         foreach( var pc in Config.Instance.PCs) {
-            PointCloudRenderer pct = new GameObject("PC").AddComponent<PointCloudRenderer>();
+            PointCloudBaseRenderer pct = null;
+            if (pc.forceMesh || SystemInfo.graphicsShaderLevel < 50) 
+                pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
+            else            
+                pct = new GameObject("PC").AddComponent<PointCloudBufferRenderer>();
+            pct.Init(pc);
             pct.transform.parent = transform;
-            pct.Init(pc, pc.forceMesh|| SystemInfo.graphicsShaderLevel < 50? pointShader40:pointShader );
         }
     }
 
