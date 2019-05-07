@@ -15,48 +15,34 @@ public class PointCloudTest : MonoBehaviour {
     cwipc_source pcSource;
     float pcSourceStartTime;
     bool stopTask = false;
+    public Color pointTint = Color.gray;
 
-    void Awake() {
-        bUseMesh = Config.Instance.PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50;
-    }
+    Material pointMaterial;
 
-    void OnDisable()
-    {
-        if (pointBuffer != null)
-        {
-            pointBuffer.Release();
-            pointBuffer = null;
+
+    public void Init(Config._PCs cfg, Shader pointShader ) {
+        bUseMesh = cfg.forceMesh || SystemInfo.graphicsShaderLevel < 50;
+
+        transform.position = new Vector3(cfg.position.x, cfg.position.y, cfg.position.z);
+        transform.rotation = Quaternion.Euler(cfg.rotation);
+        transform.localScale = cfg.scale;
+
+        if (pointMaterial == null) {
+            pointMaterial = new Material(pointShader);
+            pointMaterial.SetFloat("_PointSize", cfg.pointSize);
+            pointMaterial.SetColor("_Tint", pointTint);
+            pointMaterial.hideFlags = HideFlags.DontSave;
         }
-        if (pcSource != null)
-        {
-            pcSource.free();
-            pcSource = null;
-        }
-    }
 
-    public float pointSize = 0.05f;
-    float _pointSize = 0;
-    public Color pointTint = Color.white;
-    Color _pointTint = Color.clear;
-
-    void Start()
-    {
-        if (bUseMesh)
-        {
+        if (bUseMesh) {
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mf.mesh = mesh = new Mesh();
             mf.mesh.MarkDynamic();
-            if (pointMaterial == null)
-            {
-                pointMaterial = new Material(pointShader40);
-                pointMaterial.hideFlags = HideFlags.DontSave;
-            }
             mr.material = pointMaterial;
 
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
-        
         pc = null;
         pcSource = null;
         /*
@@ -71,23 +57,23 @@ public class PointCloudTest : MonoBehaviour {
             if (pc == null) Debug.LogError("GetPointCloudFromPly did not return a pointcloud");
         }
         else */
-        if (Config.Instance.PCs.sourceType == "cwicpcdir")
+        if (cfg.sourceType == "cwicpcdir")
         {
-            pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(Config.Instance.PCs.cwicpcDirectory);
+            pcSource = cwipc_util_pinvoke.sourceFromCompressedDir(cfg.cwicpcDirectory);
             if (pcSource == null)
             {
                 Debug.LogError("Cannot create compressed directory pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "plydir")
+        else if (cfg.sourceType == "plydir")
         {
-            pcSource = cwipc_util_pinvoke.sourceFromPlyDir(Config.Instance.PCs.cwicpcDirectory);
+            pcSource = cwipc_util_pinvoke.sourceFromPlyDir(cfg.cwicpcDirectory);
             if (pcSource == null)
             {
                 Debug.LogError("Cannot create ply directory pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "synthetic")
+        else if (cfg.sourceType == "synthetic")
         {
             pcSource = cwipc_util_pinvoke.sourceFromSynthetic();
             if (pcSource == null)
@@ -95,7 +81,7 @@ public class PointCloudTest : MonoBehaviour {
                 Debug.LogError("Cannot create synthetic pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "realsense2")
+        else if (cfg.sourceType == "realsense2")
         {
             pcSource = cwipc_util_pinvoke.sourceFromRealsense2();
             if (pcSource == null)
@@ -103,17 +89,17 @@ public class PointCloudTest : MonoBehaviour {
                 Debug.LogError("Cannot create realsense2 pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "network")
+        else if (cfg.sourceType == "network")
         {
-            pcSource = cwipc_util_pinvoke.sourceFromNetwork(Config.Instance.PCs.networkHost, Config.Instance.PCs.networkPort);
+            pcSource = cwipc_util_pinvoke.sourceFromNetwork(cfg.networkHost, cfg.networkPort);
             if (pcSource == null)
             {
                 Debug.LogError("Cannot create compressed network pointcloud source");
             }
         }
-        else if (Config.Instance.PCs.sourceType == "sub")
+        else if (cfg.sourceType == "sub")
         {
-            pcSource = cwipc_util_pinvoke.sourceFromSUB(Config.Instance.PCs.subURL, Config.Instance.PCs.subStreamNumber);
+            pcSource = cwipc_util_pinvoke.sourceFromSUB(cfg.subURL, cfg.subStreamNumber);
             if (pcSource == null)
             {
                 Debug.LogError("Cannot create signals-unity-bridge pointcloud source");
@@ -121,7 +107,7 @@ public class PointCloudTest : MonoBehaviour {
         }
         else
         {
-            Debug.LogError("Unimplemented config.json sourceType: " + Config.Instance.PCs.sourceType);
+            Debug.LogError("Unimplemented config.json sourceType: " + cfg.sourceType);
         }
 
         asyncTask();
@@ -168,7 +154,7 @@ public class PointCloudTest : MonoBehaviour {
             if (pc != null)
             {
                 // Copy the pointcloud to a mesh or a pointbuffer
-                if (bUseMesh) pc.load_to_mesh(ref mesh);
+                if (bUseMesh)  pc.load_to_mesh(ref mesh);
                 else pointCount = pc.load_to_pointbuffer(ref pointBuffer);
                 pc.free();
                 pc = null;
@@ -176,9 +162,6 @@ public class PointCloudTest : MonoBehaviour {
         }
     }
 
-    public Shader pointShader = null;
-    public Shader pointShader40 = null;
-    Material pointMaterial;
 
     void OnRenderObject() {
         if (bUseMesh) return;
@@ -192,17 +175,27 @@ public class PointCloudTest : MonoBehaviour {
 
         // TODO: Do view frustum culling here.
 
-        if (pointMaterial == null) {
-            pointMaterial = new Material(pointShader);
-            pointMaterial.hideFlags = HideFlags.DontSave;
-        }
         pointMaterial.SetBuffer("_PointBuffer", pointBuffer);
 
         pointMaterial.SetPass(0);
         pointMaterial.SetMatrix("_Transform", transform.localToWorldMatrix);
-        if (_pointTint != pointTint) { _pointTint = pointTint; pointMaterial.SetColor("_Tint", _pointTint); }
-        if (_pointSize != pointSize) { _pointSize = pointSize; pointMaterial.SetFloat("_PointSize", _pointSize); }
+        
         Graphics.DrawProcedural(MeshTopology.Points, pointCount, 1);
     }
+
+    void OnDisable()
+    {
+        if (pointBuffer != null)
+        {
+            pointBuffer.Release();
+            pointBuffer = null;
+        }
+        if (pcSource != null)
+        {
+            pcSource.free();
+            pcSource = null;
+        }
+    }
+
 
 }

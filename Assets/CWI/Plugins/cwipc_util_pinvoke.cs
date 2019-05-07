@@ -151,8 +151,7 @@ public class cwipc
         var indices = new int[vertexArray.Length];
         var colors = new Color32[vertexArray.Length];
 
-        for (int i = 0; i < vertexArray.Length; i++)
-        {
+        for (int i = 0; i < vertexArray.Length; i++) {
             points[i] = vertexArray[i].vertex;
             indices[i] = i;
             colors[i] = vertexArray[i].color;
@@ -418,6 +417,8 @@ internal class source_from_sub : cwipc_source
     bool failed;
     IntPtr subHandle;
     IntPtr decoder;
+    byte[] currentBuffer;
+    IntPtr currentBufferPtr;
 
     internal source_from_sub(string _url, int _streamNumber)
     {
@@ -507,9 +508,14 @@ internal class source_from_sub : cwipc_source
         {
             return null;
         }
-        byte[] bytes = new byte[bytesNeeded];
-        IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, ptr, bytesNeeded, ref info);
+
+        if (currentBuffer == null || bytesNeeded > currentBuffer.Length) {
+            Debug.Log("Needs more memory!!");
+            currentBuffer = new byte[(int)(bytesNeeded * 1.3f)]; // Reserves 30% more.
+            currentBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(currentBuffer, 0);
+        }
+
+        int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, currentBufferPtr, bytesNeeded, ref info);
         if (bytesRead != bytesNeeded)
         {
             Debug.LogError("sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
@@ -517,7 +523,7 @@ internal class source_from_sub : cwipc_source
         }
         
 
-        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
+        API_cwipc_codec.cwipc_decoder_feed(decoder, currentBufferPtr, bytesNeeded);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
         if (!ok)
         {

@@ -15,18 +15,23 @@ public class Config {
     [Serializable]
     public class _PCs
     {
-        public bool forceMesh;
-        public string sourceType;
-        public string cwicpcFilename;
-        public string cwicpcDirectory;
-        public string plyFilename;
-        public string plyDirectory;
-        public string networkHost;
-        public int networkPort;
-        public string subURL;
-        public int subStreamNumber;
+        public bool     forceMesh;
+        public string   sourceType;
+        public string   cwicpcFilename;
+        public string   cwicpcDirectory;
+        public string   plyFilename;
+        public string   plyDirectory;
+        public string   networkHost;
+        public int      networkPort;
+        public string   subURL;
+        public int      subStreamNumber;
+
+        public float    pointSize = 0.008f;
+        public Vector3  position;
+        public Vector3  rotation;
+        public Vector3  scale = Vector3.one;
     };
-    public _PCs PCs;
+    public _PCs[] PCs;
 
     static Config _Instance;
     public static Config Instance {
