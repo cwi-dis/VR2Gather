@@ -35,7 +35,7 @@ public class PCSocketReader : PCBaseReader
         return !failed;
     }
 
-    public cwipc get() {
+    public PointCloudFrame get() {
         if (failed) return null;
         TcpClient clt = null;
         try
@@ -71,8 +71,8 @@ public class PCSocketReader : PCBaseReader
             } while (stream.DataAvailable);
         }
         byte[] bytes = allData.ToArray();
-        var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
 
+        var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
         API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
         if (!ok)
@@ -88,7 +88,7 @@ public class PCSocketReader : PCBaseReader
         }
 
 
-        return new cwipc(pc);
+        return new PointCloudFrame(pc);
 
     }
 }

@@ -85,12 +85,14 @@ public class PCSUBReader : PCBaseReader {
         return !failed;
     }
 
-    public cwipc get() {
+    public PointCloudFrame get() {
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
         if (failed) return null;
+
         int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
-        if (bytesNeeded == 0)
+        if (bytesNeeded == 0) {
             return null;
+        }
 
         if (currentBuffer == null || bytesNeeded > currentBuffer.Length)
         {
@@ -122,7 +124,7 @@ public class PCSUBReader : PCBaseReader {
         }
 
 
-        return new cwipc(pc);
+        return new PointCloudFrame(pc);
 
     }
 

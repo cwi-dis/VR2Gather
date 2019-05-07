@@ -11,7 +11,7 @@ public class PointCloudsMainController : MonoBehaviour
     void Start()
     {
         foreach( var pc in Config.Instance.PCs) {
-            PointCloudTest pct = new GameObject("PC").AddComponent<PointCloudTest>();
+            PointCloudRenderer pct = new GameObject("PC").AddComponent<PointCloudRenderer>();
             pct.transform.parent = transform;
             pct.Init(pc, pc.forceMesh|| SystemInfo.graphicsShaderLevel < 50? pointShader40:pointShader );
         }

@@ -5,13 +5,13 @@ using Unity.Collections;
 using System.Threading.Tasks;
 using System.Threading;
 
-public class PointCloudTest : MonoBehaviour {
+public class PointCloudRenderer : MonoBehaviour {
 
     bool bUseMesh;
     ComputeBuffer pointBuffer;
     int pointCount = 0;
     Mesh mesh;
-    cwipc frameReady = null;
+    PointCloudFrame frameReady = null;
     PCBaseReader currentPCReader;
     float pcSourceStartTime;
     bool stopTask = false;
@@ -91,12 +91,12 @@ public class PointCloudTest : MonoBehaviour {
     async Task asyncTask() {
         var initTime = Time.realtimeSinceStartup;
         while (!stopTask) {
-            var tmp_pc = currentPCReader.get();
+            var tmpFrame = currentPCReader.get();
             lock (this)
             {
                 if (frameReady == null)
                 {
-                    frameReady = tmp_pc;
+                    frameReady = tmpFrame;
                     if (frameReady!=null)
                     {
                         if (bUseMesh) frameReady.getVertexArray();

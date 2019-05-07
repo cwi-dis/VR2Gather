@@ -26,13 +26,13 @@ public class PCSyntheticReader : PCBaseReader
         obj = System.IntPtr.Zero;
     }
 
-    public cwipc get() {
+    public PointCloudFrame get() {
         if (obj == System.IntPtr.Zero) {
             Debug.LogError("cwipc.obj == NULL");
             return null;
         }
         var rv = API_cwipc_util.cwipc_source_get(obj);
         if (rv == System.IntPtr.Zero) return null;
-        return new cwipc(rv);
+        return new PointCloudFrame(rv);
     }
 }

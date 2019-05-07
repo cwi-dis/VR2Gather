@@ -29,7 +29,7 @@ public class PCCompressedDirectoryReader : PCBaseReader {
         return allFilenames.Length != 0;
     }
 
-    public cwipc get()
+    public PointCloudFrame get()
     {
         if (decoder == IntPtr.Zero) {
             Debug.LogError("cwipc_decoder: no decoder available");
@@ -53,6 +53,6 @@ public class PCCompressedDirectoryReader : PCBaseReader {
             return null;
         }
 
-        return new cwipc(pc);
+        return new PointCloudFrame(pc);
     }
 }
