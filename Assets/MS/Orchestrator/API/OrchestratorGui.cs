@@ -120,6 +120,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     #endregion
 
     #region orchestration logics
+    [SerializeField]
+    private OrchestrationTest test;
 
     // the wrapper for the orchestrator
     private OrchestratorWrapper orchestratorWrapper;
@@ -131,19 +133,22 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     private GuiCommandDescription selectedCommand;
 
     // lists of items that are availble for the user
-    private List<Session> availableSessions;
-    private List<Scenario> availableScenarios;
-    private List<User> availableUsers;
-    private List<RoomInstance> availableRoomInstances;
+    public List<Session> availableSessions;
+    public List<Scenario> availableScenarios;
+    public List<User> availableUsers;
+    public List<RoomInstance> availableRoomInstances;
 
     // user Login state
-    private bool userIsLogged = false;
+    public bool userIsLogged = false;
 
     // orchestrator connection state
-    private bool connectedToOrchestrator = false;
+    public bool connectedToOrchestrator = false;
+
+    public ScenarioInstance activeScenario;
+    public Session activeSession;
 
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
-    private bool isAutoRetrievingData = false;
+    public bool isAutoRetrievingData = false;
 
     #endregion
 
@@ -247,23 +252,23 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     }
 
     #region functions that prepare the command to send
-    private void Login()
+    public void Login()
     {
         orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text,
             userPasswordPanel.GetComponentInChildren<InputField>().text);
     }
 
-    private void Logout()
+    public void Logout()
     {
         orchestratorWrapper.Logout();
     }
 
-    private void GetSessions()
+    public void GetSessions()
     {
         orchestratorWrapper.GetSessions();
     }
 
-    private void AddSession()
+    public void AddSession()
     {
         Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.AddSession(availableScenarios[dd.value].scenarioId, 
@@ -271,13 +276,13 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
     }
 
-    private void DeleteSession()
+    public void DeleteSession()
     {
         Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.DeleteSession(availableSessions[dd.value].sessionId);
     }
 
-    private void JoinSession()
+    public void JoinSession()
     {
         Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
         string sessionIdToJoin = availableSessions[dd.value].sessionId;
@@ -285,40 +290,40 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         orchestratorWrapper.JoinSession(sessionIdToJoin);
     }
 
-    private void LeaveSession()
+    public void LeaveSession()
     {
         orchestratorWrapper.LeaveSession();
     }
 
-    private void GetScenarios()
+    public void GetScenarios()
     {
         orchestratorWrapper.GetScenarios();
     }
 
-    private void GetUsers()
+    public void GetUsers()
     {
         orchestratorWrapper.GetUsers();
     }
 
-    private void AddUser()
+    public void AddUser()
     {
         orchestratorWrapper.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
             userPasswordPanel.GetComponentInChildren<InputField>().text,
             userAdminPanel.GetComponentInChildren<Toggle>().isOn);
     }
 
-    private void DeleteUser()
+    public void DeleteUser()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.DeleteUser(availableUsers[dd.value].userId);
     }
 
-    private void GetRooms()
+    public void GetRooms()
     {
         orchestratorWrapper.GetRooms();
     }
 
-    private void JoinRoom()
+    public void JoinRoom()
     {
         Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
         RoomInstance room = availableRoomInstances[dd.value];
@@ -326,19 +331,19 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         orchestratorWrapper.JoinRoom(room.roomId);
     }
 
-    private void LeaveRoom()
+    public void LeaveRoom()
     {
         orchestratorWrapper.LeaveRoom();
     }
 
-    private void SendMessage()
+    public void SendMessage()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.SendMessage(messagePanel.GetComponentInChildren<InputField>().text,
             availableUsers[dd.value].userId);
     }
 
-    private void SendMessageToAll()
+    public void SendMessageToAll()
     {
         orchestratorWrapper.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
     }
@@ -452,6 +457,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         connectedToOrchestrator = true;
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
+        //Test
+        test.StatusTextUpdate();
     }
 
     public void OnDisconnect()
@@ -463,6 +470,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         userAdmin.text = "";
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
+        //Test
+        test.StatusTextUpdate();
     }
 
     public void OnLoginResponse(ResponseStatus status, string userId)
@@ -578,6 +587,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+        //TEST
+        test.SessionsUpdate();
 
         if (isAutoRetrievingData)
         {
@@ -600,6 +611,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             {
                 AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
             });
+            //TEST
+            test.SessionsUpdate();
 
             // update the dropdown
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
@@ -693,14 +706,16 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         scenarios.ForEach(delegate (Scenario scenario)
         {
             Debug.Log("Scenario:" + scenario.GetGuiRepresentation());
-            Debug.Log("ScenarioRooms:" + scenario.scenarioRooms.Count);
-            scenario.scenarioRooms.ForEach(delegate (Room room)
-            {
-                Debug.Log("ScenarioRoom:" + room.GetGuiRepresentation());
-            });
+            //Debug.Log("ScenarioRooms:" + scenario.scenarioRooms.Count);
+            //scenario.scenarioRooms.ForEach(delegate (Room room)
+            //{
+            //    Debug.Log("ScenarioRoom:" + room.GetGuiRepresentation());
+            //});
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+        //TEST
+        test.ScenariosUpdate();
 
         if (isAutoRetrievingData)
         {
@@ -716,6 +731,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userScenario.text = scenario.GetGuiRepresentation();
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
+            activeScenario = scenario;
         }
     }
 
@@ -832,4 +848,33 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     //{
     //    Debug.LogError(message);
     //}
+
+    #region test methods
+    // Connect to the orchestrator
+    public void ConnectSocket() {
+        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this);
+        orchestratorWrapper.Connect();
+    }
+
+    // Login from the main buttons Login & Logout
+    public void TestLogin(string user, string password) {
+        orchestratorWrapper.Login(user, password);
+    }
+
+    public void TestAddSession(InputField name, InputField description, int scenario) {
+        orchestratorWrapper.AddSession(availableScenarios[scenario].scenarioId,
+            name.text, description.text);
+    }
+
+    public void TestJoinSession(int session) {
+        string sessionIdToJoin = availableSessions[session].sessionId;
+        //userSession.text = sessionIdToJoin;
+        orchestratorWrapper.JoinSession(sessionIdToJoin);
+    }
+
+    public void TestDeleteSession(string sessionId) {
+        orchestratorWrapper.DeleteSession(sessionId);
+    }
+
+    #endregion
 }

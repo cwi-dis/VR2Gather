@@ -90,7 +90,8 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            //return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName;
         }
     }
 
