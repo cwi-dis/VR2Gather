@@ -7,13 +7,19 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public enum State {
-    Default, Create, Join, Lobby
+    Default, Create, Join, Lobby, InGame
 }
 
 public class OrchestrationTest : MonoBehaviour {
+
+    [Header("General")]
+    public OrchestratorGui orchestrator;
+
     #region UI
     [SerializeField]
-    private Text status;
+    private Text statusText;
+
+    [Header("Content")]
     [SerializeField]
     private RectTransform orchestratorSessions;
     [SerializeField]
@@ -24,7 +30,11 @@ public class OrchestrationTest : MonoBehaviour {
     private InputField exchangeNameIF;
     [SerializeField]
     private InputField connectionUriIF;
-    
+    [SerializeField]
+    private InputField pcDashServerIF;
+    [SerializeField]
+    private InputField audioDashServerIF;
+
     [Header("Create")]
     [SerializeField]
     private InputField sessionNameIF;
@@ -79,8 +89,6 @@ public class OrchestrationTest : MonoBehaviour {
     private Color offlineCol = new Color(0.78f,0.15f,0.15f); // Red
     #endregion
 
-    public OrchestratorGui orchestrator;
-
     private State state = State.Default;
 
     // Start is called before the first frame update
@@ -96,6 +104,9 @@ public class OrchestrationTest : MonoBehaviour {
         lobbyPanel.SetActive(false);
         sessionPanel.SetActive(true);
         usersPanel.SetActive(false);
+
+        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(orchestrator);
 }
 
     // Update is called once per frame
@@ -112,9 +123,11 @@ public class OrchestrationTest : MonoBehaviour {
                 else doneJoinButton.interactable = true;
                 break;
             case State.Lobby:
-                if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
-                else readyLobbyButton.interactable = true;
+                //if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
+                //else readyLobbyButton.interactable = true;
                 LobbyTextUpdate();
+                break;
+            case State.InGame:
                 break;
             default:
                 break;
@@ -124,12 +137,12 @@ public class OrchestrationTest : MonoBehaviour {
     #region Auxiliar Methods
     public void StatusTextUpdate() {
         if (orchestrator.connectedToOrchestrator) {
-            status.text = "Online";
-            status.color = onlineCol;
+            statusText.text = "Online";
+            statusText.color = onlineCol;
         }
         else {
-            status.text = "Offline";
-            status.color = offlineCol;
+            statusText.text = "Offline";
+            statusText.color = offlineCol;
         }
     }
 
@@ -259,7 +272,15 @@ public class OrchestrationTest : MonoBehaviour {
     }
     
     public void ReadyButton() {
-        //if (orchestrator.activeSession.sessionUsers.Length == 2) SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
+        state = State.InGame;
+        createPanel.SetActive(false);
+        joinPanel.SetActive(false);
+        lobbyPanel.SetActive(false);
+        sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
+        createButton.interactable = true;
+        joinButton.interactable = true;
+
         SceneManager.LoadScene(scenarioIdText.text);
     }
 

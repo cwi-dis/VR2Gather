@@ -885,5 +885,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         orchestratorWrapper.DeleteSession(sessionId);
     }
 
+    public string TestGetUserID() {
+        return userId.text;
+    }
     #endregion
 }
