@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PreparationTest : MonoBehaviour {
 
     [SerializeField]
-    private Image[] players;
+    private PlayerManager[] players;
 
     private OrchestrationTest test;
     private OrchestratorGui orchestrator;
@@ -31,8 +31,8 @@ public class PreparationTest : MonoBehaviour {
 
         // Put the players on the correct seat
         for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i].color = playerCol;
-            else players[i].color = otherCol;
+            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i].cam.SetActive(true);
+            //TODO put exchange name and connection uri in players[i].tvm
         }
     }
     // Update is called once per frame
