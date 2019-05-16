@@ -629,6 +629,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             //OnJoinSessionResponse(status);
+            activeSession = session;
         }
         else
         {
@@ -650,6 +651,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userScenario.text = session.scenarioId;
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+
+            activeSession = session;
         }
         else
         {
@@ -684,6 +687,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             // success
             userSession.text = "";
             userScenario.text = "";
+
+
+            activeSession = null;
+            activeScenario = null;
+            test.LobbyTextUpdate();
         }
     }
 
@@ -732,6 +740,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
             activeScenario = scenario;
+            //test.LobbyTextUpdate();
         }
     }
 

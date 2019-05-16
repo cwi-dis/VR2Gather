@@ -15,17 +15,37 @@ public class OrchestrationTest : MonoBehaviour {
     [SerializeField]
     private Text status;
     [SerializeField]
+    private RectTransform orchestratorSessions;
+    [SerializeField]
+    private RectTransform usersSession;
+
+    [Header("Info")]
+    [SerializeField]
     private InputField exchangeNameIF;
     [SerializeField]
     private InputField connectionUriIF;
+    
+    [Header("Create")]
     [SerializeField]
     private InputField sessionNameIF;
     [SerializeField]
     private InputField sessionDescriptionIF;
     [SerializeField]
-    private Dropdown sessionIdDrop;
-    [SerializeField]
     private Dropdown scenarioIdDrop;
+
+    [Header("Join")]
+    [SerializeField]
+    private Dropdown sessionIdDrop;
+
+    [Header("Lobby")]
+    [SerializeField]
+    private Text sessionNameText;
+    [SerializeField]
+    private Text sessionDescriptionText;
+    [SerializeField]
+    private Text scenarioIdText;
+    [SerializeField]
+    private Text sessionNumUsersText;
 
     [Header("Panels")]
     [SerializeField]
@@ -38,6 +58,8 @@ public class OrchestrationTest : MonoBehaviour {
     private GameObject lobbyPanel;
     [SerializeField]
     private GameObject sessionPanel;
+    [SerializeField]
+    private GameObject usersPanel;
 
     [Header("Buttons")]
     [SerializeField]
@@ -48,10 +70,8 @@ public class OrchestrationTest : MonoBehaviour {
     private Button doneCreateButton;
     [SerializeField]
     private Button doneJoinButton;
-
-    [Space(10)]
     [SerializeField]
-    private RectTransform orchestratorSessions;
+    private Button readyLobbyButton;
     #endregion
 
     #region Utils
@@ -63,15 +83,20 @@ public class OrchestrationTest : MonoBehaviour {
 
     private State state = State.Default;
 
-    public 
-    
     // Start is called before the first frame update
     void Start() {
         orchestrator.ConnectSocket();
         orchestrator.TestLogin("admin", "password");
 
         StatusTextUpdate();
-    }
+
+        infoPanel.SetActive(true);
+        createPanel.SetActive(false);
+        joinPanel.SetActive(false);
+        lobbyPanel.SetActive(false);
+        sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
+}
 
     // Update is called once per frame
     void Update() {
@@ -87,6 +112,9 @@ public class OrchestrationTest : MonoBehaviour {
                 else doneJoinButton.interactable = true;
                 break;
             case State.Lobby:
+                if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
+                else readyLobbyButton.interactable = true;
+                LobbyTextUpdate();
                 break;
             default:
                 break;
@@ -145,12 +173,39 @@ public class OrchestrationTest : MonoBehaviour {
         scenarioIdDrop.AddOptions(options);
     }
 
+    public void LobbyTextUpdate() {
+        if (orchestrator.activeSession != null) {
+            sessionNameText.text = orchestrator.activeSession.sessionName;
+            sessionDescriptionText.text = orchestrator.activeSession.sessionDescription;
+            sessionNumUsersText.text = orchestrator.activeSession.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
+            // update the list of users in session
+            orchestrator.removeComponentsFromList(usersSession.transform);
+            for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+                orchestrator.AddTextComponentOnContent(usersSession.transform, orchestrator.activeSession.sessionUsers[i]);
+
+            }
+        }
+        else {
+            sessionNameText.text = "";
+            sessionDescriptionText.text = "";
+            sessionNumUsersText.text = "X/X";
+            orchestrator.removeComponentsFromList(usersSession.transform);
+        }
+        if (orchestrator.activeScenario != null) {
+            scenarioIdText.text = orchestrator.activeScenario.scenarioName;
+        }
+        else {
+            scenarioIdText.text = "";
+        }
+    }
+
     public void CreateButton() {
         state = State.Create;
         createPanel.SetActive(true);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(false);
         sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
         createButton.interactable = false;
         joinButton.interactable = true;
     }
@@ -161,6 +216,7 @@ public class OrchestrationTest : MonoBehaviour {
         joinPanel.SetActive(true);
         lobbyPanel.SetActive(false);
         sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
         createButton.interactable = true;
         joinButton.interactable = false;
     }
@@ -172,6 +228,7 @@ public class OrchestrationTest : MonoBehaviour {
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         sessionPanel.SetActive(false);
+        usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
     }
@@ -183,6 +240,7 @@ public class OrchestrationTest : MonoBehaviour {
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);
         sessionPanel.SetActive(false);
+        usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
     }
@@ -195,13 +253,14 @@ public class OrchestrationTest : MonoBehaviour {
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(false);
         sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
         createButton.interactable = true;
         joinButton.interactable = true;
     }
     
     public void ReadyButton() {
         //if (orchestrator.activeSession.sessionUsers.Length == 2) SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
-        SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
+        SceneManager.LoadScene(scenarioIdText.text);
     }
 
     #endregion
