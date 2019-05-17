@@ -15,9 +15,12 @@ EditorBuildSettings:
     path: Assets/CWI/Scenes/PointClouds.unity
     guid: 0b9b371832b67104a84531030cb7de72
   - enabled: 1
-    path: Assets/i2Cat/Connections/Lobby.unity
-    guid: 595c5a279f6d9b44180312b1ecdc3499
+    path: Assets/i2cat/OrchestrationTest/OrchestrationTest.unity
+    guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
-    path: Assets/i2Cat/Connections/TestConnections.unity
-    guid: 30a60f29634992d4594451c9c4c76cc8
+    path: Assets/i2cat/TestTVM&PC/Sample Scenario.unity
+    guid: 364b676935a3a7446ba78c32b5867dd5
+  - enabled: 1
+    path: Assets/i2cat/OrchestrationTest/Sample Scenario 2.unity
+    guid: bab88bbc29626f04891faadc31bb6426
   m_configObjects: {}

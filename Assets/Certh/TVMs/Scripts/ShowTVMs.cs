@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class ShowTVMs : MonoBehaviour {
     uint clientID;
+    public string connectionURI;
+    public string exchangeName;
 
     public class MeshData {
         public Vector3[] Vertices;
@@ -218,8 +220,8 @@ public class ShowTVMs : MonoBehaviour {
 
     // Use this for initialization
     void Start() {
-        ReconstructionReceiver.SetConnectionURI(clientID, Config.Instance.TVMs.connectionURI);
-        ReconstructionReceiver.SetExchangeName(clientID, Config.Instance.TVMs.exchangeName);
+        ReconstructionReceiver.SetConnectionURI(clientID, connectionURI);
+        ReconstructionReceiver.SetExchangeName(clientID, exchangeName);
         ReconstructionReceiver.RegisterOnReceivedMeshCallBack(clientID, new ReconstructionReceiver.OnReceivedMesh(OnMeshReceivedGlobalHandler));
         ReconstructionReceiver.RegisterOnConnectionErrorCallBack(clientID, new ReconstructionReceiver.OnConnectionError(OnConnectionErrorHandler));
         ReconstructionReceiver.StartClient(clientID);

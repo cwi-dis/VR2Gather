@@ -60,6 +60,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     [SerializeField]
     private Text userAdmin;
     [SerializeField]
+    private Text userMQ_url;
+    [SerializeField]
+    private Text userMQ_name;
+    [SerializeField]
     private Text userSession;
     [SerializeField]
     private Text userScenario;
@@ -148,7 +152,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public Session activeSession;
 
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
-    public bool isAutoRetrievingData = false;
+    private bool isAutoRetrievingData = false;
 
     #endregion
 
@@ -233,13 +237,13 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     }
 
     // Disconnect from the orchestrator
-    private void socketDisconnect()
+    public void socketDisconnect()
     {
         orchestratorWrapper.Disconnect();
     }
 
     // Connect to the orchestrator
-    private void socketConnect()
+    public void socketConnect()
     {
         orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this);
         orchestratorWrapper.Connect();
@@ -254,8 +258,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     #region functions that prepare the command to send
     public void Login()
     {
-        orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text,
-            userPasswordPanel.GetComponentInChildren<InputField>().text);
+        orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void Logout()
@@ -496,7 +499,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                     isAutoRetrievingData = false;
                 }
                 Debug.Log("isAutoRetrievingData:" + isAutoRetrievingData);
-                bool result = orchestratorWrapper.GetUserInfo();
+                bool result = orchestratorWrapper.GetUserInfo(userId);
                 Debug.Log(" CALL:" + result);
             }
             else
@@ -611,8 +614,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             {
                 AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
             });
-            //TEST
-            test.SessionsUpdate();
 
             // update the dropdown
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
@@ -623,12 +624,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             });
             dd.AddOptions(options);
+            //TEST
+            test.SessionsUpdate();
 
             userSession.text = session.GetGuiRepresentation();
             // Now retrieve the infos about the scenario instance
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             //OnJoinSessionResponse(status);
+            //TEST
             activeSession = session;
         }
         else
@@ -651,7 +655,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userScenario.text = session.scenarioId;
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
+            //TEST
             activeSession = session;
         }
         else
@@ -688,7 +692,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userSession.text = "";
             userScenario.text = "";
 
-
+            //TEST
             activeSession = null;
             activeScenario = null;
             test.LobbyTextUpdate();
@@ -739,8 +743,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userScenario.text = scenario.GetGuiRepresentation();
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
+            //TEST
             activeScenario = scenario;
-            //test.LobbyTextUpdate();
         }
     }
 
@@ -796,6 +800,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 // auto retriving phase: call next
                 orchestratorWrapper.GetUsers();
             }
+            //TEST
             test.StatusTextUpdate();
         }
     }
@@ -859,38 +864,46 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     //    Debug.LogError(message);
     //}
 
+
     #region test methods
     // Connect to the orchestrator
-    public void ConnectSocket() {
+    public void ConnectSocket()
+    {
         orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this);
         orchestratorWrapper.Connect();
     }
 
     // Login from the main buttons Login & Logout
-    public void TestLogin(string user, string password) {
+    public void TestLogin(string user, string password, string connectionURI, string exchangeName)
+    {
         orchestratorWrapper.Login(user, password);
     }
 
-    public void TestAddSession(InputField name, InputField description, int scenario) {
+    public void TestAddSession(InputField name, InputField description, int scenario)
+    {
         orchestratorWrapper.AddSession(availableScenarios[scenario].scenarioId,
             name.text, description.text);
     }
 
-    public void TestJoinSession(int session) {
+    public void TestJoinSession(int session)
+    {
         string sessionIdToJoin = availableSessions[session].sessionId;
         //userSession.text = sessionIdToJoin;
         orchestratorWrapper.JoinSession(sessionIdToJoin);
     }
 
-    public void TestDeleteSession(string sessionId) {
+    public void TestDeleteSession(string sessionId)
+    {
         orchestratorWrapper.DeleteSession(sessionId);
     }
 
-    public string TestGetUserID() {
+    public string TestGetUserID()
+    {
         return userId.text;
     }
 
-    public string TestGetUserName() {
+    public string TestGetUserName()
+    {
         return userName.text;
     }
     #endregion

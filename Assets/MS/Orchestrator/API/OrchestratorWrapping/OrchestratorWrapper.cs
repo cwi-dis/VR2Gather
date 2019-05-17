@@ -247,13 +247,27 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
-        public bool GetUserInfo()
+        public bool UpdateUserData(string userMQ_url, string userMQ_name)
         {
-            OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
+            command.GetParameter("MQ_url").ParamValue = userMQ_url;
+            command.GetParameter("MQ_name").ParamValue = userMQ_name;
             return OrchestrationSocketIoManager.EmitCommand(command);
         }
 
-        public void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
+        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+        }
+
+        public bool GetUserInfo(string userId)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
+            command.GetParameter("userId").ParamValue = userId;
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             User user = User.ParseJsonData<User>(response.body);
@@ -389,7 +403,12 @@ namespace OrchestratorWrapping
 
                     // users
                     new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
-                    new OrchestratorCommand("GetUserInfo", null, OnGetUserInfoResponse),
+                    new OrchestratorCommand("GetUserInfo",
+                    new List<Parameter>
+                        {
+                            new Parameter("userId", typeof(string))
+                        }, 
+                        OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {
                             new Parameter("userName", typeof(string)),
@@ -397,6 +416,12 @@ namespace OrchestratorWrapping
                             new Parameter("userAdmin", typeof(bool))
                         },
                         OnAddUserResponse),
+                    new OrchestratorCommand("UpdateUserData", new List<Parameter>
+                        {
+                            new Parameter("RMQ_url", typeof(string)),
+                            new Parameter("RMQ_name", typeof(string)),
+                        },
+                        OnUpdateUserDataResponse),
                     new OrchestratorCommand("DeleteUser", new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))

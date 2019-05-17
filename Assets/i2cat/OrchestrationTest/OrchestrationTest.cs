@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public enum State {
-    Default, Create, Join, Lobby, InGame
+    Default, Login, Create, Join, Lobby, InGame
 }
 
 public class OrchestrationTest : MonoBehaviour {
@@ -23,6 +23,16 @@ public class OrchestrationTest : MonoBehaviour {
     [SerializeField]
     private Text nameText;
 
+    [Header("Login")]
+    [SerializeField]
+    private InputField userNameLoginIF;
+    [SerializeField]
+    private InputField userPasswordLoginIF;
+    [SerializeField]
+    private InputField connectionURILoginIF;
+    [SerializeField]
+    private InputField exchangeNameLoginIF;
+
     [Header("Content")]
     [SerializeField]
     private RectTransform orchestratorSessions;
@@ -30,10 +40,10 @@ public class OrchestrationTest : MonoBehaviour {
     private RectTransform usersSession;
 
     [Header("Info")]
-    [SerializeField]
-    private InputField exchangeNameIF;
-    [SerializeField]
-    private InputField connectionUriIF;
+    //[SerializeField]
+    public InputField exchangeNameIF;
+    //[SerializeField]
+    public InputField connectionURIIF;
     [SerializeField]
     private InputField pcDashServerIF;
     [SerializeField]
@@ -63,6 +73,8 @@ public class OrchestrationTest : MonoBehaviour {
 
     [Header("Panels")]
     [SerializeField]
+    private GameObject loginPanel;
+    [SerializeField]
     private GameObject infoPanel;
     [SerializeField]
     private GameObject createPanel;
@@ -76,6 +88,8 @@ public class OrchestrationTest : MonoBehaviour {
     private GameObject usersPanel;
 
     [Header("Buttons")]
+    [SerializeField]
+    private Button loginButton;
     [SerializeField]
     private Button createButton;
     [SerializeField]
@@ -98,25 +112,34 @@ public class OrchestrationTest : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         orchestrator.ConnectSocket();
-        orchestrator.TestLogin("admin", "password");
+        //orchestrator.TestLogin("admin", "password");
 
-        infoPanel.SetActive(true);
+        loginPanel.SetActive(true);
+        infoPanel.SetActive(false);
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(false);
-        sessionPanel.SetActive(true);
+        sessionPanel.SetActive(false);
         usersPanel.SetActive(false);
+        createButton.gameObject.SetActive(false);
+        joinButton.gameObject.SetActive(false);
 
         DontDestroyOnLoad(this);
         DontDestroyOnLoad(orchestrator);
 
         StatusTextUpdate();
+        state = State.Login;
     }
 
     // Update is called once per frame
     void Update() {
         switch (state) {
             case State.Default:
+                break;
+            case State.Login:
+                if (string.IsNullOrEmpty(userNameLoginIF.text) || string.IsNullOrEmpty(userPasswordLoginIF.text) ||
+                    string.IsNullOrEmpty(connectionURILoginIF.text) || string.IsNullOrEmpty(exchangeNameLoginIF.text)) loginButton.interactable = false;
+                else loginButton.interactable = true;
                 break;
             case State.Create:
                 if (string.IsNullOrEmpty(sessionNameIF.text)) doneCreateButton.interactable = false;
@@ -150,6 +173,8 @@ public class OrchestrationTest : MonoBehaviour {
         }
         idText.text = orchestrator.TestGetUserID();
         nameText.text = orchestrator.TestGetUserName();
+        connectionURIIF.text = connectionURILoginIF.text;
+        exchangeNameIF.text = exchangeNameLoginIF.text;
     }
 
     public void SessionsUpdate() {
@@ -216,6 +241,20 @@ public class OrchestrationTest : MonoBehaviour {
         else {
             scenarioIdText.text = "";
         }
+    }
+
+    public void LoginButton() {
+        loginPanel.SetActive(false);
+        infoPanel.SetActive(true);
+        createPanel.SetActive(false);
+        joinPanel.SetActive(false);
+        lobbyPanel.SetActive(false);
+        sessionPanel.SetActive(true);
+        usersPanel.SetActive(false);
+        createButton.gameObject.SetActive(true);
+        joinButton.gameObject.SetActive(true);
+
+        orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text, connectionURILoginIF.text, exchangeNameLoginIF.text);
     }
 
     public void CreateButton() {
