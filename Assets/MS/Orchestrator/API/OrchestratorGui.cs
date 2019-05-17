@@ -796,6 +796,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 // auto retriving phase: call next
                 orchestratorWrapper.GetUsers();
             }
+            test.StatusTextUpdate();
         }
     }
 
@@ -887,6 +888,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
     public string TestGetUserID() {
         return userId.text;
+    }
+
+    public string TestGetUserName() {
+        return userName.text;
     }
     #endregion
 }

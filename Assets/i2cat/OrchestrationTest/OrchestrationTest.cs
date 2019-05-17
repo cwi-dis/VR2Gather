@@ -18,6 +18,10 @@ public class OrchestrationTest : MonoBehaviour {
     #region UI
     [SerializeField]
     private Text statusText;
+    [SerializeField]
+    private Text idText;
+    [SerializeField]
+    private Text nameText;
 
     [Header("Content")]
     [SerializeField]
@@ -96,8 +100,6 @@ public class OrchestrationTest : MonoBehaviour {
         orchestrator.ConnectSocket();
         orchestrator.TestLogin("admin", "password");
 
-        StatusTextUpdate();
-
         infoPanel.SetActive(true);
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
@@ -107,7 +109,9 @@ public class OrchestrationTest : MonoBehaviour {
 
         DontDestroyOnLoad(this);
         DontDestroyOnLoad(orchestrator);
-}
+
+        StatusTextUpdate();
+    }
 
     // Update is called once per frame
     void Update() {
@@ -144,6 +148,8 @@ public class OrchestrationTest : MonoBehaviour {
             statusText.text = "Offline";
             statusText.color = offlineCol;
         }
+        idText.text = orchestrator.TestGetUserID();
+        nameText.text = orchestrator.TestGetUserName();
     }
 
     public void SessionsUpdate() {

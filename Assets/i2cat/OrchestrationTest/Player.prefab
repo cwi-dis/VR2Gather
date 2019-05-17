@@ -90,9 +90,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c80cc882c9799e846b9861f085631998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 4434842230143733182}
-  tvm: {fileID: 4434842228507487040}
-  pc: {fileID: 979515130588583123}
+  cam: {fileID: 4434842230143733153}
+  tvm: {fileID: 4434842228507487041}
+  pc: {fileID: 7392659942812053531}
 --- !u!1 &4434842230143733153
 GameObject:
   m_ObjectHideFlags: 0
