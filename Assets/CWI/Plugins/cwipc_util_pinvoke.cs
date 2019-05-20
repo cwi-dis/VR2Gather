@@ -9,7 +9,7 @@ internal class API_cwipc_util {
     [DllImport("cwipc_util")]
     internal extern static UInt64 cwipc_timestamp(IntPtr pc);
     [DllImport("cwipc_util")]
-    internal extern static System.IntPtr cwipc_get_uncompressed_size(IntPtr pc, uint dataVersion = 0x20190209);
+    internal extern static System.IntPtr cwipc_get_uncompressed_size(IntPtr pc, uint dataVersion = 0x20190424);
     [DllImport("cwipc_util")]
     internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, System.IntPtr size);
 
