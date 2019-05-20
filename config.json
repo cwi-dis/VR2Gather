@@ -6,7 +6,7 @@
 	"PCs": [
 	  {
 		"forceMesh": true,
-		"sourceType" : "sub",
+		"sourceType" : "cwicpcdir",
 		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
 		"cwicpcDirectory": "../../../installed/lootCwicpc",
 		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
@@ -23,7 +23,7 @@
 	  },
 	  {
 		"forceMesh": true,
-		"sourceType" : "sub",
+		"sourceType" : "cwicpcdir",
 		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
 		"cwicpcDirectory": "../../../installed/lootCwicpc",
 		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
@@ -49,6 +49,7 @@
 		"networkPort": 4303,
 		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/longdress/vrtogether.mpd",
 		"subStreamNumber": 0,
+		"realsense2ConfigFile": "../../../cameraconfig.xml",
 
 		"pointSize": 0.008,
 		"position": {"x":0, "y":0, "z":2 },
