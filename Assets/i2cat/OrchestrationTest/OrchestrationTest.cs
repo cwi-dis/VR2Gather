@@ -28,10 +28,8 @@ public class OrchestrationTest : MonoBehaviour {
     private InputField userNameLoginIF;
     [SerializeField]
     private InputField userPasswordLoginIF;
-    [SerializeField]
-    private InputField connectionURILoginIF;
-    [SerializeField]
-    private InputField exchangeNameLoginIF;
+    public InputField connectionURILoginIF;
+    public InputField exchangeNameLoginIF;
 
     [Header("Content")]
     [SerializeField]
@@ -173,8 +171,6 @@ public class OrchestrationTest : MonoBehaviour {
         }
         idText.text = orchestrator.TestGetUserID();
         nameText.text = orchestrator.TestGetUserName();
-        connectionURIIF.text = connectionURILoginIF.text;
-        exchangeNameIF.text = exchangeNameLoginIF.text;
     }
 
     public void SessionsUpdate() {
@@ -188,12 +184,6 @@ public class OrchestrationTest : MonoBehaviour {
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         orchestrator.availableSessions.ForEach(delegate (Session session)
         {
-            //Debug.Log("Session:" + session.GetGuiRepresentation());
-            //Debug.Log("users:" + session.sessionUsers.Length);
-            //Array.ForEach<string>(session.sessionUsers, delegate (string user)
-            //{
-            //    Debug.Log("userId:" + user);
-            //});
             options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
         });
         sessionIdDrop.AddOptions(options);
@@ -206,12 +196,6 @@ public class OrchestrationTest : MonoBehaviour {
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         orchestrator.availableScenarios.ForEach(delegate (Scenario scenario)
         {
-            //Debug.Log("Scenario:" + scenario.GetGuiRepresentation());
-            //Debug.Log("ScenarioRooms:" + scenario.scenarioRooms.Count);
-            //scenario.scenarioRooms.ForEach(delegate (Room room)
-            //{
-            //    Debug.Log("ScenarioRoom:" + room.GetGuiRepresentation());
-            //});
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         scenarioIdDrop.AddOptions(options);
@@ -225,7 +209,11 @@ public class OrchestrationTest : MonoBehaviour {
             // update the list of users in session
             orchestrator.removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-                orchestrator.AddTextComponentOnContent(usersSession.transform, orchestrator.activeSession.sessionUsers[i]);
+                // Make this to show the real name of the user, not the id
+                for (int j = 0; j < orchestrator.availableUsers.Capacity; j++) {
+                    if (orchestrator.availableUsers[j].userId == orchestrator.activeSession.sessionUsers[i])
+                        orchestrator.AddTextComponentOnContent(usersSession.transform, orchestrator.availableUsers[j].userName);
+                }
 
             }
         }
@@ -294,6 +282,7 @@ public class OrchestrationTest : MonoBehaviour {
     public void DoneJoinButton() {
         state = State.Lobby;
         orchestrator.TestJoinSession(sessionIdDrop.value);
+        orchestrator.GetUsers();
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);

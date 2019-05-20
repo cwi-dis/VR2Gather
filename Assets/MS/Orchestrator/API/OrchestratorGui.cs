@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     #region gui components
 
     //Connection and login components
+    [Header("Connection and login components")]
     [SerializeField]
     private InputField orchestratorUrlIF;
     [SerializeField]
@@ -41,16 +43,24 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     [SerializeField]
     private InputField userPasswordIF;
     [SerializeField]
+    private InputField userMQurlIF;
+    [SerializeField]
+    private InputField userMQnameIF;
+    [SerializeField]
     private Button loginButton;
     [SerializeField]
     private Button logoutButton;
 
     // Logs container
+    [Header("Logs container")]
     [SerializeField]
     private RectTransform logsContainer;
+    [SerializeField]
+    private ScrollRect logsScrollRect;
     private Font ArialFont;
 
-    // user GUI components
+    // User GUI components
+    [Header("User GUI components")]
     [SerializeField]
     private Text userLogged;
     [SerializeField]
@@ -60,9 +70,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     [SerializeField]
     private Text userAdmin;
     [SerializeField]
-    private Text userMQ_url;
+    private Text userMQurl;
     [SerializeField]
-    private Text userMQ_name;
+    private Text userMQname;
     [SerializeField]
     private Text userSession;
     [SerializeField]
@@ -70,7 +80,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     [SerializeField]
     private Text userRoom;
 
-    // orchestrator GUI components
+    // Orchestrator GUI components
+    [Header("Orchestrator GUI components")]
     [SerializeField]
     private Text orchestratorConnected;
     [SerializeField]
@@ -83,7 +94,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     #endregion
 
     #region Gui components panel to select the commands to send and their parameters
-    
+
     // The list of available commands
     private List<Dropdown.OptionData> commandsListData = new List<Dropdown.OptionData>();
 
@@ -154,6 +165,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
     private bool isAutoRetrievingData = false;
 
+    // Temp: we need to count how many times we request UserData according to available parameters (here 2: MQname and MQurl)
+    private int userDataRequestsCount = 0;
+
+    string userID = "";
+
     #endregion
 
     // Use this for initialization
@@ -204,35 +220,24 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
             new GuiCommandDescription("AddSession", new List<RectTransform> { scenarioIdPanel, sessionNamePanel, sessionDescriptionPanel }, AddSession),
             new GuiCommandDescription("GetSessions", null, GetSessions),
-            //new GuiCommandDescription("GetSessionInfo", null, GetSessionInfo),
             new GuiCommandDescription("DeleteSession", new List<RectTransform> { sessionIdPanel }, DeleteSession),
 
             new GuiCommandDescription("JoinSession", new List<RectTransform> {  sessionIdPanel }, JoinSession),
             new GuiCommandDescription("LeaveSession", null, LeaveSession),
 
             new GuiCommandDescription("GetScenarios", null, GetScenarios),
-            //new GuiCommandDescription("GetScenarioInfo", new List<RectTransform> { scenarioIdPanel}, GetScenarioInfo),
 
             new GuiCommandDescription("GetUsers", null, GetUsers),
-            //new GuiCommandDescription("GetUserInfo", null, GetUserInfo),
             new GuiCommandDescription("AddUser", new List<RectTransform> { userNamePanel, userPasswordPanel, sessionDescriptionPanel }, AddUser),
             new GuiCommandDescription("AddSession", new List<RectTransform> { scenarioIdPanel, sessionNamePanel, userAdminPanel }, AddSession),
             new GuiCommandDescription("DeleteUser", new List<RectTransform> { userIdPanel }, DeleteUser),
 
-            //new GuiCommandDescription("GetRooms", null, GetRooms),
-            //new GuiCommandDescription("GetRoomInfo", null, GetRoomInfo),
-
             new GuiCommandDescription("JoinRoom", new List<RectTransform> { roomIdPanel }, JoinRoom),
             new GuiCommandDescription("LeaveRoom", null, LeaveRoom),
-
-                //// NOTE: not to be done here: those messages are initiated by the orchestrator
-                //// new OrchestratorCommand("UpdateSession", "UpdateSession", null),
-                //// new OrchestratorCommand("SessionClosed", "SessionClosed", null),
 
             //messages
             new GuiCommandDescription("SendMessage", new List<RectTransform> { messagePanel, userIdPanel }, SendMessage),
             new GuiCommandDescription("SendMessageToAll", new List<RectTransform> { messagePanel }, SendMessageToAll),
-                //new OrchestratorCommand("MessageSent", "MessageSent", null)
         };
     }
 
@@ -404,14 +409,20 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     // Display the received message in the logs
     public void OnOrchestratorResponse(int status, string response)
     {
-        AddTextComponentOnContent(logsContainer.transform, ">>> " + response);
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + response);
+        StartCoroutine(ScrollLogsToBottom());
     }
-
 
     // Display the sent message in the logs
     public void OnOrchestratorRequest(string request)
     {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + request);
+        AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
+    }
+
+    private IEnumerator ScrollLogsToBottom()
+    {
+        yield return new WaitForSeconds(0.2f);
+        logsScrollRect.verticalScrollbar.value = 0;
     }
 
     #endregion
@@ -479,7 +490,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
     public void OnLoginResponse(ResponseStatus status, string userId)
     {
-        Debug.Log("OnLoginResponse:");
+        Debug.Log("OnLoginResponse()");
         bool userLoggedSucessfully = (status.Error == 0);
 
         if (! userIsLogged)
@@ -498,9 +509,13 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 {
                     isAutoRetrievingData = false;
                 }
-                Debug.Log("isAutoRetrievingData:" + isAutoRetrievingData);
-                bool result = orchestratorWrapper.GetUserInfo(userId);
-                Debug.Log(" CALL:" + result);
+
+                // Temp: Manual call of RabbitMQ exchange name update, then same for RabbitMQ url, UserData array under investigations.
+                //orchestratorWrapper.UpdateUserData("userMQexchangeName", userMQnameIF.text);
+                orchestratorWrapper.UpdateUserData("userMQexchangeName", test.exchangeNameLoginIF.text);
+                //orchestratorWrapper.UpdateUserDataArray(userMQnameIF.text, userMQurlIF.text);
+
+                userID = userId;
             }
             else
             {
@@ -508,6 +523,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 this.userId.text = "";
                 userName.text = "";
                 userAdmin.text = "";
+                userID = "";
             }
         }
         else
@@ -553,6 +569,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 this.userId.text = "";
                 userName.text = "";
                 userAdmin.text = "";
+                userMQname.text = "";
+                userMQurl.text = "";
+                userID = "";
             }
             else
             {
@@ -606,7 +625,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         if (status.Error == 0)
         {
             // success
-
             availableSessions.Add(session);
             // update the list of available sessions
             removeComponentsFromList(orchestratorSessions.transform);
@@ -640,10 +658,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userSession.text = "";
             userScenario.text = "";
         }
-
-        //////XXX NOT 2 REQUESTS ON THE SAME THREADS
-        //// update the list of available sessions
-        //orchestratorWrapper.GetSessions();
     }
 
     public void OnGetSessionInfoResponse(ResponseStatus status, Session session)
@@ -793,15 +807,51 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             userName.text = user.userName;
             userAdmin.text = user.userAdmin.ToString();
 
-            Debug.Log("isAutoRetrievingData:" + isAutoRetrievingData);
+
             if (isAutoRetrievingData)
             {
-                Debug.Log("CALL USERS:" + isAutoRetrievingData);
                 // auto retriving phase: call next
-                orchestratorWrapper.GetUsers();
+                orchestratorWrapper.GetUserData(user.userId);
             }
             //TEST
             test.StatusTextUpdate();
+        }
+    }
+
+    public void OnUpdateUserDataResponse(ResponseStatus status)
+    {
+        Debug.Log("OnUpdateUserDataResponse()");
+
+        if (status.Error == 0)
+        {
+            if (userDataRequestsCount == 0)
+            {
+                //orchestratorWrapper.UpdateUserData("userMQurl", userMQurlIF.text);
+                orchestratorWrapper.UpdateUserData("userMQurl", test.connectionURILoginIF.text);
+            }
+            else if (!string.IsNullOrEmpty(userID))
+            {
+                // auto retriving phase: call next
+                orchestratorWrapper.GetUserInfo(userID);
+            }
+            userDataRequestsCount++;
+        }
+    }
+
+    public void OnGetUserDataResponse(ResponseStatus status, UserData userData)
+    {
+        Debug.Log("OnGetUserDataResponse()");
+
+        if (status.Error == 0)
+        {
+            userMQname.text = userData.userMQexchangeName;
+            userMQurl.text = userData.userMQurl;
+
+            orchestratorWrapper.GetUsers();
+
+            //TEST
+            test.exchangeNameIF.text = userData.userMQexchangeName;
+            test.connectionURIIF.text = userData.userMQurl;
         }
     }
 
@@ -858,12 +908,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     }
 
     #endregion
-
-    //public void LogError(string message)
-    //{
-    //    Debug.LogError(message);
-    //}
-
 
     #region test methods
     // Connect to the orchestrator

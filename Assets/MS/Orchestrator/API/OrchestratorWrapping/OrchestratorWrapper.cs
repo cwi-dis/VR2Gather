@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWSManagement;
+using LitJson;
 
 namespace OrchestratorWrapping
 {
@@ -247,19 +249,6 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
-        public bool UpdateUserData(string userMQ_url, string userMQ_name)
-        {
-            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
-            command.GetParameter("MQ_url").ParamValue = userMQ_url;
-            command.GetParameter("MQ_name").ParamValue = userMQ_name;
-            return OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            ResponseStatus status = new ResponseStatus(response.error, response.message);
-        }
-
         public bool GetUserInfo(string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
@@ -272,6 +261,51 @@ namespace OrchestratorWrapping
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             User user = User.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
+        }
+
+        public bool GetUserData(string userId)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetUserData");
+            command.GetParameter("userId").ParamValue = userId;
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnGetUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            UserData userData = UserData.ParseJsonData<UserData>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnGetUserDataResponse(status, userData);
+        }
+
+        public bool UpdateUserData(string userDataKey, string userDataValue)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
+            command.GetParameter("userDataKey").ParamValue = userDataKey;
+            command.GetParameter("userDataValue").ParamValue = userDataValue;
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
+        }
+
+        public bool UpdateUserDataArray(string userMQname, string userMQurl)
+        {
+            UserData userData = new UserData(userMQname, userMQurl);
+            //JsonData json = JsonUtility.ToJson(userData);
+
+            string userDataObj = "{\"userMQexchangeName\":\"" + userData.userMQexchangeName + "\", \"userMQurl\":\"" + userData.userMQurl + "\"}";
+
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataArray");
+            command.GetParameter("userDataArray").ParamValue = userDataObj;
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataArrayResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
         }
 
         public bool DeleteUser(string userId)
@@ -353,6 +387,7 @@ namespace OrchestratorWrapping
         }
         #endregion
 
+
         #region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
         public void InitGrammar()
@@ -407,7 +442,7 @@ namespace OrchestratorWrapping
                     new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))
-                        }, 
+                        },
                         OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {
@@ -416,12 +451,23 @@ namespace OrchestratorWrapping
                             new Parameter("userAdmin", typeof(bool))
                         },
                         OnAddUserResponse),
+                    new OrchestratorCommand("GetUserData",
+                    new List<Parameter>
+                        {
+                            new Parameter("userId", typeof(string))
+                        },
+                        OnGetUserDataResponse),
                     new OrchestratorCommand("UpdateUserData", new List<Parameter>
                         {
-                            new Parameter("RMQ_url", typeof(string)),
-                            new Parameter("RMQ_name", typeof(string)),
+                            new Parameter("userDataKey", typeof(string)),
+                            new Parameter("userDataValue", typeof(string)),
                         },
                         OnUpdateUserDataResponse),
+                     new OrchestratorCommand("UpdateUserDataArray", new List<Parameter>
+                        {
+                            new Parameter("userDataArray", typeof(string[])),
+                        },
+                        OnUpdateUserDataArrayResponse),
                     new OrchestratorCommand("DeleteUser", new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))

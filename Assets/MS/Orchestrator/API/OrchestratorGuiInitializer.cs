@@ -23,6 +23,7 @@ public class OrchestratorGuiInitializer : MonoBehaviour
     [SerializeField]
     private InputField MQnameIF;
 
+    #if UNITY_EDITOR
     void Awake()
     {
         userNameIF.text = defaultUserName;
@@ -30,4 +31,5 @@ public class OrchestratorGuiInitializer : MonoBehaviour
         MQurlIF.text = defaultMQurl;
         MQnameIF.text = defaultMQname;
     }
+    #endif
 }

@@ -1,7 +1,5 @@
-﻿using System;
+﻿using LitJson;
 using System.Collections.Generic;
-using LitJson;
-using System.Reflection;
 
 namespace OrchestratorWrapping
 {
@@ -9,10 +7,16 @@ namespace OrchestratorWrapping
     public abstract class OrchestratorElement
     {
         // used to retrieve the ID
-        public abstract string GetId();
+        public virtual string GetId()
+        {
+            return string.Empty;
+        }
 
         //used to display the element for Gui
-        public abstract string GetGuiRepresentation();
+        public virtual string GetGuiRepresentation()
+        {
+            return string.Empty;
+        }
 
         // Parse a JSonData to a C# object
         public static T ParseJsonData<T>(JsonData data)
@@ -21,14 +25,14 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class User: OrchestratorElement
+    public class User : OrchestratorElement
     {
-        public string userId="";
-        public string userName="";
+        public string userId = "";
+        public string userName = "";
         public bool userAdmin = false;
 
         // empty constructor callled by the JsonData parser
-        public User(){}
+        public User() { }
 
         // Parse a JSonData to a C# object
         public static User ParseJsonData(JsonData data)
@@ -44,6 +48,27 @@ namespace OrchestratorWrapping
         public override string GetGuiRepresentation()
         {
             return userName;
+        }
+    }
+
+    public class UserData : OrchestratorElement
+    {
+        public string userMQexchangeName = "";
+        public string userMQurl = "";
+
+        // Parse a JSonData to a C# object
+        public static UserData ParseJsonData(JsonData data)
+        {
+            return JsonMapper.ToObject<UserData>(data.ToJson());
+        }
+
+        // empty constructor callled by the JsonData parser
+        public UserData() { }
+
+        public UserData(string pMQname, string pMQurl)
+        {
+            userMQexchangeName = pMQname;
+            userMQurl = pMQurl;
         }
     }
 
@@ -90,8 +115,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            //return scenarioName + " (" + scenarioDescription + ")";
-            return scenarioName;
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
