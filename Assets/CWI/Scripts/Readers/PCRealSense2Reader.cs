@@ -7,7 +7,7 @@ public class PCRealSense2Reader : PCSyntheticReader
     public PCRealSense2Reader()
     {
         System.IntPtr errorPtr = System.IntPtr.Zero;
-        var rv = API_cwipc_realsense2.cwipc_realsense2(ref errorPtr);
+        var rv = API_cwipc_realsense2.cwipc_realsense2(null, ref errorPtr);
         if (errorPtr != System.IntPtr.Zero)
         {
             string errorMessage = Marshal.PtrToStringAuto(errorPtr);

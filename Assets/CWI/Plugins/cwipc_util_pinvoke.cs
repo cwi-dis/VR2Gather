@@ -28,7 +28,7 @@ internal class API_cwipc_util {
 
 internal class API_cwipc_realsense2 {
     [DllImport("cwipc_realsense2")]
-    internal extern static IntPtr cwipc_realsense2(ref System.IntPtr errorMessage);
+    internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage);
 }
 
 internal class API_cwipc_codec {
