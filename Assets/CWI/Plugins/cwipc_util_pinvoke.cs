@@ -24,6 +24,12 @@ internal class API_cwipc_util {
 
     [DllImport("cwipc_util")]
     internal extern static IntPtr cwipc_synthetic();
+
+    [DllImport("cwipc_util")]
+    internal extern static int cwipc_tiledsource_maxtile(IntPtr src);
+    [DllImport("cwipc_util")]
+    internal extern static bool cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, IntPtr tileinfo, int infoVersion = 0x20190516);
+
 }
 
 internal class API_cwipc_realsense2 {
