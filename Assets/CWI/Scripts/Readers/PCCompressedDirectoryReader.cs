@@ -10,11 +10,13 @@ public class PCCompressedDirectoryReader : PCBaseReader {
     public PCCompressedDirectoryReader(string dirname) {
         currentFile = 0;
         allFilenames = System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname);
+        System.IntPtr errorPtr = System.IntPtr.Zero;
 
-        decoder = API_cwipc_codec.cwipc_new_decoder();
+        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
         if (decoder == IntPtr.Zero)
         {
-            Debug.LogError("Cannot create PCCompressedDirectoryReader");
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            Debug.LogError("PCCompressedDirectoryReader: cwipc_new_decoder: " + errorMessage);
         }
     }
 
@@ -32,7 +34,7 @@ public class PCCompressedDirectoryReader : PCBaseReader {
     public PointCloudFrame get()
     {
         if (decoder == IntPtr.Zero) {
-            Debug.LogError("cwipc_decoder: no decoder available");
+            Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: no decoder available");
             return null;
         }
 
@@ -44,12 +46,12 @@ public class PCCompressedDirectoryReader : PCBaseReader {
         API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
         if (!ok) {
-            Debug.LogError("cwipc_decoder: no pointcloud available");
+            Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: no pointcloud available");
             return null;
         }
         var pc = API_cwipc_util.cwipc_source_get(decoder);
         if (pc == null) {
-            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: did not return a pointcloud");
             return null;
         }
 

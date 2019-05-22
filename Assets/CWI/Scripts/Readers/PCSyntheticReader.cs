@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System;
+using System.Runtime.InteropServices;
 
 public class PCSyntheticReader : PCBaseReader
 {
@@ -6,7 +8,13 @@ public class PCSyntheticReader : PCBaseReader
 
     public PCSyntheticReader()
     {
-        obj = API_cwipc_util.cwipc_synthetic();
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        obj = API_cwipc_util.cwipc_synthetic(ref errorPtr);
+        if (obj == System.IntPtr.Zero)
+        {
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            Debug.LogError("PCSyntheticReader: Error: " + errorMessage);
+        }
     }
 
     public bool eof() {
@@ -28,7 +36,7 @@ public class PCSyntheticReader : PCBaseReader
 
     public PointCloudFrame get() {
         if (obj == System.IntPtr.Zero) {
-            Debug.LogError("cwipc.obj == NULL");
+            Debug.LogError("PCSyntheticReader: cwipc.obj == NULL");
             return null;
         }
         var rv = API_cwipc_util.cwipc_source_get(obj);

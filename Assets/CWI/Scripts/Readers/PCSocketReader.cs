@@ -16,10 +16,12 @@ public class PCSocketReader : PCBaseReader
         hostname = _hostname;
         port = _port;
         failed = false;
-        decoder = API_cwipc_codec.cwipc_new_decoder();
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+
+        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
         if (decoder == IntPtr.Zero)
         {
-            Debug.LogError("Cannot create PCSocketReader");
+            Debug.LogError("PCSocketReader: Error: " + errorPtr);
         }
 
     }
