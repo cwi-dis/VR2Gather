@@ -13,41 +13,7 @@
 		"plyDirectory": "../../../installed/lootPly",
 		"networkHost": "localhost",
 		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
-		"subStreamNumber": 0,
-
-		"pointSize": 0.004,
-		"position": {"x":-2, "y":0, "z":2 },
-		"rotation": {"x":0, "y":180, "z":0 },
-		"scale": {"x":1, "y":1, "z":1 }
-	  },
-	  {
-		"forceMesh": true,
-		"sourceType" : "sub",
-		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-		"cwicpcDirectory": "../../../installed/lootCwicpc",
-		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-		"plyDirectory": "../../../installed/lootPly",
-		"networkHost": "localhost",
-		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
-		"subStreamNumber": 0,
-
-		"pointSize": 0.016,
-		"position": {"x":2, "y":0, "z":2 },
-		"rotation": {"x":0, "y":180, "z":0 },
-		"scale": {"x":1, "y":1, "z":1 }
-	  },
-	  {
-		"forceMesh": true,
-		"sourceType" : "sub",
-		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-		"cwicpcDirectory": "../../../installed/lootCwicpc",
-		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-		"plyDirectory": "../../../installed/lootPly",
-		"networkHost": "localhost",
-		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
+		"subURL": "https://vrt-pcl2dash.viaccess-orca.com/redandblack/vrtogether.mpd",
 		"subStreamNumber": 0,
 
 		"pointSize": 0.008,
