@@ -3,6 +3,14 @@ using UnityEngine.UI;
 
 public class OrchestratorGuiInitializer : MonoBehaviour
 {
+    [SerializeField]
+    bool overrideFields = false;
+    [Header("User Credentials")]
+    [SerializeField]
+    private string defaulOrchURL;
+    [SerializeField]
+    private InputField defaulOrchUrlIF;
+
     [Header("User Credentials")]
     [SerializeField]
     private string defaultUserName;
@@ -26,6 +34,9 @@ public class OrchestratorGuiInitializer : MonoBehaviour
     #if UNITY_EDITOR
     void Awake()
     {
+        if (!overrideFields) return;
+
+        defaulOrchUrlIF.text = defaulOrchURL;
         userNameIF.text = defaultUserName;
         userPasswordIF.text = defaultUserPassword;
         MQurlIF.text = defaultMQurl;

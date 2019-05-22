@@ -64,8 +64,8 @@ public class OrchestrationTest : MonoBehaviour {
     private Text sessionNameText;
     [SerializeField]
     private Text sessionDescriptionText;
-    [SerializeField]
-    private Text scenarioIdText;
+    //[SerializeField]
+    public Text scenarioIdText;
     [SerializeField]
     private Text sessionNumUsersText;
 
@@ -206,28 +206,34 @@ public class OrchestrationTest : MonoBehaviour {
             sessionNameText.text = orchestrator.activeSession.sessionName;
             sessionDescriptionText.text = orchestrator.activeSession.sessionDescription;
             sessionNumUsersText.text = orchestrator.activeSession.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
+
             // update the list of users in session
             orchestrator.removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
                 // Make this to show the real name of the user, not the id
-                for (int j = 0; j < orchestrator.availableUsers.Capacity; j++) {
-                    if (orchestrator.availableUsers[j].userId == orchestrator.activeSession.sessionUsers[i])
-                        orchestrator.AddTextComponentOnContent(usersSession.transform, orchestrator.availableUsers[j].userName);
+                foreach(User u in orchestrator.availableUsers) {
+                    if (u.userId == orchestrator.activeSession.sessionUsers[i])
+                        orchestrator.AddTextComponentOnContent(usersSession.transform, u.userName);
                 }
-
             }
+            Debug.Log("orchestrator.activeSession: Good");
         }
         else {
             sessionNameText.text = "";
             sessionDescriptionText.text = "";
             sessionNumUsersText.text = "X/X";
             orchestrator.removeComponentsFromList(usersSession.transform);
+            Debug.Log("orchestrator.activeSession: Bad");
         }
-        if (orchestrator.activeScenario != null) {
+        if (orchestrator.activeScenario != null)
+        {
             scenarioIdText.text = orchestrator.activeScenario.scenarioName;
+            Debug.Log("orchestrator.activeScenario: Good");
         }
-        else {
+        else
+        {
             scenarioIdText.text = "";
+            Debug.Log("orchestrator.activeScenario: Bad");
         }
     }
 
@@ -282,7 +288,7 @@ public class OrchestrationTest : MonoBehaviour {
     public void DoneJoinButton() {
         state = State.Lobby;
         orchestrator.TestJoinSession(sessionIdDrop.value);
-        orchestrator.GetUsers();
+        //orchestrator.GetUsers();
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);

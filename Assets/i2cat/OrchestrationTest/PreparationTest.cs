@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using OrchestratorWrapping;
 
 public class PreparationTest : MonoBehaviour {
 
@@ -32,6 +33,13 @@ public class PreparationTest : MonoBehaviour {
         // Put the players on the correct seat
         for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
             if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i].cam.SetActive(true);
+            foreach(User u in orchestrator.availableUsers) {
+                if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
+                    players[i].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
+                    players[i].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
+                    players[i].tvm.SetActive(true);
+                }
+            }
             //TODO put exchange name and connection uri in players[i].tvm
             //players[i].tvm.GetComponent<ShowTVMs>().connectionURI = test.connectionURIIF.text;
             //players[i].tvm.GetComponent<ShowTVMs>().exchangeName = test.exchangeNameIF.text;

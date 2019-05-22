@@ -25,14 +25,18 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class User : OrchestratorElement
+    public class User: OrchestratorElement
     {
-        public string userId = "";
-        public string userName = "";
+        public string userId="";
+        public string userName="";
         public bool userAdmin = false;
+        public UserData userData;
 
         // empty constructor callled by the JsonData parser
-        public User() { }
+        public User()
+        {
+            //userData = new UserData();
+        }
 
         // Parse a JSonData to a C# object
         public static User ParseJsonData(JsonData data)
@@ -51,16 +55,10 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class UserData : OrchestratorElement
+    public class UserData: OrchestratorElement
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
-
-        // Parse a JSonData to a C# object
-        public static UserData ParseJsonData(JsonData data)
-        {
-            return JsonMapper.ToObject<UserData>(data.ToJson());
-        }
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
@@ -71,22 +69,6 @@ namespace OrchestratorWrapping
             userMQurl = pMQurl;
         }
     }
-
-    //public class UserSession : OrchestratorElement
-    //{
-    //    public string userSessionId = "";
-    //    public string userSessionLoggedAs = "";
-
-    //    public override string GetId()
-    //    {
-    //        return userSessionId;
-    //    }
-
-    //    public override string GetGuiRepresentation()
-    //    {
-    //        return GetId();
-    //    }
-    //}
 
     public class Scenario : OrchestratorElement
     {
@@ -135,7 +117,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
@@ -167,7 +149,7 @@ namespace OrchestratorWrapping
         public string roomRefId;
         public string[] roomUsers;
 
-        public new static RoomInstance ParseJsonData(JsonData data)
+        public static new RoomInstance ParseJsonData(JsonData data)
         {
             return JsonMapper.ToObject<RoomInstance>(data.ToJson());
         }
