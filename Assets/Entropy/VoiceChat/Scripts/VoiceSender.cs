@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoiceSender : MonoBehaviour
+public class VoiceSender
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    int playerID;
+    public VoiceSender(int playerID) {
+        this.playerID = playerID;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    // Multy-threader function
+    public void Send(float[] buffer) {
+
     }
 }

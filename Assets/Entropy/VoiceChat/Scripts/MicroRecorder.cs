@@ -4,28 +4,43 @@ using UnityEngine;
 
 public class MicroRecorder : MonoBehaviour
 {
+    public int fps = 30;
     string device;
-    int currentMinFreq, currentMaxFreq;
+    int currentFrequency;
+    int bufferLength;
     AudioClip recorder;
     // Start is called before the first frame update
     void Start() {
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
-            Microphone.GetDeviceCaps(device, out currentMinFreq, out currentMaxFreq);
-            recorder = Microphone.Start(device, true, 2, currentMaxFreq);
-            AudioSource audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.clip = recorder;
-            audioSource.loop = true;
-            audioSource.Play();
-            Debug.Log($"Using {device}:{currentMaxFreq}");
+            int currentMinFreq;
+            Microphone.GetDeviceCaps(device, out currentMinFreq, out currentFrequency);
+            recorder = Microphone.Start(device, true, 1, currentFrequency);
+            currentFrequency = recorder.frequency;
+            bufferLength = (int)(currentFrequency / fps);
+            Debug.Log($"Using {device}  Frequency {currentFrequency} bufferLength {bufferLength}");
         }
         else
             Debug.LogError("No Micros detected.");
     }
 
+    int lastPosition=0;
     // Update is called once per frame
-    void Update()
-    {
-        
+    void Update() {
+        int currentPostion = Microphone.GetPosition(device);
+        int available;
+        if (currentPostion<lastPosition ) {
+            // Loop!
+            available = currentPostion + (currentFrequency - lastPosition);
+        }else
+            available =  currentPostion- lastPosition;
+
+
+        if (available> bufferLength)
+        {
+            Debug.Log($"Buffer !!!! (rest: {(available-bufferLength)})");
+            lastPosition = (lastPosition + bufferLength) % currentFrequency;
+        }
+
     }
 }
