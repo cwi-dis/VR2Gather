@@ -471,7 +471,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         connectedToOrchestrator = true;
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
-        //Test
+
+        //TEST
         test.StatusTextUpdate();
     }
 
@@ -484,7 +485,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         userAdmin.text = "";
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
-        //Test
+
+        //TEST
         test.StatusTextUpdate();
     }
 
@@ -609,14 +611,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
-        //TEST
-        test.SessionsUpdate();
 
         if (isAutoRetrievingData)
         {
             // auto retriving phase: this was the last call
             isAutoRetrievingData = false;
         }
+
+        //TEST
+        test.SessionsUpdate();
     }
 
     public void OnAddSessionResponse(ResponseStatus status, Session session)
@@ -642,15 +645,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             });
             dd.AddOptions(options);
-            //TEST
-            test.SessionsUpdate();
 
             userSession.text = session.GetGuiRepresentation();
             // Now retrieve the infos about the scenario instance
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             //OnJoinSessionResponse(status);
+
             //TEST
+            test.SessionsUpdate();
             activeSession = session;
         }
         else
@@ -740,14 +743,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
-        //TEST
-        test.ScenariosUpdate();
 
         if (isAutoRetrievingData)
         {
             // auto retriving phase: call next
             orchestratorWrapper.GetSessions();
         }
+
+        //TEST
+        test.ScenariosUpdate();
     }
 
     public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario)

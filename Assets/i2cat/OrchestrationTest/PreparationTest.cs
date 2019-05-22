@@ -31,15 +31,12 @@ public class PreparationTest : MonoBehaviour {
 
         // Put the players on the correct seat
         for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID())
-            {
-                players[i].cam.SetActive(true);
-                players[i].tvm.GetComponent<ShowTVMs>().connectionURI = test.connectionURIIF.text;
-                players[i].tvm.GetComponent<ShowTVMs>().exchangeName = test.exchangeNameIF.text;
-                players[i].tvm.SetActive(true);
-            }
+            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i].cam.SetActive(true);
             //TODO put exchange name and connection uri in players[i].tvm
-            
+            //players[i].tvm.GetComponent<ShowTVMs>().connectionURI = test.connectionURIIF.text;
+            //players[i].tvm.GetComponent<ShowTVMs>().exchangeName = test.exchangeNameIF.text;
+            //players[i].tvm.SetActive(true);
+
         }
     }
     // Update is called once per frame
