@@ -5,14 +5,12 @@ using BestHTTP.SocketIO;
 
 public class SocketIOServer {
     public static SocketIOServer Instance { get; private set; }
-    VoiceReceiver receiver;
     Socket socket;
 
     private SocketManager Manager;
     // Start is called before the first frame update
-    public SocketIOServer(VoiceReceiver receiver) {
+    public SocketIOServer() {
         SocketIOServer.Instance = this;
-        this.receiver = receiver;
 
         // Change an option to show how it should be done
         SocketOptions options = new SocketOptions();
@@ -37,40 +35,25 @@ public class SocketIOServer {
         });
         // We set SocketOptions' AutoConnect to false, so we have to call it manually.
         Manager.Open();
-
-
     }
 
     float[] floatBuffer;
-    void OnSoundData(Socket socket, Packet packet, params object[] args)
-    {
+    VoicePlayer[] player = new VoicePlayer[4];
+    void OnSoundData(Socket socket, Packet packet, params object[] args) {
         if (packet != null && packet.Attachments!=null) {
-            byte[] data = packet.Attachments[0];
-
-            if (floatBuffer == null) floatBuffer = new float[data.Length / 4];
-            System.Buffer.BlockCopy(data, 0, floatBuffer, 0, data.Length);
-            receiver.ReceiveBuffer(floatBuffer);
+            var data = packet.Attachments[0];
+            int userID = data[0];
+            if (player[userID] == null) {
+                player[userID] = new GameObject("Player_" + userID).AddComponent<VoicePlayer>();
+                player[userID].Init((data[1] << 8) | data[2]);
+            }
+            player[userID].receiver.ReceiveBuffer( data );
         }
-        else { }
-
     }
 
-    void OnNewMessage(Socket socket, Packet packet, params object[] args)
-    {
-        Debug.Log((float)args[0] );
-    }
-
-    byte[] byteBuffer;
     // Update is called once per frame
-    public void Send(float[] buffer) {
-        if (this.socket != null)
-        {
-            if (byteBuffer == null) byteBuffer = new byte[buffer.Length * 4];
-            System.Buffer.BlockCopy(buffer, 0, byteBuffer, 0, byteBuffer.Length);
-            this.socket.Emit("soundData", byteBuffer);
-        }
-
-        //        if(socket!=null) socket.Emit("chat", (object)buffer);
+    public void Send(byte[] buffer) {
+        if(socket!=null) socket.Emit("soundData", (object)buffer);
     }
 
     public void Close() {

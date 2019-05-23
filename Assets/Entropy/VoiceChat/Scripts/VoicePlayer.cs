@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VoicePlayer : MonoBehaviour {
-    VoiceReceiver   receiver;
-    AudioSource     audioSource;
-    SocketIOServer fakeServer;
-    AudioClip audioClip;
+    public VoiceReceiver    receiver { get; private set; }
+    AudioSource             audioSource;
+    SocketIOServer          fakeServer;
+    AudioClip               audioClip;
 
-    void Start() {
-        audioSource = GetComponent<AudioSource>();
-        receiver = new VoiceReceiver(1);
-        fakeServer = new SocketIOServer(receiver);
-        audioClip = AudioClip.Create("clip0", 44100, 1, 44100, true, OnAudioRead, OnAudioSetPosition);
+    public void Init(int frequency) {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        receiver = new VoiceReceiver();
+        audioClip = AudioClip.Create("clip0", 512, 1, frequency, true, OnAudioRead);
+
 
         audioSource.clip = audioClip;
         audioSource.loop = true;
@@ -21,14 +21,8 @@ public class VoicePlayer : MonoBehaviour {
     }
 
 
-    int position;
-    void OnAudioRead(float[] data)
-    {
+    void OnAudioRead(float[] data) {
         receiver.GetBuffer(data, data.Length);
     }
 
-    void OnAudioSetPosition(int newPosition)
-    {
-        position = newPosition;
-    }
 }

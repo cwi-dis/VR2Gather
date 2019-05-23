@@ -3,74 +3,78 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VoiceReceiver {    
-    int playerID;
-    int frequency = 44100;
-    float[] chunk = new float[4096]; // Max chunk.
-
-    // Circular buffer with audio received.
-    float[] buffer;
+    float[] circularBuffer;
     int     bufferSize;
     int     writePosition;
     int     readPosition;
 
 
-    public VoiceReceiver(int playerID) {
-        this.playerID = playerID;
-        bufferSize = frequency * 2; // 88200
-        buffer = new float[bufferSize];
+    public VoiceReceiver() {
+        bufferSize = 65536;
+        circularBuffer = new float[bufferSize];
         writePosition = 0;
         readPosition = 0;
     }
 
-    public bool GetBuffer(float[] dst, int len) {
-        int available;
-        if(writePosition< readPosition)
-            available = (bufferSize - readPosition) + writePosition; // Looped
-        else
-            available = writePosition + readPosition; // Looped
-        if (available > len)
-        {
+    bool firstTime = true;
+
+
+    public int available { get {
             if (writePosition < readPosition)
+                return (bufferSize - readPosition) + writePosition; // Looped
+            return writePosition - readPosition;
+        }
+    }
+
+    public bool GetBuffer(float[] dst, int len) {
+        if ((firstTime && available > 4096) || !firstTime)
+        {
+            firstTime = false;
+            if (available > len )
             {
-                int firstPartLen = bufferSize - readPosition;
-                if (firstPartLen > len) // first part is enougth?
+                if (writePosition < readPosition)
                 {
-                    System.Array.Copy(buffer, readPosition, dst, 0, len);
-                    readPosition += len;
+                    int partLen = bufferSize - readPosition;
+                    if (partLen > len) {
+                        System.Array.Copy(circularBuffer, readPosition, dst, 0, len);                        
+                        readPosition += len;
+                    }
+                    else {
+                        System.Array.Copy(circularBuffer, readPosition, dst, 0, partLen);
+                        System.Array.Copy(circularBuffer, 0, dst, partLen, len - partLen);
+                        readPosition = len - partLen;
+                    }
                 }
                 else
                 {
-                    System.Array.Copy(buffer, readPosition, dst, 0, firstPartLen);
-                    System.Array.Copy(buffer, 0, dst, firstPartLen, len- firstPartLen);
-                    readPosition = len - firstPartLen;
+                    System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
+                    readPosition += len;
                 }
+                return true;
             }
-            else
-            {
-                System.Array.Copy(buffer, readPosition, dst, 0, len);
-                readPosition += len;
-            }
-            return true;
         }
-        else
-            return false;
+        
+    return false;
     }
 
-    public void ReceiveBuffer(float[] buffer) {
-        int len = buffer.Length;
-        if (writePosition + len >= bufferSize)
-        {
-            int firstPartLen = (writePosition + len) - bufferSize;
-            System.Array.Copy(buffer, 0, this.buffer, writePosition, firstPartLen);
-            System.Array.Copy(buffer, firstPartLen, this.buffer, 0, len - firstPartLen);
-            writePosition = len - firstPartLen;
+
+    float[] floatBuffer;
+    public void ReceiveBuffer(byte[] data) {
+        if (floatBuffer == null) floatBuffer = new float[data.Length / 4];
+        System.Buffer.BlockCopy(data, 3, floatBuffer, 0, data.Length-3);
+
+        int len = floatBuffer.Length;
+        if (writePosition + len < bufferSize) {
+            System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, len);
+            writePosition += len;
         }
         else
         {
-            System.Array.Copy(buffer, 0, this.buffer, writePosition, len);
-            writePosition += len;
+            int partLen = bufferSize - writePosition;
+            System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, partLen);
+            System.Array.Copy(floatBuffer, partLen, circularBuffer, 0, len - partLen);
+            writePosition = len - partLen;
         }
-
 
     }
 

@@ -6,53 +6,53 @@ public class MicroRecorder : MonoBehaviour
 {
     public int fps = 30;
     string device;
-    int currentFrequency;
+    int samples;
     int bufferLength;
     AudioClip recorder;
     float[] buffer;
     VoiceSender sender;
+
 
     // Start is called before the first frame update
     void Start() {
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
             int currentMinFreq;
-            Microphone.GetDeviceCaps(device, out currentMinFreq, out currentFrequency);
-            recorder = Microphone.Start(device, true, 1, currentFrequency);
-            currentFrequency = recorder.frequency;
-            bufferLength = 4096;
+            Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
+            samples = 11025;
+            recorder = Microphone.Start(device, true, 1, samples);
+            samples = recorder.samples;
+
+            bufferLength = 512;
             buffer = new float[bufferLength];
-            Debug.Log($"Using {device}  Frequency {currentFrequency} bufferLength {bufferLength}");
+            Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} {samples}");
         }
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender(1, SocketIOServer.Instance);
+        sender = new VoiceSender(1,(ushort)samples);        
+
     }
 
-    int lastPosition=0;
+    int readPosition=0;
     // Update is called once per frame
     void Update() {
-        int currentPostion = Microphone.GetPosition(device);
+        int writePosition = Microphone.GetPosition(device);
         int available;
-        if (currentPostion<lastPosition ) {
+        if (writePosition < readPosition ) {
             // Loop!
-            available = currentPostion + (currentFrequency - lastPosition);
+            available = (samples - readPosition) + writePosition;
         }else
-            available =  currentPostion- lastPosition;
+            available =  writePosition - readPosition;
 
-
-        if (available> bufferLength) {
-            recorder.GetData(buffer, lastPosition);
-//            for (int i = 0; i < buffer.Length; ++i)
-//                buffer[i] = Random.value * 2 - 1;
+        if (available > bufferLength) {
+            recorder.GetData(buffer, readPosition);
+            readPosition = (readPosition + bufferLength) % samples;
             sender.Send(buffer);
-            lastPosition = (lastPosition + bufferLength) % currentFrequency;
         }
     }
 
-    void OnDestroy()
-    {
-        SocketIOServer.Instance.Close();
+    void OnDestroy() {
+        sender.Close();
     }
 }
