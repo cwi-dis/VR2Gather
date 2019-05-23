@@ -51,4 +51,11 @@ public class PreparationTest : MonoBehaviour {
     void Update() {
         
     }
+
+
+    private void OnGUI() {
+        for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+            GUI.Label(new Rect(5, 40 * (i + 1), 1000, 25), "Player " + i + " - URL: " + players[i].tvm.GetComponent<ShowTVMs>().connectionURI + " - Name: " + players[i].tvm.GetComponent<ShowTVMs>().exchangeName);
+        }
+    }
 }

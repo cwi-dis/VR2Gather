@@ -103,8 +103,10 @@ public class OrchestrationTest : MonoBehaviour {
     #region Utils
     private Color onlineCol = new Color(0.15f,0.78f,0.15f); // Green
     private Color offlineCol = new Color(0.78f,0.15f,0.15f); // Red
+    private float timer = 3.0f;
+    private float refresh = 3.0f;
     #endregion
-
+    
     private State state = State.Default;
 
     // Start is called before the first frame update
@@ -150,7 +152,12 @@ public class OrchestrationTest : MonoBehaviour {
             case State.Lobby:
                 //if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
                 //else readyLobbyButton.interactable = true;
-                LobbyTextUpdate();
+                timer += Time.deltaTime;
+                if (timer >= refresh) {
+                    orchestrator.orchestratorWrapper.GetSessionInfo();
+                    LobbyTextUpdate();
+                    timer = 0.0f;
+                }
                 break;
             case State.InGame:
                 break;
@@ -202,6 +209,7 @@ public class OrchestrationTest : MonoBehaviour {
     }
 
     public void LobbyTextUpdate() {
+        // Active Session
         if (orchestrator.activeSession != null) {
             sessionNameText.text = orchestrator.activeSession.sessionName;
             sessionDescriptionText.text = orchestrator.activeSession.sessionDescription;
@@ -225,13 +233,12 @@ public class OrchestrationTest : MonoBehaviour {
             orchestrator.removeComponentsFromList(usersSession.transform);
             Debug.Log("orchestrator.activeSession: Bad");
         }
-        if (orchestrator.activeScenario != null)
-        {
+        // Active Scenario
+        if (orchestrator.activeScenario != null) {
             scenarioIdText.text = orchestrator.activeScenario.scenarioName;
             Debug.Log("orchestrator.activeScenario: Good");
         }
-        else
-        {
+        else {
             scenarioIdText.text = "";
             Debug.Log("orchestrator.activeScenario: Bad");
         }
@@ -283,6 +290,8 @@ public class OrchestrationTest : MonoBehaviour {
         usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
+
+        LobbyTextUpdate();
     }
 
     public void DoneJoinButton() {
@@ -296,6 +305,8 @@ public class OrchestrationTest : MonoBehaviour {
         usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
+
+        LobbyTextUpdate();
     }
 
     public void LeaveButton() {
@@ -322,6 +333,36 @@ public class OrchestrationTest : MonoBehaviour {
         joinButton.interactable = true;
 
         SceneManager.LoadScene(scenarioIdText.text);
+    }
+
+    public void StartGame() {
+        SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
+    }
+
+    public void UpdateTVMButton() {
+        orchestrator.TestUpdateUserData(exchangeNameIF.text,connectionURIIF.text);
+    }
+
+    public void DebuggButton(int user) {
+        if (user == 0) {
+            userNameLoginIF.text = "Marc@i2CAT";
+            userPasswordLoginIF.text = "i2CAT2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.109:5672";
+            exchangeNameLoginIF.text = "marc_tvm";
+        }
+        else if (user == 1) {
+            userNameLoginIF.text = "Luca@i2CAT";
+            userPasswordLoginIF.text = "i2CAT2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.94:5672";
+            exchangeNameLoginIF.text = "gianluca";
+        }
+        else if (user == 2) {
+            userNameLoginIF.text = "Luca@i2CAT";
+            userPasswordLoginIF.text = "i2CAT2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "gianluca";
+        }
+        //orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text, connectionURILoginIF.text, exchangeNameLoginIF.text);
     }
 
     #endregion

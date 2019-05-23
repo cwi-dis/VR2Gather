@@ -31,65 +31,65 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     //Connection and login components
     [Header("Connection and login components")]
     [SerializeField]
-    private InputField orchestratorUrlIF;
+    public InputField orchestratorUrlIF;
     [SerializeField]
-    private Button connectButton;
+    public Button connectButton;
     [SerializeField]
-    private Button disconnectButton;
+    public Button disconnectButton;
     [SerializeField]
-    private Toggle autoRetrieveOrchestratorDataOnConnect;
+    public Toggle autoRetrieveOrchestratorDataOnConnect;
     [SerializeField]
-    private InputField userNameIF;
+    public InputField userNameIF;
     [SerializeField]
-    private InputField userPasswordIF;
+    public InputField userPasswordIF;
     [SerializeField]
-    private InputField userMQurlIF;
+    public InputField userMQurlIF;
     [SerializeField]
-    private InputField userMQnameIF;
+    public InputField userMQnameIF;
     [SerializeField]
-    private Button loginButton;
+    public Button loginButton;
     [SerializeField]
-    private Button logoutButton;
+    public Button logoutButton;
 
     // Logs container
     [Header("Logs container")]
     [SerializeField]
-    private RectTransform logsContainer;
+    public RectTransform logsContainer;
     [SerializeField]
-    private ScrollRect logsScrollRect;
+    public ScrollRect logsScrollRect;
     private Font ArialFont;
 
     // User GUI components
     [Header("User GUI components")]
     [SerializeField]
-    private Text userLogged;
+    public Text userLogged;
     [SerializeField]
-    private Text userId;
+    public Text userId;
     [SerializeField]
-    private Text userName;
+    public Text userName;
     [SerializeField]
-    private Text userAdmin;
+    public Text userAdmin;
     [SerializeField]
-    private Text userMQurl;
+    public Text userMQurl;
     [SerializeField]
-    private Text userMQname;
+    public Text userMQname;
     [SerializeField]
-    private Text userSession;
+    public Text userSession;
     [SerializeField]
-    private Text userScenario;
+    public Text userScenario;
     [SerializeField]
-    private Text userRoom;
+    public Text userRoom;
 
     // Orchestrator GUI components
     [Header("Orchestrator GUI components")]
     [SerializeField]
-    private Text orchestratorConnected;
+    public Text orchestratorConnected;
     [SerializeField]
-    private RectTransform orchestratorUsers;
+    public RectTransform orchestratorUsers;
     [SerializeField]
-    private RectTransform orchestratorScenarios;
+    public RectTransform orchestratorScenarios;
     [SerializeField]
-    private RectTransform orchestratorSessions;
+    public RectTransform orchestratorSessions;
 
     #endregion
 
@@ -142,7 +142,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     #region orchestration logics
 
     // the wrapper for the orchestrator
-    private OrchestratorWrapper orchestratorWrapper;
+    public OrchestratorWrapper orchestratorWrapper;
 
     // available commands
     private List<GuiCommandDescription> GuiCommands;
@@ -893,6 +893,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             options.Add(new Dropdown.OptionData(room.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+
+        orchestratorWrapper.GetUsers();
     }
 
     public void OnJoinRoomResponse(ResponseStatus status)
@@ -952,6 +954,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public void TestDeleteSession(string sessionId)
     {
         orchestratorWrapper.DeleteSession(sessionId);
+    }
+
+    public void TestUpdateUserData(string name, string url) {
+        orchestratorWrapper.UpdateUserDataJson(name, url);
     }
 
     public string TestGetUserID()
