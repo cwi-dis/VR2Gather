@@ -13,7 +13,7 @@
 		"plyDirectory": "../../../installed/lootPly",
 		"networkHost": "localhost",
 		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
+		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/longdress/vrtogether.mpd",
 		"subStreamNumber": 0,
 
 		"pointSize": 0.004,
