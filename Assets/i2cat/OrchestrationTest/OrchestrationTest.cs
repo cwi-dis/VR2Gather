@@ -103,10 +103,12 @@ public class OrchestrationTest : MonoBehaviour {
     #region Utils
     private Color onlineCol = new Color(0.15f,0.78f,0.15f); // Green
     private Color offlineCol = new Color(0.78f,0.15f,0.15f); // Red
-    private float timer = 3.0f;
-    private float refresh = 3.0f;
+    private float timerUsers = 2.7f;
+    private float refreshUsers = 3.0f;
+    private float timerSessions = 0.0f;
+    private float refreshSessions = 5.0f;
     #endregion
-    
+
     private State state = State.Default;
 
     // Start is called before the first frame update
@@ -132,7 +134,14 @@ public class OrchestrationTest : MonoBehaviour {
     }
 
     // Update is called once per frame
+
     void Update() {
+        // Auto-Refreshing Sessions
+        timerSessions += Time.deltaTime;
+        if (timerSessions >= refreshSessions) {
+            orchestrator.GetSessions();
+            timerSessions = 0.0f;
+        }
         switch (state) {
             case State.Default:
                 break;
@@ -150,13 +159,15 @@ public class OrchestrationTest : MonoBehaviour {
                 else doneJoinButton.interactable = true;
                 break;
             case State.Lobby:
+                // Button interactuability
                 //if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
                 //else readyLobbyButton.interactable = true;
-                timer += Time.deltaTime;
-                if (timer >= refresh) {
+                // Auto-Refreshing Users
+                timerUsers += Time.deltaTime;
+                if (timerUsers >= refreshUsers) {
                     orchestrator.orchestratorWrapper.GetSessionInfo();
                     LobbyTextUpdate();
-                    timer = 0.0f;
+                    timerUsers = 0.0f;
                 }
                 break;
             case State.InGame:
@@ -290,14 +301,11 @@ public class OrchestrationTest : MonoBehaviour {
         usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
-
-        LobbyTextUpdate();
     }
 
     public void DoneJoinButton() {
         state = State.Lobby;
         orchestrator.TestJoinSession(sessionIdDrop.value);
-        //orchestrator.GetUsers();
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);
@@ -305,8 +313,6 @@ public class OrchestrationTest : MonoBehaviour {
         usersPanel.SetActive(true);
         createButton.interactable = false;
         joinButton.interactable = false;
-
-        LobbyTextUpdate();
     }
 
     public void LeaveButton() {
