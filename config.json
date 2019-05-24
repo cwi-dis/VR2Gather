@@ -49,7 +49,9 @@
 		"networkPort": 4303,
 		"subURL": "http://192.168.1.10:9000/jacktest/bin2dashSink.mpd",
 		"subStreamNumber": 0,
-		"realsense2ConfigFile": "/Users/jack/src/VRTogether/cameraconfig.xml",
+		"realsense2ConfigFile": "/Users/jack/src/VRTogether/cameraconfig.xml-jaja",
+		"realsense2EncodedName" : "testbedPC",
+		"realsense2EncodedURL" : "foobar",
 
 		"pointSize": 0.008,
 		"position": {"x":0, "y":0, "z":2 },

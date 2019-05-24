@@ -50,6 +50,7 @@ public class PointCloudBaseRenderer : MonoBehaviour {
         }
         else if (cfg.sourceType == "realsense2")
         {
+            Debug.Log("xxxjack arguments " + cfg.realsense2ConfigFile + ", " + cfg.realsense2EncodedName + ", " + cfg.realsense2EncodedURL);
             currentPCReader = new PCRealSense2Reader(cfg.realsense2ConfigFile, cfg.realsense2EncodedName, cfg.realsense2EncodedURL);
             if (currentPCReader == null)
             {

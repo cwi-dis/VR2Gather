@@ -17,24 +17,24 @@ public class PCSyntheticReader : PCBaseReader
         }
     }
 
-    public bool eof() {
+    public virtual bool eof() {
         if (reader == System.IntPtr.Zero) return true;
         return API_cwipc_util.cwipc_source_eof(reader);
     }
 
-    public bool available(bool wait) {
+    public virtual bool available(bool wait) {
         if (reader == System.IntPtr.Zero) return false;
         return API_cwipc_util.cwipc_source_available(reader, wait);
     }
 
-    public void free()
+    public virtual void free()
     {
         if (reader == System.IntPtr.Zero) return;
         API_cwipc_util.cwipc_source_free(reader);
         reader = System.IntPtr.Zero;
     }
 
-    public PointCloudFrame get() {
+    public virtual PointCloudFrame get() {
         if (reader == System.IntPtr.Zero) {
             Debug.LogError("PCSyntheticReader: cwipc.reader == NULL");
             return null;
