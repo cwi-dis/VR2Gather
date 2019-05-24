@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MicroRecorder : MonoBehaviour
-{
-    public int fps = 30;
+public class MicroRecorder : MonoBehaviour{
+    public bool useEcho=false;
     string device;
     int samples;
     int bufferLength;
@@ -36,7 +35,7 @@ public class MicroRecorder : MonoBehaviour
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender(1, (ushort)samples);
+        sender = new VoiceSender((ushort)samples);
 
     }
 
@@ -54,7 +53,7 @@ public class MicroRecorder : MonoBehaviour
         if (available > bufferLength) {
             recorder.GetData(buffer, readPosition);
             readPosition = (readPosition + bufferLength) % samples;
-            sender.Send(buffer);
+            sender.Send(buffer, useEcho );
         }
     }
 

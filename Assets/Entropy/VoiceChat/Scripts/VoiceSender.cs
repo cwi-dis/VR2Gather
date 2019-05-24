@@ -5,20 +5,18 @@ using UnityEngine;
 public class VoiceSender {
     SocketIOServer socketIOServer;
 
-    byte playerID;
     ushort frequency;
-    public VoiceSender(byte playerID, ushort frequency ) {
-        this.playerID = playerID;
+    public VoiceSender(ushort frequency ) {
         this.frequency = frequency;
         socketIOServer = new SocketIOServer();
     }
 
     byte[] buffer;
     // Multy-threader function
-    public void Send(float[] data) {        
+    public void Send(float[] data, bool useEcho) {        
         if (buffer == null) {
             buffer = new byte[data.Length * 4 + 1 + 2 + 8];
-            buffer[0] = playerID;
+            buffer[0] = (byte)(useEcho?1:0);
             buffer[1] = (byte)(frequency >> 8);
             buffer[2] = (byte)(frequency & 255);
         }
