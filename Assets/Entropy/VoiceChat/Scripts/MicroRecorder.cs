@@ -19,7 +19,7 @@ public class MicroRecorder : MonoBehaviour
             device = Microphone.devices[0];
             int currentMinFreq;
             Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
-            samples = 11025;
+            samples = 10240;
             recorder = Microphone.Start(device, true, 1, samples);
             samples = recorder.samples;
 

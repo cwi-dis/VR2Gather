@@ -27,7 +27,7 @@ public class VoiceReceiver {
     }
 
     public bool GetBuffer(float[] dst, int len) {
-        if ((firstTime && available > 4096) || !firstTime)
+        if ((firstTime && available > 512) || !firstTime)
         {
             firstTime = false;
             if (available > len )
