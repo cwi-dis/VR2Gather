@@ -47,7 +47,7 @@
 		"plyDirectory": "../../../installed/lootPly",
 		"networkHost": "localhost",
 		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/longdress/vrtogether.mpd",
+		"subURL": "http://192.168.1.10:9000/jacktest/bin2dashSink.mpd",
 		"subStreamNumber": 0,
 		"realsense2ConfigFile": "/Users/jack/src/VRTogether/cameraconfig.xml",
 
