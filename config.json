@@ -23,14 +23,14 @@
 	  },
 	  {
 		"forceMesh": true,
-		"sourceType" : "cwicpcdir",
+		"sourceType" : "sub",
 		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
 		"cwicpcDirectory": "../../../installed/lootCwicpc",
 		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
 		"plyDirectory": "../../../installed/lootPly",
 		"networkHost": "localhost",
 		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/redandblack/vrtogether.mpd",
+		"subURL": "http://192.168.1.10:9000/testbed/testbedPC.mpd",
 		"subStreamNumber": 0,
 
 		"pointSize": 0.008,
@@ -51,7 +51,7 @@
 		"subStreamNumber": 0,
 		"realsense2ConfigFile": "/Users/jack/src/VRTogether/cameraconfig.xml-jaja",
 		"realsense2EncodedName" : "testbedPC",
-		"realsense2EncodedURL" : "foobar",
+		"realsense2EncodedURL" : "http://192.168.1.10:9000/testbed/",
 
 		"pointSize": 0.008,
 		"position": {"x":0, "y":0, "z":2 },

@@ -30,9 +30,22 @@ public class PCRealSense2Reader : PCSyntheticReader
                 Debug.LogError("PCRealSense2Reader: cwipc_new_encoder: " + errorMessage);
                 API_cwipc_util.cwipc_source_free(reader);
                 reader = System.IntPtr.Zero;
+                return;
             }
             Debug.Log("xxxjack encoder is " + encoder);
             // xxxjack allocate bin2dash
+            System.Int32 fourcc = 0x63776931; // 'cwi1'
+            uploader = API_bin2dash.vrt_create(encName, fourcc, encURL);
+            if (uploader == System.IntPtr.Zero)
+            {
+                Debug.LogError("PCRealSense2Reader: vrt_create: failed to create uploader");
+                API_cwipc_util.cwipc_source_free(reader);
+                reader = System.IntPtr.Zero;
+                API_cwipc_codec.cwipc_encoder_free(encoder);
+                encoder = System.IntPtr.Zero;
+                return;             
+            }
+            Debug.Log("xxxjack uploader is" + uploader );
         }
     }
 
@@ -59,12 +72,20 @@ public class PCRealSense2Reader : PCSyntheticReader
             unsafe
             {
                 int size = (int)API_cwipc_codec.cwipc_encoder_get_encoded_size(encoder);
-                Debug.Log("xxxjack encoded size would be " + size);
+                Debug.Log("xxxjack encoded size is " + size);
                 Unity.Collections.NativeArray<byte> byteArray;
                 byteArray = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.TempJob);
                 System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                 bool ok = API_cwipc_codec.cwipc_encoder_copy_data(encoder, ptr, (System.IntPtr)size);
-                // xxxjack pass 2 bin2dash
+                if (ok) {
+                    // xxxjack pass 2 bin2dash
+                    ok = API_bin2dash.vrt_push_buffer(uploader, ptr, (System.IntPtr)size);
+                    if (!ok) {
+                        Debug.LogError("PCRealSense2Reader: vrt_push_buffer returned false");
+                    }
+                } else {
+                    Debug.LogError("PCRealSense2Reader: cwipc_encoder_copy_data returned false");
+                }
                 byteArray.Dispose();
             }
         }

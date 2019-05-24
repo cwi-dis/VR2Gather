@@ -79,6 +79,21 @@ internal class API_cwipc_codec {
 
 }
 
+internal class API_bin2dash {
+    [DllImport("bin2dash")]
+    internal extern static IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, Int32 fourcc, [MarshalAs(UnmanagedType.LPStr)]string url, Int32 seg_dur_in_ms=10000, Int32 timeshift_buffer_depth_in_ms=30000);
+    
+    [DllImport("bin2dash")]
+    internal extern static void vrt_destroy(IntPtr b2d);
+    
+    [DllImport("bin2dash")]
+    internal extern static bool vrt_push_buffer(IntPtr b2d, IntPtr ptr, IntPtr size);
+    
+    [DllImport("bin2dash")]
+    internal extern static Int64 vrt_get_media_time(Int32 scale);
+    
+}
+
 internal class API_kernel {
     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
     internal static extern IntPtr GetModuleHandle(string lpModuleName);
