@@ -25,20 +25,29 @@ public class SocketIOServer {
         connection.On("soundData", OnSoundData, false);
 
         // The argument will be an Error object.
-        connection.On(SocketIOEventTypes.Error, (socket, packet, args) =>
-        {
+        connection.On(SocketIOEventTypes.Error, (socket, packet, args) => {
             if(args!=null && args.Length>0 ) Debug.Log(string.Format("Error: {0}", args[0].ToString()));
             else Debug.Log("Error: ???" );
         });
         connection.On(SocketIOEventTypes.Connect, (socket, packet, args) => {
             this.socket = socket;
         });
+        connection.On("disconnect", (socket, packet, args) => {
+            byte id = packet.Attachments[0][0];
+            Debug.Log($" disconnect {id}");
+            if (player[id] != null)
+            {
+                GameObject.Destroy(player[id].gameObject);
+                player[id] = null;
+            }
+        });
         // We set SocketOptions' AutoConnect to false, so we have to call it manually.
         Manager.Open();
     }
 
     float[] floatBuffer;
-    VoicePlayer[] player = new VoicePlayer[4];
+    VoicePlayer[] player = new VoicePlayer[32];
+    NTPTools.NTPTime tempTime;
     void OnSoundData(Socket socket, Packet packet, params object[] args) {
         if (packet != null && packet.Attachments!=null) {
             var data = packet.Attachments[0];
@@ -47,6 +56,9 @@ public class SocketIOServer {
                 player[userID] = new GameObject("Player_" + userID).AddComponent<VoicePlayer>();
                 player[userID].Init((data[1] << 8) | data[2]);
             }
+            tempTime.T0 = data[3]; tempTime.T1 = data[4]; tempTime.T2 = data[5]; tempTime.T3 = data[6]; tempTime.T4 = data[7]; tempTime.T5 = data[8]; tempTime.T6 = data[9]; tempTime.T7 = data[10];
+            var lat = NTPTools.GetNTPTime().time - tempTime.time;
+            player[userID].name = $"Player_{userID} Lat ({lat})";
             player[userID].receiver.ReceiveBuffer( data );
         }
     }

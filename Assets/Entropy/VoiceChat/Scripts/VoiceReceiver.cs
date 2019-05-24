@@ -61,7 +61,7 @@ public class VoiceReceiver {
     float[] floatBuffer;
     public void ReceiveBuffer(byte[] data) {
         if (floatBuffer == null) floatBuffer = new float[data.Length / 4];
-        System.Buffer.BlockCopy(data, 3, floatBuffer, 0, data.Length-3);
+        System.Buffer.BlockCopy(data, 1+2+8, floatBuffer, 0, data.Length-(1 + 2 + 8));
 
         int len = floatBuffer.Length;
         if (writePosition + len < bufferSize) {

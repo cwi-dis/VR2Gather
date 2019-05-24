@@ -15,11 +15,17 @@ public class MicroRecorder : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
+        NTPTools.GetNetworkTime();
+        Init();
+    }
+
+
+    public void Init() {
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
             int currentMinFreq;
             Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
-            samples = 10240;
+            samples = 11025 * 2;
             recorder = Microphone.Start(device, true, 1, samples);
             samples = recorder.samples;
 
@@ -30,7 +36,7 @@ public class MicroRecorder : MonoBehaviour
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender(1,(ushort)samples);        
+        sender = new VoiceSender(1, (ushort)samples);
 
     }
 
