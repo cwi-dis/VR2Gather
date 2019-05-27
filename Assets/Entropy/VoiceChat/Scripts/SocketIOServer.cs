@@ -54,12 +54,14 @@ public class SocketIOServer {
             int userID = data[0];
             if (player[userID] == null) {
                 player[userID] = new GameObject("Player_" + userID).AddComponent<VoicePlayer>();
-                player[userID].Init((data[1] << 8) | data[2]);
+                player[userID].Init();
             }
-            tempTime.T0 = data[3]; tempTime.T1 = data[4]; tempTime.T2 = data[5]; tempTime.T3 = data[6]; tempTime.T4 = data[7]; tempTime.T5 = data[8]; tempTime.T6 = data[9]; tempTime.T7 = data[10];
+            tempTime.T0 = data[1]; tempTime.T1 = data[2]; tempTime.T2 = data[3]; tempTime.T3 = data[4]; tempTime.T4 = data[5]; tempTime.T5 = data[6]; tempTime.T6 = data[7]; tempTime.T7 = data[8];
             var lat = NTPTools.GetNTPTime().time - tempTime.time;
             player[userID].name = $"Player_{userID} Lat ({lat})";
-            player[userID].receiver.ReceiveBuffer( data );
+
+            player[userID].receiver.ReceiveBuffer( BaseCodec.Instance.Uncompress(data, 1+8) );
+
         }
     }
 
