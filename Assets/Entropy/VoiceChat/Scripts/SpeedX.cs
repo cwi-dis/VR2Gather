@@ -5,57 +5,41 @@ using UnityEngine;
 public class SpeedX
 {
     static NSpeex.SpeexDecoder m_wide_dec = new NSpeex.SpeexDecoder(NSpeex.BandMode.Wide);
+    static NSpeex.SpeexEncoder m_wide_enc = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
+    static short[] decoded = new short[640];
+    static float[] result = new float[640];
 
-    public static float[] DecodeFromSpeex(byte[] encoded, int dataLength, int frequency) {
+    public static void DecodeFromSpeex(byte[] encoded, int offset, int dataLength, float[] result, int resultOffset) {
 
-        short[] decoded = new short[encoded.Length];
-        m_wide_dec.Decode(encoded, 0, dataLength, decoded, 0, false);
-        float[] result = new float[encoded.Length];
+        m_wide_dec.Decode(encoded, offset, dataLength, decoded, 0, false);
         int t = 0;
-        while (t < decoded.Length)
-        {
+        while (t < decoded.Length) {
             short sample = decoded[t];
             float floatSample = sample / (float)short.MaxValue;
             floatSample *= 2f;
             floatSample -= 1f;
 
-            result[t] = floatSample;
+            result[t+ resultOffset] = floatSample;
             t++;
         }
 
-        return result;
     }
 
-
-    public static byte[] EncodeToSpeex(float[] samplesFloat, out int dataLength) {
-        short[] samplesShort = new short[samplesFloat.Length];
+    static short[] samplesShort = new short[640];
+    static byte[] encoded = new byte[62];
+    public static byte[] EncodeToSpeex(float[] data, out int dataLength) {
         int i = 0;
-        while (i < samplesFloat.Length)
-        {
-            float sample = samplesFloat[i];
+        while (i < data.Length) {
+            float sample = data[i];
             sample += 1f; // now it's in the range 0 .. 2
             sample *= 0.5f; // now it's in the range 0 .. 1
             short sampleShort = (short)Mathf.FloorToInt(sample * short.MaxValue);
             samplesShort[i] = sampleShort;
             ++i;
-
         }
 
-        /*
-        short[] inputPartChunk = new short[sizeChunkNorris]; // chunk of multiple of 640
-        int y = 0;
-        while (y < sizeChunkNorris) {
-            inputPartChunk[y] = samplesShort[y];
-            y++;
-        }
-        */
-
-        byte[] encoded = new byte[4096];
-        NSpeex.SpeexEncoder m_wide_enc = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
-        dataLength = m_wide_enc.Encode(samplesShort, 0, samplesShort.Length, encoded, 0, encoded.Length);
+        dataLength = m_wide_enc.Encode(samplesShort, 0, 1, encoded, 0, encoded.Length);
         // where 'input' is an array of shorts, each short is one 16-bit sample
-
-        Debug.Log(">>> dataLength " + dataLength);
         return encoded;
     }
 

@@ -9,6 +9,7 @@
 
 		Pass {
 		CGPROGRAM
+				#pragma target 4.0
 				#pragma vertex Vertex
 
 				#pragma geometry Geometry
@@ -36,16 +37,10 @@
 					o.position = UnityObjectToClipPos(v.vertex);
 
 					half3 col = v.color.rgb;
-#ifdef UNITY_COLORSPACE_GAMMA
 					col *= _Tint.rgb * 2;
-#else
-					col *= LinearToGammaSpace(_Tint.rgb) * 2;
-					col = GammaToLinearSpace(col);
-#endif
 					o.color = col;
 					return o;
 				}
-
 
 				[maxvertexcount(4)]
 				void Geometry(point v2f input[1], inout TriangleStream<v2f> outStream) {
