@@ -14,13 +14,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/CWI/Scenes/PointClouds.unity
     guid: 0b9b371832b67104a84531030cb7de72
-  - enabled: 1
+  - enabled: 0
     path: Assets/i2Cat/OrchestrationTest/OrchestrationTest.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
-  - enabled: 1
-    path: Assets/i2Cat/TestTVM&PC/Sample Scenario.unity
+  - enabled: 0
+    path: Assets/i2Cat/OrchestrationTest/Sample Scenario.unity
     guid: 364b676935a3a7446ba78c32b5867dd5
   - enabled: 0
     path: Assets/i2Cat/OrchestrationTest/Sample Scenario 2.unity
     guid: bab88bbc29626f04891faadc31bb6426
+  - enabled: 1
+    path: Assets/i2Cat/Synch/Synch.unity
+    guid: e801529d7d565b84fa6c6e9346977599
   m_configObjects: {}
