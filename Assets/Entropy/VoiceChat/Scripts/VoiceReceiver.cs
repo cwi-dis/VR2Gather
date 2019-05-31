@@ -16,9 +16,6 @@ public class VoiceReceiver {
         readPosition = 0;
     }
 
-    bool firstTime = true;
-
-
     public int available { get {
             if (writePosition < readPosition)
                 return (bufferSize - readPosition) + writePosition; // Looped
@@ -26,6 +23,7 @@ public class VoiceReceiver {
         }
     }
 
+    bool firstTime = true;
     public bool GetBuffer(float[] dst, int len) {
         if ((firstTime && available > BaseCodec.Instance.bufferLeght) || !firstTime)
         {
