@@ -9,7 +9,7 @@ public class RawFloats : BaseCodec {
     public RawFloats(int frequency) : base() {
         recorderFrequency = frequency;
         playerFrequency = frequency;
-        bufferLeght = 512;
+        bufferLeght = 735; // 40fps
     }
 
     public override byte[] Compress(float[] data, int offset) {

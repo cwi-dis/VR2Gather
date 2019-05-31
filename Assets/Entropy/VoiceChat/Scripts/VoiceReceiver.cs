@@ -63,8 +63,7 @@ public class VoiceReceiver {
             System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, len);
             writePosition += len;
         }
-        else
-        {
+        else {
             int partLen = bufferSize - writePosition;
             System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, partLen);
             System.Array.Copy(floatBuffer, partLen, circularBuffer, 0, len - partLen);

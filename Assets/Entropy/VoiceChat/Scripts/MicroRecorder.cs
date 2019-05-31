@@ -23,7 +23,7 @@ public class MicroRecorder : MonoBehaviour
 
     public void Init() {
 
-        codec = new RawFloats(11025 * 2);
+        codec = new SpeeX();// new RawFloats(11025 * 2);
 
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
