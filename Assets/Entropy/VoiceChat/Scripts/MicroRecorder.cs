@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MicroRecorder : MonoBehaviour{
-    public bool useEcho=false;
+public class MicroRecorder : MonoBehaviour
+{
+    public int fps = 30;
     string device;
     int samples;
     int bufferLength;
     AudioClip recorder;
     float[] buffer;
     VoiceSender sender;
+    BaseCodec codec;
 
 
     // Start is called before the first frame update
@@ -20,23 +22,25 @@ public class MicroRecorder : MonoBehaviour{
 
 
     public void Init() {
+
+        codec = new SpeeX();// new RawFloats(11025 * 2);
+
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
             int currentMinFreq;
             Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
-            samples = 11025 * 2;
+            samples = codec.recorderFrequency;
             recorder = Microphone.Start(device, true, 1, samples);
             samples = recorder.samples;
 
-            bufferLength = 512;
+            bufferLength = codec.bufferLeght;
             buffer = new float[bufferLength];
             Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} {samples}");
         }
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender((ushort)samples);
-
+        sender = new VoiceSender(true, codec);
     }
 
     int readPosition=0;
@@ -53,7 +57,7 @@ public class MicroRecorder : MonoBehaviour{
         if (available > bufferLength) {
             recorder.GetData(buffer, readPosition);
             readPosition = (readPosition + bufferLength) % samples;
-            sender.Send(buffer, useEcho );
+            sender.Send(buffer);
         }
     }
 

@@ -16,9 +16,6 @@ public class VoiceReceiver {
         readPosition = 0;
     }
 
-    bool firstTime = true;
-
-
     public int available { get {
             if (writePosition < readPosition)
                 return (bufferSize - readPosition) + writePosition; // Looped
@@ -26,8 +23,9 @@ public class VoiceReceiver {
         }
     }
 
+    bool firstTime = true;
     public bool GetBuffer(float[] dst, int len) {
-        if ((firstTime && available > 512) || !firstTime)
+        if ((firstTime && available > BaseCodec.Instance.bufferLeght) || !firstTime)
         {
             firstTime = false;
             if (available > len )
@@ -57,19 +55,13 @@ public class VoiceReceiver {
     return false;
     }
 
-
-    float[] floatBuffer;
-    public void ReceiveBuffer(byte[] data) {
-        if (floatBuffer == null) floatBuffer = new float[data.Length / 4];
-        System.Buffer.BlockCopy(data, 1+2+8, floatBuffer, 0, data.Length-(1 + 2 + 8));
-
+    public void ReceiveBuffer(float[] floatBuffer) {
         int len = floatBuffer.Length;
         if (writePosition + len < bufferSize) {
             System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, len);
             writePosition += len;
         }
-        else
-        {
+        else {
             int partLen = bufferSize - writePosition;
             System.Array.Copy(floatBuffer, 0, circularBuffer, writePosition, partLen);
             System.Array.Copy(floatBuffer, partLen, circularBuffer, 0, len - partLen);
