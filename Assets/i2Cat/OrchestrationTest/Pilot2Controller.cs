@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using OrchestratorWrapping;
 
-public class PreparationTest : MonoBehaviour {
+public class Pilot2Controller : MonoBehaviour {
 
     [SerializeField]
     private PlayerManager[] players;

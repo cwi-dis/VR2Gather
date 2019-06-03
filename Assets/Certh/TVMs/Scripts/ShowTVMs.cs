@@ -7,6 +7,7 @@ public class ShowTVMs : MonoBehaviour {
     uint clientID;
     public string connectionURI;
     public string exchangeName;
+    private Config._TVMs cfg;
 
     public class MeshData {
         public Vector3[] Vertices;
@@ -216,6 +217,7 @@ public class ShowTVMs : MonoBehaviour {
         if(TVMInstances==0) ReconstructionReceiver.Init();
         clientID = (uint)ReconstructionReceiver.AddClient();
         TVMInstances++;
+        cfg = Config.Instance.TVMs;
     }
 
     // Use this for initialization
@@ -226,6 +228,9 @@ public class ShowTVMs : MonoBehaviour {
         ReconstructionReceiver.RegisterOnConnectionErrorCallBack(clientID, new ReconstructionReceiver.OnConnectionError(OnConnectionErrorHandler));
         ReconstructionReceiver.StartClient(clientID);
         meshDatas.Add( new TVMMeshData(gameObject, shader) { id = clientID } );
+        // TVM Calibration
+        gameObject.transform.localPosition = cfg.offsetPosition;
+        gameObject.transform.localRotation = Quaternion.Euler(cfg.offsetRotation);
     }
 
     void OnDisable() {
