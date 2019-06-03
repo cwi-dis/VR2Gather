@@ -30,32 +30,44 @@ public class PreparationTest : MonoBehaviour {
         mainPanel.SetActive(false);
         background.SetActive(false);
 
-        // Put the players on the correct seat
-        for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i].cam.SetActive(true);
-            foreach(User u in orchestrator.availableUsers) {
-                if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
-                    players[i].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
-                    players[i].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
-                    players[i].tvm.SetActive(true);
+        // Check if is master/presenter
+        if (test.isMaster)  {
+            // Put the players on the correct seat
+            for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+                foreach (User u in orchestrator.availableUsers) {
+                    if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
+                        players[i - 1].cam.SetActive(true);
+                        players[i - 1].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
+                        players[i - 1].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
+                        players[i - 1].tvm.SetActive(true);
+                    }
                 }
             }
-            //TODO put exchange name and connection uri in players[i].tvm
-            //players[i].tvm.GetComponent<ShowTVMs>().connectionURI = test.connectionURIIF.text;
-            //players[i].tvm.GetComponent<ShowTVMs>().exchangeName = test.exchangeNameIF.text;
-            //players[i].tvm.SetActive(true);
-
+        }
+        else {
+            // Put the players on the correct seat
+            for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+                if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) players[i - 1].cam.SetActive(true);
+                foreach (User u in orchestrator.availableUsers) {
+                    if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
+                        players[i - 1].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
+                        players[i - 1].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
+                        players[i - 1].tvm.SetActive(true);
+                    }
+                }
+            }
         }
     }
+
     // Update is called once per frame
     void Update() {
         
     }
 
 
-    private void OnGUI() {
-        for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-            GUI.Label(new Rect(5, 40 * (i + 1), 1000, 25), "Player " + i + " - URL: " + players[i].tvm.GetComponent<ShowTVMs>().connectionURI + " - Name: " + players[i].tvm.GetComponent<ShowTVMs>().exchangeName);
-        }
-    }
+    //private void OnGUI() {
+    //    for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+    //        GUI.Label(new Rect(5, 40 * (i + 1), 1000, 25), "Player " + i + " - URL: " + players[i].tvm.GetComponent<ShowTVMs>().connectionURI + " - Name: " + players[i].tvm.GetComponent<ShowTVMs>().exchangeName);
+    //    }
+    //}
 }

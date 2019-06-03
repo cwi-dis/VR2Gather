@@ -109,6 +109,9 @@ public class OrchestrationTest : MonoBehaviour {
     private float refreshSessions = 5.0f;
     #endregion
 
+    [HideInInspector]
+    public bool isMaster = false;
+
     private State state = State.Default;
 
     // Start is called before the first frame update
@@ -292,6 +295,7 @@ public class OrchestrationTest : MonoBehaviour {
     }
 
     public void DoneCreateButton() {
+        isMaster = true;
         state = State.Lobby;
         orchestrator.TestAddSession(sessionNameIF, sessionDescriptionIF, scenarioIdDrop.value);
         createPanel.SetActive(false);
@@ -316,9 +320,9 @@ public class OrchestrationTest : MonoBehaviour {
     }
 
     public void LeaveButton() {
-        orchestrator.LeaveSession();
-
+        isMaster = false;
         state = State.Default;
+        orchestrator.LeaveSession();
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(false);
@@ -338,11 +342,13 @@ public class OrchestrationTest : MonoBehaviour {
         createButton.interactable = true;
         joinButton.interactable = true;
 
-        SceneManager.LoadScene(scenarioIdText.text);
+        if (isMaster) SceneManager.LoadScene("Sample Scenario 2");
+        else SceneManager.LoadScene(scenarioIdText.text);
     }
 
     public void StartGame() {
-        SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
+        if (isMaster) SceneManager.LoadScene("Sample Scenario 2");
+        else SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
     }
 
     public void UpdateTVMButton() {
