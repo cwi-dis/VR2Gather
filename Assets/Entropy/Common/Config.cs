@@ -7,8 +7,10 @@ public class Config {
     [Serializable]
     public class _TVMs
     {
-        public string connectionURI;
-        public string exchangeName;
+        public string   connectionURI;
+        public string   exchangeName;
+        public Vector3  offsetPosition;
+        public Vector3  offsetRotation;
     };
     public _TVMs TVMs;
 
@@ -33,6 +35,8 @@ public class Config {
         public Vector3  position;
         public Vector3  rotation;
         public Vector3  scale = Vector3.one;
+        public Vector3  offsetPosition;
+        public Vector3  offsetRotation;
     };
     public _PCs[] PCs;
 
@@ -46,5 +50,12 @@ public class Config {
             }
             return _Instance;
         }
+    }
+
+    public void WriteConfig(object toJson) {
+        var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json"; 
+        System.IO.File.WriteAllText(path, JsonUtility.ToJson(toJson, true));
+
+        //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
     }
 }

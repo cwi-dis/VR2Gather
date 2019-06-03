@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWSManagement;
+using LitJson;
 
 namespace OrchestratorWrapping
 {
@@ -247,17 +249,34 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
-        public bool GetUserInfo()
+        public bool GetUserInfo(string userId = "")
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
+            command.GetParameter("userId").ParamValue = userId;
             return OrchestrationSocketIoManager.EmitCommand(command);
         }
 
-        public void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
+        private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             User user = User.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
+        }
+
+        public bool UpdateUserDataJson(string userMQname, string userMQurl)
+        {
+            UserData userData = new UserData(userMQname, userMQurl);
+            JsonData json = JsonUtility.ToJson(userData);
+
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
+            command.GetParameter("userDataJson").ParamValue = json;
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataJsonResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
 
         public bool DeleteUser(string userId)
@@ -354,9 +373,6 @@ namespace OrchestratorWrapping
                         OnLoginResponse),
                     new OrchestratorCommand("Logout", null, OnLogoutResponse),
 
-                    ////orchestrator (not to use)
-                    //new OrchestratorCommand("GetOrchestrator", "GetOrchestrator", null, OnOrchestratorResponse),
-
                     //sessions
                     new OrchestratorCommand("AddSession", new List<Parameter>
                         {
@@ -389,7 +405,12 @@ namespace OrchestratorWrapping
 
                     // users
                     new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
-                    new OrchestratorCommand("GetUserInfo", null, OnGetUserInfoResponse),
+                    new OrchestratorCommand("GetUserInfo",
+                    new List<Parameter>
+                        {
+                            new Parameter("userId", typeof(string))
+                        }, 
+                        OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {
                             new Parameter("userName", typeof(string)),
@@ -397,6 +418,11 @@ namespace OrchestratorWrapping
                             new Parameter("userAdmin", typeof(bool))
                         },
                         OnAddUserResponse),
+                     new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
+                        {
+                            new Parameter("userDataJson", typeof(string)),
+                        },
+                        OnUpdateUserDataJsonResponse),
                     new OrchestratorCommand("DeleteUser", new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))
@@ -405,17 +431,12 @@ namespace OrchestratorWrapping
 
                     // rooms
                     new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
-                    //new OrchestratorCommand("GetRoomInfo", "GetRoomInfo", null),
                     new OrchestratorCommand("JoinRoom", new List<Parameter>
                         {
                             new Parameter("roomId", typeof(string))
                         },
                         OnJoinRoomResponse),
                     new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
-
-                    //// NOTE: not to be done here: those messages are initiated by the orchestrator
-                    //// new OrchestratorCommand("UpdateSession", "UpdateSession", null),
-                    //// new OrchestratorCommand("SessionClosed", "SessionClosed", null),
 
                     ////messages TODO
                     new OrchestratorCommand("SendMessage", new List<Parameter>
@@ -429,7 +450,6 @@ namespace OrchestratorWrapping
                             new Parameter("message", typeof(string))
                         },
                         OnSendMessageToAllResponse),
-                    //new OrchestratorCommand("MessageSent", "MessageSent", null)
                 };
         }
 

@@ -1,7 +1,5 @@
-﻿using System;
+﻿using LitJson;
 using System.Collections.Generic;
-using LitJson;
-using System.Reflection;
 
 namespace OrchestratorWrapping
 {
@@ -9,10 +7,16 @@ namespace OrchestratorWrapping
     public abstract class OrchestratorElement
     {
         // used to retrieve the ID
-        public abstract string GetId();
+        public virtual string GetId()
+        {
+            return string.Empty;
+        }
 
         //used to display the element for Gui
-        public abstract string GetGuiRepresentation();
+        public virtual string GetGuiRepresentation()
+        {
+            return string.Empty;
+        }
 
         // Parse a JSonData to a C# object
         public static T ParseJsonData<T>(JsonData data)
@@ -26,9 +30,13 @@ namespace OrchestratorWrapping
         public string userId="";
         public string userName="";
         public bool userAdmin = false;
+        public UserData userData;
 
         // empty constructor callled by the JsonData parser
-        public User(){}
+        public User()
+        {
+            //userData = new UserData();
+        }
 
         // Parse a JSonData to a C# object
         public static User ParseJsonData(JsonData data)
@@ -47,21 +55,20 @@ namespace OrchestratorWrapping
         }
     }
 
-    //public class UserSession : OrchestratorElement
-    //{
-    //    public string userSessionId = "";
-    //    public string userSessionLoggedAs = "";
+    public class UserData: OrchestratorElement
+    {
+        public string userMQexchangeName = "";
+        public string userMQurl = "";
 
-    //    public override string GetId()
-    //    {
-    //        return userSessionId;
-    //    }
+        // empty constructor callled by the JsonData parser
+        public UserData() { }
 
-    //    public override string GetGuiRepresentation()
-    //    {
-    //        return GetId();
-    //    }
-    //}
+        public UserData(string pMQname, string pMQurl)
+        {
+            userMQexchangeName = pMQname;
+            userMQurl = pMQurl;
+        }
+    }
 
     public class Scenario : OrchestratorElement
     {
@@ -90,7 +97,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
@@ -110,7 +117,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
@@ -142,7 +149,7 @@ namespace OrchestratorWrapping
         public string roomRefId;
         public string[] roomUsers;
 
-        public new static RoomInstance ParseJsonData(JsonData data)
+        public static new RoomInstance ParseJsonData(JsonData data)
         {
             return JsonMapper.ToObject<RoomInstance>(data.ToJson());
         }

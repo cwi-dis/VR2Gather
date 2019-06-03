@@ -1,62 +1,132 @@
 {
-	"TVMs": {
-		"connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
-		"exchangeName": "transcoder_out"
-	},
-	"PCs": [
-	  {
-		"forceMesh": true,
-		"sourceType" : "cwicpcdir",
-		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-		"cwicpcDirectory": "../../../installed/lootCwicpc",
-		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-		"plyDirectory": "../../../installed/lootPly",
-		"networkHost": "localhost",
-		"networkPort": 4303,
-		"subURL": "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
-		"subStreamNumber": 0,
-
-		"pointSize": 0.008,
-		"position": {"x":-2, "y":0, "z":2 },
-		"rotation": {"x":0, "y":180, "z":0 },
-		"scale": {"x":1, "y":1, "z":1 }
-	  },
-	  {
-		"forceMesh": true,
-		"sourceType" : "sub",
-		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-		"cwicpcDirectory": "../../../installed/lootCwicpc",
-		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-		"plyDirectory": "../../../installed/lootPly",
-		"networkHost": "localhost",
-		"networkPort": 4303,
-		"subURL": "http://192.168.37.30:9000/testbed/testbedPC.mpd",
-		"subStreamNumber": 0,
-
-		"pointSize": 0.008,
-		"position": {"x":2, "y":0, "z":2 },
-		"rotation": {"x":0, "y":180, "z":0 },
-		"scale": {"x":1, "y":1, "z":1 }
-	  },
-	  {
-		"forceMesh": true,
-		"sourceType" : "realsense2",
-		"cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-		"cwicpcDirectory": "../../../installed/lootCwicpc",
-		"plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-		"plyDirectory": "../../../installed/lootPly",
-		"networkHost": "localhost",
-		"networkPort": 4303,
-		"subURL": "http://192.168.37.30:9000/jacktest/bin2dashSink.mpd",
-		"subStreamNumber": 0,
-		"realsense2ConfigFile": "/Users/jack/src/VRTogether/cameraconfig.xml",
-		"realsense2EncodedName" : "testbedPC",
-		"realsense2EncodedURL" : "http://192.168.1.10:9000/testbed/",
-
-		"pointSize": 0.008,
-		"position": {"x":0, "y":0, "z":2 },
-		"rotation": {"x":0, "y":180, "z":0 },
-		"scale": {"x":1, "y":1, "z":1 }
-	  }
-	]
+    "TVMs": {
+        "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
+        "exchangeName": "transcoder_out",
+        "offsetPosition": {
+            "x": 0.0,
+            "y": 0.875,
+            "z": 0.0
+        },
+        "offsetRotation": {
+            "x": 0.0,
+            "y": 36.0,
+            "z": 0.0
+        }
+    },
+    "PCs": [
+        {
+            "forceMesh": true,
+            "sourceType": "sub",
+            "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+            "cwicpcDirectory": "../../../installed/lootCwicpc",
+            "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+            "plyDirectory": "../../../installed/lootPly",
+            "networkHost": "localhost",
+            "networkPort": 4303,
+            "subURL": "http://vrt-pcl2dash.viaccess-orca.com/longdress/vrtogether.mpd",
+            "subStreamNumber": 0,
+            "pointSize": 0.004000000189989805,
+            "position": {
+                "x": -2.0,
+                "y": 0.0,
+                "z": 2.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 180.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "offsetPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "offsetRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "forceMesh": true,
+            "sourceType": "sub",
+            "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+            "cwicpcDirectory": "../../../installed/lootCwicpc",
+            "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+            "plyDirectory": "../../../installed/lootPly",
+            "networkHost": "localhost",
+            "networkPort": 4303,
+            "subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
+            "subStreamNumber": 0,
+            "pointSize": 0.01600000075995922,
+            "position": {
+                "x": 2.0,
+                "y": 0.0,
+                "z": 2.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 180.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "offsetPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "offsetRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "forceMesh": true,
+            "sourceType": "sub",
+            "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+            "cwicpcDirectory": "../../../installed/lootCwicpc",
+            "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+            "plyDirectory": "../../../installed/lootPly",
+            "networkHost": "localhost",
+            "networkPort": 4303,
+            "subURL": "http://vrt-pcl2dash.viaccess-orca.com/vrtogether.mpd",
+            "subStreamNumber": 0,
+            "pointSize": 0.00800000037997961,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 2.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 180.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            },
+            "offsetPosition": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "offsetRotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        }
+    ]
 }
