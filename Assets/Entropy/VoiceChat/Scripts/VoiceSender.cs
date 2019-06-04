@@ -1,4 +1,4 @@
-﻿#define USE_SOCKETS
+﻿//#define USE_SOCKETS
 
 using System.Net;
 using System.Net.Sockets;
@@ -37,7 +37,7 @@ public class VoiceSender {
 #else
         if (handle != System.IntPtr.Zero) {
             if (buffer == System.IntPtr.Zero) buffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(tmp, 0);
-            Debug.Log($">>> tmp.Length {tmp.Length} {cnt++}");
+            Debug.Log($">>> Buffer.Length {tmp.Length} {cnt++}");
             bin2dash_pinvoke.vrt_push_buffer(handle, buffer, (uint)tmp.Length);
         }
 #endif
