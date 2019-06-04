@@ -9,6 +9,12 @@ public class ShowTVMs : MonoBehaviour {
     public string exchangeName;
     private Config._TVMs cfg;
 
+    private static long totalPackets = 0;
+    private int pps = 0;
+
+    private float timeCounter = 0.0f;
+    private static int packetCounter = 0;
+
     public class MeshData {
         public Vector3[] Vertices;
         public Vector3[] Normals;
@@ -199,13 +205,17 @@ public class ShowTVMs : MonoBehaviour {
 
     static int TVMInstances = 0;
 
-    static List<TVMMeshData> meshDatas = new List<TVMMeshData>();
+    public static List<TVMMeshData> meshDatas = new List<TVMMeshData>();
 
     private static void OnMeshReceivedGlobalHandler(uint cID, ReconstructionReceiver.DMesh mesh) {
         lock (meshDatas) {
-            for( int i=0;i< meshDatas.Count;++i)
-                if(meshDatas[i].id == cID)
+            for (int i = 0; i < meshDatas.Count; ++i)
+                if (meshDatas[i].id == cID) {
                     meshDatas[i].Read(mesh);
+                    ++packetCounter;
+                    ++totalPackets;
+                    //Debug.Log("TVM TimeStamp: " + mesh.acquisitionTimestamp.ToString());
+                }
         }
     }
 
@@ -249,14 +259,30 @@ public class ShowTVMs : MonoBehaviour {
     private void Update() {
         lock (meshDatas) {
             for (int i = 0; i < meshDatas.Count; ++i)
-                if (meshDatas[i].isNew) 
+                if (meshDatas[i].isNew)
                     meshDatas[i].UpdateMesh();
         }
         
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
+
+        CalculatePackets();
     }
 
 
+    private void CalculatePackets() {
+        if (timeCounter <= 1.0f) {
+            timeCounter += Time.deltaTime;
+        }
+        else {
+            pps = packetCounter / (int)timeCounter;
+            timeCounter = 0.0f;
+            packetCounter = 0;
+        }
+    }
 
+    private void OnGUI() {
+        GUI.Label(new Rect(5, 200, 1000, 25), "TOTAL PACKETS: " + totalPackets);
+        GUI.Label(new Rect(5, 230, 1000, 25), "PACKETS PER SEC: " + pps);
+    }
 }
