@@ -40,6 +40,8 @@ public class Pilot2Controller : MonoBehaviour {
                         players[i - 1].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
                         players[i - 1].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
                         players[i - 1].tvm.SetActive(true);
+                        players[i - 1].pc.GetComponent<PointCloudsMainController>().subURL = u.userData.userPCDash;
+                        players[i - 1].pc.SetActive(false);
                     }
                 }
             }
@@ -53,6 +55,8 @@ public class Pilot2Controller : MonoBehaviour {
                         players[i - 1].tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
                         players[i - 1].tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
                         players[i - 1].tvm.SetActive(true);
+                        players[i - 1].pc.GetComponent<PointCloudsMainController>().subURL = u.userData.userPCDash;
+                        players[i - 1].pc.SetActive(false);
                     }
                 }
             }

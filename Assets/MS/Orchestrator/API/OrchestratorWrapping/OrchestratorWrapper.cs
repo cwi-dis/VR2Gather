@@ -263,9 +263,9 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(string userMQname, string userMQurl)
+        public bool UpdateUserDataJson(string userMQname, string userMQurl, string userPCDash, string userAudioDash)
         {
-            UserData userData = new UserData(userMQname, userMQurl);
+            UserData userData = new UserData(userMQname, userMQurl, userPCDash, userAudioDash);
             JsonData json = JsonUtility.ToJson(userData);
 
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");

@@ -12,6 +12,7 @@ public class PointCloudBaseRenderer : MonoBehaviour {
     protected Material          material;
     protected PointCloudFrame   frameReady = null;
     protected PCBaseReader      currentPCReader;
+    public string               subURL;
 
     public virtual void Init(Config._PCs cfg)
     {
@@ -63,7 +64,7 @@ public class PointCloudBaseRenderer : MonoBehaviour {
                 Debug.LogError("Cannot create remote socket pointclud reader");
         }
         else if (cfg.sourceType == "sub") {
-            currentPCReader = new PCSUBReader(cfg.subURL, cfg.subStreamNumber);
+            currentPCReader = new PCSUBReader(subURL, cfg.subStreamNumber);
             if (currentPCReader == null) 
                 Debug.LogError("Cannot create remote signals pointcloud reader");
         }

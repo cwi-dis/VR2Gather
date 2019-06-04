@@ -329,7 +329,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
     public void UpdateUserData()
     {
-        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
+        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text, 
+                                                userDataMQurlPanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void GetUserInfo()
@@ -527,7 +528,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
                 //TEST
                 //orchestratorWrapper.UpdateUserDataJson(userMQnameIF.text, userMQurlIF.text);
-                orchestratorWrapper.UpdateUserDataJson(test.exchangeNameLoginIF.text, test.connectionURILoginIF.text);
+                orchestratorWrapper.UpdateUserDataJson(test.exchangeNameLoginIF.text, test.connectionURILoginIF.text, test.pcDashServerLoginIF.text, test.audioDashServerLoginIF.text);
                 userID = userId;
             }
             else
@@ -853,6 +854,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             //TEST
             test.exchangeNameIF.text = user.userData.userMQexchangeName;
             test.connectionURIIF.text = user.userData.userMQurl;
+            test.pcDashServerIF.text = user.userData.userPCDash;
+            test.audioDashServerIF.text = user.userData.userAudioDash;
             test.StatusTextUpdate();
         }
     }
@@ -933,7 +936,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     }
 
     // Login from the main buttons Login & Logout
-    public void TestLogin(string user, string password, string connectionURI, string exchangeName)
+    public void TestLogin(string user, string password)
     {
         orchestratorWrapper.Login(user, password);
     }
@@ -956,8 +959,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         orchestratorWrapper.DeleteSession(sessionId);
     }
 
-    public void TestUpdateUserData(string name, string url) {
-        orchestratorWrapper.UpdateUserDataJson(name, url);
+    public void TestUpdateUserData(string name, string url, string pc, string audio) {
+        orchestratorWrapper.UpdateUserDataJson(name, url, pc, audio);
     }
 
     public string TestGetUserID()

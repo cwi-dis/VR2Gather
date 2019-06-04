@@ -30,6 +30,8 @@ public class OrchestrationTest : MonoBehaviour {
     private InputField userPasswordLoginIF;
     public InputField connectionURILoginIF;
     public InputField exchangeNameLoginIF;
+    public InputField pcDashServerLoginIF;
+    public InputField audioDashServerLoginIF;
 
     [Header("Content")]
     [SerializeField]
@@ -38,14 +40,10 @@ public class OrchestrationTest : MonoBehaviour {
     private RectTransform usersSession;
 
     [Header("Info")]
-    //[SerializeField]
     public InputField exchangeNameIF;
-    //[SerializeField]
     public InputField connectionURIIF;
-    [SerializeField]
-    private InputField pcDashServerIF;
-    [SerializeField]
-    private InputField audioDashServerIF;
+    public InputField pcDashServerIF;
+    public InputField audioDashServerIF;
 
     [Header("Create")]
     [SerializeField]
@@ -269,7 +267,7 @@ public class OrchestrationTest : MonoBehaviour {
         createButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
 
-        orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text, connectionURILoginIF.text, exchangeNameLoginIF.text);
+        orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text);
     }
 
     public void CreateButton() {
@@ -351,8 +349,8 @@ public class OrchestrationTest : MonoBehaviour {
         else SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
     }
 
-    public void UpdateTVMButton() {
-        orchestrator.TestUpdateUserData(exchangeNameIF.text,connectionURIIF.text);
+    public void UpdateUserDataButton() {
+        orchestrator.TestUpdateUserData(exchangeNameIF.text,connectionURIIF.text, pcDashServerIF.text, audioDashServerIF.text);
     }
 
     public void DebuggButton(int user) {
@@ -361,18 +359,24 @@ public class OrchestrationTest : MonoBehaviour {
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.109:5672";
             exchangeNameLoginIF.text = "marc_tvm";
+            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            audioDashServerLoginIF.text = "audioDashServer";
         }
         else if (user == 1) {
             userNameLoginIF.text = "Luca@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.94:5672";
             exchangeNameLoginIF.text = "gianluca";
+            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            audioDashServerLoginIF.text = "audioDashServer";
         }
         else if (user == 2) {
             userNameLoginIF.text = "Luca@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "gianluca";
+            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            audioDashServerLoginIF.text = "audioDashServer";
         }
         //orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text, connectionURILoginIF.text, exchangeNameLoginIF.text);
     }

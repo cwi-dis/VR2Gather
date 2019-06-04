@@ -186,7 +186,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5305413073146809291}
-  - component: {fileID: 979515130588583123}
+  - component: {fileID: 4629115185107213979}
   m_Layer: 0
   m_Name: PC
   m_TagString: Untagged
@@ -208,7 +208,7 @@ Transform:
   m_Father: {fileID: 4434842229477826213}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &979515130588583123
+--- !u!114 &4629115185107213979
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,8 +217,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7392659942812053531}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ee7e197142457444a3a44458036fdc3, type: 3}
+  m_Script: {fileID: 11500000, guid: ca30e72955508e34588be7996e893e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shader: {fileID: 0}
-  pointTint: {r: 1, g: 1, b: 1, a: 1}
