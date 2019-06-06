@@ -40,7 +40,8 @@ public class Config {
     static Config _Instance;
     public static Config Instance {
         get {
-            var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json";
+            //var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json";
+            var path = Application.streamingAssetsPath + "/config.json";
             if (_Instance == null) {
                 var file = System.IO.File.ReadAllText(path);
                 _Instance = JsonUtility.FromJson<Config>(file);
@@ -50,7 +51,8 @@ public class Config {
     }
 
     public void WriteConfig(object toJson) {
-        var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json"; 
+        //var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json";
+        var path = Application.streamingAssetsPath + "/config.json";
         System.IO.File.WriteAllText(path, JsonUtility.ToJson(toJson, true));
 
         //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));

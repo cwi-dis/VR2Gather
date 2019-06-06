@@ -9,8 +9,10 @@ public class ShowTVMs : MonoBehaviour {
     public string exchangeName;
     private Config._TVMs cfg;
 
-    private static long totalPackets = 0;
-    private int pps = 0;
+    public int Packets { get { return totalPackets; } }
+
+    public static int totalPackets = 0;
+    public int pps = 0;
 
     private float timeCounter = 0.0f;
     private static int packetCounter = 0;
@@ -279,10 +281,5 @@ public class ShowTVMs : MonoBehaviour {
             timeCounter = 0.0f;
             packetCounter = 0;
         }
-    }
-
-    private void OnGUI() {
-        GUI.Label(new Rect(5, 200, 1000, 25), "TOTAL PACKETS: " + totalPackets);
-        GUI.Label(new Rect(5, 230, 1000, 25), "PACKETS PER SEC: " + pps);
     }
 }
