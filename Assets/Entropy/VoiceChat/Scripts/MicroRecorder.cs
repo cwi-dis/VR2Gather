@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MicroRecorder : MonoBehaviour
-{
-    public int fps = 30;
+public class MicroRecorder : MonoBehaviour {
+    public static MicroRecorder Instance { get; private set; }
+
     string device;
     int samples;
     int bufferLength;
@@ -13,18 +13,14 @@ public class MicroRecorder : MonoBehaviour
     VoiceSender sender;
     BaseCodec codec;
 
-
     // Start is called before the first frame update
-    void Start() {
+    void Awake() {
         NTPTools.GetNetworkTime();
-        Init();
+        codec = new SpeeX();// new RawFloats(11025 * 2);
     }
 
 
-    public void Init() {
-
-        codec = new SpeeX();// new RawFloats(11025 * 2);
-
+    public void Init(int userID, bool useEcho) {
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
             int currentMinFreq;
@@ -40,7 +36,7 @@ public class MicroRecorder : MonoBehaviour
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender(true, codec);
+        sender = new VoiceSender(userID, codec, useEcho);
     }
 
     int readPosition=0;
