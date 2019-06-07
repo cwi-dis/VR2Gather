@@ -14,9 +14,9 @@ public class PointCloudsMainController : MonoBehaviour {
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
             else            
                 pct = new GameObject("PC").AddComponent<PointCloudBufferRenderer>();
+            pct.transform.parent = transform;
             pct.subURL = subURL;
             pct.Init(pc);
-            pct.transform.parent = transform;
         }
     }
 

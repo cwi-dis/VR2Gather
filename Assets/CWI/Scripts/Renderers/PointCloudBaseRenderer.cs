@@ -19,8 +19,8 @@ public class PointCloudBaseRenderer : MonoBehaviour {
     }
 
     protected void InternalInit(Config._PCs cfg, Shader pointShader ) {
-        transform.position = new Vector3(cfg.position.x, cfg.position.y, cfg.position.z);
-        transform.rotation = Quaternion.Euler(cfg.rotation);
+        transform.localPosition = new Vector3(cfg.position.x, cfg.position.y, cfg.position.z);
+        transform.localRotation = Quaternion.Euler(cfg.rotation);
         transform.localScale = cfg.scale;
 
         if (material == null) {
