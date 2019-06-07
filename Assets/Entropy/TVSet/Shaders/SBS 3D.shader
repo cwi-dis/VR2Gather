@@ -1,18 +1,12 @@
-﻿Shader "Custom/Chroma SBS 3D" {
+﻿Shader "Custom/SBS 3D" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_thresh("Threshold", Range(0, 16)) = 0.8
-		_slope("Slope", Range(0, 1)) = 0.2
-		_keyingColor("Key Colour", Color) = (1,1,1,1)
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
 	}
 	SubShader {
-		Tags {"Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent"}
+		Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}
 		LOD 200
-
-		Lighting Off
-		AlphaTest Off
-		Blend SrcAlpha OneMinusSrcAlpha
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
@@ -22,14 +16,14 @@
 		#pragma target 3.0
 
 		sampler2D _MainTex;
-		float3 _keyingColor;
-		float _thresh; // 0.8
-		float _slope; // 0.2
-		
+
 		struct Input {
 			float2 uv_MainTex;
 		};
 
+		half _Glossiness;
+		half _Metallic;
+		fixed4 _Color;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -48,16 +42,9 @@
 		void surf(Input IN, inout SurfaceOutput o) {
 			// Albedo comes from a texture tinted by color
 			float2 uv = IN.uv_MainTex* float2(0.5, 1) + float2(0.5*(unity_StereoEyeIndex), 0);
-			
-			float3 input_color = tex2D(_MainTex, uv).rgb;
-			
-			float d = abs(length(abs(_keyingColor.rgb - input_color.rgb)));
-			float edge0 = _thresh * (1 - _slope);
-			float alpha = smoothstep(edge0,_thresh,d);
-			
-			
-			o.Albedo = input_color;
-			o.Alpha = alpha;
+			fixed4 c = tex2D(_MainTex, uv ) * _Color;
+			o.Albedo = c.rgb;
+			o.Alpha = 1;
 		}
 		ENDCG
 	}
