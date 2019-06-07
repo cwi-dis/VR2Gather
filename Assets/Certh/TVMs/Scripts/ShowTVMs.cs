@@ -214,8 +214,8 @@ public class ShowTVMs : MonoBehaviour {
             for (int i = 0; i < meshDatas.Count; ++i)
                 if (meshDatas[i].id == cID) {
                     meshDatas[i].Read(mesh);
-                    ++packetCounter;
-                    ++totalPackets;
+                    //++packetCounter;
+                    //++totalPackets;
                     //Debug.Log("TVM TimeStamp: " + mesh.acquisitionTimestamp.ToString());
                 }
         }
@@ -268,9 +268,8 @@ public class ShowTVMs : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit();
 
-        CalculatePackets();
+        //CalculatePackets();
     }
-
 
     private void CalculatePackets() {
         if (timeCounter <= 1.0f) {
