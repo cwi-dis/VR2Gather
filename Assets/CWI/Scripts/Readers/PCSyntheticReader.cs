@@ -1,37 +1,45 @@
 ﻿using UnityEngine;
+using System;
+using System.Runtime.InteropServices;
 
 public class PCSyntheticReader : PCBaseReader
 {
-    protected System.IntPtr obj;
+    protected System.IntPtr reader;
 
     public PCSyntheticReader()
     {
-        obj = API_cwipc_util.cwipc_synthetic();
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        reader = API_cwipc_util.cwipc_synthetic(ref errorPtr);
+        if (reader == System.IntPtr.Zero)
+        {
+            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            Debug.LogError("PCSyntheticReader: Error: " + errorMessage);
+        }
     }
 
-    public bool eof() {
-        if (obj == System.IntPtr.Zero) return true;
-        return API_cwipc_util.cwipc_source_eof(obj);
+    public virtual bool eof() {
+        if (reader == System.IntPtr.Zero) return true;
+        return API_cwipc_util.cwipc_source_eof(reader);
     }
 
-    public bool available(bool wait) {
-        if (obj == System.IntPtr.Zero) return false;
-        return API_cwipc_util.cwipc_source_available(obj, wait);
+    public virtual bool available(bool wait) {
+        if (reader == System.IntPtr.Zero) return false;
+        return API_cwipc_util.cwipc_source_available(reader, wait);
     }
 
-    public void free()
+    public virtual void free()
     {
-        if (obj == System.IntPtr.Zero) return;
-        API_cwipc_util.cwipc_source_free(obj);
-        obj = System.IntPtr.Zero;
+        if (reader == System.IntPtr.Zero) return;
+        API_cwipc_util.cwipc_source_free(reader);
+        reader = System.IntPtr.Zero;
     }
 
-    public PointCloudFrame get() {
-        if (obj == System.IntPtr.Zero) {
-            Debug.LogError("cwipc.obj == NULL");
+    public virtual PointCloudFrame get() {
+        if (reader == System.IntPtr.Zero) {
+            Debug.LogError("PCSyntheticReader: cwipc.reader == NULL");
             return null;
         }
-        var rv = API_cwipc_util.cwipc_source_get(obj);
+        var rv = API_cwipc_util.cwipc_source_get(reader);
         if (rv == System.IntPtr.Zero) return null;
         return new PointCloudFrame(rv);
     }

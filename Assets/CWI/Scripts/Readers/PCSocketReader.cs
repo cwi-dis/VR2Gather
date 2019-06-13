@@ -16,10 +16,12 @@ public class PCSocketReader : PCBaseReader
         hostname = _hostname;
         port = _port;
         failed = false;
-        decoder = API_cwipc_codec.cwipc_new_decoder();
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+
+        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
         if (decoder == IntPtr.Zero)
         {
-            Debug.LogError("Cannot create PCSocketReader");
+            Debug.LogError("PCSocketReader: Error: " + errorPtr);
         }
 
     }
@@ -44,7 +46,7 @@ public class PCSocketReader : PCBaseReader
         }
         catch (SocketException)
         {
-            Debug.LogError("connection error");
+            Debug.LogError("PCSocketReader: cannot connect to host " + hostname + " port " + port);
         }
         if (clt == null)
         {
@@ -77,13 +79,13 @@ public class PCSocketReader : PCBaseReader
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
         if (!ok)
         {
-            Debug.LogError("cwipc_decoder: no pointcloud available");
+            Debug.LogError("PCSocketReader: cwipc_decoder: no pointcloud available");
             return null;
         }
         var pc = API_cwipc_util.cwipc_source_get(decoder);
         if (pc == null)
         {
-            Debug.LogError("cwipc_decoder: did not return a pointcloud");
+            Debug.LogError("PCSocketReader: cwipc_decoder: did not return a pointcloud");
             return null;
         }
 

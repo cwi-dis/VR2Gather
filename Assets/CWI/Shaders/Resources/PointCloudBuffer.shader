@@ -17,9 +17,6 @@ Shader "Entropy/PointCloud"{
 				#pragma geometry Geometry
 				#pragma fragment Fragment
 
-				#pragma multi_compile_fog
-				#pragma multi_compile _UNITY_COLORSPACE_GAMMA
-
 				#include "UnityCG.cginc"
 
 				#define PCX_MAX_BRIGHTNESS 16
@@ -34,7 +31,7 @@ Shader "Entropy/PointCloud"{
 				struct Varyings {
 					float4	position : SV_Position;
 					half3	color : COLOR;
-					UNITY_FOG_COORDS(0)
+//					UNITY_FOG_COORDS(0)
 				};
 
 				half4		_Tint;
@@ -48,17 +45,12 @@ Shader "Entropy/PointCloud"{
 					float4 pos = mul(_Transform, float4(pt.xyz, 1));
 					half3  col = PcxDecodeColor(asuint(pt.w));
 
-					#ifdef UNITY_COLORSPACE_GAMMA
-						col *= _Tint.rgb * 2;
-					#else
-						col *= LinearToGammaSpace(_Tint.rgb) * 2;
-						col = GammaToLinearSpace(col);
-					#endif
+					col *= _Tint.rgb * 2;
 
 					Varyings o;
 					o.position = UnityObjectToClipPos(pos);
 					o.color = col;
-					UNITY_TRANSFER_FOG(o, o.position);
+//					UNITY_TRANSFER_FOG(o, o.position);
 					return o;
 				}
 
@@ -98,7 +90,7 @@ Shader "Entropy/PointCloud"{
 
 				half4 Fragment(Varyings input) : SV_Target {
 					half4 c = half4(input.color, _Tint.a);
-					UNITY_APPLY_FOG(input.fogCoord, c);
+//					UNITY_APPLY_FOG(input.fogCoord, c);
 					return c;
 				}
 

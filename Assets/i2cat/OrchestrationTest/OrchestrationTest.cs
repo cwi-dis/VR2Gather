@@ -11,6 +11,8 @@ public enum State {
 }
 
 public class OrchestrationTest : MonoBehaviour {
+    public bool isDebug = false;
+    public bool useEcho = false;
 
     [Header("General")]
     public OrchestratorGui orchestrator;
@@ -109,6 +111,7 @@ public class OrchestrationTest : MonoBehaviour {
 
     [HideInInspector]
     public bool isMaster = false;
+
 
     private State state = State.Default;
 
@@ -340,7 +343,7 @@ public class OrchestrationTest : MonoBehaviour {
         createButton.interactable = true;
         joinButton.interactable = true;
 
-        if (isMaster) SceneManager.LoadScene("Sample Scenario 2");
+        if (isMaster && !isDebug) SceneManager.LoadScene("Sample Scenario 2");
         else SceneManager.LoadScene(scenarioIdText.text);
     }
 
