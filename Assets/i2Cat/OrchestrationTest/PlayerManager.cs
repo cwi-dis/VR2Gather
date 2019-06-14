@@ -4,19 +4,9 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
+    public int id;
     public GameObject cam;
+    public VoicePlayer chat;
     public GameObject tvm;
     public GameObject pc;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
