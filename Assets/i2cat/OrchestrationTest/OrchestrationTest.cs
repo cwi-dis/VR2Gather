@@ -16,6 +16,7 @@ public class OrchestrationTest : MonoBehaviour {
 
     [Header("General")]
     public OrchestratorGui orchestrator;
+    public PilotController controller;
 
     #region UI
     [SerializeField]
@@ -343,8 +344,11 @@ public class OrchestrationTest : MonoBehaviour {
         createButton.interactable = true;
         joinButton.interactable = true;
 
-        if (isMaster && !isDebug) SceneManager.LoadScene("Sample Scenario 2");
-        else SceneManager.LoadScene(scenarioIdText.text);
+        //if (isMaster && !isDebug) SceneManager.LoadScene("Sample Scenario 2");
+        //else SceneManager.LoadScene(scenarioIdText.text);
+
+        if (isMaster && !isDebug) orchestrator.TestSendMessage("START");
+        else orchestrator.TestSendMessage("READY");
     }
 
     public void StartGame() {
@@ -362,7 +366,7 @@ public class OrchestrationTest : MonoBehaviour {
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.109:5672";
             exchangeNameLoginIF.text = "marc_tvm";
-            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
             audioDashServerLoginIF.text = "audioDashServer";
         }
         else if (user == 1) {
@@ -370,15 +374,23 @@ public class OrchestrationTest : MonoBehaviour {
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.94:5672";
             exchangeNameLoginIF.text = "gianluca";
-            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/longdress/vrtogether.mpd";
             audioDashServerLoginIF.text = "audioDashServer";
         }
         else if (user == 2) {
-            userNameLoginIF.text = "Luca@i2CAT";
-            userPasswordLoginIF.text = "i2CAT2020";
+            userNameLoginIF.text = "Spiros@CERTH";
+            userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "gianluca";
-            pcDashServerLoginIF.text = "http://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/redandblack/vrtogether.mpd";
+            audioDashServerLoginIF.text = "audioDashServer";
+        }
+        else if (user == 3) {
+            userNameLoginIF.text = "Argyris@CERTH";
+            userPasswordLoginIF.text = "CERTH2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "gianluca";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd";
             audioDashServerLoginIF.text = "audioDashServer";
         }
         //orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text, connectionURILoginIF.text, exchangeNameLoginIF.text);

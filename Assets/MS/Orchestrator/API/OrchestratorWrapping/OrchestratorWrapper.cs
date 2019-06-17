@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWSManagement;
 using LitJson;
+using BestHTTP;
+using BestHTTP.SocketIO;
+using BestHTTP.SocketIO.Events;
 
 namespace OrchestratorWrapping
 {
@@ -21,6 +24,14 @@ namespace OrchestratorWrapping
         public ResponseStatus() : this(0, "OK") { }
     }
 
+    // class that stores a user message incoming from the orchestrator
+    public class UserMessage
+    {
+        public string fromId;
+        public string fromName;
+        public JsonData message;
+    }
+
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
@@ -34,19 +45,26 @@ namespace OrchestratorWrapping
         // Listener for the responses of the orchestrator
         private IOrchestratorMessageListener MessagesListener;
 
+        // Listener for the messages emitted spontaneously by the orchestrator
+        private IMessagesFromOrchestratorListener MessagesFromOrchestratorListener;
+
         // List of available commands (grammar description)
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
 
+        // List of messages that can be received from the orchestrator
+        public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessageListener messagesListener)
+
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
         {
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
             ResponsesListener = responsesListener;
             MessagesListener = messagesListener;
+            MessagesFromOrchestratorListener = messagesFromOrchestratorListener;
             InitGrammar();
         }
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener) : this(orchestratorSocketUrl, responsesListener, null) { }
-        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, messagesFromOrchestratorListener, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -67,7 +85,7 @@ namespace OrchestratorWrapping
             {
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
-            OrchestrationSocketIoManager.SocketConnect();
+            OrchestrationSocketIoManager.SocketConnect(orchestratorMessages);
         }
 
         public void OnSocketConnect()
@@ -358,6 +376,29 @@ namespace OrchestratorWrapping
         }
         #endregion
 
+        #region remote response
+        // messages from the orchestrator
+        private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
+        {
+            if (MessagesListener != null)
+            {
+                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
+            }
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+
+            UserMessage messageReceived = new UserMessage();
+            messageReceived.fromId = jsonResponse[1]["messageFrom"].ToString();
+            messageReceived.fromName = jsonResponse[1]["messageFromName"].ToString();
+            messageReceived.message = jsonResponse[1]["message"];
+
+            if (MessagesFromOrchestratorListener != null)
+            {
+                MessagesFromOrchestratorListener.OnUserMessageReceived(messageReceived);
+            }
+        }
+
+        #endregion
+
         #region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
         public void InitGrammar()
@@ -409,7 +450,7 @@ namespace OrchestratorWrapping
                     new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))
-                        }, 
+                        },
                         OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {
@@ -438,7 +479,7 @@ namespace OrchestratorWrapping
                         OnJoinRoomResponse),
                     new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
 
-                    ////messages TODO
+                    //messages
                     new OrchestratorCommand("SendMessage", new List<Parameter>
                         {
                             new Parameter("message", typeof(string)),
@@ -450,6 +491,13 @@ namespace OrchestratorWrapping
                             new Parameter("message", typeof(string))
                         },
                         OnSendMessageToAllResponse),
+                };
+
+            orchestratorMessages = new List<OrchestratorMessageReceiver>
+                {              
+                    //Login & Logout
+                    new OrchestratorMessageReceiver("MessageSent",
+                        OnMessageSentFromOrchestrator),
                 };
         }
 

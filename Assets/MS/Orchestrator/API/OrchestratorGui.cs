@@ -24,7 +24,7 @@ class GuiCommandDescription
 /**
  * Main Gui class
  * **/
-public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IOrchestratorMessageListener
+public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IOrchestratorMessageListener
 {
     #region gui components
 
@@ -165,6 +165,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     [SerializeField]
     private OrchestrationTest test;
 
+
     public ScenarioInstance activeScenario;
     public Session activeSession;
 
@@ -257,7 +258,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     // Connect to the orchestrator
     private void socketConnect()
     {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this);
+        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
         orchestratorWrapper.Connect();
     }
 
@@ -925,13 +926,23 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     {
         // nothing to do
     }
+
+    // Message from a user received spontaneously from the Orchestrator         
+    public void OnUserMessageReceived(UserMessage userMessage) {
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message.ToString());
+        StartCoroutine(ScrollLogsToBottom());
+
+        //TEST
+        test.controller.MessageActivation(userMessage.message.ToString());
+        Debug.Log(userMessage.fromName + ": " + userMessage.message.ToString());
+    }
     #endregion
 
     #region test methods
     // Connect to the orchestrator
     public void ConnectSocket()
     {
-        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this);
+        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
         orchestratorWrapper.Connect();
     }
 
@@ -971,6 +982,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public string TestGetUserName()
     {
         return userName.text;
+    }
+
+    public void TestSendMessage(string msg) {
+        orchestratorWrapper.SendMessageToAll(msg);
     }
     #endregion
 }

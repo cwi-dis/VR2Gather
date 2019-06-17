@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using BestHTTP.SocketIO;
+using BestHTTP;
+using BestHTTP.SocketIO.Events;
 using LitJson;
 
 // class used as a convenience to represent the commands and the responses
@@ -8,6 +9,9 @@ namespace OrchestratorWSManagement
 {
     // template for functions that treat the responses (command = the command sent, response = the response to parse)
     public delegate void ResponseCallbackManager(OrchestratorCommand command, OrchestratorResponse response);
+
+    //// template for functions that treats a message from the orchestrator
+    //public delegate void OrchestratorMessageCallbackManager(OrchestratorMessage message);
 
     // Class that defines the parameters used for the commands
     public class Parameter
@@ -26,7 +30,7 @@ namespace OrchestratorWSManagement
             ParamValue = paramValue;
             this.type = type;
         }
-        public Parameter(string paramName, Type type): this(paramName, type, null){}
+        public Parameter(string paramName, Type type) : this(paramName, type, null) { }
     }
 
     // Class that defines the availble commands
@@ -69,6 +73,23 @@ namespace OrchestratorWSManagement
                 }
             }
             return null;
+        }
+    }
+
+    public class OrchestratorMessageReceiver
+    {
+        // the name of the event sent on the socket (= the name of the command)
+        public string SocketEventName;
+
+        // the function that will be used to process the response
+        public SocketIOCallback OrchestratorMessageCallback;
+
+        // Constructors
+        public OrchestratorMessageReceiver(string socketEventName,
+            SocketIOCallback orchestratorMessageCallback)
+        {
+            this.SocketEventName = socketEventName;
+            this.OrchestratorMessageCallback = orchestratorMessageCallback;
         }
     }
 
