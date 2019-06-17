@@ -4,9 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using OrchestratorWrapping;
 using UnityEngine.Video;
+using System;
 
 public class Pilot2PresenterController : PilotController {
-
+    
     public override void Start() {
         base.Start();
         mainPanel.SetActive(false);
@@ -30,27 +31,24 @@ public class Pilot2PresenterController : PilotController {
     }
 
     public void SendPlayVideo(int id) {
-        string text = "PLAY_VIDEO_";
-        orchestrator.TestSendMessage(text + id.ToString());
+        string text = "PLAY_";
+        orchestrator.TestSendMessage(text + id.ToString() + "_" + myTime);
     }
 
     public void SendPauseVideo(int id) {
-        string text = "PAUSE_VIDEO_";
-        orchestrator.TestSendMessage(text + id.ToString());
+        string text = "PAUSE_";
+        orchestrator.TestSendMessage(text + id.ToString() + "_" + myTime);
     }
 
     public override void MessageActivation(string message) {
-        if (message == "PLAY_VIDEO_1") {
-            videos[0].Play();
+        string[] msg = message.Split(new char[] { '_' });
+        if (msg[0] == "PLAY") {
+            if (msg[1] == "1") videos[0].Play();
+            else if (msg[1] == "2") videos[1].Play();
         }
-        else if (message == "PAUSE_VIDEO_1") {
-            videos[0].Pause();
-        }
-        else if (message == "PLAY_VIDEO_2") {
-            videos[1].Play();
-        }
-        else if (message == "PAUSE_VIDEO_2") {
-            videos[1].Pause();
+        else if (msg[0] == "PAUSE") {
+            if (msg[1] == "1") videos[0].Pause();
+            else if (msg[1] == "2") videos[1].Pause();
         }
     }
 }

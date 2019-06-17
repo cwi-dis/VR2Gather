@@ -5,9 +5,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
-public class TimeStampTest : MonoBehaviour {
-
-    public ShowTVMs myTVM;
+public class TimeStampTest {
 
     public static DateTime GetNetworkTime() {
         const string ntpServer = "time.google.com";
@@ -61,13 +59,6 @@ public class TimeStampTest : MonoBehaviour {
         return DateTime.UtcNow;
     }
 
-    public DateTime GetTVMTime() {
-
-        //Debug.Log(myTVM.meshDatas[0].infoData.acquisitionTimestamp.ToString());
-
-        return DateTime.UtcNow;
-    }
-
     static uint SwapEndianness(ulong x) {
         return (uint)(((x & 0x000000ff) << 24) +
                       ((x & 0x0000ff00) << 8) +
@@ -75,10 +66,10 @@ public class TimeStampTest : MonoBehaviour {
                       ((x & 0xff000000) >> 24));
     }
 
-    private void OnGUI()
-    {
-        GUI.Label(new Rect(5, 40, 1000, 25), "Network TimeStamp: " + GetNetworkTime().ToString("HH:mm:ss.fff"));
-        GUI.Label(new Rect(5, 70, 1000, 25), "System TimeStamp: " + GetSystemTime().ToString("HH:mm:ss.fff"));
-        //GUI.Label(new Rect(5, 100, 1000, 25), "TVM TimeStamp: " + GetTVMTime().ToString("HH:mm:ss.fff"));
-    }
+    //private void OnGUI()
+    //{
+    //    GUI.Label(new Rect(5, 40, 1000, 25), "Network TimeStamp: " + GetNetworkTime().ToString("HH:mm:ss.fff"));
+    //    GUI.Label(new Rect(5, 70, 1000, 25), "System TimeStamp: " + GetSystemTime().ToString("HH:mm:ss.fff"));
+    //    //GUI.Label(new Rect(5, 100, 1000, 25), "TVM TimeStamp: " + GetTVMTime().ToString("HH:mm:ss.fff"));
+    //}
 }

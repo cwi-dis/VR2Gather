@@ -41,17 +41,14 @@ public class Pilot2PlayerController : PilotController {
     }
 
     public override void MessageActivation(string message) {
-        if (message == "PLAY_VIDEO_1") {
-            videos[0].Play();
+        string[] msg = message.Split(new char[] { '_' });
+        if (msg[0] == "PLAY") {
+            if (msg[1] == "1") videos[0].Play();
+            else if (msg[1] == "2") videos[1].Play();
         }
-        else if (message == "PAUSE_VIDEO_1") {
-            videos[0].Pause();
-        }
-        else if (message == "PLAY_VIDEO_2") {
-            videos[1].Play();
-        }
-        else if (message == "PAUSE_VIDEO_2") {
-            videos[1].Pause();
+        else if (msg[0] == "PAUSE") {
+            if (msg[1] == "1") videos[0].Pause();
+            else if (msg[1] == "2") videos[1].Pause();
         }
     }
 }

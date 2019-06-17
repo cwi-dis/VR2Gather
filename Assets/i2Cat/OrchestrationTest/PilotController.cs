@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using OrchestratorWrapping;
 using UnityEngine.Video;
+using System;
 
 abstract public class PilotController : MonoBehaviour {
 
@@ -22,6 +23,9 @@ abstract public class PilotController : MonoBehaviour {
     [HideInInspector]
     public GameObject background;
 
+    [HideInInspector]
+    public string myTime;
+
     #region Utils
     [HideInInspector]
     public Color playerCol = new Color(0.15f, 0.78f, 0.15f); // Green
@@ -37,6 +41,10 @@ abstract public class PilotController : MonoBehaviour {
         background = GameObject.Find("Background");
         test = GameObject.Find("ManagerTest").GetComponent<OrchestrationTest>();
         orchestrator = GameObject.Find("MainWindow").GetComponent<OrchestratorGui>();
+    }
+
+    public virtual void Update() {
+        myTime = TimeStampTest.GetNetworkTime().ToString("mm:ss.fff");
     }
 
     public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {
