@@ -216,7 +216,7 @@ public class ShowTVMs : MonoBehaviour {
                     meshDatas[i].Read(mesh);
                     //++packetCounter;
                     //++totalPackets;
-                    //Debug.Log("TVM TimeStamp: " + mesh.acquisitionTimestamp.ToString());
+                    Debug.Log("TVM TimeStamp: " + mesh.acquisitionTimestamp.ToString());
                 }
         }
     }

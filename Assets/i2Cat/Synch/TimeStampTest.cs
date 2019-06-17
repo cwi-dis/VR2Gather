@@ -65,11 +65,4 @@ public class TimeStampTest {
                       ((x & 0x00ff0000) >> 8) +
                       ((x & 0xff000000) >> 24));
     }
-
-    //private void OnGUI()
-    //{
-    //    GUI.Label(new Rect(5, 40, 1000, 25), "Network TimeStamp: " + GetNetworkTime().ToString("HH:mm:ss.fff"));
-    //    GUI.Label(new Rect(5, 70, 1000, 25), "System TimeStamp: " + GetSystemTime().ToString("HH:mm:ss.fff"));
-    //    //GUI.Label(new Rect(5, 100, 1000, 25), "TVM TimeStamp: " + GetTVMTime().ToString("HH:mm:ss.fff"));
-    //}
 }

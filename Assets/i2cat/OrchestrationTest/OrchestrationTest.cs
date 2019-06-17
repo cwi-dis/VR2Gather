@@ -347,7 +347,7 @@ public class OrchestrationTest : MonoBehaviour {
         //if (isMaster && !isDebug) SceneManager.LoadScene("Sample Scenario 2");
         //else SceneManager.LoadScene(scenarioIdText.text);
 
-        if (isMaster && !isDebug) orchestrator.TestSendMessage("START");
+        if (isMaster || isDebug) orchestrator.TestSendMessage("START");
         else orchestrator.TestSendMessage("READY");
     }
 

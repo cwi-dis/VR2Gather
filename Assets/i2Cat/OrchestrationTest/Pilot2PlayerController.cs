@@ -37,7 +37,7 @@ public class Pilot2PlayerController : PilotController {
             }
         }
 
-        GetComponent<MicroRecorder>().Init(my_ID, test.useEcho);
+        //GetComponent<MicroRecorder>().Init(my_ID, test.useEcho);
     }
 
     public override void MessageActivation(string message) {
