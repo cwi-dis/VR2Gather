@@ -15,6 +15,7 @@ public class MicroRecorder : MonoBehaviour {
 
     // Start is called before the first frame update
     void Awake() {
+        MicroRecorder.Instance = this;
         NTPTools.GetNetworkTime();
         codec = new SpeeX();// new RawFloats(11025 * 2);
     }
@@ -58,6 +59,6 @@ public class MicroRecorder : MonoBehaviour {
     }
 
     void OnDestroy() {
-        sender.Close();
+        if(sender!=null) sender.Close();
     }
 }

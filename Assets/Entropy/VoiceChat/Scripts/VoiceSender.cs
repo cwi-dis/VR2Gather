@@ -1,4 +1,4 @@
-﻿#define USE_SOCKETS
+﻿// #define USE_SOCKETS
 
 using System.Net;
 using System.Net.Sockets;
@@ -20,7 +20,9 @@ public class VoiceSender {
 #if USE_SOCKETS
         socketIOServer = new SocketIOServer(useEcho);
 #else
-        handle = bin2dash_pinvoke.vrt_create("vrtogether", bin2dash_pinvoke.VRT_4CC('R','A','W','W'), "http://vrt-evanescent.viaccess-orca.com/fernando@entropy-audio.mpd", 0, 0);
+        signals_unity_bridge_pinvoke.SetPaths();
+        handle = bin2dash_pinvoke.vrt_create("player_1", bin2dash_pinvoke.VRT_4CC('R', 'A', 'W', 'W'), "http://localhost:9000/", 1000, 3000);
+        if (handle == System.IntPtr.Zero) Debug.Log($">>> HANDLE ERROR ");
 #endif
     }
     int cnt = 0;
@@ -36,7 +38,6 @@ public class VoiceSender {
 #else
         if (handle != System.IntPtr.Zero) {
             if (buffer == System.IntPtr.Zero) buffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(tmp, 0);
-            Debug.Log($">>> Buffer.Length {tmp.Length} {cnt++}");
             bin2dash_pinvoke.vrt_push_buffer(handle, buffer, (uint)tmp.Length);
         }
 #endif
