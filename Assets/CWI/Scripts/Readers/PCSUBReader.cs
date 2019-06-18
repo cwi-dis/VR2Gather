@@ -21,26 +21,24 @@ public class PCSUBReader : PCBaseReader {
 
         bool ok = setup_sub_environment();
         if (!ok) {
-            Debug.LogError("PCSUBReader: setup_sub_environment failed");
+            Debug.LogError("setup_sub_environment failed");
             return;
         }
 
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero) {
-            Debug.LogError("PCSUBReader: sub_create failed");
+            Debug.LogError("sub_create failed");
             return;
         }
 
         ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
         if (!ok) {
-            Debug.LogError("PCSUBReader: sub_play failed for " + url);
+            Debug.LogError("sub_play failed for " + url);
             return;
         }
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
+        decoder = API_cwipc_codec.cwipc_new_decoder();
         if (decoder == IntPtr.Zero) {
-            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
-            Debug.LogError("PCSUBReader: cwipc_new_decoder: " + errorMessage);
+            Debug.LogError("Cannot create PCSUBReader");
             return;
         }
 
@@ -54,14 +52,14 @@ public class PCSUBReader : PCBaseReader {
         IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
         if (hMod == IntPtr.Zero)
         {
-            Debug.LogError("PCSUBReader: Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
+            Debug.LogError("Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
             return false;
         }
         StringBuilder modPath = new StringBuilder(255);
         int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
         if (rv < 0)
         {
-            Debug.LogError("PCSUBReader: Cannot get filename for signals-unity-bridge, GetModuleFileName returned " + rv);
+            Debug.LogError("Cannot get filename for signals-unity-bridge, GetModuleFileName returned " + rv);
             //return false;
         }
         string dirName = Path.GetDirectoryName(modPath.ToString());
@@ -98,7 +96,7 @@ public class PCSUBReader : PCBaseReader {
 
         if (currentBuffer == null || bytesNeeded > currentBuffer.Length)
         {
-            Debug.Log("PCSUBReader: allocating more memory");
+            Debug.Log("Needs more memory!!");
             currentBuffer = new byte[(int)(bytesNeeded * 1.3f)]; // Reserves 30% more.
             currentBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(currentBuffer, 0);
         }
@@ -106,7 +104,7 @@ public class PCSUBReader : PCBaseReader {
         int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, currentBufferPtr, bytesNeeded, ref info);
         if (bytesRead != bytesNeeded)
         {
-            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+            Debug.LogError("sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
             return null;
         }
 
@@ -115,13 +113,13 @@ public class PCSUBReader : PCBaseReader {
         bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
         if (!ok)
         {
-            Debug.LogError("PCSUBReader: cwipc_decoder: no pointcloud available");
+            Debug.LogError("cwipc_decoder: no pointcloud available");
             return null;
         }
         var pc = API_cwipc_util.cwipc_source_get(decoder);
         if (pc == null)
         {
-            Debug.LogError("PCSUBReader: cwipc_decoder: did not return a pointcloud");
+            Debug.LogError("cwipc_decoder: did not return a pointcloud");
             return null;
         }
 

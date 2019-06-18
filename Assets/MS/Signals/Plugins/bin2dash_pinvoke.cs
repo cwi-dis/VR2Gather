@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-public class bin2dash_pinvoke {
+public class bin2dash_pinvoke
+{
 
     static public uint VRT_4CC(char a, char b, char c, char d) { return (uint)((a << 24) | (b << 16) | (c << 8) | d); }
     // Creates a new packager/streamer and starts the streaming session.
@@ -22,14 +23,17 @@ public class bin2dash_pinvoke {
     [DllImport("bin2dash")]
     extern static public long vrt_get_media_time(IntPtr h, int timescale);
 
-    public static void SetPaths() {
+    public static void SetPaths()
+    {
         _setPaths();
     }
 
-    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
-        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName( path ) : UnityEngine.Application.dataPath + "/Plugins";
-//        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
-//        Environment.SetEnvironmentVariable("PATH", path );
-        
+    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "")
+    {
+        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName(path) : UnityEngine.Application.dataPath + "/Plugins";
+        //        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
+        //        Environment.SetEnvironmentVariable("PATH", path );
+
     }
 }
+
