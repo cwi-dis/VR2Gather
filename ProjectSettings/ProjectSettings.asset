@@ -18,7 +18,7 @@ PlayerSettings:
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 1
-  m_ShowUnitySplashLogo: 0
+  m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 1
   m_SplashScreenLogoStyle: 1
@@ -296,6 +296,10 @@ PlayerSettings:
     m_APIs: 0200000008000000
     m_Automatic: 1
   m_BuildTargetVRSettings:
+  - m_BuildTarget: Standalone
+    m_Enabled: 1
+    m_Devices:
+    - OpenVR
   - m_BuildTarget: Standalone
     m_Enabled: 1
     m_Devices:
@@ -605,7 +609,7 @@ PlayerSettings:
       daydreamIconForeground: {fileID: 0}
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
-    Collab: 0
+    Collab: 1
     UNet: 1
   luminIcon:
     m_Name: 
@@ -626,10 +630,10 @@ PlayerSettings:
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 3
-  cloudProjectId: 23aacb40-1797-4db2-ba9d-949f22b6d899
+  cloudProjectId: 476445a7-a7f2-4e1f-b807-df9fbc030494
   framebufferDepthMemorylessMode: 0
-  projectName: PointClouds
-  organizationId: marcmartos_i2cat
+  projectName: TestBed
+  organizationId: xrlabbyentropy
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
