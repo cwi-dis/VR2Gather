@@ -18,13 +18,13 @@ public class PCSUBReader : PCBaseReader {
         failed = true;
         url = _url;
         streamNumber = _streamNumber;
-
+        
         bool ok = setup_sub_environment();
         if (!ok) {
             Debug.LogError("PCSUBReader: setup_sub_environment failed");
             return;
         }
-
+        
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero) {
             Debug.LogError("PCSUBReader: sub_create failed");
@@ -50,22 +50,6 @@ public class PCSUBReader : PCBaseReader {
     internal bool setup_sub_environment()
     {
         signals_unity_bridge_pinvoke.SetPaths();
-
-        IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
-        if (hMod == IntPtr.Zero)
-        {
-            Debug.LogError("PCSUBReader: Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
-            return false;
-        }
-        StringBuilder modPath = new StringBuilder(255);
-        int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
-        if (rv < 0)
-        {
-            Debug.LogError("PCSUBReader: Cannot get filename for signals-unity-bridge, GetModuleFileName returned " + rv);
-            //return false;
-        }
-        string dirName = Path.GetDirectoryName(modPath.ToString());
-        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
         return true;
     }
 
@@ -93,6 +77,7 @@ public class PCSUBReader : PCBaseReader {
 
         int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
         if (bytesNeeded == 0) {
+            Debug.Log("No data");
             return null;
         }
 

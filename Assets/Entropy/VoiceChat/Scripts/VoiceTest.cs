@@ -2,26 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoiceTest : MonoBehaviour
-{
+public class VoiceTest : MonoBehaviour {
     public VoicePlayer player;
     SpeeX compressor;
     // Start is called before the first frame update
-    IEnumerator Start()
-    {
-        SocketIOServer.player[0] = player;
-
-
-        compressor = new SpeeX();
-        MicroRecorder.Instance.Init(0, true);
-
-        yield return new WaitForSeconds(1);
-        player.Init("player_1", "http://localhost:9000/player_1.mpd");
+    IEnumerator Start() {
+        int userID = 0;
+        string url = "http://localhost:9000";
+        SocketIOServer.player[userID] = player;
+        compressor = new SpeeX();        
+        MicroRecorder.Instance.Init(userID, true, true); // userID, useEcho, useSocket
+        if (SocketIOServer.Instance != null) {
+            yield return null;
+            player.Init();
+        }
+        else {
+            yield return new WaitForSeconds(1);
+            player.Init($"player_{userID}", $"{url}/player_{userID}.mpd");
+        }
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
         
     }
 }

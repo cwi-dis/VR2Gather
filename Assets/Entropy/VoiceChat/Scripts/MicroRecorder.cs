@@ -21,7 +21,7 @@ public class MicroRecorder : MonoBehaviour {
     }
 
 
-    public void Init(int userID, bool useEcho) {
+    public void Init(int userID, bool useEcho, bool useSocket=true) {
         if (Microphone.devices.Length > 0) {
             device = Microphone.devices[0];
             int currentMinFreq;
@@ -37,7 +37,7 @@ public class MicroRecorder : MonoBehaviour {
         else
             Debug.LogError("No Micros detected.");
 
-        sender = new VoiceSender(userID, codec, useEcho);
+        sender = new VoiceSender(userID, codec, useEcho, useSocket);
     }
 
     int readPosition=0;

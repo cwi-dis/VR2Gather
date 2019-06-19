@@ -14,43 +14,43 @@
         }
     },
     "PCs": [
-        {
-            "forceMesh": true,
-            "sourceType": "sub",
-            "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-            "cwicpcDirectory": "../../../installed/lootCwicpc",
-            "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-            "plyDirectory": "../../../installed/lootPly",
-            "networkHost": "localhost",
-            "networkPort": 4303,
-            "subURL": "https://vrt-evanescent.viaccess-orca.com/vrtogether.mpd",
-            "subStreamNumber": 0,
-            "pointSize": 0.008,
-            "position": {
-                "x": -2.0,
-                "y": 0.0,
-                "z": 2.0
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 180.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-            },
-            "offsetPosition": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "offsetRotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            }
+      {
+        "forceMesh": true,
+        "sourceType": "sub",
+        "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
+        "cwicpcDirectory": "../../../installed/lootCwicpc",
+        "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
+        "plyDirectory": "../../../installed/lootPly",
+        "networkHost": "localhost",
+        "networkPort": 4303,
+        "subURL": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
+        "subStreamNumber": 0,
+        "pointSize": 0.008,
+        "position": {
+          "x": -2.0,
+          "y": 0.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 180.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "offsetPosition": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "offsetRotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         }
+      }
     ]
 }

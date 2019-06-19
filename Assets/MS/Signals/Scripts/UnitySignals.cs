@@ -23,7 +23,7 @@ public class UnitySignals : MonoBehaviour {
         if (handle != IntPtr.Zero) {
             Debug.Log(">>> sub_create " + handle);
             isPlaying = signals_unity_bridge_pinvoke.sub_play(handle, URL);
-            Debug.Log(">>> sub_play " + isPlaying);
+            Debug.Log(">>> sub_play " + isPlaying + " " + URL);
             if (isPlaying) {
                 int count = signals_unity_bridge_pinvoke.sub_get_stream_count(handle);
                 Debug.Log(">>> sub_get_stream_count " + count);

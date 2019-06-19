@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 public class signals_unity_bridge_pinvoke {
 
@@ -42,6 +44,22 @@ public class signals_unity_bridge_pinvoke {
 
     public static void SetPaths() {
         _setPaths();
+        IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
+        if (hMod == IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError("PCSUBReader: Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
+            return;
+        }
+        StringBuilder modPath = new StringBuilder(255);
+        int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
+        if (rv < 0)
+        {
+            UnityEngine.Debug.LogError("PCSUBReader: Cannot get filename for signals-unity-bridge, GetModuleFileName returned " + rv);
+            //return false;
+        }
+        string dirName = Path.GetDirectoryName(modPath.ToString());
+        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
+
     }
 
     private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {

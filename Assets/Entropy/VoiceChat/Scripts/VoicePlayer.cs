@@ -13,6 +13,7 @@ public class VoicePlayer : MonoBehaviour {
     public void Init(string streamName, string URL)
     {
         signals_unity_bridge_pinvoke.SetPaths();
+        System.Threading.Thread.Sleep(2000);
         subHandle = signals_unity_bridge_pinvoke.sub_create(streamName);
         if (subHandle != System.IntPtr.Zero)
         {
@@ -43,23 +44,19 @@ public class VoicePlayer : MonoBehaviour {
     }
 
 
-    byte[] currentBuffer;
+    byte[] data;
     System.IntPtr currentBufferPtr;
 
     void Update() {
         if (subHandle != System.IntPtr.Zero) {
             signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
             int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 0, System.IntPtr.Zero, 0, ref info);
-            if (bytesNeeded == 0)
-            {
-                Debug.LogError($"No DaTA!! {bytesNeeded} ");
-                return;
-            }
+            if (bytesNeeded == 0) return;
 
-            if (currentBuffer == null || bytesNeeded > currentBuffer.Length) {
+            if (data == null || bytesNeeded > data.Length) {
                 Debug.Log("PCSUBReader: allocating more memory");
-                currentBuffer = new byte[bytesNeeded]; // Reserves 30% more.
-                currentBufferPtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBuffer, 0);
+                data = new byte[bytesNeeded]; // Reserves 30% more.
+                currentBufferPtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
             }
 
             int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 0, currentBufferPtr, bytesNeeded, ref info);
@@ -67,10 +64,20 @@ public class VoicePlayer : MonoBehaviour {
                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                 return;
             }
-
-            Debug.LogError($"DaTA!! {bytesRead} ");
+            ProcessData(data);
 
         }
+    }
+
+
+    NTPTools.NTPTime tempTime;
+    void ProcessData(byte[] data)
+    {
+        int userID = data[0];
+        tempTime.T0 = data[1]; tempTime.T1 = data[2]; tempTime.T2 = data[3]; tempTime.T3 = data[4]; tempTime.T4 = data[5]; tempTime.T5 = data[6]; tempTime.T6 = data[7]; tempTime.T7 = data[8];
+        var lat = NTPTools.GetNTPTime().time - tempTime.time;
+        SocketIOServer.player[userID].name = $"Player_{userID} Lat ({lat})";
+        SocketIOServer.player[userID].receiver.ReceiveBuffer(BaseCodec.Instance.Uncompress(data, 1 + 8));
     }
 
     void OnAudioRead(float[] data) {
