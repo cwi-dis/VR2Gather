@@ -177,5 +177,21 @@
 
 			ENDCG // here ends the part in Cg 
 		}	
+		Pass{
+			Tags {
+				"LightMode" = "ShadowCaster"
+			}
+
+			CGPROGRAM
+
+			#pragma target 2.0
+
+			#pragma vertex TvmShadowVertexProgram
+			#pragma fragment TvmShadowFragmentProgram
+
+			#include "TvmShadows.cginc"
+
+			ENDCG
+		}
 	}
 }
