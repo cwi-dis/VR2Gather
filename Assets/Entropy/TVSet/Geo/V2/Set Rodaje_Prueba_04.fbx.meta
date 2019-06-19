@@ -4,15 +4,24 @@ ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
+    100002: ase
+    100004: SetTV
     400000: //RootNode
+    400002: ase
+    400004: SetTV
     2100000: lambert4
     2100002: columnas02_initialShadingGroup2
     2100004: lambert3
     2100006: lambert2
     2100008: lambert5
     2300000: //RootNode
+    2300002: ase
+    2300004: SetTV
     3300000: //RootNode
+    3300002: ase
+    3300004: SetTV
     4300000: SetTV
+    4300002: ase
   externalObjects: {}
   materials:
     importMaterials: 1
