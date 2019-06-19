@@ -43,7 +43,6 @@ public class signals_unity_bridge_pinvoke {
 
 
     public static void SetPaths() {
-        _setPaths();
         IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
         if (hMod == IntPtr.Zero)
         {
@@ -60,11 +59,5 @@ public class signals_unity_bridge_pinvoke {
         string dirName = Path.GetDirectoryName(modPath.ToString());
         Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
 
-    }
-
-    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
-        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName( path ).Replace('\\', '/') : UnityEngine.Application.dataPath + "/Plugins";
-        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
-        //Environment.SetEnvironmentVariable("PATH", path );
     }
 }

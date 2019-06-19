@@ -21,15 +21,4 @@ public class bin2dash_pinvoke {
     // Gets the current media time in @timescale unit.
     [DllImport("bin2dash")]
     extern static public long vrt_get_media_time(IntPtr h, int timescale);
-
-    public static void SetPaths() {
-        _setPaths();
-    }
-
-    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
-        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName( path ) : UnityEngine.Application.dataPath + "/Plugins";
-//        Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path );
-//        Environment.SetEnvironmentVariable("PATH", path );
-        
-    }
 }
