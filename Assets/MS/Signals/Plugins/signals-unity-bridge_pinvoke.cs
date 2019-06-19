@@ -42,11 +42,10 @@ public class signals_unity_bridge_pinvoke {
     extern static public int sub_grab_frame(IntPtr handle, int streamIndex, System.IntPtr dst, int dstLen, ref FrameInfo info);
 
 
-    public static void SetPaths() {
-        IntPtr hMod = API_kernel.GetModuleHandle("signals-unity-bridge");
-        if (hMod == IntPtr.Zero)
-        {
-            UnityEngine.Debug.LogError("PCSUBReader: Cannot get handle on signals-unity-bridge, GetModuleHandle returned NULL.");
+    public static void SetPaths(string module_base = "signals-unity-bridge") {
+        IntPtr hMod = API_kernel.GetModuleHandle(module_base);
+        if (hMod == IntPtr.Zero) {
+            UnityEngine.Debug.LogError($"PCSUBReader: Cannot get handle on {module_base}, GetModuleHandle returned NULL. " + Environment.GetEnvironmentVariable("PATH") + " "+ Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH"));
             return;
         }
         StringBuilder modPath = new StringBuilder(255);

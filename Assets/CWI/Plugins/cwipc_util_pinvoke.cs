@@ -44,6 +44,20 @@ internal class API_cwipc_realsense2 {
 }
 
 internal class API_cwipc_codec {
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct cwipc_encoder_params
+    {
+        public bool do_inter_frame;    /**< (unused in this version, must be false) do inter-frame compression */
+        public int gop_size;           /**< (unused in this version, ignored) spacing of I frames for inter-frame compression */
+        public float exp_factor;       /**< (unused in this version, ignored). Bounding box expansion factor for inter-frame coding */
+        public int octree_bits;        /**< Octree depth: a fully populated octree will have 8**octree_bits points */
+        public int jpeg_quality;       /**< JPEG encoding quality */
+        public int macroblock_size;    /**< (unused in this version, ignored) macroblock size for inter-frame prediction */
+        public int tilenumber;         /**< 0 for encoding full pointclouds, > 0 for selecting a single tile to encode */
+        public float voxelsize;        /**< If non-zero run voxelizer with this cell size to get better tiled pointcloud */
+    };
+
     const System.UInt64 CWIPC_API_VERSION = 0x20190522;
     public const int CWIPC_ENCODER_PARAM_VERION = 0x20190506;
 
@@ -57,7 +71,7 @@ internal class API_cwipc_codec {
     internal extern static void cwipc_decoder_free(IntPtr dec);
 
     [DllImport("cwipc_codec")]
-    internal extern static IntPtr cwipc_new_encoder(int paramVersion, IntPtr encParams, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+    internal extern static IntPtr cwipc_new_encoder(int paramVersion, ref cwipc_encoder_params encParams, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
 
     [DllImport("cwipc_codec")]
     internal extern static void cwipc_encoder_free(IntPtr enc);
@@ -78,7 +92,7 @@ internal class API_cwipc_codec {
     internal extern static bool cwipc_encoder_at_gop_boundary(IntPtr enc);
 
 }
-
+/*
 internal class API_bin2dash {
     [DllImport("bin2dash")]
     internal extern static IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, Int32 fourcc, [MarshalAs(UnmanagedType.LPStr)]string url, Int32 seg_dur_in_ms=10000, Int32 timeshift_buffer_depth_in_ms=30000);
@@ -93,11 +107,12 @@ internal class API_bin2dash {
     internal extern static Int64 vrt_get_media_time(Int32 scale);
     
 }
-
+*/
 internal class API_kernel {
     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
     internal static extern IntPtr GetModuleHandle(string lpModuleName);
     [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
     internal static extern int GetModuleFileName(IntPtr hModule, System.Text.StringBuilder modulePath, int nSize);
 }
+
 

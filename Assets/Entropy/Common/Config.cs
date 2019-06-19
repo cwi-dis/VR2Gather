@@ -26,9 +26,18 @@ public class Config {
         public string   networkHost;
         public int      networkPort;
         public string   subURL;
-        public string   realsense2ConfigFile;
-        public string   realsense2EncodedName;
-        public string   realsense2EncodedURL;
+
+        [Serializable]
+        public class _Realsense2Config
+        {
+            public string   configFilename;
+            public string   url;
+            public string   streamName;
+            public int      octreeBits;
+            public int      segmentSize;
+            public int      sementLife;
+        }
+        public _Realsense2Config Realsense2Config;
         public int      subStreamNumber;
 
         public float    pointSize = 0.008f;

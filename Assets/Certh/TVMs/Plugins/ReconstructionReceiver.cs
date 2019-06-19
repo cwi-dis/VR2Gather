@@ -83,13 +83,4 @@ public class ReconstructionReceiver {
 	[DllImport("ReconstructionReceiver")]
 	public static extern float GetReconstructionReceiveFrameRate(uint id);
 
-    public static void SetPaths()
-    {
-        _setPaths();
-    }
-
-    private static void _setPaths([System.Runtime.CompilerServices.CallerFilePath]string path = "") {
-        path = UnityEngine.Application.isEditor ? System.IO.Path.GetDirectoryName(path) : UnityEngine.Application.dataPath + "/Plugins";
-        Environment.SetEnvironmentVariable("PATH", path);
-    }
 }

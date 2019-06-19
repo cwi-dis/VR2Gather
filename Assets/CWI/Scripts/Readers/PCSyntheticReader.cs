@@ -12,7 +12,7 @@ public class PCSyntheticReader : PCBaseReader
         reader = API_cwipc_util.cwipc_synthetic(ref errorPtr);
         if (reader == System.IntPtr.Zero)
         {
-            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
             Debug.LogError("PCSyntheticReader: Error: " + errorMessage);
         }
     }

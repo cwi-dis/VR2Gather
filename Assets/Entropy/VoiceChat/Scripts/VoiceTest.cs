@@ -8,7 +8,8 @@ public class VoiceTest : MonoBehaviour {
     // Start is called before the first frame update
     IEnumerator Start() {
         int userID = 0;
-        string url = "http://localhost:9000";
+        //string url = "http://localhost:9000";
+        string url = "https://vrt-evanescent.viaccess-orca.com/audio/";
         SocketIOServer.player[userID] = player;
         compressor = new SpeeX();        
         MicroRecorder.Instance.Init(userID, true, true); // userID, useEcho, useSocket

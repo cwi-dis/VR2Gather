@@ -15,7 +15,7 @@ public class PCCompressedDirectoryReader : PCBaseReader {
         decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
         if (decoder == IntPtr.Zero)
         {
-            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
             Debug.LogError("PCCompressedDirectoryReader: cwipc_new_decoder: " + errorMessage);
         }
     }

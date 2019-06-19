@@ -18,18 +18,21 @@ public class PCSUBReader : PCBaseReader {
         failed = true;
         url = _url;
         streamNumber = _streamNumber;
-        
+
         bool ok = setup_sub_environment();
         if (!ok) {
             Debug.LogError("PCSUBReader: setup_sub_environment failed");
             return;
         }
-        
+
+        System.Threading.Thread.Sleep(2000);
+
         subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
         if (subHandle == IntPtr.Zero) {
             Debug.LogError("PCSUBReader: sub_create failed");
             return;
-        }
+        }else
+            Debug.Log("PCSUBReader: sub_create ok!");
 
         ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
         if (!ok) {
@@ -39,7 +42,7 @@ public class PCSUBReader : PCBaseReader {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
         if (decoder == IntPtr.Zero) {
-            string errorMessage = Marshal.PtrToStringAuto(errorPtr);
+            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
             Debug.LogError("PCSUBReader: cwipc_new_decoder: " + errorMessage);
             return;
         }
@@ -79,7 +82,8 @@ public class PCSUBReader : PCBaseReader {
         if (bytesNeeded == 0) {
             Debug.Log("No data");
             return null;
-        }
+        }else
+            Debug.Log("data "+ bytesNeeded);
 
         if (currentBuffer == null || bytesNeeded > currentBuffer.Length)
         {

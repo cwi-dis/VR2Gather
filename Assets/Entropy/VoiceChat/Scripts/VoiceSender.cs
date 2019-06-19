@@ -22,7 +22,7 @@ public class VoiceSender {
             socketIOServer = new SocketIOServer(useEcho);
         else {
             signals_unity_bridge_pinvoke.SetPaths();
-            handle = bin2dash_pinvoke.vrt_create("player_" + userID, bin2dash_pinvoke.VRT_4CC('R', 'A', 'W', 'W'), "http://localhost:9000/", 1000, 3000);
+            handle = bin2dash_pinvoke.vrt_create("player_" + userID, bin2dash_pinvoke.VRT_4CC('R', 'A', 'W', 'W'), "https://vrt-evanescent.viaccess-orca.com/audio/"/*"http://localhost:9000/"*/, 100000, 100000);
             if (handle == System.IntPtr.Zero) Debug.Log($">>> HANDLE ERROR ");
         }
     }
