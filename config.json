@@ -1,56 +1,121 @@
 {
-    "TVMs": {
-        "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
-        "exchangeName": "transcoder_out",
-        "offsetPosition": {
-            "x": 0.0,
-            "y": 0.875,
-            "z": 0.0
-        },
-        "offsetRotation": {
-            "x": 0.0,
-            "y": 36.0,
-            "z": 0.0
-        }
+  "TVMs": {
+    "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
+    "exchangeName": "transcoder_out",
+    "offsetPosition": {
+      "x": 0.0,
+      "y": 0.875,
+      "z": 0.0
     },
-    "PCs": [
-      {
-        "forceMesh": true,
-        "sourceType": "sub",
-        "cwicpcFilename": "../../../installed/lootCwicpc/loot_vox10_1000.cwicpc",
-        "cwicpcDirectory": "../../../installed/lootCwicpc",
-        "plyFilename": "../../../installed/lootPly/loot_vox10_1000.ply",
-        "plyDirectory": "../../../installed/lootPly",
-        "networkHost": "localhost",
-        "networkPort": 4303,
-        "subURL": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
-        "subStreamNumber": 0,
-        "pointSize": 0.008,
-        "position": {
-          "x": -2.0,
-          "y": 0.0,
-          "z": 2.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 180.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "offsetPosition": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "offsetRotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        }
+    "offsetRotation": {
+      "x": 0.0,
+      "y": 36.0,
+      "z": 0.0
+    }
+  },
+  "PCs": [
+    {
+      "forceMesh": true,
+      "sourceType": "realsense2",
+      "Realsense2Config": {
+        "url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
+        "local_url": "http://localhost:9000/",
+        "streamName": "testBed",
+        "octreeBits": 4,
+        "segmentSize": 500,
+        "sementLife": 500
+      },
+      "pointSize": 0.008,
+      "position": {
+        "x": -2.0,
+        "y": 0.0,
+        "z": 2.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 180.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "offsetPosition": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "offsetRotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
       }
-    ]
+    },
+    {
+      "forceMesh": true,
+      "sourceType": "sub",
+      "_subURL": "http://localhost:9000/testBed.mpd",
+      "subURL": "https://vrt-evanescent.viaccess-orca.com/fernando/testBed.mpd",
+      "pointSize": 0.008,
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 180.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "offsetPosition": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "offsetRotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "forceMesh": true,
+      "sourceType": "sub",
+      "_subURL": "http://localhost:9000/testBed.mpd",
+      "subURL": "https://vrt-evanescent.viaccess-orca.com/jack/bin2dashSink.mpd",
+      "pointSize": 0.008,
+      "position": {
+        "x": 2.0,
+        "y": 0.0,
+        "z": 2.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 180.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "offsetPosition": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "offsetRotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+
+  ]
 }
