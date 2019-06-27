@@ -13,7 +13,7 @@ public class PointCloudBufferRenderer : PointCloudBaseRenderer {
 
     protected override void OnData() { frameReady.getByteArray(); }
 
-    protected override void OnUpdate() { pointCount = frameReady.load_to_pointbuffer(ref pointBuffer); }
+    protected override void OnUpdate() { pointCount = frameReady.loadToPointbuffer(ref pointBuffer); }
 
     void OnRenderObject() {
         if (pointCount == 0 || pointBuffer ==null || !pointBuffer.IsValid() ) return;

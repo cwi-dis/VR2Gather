@@ -18,13 +18,13 @@ public class PointCloudBaseRenderer : MonoBehaviour {
     }
 
     protected void InternalInit(Config._PCs cfg, Shader pointShader ) {
-        transform.position = new Vector3(cfg.position.x, cfg.position.y, cfg.position.z);
-        transform.rotation = Quaternion.Euler(cfg.rotation);
-        transform.localScale = cfg.scale;
+        transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
+        transform.rotation = Quaternion.Euler(cfg.Render.rotation);
+        transform.localScale = cfg.Render.scale;
 
         if (material == null) {
             material = new Material(pointShader);
-            material.SetFloat("_PointSize", cfg.pointSize);
+            material.SetFloat("_PointSize", cfg.Render.pointSize);
             material.SetColor("_Tint", pointTint);
             material.hideFlags = HideFlags.DontSave;
         }
@@ -48,7 +48,7 @@ public class PointCloudBaseRenderer : MonoBehaviour {
                 Debug.LogError("Cannot create synthetic pointcloud reader");
             }
         }
-        else if (cfg.sourceType == "realsense2")
+        else if (cfg.sourceType == "rs2")
         {
             currentPCReader = new PCRealSense2Reader(cfg);
             if (currentPCReader == null)
@@ -56,14 +56,14 @@ public class PointCloudBaseRenderer : MonoBehaviour {
                 Debug.LogError("Cannot create realsense2 pointcloud reader");
             }
         }
-        else if (cfg.sourceType == "network")
+        else if (cfg.sourceType == "net")
         {
-            currentPCReader = new PCSocketReader(cfg.networkHost, cfg.networkPort);
+            currentPCReader = new PCSocketReader(cfg.NetConfig.hostName, cfg.NetConfig.port);
             if (currentPCReader == null)
                 Debug.LogError("Cannot create remote socket pointclud reader");
         }
         else if (cfg.sourceType == "sub") {
-            currentPCReader = new PCSUBReader(cfg.subURL, cfg.subStreamNumber);
+            currentPCReader = new PCSUBReader(cfg.SUBConfig);
             if (currentPCReader == null) 
                 Debug.LogError("Cannot create remote signals pointcloud reader");
         }
@@ -114,10 +114,11 @@ public class PointCloudBaseRenderer : MonoBehaviour {
         lock (this) {
             if (frameReady != null) {
                 OnUpdate();
-                frameReady.free();
+                frameReady.FreeFrameData();
                 frameReady = null;
             }
         }
+        if (currentPCReader != null) currentPCReader.update();
     }
 
     protected virtual void OnUpdate() { }

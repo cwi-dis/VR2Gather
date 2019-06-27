@@ -1,4 +1,5 @@
 {
+  "memoryDamping": 1.3,
   "TVMs": {
     "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
     "exchangeName": "transcoder_out",
@@ -15,107 +16,126 @@
   },
   "PCs": [
     {
-      "forceMesh": true,
-      "sourceType": "realsense2",
+      "sourceType": "rs2",
       "Realsense2Config": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
-        "local_url": "http://localhost:9000/",
+        "configFilename": ""
+      },
+      "NetConfig": {
+        "hostName": "localhost",
+        "port": 16384
+      },
+      "Encoder": {
+        "octreeBits": 4
+      },
+      "Bin2Dash": {
         "streamName": "testBed",
-        "octreeBits": 4,
+        "url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
+        "_url": "http://localhost:9000/",
         "segmentSize": 500,
-        "sementLife": 500
+        "segmentLife": 500
       },
-      "pointSize": 0.008,
-      "position": {
-        "x": -2.0,
-        "y": 0.0,
-        "z": 2.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 180.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
-      "offsetPosition": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "offsetRotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+      "Render": {
+        "forceMesh": true,
+        "pointSize": 0.008,
+        "position": {
+          "x": -2.0,
+          "y": 0.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 180.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "offsetPosition": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "offsetRotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
     },
     {
-      "forceMesh": true,
       "sourceType": "sub",
-      "_subURL": "http://localhost:9000/testBed.mpd",
-      "subURL": "https://vrt-evanescent.viaccess-orca.com/fernando/testBed.mpd",
-      "pointSize": 0.008,
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 2.0
+      "SUBConfig": {
+        "_url": "http://localhost:9000/testBed.mpd",
+        "url": "https://vrt-evanescent.viaccess-orca.com/fernando/testBed.mpd"
       },
-      "rotation": {
-        "x": 0.0,
-        "y": 180.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
-      "offsetPosition": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "offsetRotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+      "Render": {
+        "forceMesh": true,
+        "pointSize": 0.008,
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 180.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "offsetPosition": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "offsetRotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
     },
     {
-      "forceMesh": true,
       "sourceType": "sub",
-      "_subURL": "http://localhost:9000/testBed.mpd",
-      "subURL": "https://vrt-evanescent.viaccess-orca.com/jack/bin2dashSink.mpd",
-      "pointSize": 0.008,
-      "position": {
-        "x": 2.0,
-        "y": 0.0,
-        "z": 2.0
+      "SUBConfig": {
+        "_url": "http://localhost:9000/testBed.mpd",
+        "2url": "https://vrt-evanescent.viaccess-orca.com/jack/bin2dashSink.mpd",
+        "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd"
       },
-      "rotation": {
-        "x": 0.0,
-        "y": 180.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
-      "offsetPosition": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "offsetRotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+      "Render": {
+        "forceMesh": true,
+        "pointSize": 0.008,
+        "position": {
+          "x": 2.0,
+          "y": 0.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 180.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "offsetPosition": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "offsetRotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
       }
     }
-
   ]
 }

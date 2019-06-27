@@ -4,6 +4,7 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
+    public float memoryDamping = 1.3f;
     [Serializable]
     public class _TVMs
     {
@@ -17,44 +18,70 @@ public class Config {
     [Serializable]
     public class _PCs
     {
-        public bool     forceMesh;
         public string   sourceType;
         public string   cwicpcFilename;
         public string   cwicpcDirectory;
         public string   plyFilename;
         public string   plyDirectory;
-        public string   networkHost;
-        public int      networkPort;
-        public string   subURL;
+        [Serializable]
+        public class _SUBConfig
+        {
+            public string url;
+            public int    streamNumber;
+        }
+        public _SUBConfig SUBConfig;
 
         [Serializable]
         public class _Realsense2Config
         {
-            public string   configFilename;
-            public string   url;
-            public string   streamName;
-            public int      octreeBits;
-            public int      segmentSize;
-            public int      sementLife;
+            public string configFilename;
         }
         public _Realsense2Config Realsense2Config;
-        public int      subStreamNumber;
 
-        public float    pointSize = 0.008f;
-        public Vector3  position;
-        public Vector3  rotation;
-        public Vector3  scale = Vector3.one;
-        public Vector3  offsetPosition;
-        public Vector3  offsetRotation;
+        [Serializable]
+        public class _NetConfig
+        {
+            public string hostName;
+            public int port;
+        }
+        public _NetConfig NetConfig;
+
+        [Serializable]
+        public class _Encoder
+        {
+            public int      octreeBits;
+        }
+        public _Encoder Encoder;
+        [Serializable]
+        public class _Bin2Dash
+        {
+            public string url;
+            public string streamName;
+            public int segmentSize;
+            public int segmentLife;
+        }
+        public _Bin2Dash Bin2Dash;
+
+        [Serializable]
+        public class _Render
+        {
+            public bool forceMesh;
+            public float pointSize = 0.008f;
+            public Vector3 position;
+            public Vector3 rotation;
+            public Vector3 scale = Vector3.one;
+            public Vector3 offsetPosition;
+            public Vector3 offsetRotation;
+        }
+        public _Render Render;
     };
     public _PCs[] PCs;
 
     static Config _Instance;
     public static Config Instance {
-        get {
-            var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json";
+        get {            
             if (_Instance == null) {
-                var file = System.IO.File.ReadAllText(path);
+                var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
                 _Instance = JsonUtility.FromJson<Config>(file);
             }
             return _Instance;

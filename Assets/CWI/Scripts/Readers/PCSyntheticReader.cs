@@ -32,7 +32,11 @@ public class PCSyntheticReader : PCBaseReader
         if (reader == System.IntPtr.Zero) return;
         API_cwipc_util.cwipc_source_free(reader);
         reader = System.IntPtr.Zero;
+        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
+
     }
+
+    protected PointCloudFrame pointCloudFrame = new PointCloudFrame();
 
     public virtual PointCloudFrame get() {
         if (reader == System.IntPtr.Zero) {
@@ -41,6 +45,9 @@ public class PCSyntheticReader : PCBaseReader
         }
         var rv = API_cwipc_util.cwipc_source_get(reader);
         if (rv == System.IntPtr.Zero) return null;
-        return new PointCloudFrame(rv);
+        pointCloudFrame.SetData(rv);
+        return pointCloudFrame;
     }
+
+    public virtual void update() { }
 }

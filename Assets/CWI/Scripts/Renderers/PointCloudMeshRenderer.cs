@@ -20,5 +20,5 @@ public class PointCloudMeshRenderer : PointCloudBaseRenderer {
     }
 
     protected override void OnData() { frameReady.getVertexArray(); }                        
-    protected override void  OnUpdate() { frameReady.load_to_mesh(ref mesh); }
+    protected override void  OnUpdate() { frameReady.loadToMesh(ref mesh); }
 }

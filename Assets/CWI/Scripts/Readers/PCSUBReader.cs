@@ -14,10 +14,10 @@ public class PCSUBReader : PCBaseReader {
     byte[] currentBuffer;
     IntPtr currentBufferPtr;
 
-    public PCSUBReader(string _url, int _streamNumber) {
+    public PCSUBReader(Config._PCs._SUBConfig cfg) {
         failed = true;
-        url = _url;
-        streamNumber = _streamNumber;
+        url = cfg.url;
+        streamNumber = cfg.streamNumber;
 
         bool ok = setup_sub_environment();
         if (!ok) {
@@ -64,6 +64,7 @@ public class PCSUBReader : PCBaseReader {
             subHandle = IntPtr.Zero;
             failed = true; // Not really failed, but reacts the same (nothing will work anymore)
         }
+        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
     }
 
     public bool eof() {
@@ -74,6 +75,7 @@ public class PCSUBReader : PCBaseReader {
         return !failed;
     }
 
+    PointCloudFrame pointCloudFrame = new PointCloudFrame();
     public PointCloudFrame get() {
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
         if (failed) return null;
@@ -88,7 +90,7 @@ public class PCSUBReader : PCBaseReader {
         if (currentBuffer == null || bytesNeeded > currentBuffer.Length)
         {
             Debug.Log("PCSUBReader: allocating more memory");
-            currentBuffer = new byte[(int)(bytesNeeded * 1.3f)]; // Reserves 30% more.
+            currentBuffer = new byte[(int)(bytesNeeded * Config.Instance.memoryDamping)]; // Reserves 30% more.
             currentBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(currentBuffer, 0);
         }
 
@@ -113,10 +115,10 @@ public class PCSUBReader : PCBaseReader {
             Debug.LogError("PCSUBReader: cwipc_decoder: did not return a pointcloud");
             return null;
         }
-
-
-        return new PointCloudFrame(pc);
-
+        pointCloudFrame.SetData(pc);
+        return pointCloudFrame;
     }
+
+    public virtual void update() { }
 
 }

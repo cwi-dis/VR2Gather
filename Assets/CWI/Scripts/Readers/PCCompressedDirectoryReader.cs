@@ -21,6 +21,7 @@ public class PCCompressedDirectoryReader : PCBaseReader {
     }
 
     public void free() {
+        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
     }
 
     public bool eof() {
@@ -30,6 +31,9 @@ public class PCCompressedDirectoryReader : PCBaseReader {
     public bool available(bool wait) {
         return allFilenames.Length != 0;
     }
+
+
+    PointCloudFrame pointCloudFrame = new PointCloudFrame();
 
     public PointCloudFrame get()
     {
@@ -54,7 +58,9 @@ public class PCCompressedDirectoryReader : PCBaseReader {
             Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: did not return a pointcloud");
             return null;
         }
-
-        return new PointCloudFrame(pc);
+        pointCloudFrame.SetData(pc);
+        return pointCloudFrame;
     }
+
+    public virtual void update() { }
 }

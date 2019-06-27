@@ -27,6 +27,8 @@ public class PCSocketReader : PCBaseReader
     }
 
     public void free() {
+        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
+
     }
 
     public bool eof() {
@@ -36,6 +38,7 @@ public class PCSocketReader : PCBaseReader
     public bool available(bool wait) {
         return !failed;
     }
+    PointCloudFrame pointCloudFrame = new PointCloudFrame();
 
     public PointCloudFrame get() {
         if (failed) return null;
@@ -57,11 +60,9 @@ public class PCSocketReader : PCBaseReader
         using (NetworkStream stream = clt.GetStream())
         {
             Byte[] data = new Byte[1024];
-
             do
             {
                 int numBytesRead = stream.Read(data, 0, data.Length);
-
                 if (numBytesRead == data.Length)
                 {
                     allData.AddRange(data);
@@ -89,8 +90,10 @@ public class PCSocketReader : PCBaseReader
             return null;
         }
 
-
-        return new PointCloudFrame(pc);
+        pointCloudFrame.SetData(pc);
+        return pointCloudFrame;
 
     }
+
+    public virtual void update() { }
 }

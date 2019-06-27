@@ -37,10 +37,8 @@ internal class API_cwipc_util {
 
 internal class API_cwipc_realsense2 {
     const System.UInt64 CWIPC_API_VERSION = 0x20190522;
-
     [DllImport("cwipc_realsense2")]
     internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion=CWIPC_API_VERSION);
-
 }
 
 internal class API_cwipc_codec {
@@ -59,7 +57,7 @@ internal class API_cwipc_codec {
     };
 
     const System.UInt64 CWIPC_API_VERSION = 0x20190522;
-    public const int CWIPC_ENCODER_PARAM_VERION = 0x20190506;
+    public const int CWIPC_ENCODER_PARAM_VERSION = 0x20190506;
 
     [DllImport("cwipc_codec")]
     internal extern static IntPtr cwipc_new_decoder(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);

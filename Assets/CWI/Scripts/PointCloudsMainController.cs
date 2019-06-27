@@ -13,7 +13,7 @@ public class PointCloudsMainController : MonoBehaviour {
         {
             var pc = Config.Instance.PCs[0];
             PointCloudBaseRenderer pct = null;
-            if (pc.forceMesh || SystemInfo.graphicsShaderLevel < 50)
+            if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
             else
                 pct = new GameObject("PC").AddComponent<PointCloudBufferRenderer>();
@@ -26,7 +26,7 @@ public class PointCloudsMainController : MonoBehaviour {
         {
             var pc = Config.Instance.PCs[1];
             PointCloudBaseRenderer pct = null;
-            if (pc.forceMesh || SystemInfo.graphicsShaderLevel < 50)
+            if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
             else
                 pct = new GameObject("PC").AddComponent<PointCloudBufferRenderer>();
@@ -38,7 +38,7 @@ public class PointCloudsMainController : MonoBehaviour {
         {
             var pc = Config.Instance.PCs[2];
             PointCloudBaseRenderer pct = null;
-            if (pc.forceMesh || SystemInfo.graphicsShaderLevel < 50)
+            if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
             else
                 pct = new GameObject("PC").AddComponent<PointCloudBufferRenderer>();
