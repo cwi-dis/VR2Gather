@@ -11,10 +11,13 @@ public class OrchestrationController : PilotController {
         test.controller = this;
     }
 
-    public override void MessageActivation(string message) {
-        if (message == "START") {
+    public override void MessageActivation(string msg) {
+        if (msg == MessageType.START) {
             if (test.isMaster && !test.isDebug) SceneManager.LoadScene("Sample Scenario 2");
             else SceneManager.LoadScene(test.scenarioIdText.text);
+        }
+        else if (msg == MessageType.READY) {
+            // Do something to check if all the users are ready (future implementation)
         }
     }
 }

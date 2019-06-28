@@ -30,23 +30,28 @@ public class Pilot2PresenterController : PilotController {
         }
     }
 
+    public void SendStartLivestream() {
+        string text = MessageType.LIVESTREAM + "_";
+        orchestrator.TestSendMessage(text + myTime);
+    }
+
     public void SendPlayVideo(int id) {
-        string text = "PLAY_";
+        string text = MessageType.PLAY + "_";
         orchestrator.TestSendMessage(text + id.ToString() + "_" + myTime);
     }
 
     public void SendPauseVideo(int id) {
-        string text = "PAUSE_";
+        string text = MessageType.PAUSE + "_";
         orchestrator.TestSendMessage(text + id.ToString() + "_" + myTime);
     }
 
     public override void MessageActivation(string message) {
         string[] msg = message.Split(new char[] { '_' });
-        if (msg[0] == "PLAY") {
+        if (msg[0] == MessageType.PLAY) {
             if (msg[1] == "1") videos[0].Play();
             else if (msg[1] == "2") videos[1].Play();
         }
-        else if (msg[0] == "PAUSE") {
+        else if (msg[0] == MessageType.PAUSE) {
             if (msg[1] == "1") videos[0].Pause();
             else if (msg[1] == "2") videos[1].Pause();
         }

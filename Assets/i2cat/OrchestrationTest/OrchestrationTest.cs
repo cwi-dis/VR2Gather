@@ -343,12 +343,9 @@ public class OrchestrationTest : MonoBehaviour {
         usersPanel.SetActive(false);
         createButton.interactable = true;
         joinButton.interactable = true;
-
-        //if (isMaster && !isDebug) SceneManager.LoadScene("Sample Scenario 2");
-        //else SceneManager.LoadScene(scenarioIdText.text);
-
-        if (isMaster || isDebug) orchestrator.TestSendMessage("START");
-        else orchestrator.TestSendMessage("READY");
+        
+        if (isMaster || isDebug) orchestrator.TestSendMessage(MessageType.START);
+        else orchestrator.TestSendMessage(MessageType.READY);
     }
 
     public void StartGame() {

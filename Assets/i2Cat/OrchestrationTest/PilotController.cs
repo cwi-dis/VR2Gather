@@ -45,6 +45,7 @@ abstract public class PilotController : MonoBehaviour {
 
     public virtual void Update() {
         myTime = TimeStampTest.GetNetworkTime().ToString("HH:mm:ss.fff");
+        //TimeStampTest.UpdateTimes();
     }
 
     public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {

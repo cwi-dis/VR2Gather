@@ -7,6 +7,10 @@ using System.Net.Sockets;
 
 public class TimeStampTest {
 
+    public static DateTime sysTime;
+    public static DateTime netTime;
+    public static long deltaTime;
+
     public static DateTime GetNetworkTime() {
         const string ntpServer = "time.google.com";
 
@@ -57,6 +61,12 @@ public class TimeStampTest {
 
     public static DateTime GetSystemTime() {
         return DateTime.UtcNow;
+    }
+
+    public static void UpdateTimes() {
+        netTime = GetNetworkTime();
+        sysTime = GetSystemTime();
+        deltaTime = sysTime.Ticks - netTime.Ticks;
     }
 
     static uint SwapEndianness(ulong x) {
