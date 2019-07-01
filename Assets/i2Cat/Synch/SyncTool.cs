@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
 
-public class TimeStampTest {
+public class SyncTool {
 
     public static DateTime sysTime;
     public static DateTime netTime;
@@ -105,7 +105,7 @@ public class TimeStampTest {
     }
 
     /// <Summary> Parse to DateTime format a given string </Summary>
-    /// <param name='str'> string with HH:mm:ss.fff format </param>
+    /// <param name="str"> string with HH:mm:ss.fff format </param>
     /// <returns> Returns the DateTime conversion of the given string</returns>
     public static DateTime ToDateTime(string str) {
         DateTime dateTime = new DateTime(myTime.Year, myTime.Month, myTime.Day);
@@ -116,7 +116,7 @@ public class TimeStampTest {
     }
 
     /// <Summary> Get the delay in seconds (double) between this client and a message received </Summary>
-    /// <param name='received'> The DateTime of the received message </param>
+    /// <param name="received"> The DateTime of the received message </param>
     /// <returns> Returns the value in seconds (double) of the delay between this client and the message received </returns>
     public static double GetDelay(DateTime received){
         long ticksDelay = myTime.Ticks - received.Ticks;

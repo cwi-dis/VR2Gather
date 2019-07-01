@@ -10,7 +10,7 @@ public enum State {
     Default, Login, Create, Join, Lobby, InGame
 }
 
-public class OrchestrationTest : MonoBehaviour {
+public class OrchestrationBridge : MonoBehaviour {
     public bool isDebug = false;
     public bool useEcho = false;
 

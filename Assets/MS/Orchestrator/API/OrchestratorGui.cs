@@ -163,7 +163,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     public bool connectedToOrchestrator = false;
 
     [SerializeField]
-    private OrchestrationTest test;
+    private OrchestrationBridge test;
 
 
     public ScenarioInstance activeScenario;

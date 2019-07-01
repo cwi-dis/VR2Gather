@@ -32,18 +32,18 @@ public class Pilot2PresenterController : PilotController {
 
     public void SendStartLivestream() {
         string text = MessageType.LIVESTREAM + "_";
-        orchestrator.TestSendMessage(text + TimeStampTest.GetMyTimeString());
+        orchestrator.TestSendMessage(text + SyncTool.GetMyTimeString());
     }
 
     public void SendPlayVideo(int id) {
         string text = MessageType.PLAY + "_";
-        orchestrator.TestSendMessage(text + id.ToString() + "_" + TimeStampTest.GetMyTimeString());
+        orchestrator.TestSendMessage(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Play();
     }
 
     public void SendPauseVideo(int id) {
         string text = MessageType.PAUSE + "_";
-        orchestrator.TestSendMessage(text + id.ToString() + "_" + TimeStampTest.GetMyTimeString());
+        orchestrator.TestSendMessage(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Pause();
     }
 

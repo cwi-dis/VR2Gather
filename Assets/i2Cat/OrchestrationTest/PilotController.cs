@@ -16,7 +16,7 @@ abstract public class PilotController : MonoBehaviour {
     public VideoPlayer[] videos;
 
     //[HideInInspector]
-    public OrchestrationTest test;
+    public OrchestrationBridge test;
     //[HideInInspector]
     public OrchestratorGui orchestrator;
 
@@ -44,12 +44,12 @@ abstract public class PilotController : MonoBehaviour {
     public virtual void Start() {
         mainPanel = GameObject.Find("MainPanel");
         background = GameObject.Find("Background");
-        test = GameObject.Find("ManagerTest").GetComponent<OrchestrationTest>();
+        test = GameObject.Find("ManagerTest").GetComponent<OrchestrationBridge>();
         orchestrator = GameObject.Find("MainWindow").GetComponent<OrchestratorGui>();
     }
 
     public virtual void Update() {
-        TimeStampTest.UpdateTimes();
+        SyncTool.UpdateTimes();
     }
 
     public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {

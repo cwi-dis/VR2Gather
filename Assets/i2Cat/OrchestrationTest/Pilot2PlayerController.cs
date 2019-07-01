@@ -74,13 +74,13 @@ public class Pilot2PlayerController : PilotController {
         else if (msg[0] == MessageType.PLAY) {
             if (msg[1] == "1") todoAction = Actions.VIDEO_1_START;
             else if (msg[1] == "2") todoAction = Actions.VIDEO_2_START;
-            delay = (float)TimeStampTest.GetDelay(TimeStampTest.ToDateTime(msg[2]));
+            delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
             Debug.Log(delay);
         }
         else if (msg[0] == MessageType.PAUSE) {
             if (msg[1] == "1") todoAction = Actions.VIDEO_1_PAUSE;
             else if (msg[1] == "2") todoAction = Actions.VIDEO_2_PAUSE;
-            delay = (float)TimeStampTest.GetDelay(TimeStampTest.ToDateTime(msg[2]));
+            delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
             Debug.Log(delay);
         }
     }
