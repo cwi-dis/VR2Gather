@@ -6,6 +6,8 @@ using OrchestratorWrapping;
 using UnityEngine.Video;
 using System;
 
+public enum Actions { VIDEO_1_START, VIDEO_1_PAUSE, VIDEO_2_START, VIDEO_2_PAUSE, WAIT }
+
 abstract public class PilotController : MonoBehaviour {
 
     public static int my_ID = 0;
@@ -23,8 +25,11 @@ abstract public class PilotController : MonoBehaviour {
     [HideInInspector]
     public GameObject background;
 
-    [HideInInspector]
-    public string myTime;
+    #region Sync
+    public float timer = 0.0f;
+    public float delay = 0.0f;
+    public Actions todoAction = Actions.WAIT;
+    #endregion
 
     #region Utils
     [HideInInspector]
@@ -44,8 +49,7 @@ abstract public class PilotController : MonoBehaviour {
     }
 
     public virtual void Update() {
-        myTime = TimeStampTest.GetNetworkTime().ToString("HH:mm:ss.fff");
-        //TimeStampTest.UpdateTimes();
+        TimeStampTest.UpdateTimes();
     }
 
     public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {

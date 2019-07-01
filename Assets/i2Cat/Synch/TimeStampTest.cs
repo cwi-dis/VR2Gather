@@ -4,12 +4,15 @@ using UnityEngine;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Globalization;
 
 public class TimeStampTest {
 
     public static DateTime sysTime;
     public static DateTime netTime;
-    public static long deltaTime;
+    public static DateTime myTime;
+    public static long delta;
+    public static long offset = 2 * TimeSpan.TicksPerSecond;
 
     public static DateTime GetNetworkTime() {
         const string ntpServer = "time.google.com";
@@ -60,13 +63,65 @@ public class TimeStampTest {
     }
 
     public static DateTime GetSystemTime() {
-        return DateTime.UtcNow;
+        return DateTime.Now;
     }
 
     public static void UpdateTimes() {
         netTime = GetNetworkTime();
         sysTime = GetSystemTime();
-        deltaTime = sysTime.Ticks - netTime.Ticks;
+        UpdateDelta();
+        UpdateMyTime();
+        //Debug.Log("NETWORK: " + netTime);
+        //Debug.Log("SYSTEM: " + sysTime);
+        //Debug.Log("MY TIME: " + myTime);
+        //Debug.Log("TOOL: " + ToDateTime(GetMyTimeString()));
+    }
+
+    public static void UpdateDelta() {
+        netTime = GetNetworkTime();
+        sysTime = GetSystemTime();
+        delta = sysTime.Ticks - netTime.Ticks;
+    }
+
+    public static long GetDelta() {
+        UpdateDelta();
+        return delta;
+    }
+    
+    public static void UpdateMyTime() {
+        UpdateDelta();
+        myTime = new DateTime(GetSystemTime().Ticks + offset - delta);
+    }
+
+    public static DateTime GetMyTime() {
+        UpdateMyTime();
+        return myTime;
+    }
+
+    /// <Summary> Converts myTime to string format HH:mm:ss.fff </Summary>
+    /// <returns> Returns the string of myTime HH:mm:ss.fff </returns>
+    public static string GetMyTimeString() {
+        return GetMyTime().ToString("HH:mm:ss.fff");
+    }
+
+    /// <Summary> Parse to DateTime format a given string </Summary>
+    /// <param name='str'> string with HH:mm:ss.fff format </param>
+    /// <returns> Returns the DateTime conversion of the given string</returns>
+    public static DateTime ToDateTime(string str) {
+        DateTime dateTime = new DateTime(myTime.Year, myTime.Month, myTime.Day);
+        string aux = dateTime.ToString("MM/dd/yyyy ");
+        aux = aux + str;
+        dateTime = DateTime.ParseExact(aux, "MM/dd/yyyy HH:mm:ss.fff", CultureInfo.InvariantCulture);
+        return dateTime;
+    }
+
+    /// <Summary> Get the delay in seconds (double) between this client and a message received </Summary>
+    /// <param name='received'> The DateTime of the received message </param>
+    /// <returns> Returns the value in seconds (double) of the delay between this client and the message received </returns>
+    public static double GetDelay(DateTime received){
+        long ticksDelay = myTime.Ticks - received.Ticks;
+        TimeSpan ts = TimeSpan.FromTicks(ticksDelay);
+        return ts.TotalSeconds;
     }
 
     static uint SwapEndianness(ulong x) {
