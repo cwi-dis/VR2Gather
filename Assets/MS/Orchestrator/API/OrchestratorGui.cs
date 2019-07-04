@@ -987,5 +987,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     public void TestSendMessage(string msg) {
         orchestratorWrapper.SendMessageToAll(msg);
     }
+
+    public void TestSendPing(string msg, string id) {
+        orchestratorWrapper.SendMessage(msg, id);
+    }
     #endregion
 }
