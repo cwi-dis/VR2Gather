@@ -8,11 +8,11 @@ using System.Globalization;
 
 public class SyncTool {
 
-    public static DateTime sysTime;
-    public static DateTime netTime;
-    public static DateTime myTime;
-    public static long delta;
-    public static long offset = 2 * TimeSpan.TicksPerSecond;
+    public static DateTime sysTime; // The system clock time
+    public static DateTime netTime; // The NTP server clock time
+    public static DateTime myTime;  // The clock of the client synced with the NTP (should be same value as NTP)
+    public static long delta;       // The delta value between system clock and NTP clock
+    public static long offset = 0 * TimeSpan.TicksPerSecond;
 
     public static DateTime GetNetworkTime() {
         const string ntpServer = "time.google.com";
@@ -122,6 +122,12 @@ public class SyncTool {
         long ticksDelay = myTime.Ticks - received.Ticks;
         TimeSpan ts = TimeSpan.FromTicks(ticksDelay);
         return ts.TotalSeconds;
+    }
+
+    public static double GetDelayMilis(DateTime received) {
+        long ticksDelay = myTime.Ticks - received.Ticks;
+        TimeSpan ts = TimeSpan.FromTicks(ticksDelay);
+        return ts.TotalMilliseconds;
     }
 
     static uint SwapEndianness(ulong x) {

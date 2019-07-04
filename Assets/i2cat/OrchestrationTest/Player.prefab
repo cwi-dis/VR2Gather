@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4434842229477826213}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6200148662232649795
 MonoBehaviour:
@@ -72,7 +72,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4434842229477826213}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 36, z: 0}
 --- !u!114 &4434842228507487040
 MonoBehaviour:
@@ -119,9 +119,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4434842230143733152}
+  - {fileID: 8881052667274182068}
   - {fileID: 4434842228507487071}
   - {fileID: 5305413073146809291}
-  - {fileID: 8881052667274182068}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -138,10 +138,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
-  cam: {fileID: 4434842230143733153}
-  chat: {fileID: 0}
-  tvm: {fileID: 4434842228507487041}
-  pc: {fileID: 7392659942812053531}
+  cam: {fileID: 4434842230143733182}
+  chat: {fileID: 6200148662232649795}
+  tvm: {fileID: 4434842228507487040}
+  pc: {fileID: 4629115185107213979}
 --- !u!1 &4434842230143733153
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +253,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4434842229477826213}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4629115185107213979
 MonoBehaviour:

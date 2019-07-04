@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
-{
+public class PlayerManager : MonoBehaviour {
     public int id;
-    public GameObject cam;
+    public Camera cam;
     public VoicePlayer chat;
-    public GameObject tvm;
-    public GameObject pc;
+    public ShowTVMs tvm;
+    public PointCloudsMainController pc;
 }

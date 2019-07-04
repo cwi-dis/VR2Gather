@@ -11,6 +11,7 @@ public enum Actions { VIDEO_1_START, VIDEO_1_PAUSE, VIDEO_2_START, VIDEO_2_PAUSE
 abstract public class PilotController : MonoBehaviour {
 
     public static int my_ID = 0;
+    public string masterID = null;
 
     public PlayerManager[] players;
     public VideoPlayer[] videos;
@@ -50,6 +51,13 @@ abstract public class PilotController : MonoBehaviour {
 
     public virtual void Update() {
         SyncTool.UpdateTimes();
+    }
+
+    public void SendPing() {
+        string text = MessageType.PING + "_";
+        text = text + my_ID + "_" + SyncTool.GetMyTimeString();
+        orchestrator.TestSendPing(text, masterID);
+        Debug.Log("PING: " + text + " // " + masterID);
     }
 
     public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {
