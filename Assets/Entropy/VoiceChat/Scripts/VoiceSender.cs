@@ -1,6 +1,4 @@
-﻿#define USE_SOCKETS
-
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
@@ -22,7 +20,9 @@ public class VoiceSender {
             socketIOServer = new SocketIOServer(useEcho);
         else {
             signals_unity_bridge_pinvoke.SetPaths();
-            handle = bin2dash_pinvoke.vrt_create("player_" + userID, bin2dash_pinvoke.VRT_4CC('R', 'A', 'W', 'W'), "https://vrt-evanescent.viaccess-orca.com/audio/"/*"http://localhost:9000/"*/, 100000, 100000);
+            //string url = "https://vrt-evanescent.viaccess-orca.com/audio/";
+            string url = "http://localhost:9000/";
+            handle = bin2dash_pinvoke.vrt_create("player_" + userID, bin2dash_pinvoke.VRT_4CC('R', 'A', 'W', 'W'), url, 500, 500);
             if (handle == System.IntPtr.Zero) Debug.Log($">>> HANDLE ERROR ");
         }
     }

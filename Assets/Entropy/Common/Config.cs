@@ -30,6 +30,7 @@ public class Config {
             public int    streamNumber;
         }
         public _SUBConfig SUBConfig;
+        public _SUBConfig AudioSUBConfig;
 
         [Serializable]
         public class _Realsense2Config
@@ -61,6 +62,7 @@ public class Config {
             public int segmentLife;
         }
         public _Bin2Dash Bin2Dash;
+        public _Bin2Dash AudioBin2Dash;
 
         [Serializable]
         public class _Render

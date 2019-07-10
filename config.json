@@ -24,6 +24,17 @@
         "hostName": "localhost",
         "port": 16384
       },
+      "AudioBin2Dash": {
+        "streamName": "audio",
+        "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
+        "url": "http://localhost:9000/",
+        "segmentSize": 500,
+        "segmentLife": 500
+      },
+      "AudioSUBConfig": {
+        "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/audio.mpd",
+        "url": "http://localhost:9000/audio.mpd"
+      },
       "Encoder": {
         "octreeBits": 4
       },

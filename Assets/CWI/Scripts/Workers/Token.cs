@@ -6,11 +6,13 @@ namespace Workers
 {
     public class Token
     {
-        public Token(int forks) { totalForks = forks; }
+        public Token(int forks=1) { totalForks = forks; }
         public Token(Token token) { original = token; currentBuffer = token.currentBuffer; currentSize = token.currentSize; }
 
         public int totalForks;
         public int currentForks;
+        public byte[] currentByteArray;
+        public float[] currentFloatArray;
         public System.IntPtr currentBuffer;
         public int currentSize;
         public Token original;

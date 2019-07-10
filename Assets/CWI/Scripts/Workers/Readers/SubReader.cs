@@ -7,6 +7,7 @@ namespace Workers
         string url;
         int streamNumber;        
         System.IntPtr subHandle;
+        byte[] currentBufferArray;
         System.IntPtr currentBuffer;
         int dampedSize = 0;
 
@@ -39,7 +40,7 @@ namespace Workers
         public override void OnStop()
         {
             base.OnStop();
-            if (currentBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(currentBuffer);
+            if (subHandle != System.IntPtr.Zero) signals_unity_bridge_pinvoke.sub_destroy(subHandle);
         }
 
 
@@ -49,21 +50,25 @@ namespace Workers
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
                     if (size > dampedSize) {
+                        Debug.Log("DATA!!!");
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
-                        if (currentBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(currentBuffer);
-                        currentBuffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(dampedSize);
+
+                        currentBufferArray = new byte[dampedSize];
+                        currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                     }
 
                     int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, currentBuffer, size, ref info);
                     if (bytesRead == size) {
                         // All ok, yield to the next process
                         token.currentBuffer = currentBuffer;
+                        token.currentByteArray = currentBufferArray;
                         token.currentSize = bytesRead;
                         Next();
                     }
                     else
                         Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                }else
+                }
+                else
                     Debug.LogError("PCSUBReader: No data.");
             }
         }

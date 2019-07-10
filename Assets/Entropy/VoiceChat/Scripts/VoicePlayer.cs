@@ -51,7 +51,9 @@ public class VoicePlayer : MonoBehaviour {
         if (subHandle != System.IntPtr.Zero) {
             signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
             int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 0, System.IntPtr.Zero, 0, ref info);
-            if (bytesNeeded == 0) return;
+            if (bytesNeeded == 0)
+                return;
+            Debug.Log("DATA!!!!");
 
             if (data == null || bytesNeeded > data.Length) {
                 Debug.Log("PCSUBReader: allocating more memory");
