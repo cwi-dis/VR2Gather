@@ -68,8 +68,6 @@ namespace Workers
                     else
                         Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                 }
-                else
-                    Debug.LogError("PCSUBReader: No data.");
             }
         }
     }

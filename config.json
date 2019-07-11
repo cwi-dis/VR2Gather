@@ -29,7 +29,7 @@
         "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
         "url": "http://localhost:9000/",
         "segmentSize": 500,
-        "segmentLife": 500
+        "segmentLife": 30000
       },
       "AudioSUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/audio.mpd",

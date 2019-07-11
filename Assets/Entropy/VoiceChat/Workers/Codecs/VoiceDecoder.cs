@@ -25,7 +25,6 @@ namespace Workers
             const int offset = 1 + 8;
             base.Update();
             if (token != null) {
-                Debug.Log("Decode");
                 if (receiveBuffer == null) receiveBuffer = new float[bufferLength];
                 decoder.Decode(token.currentByteArray, offset, token.currentByteArray.Length - offset, receiveBuffer);
                 token.currentFloatArray = receiveBuffer;
