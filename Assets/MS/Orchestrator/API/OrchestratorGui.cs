@@ -222,6 +222,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             new GuiCommandDescription("Login", new List<RectTransform> { userNamePanel, userPasswordPanel }, Login),
             new GuiCommandDescription("Logout", null, Logout),
 
+            //NTP
+            new GuiCommandDescription("GetNTPTime", null, GetNTPTime),
+
             //Sessions
             new GuiCommandDescription("AddSession", new List<RectTransform> { scenarioIdPanel, sessionNamePanel, sessionDescriptionPanel }, AddSession),
             new GuiCommandDescription("GetSessions", null, GetSessions),
@@ -277,6 +280,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     public void Logout()
     {
         orchestratorWrapper.Logout();
+    }
+
+    private void GetNTPTime()
+    {
+        Debug.Log("GetNTPTime::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        orchestratorWrapper.GetNTPTime();
     }
 
     public void GetSessions()
@@ -595,6 +604,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             }
         }
         UpdateEnabledItems();
+    }
+       
+    public void OnGetNTPTimeResponse(ResponseStatus status, string time)
+    {
+        Debug.Log("OnGetNTPTimeResponse::NtpTime::" + time);
+        Debug.Log("OnGetNTPTimeResponse::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
     }
 
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions)

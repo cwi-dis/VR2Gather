@@ -130,6 +130,19 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
+        public bool GetNTPTime()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetNTPTime");
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnGetNTPTimeResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime.ntpTime);
+        }
+
         public bool AddSession(string scenarioId, string sessionName, string sessionDescription)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
@@ -413,6 +426,9 @@ namespace OrchestratorWrapping
                         },
                         OnLoginResponse),
                     new OrchestratorCommand("Logout", null, OnLogoutResponse),
+                    
+                    //NTP
+                    new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
 
                     //sessions
                     new OrchestratorCommand("AddSession", new List<Parameter>

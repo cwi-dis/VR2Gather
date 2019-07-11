@@ -75,6 +75,13 @@ namespace OrchestratorWrapping
         }
     }
 
+    public class NtpClock : OrchestratorElement
+    {
+        public string ntpTime;
+
+        public NtpClock() { }
+    }
+
     public class Scenario : OrchestratorElement
     {
         public string scenarioId;

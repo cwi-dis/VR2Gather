@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/CWI/Scenes/PointClouds.unity
     guid: 0b9b371832b67104a84531030cb7de72
   - enabled: 1
-    path: Assets/i2Cat/OrchestrationTest/OrchestrationTest.unity
+    path: Assets/i2Cat/OrchestrationTest/OrchestrationMenu.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
     path: Assets/i2Cat/OrchestrationTest/Sample Scenario.unity

@@ -21,6 +21,8 @@ namespace OrchestratorWrapping
         void OnLoginResponse(ResponseStatus status, string userId);
         void OnLogoutResponse(ResponseStatus status);
 
+        void OnGetNTPTimeResponse(ResponseStatus status, string time);
+
         void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions);
         void OnAddSessionResponse(ResponseStatus status, Session session);
         void OnGetSessionInfoResponse(ResponseStatus status, Session session);
