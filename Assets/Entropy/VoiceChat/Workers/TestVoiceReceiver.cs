@@ -13,7 +13,7 @@ public class TestVoiceReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     IEnumerator Start() {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
 
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, true, OnAudioRead);
