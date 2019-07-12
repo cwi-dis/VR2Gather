@@ -17,11 +17,12 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
+            Debug.Log("VoiceEncoder Sopped");
         }
 
         byte[]          sendBuffer;
         System.IntPtr   sendBufferPtr;
-
+        public byte counter=0;
         protected override void Update() {
             const int offset = 1 + 8;
             base.Update();
@@ -33,6 +34,7 @@ namespace Workers
                     sendBufferPtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(sendBuffer, 0);
                 }
                 encoder.Encode(token.currentFloatArray, 0, 1, sendBuffer, offset, sendBuffer.Length - offset);
+                //sendBuffer[0] = (byte)counter++;
                 token.currentBuffer= sendBufferPtr;
                 token.currentSize = sendBuffer.Length;
                 Next();                

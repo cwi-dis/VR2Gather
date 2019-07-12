@@ -28,7 +28,11 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
+            Debug.Log("VoiceReader Sopped");
         }
+
+        //     int position = 0;
+        //     float frequency = 440;
 
         string device;
         int         samples;
@@ -39,13 +43,13 @@ namespace Workers
                 device = Microphone.devices[0];
                 int currentMinFreq;
                 Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
-                samples = 16000;//codec.recorderFrequency;
+                samples = 16000;//codec.recorderFrequency;1
                 bufferLength = 320;//codec.bufferLeght;
 
                 recorder = Microphone.Start(device, true, 1, samples);
                 samples = recorder.samples;
                 buffer = new float[bufferLength];
-                Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength}");
+                Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
 
                 int readPosition = 0;
                 while (true) { 
@@ -61,6 +65,20 @@ namespace Workers
 
                         if (available > bufferLength) {
                             recorder.GetData(buffer, readPosition);
+
+/*
+
+                            var count = 0;
+                            while (count < bufferLength)
+                            {
+                                buffer[count] = Mathf.Sign(Mathf.Sin(2 * Mathf.PI * frequency * position));
+                                position++;
+                                count++;
+                            }
+*/
+
+
+
                             readPosition = (readPosition + bufferLength) % samples;
                             bReady = true;
                         }

@@ -17,11 +17,11 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
+            Debug.Log("VoiceDecoder Sopped");
         }
 
         float[] receiveBuffer;
-        protected override void Update()
-        {
+        protected override void Update() {
             const int offset = 1 + 8;
             base.Update();
             if (token != null) {

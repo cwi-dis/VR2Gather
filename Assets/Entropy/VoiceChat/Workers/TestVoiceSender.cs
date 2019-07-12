@@ -18,16 +18,10 @@ public class TestVoiceSender : MonoBehaviour
         reader.token = new Workers.Token(1);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnDestroy()
     {
-        if (reader != null) reader.Stop();
-        if (codec != null) codec.Stop();
-        if (writer != null) writer.Stop();
+        reader?.Stop();
+        codec?.Stop();
+        writer?.Stop();
     }
 }

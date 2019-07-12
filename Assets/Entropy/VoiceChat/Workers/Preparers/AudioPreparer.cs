@@ -12,6 +12,7 @@ namespace Workers
         int writePosition;
         int readPosition;
 
+
         public AudioPreparer() : base(WorkerType.End)
         {
             bufferSize = 65536;
@@ -25,7 +26,8 @@ namespace Workers
         public override void OnStop()
         {
             base.OnStop();
-//            if (byteArray.Length != 0) byteArray.Dispose();
+            //            if (byteArray.Length != 0) byteArray.Dispose();
+            Debug.Log("AudioPreparer Sopped");
         }
 
         protected override void Update()
@@ -37,14 +39,12 @@ namespace Workers
                 if (writePosition + len < bufferSize) {
                     System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
                     writePosition += len;
-                    Debug.Log($"writePosition {writePosition}");
                 }
                 else {
                     int partLen = bufferSize - writePosition;
                     System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
                     System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
                     writePosition = len - partLen;
-                    Debug.Log($"writePosition {writePosition}");
                 }
                 Next();
             }
@@ -58,16 +58,18 @@ namespace Workers
             }
         }
 
-        bool firstTime = true;
-        public bool GetBuffer(float[] dst, int len)
-        {
-            if ((firstTime && available > 320) || !firstTime)
+    bool firstTime = true;
+        public bool GetBuffer(float[] dst, int len) {
+            if ((firstTime && available >= 320) || !firstTime)
             {
                 firstTime = false;
-                if (available > len) {
-                    if (writePosition < readPosition) {
+                if (available >= len)
+                {
+                    if (writePosition < readPosition)
+                    {
                         int partLen = bufferSize - readPosition;
-                        if (partLen > len) {
+                        if (partLen > len)
+                        {
                             System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                             readPosition += len;
                         }
@@ -83,8 +85,11 @@ namespace Workers
                         System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                         readPosition += len;
                     }
+
                     return true;
                 }
+                else
+                    System.Array.Clear(dst, 0, len);
             }
 
             return false;

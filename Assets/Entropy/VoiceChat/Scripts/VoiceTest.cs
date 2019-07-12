@@ -12,7 +12,7 @@ public class VoiceTest : MonoBehaviour {
         //string url = "https://vrt-evanescent.viaccess-orca.com/audio/";
         SocketIOServer.player[userID] = player;
         compressor = new SpeeX();        
-        MicroRecorder.Instance.Init(userID, true, false); // userID, useEcho, useSocket
+        MicroRecorder.Instance.Init(userID, true, true); // userID, useEcho, useSocket
         if (SocketIOServer.Instance != null) {
             yield return null;
             player.Init();

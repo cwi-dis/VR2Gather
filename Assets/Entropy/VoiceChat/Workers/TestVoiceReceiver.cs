@@ -28,15 +28,15 @@ public class TestVoiceReceiver : MonoBehaviour
         reader.token = new Workers.Token();
     }
 
+    void OnDestroy() {
+        reader?.Stop();
+        codec?.Stop();
+        preparer?.Stop();
+    }
+
     void OnAudioRead(float[] data) {
         preparer?.GetBuffer(data, data.Length);
     }
 
 
-    void OnDestroy()
-    {
-        reader?.Stop();
-        codec?.Stop();
-        preparer?.Stop();
-    }
 }

@@ -24,8 +24,9 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            base.OnStop();
             if (uploader != System.IntPtr.Zero) { bin2dash_pinvoke.vrt_destroy(uploader); uploader = System.IntPtr.Zero; }
+            base.OnStop();
+            Debug.Log("B2DWriter Sopped");
         }
 
         protected override void Update() {
