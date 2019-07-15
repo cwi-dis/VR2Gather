@@ -35,6 +35,7 @@ namespace Workers
                 }
                 encoder.Encode(token.currentFloatArray, 0, 1, sendBuffer, offset, sendBuffer.Length - offset);
                 //sendBuffer[0] = (byte)counter++;
+                token.currentByteArray = sendBuffer;
                 token.currentBuffer= sendBufferPtr;
                 token.currentSize = sendBuffer.Length;
                 Next();                

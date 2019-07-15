@@ -8,19 +8,24 @@ public class TestVoiceReceiver : MonoBehaviour
     Workers.BaseWorker codec;
     Workers.AudioPreparer preparer;
 
+    public SocketIOConnection socketIOConnection;
 
     AudioSource audioSource;
 
     // Start is called before the first frame update
     IEnumerator Start() {
-        yield return new WaitForSeconds(2);
+        if (socketIOConnection != null) yield return socketIOConnection.WaitConnection();
+        else  yield return new WaitForSeconds(2);
 
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, true, OnAudioRead);
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.SUBReader(Config.Instance.PCs[0].AudioSUBConfig);
+
+        if(socketIOConnection==null) reader = new Workers.SUBReader(Config.Instance.PCs[0].AudioSUBConfig);
+        else reader = new Workers.SocketIOReader(socketIOConnection.socket);
+
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
 
