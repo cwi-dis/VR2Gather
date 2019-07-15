@@ -5,16 +5,16 @@ using BestHTTP.SocketIO;
 
 namespace Workers
 {
-    public class SocketIOReader : BaseWorker {
+    public class SocketIOReader : BaseWorker, ISocketReader {
         MonoBehaviour monoBehaviour;
         Coroutine coroutine;
 
         Stack<byte[]> free = new Stack<byte[]>();
         Stack<byte[]> pending = new Stack<byte[]>();
         byte[] buffer;
-
-        public SocketIOReader(Socket socket) : base(WorkerType.Init) {
-            socket.On("soundData", OnSoundData, false);
+        public SocketIOReader(SocketIOConnection  socketIOConnection, int userID) : base(WorkerType.Init) {            
+            socketIOConnection.registerReader(this, (byte)userID);
+//            socketIOConnection.socket.On("voiceChannel", OnSoundData, false);
             Start();
         }
 
@@ -41,21 +41,21 @@ namespace Workers
             Debug.Log("SocketIOReader Sopped");
         }
 
-        NTPTools.NTPTime tempTime;
-        void OnSoundData(Socket socket, Packet packet, params object[] args) {
-            if (packet != null && packet.Attachments != null) {
-                var data = packet.Attachments[0];
-                lock (pending) {
-                    byte[] tmp;
-                    if (free.Count == 0) {
-                        tmp = new byte[data.Length];
-                    }
-                    else {
-                        tmp = free.Pop();
-                    }
-                    System.Array.Copy(data, tmp, tmp.Length);
-                    pending.Push(tmp);
+        public void OnData(byte[] data)
+        {
+            lock (pending)
+            {
+                byte[] tmp;
+                if (free.Count == 0)
+                {
+                    tmp = new byte[data.Length];
                 }
+                else
+                {
+                    tmp = free.Pop();
+                }
+                System.Array.Copy(data, tmp, tmp.Length);
+                pending.Push(tmp);
             }
         }
     }

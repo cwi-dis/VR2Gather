@@ -7,10 +7,12 @@ namespace Workers
 {
     public class SocketIOWriter : BaseWorker
     {
-        Socket socket;
-        public SocketIOWriter(Socket socket) : base(WorkerType.End)
+        byte userID;
+        SocketIOConnection  socketIOConnection;
+        public SocketIOWriter(SocketIOConnection socketIOConnection, int userID) : base(WorkerType.End)
         {
-            this.socket = socket;
+            this.userID = (byte)userID;
+            this.socketIOConnection = socketIOConnection;
             Start();
         }
 
@@ -23,8 +25,8 @@ namespace Workers
                     tmp = new byte[token.currentSize];
                     System.Array.Copy(token.currentByteArray, tmp, token.currentSize);
                 }
-                socket.Emit("soundData", (object)tmp);
-                //// 
+                tmp[0] = userID;
+                socketIOConnection.socket.Emit("dataChannel", (object)tmp);
                 Next();
             }
         }

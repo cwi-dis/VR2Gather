@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TestVoiceSender : MonoBehaviour
 {
-
+    public int userID;
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
     Workers.BaseWorker writer;
@@ -18,7 +18,7 @@ public class TestVoiceSender : MonoBehaviour
         codec = new Workers.VoiceEncoder();
 
         if (socketIOConnection == null) writer = new Workers.B2DWriter(Config.Instance.PCs[0].AudioBin2Dash);
-        else writer = new Workers.SocketIOWriter(socketIOConnection.socket);
+        else writer = new Workers.SocketIOWriter(socketIOConnection, userID);
 
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);

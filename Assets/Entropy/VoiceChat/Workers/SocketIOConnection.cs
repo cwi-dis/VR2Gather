@@ -4,6 +4,13 @@ using UnityEngine;
 
 using BestHTTP.SocketIO;
 
+
+public interface ISocketReader
+{
+    void OnData(byte[] data);
+}
+
+
 public class SocketIOConnection : MonoBehaviour {
     public Socket socket;
     public bool useEcho = true;
@@ -36,10 +43,23 @@ public class SocketIOConnection : MonoBehaviour {
             isConnected = false;
             byte id = packet.Attachments[0][0];
         });
-        manager.Open();
 
+        socket.On("dataChannel", OnData, false);
+        manager.Open();
     }
 
+    NTPTools.NTPTime tempTime;
+    void OnData(Socket socket, Packet packet, params object[] args) {
+        if (packet != null && packet.Attachments != null) {
+            var data = packet.Attachments[0];
+            readers[data[0]].OnData(data);
+        }
+    }
+
+    ISocketReader[] readers = new ISocketReader[16];
+    public void registerReader(ISocketReader reader, byte id) {
+        readers[id] = reader;
+    }
 
     public IEnumerator WaitConnection() {
         while(!isConnected) yield return null;

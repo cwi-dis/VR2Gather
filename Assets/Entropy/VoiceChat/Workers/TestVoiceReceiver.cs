@@ -9,6 +9,7 @@ public class TestVoiceReceiver : MonoBehaviour
     Workers.AudioPreparer preparer;
 
     public SocketIOConnection socketIOConnection;
+    public int                 userID;
 
     AudioSource audioSource;
 
@@ -24,7 +25,7 @@ public class TestVoiceReceiver : MonoBehaviour
 
 
         if(socketIOConnection==null) reader = new Workers.SUBReader(Config.Instance.PCs[0].AudioSUBConfig);
-        else reader = new Workers.SocketIOReader(socketIOConnection.socket);
+        else reader = new Workers.SocketIOReader(socketIOConnection, userID);
 
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
