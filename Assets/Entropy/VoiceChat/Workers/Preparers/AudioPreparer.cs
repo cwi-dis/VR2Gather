@@ -12,10 +12,8 @@ namespace Workers
         int writePosition;
         int readPosition;
 
-
-        public AudioPreparer() : base(WorkerType.End)
-        {
-            bufferSize = 65536;
+        public AudioPreparer() : base(WorkerType.End) {
+            bufferSize = 320 * 100;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
@@ -46,6 +44,7 @@ namespace Workers
                     System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
                     writePosition = len - partLen;
                 }
+//                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
                 Next();
             }
         }
@@ -58,14 +57,15 @@ namespace Workers
             }
         }
 
-    bool firstTime = true;
-        public bool GetBuffer(float[] dst, int len) {
-            if ((firstTime && available >= 320) || !firstTime)
+        bool firstTime = true;
+        float lastTime = 0;
+        public override bool GetBuffer(float[] dst, int len) {
+            if ((firstTime && available >= len*10) || !firstTime)
             {
                 firstTime = false;
                 if (available >= len)
                 {
-                    if (writePosition < readPosition)
+                    if (writePosition < readPosition) // Se ha dado la vuelta.
                     {
                         int partLen = bufferSize - readPosition;
                         if (partLen > len)
@@ -85,13 +85,9 @@ namespace Workers
                         System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                         readPosition += len;
                     }
-
                     return true;
                 }
-                else
-                    System.Array.Clear(dst, 0, len);
             }
-
             return false;
         }
 

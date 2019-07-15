@@ -9,29 +9,28 @@ namespace Workers
         MonoBehaviour monoBehaviour;
         Coroutine coroutine;
 
-        Stack<byte[]> free = new Stack<byte[]>();
-        Stack<byte[]> pending = new Stack<byte[]>();
-        byte[] buffer;
+        byte[][] pending = new byte[10][];
+        int read = 0;
+        int write = 0;
+
+        int userID;
         public SocketIOReader(SocketIOConnection  socketIOConnection, int userID) : base(WorkerType.Init) {            
             socketIOConnection.registerReader(this, (byte)userID);
+            this.userID = userID;
 //            socketIOConnection.socket.On("voiceChannel", OnSoundData, false);
             Start();
         }
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                lock (pending) {
-                    if (pending.Count > 0){
-                        byte[] tmp = pending.Pop();
-                        if( buffer== null || buffer.Length< tmp.Length)
-                            buffer = new byte[(int)(tmp.Length * 1.3f)];
-                        System.Array.Copy(tmp, buffer, tmp.Length);
-                        free.Push(tmp);
-                        token.currentByteArray = buffer;
-                        token.currentSize = tmp.Length;
-                        Next();
-                    }
+            if (token != null && read<write) {
+               // lock (pending)
+                {
+                    byte[] tmp = pending[read%10];
+                    read++;
+                    token.currentByteArray = tmp;
+                    token.currentSize = tmp.Length;
+                    Next();
                 }
             }
         }
@@ -41,22 +40,9 @@ namespace Workers
             Debug.Log("SocketIOReader Sopped");
         }
 
-        public void OnData(byte[] data)
-        {
-            lock (pending)
-            {
-                byte[] tmp;
-                if (free.Count == 0)
-                {
-                    tmp = new byte[data.Length];
-                }
-                else
-                {
-                    tmp = free.Pop();
-                }
-                System.Array.Copy(data, tmp, tmp.Length);
-                pending.Push(tmp);
-            }
+        public void OnData(byte[] data) {
+            pending[write%10]= data;
+            write++;
         }
     }
 }

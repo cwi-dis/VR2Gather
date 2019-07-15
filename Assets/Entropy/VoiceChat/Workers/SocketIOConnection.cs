@@ -26,6 +26,7 @@ public class SocketIOConnection : MonoBehaviour {
 
         // Create the Socket.IO manager
         manager = new SocketManager(new System.Uri("https://poor-echo-server.glitch.me/socket.io/"), options);
+//        manager = new SocketManager(new System.Uri("http://127.0.0.1:3000/socket.io/"), options);
         socket = manager.Socket;
 
         socket.On(SocketIOEventTypes.Error, (socket, packet, args) => {
@@ -52,7 +53,7 @@ public class SocketIOConnection : MonoBehaviour {
     void OnData(Socket socket, Packet packet, params object[] args) {
         if (packet != null && packet.Attachments != null) {
             var data = packet.Attachments[0];
-            readers[data[0]].OnData(data);
+            readers[data[0]]?.OnData(data);
         }
     }
 

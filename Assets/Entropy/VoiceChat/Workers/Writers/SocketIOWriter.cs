@@ -15,7 +15,7 @@ namespace Workers
             this.socketIOConnection = socketIOConnection;
             Start();
         }
-
+        byte counter = 0;
         protected override void Update()
         {
             base.Update();
@@ -26,6 +26,7 @@ namespace Workers
                     System.Array.Copy(token.currentByteArray, tmp, token.currentSize);
                 }
                 tmp[0] = userID;
+                tmp[1] = counter++;
                 socketIOConnection.socket.Emit("dataChannel", (object)tmp);
                 Next();
             }

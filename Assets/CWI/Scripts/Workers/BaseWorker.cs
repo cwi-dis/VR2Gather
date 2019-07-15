@@ -37,7 +37,7 @@ namespace Workers {
         void _Update() {
             while (bRunning) {
                 Update();
-                System.Threading.Thread.Yield();
+                System.Threading.Thread.Sleep(1);
             }
             // Wait to stop.
             bool waitNext = false;
@@ -72,5 +72,7 @@ namespace Workers {
             token = null;
         }
 
+
+        public virtual bool GetBuffer(float[] dst, int len) { return false;  }
     }
 }

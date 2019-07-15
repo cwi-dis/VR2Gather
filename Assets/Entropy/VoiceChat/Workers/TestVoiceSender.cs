@@ -22,6 +22,8 @@ public class TestVoiceSender : MonoBehaviour
 
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
+
+        //EntityPipeline p0 = new GameObject("PC_0").AddComponent<EntityPipeline>().Init(Config.Instance.PCs[0], transform);
     }
 
     void OnDestroy() {
