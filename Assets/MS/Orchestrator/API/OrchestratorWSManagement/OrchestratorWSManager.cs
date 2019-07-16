@@ -72,7 +72,7 @@ namespace OrchestratorWSManagement
         #region socket connection & disconnection
 
         // socket.io connection to the orchestrator
-        public void SocketConnect()
+        public void SocketConnect(List<OrchestratorMessageReceiver> messagesToManage)
         {
             // Socket config
             SocketOptions options = new SocketOptions();
@@ -81,11 +81,18 @@ namespace OrchestratorWSManagement
 
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
-            
+
             Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //JSON
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
             Manager.Socket.On(SocketIOEventTypes.Disconnect, OnServerDisconnect);
+
+            // Listen to the messages received
+            messagesToManage.ForEach(delegate (OrchestratorMessageReceiver messageReceiver)
+            {
+                Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
+            });
+
 
             // Open the socket
             Manager.Open();
@@ -144,7 +151,7 @@ namespace OrchestratorWSManagement
             }
 
             // send the command
-            if (! SendCommand(command.SocketEventName, parameters))
+            if (!SendCommand(command.SocketEventName, parameters))
             {
                 // problem while sending the command
                 sentCommand = null;

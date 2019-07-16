@@ -24,7 +24,7 @@ class GuiCommandDescription
 /**
  * Main Gui class
  * **/
-public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IOrchestratorMessageListener
+public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IOrchestratorMessageListener
 {
     #region gui components
 
@@ -163,7 +163,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public bool connectedToOrchestrator = false;
 
     [SerializeField]
-    private OrchestrationTest test;
+    private OrchestrationBridge test;
+
 
     public ScenarioInstance activeScenario;
     public Session activeSession;
@@ -221,6 +222,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             new GuiCommandDescription("Login", new List<RectTransform> { userNamePanel, userPasswordPanel }, Login),
             new GuiCommandDescription("Logout", null, Logout),
 
+            //NTP
+            new GuiCommandDescription("GetNTPTime", null, GetNTPTime),
+
             //Sessions
             new GuiCommandDescription("AddSession", new List<RectTransform> { scenarioIdPanel, sessionNamePanel, sessionDescriptionPanel }, AddSession),
             new GuiCommandDescription("GetSessions", null, GetSessions),
@@ -257,7 +261,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     // Connect to the orchestrator
     private void socketConnect()
     {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this);
+        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
         orchestratorWrapper.Connect();
     }
 
@@ -276,6 +280,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public void Logout()
     {
         orchestratorWrapper.Logout();
+    }
+
+    private void GetNTPTime()
+    {
+        Debug.Log("GetNTPTime::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        orchestratorWrapper.GetNTPTime();
     }
 
     public void GetSessions()
@@ -329,7 +339,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
     public void UpdateUserData()
     {
-        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
+        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text, 
+                                                userDataMQurlPanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void GetUserInfo()
@@ -527,7 +538,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
 
                 //TEST
                 //orchestratorWrapper.UpdateUserDataJson(userMQnameIF.text, userMQurlIF.text);
-                orchestratorWrapper.UpdateUserDataJson(test.exchangeNameLoginIF.text, test.connectionURILoginIF.text);
+                orchestratorWrapper.UpdateUserDataJson(test.exchangeNameLoginIF.text, test.connectionURILoginIF.text, test.pcDashServerLoginIF.text, test.audioDashServerLoginIF.text);
                 userID = userId;
             }
             else
@@ -593,6 +604,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             }
         }
         UpdateEnabledItems();
+    }
+       
+    public void OnGetNTPTimeResponse(ResponseStatus status, string time)
+    {
+        Debug.Log("OnGetNTPTimeResponse::NtpTime::" + time);
+        Debug.Log("OnGetNTPTimeResponse::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
     }
 
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions)
@@ -853,6 +870,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
             //TEST
             test.exchangeNameIF.text = user.userData.userMQexchangeName;
             test.connectionURIIF.text = user.userData.userMQurl;
+            test.pcDashServerIF.text = user.userData.userPCDash;
+            test.audioDashServerIF.text = user.userData.userAudioDash;
             test.StatusTextUpdate();
         }
     }
@@ -922,18 +941,28 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     {
         // nothing to do
     }
+
+    // Message from a user received spontaneously from the Orchestrator         
+    public void OnUserMessageReceived(UserMessage userMessage) {
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message.ToString());
+        StartCoroutine(ScrollLogsToBottom());
+
+        //TEST
+        test.controller.MessageActivation(userMessage.message.ToString());
+        Debug.Log(userMessage.fromName + ": " + userMessage.message.ToString());
+    }
     #endregion
 
     #region test methods
     // Connect to the orchestrator
     public void ConnectSocket()
     {
-        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this);
+        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
         orchestratorWrapper.Connect();
     }
 
     // Login from the main buttons Login & Logout
-    public void TestLogin(string user, string password, string connectionURI, string exchangeName)
+    public void TestLogin(string user, string password)
     {
         orchestratorWrapper.Login(user, password);
     }
@@ -956,8 +985,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
         orchestratorWrapper.DeleteSession(sessionId);
     }
 
-    public void TestUpdateUserData(string name, string url) {
-        orchestratorWrapper.UpdateUserDataJson(name, url);
+    public void TestUpdateUserData(string name, string url, string pc, string audio) {
+        orchestratorWrapper.UpdateUserDataJson(name, url, pc, audio);
     }
 
     public string TestGetUserID()
@@ -968,6 +997,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IO
     public string TestGetUserName()
     {
         return userName.text;
+    }
+
+    public void TestSendMessage(string msg) {
+        orchestratorWrapper.SendMessageToAll(msg);
+    }
+
+    public void TestSendPing(string msg, string id) {
+        orchestratorWrapper.SendMessage(msg, id);
     }
     #endregion
 }

@@ -7,3 +7,5 @@ Assembly-CSharp.csproj
 .collabignore
 Exe/
 Builds/
+
+*.meta
