@@ -13,6 +13,7 @@ public interface ISocketReader
 
 public class SocketIOConnection : MonoBehaviour {
     public Socket socket;
+    public string socketIO_URL = "https://poor-echo-server.glitch.me/socket.io/";
     public bool useEcho = true;
     private SocketManager manager;
     bool isConnected = false;
@@ -25,7 +26,7 @@ public class SocketIOConnection : MonoBehaviour {
         options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
 
         // Create the Socket.IO manager
-        manager = new SocketManager(new System.Uri("https://poor-echo-server.glitch.me/socket.io/"), options);
+        manager = new SocketManager(new System.Uri(socketIO_URL), options);
 //        manager = new SocketManager(new System.Uri("http://127.0.0.1:3000/socket.io/"), options);
         socket = manager.Socket;
 

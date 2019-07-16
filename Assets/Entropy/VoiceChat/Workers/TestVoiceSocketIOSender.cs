@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestVoiceSender : MonoBehaviour
-{
+public class TestVoiceSocketIOSender : MonoBehaviour {
     public int userID;
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
@@ -13,17 +12,13 @@ public class TestVoiceSender : MonoBehaviour
 
     // Start is called before the first frame update
     IEnumerator Start() {
-        if (socketIOConnection != null)  yield return socketIOConnection.WaitConnection();
+        yield return socketIOConnection.WaitConnection();
         reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();
-
-        if (socketIOConnection == null) writer = new Workers.B2DWriter(Config.Instance.PCs[0].AudioBin2Dash);
-        else writer = new Workers.SocketIOWriter(socketIOConnection, userID);
-
+        
+        writer = new Workers.SocketIOWriter(socketIOConnection, userID);
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
-
-        //EntityPipeline p0 = new GameObject("PC_0").AddComponent<EntityPipeline>().Init(Config.Instance.PCs[0], transform);
     }
 
     void OnDestroy() {
