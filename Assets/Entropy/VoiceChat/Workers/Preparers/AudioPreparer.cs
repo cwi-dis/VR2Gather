@@ -21,8 +21,7 @@ namespace Workers
             Start();
         }
 
-        public override void OnStop()
-        {
+        public override void OnStop() {
             base.OnStop();
             //            if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("AudioPreparer Sopped");

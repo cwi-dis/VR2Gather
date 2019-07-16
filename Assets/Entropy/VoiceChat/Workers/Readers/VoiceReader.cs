@@ -31,9 +31,6 @@ namespace Workers
             Debug.Log("VoiceReader Sopped");
         }
 
-        //     int position = 0;
-        //     float frequency = 440;
-
         string device;
         int         samples;
         int         bufferLength;
@@ -65,20 +62,6 @@ namespace Workers
 
                         if (available > bufferLength) {
                             recorder.GetData(buffer, readPosition);
-
-/*
-
-                            var count = 0;
-                            while (count < bufferLength)
-                            {
-                                buffer[count] = Mathf.Sign(Mathf.Sin(2 * Mathf.PI * frequency * position));
-                                position++;
-                                count++;
-                            }
-*/
-
-
-
                             readPosition = (readPosition + bufferLength) % samples;
                             bReady = true;
                         }

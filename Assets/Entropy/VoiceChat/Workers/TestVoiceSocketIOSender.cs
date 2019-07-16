@@ -11,7 +11,7 @@ public class TestVoiceSocketIOSender : MonoBehaviour {
     public SocketIOConnection socketIOConnection;
 
     // Start is called before the first frame update
-    IEnumerator Start() {
+    IEnumerator Start() {        
         yield return socketIOConnection.WaitConnection();
         reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();

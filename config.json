@@ -27,13 +27,13 @@
       "AudioBin2Dash": {
         "streamName": "audio",
         "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
-        "url": "http://localhost:9000/",
+        "url": "http://127.0.0.1:9000/",
         "segmentSize": 500,
         "segmentLife": 30000
       },
       "AudioSUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/audio.mpd",
-        "url": "http://localhost:9000/audio.mpd"
+        "url": "http://127.0.0.1:9000/audio.mpd"
       },
       "Encoder": {
         "octreeBits": 4
@@ -41,7 +41,7 @@
       "Bin2Dash": {
         "streamName": "testBed",
         "url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
-        "_url": "http://localhost:9000/",
+        "_url": "http://127.0.0.1:9000/",
         "segmentSize": 500,
         "segmentLife": 500
       },
@@ -78,7 +78,7 @@
     {
       "sourceType": "sub",
       "SUBConfig": {
-        "_url": "http://localhost:9000/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/testBed.mpd",
         "url": "https://vrt-evanescent.viaccess-orca.com/fernando/testBed.mpd"
       },
       "Render": {
@@ -114,7 +114,7 @@
     {
       "sourceType": "sub",
       "SUBConfig": {
-        "_url": "http://localhost:9000/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/testBed.mpd",
         "2url": "https://vrt-evanescent.viaccess-orca.com/jack/bin2dashSink.mpd",
         "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd"
       },
