@@ -72,7 +72,7 @@ namespace Workers {
             token = null;
         }
 
-
+        public virtual int  available { get { return 0; } }
         public virtual bool GetBuffer(float[] dst, int len) { return false;  }
     }
 }
