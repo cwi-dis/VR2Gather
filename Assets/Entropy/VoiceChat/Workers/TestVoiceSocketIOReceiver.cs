@@ -18,7 +18,6 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
     IEnumerator Start()
     {
         var ac = AudioSettings.GetConfiguration();
-        Debug.Log($"dspBufferSize {ac.dspBufferSize} sampleRate {ac.sampleRate}");
         ac.sampleRate = 16000*3;
         ac.dspBufferSize = 320*3;
         AudioSettings.Reset(ac);
@@ -51,7 +50,6 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
             System.Array.Clear(data, 0, data.Length);
     }
 
-    float[] aux = new float[320*6];
     void OnAudioFilterRead(float[] data, int channels) {
         if (preparer != null && preparer.GetBuffer(data, data.Length))
         {

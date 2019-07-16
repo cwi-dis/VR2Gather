@@ -11,9 +11,6 @@ namespace Workers
         System.IntPtr currentBuffer;
         int dampedSize = 0;
 
-
-        System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
         public SUBReader(Config._PCs._SUBConfig cfg) :base(WorkerType.Init) { 
             url = cfg.url;
@@ -25,7 +22,6 @@ namespace Workers
                 {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url))
                     {
-                        stopWatch.Start();
                         Start();
                     }
                     else
@@ -56,12 +52,6 @@ namespace Workers
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0)
                 {
-                    stopWatch.Stop();
-
-                    Debug.Log("data!!!!!!!!!!!!!!! "+stopWatch.Elapsed.TotalMilliseconds);
-                    stopWatch.Reset();
-                    stopWatch.Start();
-
                     if (size > dampedSize)
                     {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
