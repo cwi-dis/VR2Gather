@@ -16,7 +16,6 @@ public class TestVoiceDashReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     IEnumerator Start() {
-        
         yield return new WaitForSeconds(2);
 
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -32,13 +31,6 @@ public class TestVoiceDashReceiver : MonoBehaviour
         reader.token = token = new Workers.Token();
     }
 
-    string nname;
-    void Update()
-    {
-        name = nname;
-    }
-
-
     void OnDestroy() {
         reader?.Stop();
         codec?.Stop();
@@ -48,8 +40,6 @@ public class TestVoiceDashReceiver : MonoBehaviour
     void OnAudioRead(float[] data) {
         if (preparer == null || !preparer.GetBuffer(data, data.Length) )
             System.Array.Clear(data, 0, data.Length);
-        if (token != null && token.latency.time != 0) nname = $"Player{userID}({ NTPTools.GetNTPTime().time - token.latency.time})";
-
     }
 
 }

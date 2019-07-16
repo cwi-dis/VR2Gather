@@ -13,7 +13,7 @@ namespace Workers
         int readPosition;
 
         public AudioPreparer() : base(WorkerType.End) {
-            bufferSize = 320 * 100;
+            bufferSize = 320*6 * 100;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
@@ -58,7 +58,7 @@ namespace Workers
         bool firstTime = true;
         float lastTime = 0;
         public override bool GetBuffer(float[] dst, int len) {
-            if ((firstTime && available >= len*2) || !firstTime) {
+            if ((firstTime && available >= len) || !firstTime) {
                 firstTime = false;
                 if (available >= len) {
                     if (writePosition < readPosition) // Se ha dado la vuelta.
