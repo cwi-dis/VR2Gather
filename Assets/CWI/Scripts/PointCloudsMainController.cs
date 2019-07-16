@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PointCloudsMainController : MonoBehaviour {
     // Start is called before the first frame update
+    public string subURL;
     void Start() {
     }
 
