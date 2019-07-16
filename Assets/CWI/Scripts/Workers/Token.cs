@@ -16,5 +16,6 @@ namespace Workers
         public System.IntPtr currentBuffer;
         public int currentSize;
         public Token original;
+        public NTPTools.NTPTime latency;
     }
 }

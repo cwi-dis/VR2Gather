@@ -17,7 +17,6 @@ namespace Workers
         public SocketIOReader(SocketIOConnection  socketIOConnection, int userID) : base(WorkerType.Init) {            
             socketIOConnection.registerReader(this, (byte)userID);
             this.userID = userID;
-//            socketIOConnection.socket.On("voiceChannel", OnSoundData, false);
             Start();
         }
 

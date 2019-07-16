@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -11,29 +12,22 @@ public class NTPTools {
     {
         [FieldOffset(0)]
         public UInt64 time;
-        [FieldOffset(0)]
-        public byte T0;
-        [FieldOffset(0)]
-        public byte T1;
-        [FieldOffset(1)]
-        public byte T2;
-        [FieldOffset(2)]
-        public byte T3;
-        [FieldOffset(3)]
-        public byte T4;
-        [FieldOffset(4)]
-        public byte T5;
-        [FieldOffset(5)]
-        public byte T6;
-        [FieldOffset(6)]
-        public byte T7;
-        [FieldOffset(7)]
-        public byte T8;
+
+        public void SetByteArray(byte[] buf, int offset) {
+            time = BitConverter.ToUInt64(buf, offset);
+        }
+
+        public void GetByteArray(byte[] buf, int offset) {
+            Array.Copy( BitConverter.GetBytes(time), 0, buf, offset, 8);
+        }
+
     }
 
+    static Stopwatch stopWatch = new Stopwatch();   
     public static void GetNetworkTime() {
+        stopWatch = Stopwatch.StartNew();
         //default Windows time server
-        const string ntpServer = "time.windows.com";
+        const string ntpServer = "time.google.com";
 
         // NTP message size - 16 bytes of the digest (RFC 2030)
         var ntpData = new byte[48];
@@ -65,8 +59,8 @@ public class NTPTools {
 
         intPart = SwapEndianness(intPart);
         fractPart = SwapEndianness(fractPart);
-
-        offset = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L) - (ulong)(UnityEngine.Time.realtimeSinceStartup * 1000.0f);
+        
+        offset = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L) - GetMilliseconds();
     }
 
     static uint SwapEndianness(ulong x) {
@@ -74,8 +68,18 @@ public class NTPTools {
     }
 
     static NTPTime temp;
-    public static NTPTime GetNTPTime() {
-        temp.time = (UInt64)(UnityEngine.Time.realtimeSinceStartup * 1000.0f) + offset;
+    public static NTPTime GetNTPTime()
+    {
+        temp.time = GetMilliseconds() + offset;
         return temp;
     }
+
+    public static ulong GetMilliseconds() {
+        stopWatch.Stop();
+        ulong ret = (ulong)stopWatch.ElapsedMilliseconds;
+        stopWatch.Start();
+        return ret;
+    }
+
+
 }

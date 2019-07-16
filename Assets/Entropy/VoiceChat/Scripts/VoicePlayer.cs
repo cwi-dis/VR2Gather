@@ -76,7 +76,7 @@ public class VoicePlayer : MonoBehaviour {
     void ProcessData(byte[] data)
     {
         int userID = data[0];
-        tempTime.T0 = data[1]; tempTime.T1 = data[2]; tempTime.T2 = data[3]; tempTime.T3 = data[4]; tempTime.T4 = data[5]; tempTime.T5 = data[6]; tempTime.T6 = data[7]; tempTime.T7 = data[8];
+        tempTime.SetByteArray(data, 1);
         var lat = NTPTools.GetNTPTime().time - tempTime.time;
         SocketIOServer.player[userID].name = $"Player_{userID} Lat ({lat})";
         SocketIOServer.player[userID].receiver.ReceiveBuffer(BaseCodec.Instance.Uncompress(data, 1 + 8));

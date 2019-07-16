@@ -8,6 +8,8 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
     Workers.BaseWorker codec;
     Workers.BaseWorker preparer;
 
+    Workers.Token token;
+
     public SocketIOConnection socketIOConnection;
     public int                 userID;
 
@@ -15,6 +17,7 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     IEnumerator Start() {
+        nname = name;
         yield return socketIOConnection.WaitConnection();
 
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -27,8 +30,14 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
         reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-        reader.token = new Workers.Token();
+        reader.token = token = new Workers.Token();
 
+        
+    }
+
+    string nname;
+    void Update() {
+        name = nname;
     }
 
 
@@ -38,10 +47,17 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
         preparer?.Stop();
     }
 
+    ulong last;
     void OnAudioRead(float[] data) {
+        if (userID == 1) {
+            ulong ms = NTPTools.GetMilliseconds();
+            Debug.Log($"Diff {ms- last}");
+            last = ms;
+        }
+
         if (preparer == null || !preparer.GetBuffer(data, data.Length) )
             System.Array.Clear(data, 0, data.Length);
-        
+        if(token!=null && token.latency.time!=0) nname = $"Player{userID}({ NTPTools.GetNTPTime().time - token.latency.time})";
     }
 
 }

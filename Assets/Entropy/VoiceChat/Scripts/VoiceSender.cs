@@ -31,8 +31,7 @@ public class VoiceSender {
     public void Send(float[] data) {
         byte[] tmp = codec.Compress(data, 1 + 8);
         tmp[0] = (byte)userID;
-        var time = NTPTools.GetNTPTime();
-        tmp[1] = time.T0; tmp[2] = time.T1; tmp[3] = time.T2; tmp[4] = time.T3; tmp[5] = time.T4; tmp[6] = time.T5; tmp[7] = time.T6; tmp[8] = time.T7;
+        NTPTools.GetNTPTime().GetByteArray(tmp, 1);
         if(socketIOServer!=null)
             socketIOServer.Send(tmp);
         if (handle != System.IntPtr.Zero) {

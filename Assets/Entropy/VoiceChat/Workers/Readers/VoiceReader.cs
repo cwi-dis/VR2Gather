@@ -20,7 +20,7 @@ namespace Workers
             base.Update();
             if (token != null && bReady) {
                 token.currentFloatArray = buffer;
-                token.currentSize = buffer.Length;
+                token.currentSize = buffer.Length;                
                 bReady = false;
                 Next();
             }
@@ -53,15 +53,11 @@ namespace Workers
                     if (token != null && !bReady) {
                         int writePosition = Microphone.GetPosition(device);
                         int available;
-                        if (writePosition < readPosition) {
-                            // Loop!
-                            available = (samples - readPosition) + writePosition;
-                        }
-                        else
-                            available = writePosition - readPosition;
-
+                        if (writePosition < readPosition)   available = (samples - readPosition) + writePosition;
+                        else                                available = writePosition - readPosition;
                         if (available > bufferLength) {
                             recorder.GetData(buffer, readPosition);
+                            token.latency = NTPTools.GetNTPTime();
                             readPosition = (readPosition + bufferLength) % samples;
                             bReady = true;
                         }

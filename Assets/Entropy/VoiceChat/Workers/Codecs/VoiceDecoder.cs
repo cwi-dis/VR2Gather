@@ -21,11 +21,16 @@ namespace Workers
         }
 
         float[] receiveBuffer;
+        NTPTools.NTPTime tempTime;
         protected override void Update() {
             const int offset = 1 + 8;
             base.Update();
             if (token != null) {
                 if (receiveBuffer == null) receiveBuffer = new float[bufferLength];
+
+                tempTime.SetByteArray( token.currentByteArray, 1);
+                token.latency = tempTime;           
+
                 decoder.Decode(token.currentByteArray, offset, token.currentByteArray.Length - offset, receiveBuffer);
                 token.currentFloatArray = receiveBuffer;
                 token.currentSize = bufferLength;

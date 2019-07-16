@@ -8,6 +8,8 @@ public class TestVoiceDashReceiver : MonoBehaviour
     Workers.BaseWorker codec;
     Workers.BaseWorker preparer;
 
+    Workers.Token token;
+
     public int                 userID;
 
     AudioSource audioSource;
@@ -27,7 +29,13 @@ public class TestVoiceDashReceiver : MonoBehaviour
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
         reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-        reader.token = new Workers.Token();
+        reader.token = token = new Workers.Token();
+    }
+
+    string nname;
+    void Update()
+    {
+        name = nname;
     }
 
 
@@ -40,7 +48,8 @@ public class TestVoiceDashReceiver : MonoBehaviour
     void OnAudioRead(float[] data) {
         if (preparer == null || !preparer.GetBuffer(data, data.Length) )
             System.Array.Clear(data, 0, data.Length);
-        
+        if (token != null && token.latency.time != 0) nname = $"Player{userID}({ NTPTools.GetNTPTime().time - token.latency.time})";
+
     }
 
 }

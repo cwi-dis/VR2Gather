@@ -27,8 +27,7 @@ namespace Workers
             Debug.Log("AudioPreparer Sopped");
         }
 
-        protected override void Update()
-        {
+        protected override void Update() {
             base.Update();
 
             if (token != null) {
@@ -59,21 +58,17 @@ namespace Workers
         bool firstTime = true;
         float lastTime = 0;
         public override bool GetBuffer(float[] dst, int len) {
-            if ((firstTime && available >= len*10) || !firstTime)
-            {
+            if ((firstTime && available >= len*2) || !firstTime) {
                 firstTime = false;
-                if (available >= len)
-                {
+                if (available >= len) {
                     if (writePosition < readPosition) // Se ha dado la vuelta.
                     {
                         int partLen = bufferSize - readPosition;
-                        if (partLen > len)
-                        {
+                        if (partLen > len) {
                             System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                             readPosition += len;
                         }
-                        else
-                        {
+                        else {
                             System.Array.Copy(circularBuffer, readPosition, dst, 0, partLen);
                             System.Array.Copy(circularBuffer, 0, dst, partLen, len - partLen);
                             readPosition = len - partLen;
