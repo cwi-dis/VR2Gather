@@ -12,6 +12,7 @@ namespace Workers {
                 uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != System.IntPtr.Zero)
                 {
+                    Debug.Log($"Bin2Dash {cfg.url}");
                     Start();
                 }
                 else

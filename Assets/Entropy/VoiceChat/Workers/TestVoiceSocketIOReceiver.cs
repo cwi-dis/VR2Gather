@@ -15,8 +15,7 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
 
     AudioSource audioSource;
     // Start is called before the first frame update
-    IEnumerator Start()
-    {
+    IEnumerator Start() {
         var ac = AudioSettings.GetConfiguration();
         ac.sampleRate = 16000*3;
         ac.dspBufferSize = 320*3;
@@ -50,9 +49,15 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
             System.Array.Clear(data, 0, data.Length);
     }
 
+    float[] tmpBuffer;
     void OnAudioFilterRead(float[] data, int channels) {
-        if (preparer != null && preparer.GetBuffer(data, data.Length))
-        {
+        if (tmpBuffer == null) tmpBuffer = new float[data.Length];
+        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length)) {
+            int cnt = 0;
+            do
+            {
+                data[cnt] += tmpBuffer[cnt];
+            } while (++cnt < data.Length);
         }
     }
 }

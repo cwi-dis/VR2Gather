@@ -27,12 +27,15 @@ public class TestVoiceDashReceiver : MonoBehaviour
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
-        
-        reader = new Workers.SUBReader(Config.Instance.PCs[userID-1].AudioSUBConfig);
-        codec = new Workers.VoiceDecoder();
-        preparer = new Workers.AudioPreparer();
-        reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-        reader.token = token = new Workers.Token();
+        try
+        {
+            reader = new Workers.SUBReader(Config.Instance.PCs[userID - 1].AudioSUBConfig);
+            codec = new Workers.VoiceDecoder();
+            preparer = new Workers.AudioPreparer();
+            reader.AddNext(codec).AddNext(preparer).AddNext(reader);
+            reader.token = token = new Workers.Token();
+        }
+        catch { }
     }
 
     void OnDestroy() {
