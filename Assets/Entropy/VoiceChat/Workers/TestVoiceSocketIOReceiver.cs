@@ -27,6 +27,7 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
 //        audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, true, OnAudioRead);
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
+        audioSource.spatialBlend = 1.0f;
         audioSource.Play();
 
         reader = new Workers.SocketIOReader(socketIOConnection, userID);

@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour {
     public int id;
     public Camera cam;
-    public VoicePlayer chat;
+    public TestVoiceSocketIOReceiver audio;
     public ShowTVMs tvm;
     public PointCloudsMainController pc;
 }

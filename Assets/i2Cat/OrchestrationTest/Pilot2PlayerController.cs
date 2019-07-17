@@ -6,6 +6,8 @@ using OrchestratorWrapping;
 using UnityEngine.Video;
 
 public class Pilot2PlayerController : PilotController {
+
+    public TestVoiceSocketIOSender audioController;
     
     public override void Start() {
         base.Start();
@@ -23,10 +25,10 @@ public class Pilot2PlayerController : PilotController {
                 //player.cam.SetActive(true);
                 player.cam.gameObject.SetActive(true);
                 my_ID = player.id; // Save my ID.
-                if (test.useEcho) ActivateVoiceChat(player.chat, player.id);
+                //if (test.useEcho) ActivateVoiceChat(player.chat, player.id);
+                audioController.userID = my_ID;
+                audioController.gameObject.SetActive(true);
             }
-            //else
-                //ActivateVoiceChat(player.chat, player.id);
 
             foreach (User u in orchestrator.availableUsers) {
                 if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
@@ -35,6 +37,7 @@ public class Pilot2PlayerController : PilotController {
                     player.tvm.gameObject.SetActive(true);
                     player.pc.subURL = u.userData.userPCDash;
                     player.pc.gameObject.SetActive(false);
+                    player.audio.gameObject.SetActive(true);
                     //player.tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
                     //player.tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
                     //player.tvm.SetActive(true);
