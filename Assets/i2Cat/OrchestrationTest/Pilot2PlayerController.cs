@@ -17,15 +17,16 @@ public class Pilot2PlayerController : PilotController {
         test.controller = this;
         masterID = orchestrator.activeSession.sessionUsers[0];
 
+        if (test.isDebug) DebugIntro();
+
         for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
-            PlayerManager player = players[i - 1];
-            //if (test.isDebug) player = players[i + 1];
+            PlayerManager player;
+            if (!test.isDebug) player = players[i - 1];
+            else player = players[i];
 
             if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) {
-                //player.cam.SetActive(true);
                 player.cam.gameObject.SetActive(true);
                 my_ID = player.id; // Save my ID.
-                //if (test.useEcho) ActivateVoiceChat(player.chat, player.id);
                 audioController.userID = my_ID;
                 audioController.gameObject.SetActive(true);
             }
@@ -38,18 +39,9 @@ public class Pilot2PlayerController : PilotController {
                     player.pc.subURL = u.userData.userPCDash;
                     player.pc.gameObject.SetActive(false);
                     player.audio.gameObject.SetActive(true);
-                    //player.tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
-                    //player.tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
-                    //player.tvm.SetActive(true);
-                    //player.pc.GetComponent<PointCloudsMainController>().subURL = u.userData.userPCDash;
-                    //player.pc.SetActive(false);
                 }
             }
         }
-
-        //InvokeRepeating("SendPing", 5.0f, 5.0f);
-
-        //GetComponent<MicroRecorder>().Init(my_ID, test.useEcho);
     }
 
     public override void Update() {
@@ -97,6 +89,28 @@ public class Pilot2PlayerController : PilotController {
             else if (msg[1] == "2") todoAction = Actions.VIDEO_2_PAUSE;
             delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
             Debug.Log(delay);
+        }
+    }
+
+    public void DebugIntro() {
+        PlayerManager player = players[0];
+
+        if (orchestrator.activeSession.sessionUsers[0] == orchestrator.TestGetUserID()) {
+            player.cam.gameObject.SetActive(true);
+            my_ID = player.id; // Save my ID.
+            audioController.userID = my_ID;
+            audioController.gameObject.SetActive(true);
+        }
+
+        foreach (User u in orchestrator.availableUsers) {
+            if (u.userId == orchestrator.activeSession.sessionUsers[0]) {
+                player.tvm.connectionURI = u.userData.userMQurl;
+                player.tvm.exchangeName = u.userData.userMQexchangeName;
+                player.tvm.gameObject.SetActive(true);
+                player.pc.subURL = u.userData.userPCDash;
+                player.pc.gameObject.SetActive(false);
+                player.audio.gameObject.SetActive(true);
+            }
         }
     }
 }
