@@ -49,9 +49,17 @@ public class TestVoiceDashReceiver : MonoBehaviour
             System.Array.Clear(data, 0, data.Length);
     }
 
-    void OnAudioFilterRead(float[] data, int channels) {
-        if (preparer != null && preparer.GetBuffer(data, data.Length))
+    float[] tmpBuffer;
+    void OnAudioFilterRead(float[] data, int channels)
+    {
+        if (tmpBuffer == null) tmpBuffer = new float[data.Length];
+        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length))
         {
+            int cnt = 0;
+            do
+            {
+                data[cnt] += tmpBuffer[cnt];
+            } while (++cnt < data.Length);
         }
     }
 

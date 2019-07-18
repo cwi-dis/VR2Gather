@@ -54,10 +54,7 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
         if (tmpBuffer == null) tmpBuffer = new float[data.Length];
         if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length)) {
             int cnt = 0;
-            do
-            {
-                data[cnt] += tmpBuffer[cnt];
-            } while (++cnt < data.Length);
+            do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
         }
     }
 }

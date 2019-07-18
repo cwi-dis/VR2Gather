@@ -61,8 +61,7 @@ namespace Workers
             if ((firstTime && available >= len) || !firstTime) {
                 firstTime = false;
                 if (available >= len) {
-                    if (writePosition < readPosition) // Se ha dado la vuelta.
-                    {
+                    if (writePosition < readPosition){ // Se ha dado la vuelta.
                         int partLen = bufferSize - readPosition;
                         if (partLen > len) {
                             System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
@@ -74,8 +73,7 @@ namespace Workers
                             readPosition = len - partLen;
                         }
                     }
-                    else
-                    {
+                    else {
                         System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                         readPosition += len;
                     }
