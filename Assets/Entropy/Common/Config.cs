@@ -16,28 +16,40 @@ public class Config {
     public _TVMs TVMs;
 
     [Serializable]
-    public class _PCs
-    {
-        public string   sourceType;
-        public string   cwicpcFilename;
-        public string   cwicpcDirectory;
-        public string   plyFilename;
-        public string   plyDirectory;
+    public class _User {
+        public string sourceType;
+        public string cwicpcFilename;
+        public string cwicpcDirectory;
+        public string plyFilename;
+        public string plyDirectory;
         [Serializable]
-        public class _SUBConfig
-        {
+        public class _SUBConfig {
             public string url;
-            public int    streamNumber;
+            public int streamNumber;
         }
         public _SUBConfig SUBConfig;
         public _SUBConfig AudioSUBConfig;
 
         [Serializable]
-        public class _Realsense2Config
+        public class _PCSelfConfig
         {
             public string configFilename;
+            [Serializable]
+            public class _Encoder {
+                public int octreeBits;
+            }
+            public _Encoder Encoder;
+            [Serializable]
+            public class _Bin2Dash {
+                public string url;
+                public string streamName;
+                public int segmentSize;
+                public int segmentLife;
+            }
+            public _Bin2Dash Bin2Dash;
+            public _Bin2Dash AudioBin2Dash;
         }
-        public _Realsense2Config Realsense2Config;
+        public _PCSelfConfig PCSelfConfig;
 
         [Serializable]
         public class _NetConfig
@@ -47,22 +59,6 @@ public class Config {
         }
         public _NetConfig NetConfig;
 
-        [Serializable]
-        public class _Encoder
-        {
-            public int      octreeBits;
-        }
-        public _Encoder Encoder;
-        [Serializable]
-        public class _Bin2Dash
-        {
-            public string url;
-            public string streamName;
-            public int segmentSize;
-            public int segmentLife;
-        }
-        public _Bin2Dash Bin2Dash;
-        public _Bin2Dash AudioBin2Dash;
 
         [Serializable]
         public class _Render
@@ -77,7 +73,7 @@ public class Config {
         }
         public _Render Render;
     };
-    public _PCs[] PCs;
+    public _User[] Users;
 
     static Config _Instance;
     public static Config Instance {

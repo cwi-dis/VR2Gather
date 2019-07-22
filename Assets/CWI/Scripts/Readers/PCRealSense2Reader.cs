@@ -8,20 +8,21 @@ public class PCRealSense2Reader : PCSyntheticReader
     protected System.IntPtr uploader;
 
     // Start is called before the first frame update
-    public PCRealSense2Reader(Config._PCs cfg)
+    public PCRealSense2Reader(Config._User cfg)
     {
+        var b2d = cfg.PCSelfConfig.Bin2Dash;
         encoder = System.IntPtr.Zero;
         uploader = System.IntPtr.Zero;
         System.IntPtr errorPtr = System.IntPtr.Zero;
-        reader = API_cwipc_realsense2.cwipc_realsense2(cfg.Realsense2Config.configFilename, ref errorPtr);
+        reader = API_cwipc_realsense2.cwipc_realsense2(cfg.PCSelfConfig.configFilename, ref errorPtr);
         if (reader == System.IntPtr.Zero) {
             string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
             Debug.LogError("PCRealSense2Reader: cwipc_realsense2: " + errorMessage);
             return;
         }
-        Debug.Log("xxxjack encName is " + cfg.Bin2Dash.streamName);
-        if (cfg.Bin2Dash.streamName != "") {
-            API_cwipc_codec.cwipc_encoder_params parms = new API_cwipc_codec.cwipc_encoder_params { octree_bits = cfg.Encoder.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
+        Debug.Log("xxxjack encName is " + b2d.streamName);
+        if (b2d.streamName != "") {
+            API_cwipc_codec.cwipc_encoder_params parms = new API_cwipc_codec.cwipc_encoder_params { octree_bits = cfg.PCSelfConfig.Encoder.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
             encoder = API_cwipc_codec.cwipc_new_encoder(API_cwipc_codec.CWIPC_ENCODER_PARAM_VERSION, ref parms, ref errorPtr);
             if (encoder == System.IntPtr.Zero)
             {
@@ -31,10 +32,10 @@ public class PCRealSense2Reader : PCSyntheticReader
                 reader = System.IntPtr.Zero;
                 return;
             }
-            Debug.Log($"xxxjack encoder URL {cfg.Bin2Dash.url+ cfg.Bin2Dash.streamName}.mdp segmentSize {cfg.Bin2Dash.segmentSize} segmentLife {cfg.Bin2Dash.segmentLife}");
+            Debug.Log($"xxxjack encoder URL {b2d.url+ b2d.streamName}.mdp segmentSize {b2d.segmentSize} segmentLife {b2d.segmentLife}");
             // xxxjack allocate bin2dash
             signals_unity_bridge_pinvoke.SetPaths("bin2dash");
-            uploader = bin2dash_pinvoke.vrt_create(cfg.Bin2Dash.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.Bin2Dash.url, cfg.Bin2Dash.segmentSize, cfg.Bin2Dash.segmentLife);
+            uploader = bin2dash_pinvoke.vrt_create(b2d.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), b2d.url, b2d.segmentSize, b2d.segmentLife);
             if (uploader == System.IntPtr.Zero) {
                 Debug.LogError("PCRealSense2Reader: vrt_create: failed to create uploader");
                 API_cwipc_util.cwipc_source_free(reader);

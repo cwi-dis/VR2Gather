@@ -10,7 +10,7 @@ public class EntityPipeline : MonoBehaviour {
     MonoBehaviour       render;
 
     // Start is called before the first frame update
-    public EntityPipeline Init(Config._PCs cfg, Transform parent) {
+    public EntityPipeline Init(Config._User cfg, Transform parent) {
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
             preparer = new Workers.MeshPreparer();
@@ -23,22 +23,31 @@ public class EntityPipeline : MonoBehaviour {
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
+
         int forks = 1;
         switch (cfg.sourceType) {
-            case "rs2":
-                reader = new Workers.RS2Reader(cfg.Realsense2Config);
-                reader.AddNext(preparer).AddNext(reader); // <- local render tine.
-                if (cfg.Encoder != null && cfg.Bin2Dash != null) {
-                    codec = new Workers.PCEncoder(cfg.Encoder);
-                    writer = new Workers.B2DWriter(cfg.Bin2Dash);
-                    reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
-                    forks = 2;
+            case "pcself": // old "rs2"
+                
+                if (cfg.PCSelfConfig != null) {
+                    reader = new Workers.RS2Reader(cfg.PCSelfConfig);
+                    reader.AddNext(preparer).AddNext(reader); // <- local render tine.
+                
+                    if (cfg.PCSelfConfig.Encoder != null) {
+                        codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
+                        writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash);
+                        reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
+                        forks = 2;
+                    }
+                    if (cfg.PCSelfConfig.AudioBin2Dash != null)
+                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash);
                 }
                 break;
-            case "sub":
+            case "pcsub":
                 reader = new Workers.SUBReader(cfg.SUBConfig);
                 codec  = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader);
+                if (cfg.AudioSUBConfig != null)
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig);
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);
@@ -49,7 +58,7 @@ public class EntityPipeline : MonoBehaviour {
 
 
 
-        reader.token = new Workers.Token(forks);
+        if(reader!=null) reader.token = new Workers.Token(forks);
 
         transform.parent = parent;
         transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);

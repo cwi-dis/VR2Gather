@@ -13,11 +13,11 @@ public class PointCloudBaseRenderer : MonoBehaviour {
     protected PointCloudFrame   frameReady = null;
     protected PCBaseReader      currentPCReader;
 
-    public virtual void Init(Config._PCs cfg)
+    public virtual void Init(Config._User cfg)
     {
     }
 
-    protected void InternalInit(Config._PCs cfg, Shader pointShader ) {
+    protected void InternalInit(Config._User cfg, Shader pointShader ) {
         transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
         transform.rotation = Quaternion.Euler(cfg.Render.rotation);
         transform.localScale = cfg.Render.scale;

@@ -9,7 +9,7 @@ namespace Workers {
         System.IntPtr pointCloudData;
         int dampedSize = 0;
 
-        public PCEncoder(Config._PCs._Encoder cfg):base(WorkerType.Run) {
+        public PCEncoder(Config._User._PCSelfConfig._Encoder cfg):base(WorkerType.Run) {
             try {
                 API_cwipc_codec.cwipc_encoder_params parms = new API_cwipc_codec.cwipc_encoder_params { octree_bits = cfg.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
                 signals_unity_bridge_pinvoke.SetPaths("cwipc_codec");

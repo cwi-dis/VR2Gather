@@ -9,7 +9,7 @@ public class PointCloudBufferRenderer : PointCloudBaseRenderer {
     ComputeBuffer   pointBuffer;
     int             pointCount = 0;
 
-    public override void Init(Config._PCs cfg) { InternalInit(cfg, Resources.Load<Shader>("PointCloudBuffer")); }
+    public override void Init(Config._User cfg) { InternalInit(cfg, Resources.Load<Shader>("PointCloudBuffer")); }
 
     protected override void OnData() { frameReady.getByteArray(); }
 
