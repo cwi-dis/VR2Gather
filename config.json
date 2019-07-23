@@ -70,12 +70,12 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-m378/testBed.mpd",
-        "_url": "http://arecibo.huiskamer.private:9000/pc-m378/testBed.mpd"
+        "_url": "https://vrt-evanescent.viaccess-orca.com/pc-m378/testBed.mpd",
+        "url": "http://arecibo.huiskamer.private:9000/pc-m378/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-m378/audio.mpd",
-        "_url": "http://arecibo.huiskamer.private:9000/audio-m378/audio.mpd"
+        "_url": "https://vrt-evanescent.viaccess-orca.com/audio-m378/audio.mpd",
+        "url": "http://arecibo.huiskamer.private:9000/audio-m378/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
@@ -113,7 +113,7 @@
         "_url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/testBed.mpd",
         "url": "http://arecibo.huiskamer.private:9000/pc-m377a/testBed.mpd"
       },
-      "AudioSUBConfig": {
+      "_AudioSUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/audio.mpd",
         "url": "http://arecibo.huiskamer.private:9000/audio-m377a/audio.mpd"
       },
