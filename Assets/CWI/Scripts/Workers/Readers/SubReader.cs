@@ -37,6 +37,28 @@ namespace Workers
             }
         }
 
+        public SUBReader(Config._User._SUBConfig cfg, string sub_url) : base(WorkerType.Init) {
+            url = sub_url;
+            streamNumber = cfg.streamNumber;
+            try {
+                signals_unity_bridge_pinvoke.SetPaths();
+                subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
+                if (subHandle != System.IntPtr.Zero) {
+                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
+                        Start();
+                    }
+                    else
+                        throw new System.Exception($"PCSUBReader: sub_play failed for {url}");
+                }
+                else
+                    throw new System.Exception($"PCSUBReader: sub_create failed");
+            }
+            catch (System.Exception e) {
+                Debug.LogError(e.Message);
+                throw e;
+            }
+        }
+
         public override void OnStop()
         {
             if (subHandle != System.IntPtr.Zero) signals_unity_bridge_pinvoke.sub_destroy(subHandle);

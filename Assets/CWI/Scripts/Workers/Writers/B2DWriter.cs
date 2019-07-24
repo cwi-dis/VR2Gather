@@ -10,13 +10,29 @@ namespace Workers {
             try {
                 signals_unity_bridge_pinvoke.SetPaths("bin2dash");
                 uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
-                if (uploader != System.IntPtr.Zero)
-                {
+                if (uploader != System.IntPtr.Zero) {
                     Debug.Log($"Bin2Dash {cfg.url}");
                     Start();
                 }
                 else
                     throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {cfg.url}/{cfg.streamName}.mpd");
+            }
+            catch (System.Exception e) {
+                Debug.LogError(e.Message);
+                throw e;
+            }
+        }
+
+        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string name) : base(WorkerType.End) {
+            try {
+                signals_unity_bridge_pinvoke.SetPaths("bin2dash");
+                uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url + name + "/", cfg.segmentSize, cfg.segmentLife);
+                if (uploader != System.IntPtr.Zero) {
+                    Debug.Log($"Bin2Dash {cfg.url + name + "/" + cfg.streamName}");
+                    Start();
+                }
+                else
+                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {cfg.url + name + "/"}/{cfg.streamName}.mpd");
             }
             catch (System.Exception e) {
                 Debug.LogError(e.Message);

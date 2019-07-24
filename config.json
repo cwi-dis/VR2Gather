@@ -24,14 +24,14 @@
         },
         "Bin2Dash": {
           "streamName": "testBed",
-          "url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/",
+          "url": "https://vrt-evanescent.viaccess-orca.com/pc-",
           "_url": "http://127.0.0.1:9000/pc-m377a/",
           "segmentSize": 2000,
           "segmentLife": 4000
         },
         "AudioBin2Dash": {
           "streamName": "audio",
-          "url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/",
+          "url": "https://vrt-evanescent.viaccess-orca.com/audio-",
           "_url": "http://127.0.0.1:9000/audio-m377a/",
           "segmentSize": 500,
           "segmentLife": 30000

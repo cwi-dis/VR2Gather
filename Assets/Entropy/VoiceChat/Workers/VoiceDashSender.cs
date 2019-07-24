@@ -18,6 +18,15 @@ public class VoiceDashSender : MonoBehaviour
         reader.token = new Workers.Token(1);
     }
 
+    // Start is called before the first frame update
+    public void Init(Config._User._PCSelfConfig._Bin2Dash cfg, string name) {
+        reader = new Workers.VoiceReader(this);
+        codec = new Workers.VoiceEncoder();
+        writer = new Workers.B2DWriter(cfg, name);
+        reader.AddNext(codec).AddNext(writer).AddNext(reader);
+        reader.token = new Workers.Token(1);
+    }
+
     void OnDestroy() {
         reader?.Stop();
         codec?.Stop();
