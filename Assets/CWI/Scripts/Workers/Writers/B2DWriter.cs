@@ -6,7 +6,7 @@ namespace Workers {
     public class B2DWriter : BaseWorker {
         System.IntPtr uploader;
 
-        public B2DWriter(Config._PCs._Bin2Dash cfg) : base(WorkerType.End) {
+        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg) : base(WorkerType.End) {
             try {
                 signals_unity_bridge_pinvoke.SetPaths("bin2dash");
                 uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);

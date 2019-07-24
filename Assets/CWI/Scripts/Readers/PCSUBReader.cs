@@ -14,7 +14,7 @@ public class PCSUBReader : PCBaseReader {
     byte[] currentBuffer;
     IntPtr currentBufferPtr;
 
-    public PCSUBReader(Config._PCs._SUBConfig cfg) {
+    public PCSUBReader(Config._User._SUBConfig cfg) {
         failed = true;
         url = cfg.url;
         streamNumber = cfg.streamNumber;

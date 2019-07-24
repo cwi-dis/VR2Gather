@@ -14,36 +14,28 @@
       "z": 0.0
     }
   },
-  "PCs": [
+  "Users": [
     {
-      "sourceType": "rs2",
-      "Realsense2Config": {
-        "configFilename": ""
-      },
-      "NetConfig": {
-        "hostName": "localhost",
-        "port": 16384
-      },
-      "AudioBin2Dash": {
-        "streamName": "audio",
-        "_url": "https://vrt-evanescent.viaccess-orca.com/player0/",
-        "url": "http://127.0.0.1:9000/player0/",
-        "segmentSize": 500,
-        "segmentLife": 30000
-      },
-      "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/player0/audio.mpd",
-        "url": "http://127.0.0.1:9000/player0/audio.mpd"
-      },
-      "Encoder": {
-        "octreeBits": 4
-      },
-      "Bin2Dash": {
-        "streamName": "testBed",
-        "url": "https://vrt-evanescent.viaccess-orca.com/fernando/",
-        "_url": "http://127.0.0.1:9000/",
-        "segmentSize": 500,
-        "segmentLife": 500
+      "sourceType": "pcself",
+      "PCSelfConfig": {
+        "configFilename": "../cameraconfig.xml",
+        "Encoder": {
+          "octreeBits": 4
+        },
+        "Bin2Dash": {
+          "streamName": "testBed",
+          "url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/",
+          "_url": "http://127.0.0.1:9000/pc-m377a/",
+          "segmentSize": 2000,
+          "segmentLife": 4000
+        },
+        "AudioBin2Dash": {
+          "streamName": "audio",
+          "url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/",
+          "_url": "http://127.0.0.1:9000/audio-m377a/",
+          "segmentSize": 500,
+          "segmentLife": 30000
+        }
       },
       "Render": {
         "forceMesh": true,
@@ -76,21 +68,14 @@
       }
     },
     {
-      "sourceType": "sub",
+      "sourceType": "pcsub",
       "SUBConfig": {
-        "_url": "http://127.0.0.1:9000/testBed.mpd",
-        "url": "https://vrt-evanescent.viaccess-orca.com/player1/testBed.mpd"
-      },
-      "AudioBin2Dash": {
-        "streamName": "audio",
-        "_url": "https://vrt-evanescent.viaccess-orca.com/player1/",
-        "url": "http://127.0.0.1:9000/player1/",
-        "segmentSize": 500,
-        "segmentLife": 30000
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-m378/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/pc-m378/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/fernando/audio.mpd",
-        "url": "http://127.0.0.1:9000/player1/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-m378/audio.mpd",
+        "_url": "http://127.0.0.1:9000/audio-m378/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
@@ -123,22 +108,14 @@
       }
     },
     {
-      "sourceType": "sub",
+      "sourceType": "pcsub",
       "SUBConfig": {
-        "_url": "http://127.0.0.1:9000/testBed.mpd",
-        "2url": "https://vrt-evanescent.viaccess-orca.com/jack/bin2dashSink.mpd",
-        "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd"
-      },
-      "AudioBin2Dash": {
-        "streamName": "audio",
-        "_url": "https://vrt-evanescent.viaccess-orca.com/player2/",
-        "url": "http://127.0.0.1:9000/",
-        "segmentSize": 500,
-        "segmentLife": 30000
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/pc-m377a/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/player2/audio.mpd",
-        "url": "http://127.0.0.1:9000/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/audio.mpd",
+        "_url": "http://127.0.0.1:9000/audio-m377a/audio.mpd"
       },
       "Render": {
         "forceMesh": true,

@@ -8,7 +8,7 @@ using System.Threading;
 public class PointCloudMeshRenderer : PointCloudBaseRenderer {
     Mesh mesh;
 
-    public override void Init(Config._PCs cfg ) {
+    public override void Init(Config._User cfg ) {
         InternalInit(cfg, Resources.Load<Shader>("PointCloudMesh") );
 
         var mf = gameObject.AddComponent<MeshFilter>();

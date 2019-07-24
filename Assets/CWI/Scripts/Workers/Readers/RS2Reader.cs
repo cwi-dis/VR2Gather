@@ -8,7 +8,7 @@ namespace Workers {
         protected System.IntPtr reader;
         System.IntPtr currentBuffer;
 
-        public RS2Reader(Config._PCs._Realsense2Config cfg) : base(WorkerType.Init) {
+        public RS2Reader(Config._User._PCSelfConfig cfg) : base(WorkerType.Init) {
             try {
                 System.IntPtr errorPtr = System.IntPtr.Zero;
                 reader = API_cwipc_realsense2.cwipc_realsense2(cfg.configFilename, ref errorPtr);

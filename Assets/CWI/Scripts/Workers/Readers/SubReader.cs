@@ -12,7 +12,7 @@ namespace Workers
         int dampedSize = 0;
 
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-        public SUBReader(Config._PCs._SUBConfig cfg) :base(WorkerType.Init) { 
+        public SUBReader(Config._User._SUBConfig cfg) :base(WorkerType.Init) { 
             url = cfg.url;
             streamNumber = cfg.streamNumber;
             try {

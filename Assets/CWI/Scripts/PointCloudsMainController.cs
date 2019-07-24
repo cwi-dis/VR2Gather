@@ -12,7 +12,7 @@ public class PointCloudsMainController : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            var pc = Config.Instance.PCs[0];
+            var pc = Config.Instance.Users[0];
             PointCloudBaseRenderer pct = null;
             if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
@@ -25,7 +25,7 @@ public class PointCloudsMainController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            var pc = Config.Instance.PCs[1];
+            var pc = Config.Instance.Users[1];
             PointCloudBaseRenderer pct = null;
             if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
@@ -37,7 +37,7 @@ public class PointCloudsMainController : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            var pc = Config.Instance.PCs[2];
+            var pc = Config.Instance.Users[2];
             PointCloudBaseRenderer pct = null;
             if (pc.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
                 pct = new GameObject("PC").AddComponent<PointCloudMeshRenderer>();
