@@ -81,7 +81,7 @@ namespace OrchestratorWSManagement
 
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
-
+            
             Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //JSON
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
@@ -92,7 +92,7 @@ namespace OrchestratorWSManagement
             {
                 Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
-
+            
 
             // Open the socket
             Manager.Open();
@@ -151,7 +151,7 @@ namespace OrchestratorWSManagement
             }
 
             // send the command
-            if (!SendCommand(command.SocketEventName, parameters))
+            if (! SendCommand(command.SocketEventName, parameters))
             {
                 // problem while sending the command
                 sentCommand = null;

@@ -59,27 +59,22 @@ namespace OrchestratorWrapping
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
-        //Test
-        public string userPCDash = "";
-        public string userAudioDash = "";
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-        public UserData(string pMQname, string pMQurl, string pPCDash, string pAudioDash)
+        public UserData(string pMQname, string pMQurl)
         {
             userMQexchangeName = pMQname;
             userMQurl = pMQurl;
-            userPCDash = pPCDash;
-            userAudioDash = pAudioDash;
         }
     }
 
-    public class NtpClock : OrchestratorElement
+    public class NtpClock: OrchestratorElement
     {
         public string ntpTime;
 
-        public NtpClock() { }
+        public NtpClock() {}
     }
 
     public class Scenario : OrchestratorElement
@@ -109,7 +104,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
+            return scenarioName + " (" + scenarioDescription + ")";
         }
     }
 
@@ -129,7 +124,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
+            return scenarioName + " (" + scenarioDescription + ")";
         }
     }
 

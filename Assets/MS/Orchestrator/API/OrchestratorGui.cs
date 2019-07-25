@@ -31,65 +31,65 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     //Connection and login components
     [Header("Connection and login components")]
     [SerializeField]
-    public InputField orchestratorUrlIF;
+    private InputField orchestratorUrlIF;
     [SerializeField]
-    public Button connectButton;
+    private Button connectButton;
     [SerializeField]
-    public Button disconnectButton;
+    private Button disconnectButton;
     [SerializeField]
-    public Toggle autoRetrieveOrchestratorDataOnConnect;
+    private Toggle autoRetrieveOrchestratorDataOnConnect;
     [SerializeField]
-    public InputField userNameIF;
+    private InputField userNameIF;
     [SerializeField]
-    public InputField userPasswordIF;
+    private InputField userPasswordIF;
     [SerializeField]
-    public InputField userMQurlIF;
+    private InputField userMQurlIF;
     [SerializeField]
-    public InputField userMQnameIF;
+    private InputField userMQnameIF;
     [SerializeField]
-    public Button loginButton;
+    private Button loginButton;
     [SerializeField]
-    public Button logoutButton;
+    private Button logoutButton;
 
     // Logs container
     [Header("Logs container")]
     [SerializeField]
-    public RectTransform logsContainer;
+    private RectTransform logsContainer;
     [SerializeField]
-    public ScrollRect logsScrollRect;
+    private ScrollRect logsScrollRect;
     private Font ArialFont;
 
     // User GUI components
     [Header("User GUI components")]
     [SerializeField]
-    public Text userLogged;
+    private Text userLogged;
     [SerializeField]
-    public Text userId;
+    private Text userId;
     [SerializeField]
-    public Text userName;
+    private Text userName;
     [SerializeField]
-    public Text userAdmin;
+    private Text userAdmin;
     [SerializeField]
-    public Text userMQurl;
+    private Text userMQurl;
     [SerializeField]
-    public Text userMQname;
+    private Text userMQname;
     [SerializeField]
-    public Text userSession;
+    private Text userSession;
     [SerializeField]
-    public Text userScenario;
+    private Text userScenario;
     [SerializeField]
-    public Text userRoom;
+    private Text userRoom;
 
     // Orchestrator GUI components
     [Header("Orchestrator GUI components")]
     [SerializeField]
-    public Text orchestratorConnected;
+    private Text orchestratorConnected;
     [SerializeField]
-    public RectTransform orchestratorUsers;
+    private RectTransform orchestratorUsers;
     [SerializeField]
-    public RectTransform orchestratorScenarios;
+    private RectTransform orchestratorScenarios;
     [SerializeField]
-    public RectTransform orchestratorSessions;
+    private RectTransform orchestratorSessions;
 
     #endregion
 
@@ -142,7 +142,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     #region orchestration logics
 
     // the wrapper for the orchestrator
-    public OrchestratorWrapper orchestratorWrapper;
+    private OrchestratorWrapper orchestratorWrapper;
 
     // available commands
     private List<GuiCommandDescription> GuiCommands;
@@ -151,34 +151,26 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     private GuiCommandDescription selectedCommand;
 
     // lists of items that are availble for the user
-    public List<Session> availableSessions;
-    public List<Scenario> availableScenarios;
-    public List<User> availableUsers;
-    public List<RoomInstance> availableRoomInstances;
+    private List<Session> availableSessions;
+    private List<Scenario> availableScenarios;
+    private List<User> availableUsers;
+    private List<RoomInstance> availableRoomInstances;
 
     // user Login state
-    public bool userIsLogged = false;
+    private bool userIsLogged = false;
 
     // orchestrator connection state
-    public bool connectedToOrchestrator = false;
-
-    [SerializeField]
-    private OrchestrationBridge test;
-
-
-    public ScenarioInstance activeScenario;
-    public Session activeSession;
+    private bool connectedToOrchestrator = false;
 
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
     private bool isAutoRetrievingData = false;
 
-    string userID = "";
     #endregion
 
-    // Use this for initialization
+    #region Unity
+
     void Start()
     {
-
         // font to build gui components for logs!
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
@@ -212,6 +204,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         // update the states of the enabled or disabled items according to the connection and log states
         UpdateEnabledItems();
     }
+
+    #endregion
+
+    #region GUI
 
     // Build the commands available
     private void BuildCommandsPanels()
@@ -251,141 +247,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             new GuiCommandDescription("SendMessageToAll", new List<RectTransform> { messagePanel }, SendMessageToAll),
         };
     }
-
-    // Disconnect from the orchestrator
-    private void socketDisconnect()
-    {
-        orchestratorWrapper.Disconnect();
-    }
-
-    // Connect to the orchestrator
-    private void socketConnect()
-    {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
-        orchestratorWrapper.Connect();
-    }
-
-    // Login from the main buttons Login & Logout
-    private void HeadLogin()
-    {
-        orchestratorWrapper.Login(userNameIF.text, userPasswordIF.text);
-    }
-
-    #region functions that prepare the command to send
-    public void Login()
-    {
-        orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
-    }
-
-    public void Logout()
-    {
-        orchestratorWrapper.Logout();
-    }
-
-    private void GetNTPTime()
-    {
-        Debug.Log("GetNTPTime::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
-        orchestratorWrapper.GetNTPTime();
-    }
-
-    public void GetSessions()
-    {
-        orchestratorWrapper.GetSessions();
-    }
-
-    public void AddSession()
-    {
-        Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.AddSession(availableScenarios[dd.value].scenarioId,
-            sessionNamePanel.GetComponentInChildren<InputField>().text,
-            sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
-    }
-
-    public void DeleteSession()
-    {
-        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.DeleteSession(availableSessions[dd.value].sessionId);
-    }
-
-    public void JoinSession()
-    {
-        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-        string sessionIdToJoin = availableSessions[dd.value].sessionId;
-        userSession.text = sessionIdToJoin;
-        orchestratorWrapper.JoinSession(sessionIdToJoin);
-    }
-
-    public void LeaveSession()
-    {
-        orchestratorWrapper.LeaveSession();
-    }
-
-    public void GetScenarios()
-    {
-        orchestratorWrapper.GetScenarios();
-    }
-
-    public void GetUsers()
-    {
-        orchestratorWrapper.GetUsers();
-    }
-
-    public void AddUser()
-    {
-        orchestratorWrapper.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
-            userPasswordPanel.GetComponentInChildren<InputField>().text,
-            userAdminPanel.GetComponentInChildren<Toggle>().isOn);
-    }
-
-    public void UpdateUserData()
-    {
-        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text, 
-                                                userDataMQurlPanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
-    }
-
-    public void GetUserInfo()
-    {
-        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.GetUserInfo(availableUsers[dd.value].userId);
-    }
-
-    public void DeleteUser()
-    {
-        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.DeleteUser(availableUsers[dd.value].userId);
-    }
-
-    public void GetRooms()
-    {
-        orchestratorWrapper.GetRooms();
-    }
-
-    public void JoinRoom()
-    {
-        Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
-        RoomInstance room = availableRoomInstances[dd.value];
-        userRoom.text = room.GetGuiRepresentation();
-        orchestratorWrapper.JoinRoom(room.roomId);
-    }
-
-    public void LeaveRoom()
-    {
-        orchestratorWrapper.LeaveRoom();
-    }
-
-    public void SendMessage()
-    {
-        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.SendMessage(messagePanel.GetComponentInChildren<InputField>().text,
-            availableUsers[dd.value].userId);
-    }
-
-    public void SendMessageToAll()
-    {
-        orchestratorWrapper.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
-    }
-
-    #endregion
 
     // update connect and login buttons according to the states
     private void UpdateEnabledItems()
@@ -428,28 +289,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
     }
 
-    #region listener for the messages sent and received (implementation of the IOrchestratorMessageListener interface)
-
-    // Display the received message in the logs
-    public void OnOrchestratorResponse(int status, string response)
-    {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + response);
-        StartCoroutine(ScrollLogsToBottom());
-    }
-
-    // Display the sent message in the logs
-    public void OnOrchestratorRequest(string request)
-    {
-        AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
-    }
-
     private IEnumerator ScrollLogsToBottom()
     {
         yield return new WaitForSeconds(0.2f);
         logsScrollRect.verticalScrollbar.value = 0;
     }
-
-    #endregion
 
     // Fill a scroll view with a text item
     public void AddTextComponentOnContent(Transform container, string value)
@@ -487,7 +331,18 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
     }
 
-    #region callbacks for the commands (implementation of the IOrchestratorResponsesListener interface)
+    #endregion
+
+    #region Commands
+
+    #region Socket.io connect
+
+    // Connect to the orchestrator
+    private void socketConnect()
+    {
+        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
+        orchestratorWrapper.Connect();
+    }
 
     // implementation des callbacks de retour de l'interface
     public void OnConnect()
@@ -495,9 +350,13 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         connectedToOrchestrator = true;
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
+    }
 
-        //TEST
-        test.StatusTextUpdate();
+
+    // Disconnect from the orchestrator
+    private void socketDisconnect()
+    {
+        orchestratorWrapper.Disconnect();
     }
 
     public void OnDisconnect()
@@ -509,9 +368,38 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         userAdmin.text = "";
         orchestratorConnected.text = connectedToOrchestrator.ToString();
         UpdateEnabledItems();
+    }
 
-        //TEST
-        test.StatusTextUpdate();
+    #endregion
+
+    #region Orchestrator Logs
+
+    // Display the received message in the logs
+    public void OnOrchestratorResponse(int status, string response)
+    {
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + response);
+        StartCoroutine(ScrollLogsToBottom());
+    }
+
+    // Display the sent message in the logs
+    public void OnOrchestratorRequest(string request)
+    {
+        AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
+    }
+
+    #endregion
+
+    #region Login/Logout
+
+    // Login from the main buttons Login & Logout
+    private void HeadLogin()
+    {
+        orchestratorWrapper.Login(userNameIF.text, userPasswordIF.text);
+    }
+
+    private void Login()
+    {
+        orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void OnLoginResponse(ResponseStatus status, string userId)
@@ -536,10 +424,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
                     isAutoRetrievingData = false;
                 }
 
-                //TEST
-                //orchestratorWrapper.UpdateUserDataJson(userMQnameIF.text, userMQurlIF.text);
-                orchestratorWrapper.UpdateUserDataJson(test.exchangeNameLoginIF.text, test.connectionURILoginIF.text, test.pcDashServerLoginIF.text, test.audioDashServerLoginIF.text);
-                userID = userId;
+                orchestratorWrapper.UpdateUserDataJson(userMQnameIF.text, userMQurlIF.text);
             }
             else
             {
@@ -547,7 +432,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
                 this.userId.text = "";
                 userName.text = "";
                 userAdmin.text = "";
-                userID = "";
             }
         }
         else
@@ -564,6 +448,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
         userLogged.text = userIsLogged.ToString();
         UpdateEnabledItems();
+    }
+
+
+    private void Logout()
+    {
+        orchestratorWrapper.Logout();
     }
 
     public void OnLogoutResponse(ResponseStatus status)
@@ -595,7 +485,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
                 userAdmin.text = "";
                 userMQname.text = "";
                 userMQurl.text = "";
-                userID = "";
             }
             else
             {
@@ -605,11 +494,30 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
         UpdateEnabledItems();
     }
-       
+
+    #endregion
+
+    #region NTP clock
+
+    private void GetNTPTime()
+    {
+        Debug.Log("GetNTPTime::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        orchestratorWrapper.GetNTPTime();
+    }
+
     public void OnGetNTPTimeResponse(ResponseStatus status, string time)
     {
         Debug.Log("OnGetNTPTimeResponse::NtpTime::" + time);
         Debug.Log("OnGetNTPTimeResponse::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+    }
+
+    #endregion
+
+    #region Sessions
+
+    private void GetSessions()
+    {
+        orchestratorWrapper.GetSessions();
     }
 
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions)
@@ -645,10 +553,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // auto retriving phase: this was the last call
             isAutoRetrievingData = false;
         }
+    }
 
-        //TEST
-        test.SessionsUpdate();
-        Debug.Log("OnGetSessionsResponse: Good");
+
+    private void AddSession()
+    {
+        Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
+        orchestratorWrapper.AddSession(availableScenarios[dd.value].scenarioId,
+            sessionNamePanel.GetComponentInChildren<InputField>().text,
+            sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void OnAddSessionResponse(ResponseStatus status, Session session)
@@ -680,18 +593,57 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             //OnJoinSessionResponse(status);
-
-            //TEST
-            test.SessionsUpdate();
-            activeSession = session;
-
-            Debug.Log("OnAddSessionResponse: Good");
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
-            Debug.Log("OnAddSessionResponse: Bad");
+        }
+    }
+
+
+    public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario)
+    {
+        if (status.Error == 0)
+        {
+            userScenario.text = scenario.GetGuiRepresentation();
+            // now retrieve the list of the available rooms
+            orchestratorWrapper.GetRooms();
+        }
+    }
+
+
+    private void DeleteSession()
+    {
+        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
+        orchestratorWrapper.DeleteSession(availableSessions[dd.value].sessionId);
+    }
+
+    public void OnDeleteSessionResponse(ResponseStatus status)
+    {
+        // update the lists of session, anyway the result
+        orchestratorWrapper.GetSessions();
+    }
+
+
+    private void JoinSession()
+    {
+        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
+        string sessionIdToJoin = availableSessions[dd.value].sessionId;
+        userSession.text = sessionIdToJoin;
+        orchestratorWrapper.JoinSession(sessionIdToJoin);
+    }
+
+    public void OnJoinSessionResponse(ResponseStatus status)
+    {
+        if (status.Error == 0)
+        {
+            // now we wwill need the session info with the sceanrio instance used for this session
+            orchestratorWrapper.GetSessionInfo();
+        }
+        else
+        {
+            userSession.text = "";
         }
     }
 
@@ -704,38 +656,18 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
-            //TEST
-            activeSession = session;
-            Debug.Log("OnGetSessionInfoResponse: Good");
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
-            Debug.Log("OnGetSessionInfoResponse: Bad");
         }
     }
 
-    public void OnDeleteSessionResponse(ResponseStatus status)
-    {
-        // update the lists of session, anyway the result
-        orchestratorWrapper.GetSessions();
-    }
 
-    public void OnJoinSessionResponse(ResponseStatus status)
+    private void LeaveSession()
     {
-        if (status.Error == 0)
-        {
-            // now we wwill need the session info with the sceanrio instance used for this session
-            orchestratorWrapper.GetSessionInfo();
-            Debug.Log("OnJoinSessionResponse: Good");
-        }
-        else
-        {
-            userSession.text = "";
-            Debug.Log("OnJoinSessionResponse: Bad");
-        }
+        orchestratorWrapper.LeaveSession();
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status)
@@ -745,12 +677,16 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // success
             userSession.text = "";
             userScenario.text = "";
-
-            //TEST
-            activeSession = null;
-            activeScenario = null;
-            test.LobbyTextUpdate();
         }
+    }
+
+    #endregion
+
+    #region Scenarios
+
+    private void GetScenarios()
+    {
+        orchestratorWrapper.GetScenarios();
     }
 
     public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios)
@@ -786,28 +722,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // auto retriving phase: call next
             orchestratorWrapper.GetSessions();
         }
-
-        //TEST
-        test.ScenariosUpdate();
     }
 
-    public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario)
-    {
-        if (status.Error == 0)
-        {            
-            userScenario.text = scenario.GetGuiRepresentation();
-            test.scenarioIdText.text = scenario.scenarioName;
-            // now retrieve the list of the available rooms
-            orchestratorWrapper.GetRooms();
+    #endregion
 
-            //TEST
-            activeScenario = scenario;
-            Debug.Log("OnGetScenarioInstanceInfoResponse: Good");
-        }
-        else
-        {
-            Debug.Log("OnGetScenarioInstanceInfoResponse: Bad");
-        }
+    #region Users
+
+    private void GetUsers()
+    {
+        orchestratorWrapper.GetUsers();
     }
 
     public void OnGetUsersResponse(ResponseStatus status, List<User> users)
@@ -840,10 +763,41 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
     }
 
+
+    private void AddUser()
+    {
+        orchestratorWrapper.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
+            userPasswordPanel.GetComponentInChildren<InputField>().text,
+            userAdminPanel.GetComponentInChildren<Toggle>().isOn);
+    }
+
     public void OnAddUserResponse(ResponseStatus status, User user)
     {
         // update the lists of user, anyway the result
         orchestratorWrapper.GetUsers();
+    }
+
+
+    private void UpdateUserData()
+    {
+        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
+    }
+
+    public void OnUpdateUserDataJsonResponse(ResponseStatus status)
+    {
+        Debug.Log("OnUpdateUserDataJsonResponse()");
+
+        if (status.Error == 0)
+        {
+            orchestratorWrapper.GetUserInfo();
+        }
+    }
+
+
+    private void GetUserInfo()
+    {
+        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+        orchestratorWrapper.GetUserInfo(availableUsers[dd.value].userId);
     }
 
     public void OnGetUserInfoResponse(ResponseStatus status, User user)
@@ -866,24 +820,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
                 // auto retriving phase: call next
                 orchestratorWrapper.GetUsers();
             }
-
-            //TEST
-            test.exchangeNameIF.text = user.userData.userMQexchangeName;
-            test.connectionURIIF.text = user.userData.userMQurl;
-            test.pcDashServerIF.text = user.userData.userPCDash;
-            test.audioDashServerIF.text = user.userData.userAudioDash;
-            test.StatusTextUpdate();
         }
     }
 
-    public void OnUpdateUserDataJsonResponse(ResponseStatus status)
-    {
-        Debug.Log("OnUpdateUserDataJsonResponse()");
 
-        if (status.Error == 0)
-        {
-            orchestratorWrapper.GetUserInfo();
-        }
+    private void DeleteUser()
+    {
+        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+        orchestratorWrapper.DeleteUser(availableUsers[dd.value].userId);
     }
 
     public void OnDeleteUserResponse(ResponseStatus status)
@@ -892,6 +836,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
         // update the lists of user, anyway the result
         orchestratorWrapper.GetUsers();
+    }
+
+    #endregion
+
+    #region Rooms
+
+    private void GetRooms()
+    {
+        orchestratorWrapper.GetRooms();
     }
 
     public void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms)
@@ -912,8 +865,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             options.Add(new Dropdown.OptionData(room.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+    }
 
-        orchestratorWrapper.GetUsers();
+
+    private void JoinRoom()
+    {
+        Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
+        RoomInstance room = availableRoomInstances[dd.value];
+        userRoom.text = room.GetGuiRepresentation();
+        orchestratorWrapper.JoinRoom(room.roomId);
     }
 
     public void OnJoinRoomResponse(ResponseStatus status)
@@ -924,6 +884,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
     }
 
+
+    private void LeaveRoom()
+    {
+        orchestratorWrapper.LeaveRoom();
+    }
+
     public void OnLeaveRoomResponse(ResponseStatus status)
     {
         if (status.Error == 0)
@@ -932,79 +898,42 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         }
     }
 
+    #endregion
+
+    #region Messages
+
+    private void SendMessage()
+    {
+        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+        orchestratorWrapper.SendMessage(messagePanel.GetComponentInChildren<InputField>().text,
+            availableUsers[dd.value].userId);
+    }
+
     public void OnSendMessageResponse(ResponseStatus status)
     {
-        // nothing to do
+        // nothing to do on the GUI
+    }
+
+
+    private void SendMessageToAll()
+    {
+        orchestratorWrapper.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
     }
 
     public void OnSendMessageToAllResponse(ResponseStatus status)
     {
-        // nothing to do
+        // nothing to do on the GUI
     }
+
 
     // Message from a user received spontaneously from the Orchestrator         
-    public void OnUserMessageReceived(UserMessage userMessage) {
+    public void OnUserMessageReceived(UserMessage userMessage)
+    {
         AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message.ToString());
         StartCoroutine(ScrollLogsToBottom());
-
-        //TEST
-        test.controller.MessageActivation(userMessage.message.ToString());
-        Debug.Log(userMessage.fromName + ": " + userMessage.message.ToString());
     }
+
     #endregion
 
-    #region test methods
-    // Connect to the orchestrator
-    public void ConnectSocket()
-    {
-        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
-        orchestratorWrapper.Connect();
-    }
-
-    // Login from the main buttons Login & Logout
-    public void TestLogin(string user, string password)
-    {
-        orchestratorWrapper.Login(user, password);
-    }
-
-    public void TestAddSession(InputField name, InputField description, int scenario)
-    {
-        orchestratorWrapper.AddSession(availableScenarios[scenario].scenarioId,
-            name.text, description.text);
-    }
-
-    public void TestJoinSession(int session)
-    {
-        string sessionIdToJoin = availableSessions[session].sessionId;
-        //userSession.text = sessionIdToJoin;
-        orchestratorWrapper.JoinSession(sessionIdToJoin);
-    }
-
-    public void TestDeleteSession(string sessionId)
-    {
-        orchestratorWrapper.DeleteSession(sessionId);
-    }
-
-    public void TestUpdateUserData(string name, string url, string pc, string audio) {
-        orchestratorWrapper.UpdateUserDataJson(name, url, pc, audio);
-    }
-
-    public string TestGetUserID()
-    {
-        return userId.text;
-    }
-
-    public string TestGetUserName()
-    {
-        return userName.text;
-    }
-
-    public void TestSendMessage(string msg) {
-        orchestratorWrapper.SendMessageToAll(msg);
-    }
-
-    public void TestSendPing(string msg, string id) {
-        orchestratorWrapper.SendMessage(msg, id);
-    }
     #endregion
 }

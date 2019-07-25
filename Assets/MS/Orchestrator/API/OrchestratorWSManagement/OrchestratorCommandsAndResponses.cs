@@ -30,7 +30,7 @@ namespace OrchestratorWSManagement
             ParamValue = paramValue;
             this.type = type;
         }
-        public Parameter(string paramName, Type type) : this(paramName, type, null) { }
+        public Parameter(string paramName, Type type): this(paramName, type, null){}
     }
 
     // Class that defines the availble commands

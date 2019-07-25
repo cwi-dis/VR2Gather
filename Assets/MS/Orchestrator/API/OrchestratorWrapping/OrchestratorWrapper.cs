@@ -52,7 +52,7 @@ namespace OrchestratorWrapping
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
 
         // List of messages that can be received from the orchestrator
-        public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
+        public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }       
 
 
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
@@ -294,9 +294,9 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(string userMQname, string userMQurl, string userPCDash, string userAudioDash)
+        public bool UpdateUserDataJson(string userMQname, string userMQurl)
         {
-            UserData userData = new UserData(userMQname, userMQurl, userPCDash, userAudioDash);
+            UserData userData = new UserData(userMQname, userMQurl);
             JsonData json = JsonUtility.ToJson(userData);
 
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
@@ -426,7 +426,7 @@ namespace OrchestratorWrapping
                         },
                         OnLoginResponse),
                     new OrchestratorCommand("Logout", null, OnLogoutResponse),
-                    
+
                     //NTP
                     new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
 
@@ -466,7 +466,7 @@ namespace OrchestratorWrapping
                     new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))
-                        },
+                        }, 
                         OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {

@@ -6,7 +6,8 @@ namespace OrchestratorWrapping
 {
     // Interface to implement to listen the messages emitted spontaneously
     // by the orchestrator
-    public interface IMessagesFromOrchestratorListener {
+    public interface IMessagesFromOrchestratorListener
+    {
         //void OnMessageReceivedFromOrchestrator(string jsonStringMessage);
         void OnUserMessageReceived(UserMessage userMessage);
     }
@@ -14,7 +15,8 @@ namespace OrchestratorWrapping
     // Interface for clients that will use the orchestrator wrapper
     // each function is the response of a command and contains the data returned by the orchestrator
     // functions are called by the wrapper upon the response of the orchestrator
-    public interface IOrchestratorResponsesListener {
+    public interface IOrchestratorResponsesListener
+    {
         void OnConnect();
         void OnDisconnect();
 
