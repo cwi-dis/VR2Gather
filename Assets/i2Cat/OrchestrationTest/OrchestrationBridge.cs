@@ -344,7 +344,7 @@ public class OrchestrationBridge : MonoBehaviour {
         createButton.interactable = true;
         joinButton.interactable = true;
         
-        if (isMaster || isDebug) orchestrator.TestSendMessage(MessageType.START);
+        if (isMaster) orchestrator.TestSendMessage(MessageType.START);
         else orchestrator.TestSendMessage(MessageType.READY);
     }
 

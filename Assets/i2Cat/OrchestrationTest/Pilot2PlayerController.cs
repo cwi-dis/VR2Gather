@@ -34,7 +34,6 @@ public class Pilot2PlayerController : PilotController {
                     audioController.gameObject.SetActive(true);
                 }
                 else { // Audio Dash Sender
-                    player.audioSender.SetActive(true);
                     player.audioSender.AddComponent<VoiceDashSender>().Init(Config.Instance.Users[0].PCSelfConfig.AudioBin2Dash, player.id.ToString());
                 }
             }
@@ -44,16 +43,17 @@ public class Pilot2PlayerController : PilotController {
                     // TVM
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
-                    player.tvm.gameObject.SetActive(true);
+                    player.tvm.gameObject.SetActive(false);
                     // PC
                     player.pc.SetActive(true);
                     if (my_ID == player.id) {
-                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform, player.id.ToString());
+                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, player.id.ToString());
                     }
                     else {
-                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform, player.id.ToString());
+                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], player.pc.transform, player.id.ToString());
                     // AUDIO
                         player.audioReceiver.SetActive(true);
+                        player.audioSender.SetActive(false);
                         if (socket) // Audio Socket Receiver
                             player.audioReceiver.GetComponent<TestVoiceSocketIOReceiver>().enabled = true;
                         else // Audio Dash Receiver
@@ -124,7 +124,6 @@ public class Pilot2PlayerController : PilotController {
             }
             else { // Audio Dash Sender
                 player.audioSender.AddComponent<VoiceDashSender>().Init(Config.Instance.Users[0].PCSelfConfig.AudioBin2Dash, player.id.ToString());
-                player.audioSender.SetActive(true);
             }
         }
 
@@ -133,16 +132,17 @@ public class Pilot2PlayerController : PilotController {
                 // TVM
                 player.tvm.connectionURI = u.userData.userMQurl;
                 player.tvm.exchangeName = u.userData.userMQexchangeName;
-                player.tvm.gameObject.SetActive(true);
+                player.tvm.gameObject.SetActive(false);
                 // PC
                 player.pc.SetActive(true);
                 if (my_ID == player.id) {
-                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform, player.id.ToString());
+                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, player.id.ToString());
                 }
                 else {
-                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform, player.id.ToString());
+                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], player.pc.transform, player.id.ToString());
                     // AUDIO
                     player.audioReceiver.SetActive(true);
+                    player.audioSender.SetActive(false);
                     if (socket) // Audio Socket Receiver
                         player.audioReceiver.GetComponent<TestVoiceSocketIOReceiver>().enabled = true;
                     else // Audio Dash Receiver
