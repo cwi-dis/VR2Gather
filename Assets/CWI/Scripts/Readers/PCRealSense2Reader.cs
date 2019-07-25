@@ -34,7 +34,7 @@ public class PCRealSense2Reader : PCSyntheticReader
             }
             Debug.Log($"xxxjack encoder URL {b2d.url+ b2d.streamName}.mdp segmentSize {b2d.segmentSize} segmentLife {b2d.segmentLife}");
             // xxxjack allocate bin2dash
-            signals_unity_bridge_pinvoke.SetPaths("bin2dash");
+            signals_unity_bridge_pinvoke.SetPaths("bin2dash.so");
             uploader = bin2dash_pinvoke.vrt_create(b2d.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), b2d.url, b2d.segmentSize, b2d.segmentLife);
             if (uploader == System.IntPtr.Zero) {
                 Debug.LogError("PCRealSense2Reader: vrt_create: failed to create uploader");
