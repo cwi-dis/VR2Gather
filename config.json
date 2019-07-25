@@ -1,7 +1,7 @@
 {
   "memoryDamping": 1.3,
   "TVMs": {
-    "connectionURI": "amqp://tofis:tofis@127.0.0.1:5672/",
+    "connectionURI": "amqp://tofis:tofis@arecibo.huiskamer.private:5672/",
     "exchangeName": "transcoder_out",
     "offsetPosition": {
       "x": 0.0,
@@ -20,20 +20,20 @@
       "PCSelfConfig": {
         "configFilename": "../cameraconfig.xml",
         "Encoder": {
-          "octreeBits": 4
+          "octreeBits": 8
         },
         "Bin2Dash": {
           "streamName": "testBed",
           "url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/",
-          "_url": "http://127.0.0.1:9000/pc-m377a/",
+          "_url": "http://arecibo.huiskamer.private:9000/pc-m377a/",
           "segmentSize": 2000,
           "segmentLife": 4000
         },
         "AudioBin2Dash": {
           "streamName": "audio",
           "url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/",
-          "_url": "http://127.0.0.1:9000/audio-m377a/",
-          "segmentSize": 500,
+          "_url": "http://arecibo.huiskamer.private:9000/audio-m377a/",
+          "segmentSize": 1000,
           "segmentLife": 30000
         }
       },
@@ -47,7 +47,7 @@
         },
         "rotation": {
           "x": 0.0,
-          "y": 180.0,
+          "y": 0.0,
           "z": 0.0
         },
         "scale": {
@@ -70,16 +70,16 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-m378/testBed.mpd",
-        "_url": "http://127.0.0.1:9000/pc-m378/testBed.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
+        "_url": "http://arecibo.huiskamer.private:9000/pc-m378/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-m378/audio.mpd",
-        "_url": "http://127.0.0.1:9000/audio-m378/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
+        "_url": "http://arecibo.huiskamer.private:9000/audio-m378/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
-        "pointSize": 0.008,
+        "pointSize": 0.08,
         "position": {
           "x": 0.0,
           "y": 0.0,
@@ -87,11 +87,11 @@
         },
         "rotation": {
           "x": 0.0,
-          "y": 180.0,
+          "y": 0.0,
           "z": 0.0
         },
         "scale": {
-          "x": 1.0,
+          "x": -1.0,
           "y": 1.0,
           "z": 1.0
         },
@@ -111,15 +111,15 @@
       "sourceType": "pcsub",
       "SUBConfig": {
         "url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/testBed.mpd",
-        "_url": "http://127.0.0.1:9000/pc-m377a/testBed.mpd"
+        "_url": "http://arecibo.huiskamer.private:9000/pc-m377a/testBed.mpd"
       },
       "AudioSUBConfig": {
         "url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/audio.mpd",
-        "_url": "http://127.0.0.1:9000/audio-m377a/audio.mpd"
+        "_url": "http://arecibo.huiskamer.private:9000/audio-m377a/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
-        "pointSize": 0.008,
+        "pointSize": 0.08,
         "position": {
           "x": 2.0,
           "y": 0.0,
@@ -127,11 +127,11 @@
         },
         "rotation": {
           "x": 0.0,
-          "y": 180.0,
+          "y": 0.0,
           "z": 0.0
         },
         "scale": {
-          "x": 1.0,
+          "x": -1.0,
           "y": 1.0,
           "z": 1.0
         },
