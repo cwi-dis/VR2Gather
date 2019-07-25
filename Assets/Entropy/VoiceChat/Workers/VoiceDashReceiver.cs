@@ -29,13 +29,13 @@ public class VoiceDashReceiver : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string url) {
+    public void Init(Config._User._SUBConfig cfg, string id) {
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg, url);
+            reader = new Workers.SUBReader(cfg, id);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer();
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);

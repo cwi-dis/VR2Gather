@@ -24,20 +24,9 @@ public class Pilot2PresenterController : PilotController {
                     players[i - 1].tvm.connectionURI = u.userData.userMQurl;
                     players[i - 1].tvm.exchangeName = u.userData.userMQexchangeName;
                     players[i - 1].tvm.gameObject.SetActive(true);
-                    players[i - 1].pc.subURL = u.userData.userPCDash;
-                    players[i - 1].pc.gameObject.SetActive(false);
+                    //players[i - 1].pc.subURL = u.userData.userPCDash;
+                    players[i - 1].pc.SetActive(false);
                     players[i - 1].offlineText.gameObject.SetActive(false);
-                    //players[i - 1].latencyText.gameObject.SetActive(true);
-
-                    //players[i - 1].tvm.gameObject.transform.localPosition = new Vector3(0, 0, 0);
-                    //players[i - 1].tvm.gameObject.transform.localRotation = Quaternion.Euler(0, 216, 0);
-
-                    //player.cam.SetActive(true);
-                    //player.tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
-                    //player.tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;
-                    //player.tvm.SetActive(true);
-                    //player.pc.GetComponent<PointCloudsMainController>().subURL = u.userData.userPCDash;
-                    //player.pc.SetActive(false);
                 }
             }
         }

@@ -25,6 +25,7 @@ public class Config {
         [Serializable]
         public class _SUBConfig {
             public string url;
+            public string streamName;
             public int streamNumber;
         }
         public _SUBConfig SUBConfig;

@@ -37,8 +37,8 @@ namespace Workers
             }
         }
 
-        public SUBReader(Config._User._SUBConfig cfg, string sub_url) : base(WorkerType.Init) {
-            url = sub_url;
+        public SUBReader(Config._User._SUBConfig cfg, string id) : base(WorkerType.Init) {
+            url = cfg.url + id + cfg.streamName;
             streamNumber = cfg.streamNumber;
             try {
                 signals_unity_bridge_pinvoke.SetPaths();

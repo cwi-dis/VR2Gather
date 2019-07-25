@@ -8,6 +8,8 @@ using UnityEngine.Video;
 public class Pilot2PlayerController : PilotController {
 
     public TestVoiceSocketIOSender audioController;
+
+    bool socket = false;
     
     public override void Start() {
         base.Start();
@@ -27,18 +29,36 @@ public class Pilot2PlayerController : PilotController {
             if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) {
                 player.cam.gameObject.SetActive(true);
                 my_ID = player.id; // Save my ID.
-                audioController.userID = my_ID;
-                audioController.gameObject.SetActive(true);
+                if (socket) { // Audio Socket Sender
+                    audioController.userID = my_ID;
+                    audioController.gameObject.SetActive(true);
+                }
+                else { // Audio Dash Sender
+                    player.audioSender.SetActive(true);
+                    player.audioSender.AddComponent<VoiceDashSender>().Init(Config.Instance.Users[0].PCSelfConfig.AudioBin2Dash, player.id.ToString());
+                }
             }
 
             foreach (User u in orchestrator.availableUsers) {
                 if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
+                    // TVM
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
                     player.tvm.gameObject.SetActive(true);
-                    player.pc.subURL = u.userData.userPCDash;
-                    player.pc.gameObject.SetActive(false);
-                    player.audio.gameObject.SetActive(true);
+                    // PC
+                    player.pc.SetActive(true);
+                    if (my_ID == player.id) {
+                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform, player.id.ToString());
+                    }
+                    else {
+                        player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform, player.id.ToString());
+                    // AUDIO
+                        player.audioReceiver.SetActive(true);
+                        if (socket) // Audio Socket Receiver
+                            player.audioReceiver.GetComponent<TestVoiceSocketIOReceiver>().enabled = true;
+                        else // Audio Dash Receiver
+                            player.audioReceiver.AddComponent<VoiceDashReceiver>().Init(Config.Instance.Users[1].AudioSUBConfig, player.id.ToString());
+                    }
                 }
             }
         }
@@ -98,19 +118,39 @@ public class Pilot2PlayerController : PilotController {
         if (orchestrator.activeSession.sessionUsers[0] == orchestrator.TestGetUserID()) {
             player.cam.gameObject.SetActive(true);
             my_ID = player.id; // Save my ID.
-            audioController.userID = my_ID;
-            audioController.gameObject.SetActive(true);
+            if (socket) { // Audio Socket Sender
+                audioController.userID = my_ID;
+                audioController.gameObject.SetActive(true);
+            }
+            else { // Audio Dash Sender
+                player.audioSender.AddComponent<VoiceDashSender>().Init(Config.Instance.Users[0].PCSelfConfig.AudioBin2Dash, player.id.ToString());
+                player.audioSender.SetActive(true);
+            }
         }
 
         foreach (User u in orchestrator.availableUsers) {
             if (u.userId == orchestrator.activeSession.sessionUsers[0]) {
+                // TVM
                 player.tvm.connectionURI = u.userData.userMQurl;
                 player.tvm.exchangeName = u.userData.userMQexchangeName;
                 player.tvm.gameObject.SetActive(true);
-                player.pc.subURL = u.userData.userPCDash;
-                player.pc.gameObject.SetActive(false);
-                player.audio.gameObject.SetActive(true);
+                // PC
+                player.pc.SetActive(true);
+                if (my_ID == player.id) {
+                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform, player.id.ToString());
+                }
+                else {
+                    player.pc.AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform, player.id.ToString());
+                    // AUDIO
+                    player.audioReceiver.SetActive(true);
+                    if (socket) // Audio Socket Receiver
+                        player.audioReceiver.GetComponent<TestVoiceSocketIOReceiver>().enabled = true;
+                    else // Audio Dash Receiver
+                        player.audioReceiver.AddComponent<VoiceDashReceiver>().Init(Config.Instance.Users[1].AudioSUBConfig, player.id.ToString());
+                }
             }
         }
+
+
     }
 }

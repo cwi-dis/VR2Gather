@@ -70,12 +70,14 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-m378/testBed.mpd",
-        "_url": "http://127.0.0.1:9000/pc-m378/testBed.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-",
+        "_url": "http://127.0.0.1:9000/pc-m378/testBed.mpd",
+        "streamName": "/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-m378/audio.mpd",
-        "_url": "http://127.0.0.1:9000/audio-m378/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-",
+        "_url": "http://127.0.0.1:9000/audio-m378/audio.mpd",
+        "streamName": "/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
