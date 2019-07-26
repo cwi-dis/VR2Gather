@@ -54,7 +54,6 @@ namespace OrchestratorWrapping
         // List of messages that can be received from the orchestrator
         public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }       
 
-
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
         {
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
@@ -294,9 +293,9 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(string userMQname, string userMQurl)
+        public bool UpdateUserDataJson(string userMQname = "", string userMQurl = "", string userPCurl = "", string userAudioUrl = "")
         {
-            UserData userData = new UserData(userMQname, userMQurl);
+            UserData userData = new UserData(userMQname, userMQurl, userPCurl, userAudioUrl);
             JsonData json = JsonUtility.ToJson(userData);
 
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
@@ -387,6 +386,19 @@ namespace OrchestratorWrapping
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
+
+        public bool PushAudioPacket(Packet pByteArray)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
+            command.GetParameter("audiodata").ParamValue = pByteArray.EncodeBinary();
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnPushAudioPacketResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            //ResponseStatus status = new ResponseStatus(response.error, response.message);
+        }
+
         #endregion
 
         #region remote response
@@ -507,11 +519,18 @@ namespace OrchestratorWrapping
                             new Parameter("message", typeof(string))
                         },
                         OnSendMessageToAllResponse),
+
+                    //audio
+                    new OrchestratorCommand("PushAudio", new List<Parameter>
+                        {
+                            new Parameter("audiodata", typeof(byte[]))
+                        },
+                        OnPushAudioPacketResponse),
                 };
 
             orchestratorMessages = new List<OrchestratorMessageReceiver>
                 {              
-                    //Login & Logout
+                    //messages
                     new OrchestratorMessageReceiver("MessageSent",
                         OnMessageSentFromOrchestrator),
                 };

@@ -59,14 +59,18 @@ namespace OrchestratorWrapping
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
+        public string userPCurl = "";
+        public string userAudioUrl = "";
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-        public UserData(string pMQname, string pMQurl)
+        public UserData(string pMQname, string pMQurl, string pPCurl, string pAudioUrl)
         {
             userMQexchangeName = pMQname;
             userMQurl = pMQurl;
+            userPCurl = pPCurl;
+            userAudioUrl = pAudioUrl;
         }
     }
 

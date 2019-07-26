@@ -24,7 +24,7 @@ public class Pilot2PresenterController : PilotController {
                     players[i - 1].tvm.connectionURI = u.userData.userMQurl;
                     players[i - 1].tvm.exchangeName = u.userData.userMQexchangeName;
                     players[i - 1].tvm.gameObject.SetActive(true);
-                    players[i - 1].pc.subURL = u.userData.userPCDash;
+                    players[i - 1].pc.subURL = u.userData.userPCurl;
                     players[i - 1].pc.gameObject.SetActive(false);
                     players[i - 1].offlineText.gameObject.SetActive(false);
                     //players[i - 1].latencyText.gameObject.SetActive(true);

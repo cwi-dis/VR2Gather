@@ -33,7 +33,7 @@ public class Pilot2PlayerController : PilotController {
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
                     player.tvm.gameObject.SetActive(true);
-                    player.pc.subURL = u.userData.userPCDash;
+                    player.pc.subURL = u.userData.userPCurl;
                     player.pc.gameObject.SetActive(false);
                     //player.tvm.GetComponent<ShowTVMs>().connectionURI = u.userData.userMQurl;
                     //player.tvm.GetComponent<ShowTVMs>().exchangeName = u.userData.userMQexchangeName;

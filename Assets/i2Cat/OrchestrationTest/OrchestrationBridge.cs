@@ -15,7 +15,7 @@ public class OrchestrationBridge : MonoBehaviour {
     public bool useEcho = false;
 
     [Header("General")]
-    public OrchestratorGui orchestrator;
+    public OrchestratorGuiExtended orchestrator;
     public PilotController controller;
 
     #region UI
