@@ -47,6 +47,8 @@ namespace OrchestratorWrapping
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);
+
+        void OnPushAudioPacketResponse(ResponseStatus status);
     }
 
     // interface to implement to be updated from messages exchanged on the socketio

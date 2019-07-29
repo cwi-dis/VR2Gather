@@ -176,7 +176,6 @@ namespace OrchestratorWrapping
         }
     }
 
-
     public class Session : OrchestratorElement
     {
         public string sessionId;

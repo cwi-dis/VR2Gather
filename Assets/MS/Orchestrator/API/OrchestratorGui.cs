@@ -935,5 +935,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     #endregion
 
+    public void OnPushAudioPacketResponse(ResponseStatus status)
+    {
+
+    }
+
     #endregion
 }

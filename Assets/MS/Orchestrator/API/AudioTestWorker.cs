@@ -11,6 +11,8 @@ public class AudioTestWorker : MonoBehaviour {
 
     Config._User._PCSelfConfig._Bin2Dash cfg;
 
+    private bool toggle = false;
+
     void Start()
     {
         cfg = new Config._User._PCSelfConfig._Bin2Dash();
@@ -37,11 +39,25 @@ public class AudioTestWorker : MonoBehaviour {
         reader.token = new Workers.Token(1);
     }
 
+    private void StopRecordAudio()
+    {
+        reader?.Stop();
+        codec?.Stop();
+        writer?.Stop();
+    }
+
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            StartRecordAudio();
+            if (!toggle)
+            {
+                StartRecordAudio();
+            }
+            else
+                StopRecordAudio();
+
+            toggle = !toggle;
         }
     }
 }

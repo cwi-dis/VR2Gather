@@ -82,7 +82,7 @@ namespace OrchestratorWSManagement
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
             
-            Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //JSON
+            Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
             Manager.Socket.On(SocketIOEventTypes.Disconnect, OnServerDisconnect);
@@ -93,7 +93,6 @@ namespace OrchestratorWSManagement
                 Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
             
-
             // Open the socket
             Manager.Open();
         }
@@ -127,6 +126,52 @@ namespace OrchestratorWSManagement
 
         #region messages socket.io managing
 
+        public void EmitPacket(OrchestratorCommand command)
+        {
+            object[] parameters = new object [command.Parameters.Count];
+
+            if (command.Parameters != null)
+            {
+                for(int i=0; i<command.Parameters.Count; i++)
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            parameters[0] = command.Parameters[0].ParamValue;
+                            break;
+                        case 1:
+                            parameters[1] = "toto";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                /*
+                // for each parameter defined in the command, fill the parameter with its value
+                command.Parameters.ForEach(delegate (Parameter parameter)
+                {
+                    if (parameter.ParamValue != null)
+                    {
+                        parameters[0] = parameter.ParamValue;
+                    }
+                    else
+                    {
+                        parameters[0] = null;
+                    }
+                });
+                */
+            }
+
+            //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
+
+            // emit the packet on socket.io
+            Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
+
+            // command succesfully sent
+            sentCommand = command;
+        }
+
         // Emit a command
         public bool EmitCommand(OrchestratorCommand command)
         {
@@ -146,7 +191,6 @@ namespace OrchestratorWSManagement
                     {
                         parameters[parameter.ParamName] = "";
                     }
-
                 });
             }
 

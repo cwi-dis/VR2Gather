@@ -387,21 +387,17 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
 
-        public bool PushAudioPacket(Packet pByteArray)
+        public void PushAudioPacket(Packet pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
             command.GetParameter("audiodata").ParamValue = pByteArray.EncodeBinary();
-            return OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        private void OnPushAudioPacketResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            //ResponseStatus status = new ResponseStatus(response.error, response.message);
+            OrchestrationSocketIoManager.EmitPacket(command);
         }
 
         #endregion
 
         #region remote response
+
         // messages from the orchestrator
         private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
@@ -419,6 +415,19 @@ namespace OrchestratorWrapping
             if (MessagesFromOrchestratorListener != null)
             {
                 MessagesFromOrchestratorListener.OnUserMessageReceived(messageReceived);
+            }
+        }
+
+        // audio packets from the orchestrator
+        private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
+        {
+            UnityEngine.Debug.Log("[OrchestratorWrapper][OnAudioSentFromOrchestrator]Packet length: " + args.Length);
+            if (MessagesListener != null)
+            {
+            }
+
+            if (MessagesFromOrchestratorListener != null)
+            {
             }
         }
 
@@ -520,19 +529,20 @@ namespace OrchestratorWrapping
                         },
                         OnSendMessageToAllResponse),
 
-                    //audio
+                    //audio packets
                     new OrchestratorCommand("PushAudio", new List<Parameter>
                         {
-                            new Parameter("audiodata", typeof(byte[]))
-                        },
-                        OnPushAudioPacketResponse),
+                            new Parameter("audiodata", typeof(byte[])),
+                            new Parameter("test", typeof(string))
+                        }),
                 };
 
             orchestratorMessages = new List<OrchestratorMessageReceiver>
                 {              
                     //messages
-                    new OrchestratorMessageReceiver("MessageSent",
-                        OnMessageSentFromOrchestrator),
+                    new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
+                    //audio packets
+                    new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
                 };
         }
 
