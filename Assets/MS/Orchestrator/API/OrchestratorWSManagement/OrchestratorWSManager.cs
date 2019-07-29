@@ -128,11 +128,11 @@ namespace OrchestratorWSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            object[] parameters = new object [command.Parameters.Count];
-
             if (command.Parameters != null)
             {
-                for(int i=0; i<command.Parameters.Count; i++)
+                object[] parameters = new object[command.Parameters.Count];
+
+                for (int i=0; i<command.Parameters.Count; i++)
                 {
                     switch(i)
                     {
@@ -161,15 +161,15 @@ namespace OrchestratorWSManagement
                     }
                 });
                 */
+
+                //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
+
+                // emit the packet on socket.io
+                Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
+
+                // command succesfully sent
+                sentCommand = command;
             }
-
-            //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
-
-            // emit the packet on socket.io
-            Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
-
-            // command succesfully sent
-            sentCommand = command;
         }
 
         // Emit a command

@@ -421,7 +421,8 @@ namespace OrchestratorWrapping
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
-            UnityEngine.Debug.Log("[OrchestratorWrapper][OnAudioSentFromOrchestrator]Packet length: " + args.Length);
+            UnityEngine.Debug.Log("[OrchestratorWrapper][OnAudioSentFromOrchestrator]Packet length: " + packet.Attachments[0].Length);
+
             if (MessagesListener != null)
             {
             }
@@ -532,8 +533,8 @@ namespace OrchestratorWrapping
                     //audio packets
                     new OrchestratorCommand("PushAudio", new List<Parameter>
                         {
-                            new Parameter("audiodata", typeof(byte[])),
-                            new Parameter("test", typeof(string))
+                            new Parameter("audiodata", typeof(byte[]))//,
+                            //new Parameter("test", typeof(string))
                         }),
                 };
 
