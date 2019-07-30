@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioTestWorker : MonoBehaviour {
+public class AudioTestRecorder : MonoBehaviour {
 
-    public int userID;
-    Workers.BaseWorker reader;
-    Workers.BaseWorker codec;
-    Workers.BaseWorker writer;
+    private Workers.BaseWorker reader;
+    private Workers.BaseWorker codec;
+    private Workers.BaseWorker writer;
 
-    Config._User._PCSelfConfig._Bin2Dash cfg;
+    private Config._User._PCSelfConfig._Bin2Dash cfg;
 
     private bool toggle = false;
 
@@ -24,17 +23,12 @@ public class AudioTestWorker : MonoBehaviour {
         cfg.fileMirroring = true;
     }
 
-    private void StartRecordAudioDash()
-    {
-        new GameObject ("AudioRecorder").AddComponent<VoiceDashSender>().Init(cfg);
-    }
-
     private void StartRecordAudio()
     {
         reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();
 
-        writer = new Workers.SocketIOWriter(null, userID);
+        writer = new Workers.SocketIOWriter(null, 0);
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
     }

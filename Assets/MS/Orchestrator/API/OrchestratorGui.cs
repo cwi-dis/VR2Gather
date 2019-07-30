@@ -384,7 +384,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     // Display the sent message in the logs
     public void OnOrchestratorRequest(string request)
     {
-        //AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
+        AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
     }
 
     #endregion
@@ -934,11 +934,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     }
 
     #endregion
-
-    public void OnPushAudioPacketResponse(ResponseStatus status)
-    {
-
-    }
 
     #endregion
 }

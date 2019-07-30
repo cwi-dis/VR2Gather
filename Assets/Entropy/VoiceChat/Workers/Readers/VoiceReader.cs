@@ -49,7 +49,7 @@ namespace Workers
                 Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
 
                 int readPosition = 0;
-                while (true) { 
+                while (true) {
                     if (token != null && !bReady) {
                         int writePosition = Microphone.GetPosition(device);
                         int available;

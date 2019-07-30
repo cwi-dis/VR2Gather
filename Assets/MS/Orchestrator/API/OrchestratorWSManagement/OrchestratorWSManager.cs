@@ -147,21 +147,6 @@ namespace OrchestratorWSManagement
                     }
                 }
 
-                /*
-                // for each parameter defined in the command, fill the parameter with its value
-                command.Parameters.ForEach(delegate (Parameter parameter)
-                {
-                    if (parameter.ParamValue != null)
-                    {
-                        parameters[0] = parameter.ParamValue;
-                    }
-                    else
-                    {
-                        parameters[0] = null;
-                    }
-                });
-                */
-
                 //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
 
                 // emit the packet on socket.io

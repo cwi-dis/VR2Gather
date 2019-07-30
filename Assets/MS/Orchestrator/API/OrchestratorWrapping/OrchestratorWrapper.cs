@@ -32,6 +32,20 @@ namespace OrchestratorWrapping
         public JsonData message;
     }
 
+    // class that stores a user audio packet incoming from the orchestrator
+    public class UserAudioPacket
+    {
+        public byte[] audioPacket;
+
+        public UserAudioPacket(byte[] pAudioPacket)
+        {
+            if(pAudioPacket != null)
+            {
+                audioPacket = pAudioPacket;
+            }
+        }
+    }
+
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
@@ -64,6 +78,8 @@ namespace OrchestratorWrapping
         }
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, messagesFromOrchestratorListener, null) { }
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
+
+        public Action<UserAudioPacket> OnAudioSent;
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -157,7 +173,6 @@ namespace OrchestratorWrapping
             Session session = Session.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
-
 
         public bool GetSessions()
         {
@@ -421,15 +436,17 @@ namespace OrchestratorWrapping
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
-            UnityEngine.Debug.Log("[OrchestratorWrapper][OnAudioSentFromOrchestrator]Packet length: " + packet.Attachments[0].Length);
-
+            /*
             if (MessagesListener != null)
             {
+                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
             }
+            */
 
-            if (MessagesFromOrchestratorListener != null)
-            {
-            }
+            UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0]);
+
+            if (OnAudioSent != null)
+                OnAudioSent.Invoke(packetReceived);
         }
 
         #endregion
