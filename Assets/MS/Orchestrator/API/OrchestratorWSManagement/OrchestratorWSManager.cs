@@ -150,7 +150,7 @@ namespace OrchestratorWSManagement
                 //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
 
                 // emit the packet on socket.io
-                Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
+                Manager.Socket.Emit(command.SocketEventName, delegate(Socket socket, Packet originalPacket, object[] args) {}, parameters);
 
                 // command succesfully sent
                 sentCommand = command;

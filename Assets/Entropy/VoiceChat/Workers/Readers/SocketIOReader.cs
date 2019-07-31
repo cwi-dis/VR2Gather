@@ -56,7 +56,7 @@ namespace Workers
 
         public void OnUserAudioPacketReceived(UserAudioPacket userAudioPacket)
         {
-            Debug.Log("[SocketIOReader][OnUserAudioPacketReceived]" + userAudioPacket.audioPacket.Length);
+            //Debug.Log("[SocketIOReader][OnUserAudioPacketReceived]" + userAudioPacket.audioPacket.Length);
             pending[write % 10] = userAudioPacket.audioPacket;
             write++;
         }
