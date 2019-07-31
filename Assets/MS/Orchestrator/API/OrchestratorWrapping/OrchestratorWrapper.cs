@@ -66,7 +66,7 @@ namespace OrchestratorWrapping
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
 
         // List of messages that can be received from the orchestrator
-        public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }       
+        public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
         {
@@ -402,10 +402,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
 
-        public void PushAudioPacket(Packet pByteArray)
+        public void PushAudioPacket(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
-            command.GetParameter("audiodata").ParamValue = pByteArray.EncodeBinary();
+            command.GetParameter("audiodata").ParamValue = pByteArray;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
 

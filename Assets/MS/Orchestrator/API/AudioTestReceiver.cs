@@ -42,10 +42,12 @@ public class AudioTestReceiver : MonoBehaviour
 
     private void StartListeningAudio()
     {
+        /*
         var ac = AudioSettings.GetConfiguration();
         ac.sampleRate = 16000 * 3;
         ac.dspBufferSize = 320 * 3;
         AudioSettings.Reset(ac);
+        */
 
         if(audioSource == null)
         {

@@ -34,11 +34,7 @@ namespace Workers
 
                 if(OrchestratorGui.orchestratorWrapper != null)
                 {
-                    Packet lPacket = new Packet();
-                    List<byte[]> lList = new List<byte[]>();
-                    lList.Add(tmp);
-                    lPacket.Attachments = lList;
-                    OrchestratorGui.orchestratorWrapper.PushAudioPacket(lPacket);
+                    OrchestratorGui.orchestratorWrapper.PushAudioPacket(tmp);
                 }
 
                 Next();
