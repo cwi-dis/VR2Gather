@@ -12,16 +12,14 @@ namespace Workers
         int dampedSize = 0;
 
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-        public SUBReader(Config._User._SUBConfig cfg) :base(WorkerType.Init) { 
+        public SUBReader(Config._User._SUBConfig cfg) : base(WorkerType.Init) {
             url = cfg.url;
             streamNumber = cfg.streamNumber;
             try {
                 signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-                if (subHandle != System.IntPtr.Zero)
-                {
-                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url))
-                    {
+                if (subHandle != System.IntPtr.Zero) {
+                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
                         Start();
                     }
                     else
@@ -30,8 +28,29 @@ namespace Workers
                 else
                     throw new System.Exception($"PCSUBReader: sub_create failed");
             }
-            catch (System.Exception e)
-            {
+            catch (System.Exception e) {
+                Debug.LogError(e.Message);
+                throw e;
+            }
+        }
+
+        public SUBReader(string cfg) : base(WorkerType.Init) {
+            url = cfg;
+            streamNumber = 1;
+            try {
+                signals_unity_bridge_pinvoke.SetPaths();
+                subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
+                if (subHandle != System.IntPtr.Zero) {
+                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
+                        Start();
+                    }
+                    else
+                        throw new System.Exception($"PCSUBReader: sub_play failed for {url}");
+                }
+                else
+                    throw new System.Exception($"PCSUBReader: sub_create failed");
+            }
+            catch (System.Exception e) {
                 Debug.LogError(e.Message);
                 throw e;
             }
