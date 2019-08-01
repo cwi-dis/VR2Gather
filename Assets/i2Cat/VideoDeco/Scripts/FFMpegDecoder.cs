@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using SharpFFmpeg;
+using FFmpeg.AutoGen;
 using System.Runtime.InteropServices;
 
 public class FFMpegDecoder : MonoBehaviour
