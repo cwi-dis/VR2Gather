@@ -20,7 +20,7 @@ namespace Workers
             base.Update();
             if (token != null && bReady) {
                 token.currentFloatArray = buffer;
-                token.currentSize = buffer.Length;                
+                token.currentSize = buffer.Length;
                 bReady = false;
                 Next();
             }

@@ -16,23 +16,13 @@ public class AudioTestReceiver : MonoBehaviour
 
     private bool toggle = false;
 
-    private void Start()
+    private IEnumerator Start()
     {
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
+        while(OrchestratorGui.orchestratorWrapper == null)
         {
-            if (!toggle)
-            {
-                StartListeningAudio();
-            }
-            else
-                StopListeningAudio();
-
-            toggle = !toggle;
+            yield return 0;
         }
+        OrchestratorGui.orchestratorWrapper.OnAudioSentStart.AddListener(StartListeningAudio);
     }
 
     void OnDestroy()
@@ -42,13 +32,6 @@ public class AudioTestReceiver : MonoBehaviour
 
     private void StartListeningAudio()
     {
-        /*
-        var ac = AudioSettings.GetConfiguration();
-        ac.sampleRate = 16000 * 3;
-        ac.dspBufferSize = 320 * 3;
-        AudioSettings.Reset(ac);
-        */
-
         if(audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();

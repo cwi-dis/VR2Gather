@@ -131,7 +131,9 @@ namespace OrchestratorWSManagement
             if (command.Parameters != null)
             {
                 object[] parameters = new object[command.Parameters.Count];
+                parameters[0] = command.Parameters[0].ParamValue;
 
+                /*
                 for (int i=0; i<command.Parameters.Count; i++)
                 {
                     switch(i)
@@ -139,18 +141,14 @@ namespace OrchestratorWSManagement
                         case 0:
                             parameters[0] = command.Parameters[0].ParamValue;
                             break;
-                        case 1:
-                            parameters[1] = "toto";
-                            break;
                         default:
                             break;
                     }
                 }
-
-                //UnityEngine.Debug.Log("[OrchestratorWSManager][EmitPacket]parameters length: " + ((byte[])(parameters[0])).Length);
+                */
 
                 // emit the packet on socket.io
-                Manager.Socket.Emit(command.SocketEventName, delegate(Socket socket, Packet originalPacket, object[] args) {}, parameters);
+                Manager.Socket.Emit(command.SocketEventName, null, parameters);
 
                 // command succesfully sent
                 sentCommand = command;

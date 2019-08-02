@@ -592,7 +592,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // Now retrieve the infos about the scenario instance
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-            //OnJoinSessionResponse(status);
+
+            if(AudioTestRecorder.instance != null)
+            {
+                AudioTestRecorder.instance.StartRecordAudio();
+            }
         }
         else
         {

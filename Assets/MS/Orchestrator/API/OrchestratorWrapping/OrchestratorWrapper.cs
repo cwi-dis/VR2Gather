@@ -36,12 +36,14 @@ namespace OrchestratorWrapping
     public class UserAudioPacket
     {
         public byte[] audioPacket;
+        public string userID;
 
-        public UserAudioPacket(byte[] pAudioPacket)
+        public UserAudioPacket(byte[] pAudioPacket, string pUserID)
         {
             if(pAudioPacket != null)
             {
                 audioPacket = pAudioPacket;
+                userID = pUserID;
             }
         }
     }
@@ -80,6 +82,7 @@ namespace OrchestratorWrapping
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
 
         public Action<UserAudioPacket> OnAudioSent;
+        public UnityEngine.Events.UnityEvent OnAudioSentStart = new UnityEngine.Events.UnityEvent();
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -433,20 +436,23 @@ namespace OrchestratorWrapping
             }
         }
 
+        private bool firstAudioFrame = true;
+
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
-            /*
-            if (MessagesListener != null)
+            if(firstAudioFrame)
             {
-                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
+                OnAudioSentStart.Invoke();
+                firstAudioFrame = false;
             }
-            */
 
-            UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0]);
-
-            if (OnAudioSent != null)
+            if (OnAudioSent != null && !firstAudioFrame)
+            {
+                JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+                UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], jsonResponse[1]["audioFrom"].ToString());
                 OnAudioSent.Invoke(packetReceived);
+            }
         }
 
         #endregion
@@ -550,8 +556,7 @@ namespace OrchestratorWrapping
                     //audio packets
                     new OrchestratorCommand("PushAudio", new List<Parameter>
                         {
-                            new Parameter("audiodata", typeof(byte[]))//,
-                            //new Parameter("test", typeof(string))
+                            new Parameter("audiodata", typeof(byte[]))
                         }),
                 };
 

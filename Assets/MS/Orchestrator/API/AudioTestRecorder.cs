@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioTestRecorder : MonoBehaviour {
+public class AudioTestRecorder : MonoBehaviour
+{
+    public static AudioTestRecorder instance;
 
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
@@ -14,6 +16,11 @@ public class AudioTestRecorder : MonoBehaviour {
 
     void Start()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+
         cfg = new Config._User._PCSelfConfig._Bin2Dash();
 
         cfg.streamName = "audio";
@@ -23,7 +30,7 @@ public class AudioTestRecorder : MonoBehaviour {
         cfg.fileMirroring = true;
     }
 
-    private void StartRecordAudio()
+    public void StartRecordAudio()
     {
         reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();
@@ -38,20 +45,5 @@ public class AudioTestRecorder : MonoBehaviour {
         reader?.Stop();
         codec?.Stop();
         writer?.Stop();
-    }
-
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            if (!toggle)
-            {
-                StartRecordAudio();
-            }
-            else
-                StopRecordAudio();
-
-            toggle = !toggle;
-        }
     }
 }
