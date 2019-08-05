@@ -20,13 +20,13 @@ namespace Workers
             base.Update();
             if (token != null ) {
                 byte[] tmp = token.currentByteArray;
-                if (token.currentSize != tmp.Length) {
+                /*if (token.currentSize != tmp.Length) {
                     tmp = new byte[token.currentSize];
-                    System.Array.Copy(token.currentByteArray, tmp, token.currentSize);
-                }
-                tmp[0] = userID;
-                token.latency.GetByteArray(tmp, 1);                
 
+                    System.Array.Copy(token.currentByteArray, tmp, token.currentSize);
+                }*/
+                tmp[0] = userID;
+                token.latency.GetByteArray(tmp, 1);
                 socketIOConnection.socket.Emit("dataChannel", (object)tmp);
                 Next();
             }

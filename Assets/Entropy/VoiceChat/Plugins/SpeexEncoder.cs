@@ -159,9 +159,29 @@ namespace NSpeex
 
         public int Encode(float[] inData, int inOffset, int inCount, byte[] outData, int outOffset, int outCount) {
             bits.Reset();
+            int samplesProcessed = 0;
+            int result = 0;
+            while (samplesProcessed < inCount) {
+                // convert shorts into float samples,
+                for (int i = 0; i < frameSize; i++)
+                    rawData[i] = inData[inOffset + i + samplesProcessed];
+
+                result += encoder.Encode(bits, rawData);
+                samplesProcessed += frameSize;
+            }
+
+            if (result == 0)
+                return 0;
+
+            return bits.Write(outData, outOffset, outCount);
+
+            /*
+
+
             int result = encoder.Encode(bits, inData);
             if (result == 0) return 0;
             return bits.Write(outData, outOffset, outCount);
+            */
         }
 
 

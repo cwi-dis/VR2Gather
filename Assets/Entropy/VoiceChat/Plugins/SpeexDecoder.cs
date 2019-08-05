@@ -147,11 +147,19 @@ namespace NSpeex
             return samplesDecoded;
         }
 
-        public int Decode(byte[] inData, int inOffset, int inCount, float[] outData)
+        public int Decode(byte[] inData, int inOffset, int inCount, float[] outData, int outOffset=0)
         {
             bits.ReadFrom(inData, inOffset, inCount);
-            decoder.Decode(bits, outData);
-            return frameSize;
+            int samplesDecoded = 0;
+            while (decoder.Decode(bits, decodedData) == 0) {
+                for (int i = 0; i < frameSize; i++, outOffset++) {
+
+                    outData[outOffset] = decodedData[i];
+                }
+                samplesDecoded += frameSize;
+            }
+            //decoder.Decode(bits, outData);
+            return samplesDecoded;
         }
 
 
