@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
-using UnityEngine.Windows;
 
 public unsafe class TestFFMpeg : MonoBehaviour {
 
@@ -15,6 +14,8 @@ public unsafe class TestFFMpeg : MonoBehaviour {
     public string infilename;
     public string outfilename;
 
+    public bool wDecoder;
+
     AVCodec* codec;
     AVCodecParserContext* parser;
     AVCodecContext* c;
@@ -23,53 +24,85 @@ public unsafe class TestFFMpeg : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-
         FFmpegInvoke.av_register_all();
 
-        AVDictionary* dic;
-        
         codec = FFmpegInvoke.avcodec_find_decoder(AVCodecID.CODEC_ID_MPEG1VIDEO);
+        parser = FFmpegInvoke.av_parser_init((int)codec->id);
         c = FFmpegInvoke.avcodec_alloc_context3(codec);
-        FFmpegInvoke.avcodec_open2(c, codec, &dic);
+        FFmpegInvoke.avcodec_open2(c, codec, null);
         frame = FFmpegInvoke.avcodec_alloc_frame();
     }
 
     void Update() {
-        try {
-            using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
-                byte[] bytes = new byte[stream.Length];
-                int numBytesToRead = (int)stream.Length;
-                int numBytesRead = 0;
+        #region WithoutDecoder
+        if (!wDecoder) {
+            try {
+                using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
+                    byte[] bytes = new byte[stream.Length];
+                    int numBytesToRead = (int)stream.Length;
+                    int numBytesRead = 0;
 
-                #region WithoutDecoder
-                while (numBytesToRead > 0) {
-                    // Read may return anything from 0 to numBytesToRead.
-                    int n = stream.Read(bytes, numBytesRead, numBytesToRead);
+                    while (numBytesToRead > 0) {
+                        // Read may return anything from 0 to numBytesToRead.
+                        int n = stream.Read(bytes, numBytesRead, numBytesToRead);
 
-                    // Break when the end of the file is reached.
-                    if (n == 0)
-                        break;
+                        // Break when the end of the file is reached.
+                        if (n == 0)
+                            break;
 
-                    numBytesRead += n;
-                    numBytesToRead -= n;
-                }
-                numBytesToRead = bytes.Length;
-                #endregion
+                        numBytesRead += n;
+                        numBytesToRead -= n;
+                    }
+                    numBytesToRead = bytes.Length;
 
-                #region WithDecoder
-                #endregion
-
-                using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
-                    fsNew.Write(bytes, 0, numBytesToRead);
+                    using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
+                        fsNew.Write(bytes, 0, numBytesToRead);
+                    }
                 }
             }
+            catch (FileNotFoundException ioEx) {
+                Debug.Log(ioEx.Message);
+            }
         }
-        catch (FileNotFoundException ioEx) {
-            Debug.Log(ioEx.Message);
+        #endregion
+        #region WithDecoder
+        else {
+            try {
+                using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
+                    byte[] bytes = new byte[stream.Length];
+                    int numBytesToRead = (int)stream.Length;
+                    int numBytesRead = 0;
+
+                    while (numBytesToRead > 0) {
+                        // Read may return anything from 0 to numBytesToRead.
+                        int n = stream.Read(bytes, numBytesRead, numBytesToRead);
+
+                        // Break when the end of the file is reached.
+                        if (n == 0)
+                            break;
+
+                        numBytesRead += n;
+                        numBytesToRead -= n;
+                    }
+                    numBytesToRead = bytes.Length;
+
+                    fixed (byte* pBytes = bytes)
+
+                        DecodeFile(pBytes, bytes.Length);
+
+                    //using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
+                    //    fsNew.Write(bytes, 0, numBytesToRead);
+                    //}
+                }
+            }
+            catch (FileNotFoundException ioEx) {
+                Debug.Log(ioEx.Message);
+            }
         }
+        #endregion
     }
 
-    void Decode(byte* pData, int sz) {
+    void DecodeStream(byte* pData, int sz) {
         AVPacket packet;
         FFmpegInvoke.av_init_packet(&packet);
 
@@ -78,8 +111,48 @@ public unsafe class TestFFMpeg : MonoBehaviour {
         int framefinished = 0;
         int nres = FFmpegInvoke.avcodec_decode_video2(c, frame, &framefinished, &packet);
 
+        byte[] arr = new byte[frame->height];
+        Marshal.Copy((IntPtr)frame->data_0, arr, 0, frame->height);
+
         if (framefinished != 0) {
             // do the yuv magic and call a consumer
+            try {
+                using (var fs = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
+                    fs.Write(arr, 0, arr.Length);
+                }
+            }
+            catch (Exception ex) {
+                Console.WriteLine("Exception caught in process: {0}", ex);
+                return;
+            }
+        }
+
+        return;
+    }
+
+    void DecodeFile(byte* pData, int sz) {
+        AVPacket packet;
+        FFmpegInvoke.av_init_packet(&packet);
+
+        packet.data = pData;
+        packet.size = sz;
+        int framefinished = 0;
+        int nres = FFmpegInvoke.avcodec_decode_video2(c, frame, &framefinished, &packet);
+
+        byte[] arr = new byte[frame->height];
+        Marshal.Copy((IntPtr)frame->data_0, arr, 0, frame->height);
+
+        if (framefinished != 0) {
+            // do the yuv magic and call a consumer
+            try {
+                using (var fs = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
+                    fs.Write(arr, 0, arr.Length);
+                }
+            }
+            catch (Exception ex) {
+                Console.WriteLine("Exception caught in process: {0}", ex);
+                return;
+            }
         }
 
         return;

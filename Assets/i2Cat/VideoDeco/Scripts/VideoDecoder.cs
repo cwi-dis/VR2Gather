@@ -10,7 +10,7 @@ namespace Workers {
         public string url;
 
         public VideoDecoder() : base(WorkerType.Run) {
-            decoder = new FFMpegDecoder(url);
+            //decoder = new FFMpegDecoder(url);
             bufferLength = 320;
             Start();
         }
@@ -30,7 +30,7 @@ namespace Workers {
                     receiveBuffer = new float[bufferLength];
                 }
 
-                decoder.Stream(token.currentByteArray, token.currentByteArray.Length, receiveBuffer);
+                //decoder.Stream(token.currentByteArray, token.currentByteArray.Length, receiveBuffer);
 
                 token.currentFloatArray = receiveBuffer;
                 token.currentSize = receiveBuffer.Length;
