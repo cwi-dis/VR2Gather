@@ -32,8 +32,8 @@ public class AudioTestRecorder : MonoBehaviour
 
     public void StartRecordAudio()
     {
-        reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();
+        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
 
         writer = new Workers.SocketIOWriter(null, 0);
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
