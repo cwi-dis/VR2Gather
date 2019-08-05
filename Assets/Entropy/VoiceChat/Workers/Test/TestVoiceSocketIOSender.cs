@@ -14,9 +14,8 @@ public class TestVoiceSocketIOSender : MonoBehaviour {
     IEnumerator Start() {
         NTPTools.GetNetworkTime();
         yield return socketIOConnection.WaitConnection();
-        reader = new Workers.VoiceReader(this);
-        codec = new Workers.VoiceEncoder();
-        
+        codec = new Workers.VoiceEncoder(4);
+        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
         writer = new Workers.SocketIOWriter(socketIOConnection, userID);
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);

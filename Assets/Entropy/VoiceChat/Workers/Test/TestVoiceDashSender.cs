@@ -12,8 +12,8 @@ public class TestVoiceDashSender : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        reader = new Workers.VoiceReader(this);
         codec = new Workers.VoiceEncoder();
+        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
 
         writer = new Workers.B2DWriter(Config.Instance.Users[userID-1].PCSelfConfig.AudioBin2Dash);
 
