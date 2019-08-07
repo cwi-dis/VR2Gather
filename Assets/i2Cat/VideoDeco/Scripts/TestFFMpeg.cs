@@ -19,118 +19,101 @@ public unsafe class TestFFMpeg : MonoBehaviour {
 
     AVCodec* codec;
     AVCodecParserContext* parser;
-    AVCodecContext* c;
-    AVPacket* pkt;
+    AVCodecContext* codec_ctx;
+    AVPacket* packet;
     AVFrame* frame;
+
+    AVCodec* ff_h264_decoder;
+    AVCodecParser* ff_h264_parser;
 
     // Start is called before the first frame update
     void Start() {
-        pkt = ffmpeg.av_packet_alloc();
-        codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_MPEG1VIDEO);
-        parser = ffmpeg.av_parser_init((int)codec->id);
-        c = ffmpeg.avcodec_alloc_context3(codec);
-        ffmpeg.avcodec_open2(c, codec, null);
-        frame = ffmpeg.av_frame_alloc();
-       
+        CheckMode2(infilename);
+        return;
+
+        AVOutputFormat* fmt = ffmpeg.av_guess_format(null, infilename, null);
+        Debug.Log($"video_codec {fmt->video_codec} audio_codec {fmt->audio_codec}");
+
+        packet = ffmpeg.av_packet_alloc();
+        codec = ffmpeg.avcodec_find_decoder( AVCodecID.AV_CODEC_ID_H264);
+        if (codec != null) {
+            codec_ctx = ffmpeg.avcodec_alloc_context3(codec);
+            if (codec_ctx != null) {
+                parser = ffmpeg.av_parser_init((int)codec->id);
+                if (parser != null) {
+                    int ret = ffmpeg.avcodec_open2(codec_ctx, codec, null);
+                    frame = ffmpeg.av_frame_alloc();
+                    if (frame != null) Parse();
+                } else Debug.Log("av_parser_init ERROR");
+            } else Debug.Log("avcodec_alloc_context3 ERROR");
+        } else Debug.Log("avcodec_find_decoder ERROR");
     }
 
-    void Update() {
+    void Parse() {
         if (!finish) {
-            #region WithoutDecoder
-            if (!wDecoder) {
-                try {
-                    using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
-                        byte[] bytes = new byte[stream.Length];
-                        int numBytesToRead = (int)stream.Length;
-                        int numBytesRead = 0;
+            try {
+                using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
+                    int numBytesToRead = 4096;
+                    byte[] bytes = new byte[numBytesToRead];
+                    int data_size = stream.Read(bytes, 0, numBytesToRead);
+                    while (data_size > 0) {
+                        int offset = 0;
+                        while (data_size > 0 ) {
+                            ffmpeg.av_init_packet(packet);
+                            byte* data = (byte*)System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(bytes, offset);
+                            int bytes_used = ffmpeg.av_parser_parse2(parser, codec_ctx, &packet->data, &packet->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+                            if (bytes_used < 0) {
+                                Debug.Log("Error parsing");
+                                return;
+                            }
+                            offset += bytes_used;
+                            data_size -= bytes_used;
+                            if (packet->size > 0 )  {
+                                Debug.Log($"bytes_used {bytes_used} size {packet->size}");
+                                //int gotFrame;
+                                int ret2 = ffmpeg.avcodec_send_packet(codec_ctx, packet);
+                                if (ret2 < 0) {
+                                    byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
+                                    ffmpeg.av_strerror(ret2, errbuf, 128);
+                                    string err_txt = Marshal.PtrToStringAnsi((IntPtr)errbuf);
+                                    Debug.Log($"Error sending a packet for decoding {ret2} {err_txt}");
+                                } else {
+                                    while (ret2 >= 0) {
+                                        ret2 = ffmpeg.avcodec_receive_frame(codec_ctx, frame);
+                                        if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                            Debug.Log($"saving frame {codec_ctx->frame_number}");
+                                        }else
+                                            Debug.Log($"ret2 {ret2}" );
 
-                        while (numBytesToRead > 0) {
-                            // Read may return anything from 0 to numBytesToRead.
-                            int n = stream.Read(bytes, numBytesRead, numBytesToRead);
+                                        //SaveToFile(frame->data[0], frame->linesize[0], frame->width, frame->height);
+                                    }
+                                }
+                            }
 
-                            // Break when the end of the file is reached.
-                            if (n == 0)
-                                break;
-
-                            numBytesRead += n;
-                            numBytesToRead -= n;
+                            //DecodeFile(c, frame, pkt, outfilename);
+                            //data_size = stream.Read(bytes, 0, numBytesToRead);
                         }
-                        numBytesToRead = bytes.Length;
-
-                        using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
-                            fsNew.Write(bytes, 0, numBytesToRead);
-                        }
+                        data_size = stream.Read(bytes, 0, numBytesToRead);
+                        //Debug.Log($">> read Buffer {data_size}");
                     }
-                    finish = true;
+                    //int ret = ffmpeg.av_parser_parse2(parser, c, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
+                    //if (ret < 0) {
+                    //    Debug.Log("Error while parsing");
+                    //}
+                    //data += ret;
+                    //data_size -= ret;
+
+                    //if (pkt->size > 0)
+                    //    DecodeFile();
+
+                    //using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
+                    //    fsNew.Write(bytes, 0, numBytesToRead);
+                    //}
                 }
-                catch (FileNotFoundException ioEx) {
-                    Debug.Log(ioEx.Message);
-                }
+                finish = true;
+            } catch (FileNotFoundException ioEx) {
+                Debug.Log(ioEx.Message);
             }
-            #endregion
-            #region WithDecoder
-            else {
-                try {
-                    using (var stream = new FileStream(infilename, FileMode.Open, FileAccess.Read)) {
-                        byte[] bytes = new byte[stream.Length];
-                        int numBytesToRead = (int)stream.Length;
-                        int numBytesRead = 0;
-                        byte* data;
-                        int data_size;
-                        ffmpeg.av_init_packet(pkt);
-
-                        while (numBytesToRead > 0) {
-                            // Read may return anything from 0 to numBytesToRead.
-                            int n = stream.Read(bytes, numBytesRead, numBytesToRead);
-                                                        
-                            // Break when the end of the file is reached.
-                            if (n == 0)
-                                break;
-
-                            numBytesRead += n;
-                            numBytesToRead -= n;
-                        }
-                        numBytesToRead = bytes.Length;
-
-                        //DO DECODING STUFF
-
-                        data = (byte*)Marshal.AllocHGlobal(bytes.Length);
-                        Marshal.Copy(bytes, 0, (IntPtr)data, bytes.Length);
-                        data_size = bytes.Length;
-
-                        while (data_size > 0) {
-                            int ret = ffmpeg.av_parser_parse2(parser, c, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-                            if (ret < 0) Debug.Log("Error while parsing");
-
-                            data += ret;
-                            data_size -= ret;
-
-                            if (pkt->size > 0)
-                                frame = DecodeFile();
-                                //DecodeFile(c, frame, pkt, outfilename);
-                        }
-
-                        //int ret = ffmpeg.av_parser_parse2(parser, c, &pkt->data, &pkt->size, data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
-                        //if (ret < 0) {
-                        //    Debug.Log("Error while parsing");
-                        //}
-                        //data += ret;
-                        //data_size -= ret;
-
-                        //if (pkt->size > 0)
-                        //    DecodeFile();
-
-                        //using (FileStream fsNew = new FileStream(outfilename, FileMode.Create, FileAccess.Write)) {
-                        //    fsNew.Write(bytes, 0, numBytesToRead);
-                        //}
-                    }
-                    finish = true;
-                }
-                catch (FileNotFoundException ioEx) {
-                    Debug.Log(ioEx.Message);
-                }
-            }
-            #endregion
         }
     }
 
@@ -162,15 +145,15 @@ public unsafe class TestFFMpeg : MonoBehaviour {
         //AVPacket packet;
         //ffmpeg.av_init_packet(pkt);
 
-        int ret = ffmpeg.avcodec_send_packet(c, pkt);
+        int ret = ffmpeg.avcodec_send_packet(codec_ctx, packet);
         if (ret < 0) Debug.Log("Error sending a packet for decoding");
 
         while (ret >= 0) {
-            ret = ffmpeg.avcodec_receive_frame(c, frame);
+            ret = ffmpeg.avcodec_receive_frame(codec_ctx, frame);
             if (ret == ffmpeg.AVERROR(ffmpeg.EAGAIN) || ret == ffmpeg.AVERROR_EOF) return null;
             else if (ret < 0) Debug.Log("Error during decoding");
 
-            Debug.Log("saving frame " + c->frame_number);
+            Debug.Log("saving frame " + codec_ctx->frame_number);
 
             //SaveToFile(frame->data[0], frame->linesize[0], frame->width, frame->height);
         }
@@ -220,9 +203,67 @@ public unsafe class TestFFMpeg : MonoBehaviour {
                 Marshal.Copy((IntPtr)buf, buffer, 0, ysize);
                 fs.Write(buffer, 0, ysize);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             Debug.Log("Exception caught in process: " + ex);
         }
+    }
+
+    public struct buffer_data {
+        public byte* ptr;
+        public int size; ///< size left in the buffer
+    };
+
+    [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+    public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+
+    int read_packet(void* opaque, byte* buf, int buf_size) {
+        buffer_data *bd = (buffer_data *)opaque;
+        Debug.Log($"read_pakage: {buf_size}");
+        buf_size = (int)Mathf.Min (buf_size, bd->size);
+
+        /* copy internal buffer data to buf */
+        CopyMemory((IntPtr)bd->ptr, (IntPtr)buf, (uint)buf_size);
+        bd->ptr  += buf_size;
+        bd->size -= buf_size;
+    return buf_size;
+}
+
+void CheckMode2(string infilename) {
+        int avio_ctx_buffer_size = 80192;
+        byte* avio_ctx_buffer;
+        AVIOContext* avio_ctx;
+        buffer_data bd;
+        byte[] bytes = System.IO.File.ReadAllBytes(infilename);
+        bd.ptr = (byte*)System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
+        bd.size = bytes.Length;
+
+        AVFormatContext* fmt_ctx = ffmpeg.avformat_alloc_context();
+        avio_ctx_buffer = (byte*)ffmpeg.av_malloc((ulong)avio_ctx_buffer_size);
+        avio_ctx = ffmpeg.avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size, 0, &bd, (avio_alloc_context_read_packet)read_packet, null, null);
+        if (avio_ctx==null) {
+            Debug.Log("Could not create avio_ctx");
+            return;
+
+        }
+        fmt_ctx->flags |= ffmpeg.AVFMT_FLAG_CUSTOM_IO;
+        fmt_ctx->pb = avio_ctx;
+        int ret = ffmpeg.avformat_open_input(&fmt_ctx, "", null, null);
+        if (ret < 0) {
+            byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
+            ffmpeg.av_strerror(ret, errbuf, 128);
+            string err_txt = Marshal.PtrToStringAnsi((IntPtr)errbuf);
+            Debug.Log($"Could not open input {ret} {err_txt}");
+           return;
+        }
+        ret = ffmpeg.avformat_find_stream_info(fmt_ctx, null);
+        if (ret < 0) {
+            byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
+            ffmpeg.av_strerror(ret, errbuf, 128);
+            string err_txt = Marshal.PtrToStringAnsi((IntPtr)errbuf);
+            Debug.Log($"Could not find stream information {err_txt}");
+            return;
+        }
+
+        ffmpeg.av_dump_format(fmt_ctx, 0, infilename, 0);
     }
 }
