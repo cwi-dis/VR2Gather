@@ -1,21 +1,26 @@
 fileFormatVersion: 2
-guid: 3aadf3d93b4010047b60be26ce1b8fe6
+guid: c0e03ef88d233154bb4fb175bdf0c050
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: asa02
+    100000: Asa02
     100002: cuerpo02
     100004: //RootNode
-    400000: asa02
+    100006: Foco2
+    100008: Foco_1
+    400000: Asa02
     400002: cuerpo02
     400004: //RootNode
+    400006: Foco2
+    400008: Foco_1
     2100000: lambert3
     2100002: lambert4
-    2300000: asa02
+    2100004: 01 - Default
+    2300000: Asa02
     2300002: cuerpo02
-    3300000: asa02
+    3300000: Asa02
     3300002: cuerpo02
-    4300000: asa02
+    4300000: Asa02
     4300002: cuerpo02
   externalObjects: {}
   materials:
@@ -57,7 +62,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0

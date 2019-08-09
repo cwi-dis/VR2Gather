@@ -1,32 +1,33 @@
 fileFormatVersion: 2
-guid: f17679449e1f82a4d8c6c5e129bb2373
+guid: 3f6252aec76615b4f822d75730ac65ca
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: asa01
+    100000: Asa01
     100002: cuerpo01
     100004: //RootNode
     100006: lampara01
-    100008: Palas01
-    400000: asa01
+    100008: palas01
+    400000: Asa01
     400002: cuerpo01
     400004: //RootNode
     400006: lampara01
-    400008: Palas01
+    400008: palas01
     2100000: lambert2
-    2100002: 02 - Default
-    2300000: asa01
+    2100002: lambert3
+    2100004: 01 - Default
+    2300000: Asa01
     2300002: cuerpo01
     2300004: lampara01
-    2300006: Palas01
-    3300000: asa01
+    2300006: palas01
+    3300000: Asa01
     3300002: cuerpo01
     3300004: lampara01
-    3300006: Palas01
-    4300000: cuerpo01
-    4300002: lampara01
-    4300004: Palas01
-    4300006: asa01
+    3300006: palas01
+    4300000: palas01
+    4300002: Asa01
+    4300004: cuerpo01
+    4300006: lampara01
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -67,7 +68,7 @@ ModelImporter:
     importCameras: 1
     importLights: 1
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
     optimizeMeshForGPU: 1
     keepQuads: 0
