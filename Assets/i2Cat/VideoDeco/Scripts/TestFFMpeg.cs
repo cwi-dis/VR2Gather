@@ -40,18 +40,21 @@ public unsafe class TestFFMpeg : MonoBehaviour {
     [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
     public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
 
+
+    int sum = 0;
     int read_function(void* opaque, byte* buf, int buf_size) {
         buffer_data *bd = (buffer_data *)opaque;
         buf_size = (int)Mathf.Min (buf_size, (bd->size- bd->offset));
-        // Debug.Log($"read_function: {buf_size}");
+        Debug.Log($"read_function: {buf_size}");
         CopyMemory((IntPtr)buf, (IntPtr)(bd->ptr + bd->offset), (uint)buf_size);
         bd->offset += buf_size;
+        sum += buf_size;
     return buf_size;
     }
 
     long seek_function(void* opaque, long position, int whence) {
         buffer_data* bd = (buffer_data*)opaque;
-        //Debug.Log($"seek_function offset {position} whence {whence}");
+        Debug.Log($"seek_function offset {position} whence {whence}");
         if (whence == ffmpeg.AVSEEK_SIZE) {
             return bd->size;
         }
@@ -169,18 +172,25 @@ public unsafe class TestFFMpeg : MonoBehaviour {
                         return;
                     }
                     Debug.Log($"Frame {video_dec_ctx->frame_number}");
+                    /*
                     if (video_dec_ctx->frame_number < 50) {
                         //                        Debug.Log($"Frame {video_dec_ctx->frame_number} linesize {frame->linesize[0]}");
-
-                        ret = ffmpeg.sws_scale(ctx, frame->data, frame->linesize, 0, frame->height, tmpDataArray, tmpLineSizeArray);
-                        txt.LoadRawTextureData((IntPtr)tmpDataArray[0], tmpLineSizeArray[0] * frame->height);
-                        txt.Apply();
-                        System.IO.File.WriteAllBytes($"{outfilepath}/frame_{video_dec_ctx->frame_number}.png", txt.EncodeToPNG());
+                            ret = ffmpeg.sws_scale(ctx, frame->data, frame->linesize, 0, frame->height, tmpDataArray, tmpLineSizeArray);
+                            txt.LoadRawTextureData((IntPtr)tmpDataArray[0], tmpLineSizeArray[0] * frame->height);
+                            txt.Apply();
+                            System.IO.File.WriteAllBytes($"{outfilepath}/frame_{video_dec_ctx->frame_number}.png", txt.EncodeToPNG());
                     } else
                         return;
-                   
+                      */
+
                 }
                 ffmpeg.av_packet_unref(packet);
+            }
+            //else 
+            {
+                Debug.Log($"Frame sum={sum} video {packet->stream_index== video_stream_index}");
+                sum = 0;
+
             }
         }
     }

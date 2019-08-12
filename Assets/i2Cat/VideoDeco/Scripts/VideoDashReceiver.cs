@@ -16,6 +16,7 @@ public class VideoDashReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     public void Init(string url) {
+        Debug.Log($"Config.Instance.memoryDamping {Config.Instance.memoryDamping}");
         try {
             reader = new Workers.SUBReader(url);
             codec = new Workers.VideoDecoder();

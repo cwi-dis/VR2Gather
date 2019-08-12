@@ -26,8 +26,8 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-
             if (token != null) {
+            /*
                 int len = token.currentSize;
                 if (writePosition + len < bufferSize) {
                     System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
@@ -40,6 +40,7 @@ namespace Workers {
                     writePosition = len - partLen;
                 }
                 //                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
+                */
                 Next();
             }
         }
