@@ -12,10 +12,10 @@ namespace Workers
         int dampedSize = 0;
 
         signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-        public SUBReader(Config._User._SUBConfig cfg) :base(WorkerType.Init) { 
+        public SUBReader(Config._User._SUBConfig cfg, bool dropInitalData=false) :base(WorkerType.Init) { 
             url = cfg.url;
             streamNumber = cfg.streamNumber;
-            firstTime = true;
+            firstTime = dropInitalData;
             try {
                 signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
@@ -46,14 +46,24 @@ namespace Workers
 
         }
         float latTime = 0;
-        bool firstTime = true;
+        bool firstTime = false;
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                if (size != 0)
-                {
-                    if (!firstTime) {
+                if (firstTime && size!=0) {
+                    byte[] tmpArray = new byte[size];
+                    System.IntPtr tmpBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(tmpArray, 0);
+                    do {
+                        signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, tmpBuffer, size, ref info);
+                        size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                    } while (size != 0);
+                    firstTime = false;
+                }
+
+                if (size != 0) {
+                    if (!firstTime) 
+                    {
                         if (size > dampedSize) {
                             dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                             currentBufferArray = new byte[dampedSize];
@@ -69,9 +79,8 @@ namespace Workers
                             Next();
                         } else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                    } else
-                        firstTime = false;
-                }
+                    }
+                } 
             }
         }
     }

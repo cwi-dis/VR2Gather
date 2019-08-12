@@ -14,7 +14,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
 
     // Start is called before the first frame update
     IEnumerator Start() {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
         Init(Config.Instance.Users[userID - 1].AudioSUBConfig);
     }
 
@@ -26,7 +26,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg);
+            reader = new Workers.SUBReader(cfg,true);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer();
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);

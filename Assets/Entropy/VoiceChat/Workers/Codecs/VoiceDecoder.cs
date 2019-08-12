@@ -28,20 +28,18 @@ namespace Workers
             base.Update();
             if (token != null) {
                 int ret;
-                if (receiveBuffer == null)
-                {
-                    int max = (token.currentByteArray.Length - offset) * 8;
+                if (receiveBuffer == null) {
+                    int max = (token.currentSize - offset) * 8;
                     float[] aux = new float[max];
-                    bufferLength = decoder.Decode(token.currentByteArray, offset, token.currentByteArray.Length - offset, aux);
+                    bufferLength = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, aux);
                     receiveBuffer = new float[bufferLength];
                     receiveBuffer2 = new float[bufferLength*3*2]; // Frequency*stereo
                 }
 
                 tempTime.SetByteArray( token.currentByteArray, 1);
                 token.latency = tempTime;
-                int len = token.currentByteArray.Length - offset;
-
-                ret = decoder.Decode(token.currentByteArray, offset, token.currentByteArray.Length - offset, receiveBuffer);
+                int len = token.currentSize - offset;
+                ret = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, receiveBuffer);
                 // Fix frequency and stereo.
                 for( int i=0;i< bufferLength; ++i) {
                     receiveBuffer2[i * 6 + 0] = receiveBuffer2[i * 6 + 1] = receiveBuffer2[i * 6 + 2] = receiveBuffer2[i * 6 + 3] = receiveBuffer2[i * 6 + 4] = receiveBuffer2[i * 6 + 5] = receiveBuffer[i];
