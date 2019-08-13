@@ -27,19 +27,38 @@ public class EntityPipeline : MonoBehaviour {
         int forks = 1;
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
-                
-                if (cfg.PCSelfConfig != null) {
-                    reader = new Workers.RS2Reader(cfg.PCSelfConfig);
-                    reader.AddNext(preparer).AddNext(reader); // <- local render tine.
-                
-                    if (cfg.PCSelfConfig.Encoder != null) {
-                        codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
-                        writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash);
-                        reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
-                        forks = 2;
-                    }
-                    if (cfg.PCSelfConfig.AudioBin2Dash != null)
-                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash);
+
+                reader = new Workers.RS2Reader(cfg.PCSelfConfig);
+                reader.AddNext(preparer).AddNext(reader); // <- local render tine.
+
+                try
+                {
+                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
+                }
+                catch (System.EntryPointNotFoundException)
+                {
+                    Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping voice encoding");
+                }
+                try
+                {
+                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash);
+                }
+                catch (System.EntryPointNotFoundException)
+                {
+                    Debug.LogError("EntityPipeline: B2DWriter() raised EntryPointNotFound exception, skipping voice encoding");
+                }
+                if (codec != null && writer != null)
+                {
+                    reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
+                    forks = 2;
+                }
+                try
+                {
+                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash);
+                }
+                catch (System.EntryPointNotFoundException e)
+                {
+                    Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 break;
             case "pcsub":

@@ -4,49 +4,34 @@ using System.Runtime.InteropServices;
 
 public class PCSyntheticReader : PCBaseReader
 {
-    protected System.IntPtr reader;
+    protected cwipc.source reader;
 
     public PCSyntheticReader()
     {
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-        reader = API_cwipc_util.cwipc_synthetic(ref errorPtr);
-        if (reader == System.IntPtr.Zero)
+        reader = cwipc.synthetic();
+        if (reader == null)
         {
-            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
-            Debug.LogError("PCSyntheticReader: Error: " + errorMessage);
+            Debug.LogError("PCSyntheticReader: Error: could not create synthetic source"); // Should not happen, should throw exception
         }
     }
 
     public virtual bool eof() {
-        if (reader == System.IntPtr.Zero) return true;
-        return API_cwipc_util.cwipc_source_eof(reader);
+        if (reader == null) return true;
+        return reader.eof(); 
     }
 
     public virtual bool available(bool wait) {
-        if (reader == System.IntPtr.Zero) return false;
-        return API_cwipc_util.cwipc_source_available(reader, wait);
+        if (reader == null) return false;
+        return reader.available(wait);
     }
-
-    public virtual void free()
-    {
-        if (reader == System.IntPtr.Zero) return;
-        API_cwipc_util.cwipc_source_free(reader);
-        reader = System.IntPtr.Zero;
-        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
-
-    }
-
-    protected PointCloudFrame pointCloudFrame = new PointCloudFrame();
 
     public virtual PointCloudFrame get() {
-        if (reader == System.IntPtr.Zero) {
-            Debug.LogError("PCSyntheticReader: cwipc.reader == NULL");
-            return null;
-        }
-        var rv = API_cwipc_util.cwipc_source_get(reader);
-        if (rv == System.IntPtr.Zero) return null;
-        pointCloudFrame.SetData(rv);
-        return pointCloudFrame;
+        if (reader == null) return null;
+        cwipc.pointcloud pc = reader.get();
+        if (pc == null) return null;
+        PointCloudFrame rv = new PointCloudFrame();
+        rv.SetData(pc);
+        return rv;
     }
 
     public virtual void update() { }

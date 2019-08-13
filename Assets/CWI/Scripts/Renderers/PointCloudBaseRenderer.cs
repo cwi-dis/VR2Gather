@@ -125,11 +125,7 @@ public class PointCloudBaseRenderer : MonoBehaviour {
     protected virtual void OnData() { }
 
     public virtual void OnDisable() {
-        if (currentPCReader != null)
-        {
-            currentPCReader.free();
-            currentPCReader = null;
-        }
+        currentPCReader = null;
     }
 
 

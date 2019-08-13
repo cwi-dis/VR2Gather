@@ -15,14 +15,14 @@ namespace Workers {
                 uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != System.IntPtr.Zero)
                 {
-                    Debug.Log($"Bin2Dash {cfg.url}");
+                    Debug.Log($"Bin2Dash vrt_create(url={cfg.url})");
                     Start();
                 }
                 else
-                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {cfg.url}/{cfg.streamName}.mpd");
+                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader url={cfg.url}/{cfg.streamName}.mpd");
             }
             catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.LogError($"Exception during B2DWriter constructor: {e.Message}");
                 throw e;
             }
         }

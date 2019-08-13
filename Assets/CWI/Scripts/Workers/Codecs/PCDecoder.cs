@@ -4,16 +4,15 @@ using UnityEngine;
 
 namespace Workers {
     public class PCDecoder : BaseWorker {
-        System.IntPtr decoder;
-        System.IntPtr pointCloudData;
+        cwipc.decoder decoder;
+        cwipc.pointcloud pointCloudData;
         
         public PCDecoder():base(WorkerType.Run) {
             try {
-                signals_unity_bridge_pinvoke.SetPaths("cwipc_codec");
-                System.IntPtr errorPtr = System.IntPtr.Zero;
-                decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
-                if (decoder == System.IntPtr.Zero)
-                    throw new System.Exception($"PCSUBReader: cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}");
+                // xxxjack this seems sillly here: signals_unity_bridge_pinvoke.SetPaths("cwipc_codec");
+                decoder = cwipc.new_decoder(); 
+                if (decoder == null)
+                    throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
                 else
                     Start();
 
@@ -27,22 +26,24 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            if (pointCloudData != System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
+            // xxxjack removed if (pointCloudData != System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
         }
 
         protected override void Update(){
             base.Update();
             if (token != null) {
-                if(pointCloudData!= System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
-                API_cwipc_codec.cwipc_decoder_feed(decoder, token.currentBuffer, token.currentSize);
-                if ( API_cwipc_util.cwipc_source_available(decoder, true) ) {
-                    pointCloudData = API_cwipc_util.cwipc_source_get(decoder);
-                    if (pointCloudData != System.IntPtr.Zero) {
-                        token.currentBuffer = pointCloudData;
+                // xxxjack removed if(pointCloudData!= System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
+                decoder.feed(token.currentBuffer, token.currentSize);
+                // xxxjack wonders whether this shouldn't be decoder.available(false) which doesn't block...
+                if ( decoder.available(true) ) {
+                    pointCloudData = decoder.get();
+                    if (pointCloudData != null)
+                    {
+                        token.currentPointcloud = pointCloudData;
                         Next();
+                    } else {
+                        Debug.LogError("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
                     }
-                    else
-                        Debug.LogError("PCSUBReader: cwipc_decoder: did not return a pointcloud");
 
                 }
                 else
