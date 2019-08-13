@@ -36,15 +36,21 @@ namespace Workers {
             base.Update();
             if (token != null && !isReady)
             {
-                unsafe {
-                    int bufferSize = (int)API_cwipc_util.cwipc_get_uncompressed_size(token.currentBuffer);
+                unsafe
+                {
+                    int bufferSize = token.currentPointcloud.get_uncompressed_size();
                     int size = bufferSize / PointCouldVertexSize;
                     int dampedSize = (int)(size * Config.Instance.memoryDamping);
                     if (vertexArray.Length < dampedSize) {
                         vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(dampedSize, Unity.Collections.Allocator.TempJob);
                         currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
                     }
-                    int ret = API_cwipc_util.cwipc_copy_uncompressed(token.currentBuffer, currentBuffer, (System.IntPtr)bufferSize);
+                    int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, bufferSize);
+                    // Check that sizes make sense. Note that copy_uncompressed returns the number of points
+                    if (ret != size)
+                    {
+                        Debug.LogError($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
+                    }
 
                     points = new Vector3[size];
                     indices = new int[size];

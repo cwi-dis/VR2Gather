@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class PointCloudFrame
 {
-    System.IntPtr obj;
+    cwipc.pointcloud pc;    // The pointcloud object, in internal cwipc format
     Unity.Collections.NativeArray<byte> byteArray;
     Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
 
     public PointCloudFrame() {
     }
 
-    public void SetData(System.IntPtr _obj) {
-        obj = _obj;
+    public void SetData(cwipc.pointcloud _pc) {
+        pc = _pc;
     }
 
     public void Release()
@@ -22,35 +22,30 @@ public class PointCloudFrame
     }
 
     public void FreeFrameData() {
-        if (obj == System.IntPtr.Zero) return;
-        API_cwipc_util.cwipc_free(obj);
+        pc = null;
         if (vertexArray.Length != 0) vertexArray.Dispose();
-        obj = System.IntPtr.Zero;
     }
 
     public UInt64 timestamp() {
-        if (obj == System.IntPtr.Zero) {
-            Debug.LogError("cwipc.obj == NULL");
-            return 0;
-        }
-        return API_cwipc_util.cwipc_timestamp(obj);
+        return pc.timestamp();
     }
 
-    System.IntPtr ptr;
+
     public void getByteArray() {
-        if (obj == System.IntPtr.Zero) {
-            Debug.Log("cwipc.obj == NULL");
-            return;
+        if (pc == null) {
+            throw new System.Exception("PointCloudFrame: getByteArray() called but pc==null");
         }
         unsafe {
-            int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
+            int size = pc.get_uncompressed_size();
             if (size > 0) {
-                if (size > byteArray.Length) {
+                if (size > byteArray.Length)
+                {
                     if (byteArray.Length != 0) byteArray.Dispose();
                     byteArray = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.TempJob);
-                    ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+
                 }
-                API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
+                System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+                pc.copy_uncompressed(ptr, size);
 //                Debug.Log("Alloc PointCloud ByteArray!!!");
             }
             else
@@ -83,18 +78,18 @@ public class PointCloudFrame
     }
 
     public void getVertexArray() {
-        if (obj == System.IntPtr.Zero)
+        if (pc == null)
         {
-            Debug.Log("cwipc.obj == NULL");
-            return;
+            throw new System.Exception("PointCloudFrame: getVertexArray() called but pc==null");
         }
 
-        unsafe {
-            int size = (int)API_cwipc_util.cwipc_get_uncompressed_size(obj);
+        unsafe
+        {
+            int size = pc.get_uncompressed_size(); 
             var sizeT = Marshal.SizeOf(typeof(PointCouldVertex));
             vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.TempJob);
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
-            int ret = API_cwipc_util.cwipc_copy_uncompressed(obj, ptr, (System.IntPtr)size);
+            int ret = pc.copy_uncompressed(ptr, size);
         }
     }
 

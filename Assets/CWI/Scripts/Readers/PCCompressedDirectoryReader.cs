@@ -5,23 +5,20 @@ using UnityEngine;
 public class PCCompressedDirectoryReader : PCBaseReader {
     string[] allFilenames;
     int      currentFile;
-    IntPtr  decoder;
+    cwipc.decoder  decoder;
 
     public PCCompressedDirectoryReader(string dirname) {
         currentFile = 0;
         allFilenames = System.IO.Directory.GetFiles(Application.streamingAssetsPath + "/" + dirname);
-        System.IntPtr errorPtr = System.IntPtr.Zero;
 
-        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
-        if (decoder == IntPtr.Zero)
+        decoder = cwipc.new_decoder();
+        if (decoder == null)
         {
-            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
-            Debug.LogError("PCCompressedDirectoryReader: cwipc_new_decoder: " + errorMessage);
+            Debug.LogError("PCCompressedDirectoryReader: cwipc_new_decoder: create failed"); // Shoulnd't happen, should raise exception
         }
     }
 
     public void free() {
-        if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
     }
 
     public bool eof() {
@@ -32,12 +29,9 @@ public class PCCompressedDirectoryReader : PCBaseReader {
         return allFilenames.Length != 0;
     }
 
-
-    PointCloudFrame pointCloudFrame = new PointCloudFrame();
-
     public PointCloudFrame get()
     {
-        if (decoder == IntPtr.Zero) {
+        if (decoder == null) {
             Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: no decoder available");
             return null;
         }
@@ -47,17 +41,18 @@ public class PCCompressedDirectoryReader : PCBaseReader {
 
         var bytes = System.IO.File.ReadAllBytes(filename);
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
-        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        decoder.feed(ptr, bytes.Length);
+        bool ok = decoder.available(true);
         if (!ok) {
             Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: no pointcloud available");
             return null;
         }
-        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        cwipc.pointcloud pc = decoder.get();
         if (pc == null) {
             Debug.LogError("PCCompressedDirectoryReader: cwipc_decoder: did not return a pointcloud");
             return null;
         }
+        PointCloudFrame pointCloudFrame = new PointCloudFrame();
         pointCloudFrame.SetData(pc);
         return pointCloudFrame;
     }
