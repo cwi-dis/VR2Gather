@@ -45,6 +45,7 @@ namespace Workers {
                         currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
                     }
                     int ret = API_cwipc_util.cwipc_copy_uncompressed(token.currentBuffer, currentBuffer, (System.IntPtr)bufferSize);
+                    API_cwipc_util.cwipc_free(token.currentBuffer);
 
                     points = new Vector3[size];
                     indices = new int[size];

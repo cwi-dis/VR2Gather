@@ -45,7 +45,6 @@ public unsafe class TestFFMpeg : MonoBehaviour {
     int read_function(void* opaque, byte* buf, int buf_size) {
         buffer_data *bd = (buffer_data *)opaque;
         buf_size = (int)Mathf.Min (buf_size, (bd->size- bd->offset));
-        Debug.Log($"read_function: {buf_size}");
         CopyMemory((IntPtr)buf, (IntPtr)(bd->ptr + bd->offset), (uint)buf_size);
         bd->offset += buf_size;
         sum += buf_size;
@@ -116,7 +115,7 @@ public unsafe class TestFFMpeg : MonoBehaviour {
             Debug.Log("Cannot open video decoder");
             return;
         }
-        Debug.Log($">>> width {video_dec_ctx->width} height {video_dec_ctx->height} pix_fmt {video_dec_ctx->pix_fmt}");
+        Debug.Log($">>> width {video_dec_ctx->width} height {video_dec_ctx->height} pix_fmt {video_dec_ctx->pix_fmt} ");
 
         AVCodecParserContext* parser = ffmpeg.av_parser_init((int)video_dec->id);
         if (parser==null) {

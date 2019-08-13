@@ -25,7 +25,7 @@ public class VideoDashReceiver : MonoBehaviour
             reader.token = token = new Workers.Token();
         }
         catch (System.Exception e) {
-            Debug.Log(">>ERROR");
+            Debug.Log($">>ERROR {e}");
         }
     }
 

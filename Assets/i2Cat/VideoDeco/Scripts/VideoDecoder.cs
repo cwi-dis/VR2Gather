@@ -1,20 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 
 namespace Workers {
     public unsafe class VideoDecoder : BaseWorker {
-        int bufferLength;
-
-        FFMpegDecoder decoder;
         public string url;
         AVCodec* codec;
+        AVCodecParserContext* parser;
+        AVCodecContext* codec_ctx;
+        AVPacket* packet;
+        AVFrame* frame;
 
         public VideoDecoder() : base(WorkerType.Run) {
-            //decoder = new FFMpegDecoder(url);
-            bufferLength = 320;
+
+            packet = ffmpeg.av_packet_alloc();
+            codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
+            if (codec != null) {
+                codec_ctx = ffmpeg.avcodec_alloc_context3(codec);
+                if (codec_ctx != null) {
+                    codec_ctx->width = 2732;
+                    codec_ctx->height = 1366;
+//                    codec_ctx->extradata = (byte*)System.IntPtr.Zero;
+//                    codec_ctx->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
+                    parser = ffmpeg.av_parser_init((int)codec->id);
+                    if (parser != null) {
+                        int ret = ffmpeg.avcodec_open2(codec_ctx, codec, null);
+                        frame = ffmpeg.av_frame_alloc();
+                    } else Debug.Log("av_parser_init ERROR");
+                } else Debug.Log("avcodec_alloc_context3 ERROR");
+            } else Debug.Log("avcodec_find_decoder ERROR");
             Start();
         }
 
@@ -29,17 +46,51 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
-                if (receiveBuffer == null) {
-                    receiveBuffer = new float[bufferLength];
-                }
-                Debug.Log( $"token.currentSize {token.currentSize}");
-                codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_MPEG1VIDEO);
-
-
                 //decoder.Stream(token.currentByteArray, token.currentByteArray.Length, receiveBuffer);
+                ffmpeg.av_init_packet(packet);
+                /*
+                int bytes_used = ffmpeg.av_parser_parse2(parser, codec_ctx, &packet->data, &packet->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
+                if (bytes_used < 0) {
+                    Debug.Log($"Error parsing {bytes_used}");
+                    return;
+                }
+                */
+                packet->data = (byte*)token.currentBuffer;
+                packet->size = token.currentSize;
+                int frame_finished;
+                int ret = ffmpeg.avcodec_decode_video2(codec_ctx, frame, &frame_finished, packet);
+                if (ret < 0) {
+                    byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
+                    ffmpeg.av_strerror(ret, errbuf, 128);
+                    string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
+                    Debug.Log($"Error sending a packet for decoding {ret} {err_txt}");
+                }else
+                    Debug.Log($"ret {ret} frame_finished {frame_finished}");
+                /*
+                if (packet->size > 0) {
 
-                token.currentFloatArray = receiveBuffer;
-                token.currentSize = receiveBuffer.Length;
+                    Debug.Log($"bytes_used {bytes_used} size {packet->size}");
+                    //int gotFrame;
+                    int ret2 = ffmpeg.avcodec_send_packet(codec_ctx, packet);
+                    if (ret2 < 0) {
+                        byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
+                        ffmpeg.av_strerror(ret2, errbuf, 128);
+                        string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
+                        Debug.Log($"Error sending a packet for decoding {ret2} {err_txt}");
+                    } else {
+                        while (ret2 >= 0) {
+                            ret2 = ffmpeg.avcodec_receive_frame(codec_ctx, frame);
+                            if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                Debug.Log($"saving frame {codec_ctx->frame_number}");
+                            } else
+                                Debug.Log($"ret2 {ret2}");
+                            Debug.Log($"Data line size {frame->linesize[0]} width {frame->width} height {frame->height}");
+                        }
+                    }
+                }
+                */
+                //token.currentFloatArray = receiveBuffer;
+                //token.currentSize = receiveBuffer.Length;
                 Next();
             }
         }
