@@ -9,7 +9,6 @@ namespace Workers {
         
         public PCDecoder():base(WorkerType.Run) {
             try {
-                // xxxjack this seems sillly here: signals_unity_bridge_pinvoke.SetPaths("cwipc_codec");
                 decoder = cwipc.new_decoder(); 
                 if (decoder == null)
                     throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
@@ -26,15 +25,12 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            // xxxjack removed if (pointCloudData != System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
         }
 
         protected override void Update(){
             base.Update();
             if (token != null) {
-                // xxxjack removed if(pointCloudData!= System.IntPtr.Zero) API_cwipc_util.cwipc_source_free(decoder);
                 decoder.feed(token.currentBuffer, token.currentSize);
-                // xxxjack wonders whether this shouldn't be decoder.available(false) which doesn't block...
                 if ( decoder.available(true) ) {
                     pointCloudData = decoder.get();
                     if (pointCloudData != null)

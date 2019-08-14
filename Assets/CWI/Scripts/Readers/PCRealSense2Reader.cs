@@ -5,14 +5,14 @@ using UnityEngine;
 public class PCRealSense2Reader : PCSyntheticReader
 {
     cwipc.encoder encoder;
-    protected System.IntPtr uploader;
+    protected bin2dash.connection uploader;
 
     // Start is called before the first frame update
     public PCRealSense2Reader(Config._User cfg)
     {
         var b2d = cfg.PCSelfConfig.Bin2Dash;
         encoder = null;
-        uploader = System.IntPtr.Zero;
+        uploader = null;
         System.IntPtr errorPtr = System.IntPtr.Zero;
         reader = cwipc.realsense2(cfg.PCSelfConfig.configFilename);
         if (reader == null) {
@@ -25,21 +25,15 @@ public class PCRealSense2Reader : PCSyntheticReader
             if (encoder == null)
             {
                 Debug.LogError("PCRealSense2Reader: cwipc_new_encoder: could not create"); // Should not happen, should throw exception
-                // xxxjack should we free the reader too, in this case? Unsure...
                 return;
             }
-            Debug.Log($"xxxjack encoder URL {b2d.url+ b2d.streamName}.mdp segmentSize {b2d.segmentSize} segmentLife {b2d.segmentLife}");
-            // xxxjack allocate bin2dash
-            signals_unity_bridge_pinvoke.SetPaths("bin2dash.so");
-            uploader = bin2dash_pinvoke.vrt_create(b2d.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), b2d.url, b2d.segmentSize, b2d.segmentLife);
-            if (uploader == System.IntPtr.Zero) {
+            uploader = bin2dash.create(b2d.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), b2d.url, b2d.segmentSize, b2d.segmentLife);
+            if (uploader == null) {
                 Debug.LogError("PCRealSense2Reader: vrt_create: failed to create uploader");
                 // If we have no uploader we need no encoder either...
                 encoder = null;
-                // xxxjack should we free the reader too, in this case? Unsure...
                 return;             
             }
-//            Debug.Log("xxxjack uploader is" + uploader );
         }
     }
 
@@ -47,11 +41,7 @@ public class PCRealSense2Reader : PCSyntheticReader
     {
         reader = null;
         encoder = null;
-        if (uploader != System.IntPtr.Zero)
-        {
-            // xxxjack how do we free a VRT uploader?
-            uploader = System.IntPtr.Zero;
-        }
+        uploader = null;
         if (encoderPtr != System.IntPtr.Zero) { Marshal.FreeHGlobal(encoderPtr); encoderPtr = System.IntPtr.Zero; }
     }
 
@@ -119,7 +109,7 @@ public class PCRealSense2Reader : PCSyntheticReader
                 Debug.LogError("PCRealSense2Reader: encoder.available() returned true but copy_data returned false");
                 return;
             }
-            ok = bin2dash_pinvoke.vrt_push_buffer(uploader, encoderPtr, (uint)size);
+            ok = uploader.push_buffer(encoderPtr, (uint)size);
             if (!ok)
             {
                 Debug.LogError("PCRealSense2Reader: vrt_push_buffer returned false");

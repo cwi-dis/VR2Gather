@@ -6,22 +6,21 @@ public class VoicePlayer : MonoBehaviour {
     public VoiceReceiver    receiver { get; private set; }
     AudioSource             audioSource;
     AudioClip               audioClip;
-    System.IntPtr           subHandle;
+    sub.connection          subHandle;
 
     bool isPlaying;
 
     public void Init(string streamName, string URL)
     {
-        signals_unity_bridge_pinvoke.SetPaths();
         System.Threading.Thread.Sleep(2000);
-        subHandle = signals_unity_bridge_pinvoke.sub_create(streamName);
-        if (subHandle != System.IntPtr.Zero)
+        subHandle = sub.create(streamName);
+        if (subHandle != null)
         {
             Debug.Log(">>> sub_create " + subHandle);
-            isPlaying = signals_unity_bridge_pinvoke.sub_play(subHandle, URL);
+            isPlaying = subHandle.play(URL);
             Debug.Log(">>> sub_play " + isPlaying);
             if (isPlaying) {
-                int count = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
+                int count = subHandle.get_stream_count();
                 Debug.Log(">>> sub_get_stream_count " + count);
             }
             else
@@ -48,9 +47,9 @@ public class VoicePlayer : MonoBehaviour {
     System.IntPtr currentBufferPtr;
 
     void Update() {
-        if (subHandle != System.IntPtr.Zero) {
-            signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-            int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 0, System.IntPtr.Zero, 0, ref info);
+        if (subHandle != null) {
+            sub.FrameInfo info = new sub.FrameInfo();
+            int bytesNeeded = subHandle.grab_frame(0, System.IntPtr.Zero, 0, ref info);
             if (bytesNeeded == 0)
                 return;
             Debug.Log("DATA!!!!");
@@ -61,7 +60,7 @@ public class VoicePlayer : MonoBehaviour {
                 currentBufferPtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(data, 0);
             }
 
-            int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 0, currentBufferPtr, bytesNeeded, ref info);
+            int bytesRead = subHandle.grab_frame(0, currentBufferPtr, bytesNeeded, ref info);
             if (bytesRead != bytesNeeded) {
                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                 return;
