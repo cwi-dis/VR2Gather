@@ -12,7 +12,6 @@ namespace Workers {
         public PCEncoder(Config._User._PCSelfConfig._Encoder cfg):base(WorkerType.Run) {
             try {
                 cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = cfg.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
-                // xxxjack this isn't needed, is it? signals_unity_bridge_pinvoke.SetPaths("cwipc_codec");
                 encoder = cwipc.new_encoder(parms);
                 if (encoder != null) {
                     Start();
