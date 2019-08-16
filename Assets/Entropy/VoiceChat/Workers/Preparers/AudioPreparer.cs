@@ -11,9 +11,13 @@ namespace Workers
         int bufferSize;
         int writePosition;
         int readPosition;
+        int preferredBufferFill;
 
-        public AudioPreparer() : base(WorkerType.End) {
+        public AudioPreparer(int _preferredBufferFill=0) : base(WorkerType.End) {
+            preferredBufferFill = _preferredBufferFill;
             bufferSize = 320*6 * 100;
+            if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
+            preferredBufferFill = _preferredBufferFill;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
@@ -31,7 +35,16 @@ namespace Workers
             base.Update();
 
             if (token != null) {
+                // xxxjack attempting to drop audio if there is too much in the buffer already
+                int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
+                if (bytesInAudioBuffer > preferredBufferFill)
+                {
+                    Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
+                    Next();
+                    return;
+                }
                 int len = token.currentSize;
+                // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
                 if (writePosition + len < bufferSize) {
                     System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
                     writePosition += len;
@@ -42,7 +55,7 @@ namespace Workers
                     System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
                     writePosition = len - partLen;
                 }
-//                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
+                // Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
                 Next();
             }
         }
