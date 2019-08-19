@@ -16,11 +16,6 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
     AudioSource audioSource;
     // Start is called before the first frame update
     IEnumerator Start() {
-        var ac = AudioSettings.GetConfiguration();
-        ac.sampleRate = 16000*3;
-        ac.dspBufferSize = 320*3;
-        AudioSettings.Reset(ac);
-
         yield return socketIOConnection.WaitConnection();
 
         audioSource = gameObject.AddComponent<AudioSource>();

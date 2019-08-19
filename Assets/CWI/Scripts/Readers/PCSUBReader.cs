@@ -9,8 +9,8 @@ public class PCSUBReader : PCBaseReader {
     string url;
     int streamNumber;
     bool failed;
-    IntPtr subHandle;
-    IntPtr decoder;
+    sub.connection subHandle;
+    cwipc.decoder decoder;
     byte[] currentBuffer;
     IntPtr currentBufferPtr;
 
@@ -19,51 +19,33 @@ public class PCSUBReader : PCBaseReader {
         url = cfg.url;
         streamNumber = cfg.streamNumber;
 
-        bool ok = setup_sub_environment();
-        if (!ok) {
-            Debug.LogError("PCSUBReader: setup_sub_environment failed");
-            return;
-        }
-
         System.Threading.Thread.Sleep(2000);
 
-        subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-        if (subHandle == IntPtr.Zero) {
-            Debug.LogError("PCSUBReader: sub_create failed");
+        subHandle = sub.create("source_from_sub");
+        if (subHandle == null) {
+            Debug.LogError("PCSUBReader: sub.create failed");
             return;
         }else
-            Debug.Log("PCSUBReader: sub_create ok!");
+            Debug.Log("PCSUBReader: sub.create ok!");
 
-        ok = signals_unity_bridge_pinvoke.sub_play(subHandle, url);
+        bool ok = subHandle.play(url);
         if (!ok) {
-            Debug.LogError("PCSUBReader: sub_play failed for " + url);
+            Debug.LogError("PCSUBReader: sub.play failed for " + url);
             return;
         }
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
-        if (decoder == IntPtr.Zero) {
-            string errorMessage = Marshal.PtrToStringAnsi(errorPtr);
-            Debug.LogError("PCSUBReader: cwipc_new_decoder: " + errorMessage);
+        decoder = cwipc.new_decoder();
+        if (decoder == null) {
+            Debug.LogError("PCSUBReader: cwipc_new_decoder: failed to create decoder"); // Should not happen, should throw an exception
             return;
         }
 
         failed = false;
     }
 
-    internal bool setup_sub_environment()
-    {
-        signals_unity_bridge_pinvoke.SetPaths();
-        return true;
-    }
-
     public void free()
     {
-        if (subHandle != IntPtr.Zero)
-        {
-            signals_unity_bridge_pinvoke.sub_destroy(subHandle);
-            subHandle = IntPtr.Zero;
-            failed = true; // Not really failed, but reacts the same (nothing will work anymore)
-        }
+        subHandle = null;
+        failed = true; // Not really failed, but reacts the same (nothing will work anymore)
         if (pointCloudFrame != null) { pointCloudFrame.Release(); pointCloudFrame = null; }
     }
 
@@ -77,10 +59,10 @@ public class PCSUBReader : PCBaseReader {
 
     PointCloudFrame pointCloudFrame = new PointCloudFrame();
     public PointCloudFrame get() {
-        signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
+        sub.FrameInfo info = new sub.FrameInfo();
         if (failed) return null;
 
-        int bytesNeeded = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, IntPtr.Zero, 0, ref info);
+        int bytesNeeded = subHandle.grab_frame(streamNumber, IntPtr.Zero, 0, ref info);
         if (bytesNeeded == 0) {
             Debug.Log("No data");
             return null;
@@ -94,22 +76,20 @@ public class PCSUBReader : PCBaseReader {
             currentBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(currentBuffer, 0);
         }
 
-        int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, currentBufferPtr, bytesNeeded, ref info);
+        int bytesRead = subHandle.grab_frame(streamNumber, currentBufferPtr, bytesNeeded, ref info);
         if (bytesRead != bytesNeeded)
         {
-            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+            Debug.LogError("PCSUBReader: sub.grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
             return null;
         }
-
-
-        API_cwipc_codec.cwipc_decoder_feed(decoder, currentBufferPtr, bytesNeeded);
-        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        decoder.feed(currentBufferPtr, bytesRead);
+        bool ok = decoder.available(true);
         if (!ok)
         {
             Debug.LogError("PCSUBReader: cwipc_decoder: no pointcloud available");
             return null;
         }
-        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        var pc = decoder.get();
         if (pc == null)
         {
             Debug.LogError("PCSUBReader: cwipc_decoder: did not return a pointcloud");

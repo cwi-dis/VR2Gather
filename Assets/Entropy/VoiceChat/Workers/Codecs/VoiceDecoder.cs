@@ -11,14 +11,13 @@ namespace Workers
         NSpeex.SpeexDecoder decoder;
         public VoiceDecoder() : base(WorkerType.Run) {            
             decoder = new NSpeex.SpeexDecoder(NSpeex.BandMode.Wide);
-            bufferLength = 320;
             // playerFrequency = decoder.SampleRate;
             Start();
         }
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VoiceDecoder Sopped");
+            Debug.Log("VoiceDecoder Stopped");
         }
 
         float[] receiveBuffer;
@@ -28,16 +27,19 @@ namespace Workers
             const int offset = 1 + 8;
             base.Update();
             if (token != null) {
-                if (receiveBuffer == null)
-                {
+                int ret;
+                if (receiveBuffer == null) {
+                    int max = (token.currentSize - offset) * 8;
+                    float[] aux = new float[max];
+                    bufferLength = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, aux);
                     receiveBuffer = new float[bufferLength];
                     receiveBuffer2 = new float[bufferLength*3*2]; // Frequency*stereo
                 }
 
                 tempTime.SetByteArray( token.currentByteArray, 1);
-                token.latency = tempTime;           
-
-                decoder.Decode(token.currentByteArray, offset, token.currentByteArray.Length - offset, receiveBuffer);
+                token.latency = tempTime;
+                int len = token.currentSize - offset;
+                ret = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, receiveBuffer);
                 // Fix frequency and stereo.
                 for( int i=0;i< bufferLength; ++i) {
                     receiveBuffer2[i * 6 + 0] = receiveBuffer2[i * 6 + 1] = receiveBuffer2[i * 6 + 2] = receiveBuffer2[i * 6 + 3] = receiveBuffer2[i * 6 + 4] = receiveBuffer2[i * 6 + 5] = receiveBuffer[i];

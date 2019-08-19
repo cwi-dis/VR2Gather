@@ -15,7 +15,6 @@ namespace Workers
         System.IntPtr currentBuffer;
         int currentSize = 0;
 
-        signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
         public NetReader(Config._User._NetConfig cfg) :base(WorkerType.Init) {
             hostName = cfg.hostName;
             port = cfg.port;

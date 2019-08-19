@@ -12,14 +12,11 @@ public class TestVoiceDashSender : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        reader = new Workers.VoiceReader(this);
-        codec = new Workers.VoiceEncoder();
-
+        codec = new Workers.VoiceEncoder(4);
+        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
         writer = new Workers.B2DWriter(Config.Instance.Users[userID-1].PCSelfConfig.AudioBin2Dash);
-
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
-
     }
 
     void OnDestroy() {

@@ -10,18 +10,16 @@ public class PCSocketReader : PCBaseReader
     string hostname;
     int port;
     bool failed;
-    IntPtr decoder;
+    cwipc.decoder decoder;
 
     public PCSocketReader(string _hostname, int _port) {
         hostname = _hostname;
         port = _port;
         failed = false;
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-
-        decoder = API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
-        if (decoder == IntPtr.Zero)
+        decoder = cwipc.new_decoder();
+        if (decoder == null)
         {
-            Debug.LogError("PCSocketReader: Error: " + errorPtr);
+            Debug.LogError("PCSocketReader: Error allocating cwipc_decoder"); // Shoulnd't happen, should throw an exception
         }
 
     }
@@ -76,14 +74,14 @@ public class PCSocketReader : PCBaseReader
         byte[] bytes = allData.ToArray();
 
         var ptr = Marshal.UnsafeAddrOfPinnedArrayElement(bytes, 0);
-        API_cwipc_codec.cwipc_decoder_feed(decoder, ptr, bytes.Length);
-        bool ok = API_cwipc_util.cwipc_source_available(decoder, true);
+        decoder.feed(ptr, bytes.Length);
+        bool ok = decoder.available(true);
         if (!ok)
         {
             Debug.LogError("PCSocketReader: cwipc_decoder: no pointcloud available");
             return null;
         }
-        var pc = API_cwipc_util.cwipc_source_get(decoder);
+        cwipc.pointcloud pc = decoder.get();
         if (pc == null)
         {
             Debug.LogError("PCSocketReader: cwipc_decoder: did not return a pointcloud");

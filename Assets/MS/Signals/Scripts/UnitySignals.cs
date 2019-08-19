@@ -7,7 +7,7 @@ public class UnitySignals : MonoBehaviour {
     public string StreamName = "MyMediaPipeline";
     public string URL = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
 
-    IntPtr handle;
+    sub.connection handle;
     bool    isPlaying = false;
 
 
@@ -17,15 +17,14 @@ public class UnitySignals : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        signals_unity_bridge_pinvoke.SetPaths();
 
-        handle = signals_unity_bridge_pinvoke.sub_create(StreamName);
-        if (handle != IntPtr.Zero) {
+        handle = sub.create(StreamName);
+        if (handle != null) {
             Debug.Log(">>> sub_create " + handle);
-            isPlaying = signals_unity_bridge_pinvoke.sub_play(handle, URL);
+            isPlaying = handle.play(URL);
             Debug.Log(">>> sub_play " + isPlaying + " " + URL);
             if (isPlaying) {
-                int count = signals_unity_bridge_pinvoke.sub_get_stream_count(handle);
+                int count = handle.get_stream_count();
                 Debug.Log(">>> sub_get_stream_count " + count);
             }else
                 Debug.LogError("SUBD_ERROR: can't open URL " + URL );
@@ -43,7 +42,7 @@ public class UnitySignals : MonoBehaviour {
     }
 
     void OnDestroy() {
-        signals_unity_bridge_pinvoke.sub_destroy(handle);
+        handle = null;
         Application.logMessageReceived -= HandleLog;
     }
 
