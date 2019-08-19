@@ -54,7 +54,8 @@ ModelImporter:
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    extraUserProperties: []
+    extraUserProperties:
+    - '#BAKERY{"meshName":["cuerpo01","lampara01","palas01","Asa01"],"padding":[25,129,39,70],"unwrapper":[0,0,0,0]}'
     clipAnimations: []
     isReadable: 1
   meshes:

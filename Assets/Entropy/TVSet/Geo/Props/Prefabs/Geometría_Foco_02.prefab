@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2100184597664446961}
   - component: {fileID: 3394236986532680014}
+  - component: {fileID: 8416401072332216830}
   m_Layer: 0
   m_Name: Spot Light
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7803275100165365187}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 156.574, y: -0.000015258789, z: -0.000015258789}
 --- !u!108 &3394236986532680014
 Light:
@@ -69,6 +70,36 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0.7
   m_ShadowAngle: 0
+--- !u!114 &8416401072332216830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2541396145806101790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57f24a4aaa0761b45ba25e7e5108e2c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UID: 1034314721
+  color: {r: 1, g: 1, b: 1, a: 1}
+  intensity: 3
+  shadowSpread: 0.05
+  cutoff: 15.48
+  realisticFalloff: 1
+  samples: 8
+  projMode: 4
+  cookie: {fileID: 0}
+  angle: 91.7
+  innerAngle: 20.8
+  cubemap: {fileID: 0}
+  iesFile: {fileID: 0}
+  bitmask: 1
+  bakeToIndirect: 0
+  shadowmask: 0
+  indirectIntensity: 1
+  falloffMinRadius: 1
 --- !u!1 &7803275100165652961
 GameObject:
   m_ObjectHideFlags: 0
@@ -129,7 +160,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7803275100165365185}
-  - {fileID: 7803275100165365199}
   - {fileID: 2100184597664446961}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -293,33 +323,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!1 &7803275100165652975
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7803275100165365199}
-  m_Layer: 0
-  m_Name: Foco_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7803275100165365199
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7803275100165652975}
-  m_LocalRotation: {x: -0.18493095, y: -0, z: -0, w: 0.98275155}
-  m_LocalPosition: {x: -0.57574034, y: 0.016053345, z: 0.0076071993}
-  m_LocalScale: {x: 10, y: 10, z: 10}
-  m_Children: []
-  m_Father: {fileID: 7803275100165365187}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -21.314001, y: 0, z: 0}
