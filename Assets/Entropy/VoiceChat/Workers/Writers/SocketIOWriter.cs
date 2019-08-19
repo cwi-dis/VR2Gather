@@ -27,7 +27,18 @@ namespace Workers
                 }*/
                 tmp[0] = userID;
                 token.latency.GetByteArray(tmp, 1);
-                socketIOConnection.socket.Emit("dataChannel", (object)tmp);
+                //socketIOConnection.socket.Emit("dataChannel", (object)tmp);
+
+                if (socketIOConnection != null)
+                {
+                    socketIOConnection.socket.Emit("dataChannel", (object)tmp);
+                }
+
+                if (OrchestratorGui.orchestratorWrapper != null)
+                {
+                    OrchestratorGui.orchestratorWrapper.PushAudioPacket(tmp);
+                }
+
                 Next();
             }
         }

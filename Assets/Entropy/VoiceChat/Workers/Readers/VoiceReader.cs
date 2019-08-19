@@ -42,7 +42,7 @@ namespace Workers
                 int currentMinFreq;
                 Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
                 samples = 16000;//codec.recorderFrequency;1
-                bufferLength = 320 * 4;//codec.bufferLeght;
+                bufferLength = 320;// * 4;//codec.bufferLeght;
 
                 recorder = Microphone.Start(device, true, 1, samples);
                 samples = recorder.samples;
