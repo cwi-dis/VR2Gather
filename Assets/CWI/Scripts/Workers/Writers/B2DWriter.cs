@@ -10,19 +10,11 @@ namespace Workers {
 
         public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg) : base(WorkerType.End) {
             try {
-<<<<<<< HEAD
-                signals_unity_bridge_pinvoke.SetPaths("bin2dash");
-                uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
-                if (uploader != System.IntPtr.Zero) {
-                    Debug.Log($"Bin2Dash {cfg.url}");
-=======
                 if ( cfg.fileMirroring ) bw = new BinaryWriter(new FileStream( $"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null)
                 {
                     Debug.Log($"Bin2Dash vrt_create(url={cfg.url})");
->>>>>>> master
-                    Start();
                 }
                 else
                     throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader url={cfg.url}/{cfg.streamName}.mpd");
@@ -35,10 +27,10 @@ namespace Workers {
 
         public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string id) : base(WorkerType.End) {
             try {
-                signals_unity_bridge_pinvoke.SetPaths("bin2dash");
-                uploader = bin2dash_pinvoke.vrt_create(cfg.streamName, bin2dash_pinvoke.VRT_4CC('c', 'w', 'i', '1'), cfg.url + id + "/", cfg.segmentSize, cfg.segmentLife);
-                if (uploader != System.IntPtr.Zero) {
-                    Debug.Log($"Bin2Dash {cfg.url + id + "/" + cfg.streamName}");
+                if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
+                uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), cfg.url + id + "/", cfg.segmentSize, cfg.segmentLife);
+                if (uploader != null) {
+                    Debug.Log($"Bin2Dash vrt_create(url={cfg.url + id + "/" + cfg.streamName})");
                     Start();
                 }
                 else

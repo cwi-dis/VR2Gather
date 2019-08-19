@@ -38,18 +38,18 @@ namespace Workers
             }
         }
 
-        public SUBReader(Config._User._SUBConfig cfg, string id) : base(WorkerType.Init) {
+        public SUBReader(Config._User._SUBConfig cfg, string id, bool dropInitalData = false) : base(WorkerType.Init) {
             url = cfg.url + id + cfg.streamName;
             streamNumber = cfg.streamNumber;
+            firstTime = dropInitalData;
             try {
-                signals_unity_bridge_pinvoke.SetPaths();
-                subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-                if (subHandle != System.IntPtr.Zero) {
-                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
-                        Start();
+                subHandle = sub.create("source_from_sub");
+                if (subHandle != null) {
+                    isPlaying = subHandle.play(url);
+                    if (!isPlaying) {
+                        Debug.Log("SubReader: sub_play() failed, will try again later");
                     }
-                    else
-                        throw new System.Exception($"PCSUBReader: sub_play failed for {url}");
+                    Start();
                 }
                 else
                     throw new System.Exception($"PCSUBReader: sub_create failed");

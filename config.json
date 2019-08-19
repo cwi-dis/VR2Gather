@@ -24,27 +24,16 @@
         },
         "Bin2Dash": {
           "streamName": "testBed",
-<<<<<<< HEAD
-          "url": "https://vrt-evanescent.viaccess-orca.com/pc-",
-          "_url": "http://127.0.0.1:9000/pc-m377a/",
-=======
           "_url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/",
           "url": "http://arecibo.huiskamer.private:9000/pc-m377a/",
->>>>>>> master
           "segmentSize": 2000,
           "segmentLife": 4000
         },
         "AudioBin2Dash": {
           "streamName": "audio",
-<<<<<<< HEAD
-          "url": "https://vrt-evanescent.viaccess-orca.com/audio-",
-          "_url": "http://127.0.0.1:9000/audio-m377a/",
-          "segmentSize": 500,
-=======
           "_url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/",
           "url": "http://arecibo.huiskamer.private:9000/audio-m377a/",
           "segmentSize": 1000,
->>>>>>> master
           "segmentLife": 30000
         }
       },
@@ -81,23 +70,12 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-<<<<<<< HEAD
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-",
-        "_url": "http://127.0.0.1:9000/pc-m378/testBed.mpd",
-        "streamName": "/testBed.mpd"
-      },
-      "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-",
-        "_url": "http://127.0.0.1:9000/audio-m378/audio.mpd",
-        "streamName": "/audio.mpd"
-=======
         "_url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
         "url": "http://arecibo.huiskamer.private:9000/pc-m378/testBed.mpd"
       },
       "AudioSUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
         "url": "http://arecibo.huiskamer.private:9000/audio-m378/audio.mpd"
->>>>>>> master
       },
       "Render": {
         "forceMesh": true,
