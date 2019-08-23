@@ -10,11 +10,11 @@ namespace Workers {
 
         public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg) : base(WorkerType.End) {
             try {
-                if ( cfg.fileMirroring ) bw = new BinaryWriter(new FileStream( $"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
+                if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), cfg.url, cfg.segmentSize, cfg.segmentLife);
-                if (uploader != null)
-                {
+                if (uploader != null) {
                     Debug.Log($"Bin2Dash vrt_create(url={cfg.url})");
+                    Start();
                 }
                 else
                     throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader url={cfg.url}/{cfg.streamName}.mpd");
