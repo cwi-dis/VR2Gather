@@ -15,7 +15,7 @@ public class SyncTool {
     public static long offset = 0 * TimeSpan.TicksPerSecond;
 
     public static DateTime GetNetworkTime() {
-        const string ntpServer = "ntp.cwi.nl";
+        const string ntpServer = "time.google.com";
 
         // NTP message size - 16 bytes of the digest (RFC 2030)
         var ntpData = new byte[48];

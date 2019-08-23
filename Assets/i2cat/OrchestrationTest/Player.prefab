@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 4434842230143733152}
   - component: {fileID: 4434842230143733182}
   - component: {fileID: 4434842230143733183}
+  - component: {fileID: 19768446887576599}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -228,6 +229,20 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4434842230143733153}
   m_Enabled: 1
+--- !u!114 &19768446887576599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434842230143733153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  rotationSpeed: 50
 --- !u!1 &5775089999482747020
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +282,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5305413073146809291}
-  - component: {fileID: 4629115185107213979}
   m_Layer: 0
   m_Name: PC
   m_TagString: Untagged
@@ -289,16 +303,3 @@ Transform:
   m_Father: {fileID: 4434842229477826213}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4629115185107213979
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7392659942812053531}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca30e72955508e34588be7996e893e9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  subURL: 

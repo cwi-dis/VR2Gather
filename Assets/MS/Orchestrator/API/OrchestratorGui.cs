@@ -955,9 +955,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     #region test methods
     // Connect to the orchestrator
-    public void ConnectSocket()
+    public void ConnectSocket(bool core)
     {
-        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
+        if (core)orchestratorWrapper = new OrchestratorWrapper("http://127.0.0.1:8080/socket.io/", this, this, this);
+        else orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
         orchestratorWrapper.Connect();
     }
 

@@ -13,6 +13,7 @@ public enum State {
 public class OrchestrationBridge : MonoBehaviour {
     public bool isDebug = false;
     public bool useEcho = false;
+    public bool useCore = false;
 
     [Header("General")]
     public OrchestratorGui orchestrator;
@@ -118,7 +119,7 @@ public class OrchestrationBridge : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        orchestrator.ConnectSocket();
+        orchestrator.ConnectSocket(useCore);
         //orchestrator.TestLogin("admin", "password");
 
         loginPanel.SetActive(true);

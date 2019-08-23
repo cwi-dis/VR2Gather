@@ -102,23 +102,39 @@ public class EntityPipeline : MonoBehaviour {
         int forks = 1;
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
+                
+                reader = new Workers.RS2Reader(cfg.PCSelfConfig);
+                reader.AddNext(preparer).AddNext(reader); // <- local render tine.
 
-                if (cfg.PCSelfConfig != null) {
-                    reader = new Workers.RS2Reader(cfg.PCSelfConfig);
-                    reader.AddNext(preparer).AddNext(reader); // <- local render tine.
-
-                    if (cfg.PCSelfConfig.Encoder != null) {
-                        codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
-                        writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, id);
-                        reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
-                        forks = 2;
-                    }
+                try {
+                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
+                }
+                catch (System.EntryPointNotFoundException) {
+                    Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping voice encoding");
+                }
+                try {
+                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, id);
+                }
+                catch (System.EntryPointNotFoundException) {
+                    Debug.LogError("EntityPipeline: B2DWriter() raised EntryPointNotFound exception, skipping voice encoding");
+                }
+                if (codec != null && writer != null) {
+                    reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
+                    forks = 2;
+                }
+                try {                    
+                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, id);
+                }
+                catch (System.EntryPointNotFoundException e) {
+                    Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 break;
             case "pcsub":
                 reader = new Workers.SUBReader(cfg.SUBConfig, id);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader);
+                if (cfg.AudioSUBConfig != null)
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, id);
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);
@@ -132,8 +148,8 @@ public class EntityPipeline : MonoBehaviour {
         if (reader != null) reader.token = new Workers.Token(forks);
 
         transform.parent = parent;
-        transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
-        transform.rotation = Quaternion.Euler(cfg.Render.rotation);
+        //transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
+        //transform.rotation = Quaternion.Euler(cfg.Render.rotation);
         transform.localScale = cfg.Render.scale;
         return this;
     }
