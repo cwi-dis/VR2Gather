@@ -17,21 +17,6 @@ namespace Workers {
         public VideoDecoder() : base(WorkerType.Run) {
 
             packet = ffmpeg.av_packet_alloc();
-            codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
-            if (codec != null) {
-                codec_ctx = ffmpeg.avcodec_alloc_context3(codec);
-                if (codec_ctx != null) {
-                    codec_ctx->width = 2732;
-                    codec_ctx->height = 1366;
-//                    codec_ctx->extradata = (byte*)System.IntPtr.Zero;
-//                    codec_ctx->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
-                    parser = ffmpeg.av_parser_init((int)codec->id);
-                    if (parser != null) {
-                        int ret = ffmpeg.avcodec_open2(codec_ctx, codec, null);
-                        frame = ffmpeg.av_frame_alloc();
-                    } else Debug.Log("av_parser_init ERROR");
-                } else Debug.Log("avcodec_alloc_context3 ERROR");
-            } else Debug.Log("avcodec_find_decoder ERROR");
             Start();
         }
 
@@ -46,15 +31,15 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
+                if (codec == null) CreateCodec();
                 //decoder.Stream(token.currentByteArray, token.currentByteArray.Length, receiveBuffer);
                 ffmpeg.av_init_packet(packet);
-                /*
                 int bytes_used = ffmpeg.av_parser_parse2(parser, codec_ctx, &packet->data, &packet->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
                 if (bytes_used < 0) {
                     Debug.Log($"Error parsing {bytes_used}");
                     return;
                 }
-                */
+                /*
                 packet->data = (byte*)token.currentBuffer;
                 packet->size = token.currentSize;
                 int frame_finished;
@@ -66,7 +51,7 @@ namespace Workers {
                     Debug.Log($"Error sending a packet for decoding {ret} {err_txt}");
                 }else
                     Debug.Log($"ret {ret} frame_finished {frame_finished}");
-                /*
+                */
                 if (packet->size > 0) {
 
                     Debug.Log($"bytes_used {bytes_used} size {packet->size}");
@@ -88,11 +73,37 @@ namespace Workers {
                         }
                     }
                 }
-                */
                 //token.currentFloatArray = receiveBuffer;
                 //token.currentSize = receiveBuffer.Length;
                 Next();
             }
+        }
+
+        void CreateCodec() {
+            codec = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
+            if (codec != null) {
+                codec_ctx = ffmpeg.avcodec_alloc_context3(codec);
+                if (codec_ctx != null) {
+                    //codec_ctx->width = 2732;
+                    //codec_ctx->height = 1366;
+                    //                    codec_ctx->extradata = (byte*)System.IntPtr.Zero;
+                    //                    codec_ctx->pix_fmt = AVPixelFormat.AV_PIX_FMT_YUV420P;
+                    parser = ffmpeg.av_parser_init((int)codec->id);
+                    if (parser != null) {
+                        //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                        //copy decoder specific info
+                        var info = token.info;
+                        codec_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
+                        Marshal.Copy(info.dsi, 0, (System.IntPtr)codec_ctx->extradata, info.dsi_size);
+                        codec_ctx->extradata_size = info.dsi_size;
+                        //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+                        int ret = ffmpeg.avcodec_open2(codec_ctx, codec, null);
+                        frame = ffmpeg.av_frame_alloc();
+                    } else Debug.Log("av_parser_init ERROR");
+                } else Debug.Log("avcodec_alloc_context3 ERROR");
+            } else Debug.Log("avcodec_find_decoder ERROR");
+
         }
     }
 }

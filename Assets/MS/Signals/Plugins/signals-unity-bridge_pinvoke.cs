@@ -8,7 +8,10 @@ public class signals_unity_bridge_pinvoke {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct FrameInfo {
         // presentation timestamp, in milliseconds units.
-        Int64 timestamp;
+        public Int64 timestamp;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] dsi;
+        public int dsi_size;
     }
 
     // Creates a new pipeline.
