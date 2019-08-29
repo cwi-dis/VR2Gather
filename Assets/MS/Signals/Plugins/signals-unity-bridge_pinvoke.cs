@@ -31,6 +31,11 @@ public class signals_unity_bridge_pinvoke {
     [DllImport("signals-unity-bridge")]
     extern static public int sub_get_stream_count(IntPtr handle);
 
+    // Returns the 4CC of a given stream.
+    // SUB_EXPORT uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex);
+    [DllImport("signals-unity-bridge")]
+    extern static public uint sub_get_stream_4cc(IntPtr handle, int streamIndex);
+
     // Plays a given URL.
     // SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
     [DllImport("signals-unity-bridge")]
