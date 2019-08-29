@@ -19,9 +19,10 @@ namespace Workers
             try {
                 signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-                streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
+                        streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
+                        Debug.Log($"streamCount {streamCount}");
                         Start();
                     }
                     else
@@ -44,6 +45,8 @@ namespace Workers
                 subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
+                        streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
+                        Debug.Log($"streamCount {streamCount}");
                         Start();
                     }
                     else
@@ -73,9 +76,10 @@ namespace Workers
                 info.dsi_size = 256;
                 var sizeS = System.Runtime.InteropServices.Marshal.SizeOf(typeof(signals_unity_bridge_pinvoke.FrameInfo));
 
+              //  Debug.Log($"Read from {streamNumber}");
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
-                    Debug.Log("PCSUBReader: DATA 0!!!!");
+                    Debug.Log($"PCSUBReader: {streamNumber}!!!!");
                     if (size > dampedSize) {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                         currentBufferArray = new byte[dampedSize];
@@ -93,10 +97,10 @@ namespace Workers
                     } else
                         Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                 }
-                if (streamCount > 1) {
+                if (streamCount > 0) {
                     size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
-                        Debug.Log("PCSUBReader: DATA 1!!!!");
+                        Debug.Log($"PCSUBReader: {1 - streamNumber}!!!!");
                         if (size > dampedSize) {
                             dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                             currentBufferArray = new byte[dampedSize];
