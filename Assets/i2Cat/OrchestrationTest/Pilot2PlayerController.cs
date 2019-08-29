@@ -49,10 +49,10 @@ public class Pilot2PlayerController : PilotController {
                     // PC
                     //player.pc.SetActive(true);
                     if (my_ID == player.id) {
-                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, player.id.ToString());
+                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_gen);
                     }
                     else {
-                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, player.id.ToString());
+                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_gen);
                     // AUDIO
                         //player.audioReceiver.SetActive(true);
                         //player.audioSender.SetActive(false);
@@ -138,10 +138,10 @@ public class Pilot2PlayerController : PilotController {
                 // PC
                 player.pc.SetActive(true);
                 if (my_ID == player.id) {
-                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, player.id.ToString());
+                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_gen);
                 }
                 else {
-                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, player.id.ToString());
+                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_gen);
                     // AUDIO
                     //player.audioReceiver.SetActive(true);
                     //player.audioSender.SetActive(false);

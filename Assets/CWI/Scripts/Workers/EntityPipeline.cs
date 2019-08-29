@@ -87,7 +87,7 @@ public class EntityPipeline : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public EntityPipeline Init(Config._User cfg, Transform parent, string id) {
+    public EntityPipeline Init(Config._User cfg, Transform parent, string _url) {
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
             preparer = new Workers.MeshPreparer();
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -113,7 +113,7 @@ public class EntityPipeline : MonoBehaviour {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 try {
-                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, id);
+                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, _url);
                 }
                 catch (System.EntryPointNotFoundException) {
                     Debug.LogError("EntityPipeline: B2DWriter() raised EntryPointNotFound exception, skipping voice encoding");
@@ -123,18 +123,18 @@ public class EntityPipeline : MonoBehaviour {
                     forks = 2;
                 }
                 try {                    
-                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, id);
+                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, _url);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 break;
             case "pcsub":
-                reader = new Workers.SUBReader(cfg.SUBConfig, id);
+                reader = new Workers.SUBReader(cfg.SUBConfig, _url);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader);
                 if (cfg.AudioSUBConfig != null)
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, id);
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, _url);
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);

@@ -25,16 +25,16 @@ namespace Workers {
             }
         }
 
-        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string id) : base(WorkerType.End) {
+        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url) : base(WorkerType.End) {
             try {
                 if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
-                uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), cfg.url + id + "/", cfg.segmentSize, cfg.segmentLife);
+                uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), _url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
-                    Debug.Log($"Bin2Dash vrt_create(url={cfg.url + id + "/" + cfg.streamName})");
+                    Debug.Log($"Bin2Dash vrt_create(url={_url + cfg.streamName}.mpd)");
                     Start();
                 }
                 else
-                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {cfg.url + id + "/"}/{cfg.streamName}.mpd");
+                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {_url + cfg.streamName}.mpd");
             }
             catch (System.Exception e) {
                 Debug.LogError(e.Message);

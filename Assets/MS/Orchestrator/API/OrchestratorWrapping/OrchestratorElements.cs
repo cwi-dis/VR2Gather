@@ -31,11 +31,11 @@ namespace OrchestratorWrapping
         public string userName="";
         public bool userAdmin = false;
         public UserData userData;
+        public SfuData sfuData;
 
         // empty constructor callled by the JsonData parser
         public User()
         {
-            //userData = new UserData();
         }
 
         // Parse a JSonData to a C# object
@@ -73,6 +73,15 @@ namespace OrchestratorWrapping
             userPCDash = pPCDash;
             userAudioDash = pAudioDash;
         }
+    }
+
+    public class SfuData : OrchestratorElement {
+        public string url_gen = "";
+        public string url_audio = "";
+        public string url_pcc = "";
+
+        // empty constructor callled by the JsonData parser
+        public SfuData() { }
     }
 
     public class NtpClock : OrchestratorElement

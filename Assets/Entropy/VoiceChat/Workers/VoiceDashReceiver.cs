@@ -32,7 +32,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string id) {
+    public void Init(Config._User._SUBConfig cfg, string _url) {
         const int frequency = 16000;
         const double optimalAudioBufferDuration = 0.3;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
@@ -41,7 +41,7 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg, id);
+            reader = new Workers.SUBReader(cfg, _url);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);

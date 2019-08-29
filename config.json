@@ -154,12 +154,12 @@
       "SUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/pc-",
         "url": "http://192.168.10.94:9000/pc-",
-        "streamName": "/testBed.mpd"
+        "streamName": "testBed.mpd"
       },
       "AudioSUBConfig": {
         "_url": "https://vrt-evanescent.viaccess-orca.com/audio-",
         "url": "http://192.168.10.94:9000/audio-",
-        "streamName": "/audio.mpd"
+        "streamName": "audio.mpd"
       },
       "Render": {
         "forceMesh": true,

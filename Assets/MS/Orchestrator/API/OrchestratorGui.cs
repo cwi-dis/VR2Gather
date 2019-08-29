@@ -829,6 +829,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         users.ForEach(delegate (User user)
         {
             Debug.Log("User:" + user.GetGuiRepresentation());
+            Debug.Log("URL: " + user.sfuData.url_gen);
             options.Add(new Dropdown.OptionData(user.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
@@ -1006,6 +1007,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     public void TestSendPing(string msg, string id) {
         orchestratorWrapper.SendMessage(msg, id);
+    }
+
+    public void TestGetUserInfo(string userId) {
+        orchestratorWrapper.GetUserInfo(userId);
     }
     #endregion
 }

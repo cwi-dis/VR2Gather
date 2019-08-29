@@ -38,8 +38,8 @@ namespace Workers
             }
         }
 
-        public SUBReader(Config._User._SUBConfig cfg, string id, bool dropInitalData = false) : base(WorkerType.Init) {
-            url = cfg.url + id + cfg.streamName;
+        public SUBReader(Config._User._SUBConfig cfg, string _url, bool dropInitalData = false) : base(WorkerType.Init) {
+            url = _url + cfg.streamName;
             streamNumber = cfg.streamNumber;
             firstTime = dropInitalData;
             try {
