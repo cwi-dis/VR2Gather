@@ -69,7 +69,7 @@ namespace Workers
 
         }
         float latTime = 0;
-
+        int counter = 0;
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
@@ -97,7 +97,7 @@ namespace Workers
                 if (streamCount > 0) {
                     size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
-                        Debug.Log($"PCSUBReader({1 - streamNumber}): {size}!!!!");
+                        Debug.Log($"{counter++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
                         if (size > dampedSize) {
                             dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                             currentBufferArray = new byte[dampedSize];
