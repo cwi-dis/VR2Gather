@@ -74,12 +74,9 @@ namespace Workers
             base.Update();
             if (token != null) {  // Wait for token
                 info.dsi_size = 256;
-                var sizeS = System.Runtime.InteropServices.Marshal.SizeOf(typeof(signals_unity_bridge_pinvoke.FrameInfo));
-
-              //  Debug.Log($"Read from {streamNumber}");
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
-                    Debug.Log($"PCSUBReader: {streamNumber}!!!!");
+                    Debug.Log($"PCSUBReader({streamNumber}): {size}!!!!");
                     if (size > dampedSize) {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                         currentBufferArray = new byte[dampedSize];
@@ -100,7 +97,7 @@ namespace Workers
                 if (streamCount > 0) {
                     size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
-                        Debug.Log($"PCSUBReader: {1 - streamNumber}!!!!");
+                        Debug.Log($"PCSUBReader({1 - streamNumber}): {size}!!!!");
                         if (size > dampedSize) {
                             dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                             currentBufferArray = new byte[dampedSize];
