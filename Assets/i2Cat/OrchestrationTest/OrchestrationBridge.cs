@@ -119,7 +119,7 @@ public class OrchestrationBridge : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        orchestrator.ConnectSocket(useCore);
+        orchestrator.ConnectSocket();
         //orchestrator.TestLogin("admin", "password");
 
         loginPanel.SetActive(true);
