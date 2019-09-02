@@ -23,14 +23,18 @@ namespace Workers
             base.Update();
             if (token != null && !isReady) {
                 unsafe {
-                    currentSize = (int)API_cwipc_util.cwipc_get_uncompressed_size(token.currentBuffer);
+                    currentSize = token.currentPointcloud.get_uncompressed_size();
                     if (currentSize > 0) {
                         if (currentSize > byteArray.Length) {
                             if (byteArray.Length != 0) byteArray.Dispose();
                             byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.TempJob);
                             currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                         }
-                        API_cwipc_util.cwipc_copy_uncompressed(token.currentBuffer, currentBuffer, (System.IntPtr)currentSize);
+                        int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
+                        if (ret != currentSize)
+                        {
+                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret}");
+                        }
                         isReady = true;
                         Next();
                     }
@@ -39,6 +43,7 @@ namespace Workers
         }
 
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer) {
+            // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
             int size = currentSize / 16;
             if (isReady && size != 0) {
                 unsafe {

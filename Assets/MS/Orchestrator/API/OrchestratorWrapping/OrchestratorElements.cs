@@ -31,11 +31,11 @@ namespace OrchestratorWrapping
         public string userName="";
         public bool userAdmin = false;
         public UserData userData;
+        public SfuData sfuData;
 
         // empty constructor callled by the JsonData parser
         public User()
         {
-            //userData = new UserData();
         }
 
         // Parse a JSonData to a C# object
@@ -59,26 +59,36 @@ namespace OrchestratorWrapping
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
-        public string userPCurl = "";
-        public string userAudioUrl = "";
+        //Test
+        public string userPCDash = "";
+        public string userAudioDash = "";
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-        public UserData(string pMQname, string pMQurl, string pPCurl, string pAudioUrl)
+        public UserData(string pMQname, string pMQurl, string pPCDash, string pAudioDash)
         {
             userMQexchangeName = pMQname;
             userMQurl = pMQurl;
-            userPCurl = pPCurl;
-            userAudioUrl = pAudioUrl;
+            userPCDash = pPCDash;
+            userAudioDash = pAudioDash;
         }
     }
 
-    public class NtpClock: OrchestratorElement
+    public class SfuData : OrchestratorElement {
+        public string url_gen = "";
+        public string url_audio = "";
+        public string url_pcc = "";
+
+        // empty constructor callled by the JsonData parser
+        public SfuData() { }
+    }
+
+    public class NtpClock : OrchestratorElement
     {
         public string ntpTime;
 
-        public NtpClock() {}
+        public NtpClock() { }
     }
 
     public class Scenario : OrchestratorElement
@@ -108,7 +118,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
@@ -128,7 +138,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName + " (" + scenarioDescription + ")";
+            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
         }
     }
 
@@ -175,6 +185,7 @@ namespace OrchestratorWrapping
             return roomName + " (" + roomDescription + ")";
         }
     }
+
 
     public class Session : OrchestratorElement
     {

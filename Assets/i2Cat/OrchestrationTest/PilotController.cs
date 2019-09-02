@@ -19,7 +19,7 @@ abstract public class PilotController : MonoBehaviour {
     //[HideInInspector]
     public OrchestrationBridge test;
     //[HideInInspector]
-    public OrchestratorGuiExtended orchestrator;
+    public OrchestratorGui orchestrator;
 
     [HideInInspector]
     public GameObject mainPanel;
@@ -46,7 +46,8 @@ abstract public class PilotController : MonoBehaviour {
         mainPanel = GameObject.Find("MainPanel");
         background = GameObject.Find("Background");
         test = GameObject.Find("ManagerTest").GetComponent<OrchestrationBridge>();
-        orchestrator = GameObject.Find("MainWindow").GetComponent<OrchestratorGuiExtended>();
+        orchestrator = GameObject.Find("MainWindow").GetComponent<OrchestratorGui>();
+        var tmp = Config.Instance;
     }
 
     public virtual void Update() {
