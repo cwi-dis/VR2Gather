@@ -23,20 +23,21 @@ public class AudioTestReceiver : MonoBehaviour
             yield return 0;
         }
         OrchestratorGui.orchestratorWrapper.OnAudioSentStart.AddListener(StartListeningAudio);
+        OrchestratorGui.orchestratorWrapper.OnAudioSentStop.AddListener(StopListeningAudio);
     }
 
     void OnDestroy()
     {
-        StopListeningAudio();
+        StopListeningAudio("");
     }
 
-    private void StartListeningAudio()
+    private void StartListeningAudio(string pUserID)
     {
         if(audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
+        audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
 
@@ -47,7 +48,7 @@ public class AudioTestReceiver : MonoBehaviour
         reader.token = token = new Workers.Token();
     }
 
-    private void StopListeningAudio()
+    private void StopListeningAudio(string pUserID)
     {
         reader?.Stop();
         codec?.Stop();

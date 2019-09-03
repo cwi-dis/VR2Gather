@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using OrchestratorWSManagement;
 using LitJson;
 using BestHTTP;
@@ -48,6 +49,11 @@ namespace OrchestratorWrapping
         }
     }
 
+    //class that overrides generic UnityEvent wwith string argument
+    public class UnityStringEvent : UnityEvent<string>
+    {
+    }
+
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
@@ -82,7 +88,10 @@ namespace OrchestratorWrapping
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
 
         public Action<UserAudioPacket> OnAudioSent;
-        public UnityEngine.Events.UnityEvent OnAudioSentStart = new UnityEngine.Events.UnityEvent();
+        public UnityStringEvent OnAudioSentStart = new UnityStringEvent();
+        public UnityStringEvent OnAudioSentStop = new UnityStringEvent();
+
+        string userID = "";
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -134,7 +143,8 @@ namespace OrchestratorWrapping
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), response.body["userId"].ToString());
+            userID = response.body["userId"].ToString();
+            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), userID);
         }
 
         public bool Logout()
@@ -145,6 +155,7 @@ namespace OrchestratorWrapping
 
         private void OnLogoutResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
+            userID = "";
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
@@ -436,22 +447,56 @@ namespace OrchestratorWrapping
             }
         }
 
-        private bool firstAudioFrame = true;
-
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
-            if(firstAudioFrame)
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+            string lUserID = jsonResponse[1]["audioFrom"].ToString();
+
+            if (userID != lUserID && OnAudioSent != null)
             {
-                OnAudioSentStart.Invoke();
-                firstAudioFrame = false;
+                UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], lUserID);
+                OnAudioSent.Invoke(packetReceived);
+            }
+        }
+
+        // sessions update events from the orchestrator
+        private void OnSessionUpdated(Socket socket, Packet packet, params object[] args)
+        {
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+
+            if (MessagesListener != null)
+            {
+                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
             }
 
-            if (OnAudioSent != null && !firstAudioFrame)
+            string lEventID = jsonResponse[1]["eventId"].ToString();
+            string lUserID = "";
+
+            switch (lEventID)
             {
-                JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
-                UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], jsonResponse[1]["audioFrom"].ToString());
-                OnAudioSent.Invoke(packetReceived);
+                case "USER_JOINED_SESSION":
+
+                    lUserID = jsonResponse[1]["eventData"][0].ToString();
+
+                    if (OnAudioSentStart != null && !string.IsNullOrEmpty(lUserID))
+                    {
+                        OnAudioSentStart.Invoke(lUserID);
+                    }
+
+                    break;
+                case "USER_LEAVED_SESSION":
+
+                    lUserID = jsonResponse[1]["eventData"][0].ToString();
+
+                    if (OnAudioSentStop != null && !string.IsNullOrEmpty(lUserID))
+                    {
+                        OnAudioSentStop.Invoke(lUserID);
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -566,6 +611,8 @@ namespace OrchestratorWrapping
                     new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
                     //audio packets
                     new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
+                    //session update events
+                    new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 };
         }
 
