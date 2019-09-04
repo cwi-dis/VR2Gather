@@ -593,9 +593,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            if (AudioTestRecorder.instance != null)
+            if (AudioTestManager.instance != null)
             {
-                AudioTestRecorder.instance.StartRecordAudio();
+                AudioTestManager.instance.StartRecordAudio();
             }
         }
         else
@@ -645,9 +645,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            if (AudioTestRecorder.instance != null)
+            if (AudioTestManager.instance != null)
             {
-                AudioTestRecorder.instance.StartRecordAudio();
+                AudioTestManager.instance.StartRecordAudio();
             }
         }
         else
@@ -677,6 +677,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     private void LeaveSession()
     {
         orchestratorWrapper.LeaveSession();
+
+        if (AudioTestManager.instance != null)
+        {
+            AudioTestManager.instance.StopRecordAudio();
+        }
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status)

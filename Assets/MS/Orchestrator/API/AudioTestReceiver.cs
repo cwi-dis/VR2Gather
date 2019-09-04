@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using OrchestratorWrapping;
+﻿using UnityEngine;
 
 public class AudioTestReceiver : MonoBehaviour
 {
+    public string userID;
+
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker preparer;
@@ -14,26 +13,9 @@ public class AudioTestReceiver : MonoBehaviour
 
     private AudioSource audioSource;
 
-    private bool toggle = false;
-
-    private IEnumerator Start()
+    public void StartListeningAudio(string pUserID)
     {
-        while(OrchestratorGui.orchestratorWrapper == null)
-        {
-            yield return 0;
-        }
-        OrchestratorGui.orchestratorWrapper.OnAudioSentStart.AddListener(StartListeningAudio);
-        OrchestratorGui.orchestratorWrapper.OnAudioSentStop.AddListener(StopListeningAudio);
-    }
-
-    void OnDestroy()
-    {
-        StopListeningAudio("");
-    }
-
-    private void StartListeningAudio(string pUserID)
-    {
-        if(audioSource == null)
+        if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
@@ -41,20 +23,20 @@ public class AudioTestReceiver : MonoBehaviour
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.SocketIOReader(null, 0);
+        reader = new Workers.SocketIOReader(null, pUserID);
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
         reader.AddNext(codec).AddNext(preparer).AddNext(reader);
         reader.token = token = new Workers.Token();
+
+        userID = pUserID;
     }
 
-    private void StopListeningAudio(string pUserID)
+    public void StopListeningAudio()
     {
         reader?.Stop();
         codec?.Stop();
         preparer?.Stop();
-
-        Destroy(audioSource);
     }
 
     // Buffer is filled 2.5 times per second (every 400ms). 
@@ -75,5 +57,10 @@ public class AudioTestReceiver : MonoBehaviour
             int cnt = 0;
             do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
         }
+    }
+
+    private void OnDestroy()
+    {
+        StopListeningAudio();
     }
 }

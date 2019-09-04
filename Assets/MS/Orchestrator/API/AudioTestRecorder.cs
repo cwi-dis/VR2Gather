@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AudioTestRecorder : MonoBehaviour
 {
-    public static AudioTestRecorder instance;
-
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
@@ -16,11 +12,6 @@ public class AudioTestRecorder : MonoBehaviour
 
     void Start()
     {
-        if(instance == null)
-        {
-            instance = this;
-        }
-
         cfg = new Config._User._PCSelfConfig._Bin2Dash();
 
         cfg.streamName = "audio";
@@ -28,6 +19,11 @@ public class AudioTestRecorder : MonoBehaviour
         cfg.segmentSize = 1000;
         cfg.segmentLife = 30000;
         cfg.fileMirroring = true;
+    }
+
+    private void OnDestroy()
+    {
+        StopRecordAudio();
     }
 
     public void StartRecordAudio()
@@ -40,7 +36,7 @@ public class AudioTestRecorder : MonoBehaviour
         reader.token = new Workers.Token(1);
     }
 
-    private void StopRecordAudio()
+    public void StopRecordAudio()
     {
         reader?.Stop();
         codec?.Stop();
