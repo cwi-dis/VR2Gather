@@ -91,7 +91,7 @@ namespace OrchestratorWrapping
         public UnityStringEvent OnAudioSentStart = new UnityStringEvent();
         public UnityStringEvent OnAudioSentStop = new UnityStringEvent();
 
-        string userID = "";
+        string myUserID = "";
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -143,8 +143,8 @@ namespace OrchestratorWrapping
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            userID = response.body["userId"].ToString();
-            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), userID);
+            myUserID = response.body["userId"].ToString();
+            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
         public bool Logout()
@@ -155,7 +155,7 @@ namespace OrchestratorWrapping
 
         private void OnLogoutResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            userID = "";
+            myUserID = "";
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
@@ -211,6 +211,15 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
+
+            foreach(string userID in session.sessionUsers)
+            {
+                if (OnAudioSentStart != null && !string.IsNullOrEmpty(userID) && userID != myUserID)
+                {
+                    OnAudioSentStart.Invoke(userID);
+                }
+            }
+
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
@@ -453,7 +462,7 @@ namespace OrchestratorWrapping
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
             string lUserID = jsonResponse[1]["audioFrom"].ToString();
 
-            if (userID != lUserID && OnAudioSent != null)
+            if (myUserID != lUserID && OnAudioSent != null)
             {
                 UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], lUserID);
                 OnAudioSent.Invoke(packetReceived);
@@ -471,13 +480,17 @@ namespace OrchestratorWrapping
             }
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
-            string lUserID = "";
+            string lUserID = jsonResponse[1]["eventData"][0].ToString(); ;
+
+            if (lUserID == myUserID)
+            {
+                //I just joined a session, so I need to get all connected users IDs to get their audio, provided by the OnGetSessionInfoResponse callback.
+                return;
+            }
 
             switch (lEventID)
             {
                 case "USER_JOINED_SESSION":
-
-                    lUserID = jsonResponse[1]["eventData"][0].ToString();
 
                     if (OnAudioSentStart != null && !string.IsNullOrEmpty(lUserID))
                     {
@@ -486,8 +499,6 @@ namespace OrchestratorWrapping
 
                     break;
                 case "USER_LEAVED_SESSION":
-
-                    lUserID = jsonResponse[1]["eventData"][0].ToString();
 
                     if (OnAudioSentStop != null && !string.IsNullOrEmpty(lUserID))
                     {

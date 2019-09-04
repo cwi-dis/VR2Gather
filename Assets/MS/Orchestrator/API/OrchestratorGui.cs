@@ -644,6 +644,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         {
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
+
+            if (AudioTestRecorder.instance != null)
+            {
+                AudioTestRecorder.instance.StartRecordAudio();
+            }
         }
         else
         {

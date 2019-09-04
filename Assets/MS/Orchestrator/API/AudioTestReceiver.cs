@@ -53,6 +53,8 @@ public class AudioTestReceiver : MonoBehaviour
         reader?.Stop();
         codec?.Stop();
         preparer?.Stop();
+
+        Destroy(audioSource);
     }
 
     // Buffer is filled 2.5 times per second (every 400ms). 
