@@ -258,6 +258,12 @@ namespace OrchestratorWrapping
         private void OnLeaveSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+
+            if (OnAudioSentStop != null)
+            {
+                OnAudioSentStop.Invoke("");
+            }
+
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
