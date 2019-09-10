@@ -36,13 +36,17 @@ namespace Workers
 
             if (token != null) {
                 // xxxjack attempting to drop audio if there is too much in the buffer already
-                int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
+                int bytesInAudioBuffer;
+                if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
+                else  bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
+
                 if (bytesInAudioBuffer > preferredBufferFill)
                 {
                     Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
                     Next();
                     return;
                 }
+                
                 int len = token.currentSize;
                 // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
                 if (writePosition + len < bufferSize) {
