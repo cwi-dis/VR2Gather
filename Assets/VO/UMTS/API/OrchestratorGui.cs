@@ -167,6 +167,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     #endregion
 
+    #region public
+
+    public bool IsConnected { get { return orchestratorConnected; } }
+
+    public Session ActiveSession { get { return ActiveSession; } private set { ActiveSession = value; } }
+
+    #endregion
+
     #region Unity
 
     void Start()
@@ -593,15 +601,19 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            if (AudioTestManager.instance != null)
+            ActiveSession = session;
+
+            if (AudioManager.instance != null)
             {
-                AudioTestManager.instance.StartRecordAudio();
+                AudioManager.instance.StartRecordAudio();
             }
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
+
+            ActiveSession = null;
         }
     }
 
@@ -645,9 +657,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            if (AudioTestManager.instance != null)
+            if (AudioManager.instance != null)
             {
-                AudioTestManager.instance.StartRecordAudio();
+                AudioManager.instance.StartRecordAudio();
             }
         }
         else
@@ -665,11 +677,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+
+            ActiveSession = session;
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
+
+            ActiveSession = null;
         }
     }
 
@@ -678,9 +694,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     {
         orchestratorWrapper.LeaveSession();
 
-        if (AudioTestManager.instance != null)
+        if (AudioManager.instance != null)
         {
-            AudioTestManager.instance.StopRecordAudio();
+            AudioManager.instance.StopRecordAudio();
         }
     }
 
@@ -691,6 +707,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // success
             userSession.text = "";
             userScenario.text = "";
+
+            ActiveSession = null;
         }
     }
 

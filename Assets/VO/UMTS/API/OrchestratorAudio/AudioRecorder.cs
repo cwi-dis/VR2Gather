@@ -1,25 +1,10 @@
 ﻿using UnityEngine;
 
-public class AudioTestRecorder : MonoBehaviour
+public class AudioRecorder : MonoBehaviour
 {
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
-
-    private Config._User._PCSelfConfig._Bin2Dash cfg;
-
-    private bool toggle = false;
-
-    void Start()
-    {
-        cfg = new Config._User._PCSelfConfig._Bin2Dash();
-
-        cfg.streamName = "audio";
-        cfg.url = "";
-        cfg.segmentSize = 1000;
-        cfg.segmentLife = 30000;
-        cfg.fileMirroring = true;
-    }
 
     private void OnDestroy()
     {

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioTestManager : MonoBehaviour
+public class AudioManager : MonoBehaviour
 {
-    public static AudioTestManager instance;
+    public static AudioManager instance;
 
-    private AudioTestRecorder recorder;
-    private List<AudioTestReceiver> receivers = new List<AudioTestReceiver>();
+    private AudioRecorder recorder;
+    private List<AudioReceiver> receivers = new List<AudioReceiver>();
 
     private void Awake()
     {
@@ -15,6 +15,11 @@ public class AudioTestManager : MonoBehaviour
         {
             instance = this;
         }
+
+        AudioConfiguration ac = AudioSettings.GetConfiguration();
+        ac.sampleRate = 16000 * 3;
+        ac.dspBufferSize = 320 * 3;
+        AudioSettings.Reset(ac);
     }
 
     private IEnumerator Start()
@@ -28,7 +33,7 @@ public class AudioTestManager : MonoBehaviour
 
         if(recorder == null)
         {
-            recorder = gameObject.AddComponent<AudioTestRecorder>();
+            recorder = gameObject.AddComponent<AudioRecorder>();
         }
     }
 
@@ -69,7 +74,7 @@ public class AudioTestManager : MonoBehaviour
         GameObject lUserAudioReceiver = new GameObject("UserAudioReceiver_" + pUserID);
         lUserAudioReceiver.transform.parent = this.transform;
 
-        AudioTestReceiver lAudioReceiver = lUserAudioReceiver.AddComponent<AudioTestReceiver>();
+        AudioReceiver lAudioReceiver = lUserAudioReceiver.AddComponent<AudioReceiver>();
         lAudioReceiver.StartListeningAudio(pUserID);
 
         receivers.Add(lAudioReceiver);

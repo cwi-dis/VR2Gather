@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class AudioTestReceiver : MonoBehaviour
+public class AudioReceiver : MonoBehaviour
 {
     public string userID;
 
