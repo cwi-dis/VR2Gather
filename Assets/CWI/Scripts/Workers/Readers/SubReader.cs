@@ -58,7 +58,7 @@ namespace Workers
                     } else {
                         streamCount = subHandle.get_stream_count();
                         fourccInfo = subHandle.get_stream_4cc(0);
-                        Debug.Log($"streamCount {streamCount}");
+                        Debug.Log($"{url} streamCount {streamCount} fourccInfo {fourccInfo}");
                     }
                     Start();
                 }
@@ -107,6 +107,7 @@ namespace Workers
 
         int counter0 = 0;
         int counter1 = 0;
+        long lastTimeStamp=0;
         protected override void Update() {
             base.Update();
 
@@ -124,6 +125,11 @@ namespace Workers
 
                     int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
                     if (bytesRead == size) {
+                        if (lastTimeStamp != 0 ) {
+                            Debug.Log($"{url} -> DIFF {info.timestamp - lastTimeStamp}");
+                            if (lastTimeStamp > info.timestamp) Debug.Log($"ERROR lastTimeStamp {lastTimeStamp} current {info.timestamp}");
+                        }
+                        lastTimeStamp = info.timestamp;
                         // All ok, yield to the next process
                         token.currentBuffer = currentBuffer;
                         token.currentByteArray = currentBufferArray;
