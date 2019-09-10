@@ -24,16 +24,16 @@
         },
         "Bin2Dash": {
           "streamName": "testBed",
-          "_url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/",
-          "url": "http://arecibo.huiskamer.private:9000/pc-m377a/",
+          "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/",
+          "_url": "http://127.0.0.1:9000/pc-fernando/",
           "segmentSize": 2000,
-          "segmentLife": 4000
+          "segmentLife": 30000
         },
         "AudioBin2Dash": {
           "streamName": "audio",
-          "_url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/",
-          "url": "http://arecibo.huiskamer.private:9000/audio-m377a/",
-          "segmentSize": 1000,
+          "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/",
+          "_url": "http://127.0.0.1:9000/audio-fernando/",
+          "segmentSize": 2000,
           "segmentLife": 30000
         }
       },
@@ -70,12 +70,12 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
-        "url": "http://arecibo.huiskamer.private:9000/pc-m378/testBed.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/pc-marci2cat/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
-        "url": "http://arecibo.huiskamer.private:9000/audio-m378/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
+        "_url": "http://127.0.0.1:9000/audio-marci2cat/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
@@ -110,12 +110,12 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/pc-m377a/testBed.mpd",
-        "url": "http://arecibo.huiskamer.private:9000/pc-m377a/testBed.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
+        "_url": "http://127.0.0.1:9000/pc-fernando/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/audio-m377a/audio.mpd",
-        "url": "http://arecibo.huiskamer.private:9000/audio-m377a/audio.mpd"
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
+        "_url": "http://127.0.0.1:9000/audio-fernando/audio.mpd"
       },
       "Render": {
         "forceMesh": true,
