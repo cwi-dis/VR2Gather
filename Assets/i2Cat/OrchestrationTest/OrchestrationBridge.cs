@@ -16,7 +16,7 @@ public class OrchestrationBridge : MonoBehaviour {
     public bool useCore = false;
 
     [Header("General")]
-    public OrchestratorGuiExtended orchestrator;
+    public OrchestratorGui orchestrator;
     public PilotController controller;
 
     #region UI
@@ -119,7 +119,10 @@ public class OrchestrationBridge : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        orchestrator.ConnectSocket();
+        //Hardcoded ClockSync on Windows machines
+        if(System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
+
+        orchestrator.ConnectSocket(useCore);
         //orchestrator.TestLogin("admin", "password");
 
         loginPanel.SetActive(true);

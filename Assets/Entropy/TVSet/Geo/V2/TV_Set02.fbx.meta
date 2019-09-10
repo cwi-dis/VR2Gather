@@ -12,6 +12,7 @@ ModelImporter:
     100012: Suelo
     100014: Techo
     100016: //RootNode
+    100018: Paredes_Lat
     400000: Base
     400002: Base_presentador
     400004: Columnas
@@ -21,6 +22,7 @@ ModelImporter:
     400012: Suelo
     400014: Techo
     400016: //RootNode
+    400018: Paredes_Lat
     2100000: lambert41
     2100002: lambert19
     2100004: lambert1
@@ -40,6 +42,7 @@ ModelImporter:
     2300010: Plataforma_Presentador
     2300012: Suelo
     2300014: Techo
+    2300016: Paredes_Lat
     3300000: Base
     3300002: Base_presentador
     3300004: Columnas
@@ -48,6 +51,7 @@ ModelImporter:
     3300010: Plataforma_Presentador
     3300012: Suelo
     3300014: Techo
+    3300016: Paredes_Lat
     4300000: Suelo
     4300002: Techo
     4300004: Columnas
@@ -56,6 +60,7 @@ ModelImporter:
     4300010: Base
     4300012: Plataforma_Presentador
     4300014: Pared
+    4300016: Paredes_Lat
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -82,7 +87,8 @@ ModelImporter:
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
-    extraUserProperties: []
+    extraUserProperties:
+    - '#BAKERY{"meshName":["Plataforma_Presentador","Paredes_Lat","Suelo","Columnas","Techo"],"padding":[13,2,1,2,1],"unwrapper":[0,0,0,0,0]}'
     clipAnimations: []
     isReadable: 0
   meshes:

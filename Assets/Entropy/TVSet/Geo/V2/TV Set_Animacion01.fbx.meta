@@ -797,6 +797,7 @@ ModelImporter:
     4300306: pared_derecha
     7400000: Take 001
     9500000: //RootNode
+    11100000: //RootNode
     13700000: base_animacion_1
     13700002: base_pared_animacion
     13700004: pared_animacion
@@ -1029,10 +1030,10 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
     hasTranslationDoF: 0
-    hasExtraRoot: 0
+    hasExtraRoot: 1
     skeletonHasParents: 1
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  animationType: 2
+  animationType: 1
   humanoidOversampling: 1
   additionalBone: 0
   userData: 

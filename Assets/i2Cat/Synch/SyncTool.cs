@@ -5,8 +5,24 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Globalization;
+using System.Runtime.InteropServices;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct SystemTime {
+    public ushort Year;
+    public ushort Month;
+    public ushort DayOfWeek;
+    public ushort Day;
+    public ushort Hour;
+    public ushort Minute;
+    public ushort Second;
+    public ushort Millisecond;
+};
 
 public class SyncTool {
+
+    [DllImport("kernel32.dll", EntryPoint = "SetSystemTime", SetLastError = true)]
+    public extern static bool Win32SetSystemTime(ref SystemTime sysTime);
 
     public static DateTime sysTime; // The system clock time
     public static DateTime netTime; // The NTP server clock time
@@ -135,5 +151,28 @@ public class SyncTool {
                       ((x & 0x0000ff00) << 8) +
                       ((x & 0x00ff0000) >> 8) +
                       ((x & 0xff000000) >> 24));
+    }
+
+    public static void SyncSystemClock() {
+        // Set system date and time
+        SystemTime updatedTime = new SystemTime();
+        updatedTime.Year = (ushort)2009;
+        updatedTime.Month = (ushort)3;
+        updatedTime.Day = (ushort)16;
+        updatedTime.Hour = (ushort)10;
+        updatedTime.Minute = (ushort)0;
+        updatedTime.Second = (ushort)0;
+
+        DateTime ntpTime = GetNetworkTime();
+
+        updatedTime.Year = (ushort)ntpTime.Year;
+        updatedTime.Month = (ushort)ntpTime.Month;
+        updatedTime.Day = (ushort)ntpTime.Day;
+        updatedTime.Hour = (ushort)ntpTime.Hour;
+        updatedTime.Minute = (ushort)ntpTime.Minute;
+        updatedTime.Second = (ushort)ntpTime.Second;
+
+        // Call the unmanaged function that sets the new date and time instantly
+        Win32SetSystemTime(ref updatedTime);
     }
 }
