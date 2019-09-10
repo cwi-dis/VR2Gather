@@ -7,6 +7,7 @@ namespace Workers
         string url;
         int streamNumber;
         int streamCount;
+        uint fourccInfo;
         System.IntPtr subHandle;
         byte[] currentBufferArray;
         System.IntPtr currentBuffer;
@@ -22,10 +23,7 @@ namespace Workers
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
                         streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
-                        for (int i = 0; i < streamCount; ++i) {
-                            var fourCC = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, i);
-                            Debug.Log($"{i} sub_get_stream_4cc {fourCC}");
-                        }
+                        Debug.Log($"streamCount {streamCount}");
                         Start();
                     }
                     else
@@ -40,19 +38,18 @@ namespace Workers
             }
         }
 
-        public SUBReader(string cfg) : base(WorkerType.Init) {
+        public SUBReader(string cfg, int _streamNumber) : base(WorkerType.Init) {
             url = cfg;
-            streamNumber = 1;
+            streamNumber = _streamNumber;
             try {
                 signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
                         streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
-                        for (int i = 0; i < streamCount; ++i) {
-                            var fourCC = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, i);
-                            Debug.Log($"{i} sub_get_stream_4cc {fourCC}");
-                        }
+                        fourccInfo = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, streamNumber);
+                        Debug.Log($"streamCount {streamCount}");
+                        Debug.Log($"4CC {fourccInfo}");
                         Start();
                     }
                     else
