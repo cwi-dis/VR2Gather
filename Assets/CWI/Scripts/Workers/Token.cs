@@ -18,7 +18,7 @@ namespace Workers
         public int currentSize;
         public Token original;
         public NTPTools.NTPTime latency;
-        public signals_unity_bridge_pinvoke.FrameInfo info;
+        public sub.FrameInfo info;
 
     }
 }
