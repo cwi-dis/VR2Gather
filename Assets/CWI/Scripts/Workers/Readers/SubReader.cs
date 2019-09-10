@@ -38,7 +38,7 @@ namespace Workers
             }
         }
 
-        public SUBReader(string cfg, int _streamNumber) : base(WorkerType.Init) {
+        public SUBReader(string cfg, int _streamNumber=0) : base(WorkerType.Init) {
             url = cfg;
             streamNumber = _streamNumber;
             try {
@@ -71,15 +71,15 @@ namespace Workers
             Debug.Log("SUBReader Sopped");
 
         }
-        float latTime = 0;
-        int counter = 0;
+        int counter0 = 0;
+        int counter1 = 0;
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
                 info.dsi_size = 256;
                 int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
-                    Debug.Log($"PCSUBReader({streamNumber}): {size}!!!!");
+                    // Debug.Log($"{counter0++}  PCSUBReader({streamNumber}): {size}!!!!");
                     if (size > dampedSize) {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                         currentBufferArray = new byte[dampedSize];
@@ -100,15 +100,22 @@ namespace Workers
                 if (streamCount > 0) {
                     size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
-                        Debug.Log($"{counter++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
+                        // Debug.Log($"{counter1++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
                         if (size > dampedSize) {
                             dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                             currentBufferArray = new byte[dampedSize];
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
                         int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1 - streamNumber, currentBuffer, size, ref info);
-
-
+                        if (bytesRead == size) {
+                            // All ok, yield to the next process
+                            token.currentBuffer = currentBuffer;
+                            token.currentByteArray = currentBufferArray;
+                            token.currentSize = bytesRead;
+                            token.info = info;
+                            Next();
+                        } else
+                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                     }
                 }
             }

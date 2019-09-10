@@ -53,9 +53,6 @@ namespace Workers {
                     Debug.Log($"ret {ret} frame_finished {frame_finished}");
                 */
                 if (packet->size > 0) {
-
-                    Debug.Log($"bytes_used {bytes_used} size {packet->size}");
-                    //int gotFrame;
                     int ret2 = ffmpeg.avcodec_send_packet(codec_ctx, packet);
                     if (ret2 < 0) {
                         byte* errbuf = (byte*)Marshal.AllocHGlobal(128);
@@ -66,10 +63,10 @@ namespace Workers {
                         while (ret2 >= 0) {
                             ret2 = ffmpeg.avcodec_receive_frame(codec_ctx, frame);
                             if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                Debug.Log($"saving frame {codec_ctx->frame_number}");
+                                Debug.Log($"Data line size {frame->linesize[0]} width {frame->width} height {frame->height} frame {codec_ctx->frame_number}");
                             } else
-                                Debug.Log($"ret2 {ret2}");
-                            Debug.Log($"Data line size {frame->linesize[0]} width {frame->width} height {frame->height}");
+                                if(ret2!=-11)
+                                    Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
                         }
                     }
                 }
