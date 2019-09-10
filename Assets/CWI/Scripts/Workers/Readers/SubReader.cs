@@ -8,26 +8,31 @@ namespace Workers
         int streamNumber;
         int streamCount;
         uint fourccInfo;
-        System.IntPtr subHandle;
+        sub.connection subHandle;
+        bool isPlaying;
         byte[] currentBufferArray;
         System.IntPtr currentBuffer;
         int dampedSize = 0;
 
-        signals_unity_bridge_pinvoke.FrameInfo info = new signals_unity_bridge_pinvoke.FrameInfo();
-        public SUBReader(Config._User._SUBConfig cfg) : base(WorkerType.Init) {
+        sub.FrameInfo info = new sub.FrameInfo();
+        public SUBReader(Config._User._SUBConfig cfg, bool dropInitialData=false) : base(WorkerType.Init) {
             url = cfg.url;
             streamNumber = cfg.streamNumber;
+            firstTime = dropInitialData;
             try {
-                signals_unity_bridge_pinvoke.SetPaths();
-                subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-                if (subHandle != System.IntPtr.Zero) {
-                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
-                        streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
+//                signals_unity_bridge_pinvoke.SetPaths();
+                subHandle = sub.create("source_from_sub");
+                if (subHandle != null) {
+                    isPlaying = subHandle.play(url);
+                    if (!isPlaying) {
+                        Debug.Log("SubReader: sub_play() failed, will try again later");
+                    } else {
+                        streamCount = subHandle.get_stream_count();
                         Debug.Log($"streamCount {streamCount}");
-                        Start();
+
                     }
-                    else
-                        throw new System.Exception($"PCSUBReader: sub_play failed for {url}");
+                    Start();
+                    
                 }
                 else
                     throw new System.Exception($"PCSUBReader: sub_create failed");
@@ -42,18 +47,20 @@ namespace Workers
             url = cfg;
             streamNumber = _streamNumber;
             try {
-                signals_unity_bridge_pinvoke.SetPaths();
-                subHandle = signals_unity_bridge_pinvoke.sub_create("source_from_sub");
-                if (subHandle != System.IntPtr.Zero) {
-                    if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
-                        streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
-                        fourccInfo = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, streamNumber);
+                //signals_unity_bridge_pinvoke.SetPaths();
+                subHandle = sub.create("source_from_sub");
+                if (subHandle != null) {
+                    isPlaying = subHandle.play(url);
+
+                    isPlaying = subHandle.play(url);
+                    if (!isPlaying) {
+                        Debug.Log("SubReader: sub_play() failed, will try again later");
+                    } else {
+                        streamCount = subHandle.get_stream_count();
+                        fourccInfo = subHandle.get_stream_4cc(0);
                         Debug.Log($"streamCount {streamCount}");
-                        Debug.Log($"4CC {fourccInfo}");
-                        Start();
                     }
-                    else
-                        throw new System.Exception($"PCSUBReader: sub_play failed for {url}");
+                    Start();
                 }
                 else
                     throw new System.Exception($"PCSUBReader: sub_create failed");
@@ -66,18 +73,47 @@ namespace Workers
 
         public override void OnStop()
         {
-            if (subHandle != System.IntPtr.Zero) signals_unity_bridge_pinvoke.sub_destroy(subHandle);
+            subHandle = null;
             base.OnStop();
             Debug.Log("SUBReader Sopped");
-
         }
+
+
+
+        float latTime = 0;
+        bool firstTime = false;
+        int numberOfUnsuccessfulReceives;
+
+        protected void retryPlay() {
+            if (isPlaying) return;
+            if (subHandle == null) {
+                subHandle = sub.create("source_from_sub");
+                if (subHandle == null) {
+                    Debug.LogWarning("SubReader: retry sub.create() call failed again.");
+                    return;
+                }
+            }
+            if (subHandle != null) {
+                isPlaying = subHandle.play(url);
+                if (isPlaying) {
+                    Debug.Log("SubReader: retry sub.play() successful.");
+                    streamCount = subHandle.get_stream_count();
+                    Debug.Log($"streamCount {streamCount}");
+
+                }
+
+            }
+        }
+
         int counter0 = 0;
         int counter1 = 0;
         protected override void Update() {
             base.Update();
+
             if (token != null) {  // Wait for token
+                if (!isPlaying) retryPlay();
                 info.dsi_size = 256;
-                int size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
                     // Debug.Log($"{counter0++}  PCSUBReader({streamNumber}): {size}!!!!");
                     if (size > dampedSize) {
@@ -86,7 +122,7 @@ namespace Workers
                         currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                     }
 
-                    int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, streamNumber, currentBuffer, size, ref info);
+                    int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
                     if (bytesRead == size) {
                         // All ok, yield to the next process
                         token.currentBuffer = currentBuffer;
@@ -98,7 +134,7 @@ namespace Workers
                         Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                 }
                 if (streamCount > 0) {
-                    size = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                    size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
                         // Debug.Log($"{counter1++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
                         if (size > dampedSize) {
@@ -106,7 +142,7 @@ namespace Workers
                             currentBufferArray = new byte[dampedSize];
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
-                        int bytesRead = signals_unity_bridge_pinvoke.sub_grab_frame(subHandle, 1 - streamNumber, currentBuffer, size, ref info);
+                        int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, size, ref info);
                         if (bytesRead == size) {
                             // All ok, yield to the next process
                             token.currentBuffer = currentBuffer;
