@@ -22,7 +22,10 @@ namespace Workers
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
                         streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
-                        Debug.Log($"streamCount {streamCount}");
+                        for (int i = 0; i < streamCount; ++i) {
+                            var fourCC = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, i);
+                            Debug.Log($"{i} sub_get_stream_4cc {fourCC}");
+                        }
                         Start();
                     }
                     else
@@ -46,7 +49,10 @@ namespace Workers
                 if (subHandle != System.IntPtr.Zero) {
                     if (signals_unity_bridge_pinvoke.sub_play(subHandle, url)) {
                         streamCount = signals_unity_bridge_pinvoke.sub_get_stream_count(subHandle);
-                        Debug.Log($"streamCount {streamCount}");
+                        for (int i = 0; i < streamCount; ++i) {
+                            var fourCC = signals_unity_bridge_pinvoke.sub_get_stream_4cc(subHandle, i);
+                            Debug.Log($"{i} sub_get_stream_4cc {fourCC}");
+                        }
                         Start();
                     }
                     else
