@@ -27,10 +27,12 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 
     private IEnumerator Start()
     {
-        while (OrchestratorGui.orchestratorWrapper == null)
+        while (OrchestratorWrapper.instance == null)
         {
             yield return 0;
         }
+
+        OrchestratorWrapper.instance.AddUserSessionEventLister(this);
 
         if(recorder == null)
         {

@@ -58,6 +58,8 @@ namespace OrchestratorWrapping
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
     {
+        public static OrchestratorWrapper instance;
+
         // manager for the socketIO connection to the orchestrator 
         private OrchestratorWSManager OrchestrationSocketIoManager;
 
@@ -70,8 +72,8 @@ namespace OrchestratorWrapping
         // Listener for the messages emitted spontaneously by the orchestrator
         private IMessagesFromOrchestratorListener MessagesFromOrchestratorListener;
 
-        // Listener for the user events emitted when a session is updated by the orchestrator
-        private IUserSessionEventsListener UserSessionEventslistener;
+        // Listeners for the user events emitted when a session is updated by the orchestrator
+        private List<IUserSessionEventsListener> UserSessionEventslisteners = new List<IUserSessionEventsListener>();
 
         // List of available commands (grammar description)
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
@@ -79,16 +81,30 @@ namespace OrchestratorWrapping
         // List of messages that can be received from the orchestrator
         public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageIOListener messagesListener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessageIOListener messagesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IUserSessionEventsListener userSessionEventslistener)
         {
+            if(instance == null)
+            {
+                instance = this;
+            }
+
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
             ResponsesListener = responsesListener;
             MessagesListener = messagesListener;
             MessagesFromOrchestratorListener = messagesFromOrchestratorListener;
+
+            //UserSessionEventslisteners = new List<IUserSessionEventsListener>();
+            //UserSessionEventslisteners.Add(userSessionEventslistener);
+
             InitGrammar();
         }
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, messagesFromOrchestratorListener, null) { }
-        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
+
+        public void AddUserSessionEventLister(IUserSessionEventsListener e)
+        {
+            UserSessionEventslisteners.Add(e);
+        }
 
         public Action<UserAudioPacket> OnAudioSent;
 
@@ -216,9 +232,9 @@ namespace OrchestratorWrapping
             foreach(string userID in session.sessionUsers)
             {
                 //We enforce to notify that all users joined the session.
-                if (UserSessionEventslistener != null)
+                foreach(IUserSessionEventsListener e in UserSessionEventslisteners)
                 {
-                    UserSessionEventslistener.OnUserJoinedSession(userID);
+                    e?.OnUserJoinedSession(userID);
                 }
             }
 
@@ -494,17 +510,17 @@ namespace OrchestratorWrapping
             {
                 case "USER_JOINED_SESSION":
 
-                    if (UserSessionEventslistener != null)
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        UserSessionEventslistener.OnUserJoinedSession(lUserID);
+                        e?.OnUserJoinedSession(lUserID);
                     }
 
                     break;
                 case "USER_LEAVED_SESSION":
 
-                    if (UserSessionEventslistener != null)
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
                     {
-                        UserSessionEventslistener.OnUserLeftSession(lUserID);
+                        e?.OnUserLeftSession(lUserID);
                     }
 
                     break;

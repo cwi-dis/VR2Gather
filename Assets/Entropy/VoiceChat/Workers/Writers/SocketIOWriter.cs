@@ -34,9 +34,9 @@ namespace Workers
                     socketIOConnection.socket.Emit("dataChannel", (object)tmp);
                 }
 
-                if (OrchestratorGui.orchestratorWrapper != null)
+                if (OrchestratorWrapping.OrchestratorWrapper.instance != null)
                 {
-                    OrchestratorGui.orchestratorWrapper.PushAudioPacket(tmp);
+                    OrchestratorWrapping.OrchestratorWrapper.instance.PushAudioPacket(tmp);
                 }
 
                 Next();

@@ -174,7 +174,7 @@ public class OrchestrationBridge : MonoBehaviour {
                 // Auto-Refreshing Users
                 timerUsers += Time.deltaTime;
                 if (timerUsers >= refreshUsers) {
-                    OrchestratorGui.orchestratorWrapper.GetSessionInfo();
+                    OrchestratorWrapper.instance.GetSessionInfo();
                     LobbyTextUpdate();
                     timerUsers = 0.0f;
                 }

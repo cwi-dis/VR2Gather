@@ -142,7 +142,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     #region orchestration logics
 
     // the wrapper for the orchestrator
-    public static OrchestratorWrapper orchestratorWrapper;
+    private OrchestratorWrapper orchestratorWrapper;
 
     // available commands
     private List<GuiCommandDescription> GuiCommands;
@@ -357,7 +357,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     // Connect to the orchestrator
     public void SocketConnect()
     {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
+        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this, this);
         orchestratorWrapper.Connect();
     }
 

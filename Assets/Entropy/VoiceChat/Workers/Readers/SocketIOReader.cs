@@ -27,7 +27,7 @@ namespace Workers
             }
             else
             {
-                OrchestratorGui.orchestratorWrapper.OnAudioSent += OnUserAudioPacketReceived;
+                OrchestratorWrapper.instance.OnAudioSent += OnUserAudioPacketReceived;
             }
             
             Start();

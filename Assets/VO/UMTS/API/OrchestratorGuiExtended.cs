@@ -247,7 +247,7 @@ public class OrchestratorGuiExtended : OrchestratorGui
     // Connect to the orchestrator
     private void socketConnect()
     {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
+        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this, this);
         orchestratorWrapper.Connect();
     }
 
@@ -943,7 +943,7 @@ public class OrchestratorGuiExtended : OrchestratorGui
     // Connect to the orchestrator
     public void ConnectSocket()
     {
-        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this);
+        orchestratorWrapper = new OrchestratorWrapper("https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/", this, this, this, this);
         orchestratorWrapper.Connect();
     }
 
