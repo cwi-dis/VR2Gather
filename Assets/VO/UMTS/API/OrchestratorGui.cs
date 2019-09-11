@@ -171,7 +171,13 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     public bool IsConnected { get { return orchestratorConnected; } }
 
-    public Session ActiveSession { get { return ActiveSession; } private set { ActiveSession = value; } }
+    // Temporal properties added to prevent OrchestrationBridge class missing references exceptions. To be deleted as a new integration class is needed.
+    public Session              ActiveSession           { get { return ActiveSession; } private set { ActiveSession = value; } }
+    public ScenarioInstance     ActiveScenario          { get { return null; } private set { ActiveScenario = value; } }
+    public List<Session>        AvailableSessions       { get { return availableSessions; } }
+    public List<Scenario>       AvailableScenarios      { get { return availableScenarios; } }
+    public List<User>           AvailableUsers          { get { return availableUsers; } }
+    public List<RoomInstance>   AvailableRoomInstances  { get { return availableRoomInstances; } }
 
     #endregion
 
@@ -183,7 +189,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
         // buttons listeners
-        connectButton.onClick.AddListener(delegate { socketConnect(); });
+        connectButton.onClick.AddListener(delegate { SocketConnect(); });
         disconnectButton.onClick.AddListener(delegate { socketDisconnect(); });
         loginButton.onClick.AddListener(delegate { HeadLogin(); });
         logoutButton.onClick.AddListener(delegate { Logout(); });
@@ -346,7 +352,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     #region Socket.io connect
 
     // Connect to the orchestrator
-    private void socketConnect()
+    public void SocketConnect()
     {
         orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this);
         orchestratorWrapper.Connect();
@@ -523,7 +529,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
 
     #region Sessions
 
-    private void GetSessions()
+    public void GetSessions()
     {
         orchestratorWrapper.GetSessions();
     }
@@ -625,6 +631,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = scenario.GetGuiRepresentation();
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
+
+            ActiveScenario = scenario;
         }
     }
 
@@ -690,7 +698,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     }
 
 
-    private void LeaveSession()
+    public void LeaveSession()
     {
         orchestratorWrapper.LeaveSession();
 
@@ -709,7 +717,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = "";
 
             ActiveSession = null;
+            ActiveScenario = null;
         }
+    }
+
+    public void OnSessionUpdatedResponse(string userID)
+    {
+        orchestratorWrapper.GetSessionInfo();
+        orchestratorWrapper.GetUserInfo(userID);
     }
 
     #endregion

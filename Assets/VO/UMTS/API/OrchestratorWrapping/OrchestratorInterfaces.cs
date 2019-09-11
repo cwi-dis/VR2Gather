@@ -9,6 +9,7 @@ namespace OrchestratorWrapping
     public interface IMessagesFromOrchestratorListener
     {
         void OnUserMessageReceived(UserMessage userMessage);
+        void OnSessionUpdatedResponse(string userID);
     }
 
     // Interface for clients that will use the orchestrator wrapper

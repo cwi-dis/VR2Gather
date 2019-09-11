@@ -509,6 +509,11 @@ namespace OrchestratorWrapping
                 default:
                     break;
             }
+
+            if (MessagesFromOrchestratorListener != null)
+            {
+                MessagesFromOrchestratorListener.OnSessionUpdatedResponse(lUserID);
+            }
         }
 
         #endregion
