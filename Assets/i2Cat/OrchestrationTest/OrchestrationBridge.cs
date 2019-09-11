@@ -169,7 +169,7 @@ public class OrchestrationBridge : MonoBehaviour {
                 break;
             case State.Lobby:
                 // Button interactuability
-                //if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
+                //if (orchestrator.ActiveSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
                 //else readyLobbyButton.interactable = true;
                 // Auto-Refreshing Users
                 timerUsers += Time.deltaTime;
@@ -244,14 +244,14 @@ public class OrchestrationBridge : MonoBehaviour {
                         orchestrator.AddTextComponentOnContent(usersSession.transform, u.userName);
                 }
             }
-            Debug.Log("orchestrator.activeSession: Good");
+            Debug.Log("orchestrator.ActiveSession: Good");
         }
         else {
             sessionNameText.text = "";
             sessionDescriptionText.text = "";
             sessionNumUsersText.text = "X/X";
             orchestrator.removeComponentsFromList(usersSession.transform);
-            Debug.Log("orchestrator.activeSession: Bad");
+            Debug.Log("orchestrator.ActiveSession: Bad");
         }
         // Active Scenario
         if (orchestrator.ActiveScenario != null) {

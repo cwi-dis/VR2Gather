@@ -9,7 +9,17 @@ namespace OrchestratorWrapping
     public interface IMessagesFromOrchestratorListener
     {
         void OnUserMessageReceived(UserMessage userMessage);
-        void OnSessionUpdatedResponse(string userID);
+    }
+
+    // Interface to implement to listen the user events emitted spontaneously
+    // from the session updates by the orchestrator
+    public interface IUserSessionEventsListener
+    {
+        void OnUserJoinedSession(string userID);
+        void OnUserLeftSession(string userID);
+        
+        //Useless for now
+        //void OnUserDataUpdated(string userID);
     }
 
     // Interface for clients that will use the orchestrator wrapper
@@ -50,7 +60,7 @@ namespace OrchestratorWrapping
     }
 
     // interface to implement to be updated from messages exchanged on the socketio
-    public interface IOrchestratorMessageListener
+    public interface IOrchestratorMessageIOListener
     {
         void OnOrchestratorResponse(int status, string response);
         void OnOrchestratorRequest(string request);

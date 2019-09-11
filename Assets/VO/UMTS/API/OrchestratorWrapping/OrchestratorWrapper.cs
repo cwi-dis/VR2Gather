@@ -65,10 +65,13 @@ namespace OrchestratorWrapping
         private IOrchestratorResponsesListener ResponsesListener;
 
         // Listener for the responses of the orchestrator
-        private IOrchestratorMessageListener MessagesListener;
+        private IOrchestratorMessageIOListener MessagesListener;
 
         // Listener for the messages emitted spontaneously by the orchestrator
         private IMessagesFromOrchestratorListener MessagesFromOrchestratorListener;
+
+        // Listener for the user events emitted when a session is updated by the orchestrator
+        private IUserSessionEventsListener UserSessionEventslistener;
 
         // List of available commands (grammar description)
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
@@ -76,7 +79,7 @@ namespace OrchestratorWrapping
         // List of messages that can be received from the orchestrator
         public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageIOListener messagesListener)
         {
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
             ResponsesListener = responsesListener;
@@ -88,8 +91,6 @@ namespace OrchestratorWrapping
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
 
         public Action<UserAudioPacket> OnAudioSent;
-        public UnityStringEvent OnAudioSentStart = new UnityStringEvent();
-        public UnityStringEvent OnAudioSentStop = new UnityStringEvent();
 
         string myUserID = "";
 
@@ -214,9 +215,10 @@ namespace OrchestratorWrapping
 
             foreach(string userID in session.sessionUsers)
             {
-                if (OnAudioSentStart != null && !string.IsNullOrEmpty(userID) && userID != myUserID)
+                //We enforce to notify that all users joined the session.
+                if (UserSessionEventslistener != null)
                 {
-                    OnAudioSentStart.Invoke(userID);
+                    UserSessionEventslistener.OnUserJoinedSession(userID);
                 }
             }
 
@@ -492,27 +494,22 @@ namespace OrchestratorWrapping
             {
                 case "USER_JOINED_SESSION":
 
-                    if (OnAudioSentStart != null && !string.IsNullOrEmpty(lUserID))
+                    if (UserSessionEventslistener != null)
                     {
-                        OnAudioSentStart.Invoke(lUserID);
+                        UserSessionEventslistener.OnUserJoinedSession(lUserID);
                     }
 
                     break;
                 case "USER_LEAVED_SESSION":
 
-                    if (OnAudioSentStop != null && !string.IsNullOrEmpty(lUserID))
+                    if (UserSessionEventslistener != null)
                     {
-                        OnAudioSentStop.Invoke(lUserID);
+                        UserSessionEventslistener.OnUserLeftSession(lUserID);
                     }
 
                     break;
                 default:
                     break;
-            }
-
-            if (MessagesFromOrchestratorListener != null)
-            {
-                MessagesFromOrchestratorListener.OnSessionUpdatedResponse(lUserID);
             }
         }
 

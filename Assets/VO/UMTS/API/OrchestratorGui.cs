@@ -24,7 +24,7 @@ class GuiCommandDescription
 /**
  * Main Gui class
  * **/
-public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IOrchestratorMessageListener
+public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IUserSessionEventsListener
 {
     #region gui components
 
@@ -156,6 +156,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     private List<User> availableUsers;
     private List<RoomInstance> availableRoomInstances;
 
+    private Session activeSession;
+    private ScenarioInstance activeScenario;
+
     // user Login state
     private bool userIsLogged = false;
 
@@ -172,8 +175,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     public bool IsConnected { get { return orchestratorConnected; } }
 
     // Temporal properties added to prevent OrchestrationBridge class missing references exceptions. To be deleted as a new integration class is needed.
-    public Session              ActiveSession           { get { return ActiveSession; } private set { ActiveSession = value; } }
-    public ScenarioInstance     ActiveScenario          { get { return null; } private set { ActiveScenario = value; } }
+    public Session              ActiveSession           { get { return activeSession; } }
+    public ScenarioInstance     ActiveScenario          { get { return activeScenario; } }
     public List<Session>        AvailableSessions       { get { return availableSessions; } }
     public List<Scenario>       AvailableScenarios      { get { return availableScenarios; } }
     public List<User>           AvailableUsers          { get { return availableUsers; } }
@@ -574,8 +577,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
     {
         Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.AddSession(availableScenarios[dd.value].scenarioId,
-            sessionNamePanel.GetComponentInChildren<InputField>().text,
-            sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
+        sessionNamePanel.GetComponentInChildren<InputField>().text,
+        sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
     }
 
     public void OnAddSessionResponse(ResponseStatus status, Session session)
@@ -607,7 +610,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            ActiveSession = session;
+            activeSession = session;
 
             if (AudioManager.instance != null)
             {
@@ -619,7 +622,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userSession.text = "";
             userScenario.text = "";
 
-            ActiveSession = null;
+            activeSession = null;
         }
     }
 
@@ -632,7 +635,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
 
-            ActiveScenario = scenario;
+            activeScenario = scenario;
         }
     }
 
@@ -686,14 +689,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            ActiveSession = session;
+            activeSession = session;
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
 
-            ActiveSession = null;
+            activeSession = null;
         }
     }
 
@@ -716,15 +719,22 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
             userSession.text = "";
             userScenario.text = "";
 
-            ActiveSession = null;
-            ActiveScenario = null;
+            activeSession = null;
+            activeScenario = null;
         }
     }
 
-    public void OnSessionUpdatedResponse(string userID)
+    public void OnUserJoinedSession(string userID)
     {
-        orchestratorWrapper.GetSessionInfo();
-        orchestratorWrapper.GetUserInfo(userID);
+        if (!string.IsNullOrEmpty(userID))
+        {
+            orchestratorWrapper.GetUserInfo(userID);
+        }
+    }
+
+    public void OnUserLeftSession(string userID)
+    {
+        //Nothing to do here
     }
 
     #endregion
@@ -798,14 +808,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorResponsesListener, IM
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         users.ForEach(delegate (User user)
         {
-            Debug.Log("User name:" + user.GetGuiRepresentation());
-
-            //Check if sfu is correctly loaded on server side
-            if (user.sfuData != null)
-            {
-                Debug.Log("User sfu data:" + user.sfuData.url_gen);
-            }
-
             options.Add(new Dropdown.OptionData(user.GetGuiRepresentation()));
         });
         dd.AddOptions(options);

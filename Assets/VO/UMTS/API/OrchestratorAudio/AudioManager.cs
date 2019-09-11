@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using OrchestratorWrapping;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 {
     public static AudioManager instance;
 
     private AudioRecorder recorder;
     private List<AudioReceiver> receivers = new List<AudioReceiver>();
+
+    #region Unity
 
     private void Awake()
     {
@@ -28,14 +31,30 @@ public class AudioManager : MonoBehaviour
         {
             yield return 0;
         }
-        OrchestratorGui.orchestratorWrapper.OnAudioSentStart.AddListener(StartListeningAudio);
-        OrchestratorGui.orchestratorWrapper.OnAudioSentStop.AddListener(StopListeningAudio);
 
         if(recorder == null)
         {
             recorder = gameObject.AddComponent<AudioRecorder>();
         }
     }
+
+    #endregion
+
+    #region Orchestrator Listeners
+
+    public void OnUserJoinedSession(string userID)
+    {
+        StartListeningAudio(userID);
+    }
+
+    public void OnUserLeftSession(string userID)
+    {
+        StopListeningAudio();
+    }
+
+    #endregion
+
+    #region Record Audio
 
     public void StartRecordAudio()
     {
@@ -47,6 +66,10 @@ public class AudioManager : MonoBehaviour
         recorder.StopRecordAudio();
         StopListeningAudio();
     }
+
+    #endregion
+
+    #region Listen Audio
 
     private void StartListeningAudio(string pUserID)
     {
@@ -79,4 +102,6 @@ public class AudioManager : MonoBehaviour
 
         receivers.Add(lAudioReceiver);
     }
+
+    #endregion
 }
