@@ -15,7 +15,7 @@ namespace Workers
 
         public AudioPreparer(int _preferredBufferFill=0) : base(WorkerType.End) {
             preferredBufferFill = _preferredBufferFill;
-            bufferSize = 320*6 * 100;
+            bufferSize = 320 * 6 * 100;
             if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
             preferredBufferFill = _preferredBufferFill;
             circularBuffer = new float[bufferSize];
@@ -35,10 +35,12 @@ namespace Workers
             base.Update();
 
             if (token != null) {
-                // xxxjack attempting to drop audio if there is too much in the buffer already
-                int bytesInAudioBuffer;
-                if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
-                else  bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
+                // xxxjack attempting to drop audio if there is too much in the buffer already                
+                int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
+
+                //int bytesInAudioBuffer;
+                //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
+                //else  bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
 
                 if (bytesInAudioBuffer > preferredBufferFill)
                 {

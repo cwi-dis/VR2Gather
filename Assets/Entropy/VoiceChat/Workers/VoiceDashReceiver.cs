@@ -13,7 +13,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init(Config._User._SUBConfig cfg) {
         const int frequency = 16000;
-        const double optimalAudioBufferDuration = 0.25;   // How long we want to buffer audio (in seconds)
+        const double optimalAudioBufferDuration = 2.5;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
