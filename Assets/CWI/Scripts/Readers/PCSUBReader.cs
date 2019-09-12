@@ -77,15 +77,13 @@ public class PCSUBReader : PCBaseReader {
         }
 
         int bytesRead = subHandle.grab_frame(streamNumber, currentBufferPtr, bytesNeeded, ref info);
-        if (bytesRead != bytesNeeded)
-        {
+        if (bytesRead != bytesNeeded) {
             Debug.LogError("PCSUBReader: sub.grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
             return null;
         }
         decoder.feed(currentBufferPtr, bytesRead);
         bool ok = decoder.available(true);
-        if (!ok)
-        {
+        if (!ok) {
             Debug.LogError("PCSUBReader: cwipc_decoder: no pointcloud available");
             return null;
         }

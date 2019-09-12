@@ -4,10 +4,16 @@ namespace Workers
 {
     public class SUBReader : BaseWorker
     {
+
+        public enum CCCC: int {
+            MP4A = 0x6134706D,
+            AVC1 = 0x31637661
+        };
+
         string url;
         int streamNumber;
         int streamCount;
-        uint fourccInfo;
+        int videoStream = 0;
         sub.connection subHandle;
         bool isPlaying;
         byte[] currentBufferArray;
@@ -43,22 +49,22 @@ namespace Workers
             }
         }
 
-        public SUBReader(string cfg, int _streamNumber=0) : base(WorkerType.Init) {
+        public SUBReader(string cfg) : base(WorkerType.Init) {
             url = cfg;
-            streamNumber = _streamNumber;
+            streamNumber = 0;
             try {
                 //signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = sub.create("source_from_sub");
                 if (subHandle != null) {
                     isPlaying = subHandle.play(url);
-
-                    isPlaying = subHandle.play(url);
                     if (!isPlaying) {
                         Debug.Log("SubReader: sub_play() failed, will try again later");
                     } else {
-                        streamCount = subHandle.get_stream_count();
-                        fourccInfo = subHandle.get_stream_4cc(0);
-                        Debug.Log($"{url} streamCount {streamCount} fourccInfo {fourccInfo}");
+                        streamCount = Mathf.Min(2, subHandle.get_stream_count());
+                        Debug.Log($"streamCount {streamCount}");
+                        if ((CCCC)subHandle.get_stream_4cc(streamNumber) == CCCC.MP4A) videoStream = 0;
+                        else videoStream = 1;
+
                     }
                     Start();
                 }
@@ -105,9 +111,6 @@ namespace Workers
             }
         }
 
-        int counter0 = 0;
-        int counter1 = 0;
-        long lastTimeStamp=0;
         protected override void Update() {
             base.Update();
 
@@ -116,7 +119,6 @@ namespace Workers
                 info.dsi_size = 256;
                 int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 if (size != 0) {
-                    // Debug.Log($"{counter0++}  PCSUBReader({streamNumber}): {size}!!!!");
                     if (size > dampedSize) {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                         currentBufferArray = new byte[dampedSize];
@@ -125,20 +127,17 @@ namespace Workers
 
                     int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
                     if (bytesRead == size) {
-                        if (lastTimeStamp != 0 ) {
-                            Debug.Log($"{url} -> DIFF {info.timestamp - lastTimeStamp}");
-                            if (lastTimeStamp > info.timestamp) Debug.Log($"ERROR lastTimeStamp {lastTimeStamp} current {info.timestamp}");
-                        }
-                        lastTimeStamp = info.timestamp;
                         // All ok, yield to the next process
                         token.currentBuffer = currentBuffer;
                         token.currentByteArray = currentBufferArray;
                         token.currentSize = bytesRead;
                         token.info = info;
+                        token.isVideo = streamNumber == videoStream;
                         Next();
                     } else
                         Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                }
+                } else
+                    Debug.Log($"No data at {streamNumber}");
                 if (streamCount > 0) {
                     size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
@@ -155,10 +154,12 @@ namespace Workers
                             token.currentByteArray = currentBufferArray;
                             token.currentSize = bytesRead;
                             token.info = info;
+                            token.isVideo = 1 - streamNumber == videoStream;
                             Next();
                         } else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                    }
+                    } else
+                        Debug.Log($"No data at {1 - streamNumber}");
                 }
             }
         }

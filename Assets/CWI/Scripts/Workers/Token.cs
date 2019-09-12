@@ -18,7 +18,11 @@ namespace Workers
         public int currentSize;
         public Token original;
         public NTPTools.NTPTime latency;
+
+        // ---> userData
         public sub.FrameInfo info;
+        public bool isVideo;
+        ////
 
     }
 }
