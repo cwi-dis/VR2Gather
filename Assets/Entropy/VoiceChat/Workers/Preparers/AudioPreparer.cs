@@ -20,8 +20,6 @@ namespace Workers
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
-
-
             
 
             Start();
