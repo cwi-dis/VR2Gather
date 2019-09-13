@@ -16,7 +16,7 @@ namespace Workers
         public AudioPreparer(int _preferredBufferFill=0) : base(WorkerType.End) {
             bufferSize = 320 * 6 * 100;
             if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
-            preferredBufferFill = _preferredBufferFill * 2;
+            preferredBufferFill = _preferredBufferFill;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
@@ -36,27 +36,24 @@ namespace Workers
 
             if (token != null) {
                 // xxxjack attempting to drop audio if there is too much in the buffer already                
-                /*
                 int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
-                
-                //int bytesInAudioBuffer;
-                //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
-                //else  bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
 
-                if (bytesInAudioBuffer > preferredBufferFill)
-                {
+                //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
+                //else bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
+
+                if (bytesInAudioBuffer > preferredBufferFill) {
                     Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
                     Next();
                     return;
                 }
-                */
+
                 int len = token.currentSize;
 
-                if (preferredBufferFill > 0) {
-                    preferredBufferFill -= len;
-                    Next();
-                    return;
-                }
+                //if (preferredBufferFill > 0) {
+                //    preferredBufferFill -= len;
+                //    Next();
+                //    return;
+                //}
 
                 // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
                 if (writePosition + len < bufferSize) {
