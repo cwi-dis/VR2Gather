@@ -25,7 +25,7 @@ public class TestVoiceSocketIOReceiver : MonoBehaviour
         audioSource.spatialBlend = 1.0f;
         audioSource.Play();
 
-        reader = new Workers.SocketIOReader(socketIOConnection, userID);
+        reader = new Workers.SocketIOReader(socketIOConnection, userID.ToString());
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
         reader.AddNext(codec).AddNext(preparer).AddNext(reader);

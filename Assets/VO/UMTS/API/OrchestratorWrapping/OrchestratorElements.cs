@@ -27,8 +27,8 @@ namespace OrchestratorWrapping
 
     public class User: OrchestratorElement
     {
-        public string userId="";
-        public string userName="";
+        public string userId = "";
+        public string userName = "";
         public bool userAdmin = false;
         public UserData userData;
         public SfuData sfuData;
@@ -59,23 +59,25 @@ namespace OrchestratorWrapping
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
-        //Test
-        public string userPCDash = "";
-        public string userAudioDash = "";
+
+        public string userPCurl = "";
+        public string userAudioUrl = "";
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
-        public UserData(string pMQname, string pMQurl, string pPCDash, string pAudioDash)
+        public UserData(string pMQname, string pMQurl, string pPCurl, string pAudioUrl)
         {
             userMQexchangeName = pMQname;
             userMQurl = pMQurl;
-            userPCDash = pPCDash;
-            userAudioDash = pAudioDash;
+
+            userPCurl = pPCurl;
+            userAudioUrl = pAudioUrl;
         }
     }
 
-    public class SfuData : OrchestratorElement {
+    public class SfuData : OrchestratorElement
+    {
         public string url_gen = "";
         public string url_audio = "";
         public string url_pcc = "";
@@ -84,11 +86,11 @@ namespace OrchestratorWrapping
         public SfuData() { }
     }
 
-    public class NtpClock : OrchestratorElement
+    public class NtpClock: OrchestratorElement
     {
         public string ntpTime;
 
-        public NtpClock() { }
+        public NtpClock() {}
     }
 
     public class Scenario : OrchestratorElement
@@ -118,7 +120,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
+            return scenarioName + " (" + scenarioDescription + ")";
         }
     }
 
@@ -138,7 +140,7 @@ namespace OrchestratorWrapping
 
         public override string GetGuiRepresentation()
         {
-            return scenarioName /*+ " (" + scenarioDescription + ")"*/;
+            return scenarioName + " (" + scenarioDescription + ")";
         }
     }
 

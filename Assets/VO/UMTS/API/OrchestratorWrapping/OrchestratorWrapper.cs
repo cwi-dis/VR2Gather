@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using OrchestratorWSManagement;
 using LitJson;
 using BestHTTP;
@@ -32,10 +33,33 @@ namespace OrchestratorWrapping
         public JsonData message;
     }
 
+    // class that stores a user audio packet incoming from the orchestrator
+    public class UserAudioPacket
+    {
+        public byte[] audioPacket;
+        public string userID;
+
+        public UserAudioPacket(byte[] pAudioPacket, string pUserID)
+        {
+            if(pAudioPacket != null)
+            {
+                audioPacket = pAudioPacket;
+                userID = pUserID;
+            }
+        }
+    }
+
+    //class that overrides generic UnityEvent wwith string argument
+    public class UnityStringEvent : UnityEvent<string>
+    {
+    }
+
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
     public class OrchestratorWrapper : IOrchestratorConnectionListener, IMessagesListener
     {
+        public static OrchestratorWrapper instance;
+
         // manager for the socketIO connection to the orchestrator 
         private OrchestratorWSManager OrchestrationSocketIoManager;
 
@@ -43,10 +67,13 @@ namespace OrchestratorWrapping
         private IOrchestratorResponsesListener ResponsesListener;
 
         // Listener for the responses of the orchestrator
-        private IOrchestratorMessageListener MessagesListener;
+        private IOrchestratorMessageIOListener MessagesListener;
 
         // Listener for the messages emitted spontaneously by the orchestrator
         private IMessagesFromOrchestratorListener MessagesFromOrchestratorListener;
+
+        // Listeners for the user events emitted when a session is updated by the orchestrator
+        private List<IUserSessionEventsListener> UserSessionEventslisteners = new List<IUserSessionEventsListener>();
 
         // List of available commands (grammar description)
         public List<OrchestratorCommand> orchestratorCommands { get; private set; }
@@ -54,17 +81,34 @@ namespace OrchestratorWrapping
         // List of messages that can be received from the orchestrator
         public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
-
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IOrchestratorMessageListener messagesListener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessageIOListener messagesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IUserSessionEventsListener userSessionEventslistener)
         {
+            if(instance == null)
+            {
+                instance = this;
+            }
+
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
             ResponsesListener = responsesListener;
             MessagesListener = messagesListener;
             MessagesFromOrchestratorListener = messagesFromOrchestratorListener;
+
+            //UserSessionEventslisteners = new List<IUserSessionEventsListener>();
+            //UserSessionEventslisteners.Add(userSessionEventslistener);
+
             InitGrammar();
         }
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, messagesFromOrchestratorListener, null) { }
-        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
+
+        public void AddUserSessionEventLister(IUserSessionEventsListener e)
+        {
+            UserSessionEventslisteners.Add(e);
+        }
+
+        public Action<UserAudioPacket> OnAudioSent;
+
+        string myUserID = "";
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -116,7 +160,8 @@ namespace OrchestratorWrapping
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), response.body["userId"].ToString());
+            myUserID = response.body["userId"].ToString();
+            if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
         public bool Logout()
@@ -127,6 +172,7 @@ namespace OrchestratorWrapping
 
         private void OnLogoutResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
+            myUserID = "";
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
@@ -159,7 +205,6 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
 
-
         public bool GetSessions()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetSessions");
@@ -183,6 +228,16 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
+
+            foreach(string userID in session.sessionUsers)
+            {
+                //We enforce to notify that all users joined the session.
+                foreach(IUserSessionEventsListener e in UserSessionEventslisteners)
+                {
+                    e?.OnUserJoinedSession(userID);
+                }
+            }
+
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
@@ -294,9 +349,9 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(string userMQname, string userMQurl, string userPCDash, string userAudioDash)
+        public bool UpdateUserDataJson(string userMQname = "", string userMQurl = "", string userPCurl = "", string userAudioUrl = "")
         {
-            UserData userData = new UserData(userMQname, userMQurl, userPCDash, userAudioDash);
+            UserData userData = new UserData(userMQname, userMQurl, userPCurl, userAudioUrl);
             JsonData json = JsonUtility.ToJson(userData);
 
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
@@ -387,9 +442,18 @@ namespace OrchestratorWrapping
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
+
+        public void PushAudioPacket(byte[] pByteArray)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
+            command.GetParameter("audiodata").ParamValue = pByteArray;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
         #endregion
 
         #region remote response
+
         // messages from the orchestrator
         private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
@@ -410,6 +474,61 @@ namespace OrchestratorWrapping
             }
         }
 
+        // audio packets from the orchestrator
+        private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
+        {
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+            string lUserID = jsonResponse[1]["audioFrom"].ToString();
+
+            if (myUserID != lUserID && OnAudioSent != null)
+            {
+                UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], lUserID);
+                OnAudioSent.Invoke(packetReceived);
+            }
+        }
+
+        // sessions update events from the orchestrator
+        private void OnSessionUpdated(Socket socket, Packet packet, params object[] args)
+        {
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+
+            if (MessagesListener != null)
+            {
+                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
+            }
+
+            string lEventID = jsonResponse[1]["eventId"].ToString();
+            string lUserID = jsonResponse[1]["eventData"][0].ToString(); ;
+
+            if (lUserID == myUserID)
+            {
+                //I just joined a session, so I need to get all connected users IDs to get their audio, provided by the OnGetSessionInfoResponse callback.
+                return;
+            }
+
+            switch (lEventID)
+            {
+                case "USER_JOINED_SESSION":
+
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                    {
+                        e?.OnUserJoinedSession(lUserID);
+                    }
+
+                    break;
+                case "USER_LEAVED_SESSION":
+
+                    foreach (IUserSessionEventsListener e in UserSessionEventslisteners)
+                    {
+                        e?.OnUserLeftSession(lUserID);
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
         #endregion
 
         #region grammar definition
@@ -426,7 +545,7 @@ namespace OrchestratorWrapping
                         },
                         OnLoginResponse),
                     new OrchestratorCommand("Logout", null, OnLogoutResponse),
-                    
+
                     //NTP
                     new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
 
@@ -466,7 +585,7 @@ namespace OrchestratorWrapping
                     new List<Parameter>
                         {
                             new Parameter("userId", typeof(string))
-                        },
+                        }, 
                         OnGetUserInfoResponse),
                     new OrchestratorCommand("AddUser", new List<Parameter>
                         {
@@ -507,13 +626,22 @@ namespace OrchestratorWrapping
                             new Parameter("message", typeof(string))
                         },
                         OnSendMessageToAllResponse),
+
+                    //audio packets
+                    new OrchestratorCommand("PushAudio", new List<Parameter>
+                        {
+                            new Parameter("audiodata", typeof(byte[]))
+                        }),
                 };
 
             orchestratorMessages = new List<OrchestratorMessageReceiver>
                 {              
-                    //Login & Logout
-                    new OrchestratorMessageReceiver("MessageSent",
-                        OnMessageSentFromOrchestrator),
+                    //messages
+                    new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
+                    //audio packets
+                    new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
+                    //session update events
+                    new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 };
         }
 

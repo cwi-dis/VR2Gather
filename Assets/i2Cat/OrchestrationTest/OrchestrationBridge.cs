@@ -122,7 +122,7 @@ public class OrchestrationBridge : MonoBehaviour {
         //Hardcoded ClockSync on Windows machines
         if(System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
 
-        orchestrator.ConnectSocket(useCore);
+        orchestrator.SocketConnect();
         //orchestrator.TestLogin("admin", "password");
 
         loginPanel.SetActive(true);
@@ -169,12 +169,12 @@ public class OrchestrationBridge : MonoBehaviour {
                 break;
             case State.Lobby:
                 // Button interactuability
-                //if (orchestrator.activeSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
+                //if (orchestrator.ActiveSession.sessionUsers.Length != 4) readyLobbyButton.interactable = false; // Change the number per maxUsers per pilot
                 //else readyLobbyButton.interactable = true;
                 // Auto-Refreshing Users
                 timerUsers += Time.deltaTime;
                 if (timerUsers >= refreshUsers) {
-                    orchestrator.orchestratorWrapper.GetSessionInfo();
+                    OrchestratorWrapper.instance.GetSessionInfo();
                     LobbyTextUpdate();
                     timerUsers = 0.0f;
                 }
@@ -188,7 +188,7 @@ public class OrchestrationBridge : MonoBehaviour {
 
     #region Auxiliar Methods
     public void StatusTextUpdate() {
-        if (orchestrator.connectedToOrchestrator) {
+        if (orchestrator.IsConnected) {
             statusText.text = "Online";
             statusText.color = onlineCol;
         }
@@ -196,20 +196,20 @@ public class OrchestrationBridge : MonoBehaviour {
             statusText.text = "Offline";
             statusText.color = offlineCol;
         }
-        idText.text = orchestrator.TestGetUserID();
-        nameText.text = orchestrator.TestGetUserName();
+        //idText.text = orchestrator.TestGetUserID();
+        //nameText.text = orchestrator.TestGetUserName();
     }
 
     public void SessionsUpdate() {
         // update the list of available sessions
         orchestrator.removeComponentsFromList(orchestratorSessions.transform);
-        orchestrator.availableSessions.ForEach(delegate (Session element) {
+        orchestrator.AvailableSessions.ForEach(delegate (Session element) {
             orchestrator.AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
         });
         // update the dropdown
         sessionIdDrop.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        orchestrator.availableSessions.ForEach(delegate (Session session)
+        orchestrator.AvailableSessions.ForEach(delegate (Session session)
         {
             options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
         });
@@ -221,7 +221,7 @@ public class OrchestrationBridge : MonoBehaviour {
         // update the dropdown
         scenarioIdDrop.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        orchestrator.availableScenarios.ForEach(delegate (Scenario scenario)
+        orchestrator.AvailableScenarios.ForEach(delegate (Scenario scenario)
         {
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
@@ -230,32 +230,32 @@ public class OrchestrationBridge : MonoBehaviour {
 
     public void LobbyTextUpdate() {
         // Active Session
-        if (orchestrator.activeSession != null) {
-            sessionNameText.text = orchestrator.activeSession.sessionName;
-            sessionDescriptionText.text = orchestrator.activeSession.sessionDescription;
-            sessionNumUsersText.text = orchestrator.activeSession.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
+        if (orchestrator.ActiveSession != null) {
+            sessionNameText.text = orchestrator.ActiveSession.sessionName;
+            sessionDescriptionText.text = orchestrator.ActiveSession.sessionDescription;
+            sessionNumUsersText.text = orchestrator.ActiveSession.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
 
             // update the list of users in session
             orchestrator.removeComponentsFromList(usersSession.transform);
-            for (int i = 0; i < orchestrator.activeSession.sessionUsers.Length; i++) {
+            for (int i = 0; i < orchestrator.ActiveSession.sessionUsers.Length; i++) {
                 // Make this to show the real name of the user, not the id
-                foreach(User u in orchestrator.availableUsers) {
-                    if (u.userId == orchestrator.activeSession.sessionUsers[i])
+                foreach(User u in orchestrator.AvailableUsers) {
+                    if (u.userId == orchestrator.ActiveSession.sessionUsers[i])
                         orchestrator.AddTextComponentOnContent(usersSession.transform, u.userName);
                 }
             }
-            Debug.Log("orchestrator.activeSession: Good");
+            Debug.Log("orchestrator.ActiveSession: Good");
         }
         else {
             sessionNameText.text = "";
             sessionDescriptionText.text = "";
             sessionNumUsersText.text = "X/X";
             orchestrator.removeComponentsFromList(usersSession.transform);
-            Debug.Log("orchestrator.activeSession: Bad");
+            Debug.Log("orchestrator.ActiveSession: Bad");
         }
         // Active Scenario
-        if (orchestrator.activeScenario != null) {
-            scenarioIdText.text = orchestrator.activeScenario.scenarioName;
+        if (orchestrator.ActiveScenario != null) {
+            scenarioIdText.text = orchestrator.ActiveScenario.scenarioName;
             Debug.Log("orchestrator.activeScenario: Good");
         }
         else {
@@ -275,7 +275,7 @@ public class OrchestrationBridge : MonoBehaviour {
         createButton.gameObject.SetActive(true);
         joinButton.gameObject.SetActive(true);
 
-        orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text);
+        //orchestrator.TestLogin(userNameLoginIF.text, userPasswordLoginIF.text);
     }
 
     public void CreateButton() {
@@ -303,7 +303,7 @@ public class OrchestrationBridge : MonoBehaviour {
     public void DoneCreateButton() {
         isMaster = true;
         state = State.Lobby;
-        orchestrator.TestAddSession(sessionNameIF, sessionDescriptionIF, scenarioIdDrop.value);
+        //orchestrator.TestAddSession(sessionNameIF, sessionDescriptionIF, scenarioIdDrop.value);
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);
@@ -315,7 +315,7 @@ public class OrchestrationBridge : MonoBehaviour {
 
     public void DoneJoinButton() {
         state = State.Lobby;
-        orchestrator.TestJoinSession(sessionIdDrop.value);
+        //orchestrator.TestJoinSession(sessionIdDrop.value);
         createPanel.SetActive(false);
         joinPanel.SetActive(false);
         lobbyPanel.SetActive(true);
@@ -348,17 +348,17 @@ public class OrchestrationBridge : MonoBehaviour {
         createButton.interactable = true;
         joinButton.interactable = true;
         
-        if (isMaster) orchestrator.TestSendMessage(MessageType.START);
-        else orchestrator.TestSendMessage(MessageType.READY);
+        //if (isMaster) orchestrator.TestSendMessage(MessageType.START);
+        //else orchestrator.TestSendMessage(MessageType.READY);
     }
 
     public void StartGame() {
         if (isMaster) SceneManager.LoadScene("Sample Scenario 2");
-        else SceneManager.LoadScene(orchestrator.activeScenario.scenarioName);
+        else SceneManager.LoadScene(orchestrator.ActiveScenario.scenarioName);
     }
 
     public void UpdateUserDataButton() {
-        orchestrator.TestUpdateUserData(exchangeNameIF.text,connectionURIIF.text, pcDashServerIF.text, audioDashServerIF.text);
+        //orchestrator.TestUpdateUserData(exchangeNameIF.text,connectionURIIF.text, pcDashServerIF.text, audioDashServerIF.text);
     }
 
     public void DebuggButton(int user) {
