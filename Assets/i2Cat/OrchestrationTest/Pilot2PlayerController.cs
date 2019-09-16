@@ -7,28 +7,25 @@ using UnityEngine.Video;
 
 public class Pilot2PlayerController : PilotController {
 
-    public TestVoiceSocketIOSender audioController;
-
     EntityPipeline[] p = new EntityPipeline[4];
 
     bool socket = false;
     
     public override void Start() {
         base.Start();
-        mainPanel.SetActive(false);
+        orchestrator.controller = this;
         background.SetActive(false);
 
-        test.controller = this;
         masterID = orchestrator.activeSession.sessionUsers[0];
 
-        if (test.isDebug) DebugIntro();
+        if (orchestrator.isDebug) DebugIntro();
 
         for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
             PlayerManager player;
-            if (!test.isDebug) player = players[i - 1];
+            if (!orchestrator.isDebug) player = players[i - 1];
             else player = players[i];
 
-            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.TestGetUserID()) {
+            if (orchestrator.activeSession.sessionUsers[i] == orchestrator.userID) {
                 player.cam.gameObject.SetActive(true);
                 my_ID = player.id; // Save my ID.
                 //if (socket) { // Audio Socket Sender
@@ -117,7 +114,7 @@ public class Pilot2PlayerController : PilotController {
     public void DebugIntro() {
         PlayerManager player = players[0];
 
-        if (orchestrator.activeSession.sessionUsers[0] == orchestrator.TestGetUserID()) {
+        if (orchestrator.activeSession.sessionUsers[0] == orchestrator.userID) {
             player.cam.gameObject.SetActive(true);
             my_ID = player.id; // Save my ID.
             //if (socket) { // Audio Socket Sender
@@ -139,6 +136,7 @@ public class Pilot2PlayerController : PilotController {
                 player.pc.SetActive(true);
                 if (my_ID == player.id) {
                     p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_gen);
+                    Debug.Log(u.sfuData.url_gen);
                 }
                 else {
                     p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_gen);

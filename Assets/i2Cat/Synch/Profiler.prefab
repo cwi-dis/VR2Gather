@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4836261017204085298
 RectTransform:
   m_ObjectHideFlags: 0
@@ -120,7 +120,11 @@ MonoBehaviour:
   userText: {fileID: 4836261017672676376}
   packetsText: {fileID: 4836261018463792545}
   ppsText: {fileID: 4836261019034972340}
-  playersTVM: []
+  playersTVM:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &4836261017672676378
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +198,7 @@ MonoBehaviour:
     m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
-    m_AlignByGeometry: 1
+    m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
@@ -352,7 +356,7 @@ MonoBehaviour:
     m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 0
-    m_AlignByGeometry: 1
+    m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
@@ -510,7 +514,7 @@ MonoBehaviour:
     m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
-    m_AlignByGeometry: 1
+    m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
@@ -750,7 +754,7 @@ MonoBehaviour:
     m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
-    m_AlignByGeometry: 1
+    m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1

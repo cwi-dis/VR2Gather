@@ -12,10 +12,8 @@ public class Pilot2PresenterController : PilotController {
         
     public override void Start() {
         base.Start();
-        mainPanel.SetActive(false);
+        orchestrator.controller = this;
         background.SetActive(false);
-        
-        test.controller = this;
 
         for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
             foreach (User u in orchestrator.availableUsers) {
@@ -34,18 +32,18 @@ public class Pilot2PresenterController : PilotController {
 
     public void SendStartLivestream() {
         string text = MessageType.LIVESTREAM + "_";
-        orchestrator.TestSendMessage(text + SyncTool.GetMyTimeString());
+        orchestrator.SendMessageToAll(text + SyncTool.GetMyTimeString());
     }
 
     public void SendPlayVideo(int id) {
         string text = MessageType.PLAY + "_";
-        orchestrator.TestSendMessage(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
+        orchestrator.SendMessageToAll(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Play();
     }
 
     public void SendPauseVideo(int id) {
         string text = MessageType.PAUSE + "_";
-        orchestrator.TestSendMessage(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
+        orchestrator.SendMessageToAll(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Pause();
     }
 
