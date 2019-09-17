@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class VideoDashReceiver : MonoBehaviour
 {
+    new public Renderer renderer;
+
     Workers.BaseWorker reader;
-    Workers.BaseWorker codec;
+    Workers.VideoDecoder codec;
     Workers.BaseWorker preparer;
     public string url;
+
+    public Texture2D texture;
 
     private void Start() {
         Init(url);
@@ -26,6 +30,20 @@ public class VideoDashReceiver : MonoBehaviour
         catch (System.Exception e) {
             Debug.Log($">>ERROR {e}");
         }
+    }
+
+    void Update() {
+        if (codec.videoIsReady) {
+            if (texture == null) {
+                texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
+                renderer.material.mainTexture = texture;
+            }
+            texture.LoadRawTextureData(codec.videoData, codec.videoDataSize);
+            texture.Apply();
+
+            codec.videoIsReady = false;
+        }
+
     }
 
     void OnDestroy() {

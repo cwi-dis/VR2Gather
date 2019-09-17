@@ -148,9 +148,6 @@ public unsafe class TestFFMpeg : MonoBehaviour {
         SwsContext* ctx = ffmpeg.sws_getContext(video_dec_ctx->width, video_dec_ctx->height,
                     AVPixelFormat.AV_PIX_FMT_YUV420P, video_dec_ctx->width, video_dec_ctx->height,
                     AVPixelFormat.AV_PIX_FMT_RGB24, 0, null, null, null);
-
-
-        Texture2D txt = new Texture2D(frame2->width, frame2->height, TextureFormat.RGB24, false, true );
         
         while (ffmpeg.av_read_frame(fmt_ctx, packet) >= 0) {
             if (packet->stream_index == video_stream_index) {
