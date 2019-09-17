@@ -151,7 +151,7 @@ namespace OrchestratorWSManagement
                 Manager.Socket.Emit(command.SocketEventName, null, parameters);
 
                 // command succesfully sent
-                sentCommand = command;
+                //sentCommand = command;
             }
         }
 
@@ -176,10 +176,11 @@ namespace OrchestratorWSManagement
                     }
                 });
             }
-
+            
             // send the command
             if (! SendCommand(command.SocketEventName, parameters))
             {
+                UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
                 // problem while sending the command
                 sentCommand = null;
                 return false;
@@ -230,7 +231,10 @@ namespace OrchestratorWSManagement
 
             // If a function is declared in the grammar to treat the response 
             // for this command, then call this function
-            sentCommand.ResponseCallback?.Invoke(sentCommand, response);
+
+            //sentCommand.ResponseCallback?.Invoke(sentCommand, response);
+            sentCommand.ResponseCallback.Invoke(sentCommand, response);
+
             ////sentCommand = null; XXXXXXXXXXX
         }
 

@@ -93,8 +93,8 @@ namespace OrchestratorWrapping
             MessagesListener = messagesListener;
             MessagesFromOrchestratorListener = messagesFromOrchestratorListener;
 
-            //UserSessionEventslisteners = new List<IUserSessionEventsListener>();
-            //UserSessionEventslisteners.Add(userSessionEventslistener);
+            UserSessionEventslisteners = new List<IUserSessionEventsListener>();
+            UserSessionEventslisteners.Add(userSessionEventslistener);
 
             InitGrammar();
         }
