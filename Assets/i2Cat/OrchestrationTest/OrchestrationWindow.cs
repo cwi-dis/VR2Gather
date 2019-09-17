@@ -20,6 +20,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
+    private bool updated = false;
 
     [Header("Status")]
     public string orchestratorUrl;
@@ -517,6 +518,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetUserInfo(userID);
             Debug.Log(_userID + " Joined");
         }
+        updated = true;
     }
 
     public void OnUserLeftSession(string _userID) {
@@ -524,6 +526,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetUserInfo(userID);
             Debug.Log(_userID + " Leaved");
         }
+        updated = true;
     }
 
     #endregion
@@ -581,6 +584,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // auto retriving phase: call next
             orchestratorWrapper.GetScenarios();
         }
+
+        if (updated) {
+            orchestratorWrapper.GetSessionInfo();
+            updated = false;
+        }
     }
     
     private void AddUser() {
@@ -612,8 +620,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 orchestratorWrapper.GetUserInfo(u.userId);
             }
         }
-        //Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        //orchestratorWrapper.GetUserInfo(availableUsers[dd.value].userId);
     }
 
     public void OnGetUserInfoResponse(ResponseStatus status, User user) {
@@ -629,11 +635,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 pcDashServerIF.text = user.sfuData.url_pcc;
                 audioDashServerIF.text = user.sfuData.url_audio;
             }
-                       
-            if (isAutoRetrievingData) {
-                // auto retriving phase: call next
-                orchestratorWrapper.GetUsers();
-            }
+
+            orchestratorWrapper.GetUsers();
         }
     }
     
