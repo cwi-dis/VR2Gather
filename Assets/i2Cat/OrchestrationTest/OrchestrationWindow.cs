@@ -515,16 +515,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnUserJoinedSession(string _userID) {
-        if (!string.IsNullOrEmpty(userID)) {
-            orchestratorWrapper.GetUserInfo(userID);
+        if (!string.IsNullOrEmpty(_userID)) {
+            orchestratorWrapper.GetUserInfo(_userID);
             Debug.Log(_userID + " Joined");
         }
         updated = true;
     }
 
     public void OnUserLeftSession(string _userID) {
-        if (!string.IsNullOrEmpty(userID)) {
-            orchestratorWrapper.GetUserInfo(userID);
+        if (!string.IsNullOrEmpty(_userID)) {
+            orchestratorWrapper.GetUserInfo(_userID);
             Debug.Log(_userID + " Leaved");
         }
         updated = true;
