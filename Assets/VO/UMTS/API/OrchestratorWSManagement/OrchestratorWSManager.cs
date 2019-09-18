@@ -133,25 +133,8 @@ namespace OrchestratorWSManagement
                 object[] parameters = new object[command.Parameters.Count];
                 parameters[0] = command.Parameters[0].ParamValue;
 
-                /*
-                for (int i=0; i<command.Parameters.Count; i++)
-                {
-                    switch(i)
-                    {
-                        case 0:
-                            parameters[0] = command.Parameters[0].ParamValue;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                */
-
                 // emit the packet on socket.io
                 Manager.Socket.Emit(command.SocketEventName, null, parameters);
-
-                // command succesfully sent
-                //sentCommand = command;
             }
         }
 
@@ -231,11 +214,7 @@ namespace OrchestratorWSManagement
 
             // If a function is declared in the grammar to treat the response 
             // for this command, then call this function
-
-            //sentCommand.ResponseCallback?.Invoke(sentCommand, response);
             sentCommand.ResponseCallback.Invoke(sentCommand, response);
-
-            ////sentCommand = null; XXXXXXXXXXX
         }
 
         // Parse the firs level of this JSON string response

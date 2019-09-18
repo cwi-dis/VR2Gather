@@ -231,6 +231,11 @@ namespace OrchestratorWrapping
 
             foreach(string userID in session.sessionUsers)
             {
+                if(userID == myUserID)
+                {
+                    return;
+                }
+
                 //We enforce to notify that all users joined the session.
                 foreach(IUserSessionEventsListener e in UserSessionEventslisteners)
                 {
