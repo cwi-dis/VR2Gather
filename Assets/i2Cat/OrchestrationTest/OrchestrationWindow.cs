@@ -464,7 +464,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
             // now retrieve the secnario instance infos
-            orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+            if (!updated) orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+            else updated = false;
 
             activeSession = session;
 
@@ -587,7 +588,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
         if (updated) {
             orchestratorWrapper.GetSessionInfo();
-            updated = false;
         }
     }
     
