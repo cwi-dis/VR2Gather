@@ -459,11 +459,13 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
         if (status.Error == 0) {
             // success
+            Debug.Log("OnGetSessionInfoResponse()");
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
             // now retrieve the secnario instance infos
+            Debug.Log(updated);
             if (!updated) orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             else updated = false;
 
@@ -516,18 +518,24 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
+            updated = true;
             orchestratorWrapper.GetUserInfo(_userID);
-            Debug.Log(_userID + " Joined");
+            foreach (User u in availableUsers) {
+                if (u.userId == _userID)
+                    Debug.Log(u.userName + " Joined");
+            }
         }
-        updated = true;
     }
 
     public void OnUserLeftSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
+            updated = true;
             orchestratorWrapper.GetUserInfo(_userID);
-            Debug.Log(_userID + " Leaved");
+            foreach (User u in availableUsers) {
+                if (u.userId == _userID)
+                    Debug.Log(u.userName + " Leaved");
+            }
         }
-        updated = true;
     }
 
     #endregion
@@ -585,8 +593,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // auto retriving phase: call next
             orchestratorWrapper.GetScenarios();
         }
-
-        if (updated) {
+        else if (updated) {
             orchestratorWrapper.GetSessionInfo();
         }
     }
@@ -636,7 +643,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 audioDashServerIF.text = user.sfuData.url_audio;
             }
 
-            orchestratorWrapper.GetUsers();
+            if (isAutoRetrievingData || updated) {
+                orchestratorWrapper.GetUsers();
+            }
         }
     }
     
@@ -739,6 +748,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
 
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+
+        updated = false;
 
         SocketConnect();
 
