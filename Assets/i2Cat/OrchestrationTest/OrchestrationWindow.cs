@@ -742,19 +742,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
         SocketConnect();
 
-        loginPanel.SetActive(true);
-        infoPanel.SetActive(false);
-        createPanel.SetActive(false);
-        joinPanel.SetActive(false);
-        lobbyPanel.SetActive(false);
-        sessionPanel.SetActive(false);
-        usersPanel.SetActive(false);
-        createButton.gameObject.SetActive(false);
-        joinButton.gameObject.SetActive(false);
-
         DontDestroyOnLoad(this);
-
-        state = State.Login;
     }
     
     public void PanelChanger() {
