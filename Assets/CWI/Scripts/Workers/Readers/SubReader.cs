@@ -135,6 +135,7 @@ namespace Workers
                             token.info = info;
                             token.isVideo = streamNumber == videoStream;
                             Next();
+                            return;
                         }
                         else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
@@ -143,7 +144,6 @@ namespace Workers
                     if (streamCount > 0) {
                         size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                         if (size != 0) {
-                            // Debug.Log($"{counter1++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
                             if (size > dampedSize) {
                                 dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                                 currentBufferArray = new byte[dampedSize];
