@@ -70,9 +70,8 @@ namespace Workers {
                                     if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
                                         CreateResizeFilter();
                                         int ret = ffmpeg.sws_scale(swsCtx, frame->data, frame->linesize, 0, frame->height, tmpDataArray, tmpLineSizeArray);
-
-                                        videoDataSize = tmpLineSizeArray[0] * frame->height;
                                         videoData = (System.IntPtr)tmpDataArray[0];
+                                        videoDataSize = tmpLineSizeArray[0] * frame->height;
                                         videoIsReady = true;
                                     } else
                                         if (ret2 != -11)
