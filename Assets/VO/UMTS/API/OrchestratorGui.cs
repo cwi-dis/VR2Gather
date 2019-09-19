@@ -76,6 +76,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     [SerializeField]
     private Text userSession;
     [SerializeField]
+    private Text userSessionUsers;
+    [SerializeField]
     private Text userScenario;
     [SerializeField]
     private Text userRoom;
@@ -150,14 +152,19 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     // selected commands
     private GuiCommandDescription selectedCommand;
 
-    // lists of items that are availble for the user
-    private List<Session> availableSessions;
-    private List<Scenario> availableScenarios;
-    private List<User> availableUsers;
-    private List<RoomInstance> availableRoomInstances;
+    //Users
+    private List<User> connectedUsers;
+    private List<User> availableUserAccounts;
 
-    private Session activeSession;
-    private ScenarioInstance activeScenario;
+    //Session
+    private Session mySession;
+    private List<Session> availableSessions;
+
+    //Scenario
+    private ScenarioInstance myScenario;
+    private List<Scenario> availableScenarios;
+
+    private List<RoomInstance> availableRoomInstances;
 
     // user Login state
     private bool userIsLogged = false;
@@ -175,11 +182,11 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     public bool IsConnected { get { return orchestratorConnected; } }
 
     // Temporal properties added to prevent OrchestrationBridge class missing references exceptions. To be deleted as a new integration class is needed.
-    public Session              ActiveSession           { get { return activeSession; } }
-    public ScenarioInstance     ActiveScenario          { get { return activeScenario; } }
+    public Session              ActiveSession           { get { return mySession; } }
+    public ScenarioInstance     ActiveScenario          { get { return myScenario; } }
     public List<Session>        AvailableSessions       { get { return availableSessions; } }
     public List<Scenario>       AvailableScenarios      { get { return availableScenarios; } }
-    public List<User>           AvailableUsers          { get { return availableUsers; } }
+    public List<User>           AvailableUsers          { get { return availableUserAccounts; } }
     public List<RoomInstance>   AvailableRoomInstances  { get { return availableRoomInstances; } }
 
     #endregion
@@ -303,6 +310,28 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             {
                 panel.gameObject.SetActive(true);
             });
+        }
+    }
+
+    // update the list of connected users in a session to display
+    private void UpdateConnectedUsersGUI()
+    {
+        userSessionUsers.text = "Me; ";
+
+        switch(connectedUsers.Count)
+        {
+            case 0:
+                userSessionUsers.text = "None";
+                break;
+            case 1:
+                userSessionUsers.text += connectedUsers[0].userName;
+                break;
+            default:
+                foreach (User u in connectedUsers)
+                {
+                    userSessionUsers.text += u.userName + "; ";
+                }
+                break;
         }
     }
 
@@ -606,11 +635,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             dd.AddOptions(options);
 
             userSession.text = session.GetGuiRepresentation();
+
             // Now retrieve the infos about the scenario instance
             userScenario.text = session.scenarioId;
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            activeSession = session;
+            mySession = session;
 
             if (AudioManager.instance != null)
             {
@@ -622,7 +652,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             userSession.text = "";
             userScenario.text = "";
 
-            activeSession = null;
+            mySession = null;
         }
     }
 
@@ -635,7 +665,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             // now retrieve the list of the available rooms
             orchestratorWrapper.GetRooms();
 
-            activeScenario = scenario;
+            myScenario = scenario;
         }
     }
 
@@ -667,11 +697,6 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
         {
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
-
-            if (AudioManager.instance != null)
-            {
-                AudioManager.instance.StartRecordAudio();
-            }
         }
         else
         {
@@ -689,14 +714,19 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            activeSession = session;
+            mySession = session;
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.StartRecordAudio();
+            }
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
 
-            activeSession = null;
+            mySession = null;
         }
     }
 
@@ -719,8 +749,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             userSession.text = "";
             userScenario.text = "";
 
-            activeSession = null;
-            activeScenario = null;
+            mySession = null;
+            myScenario = null;
+            connectedUsers.Clear();
+            connectedUsers = null;
         }
     }
 
@@ -728,13 +760,18 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            orchestratorWrapper.GetUserInfo(userID);
+            AddConnectedUser(userID);
+            UpdateConnectedUsersGUI();
         }
     }
 
     public void OnUserLeftSession(string userID)
     {
-        //Nothing to do here
+        if (!string.IsNullOrEmpty(userID))
+        {
+            DeletedConnectedUser(userID);
+            UpdateConnectedUsersGUI();
+        }
     }
 
     #endregion
@@ -795,7 +832,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
         Debug.Log("OnGetUsersResponse:" + users.Count);
 
         // update the list of available users
-        availableUsers = users;
+        availableUserAccounts = users;
         removeComponentsFromList(orchestratorUsers.transform);
         users.ForEach(delegate (User element)
         {
@@ -853,7 +890,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private void GetUserInfo()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.GetUserInfo(availableUsers[dd.value].userId);
+        orchestratorWrapper.GetUserInfo(availableUserAccounts[dd.value].userId);
     }
 
     public void OnGetUserInfoResponse(ResponseStatus status, User user)
@@ -883,7 +920,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private void DeleteUser()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.DeleteUser(availableUsers[dd.value].userId);
+        orchestratorWrapper.DeleteUser(availableUserAccounts[dd.value].userId);
     }
 
     public void OnDeleteUserResponse(ResponseStatus status)
@@ -962,7 +999,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
         orchestratorWrapper.SendMessage(messagePanel.GetComponentInChildren<InputField>().text,
-            availableUsers[dd.value].userId);
+            availableUserAccounts[dd.value].userId);
     }
 
     public void OnSendMessageResponse(ResponseStatus status)
@@ -987,6 +1024,45 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     {
         AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message.ToString());
         StartCoroutine(ScrollLogsToBottom());
+    }
+
+    #endregion
+
+    #region Logics
+
+    private void AddConnectedUser(string pUserID)
+    {
+        if(connectedUsers == null)
+        {
+            connectedUsers = new List<User>();
+        }
+
+        foreach(User u in availableUserAccounts)
+        {
+            if(u.userId == pUserID)
+            {
+                connectedUsers.Add(u);
+            }
+        }
+    }
+
+    private void DeletedConnectedUser(string pUserID)
+    {
+        if (connectedUsers == null || connectedUsers.Count == 0)
+        {
+            return;
+        }
+
+        foreach (User u in connectedUsers)
+        {
+            if (u.userId == pUserID)
+            {
+                connectedUsers.Remove(u);
+
+                if (connectedUsers.Count == 0)
+                    break;
+            }
+        }
     }
 
     #endregion
