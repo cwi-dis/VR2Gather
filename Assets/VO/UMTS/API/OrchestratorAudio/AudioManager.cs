@@ -73,7 +73,7 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 
     #region Listen Audio
 
-    private void StartListeningAudio(string pUserID)
+    public void StartListeningAudio(string pUserID)
     {
         InstantiateAudioListener(pUserID);
     }

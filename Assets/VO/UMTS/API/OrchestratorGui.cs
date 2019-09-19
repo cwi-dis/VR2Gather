@@ -153,6 +153,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private GuiCommandDescription selectedCommand;
 
     //Users
+    private User me;
     private List<User> connectedUsers;
     private List<User> availableUserAccounts;
 
@@ -316,7 +317,12 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     // update the list of connected users in a session to display
     private void UpdateConnectedUsersGUI()
     {
-        userSessionUsers.text = "Me; ";
+        if (connectedUsers == null)
+        {
+            return;
+        }
+
+        userSessionUsers.text = "";
 
         switch(connectedUsers.Count)
         {
@@ -324,9 +330,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
                 userSessionUsers.text = "None";
                 break;
             case 1:
-                userSessionUsers.text += connectedUsers[0].userName;
+                userSessionUsers.text = "Me; " + connectedUsers[0].userName;
                 break;
             default:
+                userSessionUsers.text = "Me; ";
                 foreach (User u in connectedUsers)
                 {
                     userSessionUsers.text += u.userName + "; ";
@@ -407,6 +414,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     public void OnDisconnect()
     {
+        me = null;
         connectedToOrchestrator = false;
         userIsLogged = false;
         this.userId.text = "";
@@ -524,6 +532,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             if (userLoggedOutSucessfully)
             {
                 //normal
+                me = null;
                 userIsLogged = false;
                 userLogged.text = false.ToString();
                 this.userId.text = "";
@@ -719,6 +728,15 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             if (AudioManager.instance != null)
             {
                 AudioManager.instance.StartRecordAudio();
+
+                foreach(string id in session.sessionUsers)
+                {
+                    if(id != me.userId)
+                    {
+                        AudioManager.instance.StartListeningAudio(id);
+                        OnUserJoinedSession(id);
+                    }
+                }
             }
         }
         else
@@ -751,8 +769,10 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
             mySession = null;
             myScenario = null;
-            connectedUsers.Clear();
+            connectedUsers?.Clear();
             connectedUsers = null;
+
+            UpdateConnectedUsersGUI();
         }
     }
 
@@ -899,8 +919,9 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
         if (status.Error == 0)
         {
-            if (string.IsNullOrEmpty(userId.text) || user.userId == userId.text)
+            if (string.IsNullOrEmpty(userId.text) || user.userId == me.userId)
             {
+                me = user;
                 userId.text = user.userId;
                 userName.text = user.userName;
                 userAdmin.text = user.userAdmin.ToString();

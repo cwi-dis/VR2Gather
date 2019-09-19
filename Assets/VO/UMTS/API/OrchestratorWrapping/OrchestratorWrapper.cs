@@ -228,21 +228,6 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
-
-            foreach(string userID in session.sessionUsers)
-            {
-                if(userID == myUserID)
-                {
-                    return;
-                }
-
-                //We enforce to notify that all users joined the session.
-                foreach(IUserSessionEventsListener e in UserSessionEventslisteners)
-                {
-                    e?.OnUserJoinedSession(userID);
-                }
-            }
-
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
