@@ -56,13 +56,16 @@ namespace Workers {
                     if (!videoIsReady) {
                         if (codecVideo == null) CreateVideoCodec();
                         ffmpeg.av_init_packet(videoPacket);
-                        //videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
-                        //videoPacket->size = token.currentSize;
-                        int bytes_used = ffmpeg.av_parser_parse2(videoParser, codecVideo_ctx, &videoPacket->data, &videoPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
+                        videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
+                        videoPacket->size = token.currentSize;
+                        videoPacket->pts = token.info.timestamp;
+                        /*
+                         * int bytes_used = ffmpeg.av_parser_parse2(videoParser, codecVideo_ctx, &videoPacket->data, &videoPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
                         if (bytes_used < 0) {
                             Debug.Log($"Error parsing {bytes_used}");
                             return;
                         }
+                        */
                         if (videoPacket->size > 0) {
                             int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
                             if (ret2 < 0) {
@@ -76,8 +79,8 @@ namespace Workers {
                                         videoData = (System.IntPtr)tmpDataArray[0];
                                         videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                         videoIsReady = true;
-                                        Debug.Log($"framerate {codecVideo_ctx->framerate.num} frame_offset {codecVideo_ctx->framerate.den}");
-                                        Debug.Log($"cur_offset {videoParser->cur_offset} frame_offset {videoParser->frame_offset}");
+                                        //Debug.Log($"framerate {codecVideo_ctx->framerate.num} frame_offset {codecVideo_ctx->framerate.den}");
+                                        //Debug.Log($"cur_offset {videoParser->cur_offset} frame_offset {videoParser->frame_offset}");
 
                                         // Debug.Log($"Video data -> ready pkt_pos {videoFrame->pkt_pos} pkt_duration {videoFrame->pkt_duration}");
                                     } else
@@ -94,13 +97,14 @@ namespace Workers {
                     ffmpeg.av_init_packet(audioPacket);
                     audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way
                     audioPacket->size = token.currentSize;
-/*
-                    int bytes_used = ffmpeg.av_parser_parse2(audioParser, codecAudio_ctx, &audioPacket->data, &audioPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
-                    if (bytes_used < 0) {
-                        Debug.Log($"Error parsing {bytes_used}");
-                        return;
-                    }
-*/
+                    audioPacket->pts = token.info.timestamp;
+                    /*
+                                        int bytes_used = ffmpeg.av_parser_parse2(audioParser, codecAudio_ctx, &audioPacket->data, &audioPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
+                                        if (bytes_used < 0) {
+                                            Debug.Log($"Error parsing {bytes_used}");
+                                            return;
+                                        }
+                    */
                     if (audioPacket->size > 0) {
                         int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
                         if (ret2 < 0) {
@@ -110,14 +114,16 @@ namespace Workers {
                                 ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
                                 if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
                                     CreateResampleFilter();
-                                    // Debug.Log($"Audio data -> ready nb_samples {audioFrame->nb_samples} sample_rate {audioFrame->sample_rate}  channel_layout {audioFrame->channel_layout} format {audioFrame->format}");
 
-                                    //int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, audioFrame->data, audioFrame->nb_samples);
-                                    //CreateResizeFilter();
-                                    //int ret = ffmpeg.sws_scale(swsCtx, audioFrame->data, audioFrame->linesize, 0, audioFrame->height, tmpDataArray, tmpLineSizeArray);
-                                    //videoData = (System.IntPtr)tmpDataArray[0];
-                                    //videoDataSize = tmpLineSizeArray[0] * audioFrame->height;
-                                    //videoIsReady = true;
+                                    Debug.Log($"Audio data -> ready nb_samples {audioFrame->nb_samples} sample_rate {audioFrame->sample_rate}  channel_layout {audioFrame->channel_layout} format {audioFrame->format}");
+                                    fixed (byte** tmp = (byte*[])audioFrame->data) {
+                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
+                                        if (ret < 0) {
+                                            ShowError(ret, "Error while converting");
+                                        } else {
+                                            Debug.Log($"Todo oK!! dst_nb_samples {dst_nb_samples}");
+                                        }
+                                    }
                                 } else
                                     if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_INVALIDDATA) {
                                             ShowError(ret2, $"Error receiving frame for audio decoding");
@@ -189,16 +195,24 @@ namespace Workers {
 
         }
 
+        byte** dst_data;
+        int dst_linesize;
+        int max_dst_nb_samples;
+        int dst_nb_samples;
+        byte*[] arrayAudio = new byte*[1];
+
         void CreateResampleFilter() {
             if ((System.IntPtr)swrCtx == System.IntPtr.Zero) {
                 swrCtx = ffmpeg.swr_alloc();
+                int src_nb_samples = 1024;
+                int dst_rate = 16000;
 
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "in_sample_fmt", (AVSampleFormat)audioFrame->format, 0); // Source sample format.
 
                 ffmpeg.av_opt_set_int(swrCtx, "out_channel_layout", ffmpeg.AV_CH_LAYOUT_MONO, 0);           // Target layout
-                ffmpeg.av_opt_set_int(swrCtx, "out_sample_rate", 16000, 0);                                 // Target sample rate.
+                ffmpeg.av_opt_set_int(swrCtx, "out_sample_rate", dst_rate, 0);                                 // Target sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_FLTP, 0);// Target sample format. // AV_SAMPLE_FMT_FLTP
                 int ret = 0;
                 /* initialize the resampling context */
@@ -207,17 +221,17 @@ namespace Workers {
 //                    fprintf(stderr, "Failed to initialize the resampling context\n");
 //                    goto end;
                 }
-                /*
-                int num_bytes = ffmpeg.av_image_get_buffer_size(AVPixelFormat.AV_PIX_FMT_RGB24, videoFrame->width, videoFrame->height, 1);
-                _pictureFrameData = (byte*)ffmpeg.av_malloc((ulong)num_bytes);
-                ffmpeg.av_image_fill_arrays(ref tmpDataArray, ref tmpLineSizeArray, (byte*)_pictureFrameData, AVPixelFormat.AV_PIX_FMT_RGB24, videoFrame->width, videoFrame->height, 1);
-                swsYUV2RGBCtx = ffmpeg.sws_getContext(videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_YUV420P, videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_RGB24, 0, null, null, null);
 
-                Width = videoFrame->width;
-                Height = videoFrame->height;
-                */
+
+                max_dst_nb_samples = dst_nb_samples = (int)ffmpeg.av_rescale_rnd(src_nb_samples, dst_rate, audioFrame->sample_rate, AVRounding.AV_ROUND_UP);
+                // buffer is going to be directly written to a rawaudio file, no alignment 
+                int dst_nb_channels = ffmpeg.av_get_channel_layout_nb_channels(ffmpeg.AV_CH_LAYOUT_MONO);
+                fixed (byte*** data = &dst_data) {
+                    fixed (int* linesize = &dst_linesize) {
+                        ret = ffmpeg.av_samples_alloc_array_and_samples(data, linesize, dst_nb_channels, dst_nb_samples, AVSampleFormat.AV_SAMPLE_FMT_FLTP, 0);
+                    }
+                }
             }
-            
         }
 
 
