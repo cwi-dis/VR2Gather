@@ -58,6 +58,7 @@ public class Pilot2PlayerController : PilotController {
                         //else // Audio Dash Receiver
                         //    player.audioReceiver.AddComponent<VoiceDashReceiver>().Init(Config.Instance.Users[3].AudioSUBConfig, player.id.ToString());
                     }
+                    Debug.Log(u.userName + " - " + u.sfuData.url_gen);
                 }
             }
         }
@@ -136,7 +137,6 @@ public class Pilot2PlayerController : PilotController {
                 player.pc.SetActive(true);
                 if (my_ID == player.id) {
                     p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_gen);
-                    Debug.Log(u.sfuData.url_gen);
                 }
                 else {
                     p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_gen);
@@ -148,6 +148,7 @@ public class Pilot2PlayerController : PilotController {
                     //else // Audio Dash Receiver
                     //    player.audioReceiver.AddComponent<VoiceDashReceiver>().Init(Config.Instance.Users[3].AudioSUBConfig, player.id.ToString());
                 }
+                Debug.Log(u.userName + " - " + u.sfuData.url_gen);
             }
         }
 

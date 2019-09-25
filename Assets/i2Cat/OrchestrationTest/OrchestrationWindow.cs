@@ -643,9 +643,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 audioDashServerIF.text = user.sfuData.url_audio;
             }
 
-            if (isAutoRetrievingData || updated) {
-                orchestratorWrapper.GetUsers();
-            }
+
+            orchestratorWrapper.GetUsers();
+            //if (isAutoRetrievingData || updated) {
+            //}
         }
     }
     
