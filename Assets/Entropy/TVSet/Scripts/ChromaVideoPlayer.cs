@@ -14,14 +14,21 @@ public class ChromaVideoPlayer : MonoBehaviour {
         vp = GetComponent<UnityEngine.Video.VideoPlayer>();
         vp.url = "file:///" + Application.streamingAssetsPath + "/" + fileName;
         vp.time = fastforward;
-	}
+        vp.Prepare();
+        gameObject.SetActive(false);
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        if (play != oldPlay) {
-            oldPlay = play;
+        if (play != vp.isPlaying) {
             if (play) vp.Play();
             else vp.Pause();
         }
 	}
+
+    public void OnPlay() {
+        gameObject.SetActive(true);
+        play = true;
+    }
 }

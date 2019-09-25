@@ -16,15 +16,8 @@ abstract public class PilotController : MonoBehaviour {
     public PlayerManager[] players;
     public VideoPlayer[] videos;
 
-    //[HideInInspector]
-    public OrchestrationBridge test;
-    //[HideInInspector]
-    public OrchestratorGui orchestrator;
-
-    [HideInInspector]
-    public GameObject mainPanel;
-    [HideInInspector]
-    public GameObject background;
+    [HideInInspector] public OrchestrationWindow orchestrator;
+    [HideInInspector] public GameObject background;
 
     #region Sync
     public float timer = 0.0f;
@@ -33,30 +26,26 @@ abstract public class PilotController : MonoBehaviour {
     #endregion
 
     #region Utils
-    [HideInInspector]
-    public Color playerCol = new Color(0.15f, 0.78f, 0.15f); // Green
-    [HideInInspector]
-    public Color otherCol = new Color(1.0f, 1.0f, 1.0f); // White
-    [HideInInspector]
-    public Color offlineCol = new Color(1.0f, 0.5f, 0.5f); // Red
+    [HideInInspector] public Color playerCol = new Color(0.15f, 0.78f, 0.15f); // Green
+    [HideInInspector] public Color otherCol = new Color(1.0f, 1.0f, 1.0f); // White
+    [HideInInspector] public Color offlineCol = new Color(1.0f, 0.5f, 0.5f); // Red
     #endregion
 
     // Start is called before the first frame update
     public virtual void Start() {
-        mainPanel = GameObject.Find("MainPanel");
         background = GameObject.Find("Background");
-        test = GameObject.Find("ManagerTest").GetComponent<OrchestrationBridge>();
-        orchestrator = GameObject.Find("MainWindow").GetComponent<OrchestratorGui>();
+        orchestrator = GameObject.Find("ManagerTest").GetComponent<OrchestrationWindow>();
+        var tmp = Config.Instance;
     }
 
     public virtual void Update() {
-        SyncTool.UpdateTimes();
+        //SyncTool.UpdateTimes();
     }
 
     public void SendPing() {
         string text = MessageType.PING + "_";
         text = text + my_ID + "_" + SyncTool.GetMyTimeString();
-        orchestrator.TestSendPing(text, masterID);
+        orchestrator.SendPing(text, masterID);
         Debug.Log("PING: " + text + " // " + masterID);
     }
 

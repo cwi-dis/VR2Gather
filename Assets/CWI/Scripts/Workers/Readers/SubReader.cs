@@ -75,6 +75,28 @@ namespace Workers
             }
         }
 
+        public SUBReader(Config._User._SUBConfig cfg, string _url, bool dropInitalData = false) : base(WorkerType.Init) {
+            url = _url + cfg.streamName;
+            streamNumber = cfg.streamNumber;
+            firstTime = dropInitalData;
+            try {
+                subHandle = sub.create("source_from_sub");
+                if (subHandle != null) {
+                    isPlaying = subHandle.play(url);
+                    if (!isPlaying) {
+                        Debug.Log("SubReader: sub_play() failed, will try again later");
+                    }
+                    Start();
+                }
+                else
+                    throw new System.Exception($"PCSUBReader: sub_create failed");
+            }
+            catch (System.Exception e) {
+                Debug.LogError(e.Message);
+                throw e;
+            }
+        }
+
         public override void OnStop()
         {
             subHandle = null;

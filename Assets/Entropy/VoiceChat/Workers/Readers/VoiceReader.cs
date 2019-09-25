@@ -11,7 +11,6 @@ namespace Workers
         bool bReady;
         float[] buffer;
         public VoiceReader(MonoBehaviour monoBehaviour, int bufferLength) : base(WorkerType.Init) {
-            var tmp = Config.Instance;
             this.bufferLength = bufferLength;
             this.monoBehaviour = monoBehaviour;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder());
@@ -43,6 +42,7 @@ namespace Workers
                 int currentMinFreq;
                 Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
                 samples = 16000;//codec.recorderFrequency;1
+                bufferLength = 320;// * 4;//codec.bufferLeght;
 
                 recorder = Microphone.Start(device, true, 1, samples);
                 samples = recorder.samples;
@@ -50,7 +50,7 @@ namespace Workers
                 Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
 
                 int readPosition = 0;
-                while (true) { 
+                while (true) {
                     if (token != null && !bReady) {
                         int writePosition = Microphone.GetPosition(device);
                         int available;

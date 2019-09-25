@@ -121,7 +121,49 @@
         "forceMesh": true,
         "pointSize": 0.08,
         "position": {
-          "x": 2.0,
+          "x": 0.0,
+          "y": 0.0,
+          "z": 2.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": -1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "offsetPosition": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "offsetRotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "sourceType": "pcsub",
+      "SUBConfig": {
+        "_url": "https://vrt-evanescent.viaccess-orca.com/pc-",
+        "url": "http://192.168.10.94:9000/pc-",
+        "streamName": "testBed.mpd"
+      },
+      "AudioSUBConfig": {
+        "_url": "https://vrt-evanescent.viaccess-orca.com/audio-",
+        "url": "http://192.168.10.94:9000/audio-",
+        "streamName": "audio.mpd"
+      },
+      "Render": {
+        "forceMesh": true,
+        "pointSize": 0.08,
+        "position": {
+          "x": 0.0,
           "y": 0.0,
           "z": 2.0
         },

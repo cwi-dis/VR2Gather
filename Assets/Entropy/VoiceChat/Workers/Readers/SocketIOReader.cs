@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP.SocketIO;
+using OrchestratorWrapping;
+using System;
 
 namespace Workers
 {
@@ -13,10 +15,21 @@ namespace Workers
         int read = 0;
         int write = 0;
 
-        int userID;
-        public SocketIOReader(SocketIOConnection  socketIOConnection, int userID) : base(WorkerType.Init) {            
-            socketIOConnection.registerReader(this, (byte)userID);
+        string userID;
+
+        public SocketIOReader(SocketIOConnection  socketIOConnection, string userID) : base(WorkerType.Init)
+        {
             this.userID = userID;
+
+            if (socketIOConnection != null)
+            {
+                socketIOConnection.registerReader(this, (byte)(int.Parse(userID)));
+            }
+            else
+            {
+                OrchestratorWrapper.instance.OnAudioSent += OnUserAudioPacketReceived;
+            }
+            
             Start();
         }
 
@@ -42,6 +55,15 @@ namespace Workers
         public void OnData(byte[] data) {
             pending[write%10]= data;
             write++;
+        }
+
+        public void OnUserAudioPacketReceived(UserAudioPacket userAudioPacket)
+        {
+            if(userAudioPacket.userID == userID)
+            {
+                pending[write % 10] = userAudioPacket.audioPacket;
+                write++;
+            }
         }
     }
 }
