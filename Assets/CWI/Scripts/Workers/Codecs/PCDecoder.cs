@@ -29,21 +29,26 @@ namespace Workers {
 
         protected override void Update(){
             base.Update();
-            if (token != null) {
+            if (token != null && token.currentBuffer != null && token.currentSize != 0)
+            {
                 decoder.feed(token.currentBuffer, token.currentSize);
-                if ( decoder.available(true) ) {
+                if (decoder.available(true))
+                {
                     pointCloudData = decoder.get();
                     if (pointCloudData != null)
                     {
                         token.currentPointcloud = pointCloudData;
                         Next();
-                    } else {
+                    }
+                    else
+                    {
                         Debug.LogError("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
                     }
 
                 }
-                else
-                    Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
+                else {
+                    //Debug.Log($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
+                }
             }
         }
     }
