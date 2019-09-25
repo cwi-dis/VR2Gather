@@ -26,7 +26,6 @@ namespace Workers
             streamNumber = cfg.streamNumber;
             firstTime = dropInitialData;
             try {
-//              signals_unity_bridge_pinvoke.SetPaths();
                 subHandle = sub.create("source_from_sub");
                 if (subHandle != null) {
                     Debug.Log("SubReader: sub.create() successful.");
@@ -79,14 +78,17 @@ namespace Workers
             url = _url + cfg.streamName;
             streamNumber = cfg.streamNumber;
             firstTime = dropInitalData;
-
-            numberOfUnsuccessfulReceives = 0;
             try {
                 subHandle = sub.create("source_from_sub");
                 if (subHandle != null) {
+                    Debug.Log("SubReader: sub.create() successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
                         Debug.Log("SubReader: sub_play() failed, will try again later");
+                    }
+                    else {
+                        streamCount = subHandle.get_stream_count();
+                        Debug.Log($"streamCount {streamCount}");
                     }
                     Start();
                 }

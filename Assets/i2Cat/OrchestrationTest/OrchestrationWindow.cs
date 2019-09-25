@@ -15,6 +15,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     #region UI
 
     public bool isDebug = false;
+    public bool useSocketIOAudio = false;
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -379,7 +380,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
-            if (AudioManager.instance != null) {
+            if (AudioManager.instance != null && useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
             }
 
@@ -441,7 +442,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            if (AudioManager.instance != null) {
+            if (AudioManager.instance != null && useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
             }
 
@@ -493,7 +494,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void LeaveSession() {
         orchestratorWrapper.LeaveSession();
 
-        if (AudioManager.instance != null) {
+        if (AudioManager.instance != null && useSocketIOAudio) {
             AudioManager.instance.StopRecordAudio();
         }
     }

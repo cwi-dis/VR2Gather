@@ -10,7 +10,9 @@ public class TestWorkers : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         var tmp = Config.Instance;
-        p0 = new GameObject("User_1").AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform);
+        p0 = new GameObject("User_1").AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform); 
+        p1 = new GameObject("User_2").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        //p2 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[2], transform);
     }
 
     void Update() {
