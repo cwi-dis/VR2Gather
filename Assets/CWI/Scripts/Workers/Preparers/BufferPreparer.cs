@@ -31,9 +31,9 @@ namespace Workers
                             currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                         }
                         int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
-                        if (ret*16 != currentSize)
+                        if (ret != currentSize)
                         {
-                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret*16}, #points={ret}");
+                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret}");
                         }
                         isReady = true;
                         Next();
