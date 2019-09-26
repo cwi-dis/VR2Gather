@@ -37,11 +37,12 @@ public class Pilot2PlayerController : PilotController {
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
                     player.tvm.gameObject.SetActive(false);
                     // PC & Audio
+                    player.pc.gameObject.SetActive(true);
                     if (my_ID == player.id) {
-                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
+                        p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                     }
                     else {
-                        p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
+                        p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                     }
                 }
             }
@@ -111,11 +112,12 @@ public class Pilot2PlayerController : PilotController {
                 player.tvm.exchangeName = u.userData.userMQexchangeName;
                 player.tvm.gameObject.SetActive(false);
                 // PC & Audio
+                player.pc.gameObject.SetActive(true);
                 if (my_ID == player.id) {
-                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
+                    p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                 }
                 else {
-                    p[player.id - 1] = player.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
+                    p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[3], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                 }
             }
         }
