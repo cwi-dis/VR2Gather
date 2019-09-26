@@ -9,7 +9,9 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  preparer;
     MonoBehaviour       render;
 
-    // Start is called before the first frame update
+    /// <summary> Config.json based Init. Start is called before the first frame update </summary> 
+    /// <param name="cfg"> Config file json </param>
+    /// <param name="parent"> Transform parent where attach it </param>
     public EntityPipeline Init(Config._User cfg, Transform parent) {
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
@@ -86,8 +88,12 @@ public class EntityPipeline : MonoBehaviour {
         return this;
     }
 
-    // Start is called before the first frame update
-    public EntityPipeline Init(Config._User cfg, Transform parent, string _url) {
+    /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
+    /// <param name="cfg"> Config file json </param>
+    /// <param name="parent"> Transform parent where attach it </param>
+    /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
+    /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
+    public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc, string url_audio) {
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
             preparer = new Workers.MeshPreparer();
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -113,7 +119,7 @@ public class EntityPipeline : MonoBehaviour {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 try {
-                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, _url);
+                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, url_pcc);
                 }
                 catch (System.EntryPointNotFoundException) {
                     Debug.LogError("EntityPipeline: B2DWriter() raised EntryPointNotFound exception, skipping voice encoding");
@@ -123,18 +129,18 @@ public class EntityPipeline : MonoBehaviour {
                     forks = 2;
                 }
                 try {                    
-                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, _url);
+                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding");
                 }
                 break;
             case "pcsub":
-                reader = new Workers.SUBReader(cfg.SUBConfig, _url);
+                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader);
                 if (cfg.AudioSUBConfig != null)
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, _url);
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio);
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);

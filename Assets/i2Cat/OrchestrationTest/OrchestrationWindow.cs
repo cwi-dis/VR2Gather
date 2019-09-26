@@ -466,7 +466,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
             // now retrieve the secnario instance infos
-            Debug.Log(updated);
             if (!updated) orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             else updated = false;
 
@@ -586,9 +585,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         // update the list of available users
         availableUsers = users;
 
-        users.ForEach(delegate (User user) {
-            Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_gen);
-        });
+        //users.ForEach(delegate (User user) {
+        //    Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_gen);
+        //});
 
         if (isAutoRetrievingData) {
             // auto retriving phase: call next
