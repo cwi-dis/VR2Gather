@@ -904,7 +904,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             userNameLoginIF.text = "Spiros@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "gianluca";
+            exchangeNameLoginIF.text = "spiros";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Spiros/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Spiros/audio.mpd";
         }
@@ -912,9 +912,41 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             userNameLoginIF.text = "Argyris@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "gianluca";
+            exchangeNameLoginIF.text = "argyris";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Argyris/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Argyris/audio.mpd";
+        }
+        else if (user == 4) {
+            userNameLoginIF.text = "Jack@CWI";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "jack";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
+        }
+        else if (user == 5) {
+            userNameLoginIF.text = "Shishir@CWI";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "shishir";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
+        }
+        else if (user == 6) {
+            userNameLoginIF.text = "Fernando@ENTROPY";
+            userPasswordLoginIF.text = "ENTROPY2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "fernando";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Fernando/audio.mpd";
+        }
+        else if (user == 7) {
+            userNameLoginIF.text = "Vincent@VO";
+            userPasswordLoginIF.text = "VO2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "vincent";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Vincent/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Vincent/audio.mpd";
         }
     }
     
