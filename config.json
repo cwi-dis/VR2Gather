@@ -38,7 +38,7 @@
         }
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.008,
         "position": {
           "x": -2.0,
@@ -78,7 +78,7 @@
         "_url": "http://127.0.0.1:9000/audio-marci2cat/audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
@@ -118,7 +118,7 @@
         "_url": "http://127.0.0.1:9000/audio-fernando/audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
@@ -160,7 +160,7 @@
         "streamName": "audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
