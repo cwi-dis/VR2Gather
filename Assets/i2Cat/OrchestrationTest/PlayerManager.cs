@@ -7,6 +7,6 @@ public class PlayerManager : MonoBehaviour {
     public Camera cam;
     public GameObject audioSender;
     public GameObject audioReceiver;
-    public ShowTVMs tvm;
+    public DataProviders.NetworkDataProvider tvm;
     public GameObject pc;
 }

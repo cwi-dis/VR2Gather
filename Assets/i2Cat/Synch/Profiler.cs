@@ -47,8 +47,8 @@ public class Profiler : MonoBehaviour
     [SerializeField]
     private Text ppsText;
 
-    [SerializeField]
-    private ShowTVMs[] playersTVM;
+    //[SerializeField]
+    //private ShowTVMs[] playersTVM;
 
 
     // Start is called before the first frame update
@@ -82,7 +82,7 @@ public class Profiler : MonoBehaviour
 
     // Update is called once per frame
     void Update() {
-        CalculateUsers();
+        //CalculateUsers();
         CalculatePerformance();
 
         ramInfo =   "RAM: " + ramUsage + " MB / " +
@@ -127,19 +127,19 @@ public class Profiler : MonoBehaviour
         ppsText.text = ppsInfo;
     }
 
-    void CalculateUsers() {
-        numUsers = 0;
-        pps = 0;
-        totalPackets = 0;
-        foreach(ShowTVMs o in playersTVM) {
-            if (o.isActiveAndEnabled) {
-                ++numUsers;
-                pps += o.pps;
-                totalPackets += o.Packets;
-            }
-        }
-        if (numUsers > 0) pps /= numUsers;
-    }
+    //void CalculateUsers() {
+    //    numUsers = 0;
+    //    pps = 0;
+    //    totalPackets = 0;
+    //    foreach(ShowTVMs o in playersTVM) {
+    //        if (o.isActiveAndEnabled) {
+    //            ++numUsers;
+    //            pps += o.pps;
+    //            totalPackets += o.Packets;
+    //        }
+    //    }
+    //    if (numUsers > 0) pps /= numUsers;
+    //}
 
     //private void OnGUI()
     //{
