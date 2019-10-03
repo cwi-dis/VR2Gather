@@ -141,7 +141,7 @@ namespace Workers
         protected void UnsuccessfulCheck(int _size) {
             if (_size == 0) {
                 numberOfUnsuccessfulReceives++;
-                if (numberOfUnsuccessfulReceives > 200) {
+                if (numberOfUnsuccessfulReceives > 2000) {
                     Debug.LogWarning($"SubReader {url}: Too many receive errors. Closing SUB player, will reopen.");
                     subHandle = null;
                     isPlaying = false;
