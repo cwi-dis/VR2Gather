@@ -19,6 +19,7 @@ namespace Workers
         byte[] currentBufferArray;
         System.IntPtr currentBuffer;
         int dampedSize = 0;
+        System.Runtime.InteropServices.GCHandle gch;
 
         sub.FrameInfo info = new sub.FrameInfo();
         public SUBReader(Config._User._SUBConfig cfg, bool dropInitialData=false) : base(WorkerType.Init) { //ConfigFile Based SUB
@@ -152,6 +153,13 @@ namespace Workers
             numberOfUnsuccessfulReceives = 0;
         }
 
+        protected void Cleaner() {
+            if (gch.IsAllocated) gch.Free();
+            dampedSize = 0;
+            currentBufferArray = null;
+            currentBuffer = System.IntPtr.Zero;
+        }
+
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
@@ -165,10 +173,13 @@ namespace Workers
                 // If we are not playing or if we didn't receive anything we restart after 1000 failures.
                 UnsuccessfulCheck(size);
 
+                Cleaner();
+
                 if (size != 0) {
                     if (size > dampedSize) {
                         dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
                         currentBufferArray = new byte[dampedSize];
+                        gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
                         currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                     }
 

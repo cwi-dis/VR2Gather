@@ -23,10 +23,10 @@ public class TestWorkers : MonoBehaviour {
     void Update() {
         if (p1 == null && Input.GetKeyDown(KeyCode.Alpha1)) p1 = new GameObject("User_2").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
         if (p2 == null && Input.GetKeyDown(KeyCode.Alpha2)) p2 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = new GameObject("User_4").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = new GameObject("User_5").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = new GameObject("User_6").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = new GameObject("User_7").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = new GameObject("User_8").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
     }
 }
