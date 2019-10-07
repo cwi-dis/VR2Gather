@@ -269,6 +269,19 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
+        public bool GetLivePresenterData()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetLivePresenterData");
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void GetLivePresenterDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            LivePresenterData liveData = LivePresenterData.ParseJsonData<LivePresenterData>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
+        }
+
         public bool GetScenarios()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetScenarios");
@@ -560,6 +573,9 @@ namespace OrchestratorWrapping
                         },
                         OnJoinSessionResponse),
                     new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
+
+                    // live stream
+                    new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
 
                     // scenarios
                     new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),

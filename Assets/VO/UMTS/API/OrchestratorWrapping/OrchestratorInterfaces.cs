@@ -42,6 +42,8 @@ namespace OrchestratorWrapping
         void OnJoinSessionResponse(ResponseStatus status);
         void OnLeaveSessionResponse(ResponseStatus status);
 
+        void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData);
+
         void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
         void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
 

@@ -573,6 +573,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     #endregion
 
+    #region Live 
+
+    public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
+    {
+        //Debug.Log("[OrchestrationWindow][OnGetLivePresenterDataResponse] Live stream url: " + liveData.remoteAddress);
+        //orchestratorWrapper.GetRooms();
+    }
+
+    #endregion
+
     #region Users
 
     private void GetUsers() {

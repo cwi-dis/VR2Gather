@@ -86,6 +86,14 @@ namespace OrchestratorWrapping
         public SfuData() { }
     }
 
+    public class LivePresenterData : OrchestratorElement
+    {
+        public string remoteAddress = "";
+
+        // empty constructor callled by the JsonData parser
+        public LivePresenterData() { }
+    }
+
     public class NtpClock: OrchestratorElement
     {
         public string ntpTime;

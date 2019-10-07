@@ -322,9 +322,6 @@
     <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
       <HintPath>C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/15.0/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
     </Reference>
-    <Reference Include="CompressorWrapper">
-      <HintPath>D:/GIT/vr-together/TestBed/Assets/Certh/TVMs/Plugins/CompressorWrapper.dll</HintPath>
-    </Reference>
     <Reference Include="LZ4">
       <HintPath>D:/GIT/vr-together/TestBed/Assets/Certh/TVMs/Plugins/LZ4.dll</HintPath>
     </Reference>
@@ -348,6 +345,9 @@
     </Reference>
     <Reference Include="UnityFbxSdk">
       <HintPath>D:/GIT/vr-together/TestBed/Assets/FbxExporters/Editor/FbxSdk/Plugins/UnityFbxSdk.dll</HintPath>
+    </Reference>
+    <Reference Include="FFmpeg.AutoGen">
+      <HintPath>D:/GIT/vr-together/TestBed/Assets/i2Cat/VideoDeco/Plugins/FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>D:/GIT/vr-together/TestBed/Library/PackageCache/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>

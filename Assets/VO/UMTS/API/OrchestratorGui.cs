@@ -80,6 +80,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     [SerializeField]
     private Text userScenario;
     [SerializeField]
+    private Text userLiveURL;
+    [SerializeField]
     private Text userRoom;
 
     // Orchestrator GUI components
@@ -671,8 +673,14 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
         if (status.Error == 0)
         {
             userScenario.text = scenario.GetGuiRepresentation();
+            
+            //
             // now retrieve the list of the available rooms
-            orchestratorWrapper.GetRooms();
+            //orchestratorWrapper.GetRooms();
+            //
+
+            // now retrieve the url of the Live presenter stream
+            orchestratorWrapper.GetLivePresenterData();
 
             myScenario = scenario;
         }
@@ -687,6 +695,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     public void OnDeleteSessionResponse(ResponseStatus status)
     {
+        userLiveURL.text = "";
+
         // update the lists of session, anyway the result
         orchestratorWrapper.GetSessions();
     }
@@ -836,6 +846,19 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             // auto retriving phase: call next
             orchestratorWrapper.GetSessions();
         }
+    }
+
+    #endregion
+
+    #region Live
+
+    public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
+    {
+        //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.remoteAddress);
+
+        userLiveURL.text = liveData.remoteAddress;
+
+        orchestratorWrapper.GetRooms();
     }
 
     #endregion
