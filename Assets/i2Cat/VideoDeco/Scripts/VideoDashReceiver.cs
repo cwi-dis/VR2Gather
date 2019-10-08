@@ -12,9 +12,16 @@ public class VideoDashReceiver : MonoBehaviour
     public string url;
 
     public Texture2D texture;
+    AudioSource audioSource;
 
     private void Start() {
         Init(url);
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
+        audioSource.loop = true;
+        audioSource.Play();
+
     }
 
     // Start is called before the first frame update
@@ -50,5 +57,20 @@ public class VideoDashReceiver : MonoBehaviour
         reader?.Stop();
         codec?.Stop();
         preparer?.Stop();
+    }
+
+
+    void OnAudioRead(float[] data) {
+        if (preparer == null || !preparer.GetBuffer(data, data.Length))
+            System.Array.Clear(data, 0, data.Length);
+    }
+
+    float[] tmpBuffer;
+    void OnAudioFilterRead(float[] data, int channels) {
+        if (tmpBuffer == null) tmpBuffer = new float[data.Length];
+        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length)) {
+            int cnt = 0;
+            do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
+        }
     }
 }

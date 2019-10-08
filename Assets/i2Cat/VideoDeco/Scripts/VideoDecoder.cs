@@ -114,14 +114,13 @@ namespace Workers {
                                 ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
                                 if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
                                     CreateResampleFilter();
-
-                                    Debug.Log($"Audio data -> ready nb_samples {audioFrame->nb_samples} sample_rate {audioFrame->sample_rate}  channel_layout {audioFrame->channel_layout} format {audioFrame->format}");
                                     fixed (byte** tmp = (byte*[])audioFrame->data) {
                                         int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
                                         if (ret < 0) {
                                             ShowError(ret, "Error while converting");
                                         } else {
-                                            Debug.Log($"Todo oK!! dst_nb_samples {dst_nb_samples}");
+                                            token.currentBuffer = (System.IntPtr)tmp[0]; //(System.IntPtr)dst_data[0];
+                                            token.currentSize = audioFrame->nb_samples;// dst_nb_samples;
                                         }
                                     }
                                 } else

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 
@@ -26,21 +27,23 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-            /*
-                int len = token.currentSize;
-                if (writePosition + len < bufferSize) {
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
-                    writePosition += len;
+            if (token != null) { 
+                if (!token.isVideo) {
+                    int len = token.currentSize;
+                    if (writePosition + len < bufferSize) {
+                        Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, len);
+                        //                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
+                        writePosition += len;
+                    } else {
+                        int partLen = bufferSize - writePosition;
+                        Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, partLen);
+                        Marshal.Copy(token.currentBuffer + partLen * 4, circularBuffer, writePosition, len - partLen);
+                        //                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
+                        //                    System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
+                        writePosition = len - partLen;
+                    }
+                //                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");                
                 }
-                else {
-                    int partLen = bufferSize - writePosition;
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
-                    System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
-                    writePosition = len - partLen;
-                }
-                //                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
-                */
                 Next();
             }
         }
@@ -80,8 +83,5 @@ namespace Workers {
             }
             return false;
         }
-
-
-
     }
 }
