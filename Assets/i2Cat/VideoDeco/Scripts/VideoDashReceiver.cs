@@ -59,7 +59,6 @@ public class VideoDashReceiver : MonoBehaviour
         preparer?.Stop();
     }
 
-
     void OnAudioRead(float[] data) {
         if (preparer == null || !preparer.GetBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
