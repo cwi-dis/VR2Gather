@@ -10,7 +10,7 @@ using System.IO;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(NetworkDataProvider))]
-[RequireComponent(typeof(AdjustTVMesh))]
+//[RequireComponent(typeof(AdjustTVMesh))]
 
 public class MeshConstructor : MonoBehaviour
 {

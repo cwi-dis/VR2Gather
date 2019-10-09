@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6505926999242552118}
   - component: {fileID: 6505926999242552117}
   - component: {fileID: 6505926999242552116}
-  - component: {fileID: 6505926999242552123}
   m_Layer: 0
   m_Name: TVMesh
   m_TagString: Untagged
@@ -106,16 +105,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectionURI: 
   exchangeName: 
---- !u!114 &6505926999242552123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6505926999242552122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85c5ac29cfff2ce46af0af2d42846b67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TranslationStep: 0.05
