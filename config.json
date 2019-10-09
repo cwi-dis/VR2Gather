@@ -1,8 +1,8 @@
 {
   "memoryDamping": 1.3,
   "TVMs": {
-    "connectionURI": "amqp://tofis:tofis@arecibo.huiskamer.private:5672/",
-    "exchangeName": "transcoder_out",
+    "connectionURI": "amqp://tofis:tofis@192.168.1.110:5672",
+    "exchangeName": "TVMeshData",
     "offsetPosition": {
       "x": 0.0,
       "y": 0.875,
