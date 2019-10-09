@@ -15,6 +15,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     #region UI
 
     public bool isDebug = false;
+    public bool useSocketIOAudio = false;
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -379,7 +380,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
-            if (AudioManager.instance != null) {
+            if (AudioManager.instance != null && useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
             }
 
@@ -441,7 +442,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            if (AudioManager.instance != null) {
+            if (AudioManager.instance != null && useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
             }
 
@@ -465,7 +466,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
             // now retrieve the secnario instance infos
-            Debug.Log(updated);
             if (!updated) orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             else updated = false;
 
@@ -493,7 +493,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void LeaveSession() {
         orchestratorWrapper.LeaveSession();
 
-        if (AudioManager.instance != null) {
+        if (AudioManager.instance != null && useSocketIOAudio) {
             AudioManager.instance.StopRecordAudio();
         }
     }
@@ -585,9 +585,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         // update the list of available users
         availableUsers = users;
 
-        users.ForEach(delegate (User user) {
-            Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_gen);
-        });
+        //users.ForEach(delegate (User user) {
+        //    Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_gen);
+        //});
 
         if (isAutoRetrievingData) {
             // auto retriving phase: call next
@@ -904,7 +904,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             userNameLoginIF.text = "Spiros@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "gianluca";
+            exchangeNameLoginIF.text = "spiros";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Spiros/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Spiros/audio.mpd";
         }
@@ -912,9 +912,41 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             userNameLoginIF.text = "Argyris@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "gianluca";
+            exchangeNameLoginIF.text = "argyris";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Argyris/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Argyris/audio.mpd";
+        }
+        else if (user == 4) {
+            userNameLoginIF.text = "Jack@CWI";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "jack";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
+        }
+        else if (user == 5) {
+            userNameLoginIF.text = "Shishir@CWI";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "shishir";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
+        }
+        else if (user == 6) {
+            userNameLoginIF.text = "Fernando@ENTROPY";
+            userPasswordLoginIF.text = "ENTROPY2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "fernando";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Fernando/audio.mpd";
+        }
+        else if (user == 7) {
+            userNameLoginIF.text = "Vincent@VO";
+            userPasswordLoginIF.text = "VO2020";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
+            exchangeNameLoginIF.text = "vincent";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Vincent/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Vincent/audio.mpd";
         }
     }
     

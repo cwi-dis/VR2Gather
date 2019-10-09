@@ -24,21 +24,21 @@
         },
         "Bin2Dash": {
           "streamName": "testBed",
-          "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/",
+          "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
           "_url": "http://127.0.0.1:9000/pc-fernando/",
           "segmentSize": 2000,
           "segmentLife": 30000
         },
         "AudioBin2Dash": {
           "streamName": "audio",
-          "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/",
+          "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/",
           "_url": "http://127.0.0.1:9000/audio-fernando/",
           "segmentSize": 2000,
           "segmentLife": 30000
         }
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.008,
         "position": {
           "x": -2.0,
@@ -51,7 +51,7 @@
           "z": 0.0
         },
         "scale": {
-          "x": 1.0,
+          "x": -1.0,
           "y": 1.0,
           "z": 1.0
         },
@@ -70,15 +70,15 @@
     {
       "sourceType": "pcsub",
       "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
+        "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
         "_url": "http://127.0.0.1:9000/pc-marci2cat/testBed.mpd"
       },
       "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
+        "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
         "_url": "http://127.0.0.1:9000/audio-marci2cat/audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
@@ -118,7 +118,7 @@
         "_url": "http://127.0.0.1:9000/audio-fernando/audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
@@ -160,7 +160,7 @@
         "streamName": "audio.mpd"
       },
       "Render": {
-        "forceMesh": true,
+        "forceMesh": false,
         "pointSize": 0.08,
         "position": {
           "x": 0.0,
