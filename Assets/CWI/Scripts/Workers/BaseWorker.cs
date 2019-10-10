@@ -52,24 +52,26 @@ namespace Workers {
         protected virtual void Update(){ }
 
         public void Next() {
-            if (type == WorkerType.Init)
-                token.currentForks = token.totalForks;
-            else {
-                if (type == WorkerType.End) {
-                    if (token.original != null) token = token.original;
-                    token.currentForks--;
-                    if (token.currentForks != 0) {
-                        token = null;
-                        return;
+            lock (token) {
+                if (type == WorkerType.Init)
+                    token.currentForks = token.totalForks;
+                else {
+                    if (type == WorkerType.End) {
+                        if (token.original != null) token = token.original;
+                        token.currentForks--;
+                        if (token.currentForks != 0) {
+                            token = null;
+                            return;
+                        }
                     }
                 }
+                for (int i = 0; i < nexts.Count; ++i)
+                    if (i > 0)
+                        nexts[i].token = new Token(token);
+                    else
+                        nexts[i].token = token;
+                token = null;
             }
-            for (int i = 0; i < nexts.Count; ++i)
-                if (i > 0)
-                    nexts[i].token = new Token(token);
-                else
-                    nexts[i].token = token;
-            token = null;
         }
 
         public virtual int  available { get { return 0; } }
