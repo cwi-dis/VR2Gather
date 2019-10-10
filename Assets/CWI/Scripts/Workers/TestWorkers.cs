@@ -11,12 +11,7 @@ public class TestWorkers : MonoBehaviour {
     EntityPipeline p5;
     EntityPipeline p6;
     EntityPipeline p7;
-
-    void Awake() { // Try to limit FPS
-        QualitySettings.vSyncCount = 0;
-        Application.targetFrameRate = 30;
-    }
-
+        
     // Start is called before the first frame update
     void Start() {
         var tmp = Config.Instance;
