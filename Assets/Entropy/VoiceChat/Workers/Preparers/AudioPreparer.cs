@@ -33,75 +33,80 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-
             if (token != null) {
-                // xxxjack attempting to drop audio if there is too much in the buffer already                
-                int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
+                lock (token) {
+                    // xxxjack attempting to drop audio if there is too much in the buffer already                
+                    int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
 
-                //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
-                //else bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
+                    //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
+                    //else bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
 
-                if (bytesInAudioBuffer > preferredBufferFill) {
-                    Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
+                    if (bytesInAudioBuffer > preferredBufferFill) {
+                        Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
+                        Next();
+                        return;
+                    }
+
+                    int len = token.currentSize;
+
+                    //if (preferredBufferFill > 0) {
+                    //    preferredBufferFill -= len;
+                    //    Next();
+                    //    return;
+                    //}
+
+                    // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
+                    lock (circularBuffer) {
+                        if (writePosition + len < bufferSize) {
+                            System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
+                            writePosition += len;
+                        } else {
+                            int partLen = bufferSize - writePosition;
+                            System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
+                            System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
+                            writePosition = len - partLen;
+                        }
+                    }
+                    // Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
                     Next();
-                    return;
                 }
-
-                int len = token.currentSize;
-
-                //if (preferredBufferFill > 0) {
-                //    preferredBufferFill -= len;
-                //    Next();
-                //    return;
-                //}
-
-                // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
-                if (writePosition + len < bufferSize) {
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
-                    writePosition += len;
-                }
-                else {
-                    int partLen = bufferSize - writePosition;
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
-                    System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
-                    writePosition = len - partLen;
-                }
-                // Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
-                Next();
             }
         }
 
-        public int available {
+        public override int available {
             get {
-                if (writePosition < readPosition)
-                    return (bufferSize - readPosition) + writePosition; // Looped
-                return writePosition - readPosition;
+                lock (circularBuffer) {
+                    if (writePosition < readPosition)
+                        return (bufferSize - readPosition) + writePosition; // Looped
+                    return writePosition - readPosition;
+                }
             }
         }
 
         bool firstTime = true;
         float lastTime = 0;
         public override bool GetBuffer(float[] dst, int len) {
-            if ((firstTime && available >= len) || !firstTime) {
-                firstTime = false;
-                if (available >= len) {
-                    if (writePosition < readPosition){ // Se ha dado la vuelta.
-                        int partLen = bufferSize - readPosition;
-                        if (partLen > len) {
+            var bytes = available;
+            lock (circularBuffer) {
+                if ((firstTime && bytes >= len) || !firstTime) {
+                    firstTime = false;
+                    if (bytes >= len) {
+                        if (writePosition < readPosition) { // Se ha dado la vuelta.
+                            int partLen = bufferSize - readPosition;
+                            if (partLen > len) {
+                                System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
+                                readPosition += len;
+                            } else {
+                                System.Array.Copy(circularBuffer, readPosition, dst, 0, partLen);
+                                System.Array.Copy(circularBuffer, 0, dst, partLen, len - partLen);
+                                readPosition = len - partLen;
+                            }
+                        } else {
                             System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
                             readPosition += len;
                         }
-                        else {
-                            System.Array.Copy(circularBuffer, readPosition, dst, 0, partLen);
-                            System.Array.Copy(circularBuffer, 0, dst, partLen, len - partLen);
-                            readPosition = len - partLen;
-                        }
+                        return true;
                     }
-                    else {
-                        System.Array.Copy(circularBuffer, readPosition, dst, 0, len);
-                        readPosition += len;
-                    }
-                    return true;
                 }
             }
             return false;

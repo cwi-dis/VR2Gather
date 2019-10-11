@@ -187,19 +187,21 @@ namespace Workers
                     }
 
                     int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
-                    if (bytesRead == bytesNeeded) {
-                        // All ok, yield to the next process
-                        token.currentBuffer = currentBuffer;
-                        token.currentByteArray = currentBufferArray;
-                        token.currentSize = bytesRead;
-                        token.info = info;
-                        token.isVideo = streamNumber == videoStream;
-                        Next();
+                    lock (token) {
+                        if (bytesRead == bytesNeeded) {
+                            // All ok, yield to the next process
+                            token.currentBuffer = currentBuffer;
+                            token.currentByteArray = currentBufferArray;
+                            token.currentSize = bytesRead;
+                            token.info = info;
+                            token.isVideo = streamNumber == videoStream;
+                            Next();
+                        }
+                        else
+                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
-                    else
-                        Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                 }
-                else Debug.Log($"No data at {url} {streamNumber}");
+                //else Debug.Log($"No data at {url} {streamNumber}");
                 //if (streamCount > 0) {
                 //    bytesNeeded = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                 //    if (bytesNeeded != 0) {

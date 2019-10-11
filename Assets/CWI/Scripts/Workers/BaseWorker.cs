@@ -52,7 +52,6 @@ namespace Workers {
         protected virtual void Update(){ }
 
         public void Next() {
-            lock (token) {
                 if (type == WorkerType.Init)
                     token.currentForks = token.totalForks;
                 else {
@@ -71,7 +70,6 @@ namespace Workers {
                     else
                         nexts[i].token = token;
                 token = null;
-            }
         }
 
         public virtual int  available { get { return 0; } }
