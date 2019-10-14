@@ -13,7 +13,7 @@ public class OrchestrationController : PilotController {
     public override void MessageActivation(string msg) {
         if (msg == MessageType.START) {
             if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Sample Scenario 2");
-            else SceneManager.LoadScene("Sample Scenario");
+            else SceneManager.LoadScene("TVSet_Test_Distancia");
         }
         else if (msg == MessageType.READY) {
             // Do something to check if all the users are ready (future implementation)
