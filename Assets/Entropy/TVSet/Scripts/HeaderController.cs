@@ -18,7 +18,7 @@ public class HeaderController : MonoBehaviour
     public void OnPlay(Callback callback ) {
         Debug.Log($"OnPlay ");
         gameObject.SetActive(true);
-        camera.cullingMask = LayerMask.GetMask("Header");
+        //camera.cullingMask = LayerMask.GetMask("Header");
         animation.Play("Take 001");
         audioSource.Play();
         StartCoroutine(WaitStop(animation["Take 001"].length, callback));

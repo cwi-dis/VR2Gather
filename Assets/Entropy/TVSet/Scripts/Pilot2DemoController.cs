@@ -7,8 +7,6 @@ public class Pilot2DemoController : MonoBehaviour
     public float             initialWaitTime;
     public HeaderController  Header;
     public ChromaVideoPlayer Presenter;
-    public float             timeFromPresenterToHoward;
-    public ChromaVideoPlayer Howard;
     public float             timeFromPresenterToVRSphere;
     public ChromaVideoPlayer VRSphere;
     public Animation         openPlato;
@@ -21,11 +19,7 @@ public class Pilot2DemoController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Presenter.play && !Howard.play) {
-            timeFromPresenterToHoward -= Time.deltaTime;
-            if (timeFromPresenterToHoward < 0)
-                Howard.OnPlay();
-        }
+        
         if (Presenter.play && !VRSphere.play) {
             timeFromPresenterToVRSphere -= Time.deltaTime;
             if (timeFromPresenterToVRSphere < 0)
@@ -34,7 +28,8 @@ public class Pilot2DemoController : MonoBehaviour
     }
 
     public void OnIntro() {
-        Header.OnPlay(()=> { OnPresenter();  });
+	OnPresenter();
+        Header.OnPlay(()=> { });
 
     }
 
