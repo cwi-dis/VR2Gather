@@ -46,10 +46,9 @@ namespace DataProviders
 
     public class NetworkDataProvider : MonoBehaviour, IDataProvider
     {
-        public string jname = "";
         public bool isMaster;
-        public string url;
-        public string exchange;
+        public string connectionURI;
+        public string exchangeName;
         private bool isReceiverConnected = false;
         //public Config config;
         public event EventHandler<EventArgs<byte[]>> OnNewData;
@@ -70,16 +69,9 @@ namespace DataProviders
 
         private void Start()
         {
-            //if (jname == "ipRealSenz.json")
-            //{
-            //    DllFunctions.set_number_TVMS(2);
-            //}
-            //config = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(Application.streamingAssetsPath + "/" + jname));
-            //m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = config.remote_tvm_address;
-            //m_RabbitMQReceiver.ConnectionProperties.ExchangeName = config.remote_tvm_exchange_name;
             if (isMaster) DllFunctions.set_number_TVMS(4);
-            m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = url;
-            m_RabbitMQReceiver.ConnectionProperties.ExchangeName = exchange;
+            m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = connectionURI;
+            m_RabbitMQReceiver.ConnectionProperties.ExchangeName = exchangeName;
             m_RabbitMQReceiver.Enabled = true;
         }
 
