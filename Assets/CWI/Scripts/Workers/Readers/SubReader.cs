@@ -158,6 +158,10 @@ namespace Workers
             dampedSize = 0;
             currentBufferArray = null;
             currentBuffer = System.IntPtr.Zero;
+            info = new sub.FrameInfo {
+                dsi = new byte[256],
+                dsi_size = 256
+            };
         }
 
         protected override void Update() {
@@ -166,48 +170,49 @@ namespace Workers
                 // Start playing, if not already playing
                 retryPlay();
 
-                // Attempt to receive, if we are playing
-                info.dsi_size = 256;
-                int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-
-                // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                UnsuccessfulCheck(size);
-
                 Cleaner();
 
-                if (size != 0) {
-                    if (size > dampedSize) {
-                        dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
-                        currentBufferArray = new byte[dampedSize];
+                // Attempt to receive, if we are playing
+                int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+
+                // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                UnsuccessfulCheck(bytesNeeded);                
+
+                if (bytesNeeded != 0) {
+                    if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
+                        //dampedSize = (int)(bytesNeeded * Config.Instance.memoryDamping); // Reserves 30% more.
+                        currentBufferArray = new byte[(int)bytesNeeded];
                         gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
                         currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                     }
 
-                    int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
-                    if (bytesRead == size) {
-                        // All ok, yield to the next process
-                        token.currentBuffer = currentBuffer;
-                        token.currentByteArray = currentBufferArray;
-                        token.currentSize = bytesRead;
-                        token.info = info;
-                        token.isVideo = streamNumber == videoStream;
-                        Next();
+                    int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
+                    lock (token) {
+                        if (bytesRead == bytesNeeded) {
+                            // All ok, yield to the next process
+                            token.currentBuffer = currentBuffer;
+                            token.currentByteArray = currentBufferArray;
+                            token.currentSize = bytesRead;
+                            token.info = info;
+                            token.isVideo = streamNumber == videoStream;
+                            Next();
+                        }
+                        else
+                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
-                    else
-                        Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                 }
-                else Debug.Log($"No data at {url} {streamNumber}");
+                //else Debug.Log($"No data at {url} {streamNumber}");
                 //if (streamCount > 0) {
-                //    size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                //    if (size != 0) {
-                //        // Debug.Log($"{counter1++}  PCSUBReader({1 - streamNumber}): {size}!!!!");
-                //        if (size > dampedSize) {
-                //            dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
+                //    bytesNeeded = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                //    if (bytesNeeded != 0) {
+                //        // Debug.Log($"{counter1++}  PCSUBReader({1 - streamNumber}): {bytesNeeded}!!!!");
+                //        if (bytesNeeded > dampedSize) {
+                //            dampedSize = (int)(bytesNeeded * Config.Instance.memoryDamping); // Reserves 30% more.
                 //            currentBufferArray = new byte[dampedSize];
                 //            currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                 //        }
-                //        int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, size, ref info);
-                //        if (bytesRead == size) {
+                //        int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
+                //        if (bytesRead == bytesNeeded) {
                 //            // All ok, yield to the next process
                 //            token.currentBuffer = currentBuffer;
                 //            token.currentByteArray = currentBufferArray;
@@ -216,7 +221,7 @@ namespace Workers
                 //            token.isVideo = 1 - streamNumber == videoStream;
                 //            Next();
                 //        } else
-                //            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
+                //            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                 //    } 
                 //    else Debug.Log($"No data at {1 - streamNumber}");
                 //}
