@@ -23,5 +23,8 @@ public static class DllFunctions
     };
 
     [DllImport("textured_TVMesh_receiver", CharSet = CharSet.Ansi)]//, CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr callTVMFrameDLL(IntPtr buffer, int size);
+    public static extern IntPtr callTVMFrameDLL(IntPtr buffer, int size, int index);
+
+    [DllImport("textured_TVMesh_receiver", CharSet = CharSet.Ansi)]//, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void set_number_TVMS(int numTVMS);
 }
