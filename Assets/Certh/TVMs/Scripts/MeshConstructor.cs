@@ -11,7 +11,7 @@ using System.IO;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(NetworkDataProvider))]
-[RequireComponent(typeof(AdjustTVMesh))]
+//[RequireComponent(typeof(AdjustTVMesh))]
 
 public class MeshConstructor : MonoBehaviour
 {
@@ -122,7 +122,7 @@ public class MeshConstructor : MonoBehaviour
         m_DataProvider.OnNewData += DataProvider_OnNewData;
 
         // Defining the position of the original mesh
-        this.transform.position = new Vector3(-1.08f, -1.14f, 2.15f);
+        //this.transform.position = new Vector3(-1.08f, -1.14f, 2.15f);
     }
 
     private void OnDestroy()
