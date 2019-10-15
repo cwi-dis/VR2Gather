@@ -10,6 +10,8 @@ public class Pilot2PlayerController : PilotController {
     EntityPipeline[] p = new EntityPipeline[4];
 
     bool socket = false;
+    bool useTVM = true;
+    bool audioPCTogether = false;
     
     public override void Start() {
         base.Start();
@@ -35,9 +37,9 @@ public class Pilot2PlayerController : PilotController {
                     // TVM
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
-                    player.tvm.gameObject.SetActive(false);
+                    player.tvm.gameObject.SetActive(useTVM);
                     // PC & Audio
-                    player.pc.gameObject.SetActive(true);
+                    player.pc.gameObject.SetActive(!useTVM || !audioPCTogether);
                     if (my_ID == player.id) {
                         p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                     }
@@ -110,9 +112,9 @@ public class Pilot2PlayerController : PilotController {
                 // TVM
                 player.tvm.connectionURI = u.userData.userMQurl;
                 player.tvm.exchangeName = u.userData.userMQexchangeName;
-                player.tvm.gameObject.SetActive(false);
+                player.tvm.gameObject.SetActive(useTVM);
                 // PC & Audio
-                player.pc.gameObject.SetActive(true);
+                player.pc.gameObject.SetActive(!useTVM || !audioPCTogether);
                 if (my_ID == player.id) {
                     p[player.id - 1] = player.pc.gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], player.pc.transform, u.sfuData.url_pcc, u.sfuData.url_audio);
                 }

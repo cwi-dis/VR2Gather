@@ -887,8 +887,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (user == 0) {
             userNameLoginIF.text = "Marc@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.109:5672";
-            exchangeNameLoginIF.text = "marc_tvm";
+            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.1.210:5672";
+            exchangeNameLoginIF.text = "MarcTVM";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Marc/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Marc/audio.mpd";
         }
