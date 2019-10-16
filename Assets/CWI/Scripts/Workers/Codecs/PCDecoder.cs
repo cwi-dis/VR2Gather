@@ -30,20 +30,22 @@ namespace Workers {
         protected override void Update(){
             base.Update();
             if (token != null) {
-                decoder.feed(token.currentBuffer, token.currentSize);
-                if ( decoder.available(true) ) {
-                    pointCloudData = decoder.get();
-                    if (pointCloudData != null)
-                    {
-                        token.currentPointcloud = pointCloudData;
-                        Next();
-                    } else {
-                        Debug.LogError("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
-                    }
+                lock (token) {
+                    decoder.feed(token.currentBuffer, token.currentSize);
+                    if (decoder.available(true)) {
+                        pointCloudData = decoder.get();
+                        if (pointCloudData != null) {
+                            token.currentPointcloud = pointCloudData;
+                            Next();
+                        }
+                        else {
+                            Debug.LogError("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
+                        }
 
+                    }
+                    else
+                        Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
                 }
-                else
-                    Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
             }
         }
     }
