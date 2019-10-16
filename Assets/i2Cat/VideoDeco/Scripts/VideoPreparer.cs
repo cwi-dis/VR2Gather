@@ -32,17 +32,13 @@ namespace Workers {
                     int len = token.currentSize;
                     if (writePosition + len < bufferSize) {
                         Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, len);
-                        //                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
                         writePosition += len;
                     } else {
                         int partLen = bufferSize - writePosition;
                         Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, partLen);
-                        Marshal.Copy(token.currentBuffer + partLen * 4, circularBuffer, writePosition, len - partLen);
-                        //                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
-                        //                    System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
+                        Marshal.Copy(token.currentBuffer + partLen, circularBuffer, 0, len - partLen);
                         writePosition = len - partLen;
                     }
-                //                Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");                
                 }
                 Next();
             }
@@ -81,6 +77,7 @@ namespace Workers {
                     return true;
                 }
             }
+            Debug.Log("NO DATA");
             return false;
         }
     }

@@ -16,9 +16,8 @@ public class VideoDashReceiver : MonoBehaviour
 
     private void Start() {
         Init(url);
-
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
+        audioSource = gameObject.GetComponent<AudioSource>();
+        if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
         audioSource.Play();
 
@@ -26,7 +25,6 @@ public class VideoDashReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     public void Init(string url) {
-        Debug.Log($"Config.Instance.memoryDamping {Config.Instance.memoryDamping}");
         try {
             reader = new Workers.SUBReader(url);
             codec = new Workers.VideoDecoder();
@@ -38,7 +36,7 @@ public class VideoDashReceiver : MonoBehaviour
             Debug.Log($">>ERROR {e}");
         }
     }
-
+    bool buffering = true;
     void Update() {
         if (codec.videoIsReady) {
             if (texture == null) {
@@ -50,7 +48,7 @@ public class VideoDashReceiver : MonoBehaviour
 
             codec.videoIsReady = false;
         }
-
+        Debug.Log($"preparer.available {preparer.available}");
     }
 
     void OnDestroy() {
@@ -64,12 +62,7 @@ public class VideoDashReceiver : MonoBehaviour
             System.Array.Clear(data, 0, data.Length);
     }
 
-    float[] tmpBuffer;
     void OnAudioFilterRead(float[] data, int channels) {
-        if (tmpBuffer == null) tmpBuffer = new float[data.Length];
-        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length)) {
-            int cnt = 0;
-            do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
-        }
+        preparer?.GetBuffer(data, data.Length);
     }
 }

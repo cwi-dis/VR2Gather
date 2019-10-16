@@ -49,6 +49,7 @@ namespace Workers {
         }
 
         NTPTools.NTPTime tempTime;
+        System.IntPtr ptrData;
         protected override void Update() {
             base.Update();
             if (token != null) {
@@ -119,9 +120,8 @@ namespace Workers {
                                         if (ret < 0) {
                                             ShowError(ret, "Error while converting");
                                         } else {
-                                            Debug.Log($"Org samples {audioFrame->nb_samples} Dst samples {dst_nb_samples}");
-                                            token.currentBuffer = (System.IntPtr)tmp[0]; //(System.IntPtr)dst_data[0];
-                                            token.currentSize = audioFrame->nb_samples;// dst_nb_samples;
+                                            token.currentBuffer = (System.IntPtr)dst_data[0];
+                                            token.currentSize = dst_nb_samples;
                                         }
                                     }
                                 } else
@@ -204,14 +204,11 @@ namespace Workers {
             if ((System.IntPtr)swrCtx == System.IntPtr.Zero) {
                 swrCtx = ffmpeg.swr_alloc();
                 int src_nb_samples = 1024;
-                int dst_rate = 16000;
+                int dst_rate = 48000;
 
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "in_sample_fmt", (AVSampleFormat)audioFrame->format, 0); // Source sample format.
-
-                Debug.Log($"format {(AVSampleFormat)audioFrame->format} channel_layout {audioFrame->channel_layout} sample_rate {audioFrame->sample_rate} AV_CH_LAYOUT_MONO {ffmpeg.AV_CH_LAYOUT_MONO}");
-
                 ffmpeg.av_opt_set_int(swrCtx, "out_channel_layout", ffmpeg.AV_CH_LAYOUT_MONO, 0); // Target layout
                 ffmpeg.av_opt_set_int(swrCtx, "out_sample_rate", dst_rate, 0); // Target sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_FLTP, 0); // Target sample format. // AV_SAMPLE_FMT_FLTP
@@ -223,7 +220,7 @@ namespace Workers {
 //                    goto end;
                 }
 
-                max_dst_nb_samples = dst_nb_samples = (int)ffmpeg.av_rescale_rnd(src_nb_samples, dst_rate, audioFrame->sample_rate, AVRounding.AV_ROUND_UP);
+                dst_nb_samples = (int)ffmpeg.av_rescale_rnd( src_nb_samples, dst_rate, audioFrame->sample_rate, AVRounding.AV_ROUND_UP);
                 // buffer is going to be directly written to a rawaudio file, no alignment 
                 int dst_nb_channels = ffmpeg.av_get_channel_layout_nb_channels(ffmpeg.AV_CH_LAYOUT_MONO);
                 fixed (byte*** data = &dst_data) {
