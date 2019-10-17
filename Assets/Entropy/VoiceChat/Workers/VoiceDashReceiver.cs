@@ -7,32 +7,10 @@ public class VoiceDashReceiver : MonoBehaviour {
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
     Workers.BaseWorker preparer;
-    Workers.Token token;
-    AudioSource audioSource;
+    AudioSource audioSource;    
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg) {
-        const int frequency = 16000;
-        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
-        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.spatialBlend = 1.0f;
-        audioSource.loop = true;
-        audioSource.Play();
-        try {
-            reader = new Workers.SUBReader(cfg);
-            codec = new Workers.VoiceDecoder();
-            preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
-            reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = token = new Workers.Token();
-        } catch (System.Exception e) {
-            Debug.Log(">>ERROR");
-
-        }
-    }
-
-    // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string _url) {
+    public void Init(Config._User._SUBConfig cfg, string _url = "") {
         const int frequency = 16000;
         const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
@@ -45,7 +23,7 @@ public class VoiceDashReceiver : MonoBehaviour {
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = token = new Workers.Token();
+            reader.token = new Workers.Token();
         }
         catch (System.Exception e) {
             Debug.Log(">>ERROR");

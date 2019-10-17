@@ -26,7 +26,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg,true);
+            reader = new Workers.SUBReader(cfg);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer();
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);
