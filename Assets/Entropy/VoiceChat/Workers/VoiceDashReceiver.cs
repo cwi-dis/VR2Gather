@@ -13,10 +13,9 @@ public class VoiceDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init(Config._User._SUBConfig cfg) {
         const int frequency = 16000;
-        const double optimalAudioBufferDuration = 2.0;   // How long we want to buffer audio (in seconds)
+        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         audioSource = gameObject.AddComponent<AudioSource>();
-        //audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.spatialBlend = 1.0f;
         audioSource.loop = true;
         audioSource.Play();
@@ -35,10 +34,9 @@ public class VoiceDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init(Config._User._SUBConfig cfg, string _url) {
         const int frequency = 16000;
-        const double optimalAudioBufferDuration = 2.0;   // How long we want to buffer audio (in seconds)
+        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         audioSource = gameObject.AddComponent<AudioSource>();
-        //audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.spatialBlend = 1.0f;
         audioSource.loop = true;
         audioSource.Play();
