@@ -37,14 +37,15 @@ namespace Workers
                         receiveBuffer2 = new float[bufferLength * 3 * 2]; // Frequency*stereo
                     }
 
-                    tempTime.SetByteArray(token.currentByteArray, 1);
+                    //tempTime.SetByteArray(token.currentByteArray, 0); // NTP Reading
                     int len = token.currentSize - offset;
                     ret = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, receiveBuffer);
                     // Fix frequency and stereo.
                     for (int i = 0; i < bufferLength; ++i) {
                         receiveBuffer2[i * 6 + 0] = receiveBuffer2[i * 6 + 1] = receiveBuffer2[i * 6 + 2] = receiveBuffer2[i * 6 + 3] = receiveBuffer2[i * 6 + 4] = receiveBuffer2[i * 6 + 5] = receiveBuffer[i];
                     }
-                    token.latency = tempTime;
+                    //token.latency = tempTime;
+                    //Debug.Log(NTPTools.GetNTPTime().time - tempTime.time);
                     token.currentFloatArray = receiveBuffer2;
                     token.currentSize = receiveBuffer2.Length;
                     Next();

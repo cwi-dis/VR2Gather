@@ -38,6 +38,8 @@ namespace Workers
                 }
                 len = encoder.Encode(token.currentFloatArray, 0, bufferSize, sendBuffer, offset, sendBuffer.Length - offset);
 
+                //token.latency.GetByteArray(sendBuffer, 0); //NTP Sending
+
                 token.currentByteArray = sendBuffer;
                 token.currentBuffer= sendBufferPtr;
                 token.currentSize = sendBuffer.Length;
