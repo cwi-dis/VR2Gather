@@ -49,12 +49,6 @@ abstract public class PilotController : MonoBehaviour {
         Debug.Log("PING: " + text + " // " + masterID);
     }
 
-    public void ActivateVoiceChat(VoicePlayer voicePlayer, int id) {
-        voicePlayer.gameObject.SetActive(true);
-        SocketIOServer.player[id] = voicePlayer;
-        voicePlayer.Init();
-    }
-
     public abstract void MessageActivation(string message);
 }
 

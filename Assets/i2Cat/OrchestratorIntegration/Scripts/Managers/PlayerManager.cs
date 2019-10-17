@@ -6,7 +6,6 @@ public class PlayerManager : MonoBehaviour {
     public int id;
     public Camera cam;
     public GameObject audioSender;
-    public GameObject audioReceiver;
     public DataProviders.NetworkDataProvider tvm;
     public GameObject pc;
 }
