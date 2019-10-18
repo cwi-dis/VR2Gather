@@ -77,7 +77,6 @@ namespace Workers {
                     return true;
                 }
             }
-            Debug.Log("NO DATA");
             return false;
         }
     }

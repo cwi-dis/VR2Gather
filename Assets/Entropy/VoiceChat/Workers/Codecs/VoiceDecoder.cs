@@ -42,7 +42,12 @@ namespace Workers
                 ret = decoder.Decode(token.currentByteArray, offset, token.currentSize - offset, receiveBuffer);
                 // Fix frequency and stereo.
                 for( int i=0;i< bufferLength; ++i) {
-                    receiveBuffer2[i * 6 + 0] = receiveBuffer2[i * 6 + 1] = receiveBuffer2[i * 6 + 2] = receiveBuffer2[i * 6 + 3] = receiveBuffer2[i * 6 + 4] = receiveBuffer2[i * 6 + 5] = receiveBuffer[i];
+                    receiveBuffer2[i * 6 + 0] =
+                    receiveBuffer2[i * 6 + 1] =
+                    receiveBuffer2[i * 6 + 2] =
+                    receiveBuffer2[i * 6 + 3] =
+                    receiveBuffer2[i * 6 + 4] =
+                    receiveBuffer2[i * 6 + 5] = receiveBuffer[i];
                 }
                 token.currentFloatArray = receiveBuffer2;
                 token.currentSize = receiveBuffer2.Length;

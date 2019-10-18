@@ -49,7 +49,7 @@ namespace Workers {
         }
 
         NTPTools.NTPTime tempTime;
-        System.IntPtr ptrData;
+        System.IntPtr audioData = System.IntPtr.Zero;
         protected override void Update() {
             base.Update();
             if (token != null) {
@@ -96,7 +96,7 @@ namespace Workers {
                     // Audio-
                     if (codecAudio == null) CreateAudioCodec();
                     ffmpeg.av_init_packet(audioPacket);
-                    audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way
+                    audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way2
                     audioPacket->size = token.currentSize;
                     audioPacket->pts = token.info.timestamp;
                     /*
@@ -114,14 +114,22 @@ namespace Workers {
                             while (ret2 >= 0) {
                                 ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
                                 if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                    CreateResampleFilter();
+//                                    CreateResampleFilter();
                                     fixed (byte** tmp = (byte*[])audioFrame->data) {
-                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
-                                        if (ret < 0) {
-                                            ShowError(ret, "Error while converting");
-                                        } else {
-                                            token.currentBuffer = (System.IntPtr)dst_data[0];
-                                            token.currentSize = dst_nb_samples;
+//                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
+//                                        if (ret < 0) {
+//                                            ShowError(ret, "Error while converting");
+//                                        } else 
+                                        {
+                                            if( audioData == System.IntPtr.Zero) audioData = Marshal.AllocHGlobal(audioFrame->nb_samples*8);
+                                            float* src = (float*)tmp[0];
+                                            float* dst = (float*)audioData.ToInt64();
+                                            for (int i=0;i< audioFrame->nb_samples; i++) {
+                                                dst[i*2+0] = src[i];
+                                                dst[i*2+1] = src[i];
+                                            }
+                                            token.currentBuffer = (System.IntPtr)audioData;
+                                            token.currentSize = audioFrame->nb_samples*2;
                                         }
                                     }
                                 } else

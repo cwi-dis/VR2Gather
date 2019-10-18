@@ -9,18 +9,18 @@ public class VideoDashReceiver : MonoBehaviour
     Workers.BaseWorker reader;
     Workers.VideoDecoder codec;
     Workers.BaseWorker preparer;
-    public string url;
+    public string url = "https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
     public Texture2D texture;
     AudioSource audioSource;
 
     private void Start() {
+        var pp =Config.Instance;
         Init(url);
         audioSource = gameObject.GetComponent<AudioSource>();
         if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
         audioSource.Play();
-
     }
 
     // Start is called before the first frame update
@@ -48,7 +48,6 @@ public class VideoDashReceiver : MonoBehaviour
 
             codec.videoIsReady = false;
         }
-        Debug.Log($"preparer.available {preparer.available}");
     }
 
     void OnDestroy() {
