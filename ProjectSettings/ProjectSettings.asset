@@ -143,7 +143,7 @@ PlayerSettings:
       depthFormat: 1
       depthBufferSharingEnabled: 0
     oculus:
-      sharedDepthBuffer: 0
+      sharedDepthBuffer: 1
       dashSupport: 0
     enable360StereoCapture: 0
   protectGraphicsMemory: 0
