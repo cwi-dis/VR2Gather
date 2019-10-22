@@ -1,193 +1,299 @@
 {
-  "memoryDamping": 1.3,
-  "TVMs": {
-    "connectionURI": "amqp://tofis:tofis@arecibo.huiskamer.private:5672/",
-    "exchangeName": "transcoder_out",
-    "offsetPosition": {
-      "x": 0.0,
-      "y": 0.875,
-      "z": 0.0
-    },
-    "offsetRotation": {
-      "x": 0.0,
-      "y": 36.0,
-      "z": 0.0
-    }
-  },
-  "Users": [
-    {
-      "sourceType": "pcself",
-      "PCSelfConfig": {
-        "configFilename": "../cameraconfig.xml",
-        "Encoder": {
-          "octreeBits": 8
-        },
-        "Bin2Dash": {
-          "streamName": "testBed",
-          "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/",
-          "_url": "http://127.0.0.1:9000/pc-fernando/",
-          "segmentSize": 2000,
-          "segmentLife": 30000
-        },
-        "AudioBin2Dash": {
-          "streamName": "audio",
-          "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/",
-          "_url": "http://127.0.0.1:9000/audio-fernando/",
-          "segmentSize": 2000,
-          "segmentLife": 30000
-        }
-      },
-      "Render": {
-        "forceMesh": true,
-        "pointSize": 0.008,
-        "position": {
-          "x": -2.0,
-          "y": 0.0,
-          "z": 2.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": 1.0,
-          "y": 1.0,
-          "z": 1.0
-        },
+    "memoryDamping": 1.2999999523162842,
+    "TVMs": {
+        "connectionURI": "amqp://tofis:tofis@192.168.1.110:5672",
+        "exchangeName": "TVMeshData",
         "offsetPosition": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+            "x": 0.46999984979629519,
+            "y": 0.8849999904632568,
+            "z": -0.599999725818634
         },
         "offsetRotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+            "x": 0.0,
+            "y": 90.00016021728516,
+            "z": 0.0
         }
-      }
     },
-    {
-      "sourceType": "pcsub",
-      "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-marci2cat/testBed.mpd",
-        "_url": "http://127.0.0.1:9000/pc-marci2cat/testBed.mpd"
-      },
-      "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-marci2cat/audio.mpd",
-        "_url": "http://127.0.0.1:9000/audio-marci2cat/audio.mpd"
-      },
-      "Render": {
-        "forceMesh": true,
-        "pointSize": 0.08,
-        "position": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.0
+    "Users": [
+        {
+            "sourceType": "pcself",
+            "cwicpcFilename": "",
+            "cwicpcDirectory": "",
+            "plyFilename": "",
+            "plyDirectory": "",
+            "SUBConfig": {
+                "url": "",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "AudioSUBConfig": {
+                "url": "",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "PCSelfConfig": {
+                "configFilename": "../cameraconfig.xml",
+                "Encoder": {
+                    "octreeBits": 8
+                },
+                "Bin2Dash": {
+                    "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
+                    "streamName": "testBed",
+                    "segmentSize": 2000,
+                    "segmentLife": 30000,
+                    "fileMirroring": false
+                },
+                "AudioBin2Dash": {
+                    "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/",
+                    "streamName": "audio",
+                    "segmentSize": 2000,
+                    "segmentLife": 30000,
+                    "fileMirroring": false
+                }
+            },
+            "NetConfig": {
+                "hostName": "",
+                "port": 0
+            },
+            "Render": {
+                "forceMesh": false,
+                "pointSize": 0.00800000037997961,
+                "position": {
+                    "x": -2.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": -1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "offsetPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "offsetRotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            }
         },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        {
+            "sourceType": "pcsub",
+            "cwicpcFilename": "",
+            "cwicpcDirectory": "",
+            "plyFilename": "",
+            "plyDirectory": "",
+            "SUBConfig": {
+                "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "AudioSUBConfig": {
+                "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "PCSelfConfig": {
+                "configFilename": "",
+                "Encoder": {
+                    "octreeBits": 0
+                },
+                "Bin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                },
+                "AudioBin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                }
+            },
+            "NetConfig": {
+                "hostName": "",
+                "port": 0
+            },
+            "Render": {
+                "forceMesh": false,
+                "pointSize": 0.07999999821186066,
+                "position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": -1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "offsetPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "offsetRotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            }
         },
-        "scale": {
-          "x": -1.0,
-          "y": 1.0,
-          "z": 1.0
+        {
+            "sourceType": "pcsub",
+            "cwicpcFilename": "",
+            "cwicpcDirectory": "",
+            "plyFilename": "",
+            "plyDirectory": "",
+            "SUBConfig": {
+                "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "AudioSUBConfig": {
+                "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "PCSelfConfig": {
+                "configFilename": "",
+                "Encoder": {
+                    "octreeBits": 0
+                },
+                "Bin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                },
+                "AudioBin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                }
+            },
+            "NetConfig": {
+                "hostName": "",
+                "port": 0
+            },
+            "Render": {
+                "forceMesh": false,
+                "pointSize": 0.07999999821186066,
+                "position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": -1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "offsetPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "offsetRotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            }
         },
-        "offsetPosition": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "offsetRotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
+        {
+            "sourceType": "pcsub",
+            "cwicpcFilename": "",
+            "cwicpcDirectory": "",
+            "plyFilename": "",
+            "plyDirectory": "",
+            "SUBConfig": {
+                "url": "http://192.168.10.94:9000/pc-",
+                "streamName": "testBed.mpd",
+                "streamNumber": 0
+            },
+            "AudioSUBConfig": {
+                "url": "http://192.168.10.94:9000/audio-",
+                "streamName": "audio.mpd",
+                "streamNumber": 0
+            },
+            "PCSelfConfig": {
+                "configFilename": "",
+                "Encoder": {
+                    "octreeBits": 0
+                },
+                "Bin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                },
+                "AudioBin2Dash": {
+                    "url": "",
+                    "streamName": "",
+                    "segmentSize": 0,
+                    "segmentLife": 0,
+                    "fileMirroring": false
+                }
+            },
+            "NetConfig": {
+                "hostName": "",
+                "port": 0
+            },
+            "Render": {
+                "forceMesh": false,
+                "pointSize": 0.07999999821186066,
+                "position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": -1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                },
+                "offsetPosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "offsetRotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                }
+            }
         }
-      }
-    },
-    {
-      "sourceType": "pcsub",
-      "SUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
-        "_url": "http://127.0.0.1:9000/pc-fernando/testBed.mpd"
-      },
-      "AudioSUBConfig": {
-        "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
-        "_url": "http://127.0.0.1:9000/audio-fernando/audio.mpd"
-      },
-      "Render": {
-        "forceMesh": true,
-        "pointSize": 0.08,
-        "position": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": -1.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "offsetPosition": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "offsetRotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "sourceType": "pcsub",
-      "SUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/pc-",
-        "url": "http://192.168.10.94:9000/pc-",
-        "streamName": "testBed.mpd"
-      },
-      "AudioSUBConfig": {
-        "_url": "https://vrt-evanescent.viaccess-orca.com/audio-",
-        "url": "http://192.168.10.94:9000/audio-",
-        "streamName": "audio.mpd"
-      },
-      "Render": {
-        "forceMesh": true,
-        "pointSize": 0.08,
-        "position": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 2.0
-        },
-        "rotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "scale": {
-          "x": -1.0,
-          "y": 1.0,
-          "z": 1.0
-        },
-        "offsetPosition": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "offsetRotation": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        }
-      }
-    }
-  ]
+    ]
 }

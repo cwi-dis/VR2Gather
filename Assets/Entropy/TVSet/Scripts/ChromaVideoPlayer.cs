@@ -15,7 +15,7 @@ public class ChromaVideoPlayer : MonoBehaviour {
         vp.url = "file:///" + Application.streamingAssetsPath + "/" + fileName;
         vp.time = fastforward;
         vp.Prepare();
-        gameObject.SetActive(false);
+       // gameObject.SetActive(false);
 
     }
 	

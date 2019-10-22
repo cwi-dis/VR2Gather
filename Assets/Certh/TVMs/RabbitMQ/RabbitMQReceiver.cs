@@ -146,8 +146,8 @@ public class RabbitMQReceiver
             else if (!value && m_BGWorker.IsBusy)
             {
                 m_BGWorker.CancelAsync();
-                while (m_BGWorker.IsBusy)
-                    Thread.Sleep(1000);
+                //while (m_BGWorker.IsBusy)
+                //    Thread.Sleep(1000);
             }
         }
     }

@@ -22,21 +22,22 @@ namespace Workers
         protected override void Update() {
             base.Update();
             if (token != null && !isReady) {
-                unsafe {
-                    currentSize = token.currentPointcloud.get_uncompressed_size();
-                    if (currentSize > 0) {
-                        if (currentSize > byteArray.Length) {
-                            if (byteArray.Length != 0) byteArray.Dispose();
-                            byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.TempJob);
-                            currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+                lock (token) {
+                    unsafe {
+                        currentSize = token.currentPointcloud.get_uncompressed_size();
+                        if (currentSize > 0) {
+                            if (currentSize > byteArray.Length) {
+                                if (byteArray.Length != 0) byteArray.Dispose();
+                                byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.TempJob);
+                                currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
+                            }
+                            int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
+                            if (ret * 16 != currentSize) {
+                                Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                            }
+                            isReady = true;
+                            Next();
                         }
-                        int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
-                        if (ret != currentSize)
-                        {
-                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret}");
-                        }
-                        isReady = true;
-                        Next();
                     }
                 }
             }

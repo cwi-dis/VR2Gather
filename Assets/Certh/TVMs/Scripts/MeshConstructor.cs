@@ -3,6 +3,7 @@ using Utils;
 using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Linq;
 
 using System;
 using System.IO;
@@ -10,15 +11,17 @@ using System.IO;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(NetworkDataProvider))]
-[RequireComponent(typeof(AdjustTVMesh))]
+//[RequireComponent(typeof(AdjustTVMesh))]
 
 public class MeshConstructor : MonoBehaviour
 {
-    private static bool received_new_frame = false;
+    public int mesh_id;
+    private bool received_new_frame = false;
     private GameObject gameObj;
     private GameObject mirror;
     private IDataProvider m_DataProvider;
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch1 = new System.Diagnostics.Stopwatch();
     private List<Texture2D> m_Textures = new List<Texture2D>();
     private List<Vector3> m_vertices = new List<Vector3>();
     private List<Vector4> m_participatingCams = new List<Vector4>();
@@ -26,11 +29,28 @@ public class MeshConstructor : MonoBehaviour
     private byte[][] m_textures;
     private List<float> m_colorExts = new List<float>();
     private List<float> m_colorInts = new List<float>();
+    private List<long> deserializeTime = new List<long>();
+    private List<long> renderingTime = new List<long>();
     private int m_numDevs;
     private int m_width;
     private int m_height;
     private object m_lockobj = new object();
     private int ind = 0;
+
+    private double CalculateStdDev(IEnumerable<long> values)
+    {
+        double ret = 0;
+        if (values.Count() > 0)
+        {
+            //Compute the Average      
+            double avg = values.Average();
+            //Perform the Sum of (value-avg)_2_2      
+            double sum = values.Sum(d => Math.Pow(d - avg, 2));
+            //Put it all together      
+            ret = Math.Sqrt((sum) / (values.Count() - 1));
+        }
+        return ret;
+    }
 
     // Updating the mesh every time a new buffer is received from the network
     private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e)
@@ -54,7 +74,7 @@ public class MeshConstructor : MonoBehaviour
                 var buffer = e.Value; // Buffer 's data
                 var gcRes = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                 var pnt = gcRes.AddrOfPinnedObject(); // Buffer 's address
-                IntPtr meshPtr = DllFunctions.callTVMFrameDLL(pnt, buffer.Length); // Pointer of the returned structure
+                IntPtr meshPtr = DllFunctions.callTVMFrameDLL(pnt, buffer.Length, mesh_id); // Pointer of the returned structure
                 DllFunctions.Mesh currentMesh = (DllFunctions.Mesh)Marshal.PtrToStructure(meshPtr, typeof(DllFunctions.Mesh)); // C# struct equivalent of the one produced by the native C++ DLL
 
                 // Clearing the lists of the deserialiazed buffer 's data
@@ -87,7 +107,9 @@ public class MeshConstructor : MonoBehaviour
                     Debug.Log(ex.Message);
                 }
                 stopWatch.Stop();
-                //Debug.Log("time:" + stopWatch.ElapsedMilliseconds);
+                deserializeTime.Add(stopWatch.ElapsedMilliseconds);
+                if(deserializeTime.Count == 1000)
+                    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
             }
         }
     }
@@ -98,6 +120,9 @@ public class MeshConstructor : MonoBehaviour
         // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
+
+        // Defining the position of the original mesh
+        //this.transform.position = new Vector3(-1.08f, -1.14f, 2.15f);
     }
 
     private void OnDestroy()
@@ -115,6 +140,9 @@ public class MeshConstructor : MonoBehaviour
 
         try
         {
+            stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
+            stopWatch1.Start();
+
             List<Vector3> vert;
             List<Vector4> ids;
             List<int> face;
@@ -196,6 +224,10 @@ public class MeshConstructor : MonoBehaviour
 
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorIntrinsics", c_intrinsics); // Color intrinsics matrix in an array (column major)
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorExtrinsics", c_extrinsics); // Color extrinsics matrix in an array (column major)
+            stopWatch1.Stop();
+            renderingTime.Add(stopWatch1.ElapsedMilliseconds);
+            if(renderingTime.Count == 1000)
+                Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
         }
         catch (Exception ex)
         {
