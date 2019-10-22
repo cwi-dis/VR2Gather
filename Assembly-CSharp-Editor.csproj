@@ -62,10 +62,8 @@
   <ItemGroup>
     <Compile Include="Assets\Builder\Editor\MainBuilder.cs" />
     <Compile Include="Assets\CWI\Editor\CWIBuilder.cs" />
-    <None Include="Assets\Editor\x64\Bakery\shaderSrc\ftrace.cginc" />
     <None Include="Assets\FbxExporters\Editor\FbxSdk\LICENSE.txt" />
     <None Include="Assets\FbxExporters\Editor\FbxSdk\README.txt" />
-    <None Include="Assets\Editor\x64\Bakery\ftChecker.shader" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>D:/GIT/vr-together/TestBed/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
     </Reference>
@@ -326,6 +324,9 @@
     </Reference>
     <Reference Include="Lzma">
       <HintPath>D:/GIT/vr-together/TestBed/Assets/Certh/TVMs/Plugins/Lzma.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>D:/GIT/vr-together/TestBed/Assets/Certh/TVMs/Plugins/Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RabbitMQ.Client">
       <HintPath>D:/GIT/vr-together/TestBed/Assets/Certh/TVMs/Plugins/RabbitMQ.Client.dll</HintPath>
@@ -722,14 +723,6 @@
     <ProjectReference Include="Assembly-CSharp.csproj">
       <Project>{EB0F535F-4CD2-6B6F-5291-0A88FCAD7EEC}</Project>
       <Name>Assembly-CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="BakeryEditorAssembly.csproj">
-      <Project>{51D8B084-56BC-4896-5B56-E0A31AE44B0F}</Project>
-      <Name>BakeryEditorAssembly</Name>
-    </ProjectReference>
-    <ProjectReference Include="BakeryRuntimeAssembly.csproj">
-      <Project>{5E872488-E305-9D18-D69B-93DF8B94E6BD}</Project>
-      <Name>BakeryRuntimeAssembly</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
