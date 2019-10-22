@@ -88,7 +88,8 @@ namespace OrchestratorWrapping
 
     public class LivePresenterData : OrchestratorElement
     {
-        public string remoteAddress = "";
+        public string liveAddress = "";
+        public string vodAddress = "";
 
         // empty constructor callled by the JsonData parser
         public LivePresenterData() { }

@@ -82,6 +82,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     [SerializeField]
     private Text userLiveURL;
     [SerializeField]
+    private Text userVODLiveURL;
+    [SerializeField]
     private Text userRoom;
 
     // Orchestrator GUI components
@@ -696,6 +698,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     public void OnDeleteSessionResponse(ResponseStatus status)
     {
         userLiveURL.text = "";
+        userVODLiveURL.text = "";
 
         // update the lists of session, anyway the result
         orchestratorWrapper.GetSessions();
@@ -856,7 +859,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     {
         //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.remoteAddress);
 
-        userLiveURL.text = liveData.remoteAddress;
+        userLiveURL.text = liveData.liveAddress;
+        userVODLiveURL.text = liveData.vodAddress;
 
         orchestratorWrapper.GetRooms();
     }
