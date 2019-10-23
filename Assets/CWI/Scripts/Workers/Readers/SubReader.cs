@@ -62,7 +62,7 @@ namespace Workers
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1) videoStream = 0;
                         else videoStream = 1;
-                        streamNumber = 1 - videoStream;
+                        streamNumber = videoStream;
                     }
                     Start();
                 }
@@ -116,8 +116,6 @@ namespace Workers
             if (token != null) {  // Wait for token
                 if (!isPlaying) retryPlay();
                 else {
-                    if (streamCount > 0) streamNumber = 1 - streamNumber;
-
                     info.dsi_size = 256;
                     int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
@@ -126,7 +124,6 @@ namespace Workers
                             currentBufferArray = new byte[dampedSize];
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
-
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
                         Debug.Log($"DATA [{streamNumber}] {info.timestamp} (size={bytesRead})");
                         if (bytesRead == size) {
@@ -136,14 +133,13 @@ namespace Workers
                             token.currentSize = bytesRead;
                             token.info = info;
                             token.isVideo = streamNumber == videoStream;
+                            //                     if (streamCount > 0) streamNumber = 1 - streamNumber;
+
                             Next();
                             return;
                         } else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                    } else {
-                        Debug.Log($"NO DATA [{streamNumber}]");
                     }
-
 
                     /*
                     //else Debug.Log($"No data at {streamNumber}");
