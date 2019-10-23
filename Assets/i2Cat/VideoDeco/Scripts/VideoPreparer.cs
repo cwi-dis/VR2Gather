@@ -12,7 +12,7 @@ namespace Workers {
         int readPosition;
 
         public VideoPreparer() : base(WorkerType.End) {
-            bufferSize = 320 * 6 * 100;
+            bufferSize = 384000*4;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;

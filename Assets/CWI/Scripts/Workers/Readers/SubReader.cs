@@ -62,7 +62,7 @@ namespace Workers
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1) videoStream = 0;
                         else videoStream = 1;
-
+                        streamNumber = 1 - videoStream;
                     }
                     Start();
                 }
@@ -111,12 +111,13 @@ namespace Workers
                 }
             }
         }
-
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
                 if (!isPlaying) retryPlay();
                 else {
+                    if (streamCount > 0) streamNumber = 1 - streamNumber;
+
                     info.dsi_size = 256;
                     int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     if (size != 0) {
@@ -127,6 +128,7 @@ namespace Workers
                         }
 
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, size, ref info);
+                        Debug.Log($"DATA [{streamNumber}] {info.timestamp} (size={bytesRead})");
                         if (bytesRead == size) {
                             // All ok, yield to the next process
                             token.currentBuffer = currentBuffer;
@@ -136,10 +138,14 @@ namespace Workers
                             token.isVideo = streamNumber == videoStream;
                             Next();
                             return;
-                        }
-                        else
+                        } else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
+                    } else {
+                        Debug.Log($"NO DATA [{streamNumber}]");
                     }
+
+
+                    /*
                     //else Debug.Log($"No data at {streamNumber}");
                     if (streamCount > 0) {
                         size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
@@ -163,6 +169,7 @@ namespace Workers
                         } 
                         // else Debug.Log($"No data at {1 - streamNumber}");
                     }
+                    */
                 }
             }
         }

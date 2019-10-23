@@ -32,6 +32,7 @@ namespace Workers {
         public int Width { get; private set; }
         public int Height { get; private set; }
         public bool videoIsReady { get; set; }
+        public float timeToWait { get; set; }
 
         public System.IntPtr videoData { get; private set; }
         public int videoDataSize { get; private set; }
@@ -48,8 +49,9 @@ namespace Workers {
             Debug.Log("VideoDecoder Stopped");
         }
 
-        NTPTools.NTPTime tempTime;
+        NTPTools.NTPTime lastTime;
         System.IntPtr audioData = System.IntPtr.Zero;
+        long lastTimeStamp;
         protected override void Update() {
             base.Update();
             if (token != null) {
@@ -60,13 +62,6 @@ namespace Workers {
                         videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
                         videoPacket->size = token.currentSize;
                         videoPacket->pts = token.info.timestamp;
-                        /*
-                         * int bytes_used = ffmpeg.av_parser_parse2(videoParser, codecVideo_ctx, &videoPacket->data, &videoPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
-                        if (bytes_used < 0) {
-                            Debug.Log($"Error parsing {bytes_used}");
-                            return;
-                        }
-                        */
                         if (videoPacket->size > 0) {
                             int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
                             if (ret2 < 0) {
@@ -79,14 +74,17 @@ namespace Workers {
                                         int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
                                         videoData = (System.IntPtr)tmpDataArray[0];
                                         videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
+                                        var currentTime = NTPTools.GetNTPTime();
+                                        timeToWait = 20f / 1000f;// (lastTimeStamp!=0?videoFrame->best_effort_timestamp - lastTimeStamp:0) / 1000f;
+                                        lastTimeStamp = videoFrame->best_effort_timestamp;
+                                        //Debug.Log($">>>> Frame de video {currentTime.time - lastTime.time}");
+                                        lastTime = NTPTools.GetNTPTime();
                                         videoIsReady = true;
-                                        //Debug.Log($"framerate {codecVideo_ctx->framerate.num} frame_offset {codecVideo_ctx->framerate.den}");
-                                        //Debug.Log($"cur_offset {videoParser->cur_offset} frame_offset {videoParser->frame_offset}");
 
-                                        // Debug.Log($"Video data -> ready pkt_pos {videoFrame->pkt_pos} pkt_duration {videoFrame->pkt_duration}");
                                     } else
                                         if (ret2 != -11)
                                             Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+
                                 }
                             }
                         }
@@ -99,13 +97,6 @@ namespace Workers {
                     audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way2
                     audioPacket->size = token.currentSize;
                     audioPacket->pts = token.info.timestamp;
-                    /*
-                                        int bytes_used = ffmpeg.av_parser_parse2(audioParser, codecAudio_ctx, &audioPacket->data, &audioPacket->size, (byte*)token.currentBuffer, token.currentSize, ffmpeg.AV_NOPTS_VALUE, ffmpeg.AV_NOPTS_VALUE, 0);
-                                        if (bytes_used < 0) {
-                                            Debug.Log($"Error parsing {bytes_used}");
-                                            return;
-                                        }
-                    */
                     if (audioPacket->size > 0) {
                         int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
                         if (ret2 < 0) {

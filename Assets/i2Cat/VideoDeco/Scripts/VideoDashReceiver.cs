@@ -38,15 +38,18 @@ public class VideoDashReceiver : MonoBehaviour
     }
     bool buffering = true;
     void Update() {
-        if (codec.videoIsReady) {
-            if (texture == null) {
-                texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
-                renderer.material.mainTexture = texture;
-            }
-            texture.LoadRawTextureData(codec.videoData, codec.videoDataSize);
-            texture.Apply();
+        if (codec.videoIsReady ) {
+            if (codec.timeToWait <= 0) {
+                if (texture == null) {
+                    texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
+                    renderer.material.mainTexture = texture;
+                }
+                texture.LoadRawTextureData(codec.videoData, codec.videoDataSize);
+                texture.Apply();
 
-            codec.videoIsReady = false;
+                codec.videoIsReady = false;
+            } else
+                codec.timeToWait -= Time.deltaTime;
         }
     }
 
