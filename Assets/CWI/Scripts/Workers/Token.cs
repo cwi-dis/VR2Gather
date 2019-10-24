@@ -22,6 +22,7 @@ namespace Workers
         // ---> userData
         public sub.FrameInfo info;
         public bool isVideo;
+        public bool needsVideo = true;
         ////
 
     }

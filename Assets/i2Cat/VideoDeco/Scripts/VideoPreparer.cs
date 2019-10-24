@@ -29,22 +29,24 @@ namespace Workers {
             base.Update();
             if (token != null) { 
                 if (!token.isVideo) {
-                    int len = token.currentSize;
-                    if (writePosition + len < bufferSize) {
-                        Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, len);
-                        writePosition += len;
-                    } else {
-                        int partLen = bufferSize - writePosition;
-                        Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, partLen);
-                        Marshal.Copy(token.currentBuffer + partLen, circularBuffer, 0, len - partLen);
-                        writePosition = len - partLen;
+                    lock (this) {
+                        int len = token.currentSize;
+                        if (writePosition + len < bufferSize) {
+                            Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, len);
+                            writePosition += len;
+                        } else {
+                            int partLen = bufferSize - writePosition;
+                            Marshal.Copy(token.currentBuffer, circularBuffer, writePosition, partLen);
+                            Marshal.Copy(token.currentBuffer + partLen, circularBuffer, 0, len - partLen);
+                            writePosition = len - partLen;
+                        }
                     }
                 }
                 Next();
             }
         }
 
-        public int available {
+        public override int available {
             get {
                 if (writePosition < readPosition)
                     return (bufferSize - readPosition) + writePosition; // Looped

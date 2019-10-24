@@ -31,14 +31,11 @@ namespace Workers {
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public bool videoIsReady { get; set; }
-        public float timeToWait { get; set; }
 
         public System.IntPtr videoData { get; private set; }
         public int videoDataSize { get; private set; }
 
         public VideoDecoder() : base(WorkerType.Run) {
-            videoIsReady = false;
             videoPacket = ffmpeg.av_packet_alloc();
             audioPacket = ffmpeg.av_packet_alloc();
             Start();
@@ -56,40 +53,38 @@ namespace Workers {
             base.Update();
             if (token != null) {
                 if (token.isVideo ) {
-                    if (!videoIsReady) {
-                        if (codecVideo == null) CreateVideoCodec();
-                        ffmpeg.av_init_packet(videoPacket);
-                        videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
-                        videoPacket->size = token.currentSize;
-                        videoPacket->pts = token.info.timestamp;
-                        if (videoPacket->size > 0) {
-                            int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
-                            if (ret2 < 0) {
-                                ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {token.currentSize} videoPacket->size {videoPacket->size}");
-                            } else {
-                                while (ret2 >= 0) {
-                                    ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
-                                    if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                        CreateYUV2RGBFilter();
-                                        int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
-                                        videoData = (System.IntPtr)tmpDataArray[0];
-                                        videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
-                                        var currentTime = NTPTools.GetNTPTime();
-                                        timeToWait = 20f / 1000f;// (lastTimeStamp!=0?videoFrame->best_effort_timestamp - lastTimeStamp:0) / 1000f;
-                                        lastTimeStamp = videoFrame->best_effort_timestamp;
-                                        //Debug.Log($">>>> Frame de video {currentTime.time - lastTime.time}");
-                                        lastTime = NTPTools.GetNTPTime();
-                                        videoIsReady = true;
+                    if (codecVideo == null) CreateVideoCodec();
+                    ffmpeg.av_init_packet(videoPacket);
+                    videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
+                    videoPacket->size = token.currentSize;
+                    videoPacket->pts = token.info.timestamp;
+                    if (videoPacket->size > 0) {
+                        int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
+                        if (ret2 < 0) {
+                            ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {token.currentSize} videoPacket->size {videoPacket->size}");
+                        } else {
+                            while (ret2 >= 0) {
+                                ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
+                                if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                    CreateYUV2RGBFilter();
+                                    int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
+                                    videoData = (System.IntPtr)tmpDataArray[0];
+                                    videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
+                                    var currentTime = NTPTools.GetNTPTime();
+                                    //timeToWait = 20f / 1000f;// (lastTimeStamp!=0?videoFrame->best_effort_timestamp - lastTimeStamp:0) / 1000f;
+                                    lastTimeStamp = videoFrame->best_effort_timestamp;
+                                    //Debug.Log($">>>> Frame de video {currentTime.time - lastTime.time}");
+                                    lastTime = NTPTools.GetNTPTime();
+                                    token.needsVideo = false; // I've got a frame, I don't need more till I show it.
 
-                                    } else
-                                        if (ret2 != -11)
-                                            Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+                                } else
+                                    if (ret2 != -11)
+                                    Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
 
-                                }
                             }
                         }
-                        Next();
                     }
+                    Next();
                 } else {
                     // Audio-
                     if (codecAudio == null) CreateAudioCodec();
@@ -131,7 +126,6 @@ namespace Workers {
                         }
                     }
                     Next();
-
                 }
             }
         }
