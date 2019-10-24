@@ -73,10 +73,17 @@ public class EntityPipeline : MonoBehaviour {
         if (reader != null) reader.token = new Workers.Token(forks);
 
         //transform.parent = parent;
-        if (url_pcc == string.Empty || url_audio == string.Empty) {
-            transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
-            transform.rotation = Quaternion.Euler(cfg.Render.rotation);
-        }
+        //if (url_pcc == string.Empty || url_audio == string.Empty) {
+        //    transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
+        //    transform.rotation = Quaternion.Euler(cfg.Render.rotation);
+        //}
+
+        //Position depending on config calibration
+        var temp = Config.Instance;
+        Config._PCs configTransform = temp.PCs;
+        transform.localPosition = configTransform.offsetPosition;
+        transform.localRotation = Quaternion.Euler(configTransform.offsetRotation);
+
         transform.localScale = cfg.Render.scale;
         return this;
     }
