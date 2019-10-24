@@ -15,6 +15,8 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
+        var temp = Config.Instance;
+        Config._PCs configTransform = temp.PCs;
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
             preparer = new Workers.MeshPreparer();
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -79,10 +81,8 @@ public class EntityPipeline : MonoBehaviour {
         //}
 
         //Position depending on config calibration
-        var temp = Config.Instance;
-        Config._PCs configTransform = temp.PCs;
-        transform.localPosition = configTransform.offsetPosition;
-        transform.localRotation = Quaternion.Euler(configTransform.offsetRotation);
+        transform.position = configTransform.offsetPosition;
+        transform.rotation = Quaternion.Euler(configTransform.offsetRotation);
 
         transform.localScale = cfg.Render.scale;
         return this;
