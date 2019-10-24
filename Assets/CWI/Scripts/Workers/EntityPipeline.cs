@@ -72,7 +72,7 @@ public class EntityPipeline : MonoBehaviour {
 
         if (reader != null) reader.token = new Workers.Token(forks);
 
-        transform.parent = parent;
+        //transform.parent = parent;
         if (url_pcc == string.Empty || url_audio == string.Empty) {
             transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
             transform.rotation = Quaternion.Euler(cfg.Render.rotation);

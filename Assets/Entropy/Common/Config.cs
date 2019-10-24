@@ -16,6 +16,14 @@ public class Config {
     public _TVMs TVMs;
 
     [Serializable]
+    public class _PCs {
+        public Vector3 offsetPosition;
+        public Vector3 offsetRotation;
+        public Vector3 scale;
+    };
+    public _PCs PCs;
+
+    [Serializable]
     public class _User {
         public string sourceType;
         public string cwicpcFilename;
@@ -70,8 +78,6 @@ public class Config {
             public Vector3 position;
             public Vector3 rotation;
             public Vector3 scale = Vector3.one;
-            public Vector3 offsetPosition;
-            public Vector3 offsetRotation;
         }
         public _Render Render;
     };
