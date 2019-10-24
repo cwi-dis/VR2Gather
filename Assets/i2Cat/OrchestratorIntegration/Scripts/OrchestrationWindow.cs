@@ -442,10 +442,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            if (AudioManager.instance != null && useSocketIOAudio) {
-                AudioManager.instance.StartRecordAudio();
-            }
-
             state = State.Lobby;
             PanelChanger();
         }
@@ -465,6 +461,18 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionDescriptionText.text = session.sessionDescription;
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
+
+            if (AudioManager.instance != null && useSocketIOAudio && !updated) {
+                AudioManager.instance.StartRecordAudio();
+
+                foreach (string id in session.sessionUsers) {
+                    if (id != idText.text) {
+                        AudioManager.instance.StartListeningAudio(id);
+                        OnUserJoinedSession(id);
+                    }
+                }
+            }
+
             // now retrieve the secnario instance infos
             if (!updated) orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
             else updated = false;
@@ -478,7 +486,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     if (u.userId == activeSession.sessionUsers[i])
                         AddTextComponentOnContent(usersSession.transform, u.userName);
                 }
-            }
+            }   
         }
         else {
             sessionNameText.text = "";
@@ -897,16 +905,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (user == 0) {
             userNameLoginIF.text = "Marc@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.1.210:5672";
-            exchangeNameLoginIF.text = "MarcTVM";
+            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
+            exchangeNameLoginIF.text = "210TVM";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Marc/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Marc/audio.mpd";
         }
         else if (user == 1) {
             userNameLoginIF.text = "Luca@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.10.94:5672";
-            exchangeNameLoginIF.text = "gianluca";
+            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.137:5672";
+            exchangeNameLoginIF.text = "110TVM";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Luca/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Luca/audio.mpd";
         }
@@ -929,16 +937,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         else if (user == 4) {
             userNameLoginIF.text = "Jack@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "jack";
+            connectionURILoginIF.text = "amqp://marc:marc@192.168.10.49:5672";
+            exchangeNameLoginIF.text = "Fake1";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
         }
         else if (user == 5) {
             userNameLoginIF.text = "Shishir@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "shishir";
+            connectionURILoginIF.text = "amqp://marc:marc@192.168.10.49:5672";
+            exchangeNameLoginIF.text = "Fake1";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }

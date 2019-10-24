@@ -38,6 +38,8 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
         {
             recorder = gameObject.AddComponent<AudioRecorder>();
         }
+
+        DontDestroyOnLoad(this);
     }
 
     #endregion
