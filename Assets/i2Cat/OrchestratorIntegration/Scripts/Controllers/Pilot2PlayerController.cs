@@ -56,6 +56,9 @@ public class Pilot2PlayerController : PilotController {
     public override void Update() {
         base.Update();
 
+        //if (Input.GetKeyDown(KeyCode.Alpha1)) players[0].tvm.gameObject.SetActive(true);
+        //if (Input.GetKeyDown(KeyCode.Alpha2)) players[1].tvm.gameObject.SetActive(true);
+
         if (todoAction != Actions.WAIT) {
             timer += Time.deltaTime;
 
