@@ -39,7 +39,7 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
             recorder = gameObject.AddComponent<AudioRecorder>();
         }
 
-        DontDestroyOnLoad(this);
+        //DontDestroyOnLoad(this);
     }
 
     #endregion

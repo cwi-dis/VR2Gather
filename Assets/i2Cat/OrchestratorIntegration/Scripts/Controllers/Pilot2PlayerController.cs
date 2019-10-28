@@ -12,6 +12,8 @@ public class Pilot2PlayerController : PilotController {
     bool socket = false;
     bool useTVM = true;
     bool audioPCTogether = false;
+    float timer = 0.0f;
+    bool enter = false;
     
     public override void Start() {
         base.Start();
@@ -50,11 +52,26 @@ public class Pilot2PlayerController : PilotController {
                     }
                 }
             }
-        }
+        }        
     }
 
     public override void Update() {
         base.Update();
+
+        //Audio Over Socket.io
+        if (timer >= 12.0f && AudioManager.instance != null && orchestrator.useSocketIOAudio && !enter) {
+            AudioManager.instance.StartRecordAudio();
+
+            foreach (string id in orchestrator.activeSession.sessionUsers) {
+                if (id != orchestrator.userID) {
+                    AudioManager.instance.StartListeningAudio(id);
+                }
+            }
+
+            enter = true;
+        }
+        else timer += Time.deltaTime;
+
 
         //if (Input.GetKeyDown(KeyCode.Alpha1)) players[0].tvm.gameObject.SetActive(true);
         //if (Input.GetKeyDown(KeyCode.Alpha2)) players[1].tvm.gameObject.SetActive(true);
@@ -130,7 +147,5 @@ public class Pilot2PlayerController : PilotController {
                 }
             }
         }
-
-
     }
 }
