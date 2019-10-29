@@ -66,6 +66,7 @@ public class VideoDashReceiver : MonoBehaviour
                     if (texture == null) {
                         texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
                         renderer.material.mainTexture = texture;
+                        renderer.transform.localScale = new Vector3(-1, 1, codec.Height / (float)codec.Width);
                     }
 
                     if (firstFrame) {
