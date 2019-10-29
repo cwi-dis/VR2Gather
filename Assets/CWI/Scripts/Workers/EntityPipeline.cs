@@ -81,7 +81,7 @@ public class EntityPipeline : MonoBehaviour {
         //}
 
         //Position depending on config calibration
-        transform.position = configTransform.offsetPosition;
+        transform.localPosition = configTransform.offsetPosition;
         transform.rotation = Quaternion.Euler(configTransform.offsetRotation);
 
         transform.localScale = cfg.Render.scale;
