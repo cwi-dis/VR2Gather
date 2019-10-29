@@ -8,7 +8,7 @@ public class VideoDashReceiver : MonoBehaviour
 
     Workers.BaseWorker reader;
     Workers.VideoDecoder codec;
-    Workers.BaseWorker preparer;
+    Workers.VideoPreparer preparer;
     Workers.Token token;
     public string url = "https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
@@ -21,16 +21,23 @@ public class VideoDashReceiver : MonoBehaviour
         audioSource = gameObject.GetComponent<AudioSource>();
         if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
+        audioSource.Stop();
         //audioSource.Play();
     }
 
     // Start is called before the first frame update
     public void Init(string url) {
         try {
-            reader = new Workers.SUBReader(url, ()=> {
+            reader = new Workers.SUBReader(url, () => {
                 bool val = false;
                 lock (preparer) {
-                    val = preparer != null && preparer.available < 24000;
+                    val = (preparer != null && preparer.availableVideo < codec.videoDataSize * 5) || codec.videoDataSize==0;
+                }
+                return val;
+            }, ()=> {
+                bool val = false;
+                lock (preparer) {
+                    val = preparer != null && preparer.availableAudio < 12000;
                 }
                 return val;
             } );
@@ -44,6 +51,7 @@ public class VideoDashReceiver : MonoBehaviour
         }
     }
 
+
     bool firstFrame = true;
     float timeToWait = 0;
     float currentTime = 0;
@@ -52,31 +60,28 @@ public class VideoDashReceiver : MonoBehaviour
     string log = "";
 
     void Update() {
-        if (token!=null && !token.needsVideo) {
-            if (timeToWait < 0) {
-                if (texture == null) {
-                    texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
-                    renderer.material.mainTexture = texture;
-                }
+        lock (preparer) {
+            if (preparer.availableVideo > 0) {
+                if (timeToWait < 0) {
+                    if (texture == null) {
+                        texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
+                        renderer.material.mainTexture = texture;
+                    }
 
-                if (firstFrame) {
-                    firstFrame = false;
-                    audioSource.Play();
-                    currentTime = timeToWait = 0;
+                    if (firstFrame) {
+                        firstFrame = false;
+                        audioSource.Play();
+                        currentTime = timeToWait = 0;
+                    }
+                    lastFrame = Time.realtimeSinceStartup;
+                    timeToWait += 1 / 30f;
+                    currentTime += 1 / 30f;
+                    texture.LoadRawTextureData(preparer.GetVideoPointer(codec.videoDataSize), codec.videoDataSize);
+                    texture.Apply();
                 }
-                if (Time.realtimeSinceStartup - lastFrame > 0.1f)
-                    log += $">>>>>> Frame time {Time.realtimeSinceStartup - lastFrame} currentTime {currentTime}\n";
-                else 
-                    log += $"Frame time {Time.realtimeSinceStartup - lastFrame} currentTime {currentTime}\n";
-                lastFrame = Time.realtimeSinceStartup;
-                timeToWait += 1 / 30f;
-                currentTime += 1 / 30f;
-                texture.LoadRawTextureData(codec.videoData, codec.videoDataSize);
-                texture.Apply();
-                token.needsVideo = true;
             }
+            timeToWait -= Time.deltaTime;
         }
-        timeToWait -= Time.deltaTime;
     }
 
     void OnDestroy() {
@@ -87,11 +92,11 @@ public class VideoDashReceiver : MonoBehaviour
     }
 
     void OnAudioRead(float[] data) {
-        if (preparer == null || !preparer.GetBuffer(data, data.Length))
+        if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
     }
 
     void OnAudioFilterRead(float[] data, int channels) {
-        preparer?.GetBuffer(data, data.Length);
+        preparer?.GetAudioBuffer(data, data.Length);
     }
 }

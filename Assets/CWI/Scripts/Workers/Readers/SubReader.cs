@@ -4,9 +4,10 @@ namespace Workers
 {
     public class SUBReader : BaseWorker {
 
-        public delegate bool NeedsAudio();
+        public delegate bool NeedsSomething();
 
-        NeedsAudio needsAudio;
+        NeedsSomething needsVideo;
+        NeedsSomething needsAudio;
 
         public enum CCCC: int {
             MP4A = 0x6134706D,
@@ -51,7 +52,8 @@ namespace Workers
             }
         }
 
-        public SUBReader(string cfg, NeedsAudio needsAudio=null) : base(WorkerType.Init) {
+        public SUBReader(string cfg, NeedsSomething needsVideo = null, NeedsSomething needsAudio =null) : base(WorkerType.Init) {
+            this.needsVideo = needsVideo;
             this.needsAudio = needsAudio;
             url = cfg;
             streamNumber = 0;
@@ -120,7 +122,32 @@ namespace Workers
             if (token != null) {  // Wait for token
                 if (!isPlaying) retryPlay();
                 else  {
-                    if (token.needsVideo) {
+                    // Try to read fron audio.
+                    if (streamCount > 0 && needsAudio!=null && needsAudio() ) {
+                        int size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                        if (size != 0) {
+                            if (size > dampedSize) {
+                                dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
+                                currentBufferArray = new byte[dampedSize];
+                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
+                            }
+                            int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, size, ref info);
+                            if (bytesRead == size) {
+                                // All ok, yield to the next process
+                                token.currentBuffer = currentBuffer;
+                                token.currentByteArray = currentBufferArray;
+                                token.currentSize = bytesRead;
+                                token.info = info;
+                                token.isVideo = false;
+                                Next();
+                                return;
+                            } else
+                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
+                        } 
+                        // else Debug.Log($"No data at {1 - streamNumber}");
+                    }
+
+                    if ( needsVideo() ) {
                         info.dsi_size = 256;
                         // Try to read from video.
                         int size = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
@@ -143,31 +170,6 @@ namespace Workers
                             } else
                                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
                         }
-                    }
-
-                    // Try to read fron audio.
-                    if (streamCount > 0 && needsAudio!=null && needsAudio() ) {
-                        int size = subHandle.grab_frame(1-streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                        if (size != 0) {
-                            if (size > dampedSize) {
-                                dampedSize = (int)(size * Config.Instance.memoryDamping); // Reserves 30% more.
-                                currentBufferArray = new byte[dampedSize];
-                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
-                            }
-                            int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, size, ref info);
-                            if (bytesRead == size) {
-
-                                // All ok, yield to the next process
-                                token.currentBuffer = currentBuffer;
-                                token.currentByteArray = currentBufferArray;
-                                token.currentSize = bytesRead;
-                                token.info = info;
-                                token.isVideo = false;
-                                Next();
-                            } else
-                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + size);
-                        } 
-                        // else Debug.Log($"No data at {1 - streamNumber}");
                     }
                 }
             }

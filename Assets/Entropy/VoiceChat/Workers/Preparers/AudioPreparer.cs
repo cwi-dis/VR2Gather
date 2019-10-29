@@ -81,7 +81,7 @@ namespace Workers
 
         bool firstTime = true;
         float lastTime = 0;
-        public override bool GetBuffer(float[] dst, int len) {
+        public bool GetAudioBuffer(float[] dst, int len) {
             if ((firstTime && available >= len) || !firstTime) {
                 firstTime = false;
                 if (available >= len) {

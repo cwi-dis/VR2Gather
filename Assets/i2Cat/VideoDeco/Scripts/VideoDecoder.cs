@@ -32,7 +32,7 @@ namespace Workers {
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        public System.IntPtr videoData { get; private set; }
+//        public System.IntPtr videoData { get; private set; }
         public int videoDataSize { get; private set; }
 
         public VideoDecoder() : base(WorkerType.Run) {
@@ -46,9 +46,7 @@ namespace Workers {
             Debug.Log("VideoDecoder Stopped");
         }
 
-        NTPTools.NTPTime lastTime;
         System.IntPtr audioData = System.IntPtr.Zero;
-        long lastTimeStamp;
         protected override void Update() {
             base.Update();
             if (token != null) {
@@ -68,15 +66,9 @@ namespace Workers {
                                 if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
                                     CreateYUV2RGBFilter();
                                     int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
-                                    videoData = (System.IntPtr)tmpDataArray[0];
                                     videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
-                                    var currentTime = NTPTools.GetNTPTime();
-                                    //timeToWait = 20f / 1000f;// (lastTimeStamp!=0?videoFrame->best_effort_timestamp - lastTimeStamp:0) / 1000f;
-                                    lastTimeStamp = videoFrame->best_effort_timestamp;
-                                    //Debug.Log($">>>> Frame de video {currentTime.time - lastTime.time}");
-                                    lastTime = NTPTools.GetNTPTime();
-                                    token.needsVideo = false; // I've got a frame, I don't need more till I show it.
-
+                                    token.currentBuffer = (System.IntPtr)tmpDataArray[0];
+                                    token.currentSize = tmpLineSizeArray[0] * videoFrame->height;
                                 } else
                                     if (ret2 != -11)
                                     Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");

@@ -31,11 +31,5 @@ namespace Workers
             if (token != null)
                 Next();
         }
-
-        public override bool GetBuffer(float[] dst, int len)
-        {
-            return false;
-        }
-
     }
 }
