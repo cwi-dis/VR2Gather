@@ -56,7 +56,7 @@ public class MeshConstructor : MonoBehaviour
     private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e)
     {
         // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
-        stopWatch = System.Diagnostics.Stopwatch.StartNew();
+        //stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
         lock (e)
         {
@@ -106,10 +106,10 @@ public class MeshConstructor : MonoBehaviour
                 {
                     Debug.Log(ex.Message);
                 }
-                stopWatch.Stop();
-                deserializeTime.Add(stopWatch.ElapsedMilliseconds);
-                if(deserializeTime.Count == 1000)
-                    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
+                //stopWatch.Stop();
+                //deserializeTime.Add(stopWatch.ElapsedMilliseconds);
+                //if(deserializeTime.Count == 1000)
+                //    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
             }
         }
     }
@@ -140,8 +140,8 @@ public class MeshConstructor : MonoBehaviour
 
         try
         {
-            stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
-            stopWatch1.Start();
+            //stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
+            //stopWatch1.Start();
 
             List<Vector3> vert;
             List<Vector4> ids;
@@ -224,10 +224,10 @@ public class MeshConstructor : MonoBehaviour
 
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorIntrinsics", c_intrinsics); // Color intrinsics matrix in an array (column major)
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorExtrinsics", c_extrinsics); // Color extrinsics matrix in an array (column major)
-            stopWatch1.Stop();
-            renderingTime.Add(stopWatch1.ElapsedMilliseconds);
-            if(renderingTime.Count == 1000)
-                Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
+            //stopWatch1.Stop();
+            //renderingTime.Add(stopWatch1.ElapsedMilliseconds);
+            //if(renderingTime.Count == 1000)
+            //    Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
         }
         catch (Exception ex)
         {
