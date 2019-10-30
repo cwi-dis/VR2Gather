@@ -30,6 +30,7 @@ namespace Workers {
             base.Update();
             if (token != null) {  // Wait for token
                 cwipc.pointcloud pc = reader.get();
+                Debug.Log($"xxxjack grabbed pointcloud of {pc.count()} points");
                 if (pc != null)
                 {
                     token.currentPointcloud = pc;
