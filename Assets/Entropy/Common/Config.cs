@@ -43,6 +43,7 @@ public class Config {
         public class _PCSelfConfig
         {
             public string configFilename;
+            public float voxelSize;
             [Serializable]
             public class _Encoder {
                 public int octreeBits;

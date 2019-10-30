@@ -101,6 +101,12 @@ public class cwipc
         [DllImport("cwipc_codec")]
         internal extern static bool cwipc_encoder_at_gop_boundary(IntPtr enc);
 
+        [DllImport("cwipc_codec")]
+        internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
+
+        [DllImport("cwipc_codec")]
+        internal extern static IntPtr cwipc_tilefilter(IntPtr pc, int tilenum);
+
     }
 
     public class pointcloud
@@ -329,4 +335,22 @@ public class cwipc
         return new encoder(enc);
 
     }
+
+    public static pointcloud downsample(pointcloud pc, float voxelSize)
+    {
+        System.IntPtr pcPtr = pc._intptr();
+        System.IntPtr rvPtr = _API_cwipc_codec.cwipc_downsample(pcPtr, voxelSize);
+        if (rvPtr == System.IntPtr.Zero) return null;
+        return new pointcloud(rvPtr);
+    }
+
+    public static pointcloud tilefilter(pointcloud pc, int tileNum)
+    {
+        System.IntPtr pcPtr = pc._intptr();
+        System.IntPtr rvPtr = _API_cwipc_codec.cwipc_tilefilter(pcPtr, tileNum);
+        if (rvPtr == System.IntPtr.Zero) return null;
+        return new pointcloud(rvPtr);
+    }
+
+
 }

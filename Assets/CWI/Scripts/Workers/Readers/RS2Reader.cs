@@ -6,8 +6,10 @@ namespace Workers {
     public class RS2Reader : BaseWorker
     {
         cwipc.source reader;
+        float voxelSize;
 
         public RS2Reader(Config._User._PCSelfConfig cfg) : base(WorkerType.Init) {
+            voxelSize = cfg.voxelSize;
             try {
                 reader = cwipc.realsense2(cfg.configFilename);  
                 if (reader != null)
@@ -31,6 +33,18 @@ namespace Workers {
             if (token != null) {  // Wait for token
                 cwipc.pointcloud pc = reader.get();
                 Debug.Log($"xxxjack grabbed pointcloud of {pc.count()} points");
+                if (pc != null && voxelSize != 0)
+                {
+                    pc = cwipc.downsample(pc, voxelSize);
+                    if (pc == null)
+                    {
+                        Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
+                    }
+                    else
+                    {
+                        Debug.Log($"xxxjack voxelated with {voxelSize} gives {pc.count()} points");
+                    }
+                }
                 if (pc != null)
                 {
                     token.currentPointcloud = pc;
