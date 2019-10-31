@@ -38,6 +38,8 @@ public class cwipc
         [DllImport("cwipc_util")]
         internal extern static int cwipc_count(IntPtr pc);
         [DllImport("cwipc_util")]
+        internal extern static float cwipc_cellsize(IntPtr pc);
+        [DllImport("cwipc_util")]
         internal extern static System.IntPtr cwipc_get_uncompressed_size(IntPtr pc);
         [DllImport("cwipc_util")]
         internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, System.IntPtr size);
@@ -140,6 +142,11 @@ public class cwipc
         public int count()
         {
             return (int)_API_cwipc_util.cwipc_count(obj);
+        }
+
+        public float cellsize()
+        {
+            return _API_cwipc_util.cwipc_cellsize(obj);
         }
 
         public int get_uncompressed_size()

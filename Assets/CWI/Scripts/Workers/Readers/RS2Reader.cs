@@ -32,24 +32,20 @@ namespace Workers {
             base.Update();
             if (token != null) {  // Wait for token
                 cwipc.pointcloud pc = reader.get();
-                Debug.Log($"xxxjack grabbed pointcloud of {pc.count()} points");
-                if (pc != null && voxelSize != 0)
+                if (pc == null) return;
+                if (voxelSize != 0)
                 {
+                    int oldCount = pc.count();
                     pc = cwipc.downsample(pc, voxelSize);
                     if (pc == null)
                     {
                         Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
+                        return;
                     }
-                    else
-                    {
-                        Debug.Log($"xxxjack voxelated with {voxelSize} gives {pc.count()} points");
-                    }
+                    Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {pc.count()} point, cellsize={pc.cellsize()}");
                 }
-                if (pc != null)
-                {
-                    token.currentPointcloud = pc;
-                    Next();
-                }
+                token.currentPointcloud = pc;
+                Next();
             }
         }
     }
