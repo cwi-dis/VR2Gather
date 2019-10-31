@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-public static class DllFunctions
-{
+public static class DllFunctions {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Mesh
-    {
+    public struct Mesh {
         public int numDevices;
         public int width;
         public int height;
