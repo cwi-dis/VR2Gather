@@ -32,6 +32,8 @@ namespace Workers {
                 lock (token) {
                     unsafe {
                         int bufferSize = token.currentPointcloud.get_uncompressed_size();
+                        float currentCellSize = token.currentPointcloud.cellsize();
+                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         int size = bufferSize / PointCouldVertexSize;
                         int dampedSize = (int)(size * Config.Instance.memoryDamping);
                         if (vertexArray.Length < dampedSize) {

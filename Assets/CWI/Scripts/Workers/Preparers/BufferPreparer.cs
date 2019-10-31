@@ -25,6 +25,8 @@ namespace Workers
                 lock (token) {
                     unsafe {
                         currentSize = token.currentPointcloud.get_uncompressed_size();
+                        float currentCellSize = token.currentPointcloud.cellsize();
+                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         if (currentSize > 0) {
                             if (currentSize > byteArray.Length) {
                                 if (byteArray.Length != 0) byteArray.Dispose();
