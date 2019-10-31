@@ -4,6 +4,22 @@ public class AudioReceiver : MonoBehaviour
 {
     public string userID;
 
+    public void StartListeningAudio(string pUserID)
+    {
+        #if TEST_BED
+        StartListeningAudio(pUserID);
+        #endif
+    }
+
+    public void StopListeningAudio()
+    {
+        #if TEST_BED
+        StopListeningAudio();
+        #endif
+    }
+
+    #if TEST_BED
+
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker preparer;
@@ -13,7 +29,7 @@ public class AudioReceiver : MonoBehaviour
 
     private AudioSource audioSource;
 
-    public void StartListeningAudio(string pUserID)
+    private void StartListening(string pUserID)
     {
         if (audioSource == null)
         {
@@ -32,7 +48,7 @@ public class AudioReceiver : MonoBehaviour
         userID = pUserID;
     }
 
-    public void StopListeningAudio()
+    private void StopListening()
     {
         reader?.Stop();
         codec?.Stop();
@@ -63,4 +79,6 @@ public class AudioReceiver : MonoBehaviour
     {
         StopListeningAudio();
     }
+
+#endif
 }

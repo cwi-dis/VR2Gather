@@ -2,6 +2,22 @@
 
 public class AudioRecorder : MonoBehaviour
 {
+    public void StartRecordAudio()
+    {
+        #if TEST_BED
+        StartRecord();
+        #endif
+    }
+
+    public void StopRecordAudio()
+    {
+        #if TEST_BED
+        StopRecord();
+        #endif
+    }
+
+    #if TEST_BED
+
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
@@ -11,7 +27,7 @@ public class AudioRecorder : MonoBehaviour
         StopRecordAudio();
     }
 
-    public void StartRecordAudio()
+    private void StartRecord()
     {
         codec = new Workers.VoiceEncoder();
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
@@ -21,10 +37,11 @@ public class AudioRecorder : MonoBehaviour
         reader.token = new Workers.Token(1);
     }
 
-    public void StopRecordAudio()
+    private void StopRecord()
     {
         reader?.Stop();
         codec?.Stop();
         writer?.Stop();
     }
+    #endif
 }
