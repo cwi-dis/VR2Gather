@@ -30,6 +30,7 @@ namespace Workers
 
         void OnRenderObject() {
             if (preparer == null) return;
+            material.SetFloat("_PointSize", preparer.SetPointSize());
             preparer.GetMesh(ref mesh); // <- Bottleneck
 
             if (mesh == null ) return;

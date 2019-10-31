@@ -10,6 +10,7 @@ namespace Workers
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr                       currentBuffer;
         int                                 currentSize;
+        float                               currentCellSize = 0.008f;
         public BufferPreparer():base(WorkerType.End) {
             Start();
         }
@@ -25,7 +26,7 @@ namespace Workers
                 lock (token) {
                     unsafe {
                         currentSize = token.currentPointcloud.get_uncompressed_size();
-                        float currentCellSize = token.currentPointcloud.cellsize();
+                        currentCellSize = token.currentPointcloud.cellsize();
                         // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         if (currentSize > 0) {
                             if (currentSize > byteArray.Length) {
@@ -60,6 +61,11 @@ namespace Workers
                 isReady = false;
             }
             return size;
+        }
+
+        public float SetPointSize() {
+            if (currentCellSize > 0.0000f) return currentCellSize;
+            else return 0.008f;
         }
 
     }

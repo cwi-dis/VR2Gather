@@ -9,6 +9,7 @@ namespace Workers {
         Vector3[] points;
         int[] indices;
         Color32[] colors;
+        float currentCellSize = 0.008f;
 
         public MeshPreparer() : base(WorkerType.End) {
             PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
@@ -32,7 +33,7 @@ namespace Workers {
                 lock (token) {
                     unsafe {
                         int bufferSize = token.currentPointcloud.get_uncompressed_size();
-                        float currentCellSize = token.currentPointcloud.cellsize();
+                        currentCellSize = token.currentPointcloud.cellsize();
                         // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         int size = bufferSize / PointCouldVertexSize;
                         int dampedSize = (int)(size * Config.Instance.memoryDamping);
@@ -73,6 +74,11 @@ namespace Workers {
                 return true;
             }
             return false;
+        }
+
+        public float SetPointSize() {
+            if (currentCellSize > 0.0000f) return currentCellSize;
+            else return 0.008f;
         }
     }
 }
