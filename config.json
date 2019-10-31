@@ -50,7 +50,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "../cameraconfig.xml",
-				"voxelSize" : 0.005,
+				"voxelSize" : 0.05,
                 "Encoder": {
                     "octreeBits": 8
                 },
