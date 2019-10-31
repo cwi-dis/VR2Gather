@@ -23,6 +23,7 @@ public class OrchestratorController : PilotController {
 
     public override void MessageActivation(string msg) {
         if (msg == MessageType.START) {
+            //SceneManager.LoadScene("Pilot2_Presenter");
             if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
             else {
                 //SceneManager.LoadScene("TVSet_Test_Distancia"); 
