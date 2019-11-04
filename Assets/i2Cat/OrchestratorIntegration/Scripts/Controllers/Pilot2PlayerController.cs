@@ -8,6 +8,7 @@ using UnityEngine.Video;
 public class Pilot2PlayerController : PilotController {
 
     EntityPipeline[] p = new EntityPipeline[4];
+    [SerializeField] VideoDashReceiver livePresenter;
 
     bool socket = false;
     bool useTVM = true;
@@ -19,6 +20,10 @@ public class Pilot2PlayerController : PilotController {
         orchestrator.controller = this;
         background.SetActive(false);
 
+        //LivePresenter
+        livePresenter.url = orchestrator.livePresenterData.liveAddress;
+        livePresenter.gameObject.SetActive(true);
+        
         masterID = orchestrator.activeSession.sessionUsers[0];
 
         if (orchestrator.isDebug) DebugIntro();

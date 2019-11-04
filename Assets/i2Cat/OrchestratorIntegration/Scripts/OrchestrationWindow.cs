@@ -107,6 +107,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public Session activeSession;
     public ScenarioInstance activeScenario;
+    public LivePresenterData livePresenterData;
 
     // user Login state
     private bool userIsLogged = false;
@@ -411,7 +412,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (status.Error == 0) {
             scenarioIdText.text = scenario.scenarioName;
             // now retrieve the list of the available rooms
-            orchestratorWrapper.GetRooms();
+            //orchestratorWrapper.GetRooms();
+
+            // now retrieve the url of the Live presenter stream
+            orchestratorWrapper.GetLivePresenterData();
 
             activeScenario = scenario;
         }
@@ -516,6 +520,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = null;
             activeScenario = null;
+            livePresenterData = null;
 
             removeComponentsFromList(usersSession.transform);
 
@@ -583,10 +588,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     #region Live 
 
-    public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
-    {
-        //Debug.Log("[OrchestrationWindow][OnGetLivePresenterDataResponse] Live stream url: " + liveData.remoteAddress);
-        //orchestratorWrapper.GetRooms();
+    public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData) {
+        if (livePresenterData == null) livePresenterData = new LivePresenterData();
+        livePresenterData.liveAddress = liveData.liveAddress;
+        livePresenterData.vodAddress = liveData.vodAddress;
+
+        orchestratorWrapper.GetRooms();
     }
 
     #endregion
@@ -921,16 +928,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         else if (user == 2) {
             userNameLoginIF.text = "Spiros@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "spiros";
+            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
+            exchangeNameLoginIF.text = "Fake1";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Spiros/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Spiros/audio.mpd";
         }
         else if (user == 3) {
             userNameLoginIF.text = "Argyris@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "argyris";
+            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
+            exchangeNameLoginIF.text = "Fake1";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Argyris/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Argyris/audio.mpd";
         }

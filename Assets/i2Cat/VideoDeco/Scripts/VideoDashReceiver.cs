@@ -10,7 +10,7 @@ public class VideoDashReceiver : MonoBehaviour
     Workers.VideoDecoder codec;
     Workers.VideoPreparer preparer;
     Workers.Token token;
-    public string url = "https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
+    public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
     public Texture2D texture;
     AudioSource audioSource;
@@ -66,7 +66,7 @@ public class VideoDashReceiver : MonoBehaviour
                     if (texture == null) {
                         texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
                         renderer.material.mainTexture = texture;
-                        renderer.transform.localScale = new Vector3(-1, 1, codec.Height / (float)codec.Width);
+                        renderer.transform.localScale = new Vector3(1, -1, codec.Height / (float)codec.Width);
                     }
 
                     if (firstFrame) {
@@ -89,7 +89,7 @@ public class VideoDashReceiver : MonoBehaviour
         reader?.Stop();
         codec?.Stop();
         preparer?.Stop();
-        System.IO.File.WriteAllText("c:/tmp/log.txt", log);
+        //System.IO.File.WriteAllText("c:/tmp/log.txt", log);
     }
 
     void OnAudioRead(float[] data) {
