@@ -5,7 +5,7 @@ using UnityEngine;
 public class TestVoiceDashReceiver : MonoBehaviour {
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
-    Workers.BaseWorker preparer;
+    Workers.AudioPreparer preparer;
     Workers.Token       token;
 
     public int                 userID;
@@ -44,7 +44,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
     }
 
     void OnAudioRead(float[] data) {
-        if (preparer == null || !preparer.GetBuffer(data, data.Length) )
+        if (preparer == null || !preparer.GetAudioBuffer(data, data.Length) )
             System.Array.Clear(data, 0, data.Length);
     }
 
@@ -52,7 +52,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
     void OnAudioFilterRead(float[] data, int channels)
     {
         if (tmpBuffer == null) tmpBuffer = new float[data.Length];
-        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length))
+        if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
         {
             int cnt = 0;
             do

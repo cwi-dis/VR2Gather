@@ -22,7 +22,7 @@ public class AudioReceiver : MonoBehaviour
 
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
-    private Workers.BaseWorker preparer;
+    private Workers.AudioPreparer preparer;
     private Workers.Token token;
 
     private float[] tmpBuffer;
@@ -58,7 +58,7 @@ public class AudioReceiver : MonoBehaviour
     // Buffer is filled 2.5 times per second (every 400ms). 
     private void OnAudioRead(float[] data)
     {
-        if (preparer == null || !preparer.GetBuffer(data, data.Length))
+        if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
     }
 
@@ -68,7 +68,7 @@ public class AudioReceiver : MonoBehaviour
         {
             tmpBuffer = new float[data.Length];
         }
-        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length))
+        if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
         {
             int cnt = 0;
             do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
