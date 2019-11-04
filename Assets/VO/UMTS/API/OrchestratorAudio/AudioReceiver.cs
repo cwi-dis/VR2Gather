@@ -7,14 +7,14 @@ public class AudioReceiver : MonoBehaviour
     public void StartListeningAudio(string pUserID)
     {
         #if TEST_BED
-        StartListeningAudio(pUserID);
+        StartListening(pUserID);
         #endif
     }
 
     public void StopListeningAudio()
     {
         #if TEST_BED
-        StopListeningAudio();
+        StopListening();
         #endif
     }
 
