@@ -161,18 +161,20 @@ namespace Workers {
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
                         int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
-                        if (bytesRead == bytesNeeded) {
-                            // All ok, yield to the next process
-                            token.currentBuffer = currentBuffer;
-                            token.currentByteArray = currentBufferArray;
-                            token.currentSize = bytesRead;
-                            token.info = info;
-                            token.isVideo = false;
-                            Next();
-                            return;
+                        lock (token) {
+                            if (bytesRead == bytesNeeded) {
+                                // All ok, yield to the next process
+                                token.currentBuffer = currentBuffer;
+                                token.currentByteArray = currentBufferArray;
+                                token.currentSize = bytesRead;
+                                token.info = info;
+                                token.isVideo = false;
+                                Next();
+                                return;
+                            }
+                            else
+                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                         }
-                        else
-                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
                 }
                 if (needsVideo == null || needsVideo()) {
@@ -188,18 +190,20 @@ namespace Workers {
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
-                        if (bytesRead == bytesNeeded) {
-                            // All ok, yield to the next process
-                            token.currentBuffer = currentBuffer;
-                            token.currentByteArray = currentBufferArray;
-                            token.currentSize = bytesRead;
-                            token.info = info;
-                            token.isVideo = true;
-                            Next();
-                            return;
+                        lock (token) {
+                            if (bytesRead == bytesNeeded) {
+                                // All ok, yield to the next process
+                                token.currentBuffer = currentBuffer;
+                                token.currentByteArray = currentBufferArray;
+                                token.currentSize = bytesRead;
+                                token.info = info;
+                                token.isVideo = true;
+                                Next();
+                                return;
+                            }
+                            else
+                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                         }
-                        else
-                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
                 }                               
             }
