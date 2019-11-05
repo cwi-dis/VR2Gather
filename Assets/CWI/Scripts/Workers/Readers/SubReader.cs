@@ -161,26 +161,25 @@ namespace Workers {
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
                         int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
-                        lock (token) {
                             if (bytesRead == bytesNeeded) {
-                                // All ok, yield to the next process
-                                token.currentBuffer = currentBuffer;
-                                token.currentByteArray = currentBufferArray;
-                                token.currentSize = bytesRead;
-                                token.info = info;
-                                token.isVideo = false;
-                                Next();
-                                return;
+                                lock (token) {
+                                    // All ok, yield to the next process
+                                    token.currentBuffer = currentBuffer;
+                                    token.currentByteArray = currentBufferArray;
+                                    token.currentSize = bytesRead;
+                                    token.info = info;
+                                    token.isVideo = false;
+                                    Next();
+                                }
+                            return;
                             }
                             else
                                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
-                        }
                     }
                 }
                 if (needsVideo == null || needsVideo()) {
                     // Attempt to receive, if we are playing
                     int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                    Debug.Log("BytesNeeded: " + bytesNeeded);
                     // If we are not playing or if we didn't receive anything we restart after 1000 failures.
                     UnsuccessfulCheck(bytesNeeded);
                     if (bytesNeeded != 0) {
@@ -190,20 +189,20 @@ namespace Workers {
                             currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
-                        lock (token) {
                             if (bytesRead == bytesNeeded) {
-                                // All ok, yield to the next process
-                                token.currentBuffer = currentBuffer;
-                                token.currentByteArray = currentBufferArray;
-                                token.currentSize = bytesRead;
-                                token.info = info;
-                                token.isVideo = true;
-                                Next();
-                                return;
-                            }
-                            else
-                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+                            // All ok, yield to the next process
+                                lock (token) {
+                                    token.currentBuffer = currentBuffer;
+                                    token.currentByteArray = currentBufferArray;
+                                    token.currentSize = bytesRead;
+                                    token.info = info;
+                                    token.isVideo = true;
+                                    Next();
+                                }
+                            return;
                         }
+                        else
+                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
                 }                               
             }
