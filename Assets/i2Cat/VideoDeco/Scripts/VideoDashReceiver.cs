@@ -27,18 +27,17 @@ public class VideoDashReceiver : MonoBehaviour
 
     // Start is called before the first frame update
     public void Init(string url) {
-        int framesBuffered = 10;
         try {
             reader = new Workers.SUBReader(url, () => {
                 bool val = false;
                 lock (preparer) {
-                    val = (preparer != null && preparer.availableVideo < codec.videoDataSize * framesBuffered) || codec.videoDataSize==0;
+                    val = (preparer != null && preparer.availableVideo < codec.videoDataSize * 5) || codec.videoDataSize==0;
                 }
                 return val;
             }, ()=> {
                 bool val = false;
                 lock (preparer) {
-                    val = preparer != null && preparer.availableAudio < ( 48000 / 30)* framesBuffered*4;
+                    val = preparer != null && preparer.availableAudio < 12000;
                 }
                 return val;
             } );
