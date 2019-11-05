@@ -153,7 +153,7 @@ namespace Workers {
                     // Attempt to receive, if we are playing
                     int bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
                     // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                    UnsuccessfulCheck(bytesNeeded);
+                    //UnsuccessfulCheck(bytesNeeded);
                     if (bytesNeeded != 0) {
                         if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
                             currentBufferArray = new byte[(int)bytesNeeded];
@@ -162,16 +162,17 @@ namespace Workers {
                         }
                         int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
-                                lock (token) {
+                                lock (token) 
+                                {
                                     // All ok, yield to the next process
                                     token.currentBuffer = currentBuffer;
                                     token.currentByteArray = currentBufferArray;
                                     token.currentSize = bytesRead;
                                     token.info = info;
                                     token.isVideo = false;
-                                    Next();
                                 }
-                            return;
+                                Next();
+                                return;
                             }
                             else
                                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
@@ -191,15 +192,16 @@ namespace Workers {
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
                             // All ok, yield to the next process
-                                lock (token) {
+                                lock (token)  
+                                {
                                     token.currentBuffer = currentBuffer;
                                     token.currentByteArray = currentBufferArray;
                                     token.currentSize = bytesRead;
                                     token.info = info;
                                     token.isVideo = true;
-                                    Next();
                                 }
-                            return;
+                                Next();
+                                return;
                         }
                         else
                             Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);

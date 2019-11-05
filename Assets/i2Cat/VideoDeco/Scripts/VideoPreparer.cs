@@ -37,11 +37,11 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) { 
-                if (token.isVideo) {
-                    lock (this) {
+            if (token != null) {
+                lock (token) {
+                    if (token.isVideo) {
                         int len = token.currentSize;
-                        if(videoBufferSize == 0) {
+                        if (videoBufferSize == 0) {
                             videoBufferSize = len * 15;
                             circularVideoBuffer = new byte[videoBufferSize];
                             circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
@@ -56,9 +56,7 @@ namespace Workers {
                             Marshal.Copy(token.currentBuffer + partLen, circularVideoBuffer, 0, len - partLen);
                             writeVideoPosition = len - partLen;
                         }
-                    }
-                } else {
-                    lock (this) {
+                    } else {
                         int len = token.currentSize;
                         if (writeAudioPosition + len < audioBufferSize) {
                             Marshal.Copy(token.currentBuffer, circularAudioBuffer, writeAudioPosition, len);
@@ -69,8 +67,8 @@ namespace Workers {
                             Marshal.Copy(token.currentBuffer + partLen, circularAudioBuffer, 0, len - partLen);
                             writeAudioPosition = len - partLen;
                         }
-                    }
 
+                    }
                 }
                 Next();
             }

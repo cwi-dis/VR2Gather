@@ -50,70 +50,71 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
-                if (token.isVideo ) {
-                    if (codecVideo == null) CreateVideoCodec();
-                    ffmpeg.av_init_packet(videoPacket);
-                    videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
-                    videoPacket->size = token.currentSize;
-                    videoPacket->pts = token.info.timestamp;
-                    if (videoPacket->size > 0) {
-                        int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
-                        if (ret2 < 0) {
-                            ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {token.currentSize} videoPacket->size {videoPacket->size}");
-                        } else {
-                            while (ret2 >= 0) {
-                                ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
-                                if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                    CreateYUV2RGBFilter();
-                                    int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
-                                    videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
-                                    token.currentBuffer = (System.IntPtr)tmpDataArray[0];
-                                    token.currentSize = tmpLineSizeArray[0] * videoFrame->height;
-                                } else
-                                    if (ret2 != -11)
-                                    Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+                lock (token) {
+                    if (token.isVideo) {
+                        if (codecVideo == null) CreateVideoCodec();
+                        ffmpeg.av_init_packet(videoPacket);
+                        videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
+                        videoPacket->size = token.currentSize;
+                        videoPacket->pts = token.info.timestamp;
+                        if (videoPacket->size > 0) {
+                            int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
+                            if (ret2 < 0) {
+                                ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {token.currentSize} videoPacket->size {videoPacket->size}");
+                            } else {
+                                while (ret2 >= 0) {
+                                    ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
+                                    if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                        CreateYUV2RGBFilter();
+                                        int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
+                                        videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
+                                        token.currentBuffer = (System.IntPtr)tmpDataArray[0];
+                                        token.currentSize = tmpLineSizeArray[0] * videoFrame->height;
+                                    } else
+                                        if (ret2 != -11)
+                                        Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
 
+                                }
                             }
                         }
-                    }
-                    Next();
-                } else {
-                    // Audio-
-                    if (codecAudio == null) CreateAudioCodec();
-                    ffmpeg.av_init_packet(audioPacket);
-                    audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way2
-                    audioPacket->size = token.currentSize;
-                    audioPacket->pts = token.info.timestamp;
-                    if (audioPacket->size > 0) {
-                        int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
-                        if (ret2 < 0) {
-                            ShowError(ret2, $"Error sending a packet for audio decoding token.currentSize {token.currentSize} audioPacket->size {audioPacket->size}");
-                        } else {
-                            while (ret2 >= 0) {
-                                ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
-                                if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-//                                    CreateResampleFilter();
-                                    fixed (byte** tmp = (byte*[])audioFrame->data) {
-//                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
-//                                        if (ret < 0) {
-//                                            ShowError(ret, "Error while converting");
-//                                        } else 
-                                        {
-                                            if( audioData == System.IntPtr.Zero) audioData = Marshal.AllocHGlobal(audioFrame->nb_samples*8);
-                                            float* src = (float*)tmp[0];
-                                            float* dst = (float*)audioData.ToInt64();
-                                            for (int i=0;i< audioFrame->nb_samples; i++) {
-                                                dst[i*2+0] = src[i];
-                                                dst[i*2+1] = src[i];
+                    } else {
+                        // Audio-
+                        if (codecAudio == null) CreateAudioCodec();
+                        ffmpeg.av_init_packet(audioPacket);
+                        audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way2
+                        audioPacket->size = token.currentSize;
+                        audioPacket->pts = token.info.timestamp;
+                        if (audioPacket->size > 0) {
+                            int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
+                            if (ret2 < 0) {
+                                ShowError(ret2, $"Error sending a packet for audio decoding token.currentSize {token.currentSize} audioPacket->size {audioPacket->size}");
+                            } else {
+                                while (ret2 >= 0) {
+                                    ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
+                                    if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                        //                                    CreateResampleFilter();
+                                        fixed (byte** tmp = (byte*[])audioFrame->data) {
+                                            //                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
+                                            //                                        if (ret < 0) {
+                                            //                                            ShowError(ret, "Error while converting");
+                                            //                                        } else 
+                                            {
+                                                if (audioData == System.IntPtr.Zero) audioData = Marshal.AllocHGlobal(audioFrame->nb_samples * 8);
+                                                float* src = (float*)tmp[0];
+                                                float* dst = (float*)audioData.ToInt64();
+                                                for (int i = 0; i < audioFrame->nb_samples; i++) {
+                                                    dst[i * 2 + 0] = src[i];
+                                                    dst[i * 2 + 1] = src[i];
+                                                }
+                                                token.currentBuffer = (System.IntPtr)audioData;
+                                                token.currentSize = audioFrame->nb_samples * 2;
                                             }
-                                            token.currentBuffer = (System.IntPtr)audioData;
-                                            token.currentSize = audioFrame->nb_samples*2;
                                         }
+                                    } else
+                                        if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_INVALIDDATA) {
+                                        ShowError(ret2, $"Error receiving frame for audio decoding");
                                     }
-                                } else
-                                    if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_INVALIDDATA) {
-                                            ShowError(ret2, $"Error receiving frame for audio decoding");
-                                    }
+                                }
                             }
                         }
                     }
