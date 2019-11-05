@@ -5,20 +5,20 @@ using UnityEngine.SceneManagement;
 
 public class OrchestratorController : PilotController {
 
-    AsyncOperation async;
+    //AsyncOperation async;
     bool load = false;
 
     public override void Start() {
         base.Start();
         orchestrator.controller = this;
-        async = SceneManager.LoadSceneAsync("TVSet_Test_Distancia");
-        async.allowSceneActivation = false;
+        //async = SceneManager.LoadSceneAsync("TVSet_Test_Distancia");
+        //async.allowSceneActivation = false;
     }
 
     public override void Update() {
         base.Update();
-        Debug.Log(async.progress);
-        if (load && async.progress >= 0.8) async.allowSceneActivation = true;
+        //Debug.Log(async.progress);
+        //if (load && async.progress >= 0.8) async.allowSceneActivation = true;
     }
 
     public override void MessageActivation(string msg) {
@@ -26,9 +26,9 @@ public class OrchestratorController : PilotController {
             //SceneManager.LoadScene("Pilot2_Presenter");
             if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
             else {
-                //SceneManager.LoadScene("TVSet_Test_Distancia"); 
+                SceneManager.LoadScene("TVSet_Test_Distancia"); 
                 //SceneManager.LoadScene("Pilot2_Player");
-                load = true;
+                //load = true;
             }
         }
         else if (msg == MessageType.READY) {

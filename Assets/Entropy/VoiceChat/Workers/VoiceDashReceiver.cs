@@ -11,16 +11,17 @@ public class VoiceDashReceiver : MonoBehaviour {
     AudioSource audioSource;
 
     // Start is called before the first frame update
-    public void Init(string url) {
+    public void Init(Config._User._SUBConfig cfg, string url = "") {
         const int frequency = 16000;
-        const double optimalAudioBufferDuration = 2.0;   // How long we want to buffer audio (in seconds)
+        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialBlend = 1.0f;
         //audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(url);
+            reader = new Workers.SUBReader(cfg, url);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);

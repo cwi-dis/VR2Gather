@@ -593,6 +593,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         livePresenterData.liveAddress = liveData.liveAddress;
         livePresenterData.vodAddress = liveData.vodAddress;
 
+        Debug.Log("Live: " + liveData.liveAddress);
+        Debug.Log("VoD: " + liveData.vodAddress);
+
         orchestratorWrapper.GetRooms();
     }
 

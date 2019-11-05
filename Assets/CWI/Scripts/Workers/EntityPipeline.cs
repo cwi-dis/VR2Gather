@@ -59,11 +59,11 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 break;
             case "pcsub":
-                reader = new Workers.SUBReader(url_pcc);
+                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader); //PC pipeline
 
-                gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio); //Audio Pipeline
+                gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);
