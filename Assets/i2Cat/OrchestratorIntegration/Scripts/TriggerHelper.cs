@@ -6,11 +6,10 @@ using UnityEngine.UI;
 public class TriggerHelper : MonoBehaviour {
 
     int value;
-    OscJack.OscPropertySender sender;
+    [SerializeField] OscJack.OscPropertySender sender;
 
     private void Start() {
         value = 0;
-        sender = GameObject.Find("Sender").GetComponent<OscJack.OscPropertySender>();
         sender._oscAddress = "";
     }
 
@@ -19,6 +18,7 @@ public class TriggerHelper : MonoBehaviour {
         else value = 0;
         sender._oscAddress = str;
         sender.Send(value);
+        Handheld.Vibrate();
     }
 
     public void SendPause(string str) {
@@ -26,6 +26,7 @@ public class TriggerHelper : MonoBehaviour {
         else value = 0;
         sender._oscAddress = str;
         sender.Send(value);
+        Handheld.Vibrate();
     }
 
 }
