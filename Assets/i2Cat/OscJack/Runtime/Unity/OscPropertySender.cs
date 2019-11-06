@@ -12,7 +12,7 @@ namespace OscJack
     {
         #region Editable fields
 
-        [SerializeField] string _ipAddress = "127.0.0.1";
+        [SerializeField] public string _ipAddress = "127.0.0.1";
         [SerializeField] int _udpPort = 9000;
         [SerializeField] public string _oscAddress = "/unity";
         [SerializeField] Component _dataSource = null;
