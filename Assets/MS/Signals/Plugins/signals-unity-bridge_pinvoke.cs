@@ -14,10 +14,15 @@ public class sub
         public int dsi_size;
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct StreamDesc {
+        public uint MP4_4CC;
+        public uint tileNumber;
+        public uint quality;
+    }
+    
     protected class _API
     {
-
-
         // Creates a new pipeline.
         // name: a display name for log messages. Can be NULL.
         // The returned pipeline must be freed using 'sub_destroy'.
@@ -36,10 +41,11 @@ public class sub
         [DllImport("signals-unity-bridge")]
         extern static public int sub_get_stream_count(IntPtr handle);
 
-        // Returns the 4CC of a given stream.
-        // SUB_EXPORT uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex);
+
+        // Returns the 4CC of a given stream. Desc is owned by the caller.
+        // SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);;
         [DllImport("signals-unity-bridge")]
-        extern static public uint sub_get_stream_4cc(IntPtr handle, int streamIndex);
+        extern static public bool sub_get_stream_info(IntPtr handle, int streamIndex, ref StreamDesc desc);
 
         // Plays a given URL.
         // SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
@@ -86,8 +92,9 @@ public class sub
         }
 
         public uint get_stream_4cc(int stream) {
-            return _API.sub_get_stream_4cc(obj, stream);
-
+            StreamDesc streamDesc = new StreamDesc();
+            _API.sub_get_stream_info(obj, stream, ref streamDesc);
+            return streamDesc.MP4_4CC;
         }
 
         public bool play(string name)
