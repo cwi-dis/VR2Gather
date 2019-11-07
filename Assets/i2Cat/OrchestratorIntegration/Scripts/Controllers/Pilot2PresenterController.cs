@@ -39,6 +39,7 @@ public class Pilot2PresenterController : PilotController {
         string text = MessageType.PLAY + "_";
         //orchestrator.SendMessageToAll(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Play();
+        //videos[id - 1].GetComponent<VideoForwardTool>().OnPlay();
     }
 
     public void SendPauseVideo(int id) {
