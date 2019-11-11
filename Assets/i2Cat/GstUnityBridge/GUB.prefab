@@ -74,7 +74,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ea582520fd1b7cf459feb7bc7ea4a555, type: 2}
+  - {fileID: 2100000, guid: 83141417ee278af4d8fbae94cd974238, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -110,7 +110,7 @@ MonoBehaviour:
   m_FlipX: 0
   m_FlipY: 1
   m_Loop: 0
-  m_URI: rtmp://91.126.37.138:1935/live/test2
+  m_URI: rtmp://91.126.37.138:1935/live/test
   m_VideoIndex: 0
   m_AudioIndex: 0
   m_TargetMaterial: {fileID: 0}
