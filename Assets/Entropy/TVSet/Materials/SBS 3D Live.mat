@@ -7,10 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SBS 3D
+  m_Name: SBS 3D Live
   m_Shader: {fileID: 4800000, guid: c40de9853aecd2b4a9259d353d757380, type: 3}
   m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -72,9 +72,9 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _slope: 0
-    - _thresh: 0.7
+    - _slope: 0.2
+    - _thresh: 0.16
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _keyingColor: {r: 0.058823504, g: 1, b: 0.023529414, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _keyingColor: {r: 0.4705882, g: 0.65882355, b: 0.5098039, a: 1}

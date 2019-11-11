@@ -21,8 +21,8 @@ public class Pilot2PlayerController : PilotController {
         background.SetActive(false);
 
         //LivePresenter
-        livePresenter.url = orchestrator.livePresenterData.liveAddress;
-        livePresenter.gameObject.SetActive(true);
+        //livePresenter.url = orchestrator.livePresenterData.liveAddress;
+        //livePresenter.gameObject.SetActive(true);
         
         masterID = orchestrator.activeSession.sessionUsers[0];
 
