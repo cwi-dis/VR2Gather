@@ -35,8 +35,9 @@ public class AudioReceiver : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
+        //audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
         audioSource.loop = true;
+        audioSource.spatialBlend = 1.0f;
         audioSource.Play();
 
         reader = new Workers.SocketIOReader(null, pUserID);
