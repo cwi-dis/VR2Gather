@@ -18,7 +18,7 @@ public class TriggerHelper : MonoBehaviour {
         else value = 0;
         sender._oscAddress = str;
         sender.Send(value);
-        Handheld.Vibrate();
+        //Handheld.Vibrate();
     }
 
     public void SendPause(string str) {
@@ -26,7 +26,7 @@ public class TriggerHelper : MonoBehaviour {
         else value = 0;
         sender._oscAddress = str;
         sender.Send(value);
-        Handheld.Vibrate();
+        //Handheld.Vibrate();
     }
 
 }
