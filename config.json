@@ -16,13 +16,13 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": -0.6399996876716614,
+            "x": -0.6499996781349182,
             "y": 0.6999996304512024,
-            "z": 0.06000000983476639
+            "z": 0.07000000774860382
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 231.9996795654297,
+            "y": 188.99957275390626,
             "z": 0.0
         },
         "scale": {
@@ -52,7 +52,7 @@
                 "configFilename": "../cameraconfig.xml",
                 "voxelSize": 0.009999999776482582,
                 "Encoder": {
-                    "octreeBits": 8
+                    "octreeBits": 10
                 },
                 "Bin2Dash": {
                     "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
