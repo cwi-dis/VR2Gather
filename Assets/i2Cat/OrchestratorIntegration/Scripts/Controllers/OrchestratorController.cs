@@ -22,7 +22,7 @@ public class OrchestratorController : PilotController {
             if (orchestrator.activeScenario.scenarioName == "Pilot 1") SceneManager.LoadScene("Pilot1");
             if (orchestrator.activeScenario.scenarioName == "Pilot 2") {
                 if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
-                else SceneManager.LoadScene("TVSet_Test_Distancia");
+                else SceneManager.LoadScene("Pilot2_Player");
             }
         }
         else if (msg == MessageType.READY) {

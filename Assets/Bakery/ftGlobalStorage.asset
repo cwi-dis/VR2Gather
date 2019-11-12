@@ -467,7 +467,20 @@ MonoBehaviour:
   - Assets/Entropy/TVSet/Geo/PanelHoward.FBX
   - Assets/Entropy/TVSet/Geo/Props/cylinder.fbx
   - Assets/Entropy/TVSet/Geo/Presenter.FBX
-  uvOverlapAssetList: 00000000ffffffff0000000001010000010100000000000000000000000000000000000000000000000000000000000000000000
+  - Assets/Pilot1/Art/Environments/SueloMojado/Car.FBX
+  - Assets/Pilot1/Environments/New Assets/Mesa_181109.fbx
+  - Assets/Pilot1/Environments/Rooms_noBake/Occluder_box.FBX
+  - Assets/Pilot1/Art/Environments/SueloMojado/capsula.FBX
+  - Assets/Pilot1/Environments/New Assets/Puertas_181109.fbx
+  - Assets/Pilot1/Art/Models/sphere2_fbx.fbx
+  - Assets/Pilot1/Art/Environments/Rooms_noBake/Fan.FBX
+  - Assets/Pilot1/Art/Environments/Rooms_noBake/COMISARIA_ALL_BAKE_V1.fbx
+  - Assets/Pilot1/Environments/NewRoom/Comisaria_01.fbx
+  - Assets/Pilot1/Environments/New Assets/Marco_181109.fbx
+  - Assets/Pilot1/Environments/New Assets/Cajones_181112.fbx
+  - Assets/Pilot1/Environments/CrimeScene/Sources/cinta.FBX
+  - Assets/Pilot1/Environments/CrimeScene/Sources/BarrierMetal_A.FBX
+  uvOverlapAssetList: 00000000ffffffff000000000101000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000010100000101000000000000010100000101000001010000010100000000000000000000
   xatlasWarningShown: 0
   renderSettingsBounces: 5
   renderSettingsGISamples: 16
