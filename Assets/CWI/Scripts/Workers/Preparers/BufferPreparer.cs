@@ -63,7 +63,7 @@ namespace Workers
             return size;
         }
 
-        public float SetPointSize() {
+        public float GetPointSize() {
             if (currentCellSize > 0.0000f) return currentCellSize;
             else return 0.008f;
         }

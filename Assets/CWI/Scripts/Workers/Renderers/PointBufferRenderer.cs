@@ -23,7 +23,7 @@ namespace Workers
 
 
         void OnRenderObject() {
-            material.SetFloat("_PointSize", preparer.SetPointSize());
+            material.SetFloat("_PointSize", preparer.GetPointSize());
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
             var camera = Camera.current;
