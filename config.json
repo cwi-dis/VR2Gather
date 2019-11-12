@@ -16,13 +16,13 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": -0.5599997639656067,
-            "y": 0.30000001192092898,
-            "z": 0.5499997735023499
+            "x": -0.6399996876716614,
+            "y": 0.6999996304512024,
+            "z": 0.06000000983476639
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 220.99964904785157,
+            "y": 231.9996795654297,
             "z": 0.0
         },
         "scale": {
@@ -50,7 +50,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "../cameraconfig.xml",
-				"voxelSize" : 0.05,
+                "voxelSize": 0.009999999776482582,
                 "Encoder": {
                     "octreeBits": 8
                 },
@@ -111,6 +111,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },
@@ -171,6 +172,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },
@@ -231,6 +233,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },
