@@ -100,6 +100,7 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
     {
         GameObject lUserAudioReceiver = new GameObject("UserAudioReceiver_" + pUserID);
         lUserAudioReceiver.transform.parent = this.transform;
+        lUserAudioReceiver.transform.localPosition = new Vector3(0, 0, 0);
 
         AudioReceiver lAudioReceiver = lUserAudioReceiver.AddComponent<AudioReceiver>();
         lAudioReceiver.StartListeningAudio(pUserID);
