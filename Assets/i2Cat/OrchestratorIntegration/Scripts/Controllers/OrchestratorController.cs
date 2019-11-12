@@ -11,24 +11,18 @@ public class OrchestratorController : PilotController {
     public override void Start() {
         base.Start();
         orchestrator.controller = this;
-        //async = SceneManager.LoadSceneAsync("TVSet_Test_Distancia");
-        //async.allowSceneActivation = false;
     }
 
     public override void Update() {
         base.Update();
-        //Debug.Log(async.progress);
-        //if (load && async.progress >= 0.8) async.allowSceneActivation = true;
     }
 
     public override void MessageActivation(string msg) {
         if (msg == MessageType.START) {
-            //SceneManager.LoadScene("Pilot2_Presenter");
-            if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
-            else {
-                SceneManager.LoadScene("TVSet_Test_Distancia"); 
-                //SceneManager.LoadScene("Pilot2_Player");
-                //load = true;
+            if (orchestrator.activeScenario.scenarioName == "Pilot 1") SceneManager.LoadScene("Pilot1");
+            if (orchestrator.activeScenario.scenarioName == "Pilot 2") {
+                if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
+                else SceneManager.LoadScene("TVSet_Test_Distancia");
             }
         }
         else if (msg == MessageType.READY) {
