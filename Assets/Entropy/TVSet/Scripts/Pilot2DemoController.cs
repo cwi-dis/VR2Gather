@@ -10,6 +10,7 @@ public class Pilot2DemoController : MonoBehaviour
     public float             timeFromPresenterToVRSphere;
     public ChromaVideoPlayer VRSphere;
     public Animation         openPlato;
+    public bool              platoIsOpened;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +21,7 @@ public class Pilot2DemoController : MonoBehaviour
     void Update()
     {
         
-        if (Presenter.play && !VRSphere.play) {
+        if (Presenter.play && !platoIsOpened) {
             timeFromPresenterToVRSphere -= Time.deltaTime;
             if (timeFromPresenterToVRSphere < 0)
                 OnDirectConnection();
@@ -28,17 +29,18 @@ public class Pilot2DemoController : MonoBehaviour
     }
 
     public void OnIntro() {
-	OnPresenter();
+	    OnPresenter();
         Header.OnPlay(()=> { });
-
     }
 
     public void OnPresenter() {
         Presenter.OnPlay();
+        VRSphere.OnPlay();
     }
 
     public void OnDirectConnection() {
         openPlato.Play("Take 001");
-        VRSphere.OnPlay();
+        platoIsOpened = true;
+        //
     }
 }
