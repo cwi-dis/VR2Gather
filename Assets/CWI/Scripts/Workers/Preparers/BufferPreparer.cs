@@ -64,7 +64,7 @@ namespace Workers
         }
 
         public float GetPointSize() {
-            if (currentCellSize > 0.0000f) return currentCellSize;
+            if (currentCellSize > 0.0000f) return currentCellSize*0.71f;
             else return 0.008f;
         }
 
