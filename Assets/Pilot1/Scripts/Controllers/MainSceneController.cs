@@ -48,8 +48,11 @@ public class MainSceneController : MonoBehaviour {
         player2VideoPlayer.transform.localScale *= 1.5f;
 
         currentVideoPlayer.Initialize(url);
+    }
 
-        StartCoroutine(AudioIntroPlay());
+    public void OnPrepare() {
+        (PoliceController.Instance.my_id == 0 ? player1MonitorRenderer : player2MonitorRenderer).sharedMaterial.mainTexture = currentVideoPlayer.Texture;
+        IsPrepared(null, 0, 0);
     }
 
     IEnumerator AudioIntroPlay() {
@@ -67,7 +70,6 @@ public class MainSceneController : MonoBehaviour {
         animation["Doors"].time = currentVideoPlayer.Position;
         animation["Doors"].speed = 1;
     }
-
 
     void Update() {
        // animation.clip.SampleAnimation(gameObject, currentVideoPlayer.Position);

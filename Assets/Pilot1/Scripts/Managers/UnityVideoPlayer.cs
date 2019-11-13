@@ -25,10 +25,20 @@ public class UnityVideoPlayer : MonoBehaviour {
         URI = Application.streamingAssetsPath + "/videos/" + url;
         var renderer = GetComponent<Renderer>();
         video = GetComponent<VideoPlayer>();
+        video.prepareCompleted += Video_prepareCompleted;
         if (video != null) {
             video.url = URI + ".mp4";
             subtitles?.Load(this);
             video.Prepare();
         }
+    }
+
+    public virtual void OnApplicationQuit() {
+        video.prepareCompleted -= Video_prepareCompleted;
+        video.Stop();
+    }
+
+    protected void Video_prepareCompleted(VideoPlayer source) {
+        MainSceneController.Instance.OnPrepare();
     }
 }
