@@ -35,16 +35,16 @@ public class PoliceController : MonoBehaviour {
 
         FaderMaterial.color = Color.black;
 
+        for (int i = 0; i < 2; ++i) {
+            setRenderes(TVM[i], false);
+        };
+
         // Intro Cars Scene
         IntroScene.SetActive(true);
 		//Move Intro to see the player 2 in cars scene.
 		if (my_id == 1) IntroScene.transform.Translate(new Vector3(-5,0,0), Space.World);
         yield return FaderTo(0);
         yield return new WaitForSeconds(IntroSceneController.Instance.introDuration);
-        for (int i = 0; i < 2; ++i) {
-            setRenderes(TVM[i], false);
-            if (i == my_id) setRenderes(TVM[i], true);
-        }
         yield return new WaitForSeconds(IntroSceneController.Instance.introDuration);
         yield return FaderTo(1);
 
