@@ -17,15 +17,17 @@ public class OrchestratorController : PilotController {
         base.Update();
     }
 
-    public override void MessageActivation(string msg) {
-        if (msg == MessageType.START) {
-            if (orchestrator.activeScenario.scenarioName == "Pilot 1") SceneManager.LoadScene("Pilot1");
-            if (orchestrator.activeScenario.scenarioName == "Pilot 2") {
+    public override void MessageActivation(string message) {
+        Debug.Log(message);
+        string[] msg = message.Split(new char[] { '_' });
+        if (msg[0] == MessageType.START) {
+            if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
+            if (msg[1] == "Pilot 2") {
                 if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
                 else SceneManager.LoadScene("Pilot2_Player");
             }
         }
-        else if (msg == MessageType.READY) {
+        else if (msg[0] == MessageType.READY) {
             // Do something to check if all the users are ready (future implementation)
         }
     }

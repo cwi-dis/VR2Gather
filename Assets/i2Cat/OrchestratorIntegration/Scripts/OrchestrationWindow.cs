@@ -418,6 +418,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetLivePresenterData();
 
             activeScenario = scenario;
+            Debug.Log("XXXXX - " + activeScenario.scenarioName);
         }
         else {
             scenarioIdText.text = "";
@@ -907,7 +908,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void ReadyButton() {
-        if (isMaster) SendMessageToAll(MessageType.START);
+        if (isMaster) SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
         else SendMessageToAll(MessageType.READY);
     }
     
