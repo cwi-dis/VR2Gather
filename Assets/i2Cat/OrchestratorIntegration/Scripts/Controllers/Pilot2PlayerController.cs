@@ -14,6 +14,8 @@ public class Pilot2PlayerController : PilotController {
     bool useTVM = true;
     bool audioPCTogether = false;
     bool enter = false;
+
+    [SerializeField] Pilot2DemoController demoController;
     
     public override void Start() {
         base.Start();
@@ -89,13 +91,22 @@ public class Pilot2PlayerController : PilotController {
             if (timer >= delay) {
                 switch (todoAction) {
                     case Actions.VIDEO_1_START:
-                        videos[0].Play();
+                        if (demoController.HowardLive.activeSelf) {
+                            demoController.HowardLive.GetComponent<Animation>().Play();
+                            videos[0].Play();
+                        }
+                        else demoController.HowardLive.SetActive(true);
                         break;
                     case Actions.VIDEO_1_PAUSE:
+                        demoController.HowardLive.GetComponent<Animation>().Stop();
                         videos[0].Pause();
                         break;
                     case Actions.VIDEO_2_START:
-                        videos[1].Play();
+                        if (demoController.DomeLive.activeSelf) videos[1].Play();
+                        else {
+                            demoController.OnDirectConnection();
+                            demoController.DomeLive.SetActive(true);
+                        }
                         break;
                     case Actions.VIDEO_2_PAUSE:
                         videos[1].Pause();
@@ -117,13 +128,15 @@ public class Pilot2PlayerController : PilotController {
         else if (msg[0] == MessageType.PLAY) {
             if (msg[1] == "1") todoAction = Actions.VIDEO_1_START;
             else if (msg[1] == "2") todoAction = Actions.VIDEO_2_START;
-            delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
+            delay = 1.3f;
+            //delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
             Debug.Log(delay);
         }
         else if (msg[0] == MessageType.PAUSE) {
             if (msg[1] == "1") todoAction = Actions.VIDEO_1_PAUSE;
             else if (msg[1] == "2") todoAction = Actions.VIDEO_2_PAUSE;
-            delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
+            delay = 1.3f;
+            //delay = (float)SyncTool.GetDelay(SyncTool.ToDateTime(msg[2]));
             Debug.Log(delay);
         }
     }

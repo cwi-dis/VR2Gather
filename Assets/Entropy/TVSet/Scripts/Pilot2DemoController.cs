@@ -6,25 +6,33 @@ public class Pilot2DemoController : MonoBehaviour
 {
     public float             initialWaitTime;
     public HeaderController  Header;
-    public ChromaVideoPlayer Presenter;
+    public ChromaVideoPlayer PresenterLocal;
+    public GameObject        PresenterGub;
+    public GameObject HowardLocal;
+    public GameObject HowardLive;
+    public GameObject DomeLocal;
+    public GameObject DomeLive;
+    public GameObject Advisor1;
+    public GameObject Advisor2;
+    public GameObject Advisor3;
     public float             timeFromPresenterToVRSphere;
     public ChromaVideoPlayer VRSphere;
     public Animation         openPlato;
     public bool              platoIsOpened;
+    public bool              isLive = false;
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         OnIntro();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
-        if (Presenter.play && !platoIsOpened) {
-            timeFromPresenterToVRSphere -= Time.deltaTime;
-            if (timeFromPresenterToVRSphere < 0)
-                OnDirectConnection();
+    void Update() {
+        if (!isLive) {
+            if (PresenterLocal.play && !platoIsOpened) {
+                timeFromPresenterToVRSphere -= Time.deltaTime;
+                if (timeFromPresenterToVRSphere < 0)
+                    OnDirectConnection();
+            }
         }
     }
 
@@ -34,8 +42,19 @@ public class Pilot2DemoController : MonoBehaviour
     }
 
     public void OnPresenter() {
-        Presenter.OnPlay();
-        VRSphere.OnPlay();
+        if (!isLive) {
+            PresenterLocal.OnPlay();
+            VRSphere.OnPlay();
+        }
+        else {
+            PresenterLocal.gameObject.SetActive(false);
+            HowardLocal.SetActive(false);
+            DomeLocal.SetActive(false);
+            Advisor1.SetActive(false);
+            Advisor2.SetActive(false);
+            Advisor3.SetActive(false);
+            PresenterGub.SetActive(true);
+        }
     }
 
     public void OnDirectConnection() {
