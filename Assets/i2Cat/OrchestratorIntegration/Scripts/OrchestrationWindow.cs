@@ -22,6 +22,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     private State state = State.Offline;
     private bool updated = false;
+    private bool imJoining = false;
 
     [Header("Status")]
     public string orchestratorUrl;
@@ -439,11 +440,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         Dropdown dd = sessionIdDrop;
         string sessionIdToJoin = availableSessions[dd.value].sessionId;
         //userSession.text = sessionIdToJoin;
-        orchestratorWrapper.JoinSession(sessionIdToJoin);
+        orchestratorWrapper.JoinSession(sessionIdToJoin);        
     }
 
     public void OnJoinSessionResponse(ResponseStatus status) {
         if (status.Error == 0) {
+            imJoining = true;
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
@@ -483,6 +485,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             else updated = false;
 
             activeSession = session;
+            imJoining = false;
 
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
@@ -532,8 +535,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
-            updated = true;
-            orchestratorWrapper.GetUserInfo(_userID);
+            updated = true;  
+            if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
             foreach (User u in availableUsers) {
                 if (u.userId == _userID)
                     Debug.Log(u.userName + " Joined");
@@ -544,7 +547,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnUserLeftSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
-            orchestratorWrapper.GetUserInfo(_userID);
+            //orchestratorWrapper.GetUserInfo(_userID);
             foreach (User u in availableUsers) {
                 if (u.userId == _userID)
                     Debug.Log(u.userName + " Leaved");

@@ -73,8 +73,8 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     - _slope: 0.31
-    - _thresh: 0.07
+    - _thresh: 0.9
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _keyingColor: {r: 0.21181916, g: 0.3773585, b: 0.23295183, a: 1}
+    - _keyingColor: {r: 0.08627451, g: 1, b: 0.03137255, a: 1}
