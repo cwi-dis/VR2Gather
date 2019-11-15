@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class Pilot2DemoController : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class Pilot2DemoController : MonoBehaviour
     public float             timeFromPresenterToVRSphere;
     public ChromaVideoPlayer VRSphere;
     public Animation         openPlato;
+    public VideoPlayer domeVideo;
+    public GameObject domeWindow;
     public bool              platoIsOpened;
     public bool              isLive = false;
     // Start is called before the first frame update
@@ -32,6 +35,11 @@ public class Pilot2DemoController : MonoBehaviour
                 timeFromPresenterToVRSphere -= Time.deltaTime;
                 if (timeFromPresenterToVRSphere < 0)
                     OnDirectConnection();
+            }
+        }
+        else {
+            if (platoIsOpened && !domeVideo.isPlaying && domeVideo.frame >= 60) {
+                OnDirectDisconnection();
             }
         }
     }
@@ -60,6 +68,10 @@ public class Pilot2DemoController : MonoBehaviour
     public void OnDirectConnection() {
         openPlato.Play("Take 001");
         platoIsOpened = true;
-        //
+    }
+
+    public void OnDirectDisconnection() {
+        domeWindow.SetActive(true);
+        platoIsOpened = false;
     }
 }
