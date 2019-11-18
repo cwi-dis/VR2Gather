@@ -16,13 +16,13 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": 0,
-            "y": 0,
-            "z": 0.2
+            "x": -0.619999885559082,
+            "y": 0.8599994778633118,
+            "z": 0.020000193268060685
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 153.99945068359376,
+            "y": 145.99942016601563,
             "z": 0.0
         },
         "scale": {
@@ -50,7 +50,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "../cameraconfig.xml",
-                "voxelSize": 0.005,
+                "voxelSize": 0.00800000037997961,
                 "Encoder": {
                     "octreeBits": 10
                 },
