@@ -22,6 +22,7 @@
 		#pragma target 3.0
 
 		sampler2D _MainTex;
+		//float4 _MainTex_ST;
 		float3 _keyingColor;
 		float _thresh; // 0.8
 		float _slope; // 0.2
@@ -47,8 +48,9 @@
 
 		void surf(Input IN, inout SurfaceOutput o) {
 			// Albedo comes from a texture tinted by color
-			float2 uv = IN.uv_MainTex* float2(0.5, 1) + float2(0.5*(unity_StereoEyeIndex), 0);
-			
+			float2 uv = IN.uv_MainTex;// TRANSFORM_TEX(IN.uv_MainTex, _MainTex);
+			uv = uv * float2(0.5, 1) + float2(0.5*(unity_StereoEyeIndex), 0);
+
 			float3 input_color = tex2D(_MainTex, uv).rgb;
 			
 			float d = abs(length(abs(_keyingColor.rgb - input_color.rgb)));

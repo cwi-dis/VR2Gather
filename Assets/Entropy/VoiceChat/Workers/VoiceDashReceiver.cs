@@ -6,26 +6,27 @@ public class VoiceDashReceiver : MonoBehaviour {
 
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
-    Workers.BaseWorker preparer;
-    AudioSource audioSource;    
+    Workers.AudioPreparer preparer;
+    Workers.Token token;
+    AudioSource audioSource;
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string _url = "") {
+    public void Init(Config._User._SUBConfig cfg, string url = "") {
         const int frequency = 16000;
         const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f;
+        //audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg, _url);
+            reader = new Workers.SUBReader(cfg, url);
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = new Workers.Token();
-        }
-        catch (System.Exception e) {
+            reader.token = token = new Workers.Token();
+        } catch (System.Exception e) {
             Debug.Log(">>ERROR");
 
         }
@@ -38,14 +39,14 @@ public class VoiceDashReceiver : MonoBehaviour {
     }
 
     void OnAudioRead(float[] data) {
-        if (preparer == null || !preparer.GetBuffer(data, data.Length))
+        if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
     }
 
     float[] tmpBuffer;
     void OnAudioFilterRead(float[] data, int channels) {
         if (tmpBuffer == null) tmpBuffer = new float[data.Length];
-        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length)) {
+        if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length)) {
             int cnt = 0;
             do {
                 data[cnt] += tmpBuffer[cnt];

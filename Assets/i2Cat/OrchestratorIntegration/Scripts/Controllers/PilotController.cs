@@ -16,8 +16,8 @@ abstract public class PilotController : MonoBehaviour {
     public PlayerManager[] players;
     public VideoPlayer[] videos;
 
-    [HideInInspector] public OrchestrationWindow orchestrator;
-    [HideInInspector] public GameObject background;
+    [HideInInspector] public OrchestrationWindow orchestrator = null;
+    [HideInInspector] public GameObject background = null;
 
     #region Sync
     public float timer = 0.0f;

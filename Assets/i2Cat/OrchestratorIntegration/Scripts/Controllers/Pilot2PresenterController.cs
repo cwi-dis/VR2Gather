@@ -17,7 +17,7 @@ public class Pilot2PresenterController : PilotController {
 
         for (int i = 1; i < orchestrator.activeSession.sessionUsers.Length; i++) {
             foreach (User u in orchestrator.availableUsers) {
-                if (u.userId == orchestrator.activeSession.sessionUsers[i]) {                    
+                if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
                     players[i - 1].cam.gameObject.SetActive(true);
                     players[i - 1].tvm.connectionURI = u.userData.userMQurl;
                     players[i - 1].tvm.exchangeName = u.userData.userMQexchangeName;
@@ -39,6 +39,7 @@ public class Pilot2PresenterController : PilotController {
         string text = MessageType.PLAY + "_";
         orchestrator.SendMessageToAll(text + id.ToString() + "_" + SyncTool.GetMyTimeString());
         videos[id - 1].Play();
+        //videos[id - 1].GetComponent<VideoForwardTool>().OnPlay();
     }
 
     public void SendPauseVideo(int id) {

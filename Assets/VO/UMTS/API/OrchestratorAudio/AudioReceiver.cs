@@ -4,23 +4,40 @@ public class AudioReceiver : MonoBehaviour
 {
     public string userID;
 
+    public void StartListeningAudio(string pUserID)
+    {
+        #if TEST_BED
+        StartListening(pUserID);
+        #endif
+    }
+
+    public void StopListeningAudio()
+    {
+        #if TEST_BED
+        StopListening();
+        #endif
+    }
+
+    #if TEST_BED
+
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
-    private Workers.BaseWorker preparer;
+    private Workers.AudioPreparer preparer;
     private Workers.Token token;
 
     private float[] tmpBuffer;
 
     private AudioSource audioSource;
 
-    public void StartListeningAudio(string pUserID)
+    private void StartListening(string pUserID)
     {
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
+        //audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
         audioSource.loop = true;
+        audioSource.spatialBlend = 1.0f;
         audioSource.Play();
 
         reader = new Workers.SocketIOReader(null, pUserID);
@@ -32,7 +49,7 @@ public class AudioReceiver : MonoBehaviour
         userID = pUserID;
     }
 
-    public void StopListeningAudio()
+    private void StopListening()
     {
         reader?.Stop();
         codec?.Stop();
@@ -42,7 +59,7 @@ public class AudioReceiver : MonoBehaviour
     // Buffer is filled 2.5 times per second (every 400ms). 
     private void OnAudioRead(float[] data)
     {
-        if (preparer == null || !preparer.GetBuffer(data, data.Length))
+        if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
     }
 
@@ -52,7 +69,7 @@ public class AudioReceiver : MonoBehaviour
         {
             tmpBuffer = new float[data.Length];
         }
-        if (preparer != null && preparer.GetBuffer(tmpBuffer, tmpBuffer.Length))
+        if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
         {
             int cnt = 0;
             do { data[cnt] += tmpBuffer[cnt]; } while (++cnt < data.Length);
@@ -63,4 +80,6 @@ public class AudioReceiver : MonoBehaviour
     {
         StopListeningAudio();
     }
+
+#endif
 }

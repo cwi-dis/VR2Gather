@@ -11,7 +11,6 @@ using System.IO;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(NetworkDataProvider))]
-//[RequireComponent(typeof(AdjustTVMesh))]
 
 public class MeshConstructor : MonoBehaviour
 {
@@ -37,11 +36,9 @@ public class MeshConstructor : MonoBehaviour
     private object m_lockobj = new object();
     private int ind = 0;
 
-    private double CalculateStdDev(IEnumerable<long> values)
-    {
+    private double CalculateStdDev(IEnumerable<long> values) {
         double ret = 0;
-        if (values.Count() > 0)
-        {
+        if (values.Count() > 0) {
             //Compute the Average      
             double avg = values.Average();
             //Perform the Sum of (value-avg)_2_2      
@@ -53,21 +50,18 @@ public class MeshConstructor : MonoBehaviour
     }
 
     // Updating the mesh every time a new buffer is received from the network
-    private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e)
-    {
+    private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e) {
         // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
-        stopWatch = System.Diagnostics.Stopwatch.StartNew();
+        //stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
-        lock (e)
-        {
-            if (e.Value != null)
-            {
+        lock (e) {
+            if (e.Value != null) {
                 //// Storing the received buffer to a .bin file
                 //File.WriteAllBytes(@"C:\VCL_User_Prod\RealSenzBinsCorto\RealSenzBin_" + ind + ".bin", e.Value);
                 //Debug.Log("file saved");
 
-                stopWatch = System.Diagnostics.Stopwatch.StartNew();
-                stopWatch.Start();
+                //stopWatch = System.Diagnostics.Stopwatch.StartNew();
+                //stopWatch.Start();
 
                 // Flaging that a new buffer is received
                 int size = Marshal.SizeOf(e.Value[0]) * e.Value.Length; // Buffer 's size
@@ -84,10 +78,7 @@ public class MeshConstructor : MonoBehaviour
                 m_colorExts.Clear();
                 m_colorInts.Clear();
 
-
-                try
-                {
-
+                try {
                     // Defining the textures from the returned struct
                     DefineTexture(currentMesh);
 
@@ -102,21 +93,19 @@ public class MeshConstructor : MonoBehaviour
 
                     received_new_frame = true;
                 }
-                catch (UnityException ex)
-                {
+                catch (UnityException ex) {
                     Debug.Log(ex.Message);
                 }
-                stopWatch.Stop();
-                deserializeTime.Add(stopWatch.ElapsedMilliseconds);
-                if(deserializeTime.Count == 1000)
-                    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
+                //stopWatch.Stop();
+                //deserializeTime.Add(stopWatch.ElapsedMilliseconds);
+                //if(deserializeTime.Count == 1000)
+                //    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
             }
         }
     }
 
     // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
-    private void Awake()
-    {
+    private void Awake() {
         // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
@@ -125,23 +114,20 @@ public class MeshConstructor : MonoBehaviour
         //this.transform.position = new Vector3(-1.08f, -1.14f, 2.15f);
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         // Removing the function DataProvider_OnNewData from its assignment to the NetworkDataProvider when the game object gets destroyed
         m_DataProvider.OnNewData -= DataProvider_OnNewData;
     }
 
 
-    private void Update()
-    {
+    private void Update() {
         // Checking if a new buffer is received
         if (!received_new_frame)
             return;
 
-        try
-        {
-            stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
-            stopWatch1.Start();
+        try {
+            //stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
+            //stopWatch1.Start();
 
             List<Vector3> vert;
             List<Vector4> ids;
@@ -154,8 +140,7 @@ public class MeshConstructor : MonoBehaviour
             int numDevs;
 
             // Locking all the variables that refer to the data that need to be fed to the shader
-            lock (m_lockobj)
-            {
+            lock (m_lockobj) {
                 vert = m_vertices;
                 ids = m_participatingCams;
                 face = m_faces;
@@ -188,12 +173,9 @@ public class MeshConstructor : MonoBehaviour
             Texture2D current_tex = null;
 
             // Assigning the textures
-
-            for (int i = 0; i < numDevs; i++)
-            {
+            for (int i = 0; i < numDevs; i++) {
                 // After the first reconstructed mesh, delete the existing texture of the current id in the list instead of recreating the latter
-                if (i < m_Textures.Count)
-                {
+                if (i < m_Textures.Count) {
                     current_tex = m_Textures[i];
                     Texture2D.Destroy(m_Textures[i]);
                     current_tex = null;
@@ -213,7 +195,6 @@ public class MeshConstructor : MonoBehaviour
                 current_tex.Apply();
             }
 
-
             // Defining all the shader 's variables
             for (int i = 0; i < numDevs; i++)
                 GetComponent<MeshRenderer>().material.SetTexture("Texture" + i, m_Textures[i]); // Textures
@@ -224,13 +205,12 @@ public class MeshConstructor : MonoBehaviour
 
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorIntrinsics", c_intrinsics); // Color intrinsics matrix in an array (column major)
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorExtrinsics", c_extrinsics); // Color extrinsics matrix in an array (column major)
-            stopWatch1.Stop();
-            renderingTime.Add(stopWatch1.ElapsedMilliseconds);
-            if(renderingTime.Count == 1000)
-                Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
+            //stopWatch1.Stop();
+            //renderingTime.Add(stopWatch1.ElapsedMilliseconds);
+            //if(renderingTime.Count == 1000)
+            //    Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             received_new_frame = false;
             Debug.Log(ex);
             return;
@@ -240,30 +220,26 @@ public class MeshConstructor : MonoBehaviour
     }
 
     // Defining textures of the shader
-    void DefineTexture(DllFunctions.Mesh mesh)
-    {
+    void DefineTexture(DllFunctions.Mesh mesh) {
         //Marshaling for the texture images
         IntPtr[] texturePtr = new IntPtr[mesh.numDevices];
         byte[][] textures = new byte[mesh.numDevices][];
 
         Marshal.Copy(mesh.textures, texturePtr, 0, mesh.numDevices);
 
-        for (int i = 0; i < mesh.numDevices; i++)
-        {
+        for (int i = 0; i < mesh.numDevices; i++) {
             textures[i] = new byte[mesh.width * mesh.height * 3];
             Marshal.Copy(texturePtr[i], textures[i], 0, mesh.width * mesh.height * 3);
         }
 
         // Lock the byte arrays to feed the game object
-        lock (m_lockobj)
-        {
+        lock (m_lockobj) {
             m_textures = textures;
         }
     }
 
     // Defining the rest of the shader 's parameters
-    void DefineShaderParams(DllFunctions.Mesh mesh)
-    {
+    void DefineShaderParams(DllFunctions.Mesh mesh) {
         // Marshaling for the weigths of each of the cameras defining a vertex 's texture
         float[] camWeights = new float[mesh.numVertices];
         Marshal.Copy(mesh.weights, camWeights, 0, mesh.numVertices);
@@ -288,8 +264,7 @@ public class MeshConstructor : MonoBehaviour
         Marshal.Copy(mesh.colorInts, colorIntrinsics, 0, mesh.numDevices * 9);
 
         // Lock the arrays in order to feed the game object
-        lock (m_lockobj)
-        {
+        lock (m_lockobj) {
             m_numDevs = mesh.numDevices;
             m_width = mesh.width;
             m_height = mesh.height;
@@ -300,8 +275,7 @@ public class MeshConstructor : MonoBehaviour
     }
 
     //Creating the mesh
-    void CreateShape(DllFunctions.Mesh mesh)
-    {
+    void CreateShape(DllFunctions.Mesh mesh) {
         // Marshaling for the faces
         int[] faces = new int[mesh.numFaces * 3];
         Marshal.Copy(mesh.faces, faces, 0, mesh.numFaces * 3);
@@ -315,8 +289,7 @@ public class MeshConstructor : MonoBehaviour
             vertices[i] = (new Vector3(vertexArray[3 * i], vertexArray[3 * i + 1], vertexArray[3 * i + 2]));
 
         // Lock the arrays in order to feed the game object
-        lock (m_lockobj)
-        {
+        lock (m_lockobj) {
             m_vertices.AddRange(vertices);
             m_faces.AddRange(faces);
         }

@@ -5,32 +5,29 @@ using UnityEngine.SceneManagement;
 
 public class OrchestratorController : PilotController {
 
-    AsyncOperation async;
+    //AsyncOperation async;
     bool load = false;
 
     public override void Start() {
         base.Start();
         orchestrator.controller = this;
-        async = SceneManager.LoadSceneAsync("TVSet_Test_Distancia");
-        async.allowSceneActivation = false;
     }
 
     public override void Update() {
         base.Update();
-        Debug.Log(async.progress);
-        if (load && async.progress >= 0.8) async.allowSceneActivation = true;
     }
 
-    public override void MessageActivation(string msg) {
-        if (msg == MessageType.START) {
-            if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
-            else {
-                //SceneManager.LoadScene("TVSet_Test_Distancia"); 
-                //SceneManager.LoadScene("Pilot2_Player");
-                load = true;
+    public override void MessageActivation(string message) {
+        Debug.Log(message);
+        string[] msg = message.Split(new char[] { '_' });
+        if (msg[0] == MessageType.START) {
+            if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
+            if (msg[1] == "Pilot 2") {
+                if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
+                else SceneManager.LoadScene("Pilot2_Player");
             }
         }
-        else if (msg == MessageType.READY) {
+        else if (msg[0] == MessageType.READY) {
             // Do something to check if all the users are ready (future implementation)
         }
     }
