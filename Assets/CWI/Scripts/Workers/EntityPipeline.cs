@@ -44,8 +44,8 @@ public class EntityPipeline : MonoBehaviour {
                 try {
                     writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, url_pcc);
                 }
-                catch (System.EntryPointNotFoundException) {
-                    Debug.LogError("EntityPipeline: B2DWriter() raised EntryPointNotFound exception, skipping PC writing");
+                catch (System.EntryPointNotFoundException e) {
+                    Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                 }
                 if (codec != null && writer != null) {
                     reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.

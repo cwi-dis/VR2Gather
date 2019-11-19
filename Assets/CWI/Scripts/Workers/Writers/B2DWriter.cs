@@ -22,10 +22,10 @@ namespace Workers {
                     Start();
                 }
                 else
-                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
+                    throw new System.Exception($"B2DWriter: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
             }
             catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.LogError($"B2DWriter({url}:{e.Message}");
                 throw e;
             }
         }
