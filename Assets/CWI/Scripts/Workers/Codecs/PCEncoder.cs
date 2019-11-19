@@ -37,25 +37,30 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
-                if (token.currentPointcloud != null)
-                {
-                    encoder.feed(token.currentPointcloud);
-                }
-                if ( encoder.available(true)) {
-                    unsafe {
-                        int size = encoder.get_encoded_size();
-                        if (dampedSize < size) {
-                            dampedSize = (int)(size * Config.Instance.memoryDamping);
-                            if (encoderBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer);
-                            encoderBuffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(dampedSize);
+                lock (token) {
+                    if (token.currentPointcloud != null) {
+                        Debug.Log("Feed the encoder");
+                        encoder.feed(token.currentPointcloud);
+                    }
+                    if (encoder.available(true)) {
+                        unsafe {
+                            Debug.Log("Frame available");
+                            int size = encoder.get_encoded_size();
+                            if (dampedSize < size) {
+                                dampedSize = (int)(size * Config.Instance.memoryDamping);
+                                if (encoderBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer);
+                                encoderBuffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(dampedSize);
+                            }
+                            if (encoder.copy_data(encoderBuffer, dampedSize)) {
+                                token.currentBuffer = encoderBuffer;
+                                token.currentSize = size;
+                                Debug.Log($"PC encoded {size}");
+                                Next();
+                            } else
+                                Debug.LogError("PCRealSense2Reader: cwipc_encoder_copy_data returned false");
                         }
-                        if (encoder.copy_data(encoderBuffer, dampedSize)) {
-                            token.currentBuffer = encoderBuffer;
-                            token.currentSize = size;
-                            Next();
-                        }
-                        else
-                            Debug.LogError("PCRealSense2Reader: cwipc_encoder_copy_data returned false");
+                    } else {
+                        Debug.Log("NO FRAME!!!! Frame available");
                     }
                 }
             }

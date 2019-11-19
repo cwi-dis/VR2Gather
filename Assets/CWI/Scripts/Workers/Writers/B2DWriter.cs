@@ -40,10 +40,12 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
-                //bw?.Write(token.currentByteArray, 0, token.currentSize);
-                if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
-                    Debug.Log("ERROR sending data");
-                Next();
+                lock (token) {
+                    //bw?.Write(token.currentByteArray, 0, token.currentSize);
+                    if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
+                        Debug.Log("ERROR sending data");
+                    Next();
+                }
             }
         }
     }

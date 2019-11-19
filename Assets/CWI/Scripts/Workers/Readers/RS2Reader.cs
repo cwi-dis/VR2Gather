@@ -31,21 +31,22 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
-                cwipc.pointcloud pc = reader.get();
-                if (pc == null) return;
-                if (voxelSize != 0)
-                {
-                    int oldCount = pc.count();
-                    pc = cwipc.downsample(pc, voxelSize);
-                    if (pc == null)
-                    {
-                        Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
-                        return;
+                lock (token) {
+                    cwipc.pointcloud pc = reader.get();
+                    if (pc == null) return;
+                    if (voxelSize != 0) {
+                        int oldCount = pc.count();
+                        pc = cwipc.downsample(pc, voxelSize);
+                        if (pc == null) {
+                            Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
+                            return;
+                        }
+                        Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {pc.count()} point, cellsize={pc.cellsize()}");
                     }
-                    Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {pc.count()} point, cellsize={pc.cellsize()}");
+                    Debug.Log($"xxxjack voxelSize={voxelSize} to {pc.count()} point, cellsize={pc.cellsize()} uncompressed_size={pc.get_uncompressed_size()}");
+                    token.currentPointcloud = pc;
+                    Next();
                 }
-                token.currentPointcloud = pc;
-                Next();
             }
         }
     }
