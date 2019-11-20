@@ -81,9 +81,15 @@ public class sub
             throw new System.Exception("sub.connection: default constructor called");
         }
 
-        ~connection()
-        {
-            _API.sub_destroy(obj);
+        ~connection() {
+            free();
+        }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API.sub_destroy(obj);
+                obj = System.IntPtr.Zero;
+            }
         }
 
         public int get_stream_count()

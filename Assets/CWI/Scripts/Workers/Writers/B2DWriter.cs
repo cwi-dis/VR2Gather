@@ -31,6 +31,7 @@ namespace Workers {
         }
 
         public override void OnStop() {
+            uploader.free();
             uploader = null;
             //bw?.Close();
             base.OnStop();

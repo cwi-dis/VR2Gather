@@ -45,8 +45,16 @@ public class bin2dash
 
         ~connection()
         {
-            _API.vrt_destroy(obj);
+            free();
         }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API.vrt_destroy(obj);
+                obj = System.IntPtr.Zero;
+            }
+        }
+
 
         public bool push_buffer(IntPtr buffer, uint bufferSize)
         {
