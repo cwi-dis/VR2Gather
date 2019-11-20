@@ -129,9 +129,21 @@ public class cwipc
             throw new System.Exception("cwipc_pointcloud: default constructor called");
         }
 
-        ~pointcloud()
-        {
-            _API_cwipc_util.cwipc_free(obj);
+        ~pointcloud() {
+            free();
+        }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API_cwipc_util.cwipc_free(obj);
+                obj = System.IntPtr.Zero;
+            }
+        }
+
+
+        public void Set(System.IntPtr _obj) {
+            if ( obj != System.IntPtr.Zero)  _API_cwipc_util.cwipc_free(obj);
+            obj = _obj;
         }
 
         public UInt64 timestamp()
@@ -187,7 +199,6 @@ public class cwipc
         {
             _API_cwipc_util.cwipc_source_free(obj);
         }
-
         public pointcloud get()
         {
             System.IntPtr pc = _API_cwipc_util.cwipc_source_get(obj);

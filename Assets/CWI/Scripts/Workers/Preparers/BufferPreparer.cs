@@ -18,6 +18,7 @@ namespace Workers
         public override void OnStop() {
             base.OnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
+            Debug.Log("BufferPreparer Stopped");
         }
 
         protected override void Update() {

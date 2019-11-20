@@ -34,7 +34,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
                 reader = new Workers.RS2Reader(cfg.PCSelfConfig);
-               // reader.AddNext(preparer).AddNext(reader); // <- local render tine.
+                reader.AddNext(preparer).AddNext(reader); // <- local render tine.
 
                 try {
                     codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
@@ -50,7 +50,7 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 if (codec != null && writer != null) {
                     reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
-//                    forks = 2;
+                    forks = 2;
                 }
                 try {
 #if !NO_VOICE 

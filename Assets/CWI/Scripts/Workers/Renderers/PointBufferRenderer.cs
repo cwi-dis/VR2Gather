@@ -21,7 +21,6 @@ namespace Workers
             }
         }
 
-
         void OnRenderObject() {
             material.SetFloat("_PointSize", preparer.GetPointSize());
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
@@ -29,8 +28,6 @@ namespace Workers
             var camera = Camera.current;
             if ((camera.cullingMask & (1 << gameObject.layer)) == 0) return;
             if (camera.name == "Preview Scene Camera") return;
-
-            
 
             // TODO: Do view frustum culling here.
             material.SetBuffer("_PointBuffer", pointBuffer);
