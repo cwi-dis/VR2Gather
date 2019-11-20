@@ -195,10 +195,16 @@ public class cwipc
             throw new System.Exception("cwipc_source: default constructor called");
         }
 
-        ~source()
-        {
-            _API_cwipc_util.cwipc_source_free(obj);
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API_cwipc_util.cwipc_source_free(obj);
+                obj = System.IntPtr.Zero;
+            }
         }
+        ~source() {
+            free();
+        }
+
         public pointcloud get()
         {
             System.IntPtr pc = _API_cwipc_util.cwipc_source_get(obj);
@@ -259,9 +265,15 @@ public class cwipc
             throw new System.Exception("cwipc_encoder: default constructor called");
         }
 
-        ~encoder()
-        {
-            _API_cwipc_codec.cwipc_encoder_free(obj);
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API_cwipc_codec.cwipc_encoder_free(obj);
+                obj = System.IntPtr.Zero;
+            }
+        }
+
+        ~encoder() {
+            free();
         }
 
         public void feed(pointcloud pc)

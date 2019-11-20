@@ -43,8 +43,7 @@ public class bin2dash
             throw new System.Exception("bin2dash.connection: default constructor called");
         }
 
-        ~connection()
-        {
+        ~connection() {
             free();
         }
 

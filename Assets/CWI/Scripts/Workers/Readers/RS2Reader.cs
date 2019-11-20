@@ -26,6 +26,7 @@ namespace Workers {
         public override void OnStop() {
             base.OnStop();
             if (currentPointCloud != null) currentPointCloud.free();
+            reader.free();
             reader = null;
             Debug.Log("RS2Reader Stopped");
         }
