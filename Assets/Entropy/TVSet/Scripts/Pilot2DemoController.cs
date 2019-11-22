@@ -61,7 +61,7 @@ public class Pilot2DemoController : MonoBehaviour
             Advisor1.SetActive(false);
             Advisor2.SetActive(false);
             Advisor3.SetActive(false);
-            PresenterGub.SetActive(true);
+            PresenterGub.SetActive(false);
         }
     }
 
