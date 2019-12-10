@@ -32,7 +32,7 @@ namespace DataProviders {
         }
 
         private void Start() {
-            if (isMaster) DllFunctions.set_number_TVMS(4);
+            if (isMaster) DllFunctions.set_number_TVMS(8);
             m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = connectionURI;
             m_RabbitMQReceiver.ConnectionProperties.ExchangeName = exchangeName;
             m_RabbitMQReceiver.Enabled = true;

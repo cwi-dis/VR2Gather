@@ -35,6 +35,7 @@ public class MeshConstructor : MonoBehaviour
     private int m_height;
     private object m_lockobj = new object();
     private int ind = 0;
+    public int fps = 0;
 
     private double CalculateStdDev(IEnumerable<long> values) {
         double ret = 0;
@@ -59,7 +60,7 @@ public class MeshConstructor : MonoBehaviour
                 //// Storing the received buffer to a .bin file
                 //File.WriteAllBytes(@"C:\VCL_User_Prod\RealSenzBinsCorto\RealSenzBin_" + ind + ".bin", e.Value);
                 //Debug.Log("file saved");
-
+                ++fps;
                 //stopWatch = System.Diagnostics.Stopwatch.StartNew();
                 //stopWatch.Start();
 

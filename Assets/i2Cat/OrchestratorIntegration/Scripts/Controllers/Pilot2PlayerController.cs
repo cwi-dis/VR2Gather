@@ -14,6 +14,8 @@ public class Pilot2PlayerController : PilotController {
     bool useTVM = true;
     bool audioPCTogether = false;
     bool enter = false;
+    float gubInitTimer = 0.0f;
+    int tvmActivater = 0;
 
     [SerializeField] Pilot2DemoController demoController;
     
@@ -21,6 +23,8 @@ public class Pilot2PlayerController : PilotController {
         base.Start();
         orchestrator.controller = this;
         background.SetActive(false);
+        timer = 0.0f;
+        gubInitTimer = Random.Range(9.0f, 11.0f);
 
         //LivePresenter
         //livePresenter.url = orchestrator.livePresenterData.liveAddress;
@@ -45,7 +49,7 @@ public class Pilot2PlayerController : PilotController {
                     // TVM
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;
-                    player.tvm.gameObject.SetActive(useTVM);
+                    //player.tvm.gameObject.SetActive(useTVM);
                     // PC & Audio
                     if (!orchestrator.useSocketIOAudio) {
                         player.pc.gameObject.SetActive(!useTVM || !audioPCTogether);
@@ -66,6 +70,12 @@ public class Pilot2PlayerController : PilotController {
 
         //Audio Over Socket.io
         if (!enter) {
+            if (timer >= gubInitTimer && demoController.isLive && !demoController.PresenterGub.activeSelf) demoController.PresenterGub.SetActive(true);
+
+            if (timer >= 2.0f && tvmActivater < orchestrator.activeSession.sessionUsers.Length) {
+                players[tvmActivater++].tvm.gameObject.SetActive(useTVM);
+            }
+
             if (timer >= 12.0f && AudioManager.instance != null && orchestrator.useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
 
