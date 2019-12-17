@@ -43,10 +43,17 @@ public class bin2dash
             throw new System.Exception("bin2dash.connection: default constructor called");
         }
 
-        ~connection()
-        {
-            _API.vrt_destroy(obj);
+        ~connection() {
+            free();
         }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API.vrt_destroy(obj);
+                obj = System.IntPtr.Zero;
+            }
+        }
+
 
         public bool push_buffer(IntPtr buffer, uint bufferSize)
         {

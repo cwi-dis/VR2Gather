@@ -88,6 +88,7 @@ namespace Workers {
         }
 
         public override void OnStop() {
+            subHandle.free();
             subHandle = null;
             base.OnStop();
             Cleaner();
@@ -99,8 +100,10 @@ namespace Workers {
                 numberOfUnsuccessfulReceives++;
                 if (numberOfUnsuccessfulReceives > 2000) {
                     Debug.LogWarning($"SubReader {url}: Too many receive errors. Closing SUB player, will reopen.");
+                    subHandle.free();
                     subHandle = null;
                     isPlaying = false;
+
                     numberOfUnsuccessfulReceives = 0;
                 }
                 return;

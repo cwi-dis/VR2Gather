@@ -9,11 +9,13 @@ namespace Workers {
         
         public PCDecoder():base(WorkerType.Run) {
             try {
-                decoder = cwipc.new_decoder(); 
+                decoder = cwipc.new_decoder();
                 if (decoder == null)
                     throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
-                else
+                else {
                     Start();
+                    Debug.Log("PCDecoder Inited");
+                }
 
             }
             catch (System.Exception e) {
@@ -25,6 +27,8 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
+            decoder = null;
+            Debug.Log("PCDecoder Stopped");
         }
 
         protected override void Update(){

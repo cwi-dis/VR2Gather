@@ -55,7 +55,7 @@ namespace Workers {
                             indices[i] = i;
                             colors[i] = vertexArray[i].color;
                         }
-                        isReady = true;
+                        lock (this) isReady = true;
                         Next();
                     }
                 }
@@ -63,15 +63,17 @@ namespace Workers {
         }
 
         public bool GetMesh(ref Mesh mesh) {
-            if (isReady) {
-                if (mesh != null) {
-                    mesh.Clear();
-                    mesh.vertices = points;
-                    mesh.colors32 = colors;
-                    mesh.SetIndices(indices, MeshTopology.Points, 0);
+            lock (this) {
+                if (isReady) {
+                    if (mesh != null) {
+                        mesh.Clear();
+                        mesh.vertices = points;
+                        mesh.colors32 = colors;
+                        mesh.SetIndices(indices, MeshTopology.Points, 0);
+                    }
+                    isReady = false;
+                    return true;
                 }
-                isReady = false;
-                return true;
             }
             return false;
         }

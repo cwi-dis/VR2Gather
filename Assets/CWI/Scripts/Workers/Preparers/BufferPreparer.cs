@@ -18,6 +18,7 @@ namespace Workers
         public override void OnStop() {
             base.OnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
+            Debug.Log("BufferPreparer Stopped");
         }
 
         protected override void Update() {
@@ -48,7 +49,7 @@ namespace Workers
 
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer) {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
-            int size = currentSize / 16;
+            int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
             if (isReady && size != 0) {
                 unsafe {
                     int dampedSize = (int)(size * Config.Instance.memoryDamping);
