@@ -47,9 +47,12 @@ public class Pilot2PlayerController : PilotController {
             foreach (User u in orchestrator.availableUsers) {
                 if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
                     // TVM
-                    player.tvm.connectionURI = u.userData.userMQurl;
-                    player.tvm.exchangeName = u.userData.userMQexchangeName;
-                    //player.tvm.gameObject.SetActive(useTVM);
+                    if (false /* xxxjack workaround issue #9 */)
+                    {
+                        player.tvm.connectionURI = u.userData.userMQurl;
+                        player.tvm.exchangeName = u.userData.userMQexchangeName;
+                        //player.tvm.gameObject.SetActive(useTVM);
+                    }
                     // PC & Audio
                     if (!orchestrator.useSocketIOAudio) {
                         player.pc.gameObject.SetActive(!useTVM || !audioPCTogether);
@@ -72,10 +75,12 @@ public class Pilot2PlayerController : PilotController {
         if (!enter) {
             if (timer >= gubInitTimer && demoController.isLive && !demoController.PresenterGub.activeSelf) demoController.PresenterGub.SetActive(true);
 
-            if (timer >= 2.0f && tvmActivater < orchestrator.activeSession.sessionUsers.Length) {
-                players[tvmActivater++].tvm.gameObject.SetActive(useTVM);
+            if (false /* xxxjack workaround issue #9 */)
+            {
+                if (timer >= 2.0f && tvmActivater < orchestrator.activeSession.sessionUsers.Length) {
+                    players[tvmActivater++].tvm.gameObject.SetActive(useTVM);
+                }
             }
-
             if (timer >= 12.0f && AudioManager.instance != null && orchestrator.useSocketIOAudio) {
                 AudioManager.instance.StartRecordAudio();
 
@@ -161,10 +166,13 @@ public class Pilot2PlayerController : PilotController {
 
         foreach (User u in orchestrator.availableUsers) {
             if (u.userId == orchestrator.activeSession.sessionUsers[0]) {
-                // TVM
-                player.tvm.connectionURI = u.userData.userMQurl;
-                player.tvm.exchangeName = u.userData.userMQexchangeName;
-                player.tvm.gameObject.SetActive(useTVM);
+                if (false /* xxxjack workaround issue #9 */)
+                {
+                    // TVM
+                    player.tvm.connectionURI = u.userData.userMQurl;
+                    player.tvm.exchangeName = u.userData.userMQexchangeName;
+                    player.tvm.gameObject.SetActive(useTVM);
+                }
                 // PC & Audio
                 if (!orchestrator.useSocketIOAudio) {
                     player.pc.gameObject.SetActive(!useTVM || !audioPCTogether);
