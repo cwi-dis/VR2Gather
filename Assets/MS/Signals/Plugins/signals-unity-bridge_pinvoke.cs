@@ -96,10 +96,18 @@ public class sub
 
         public int get_stream_count()
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("sub.get_stream_count: called with obj==null");
+            }
             return _API.sub_get_stream_count(obj);
         }
 
         public uint get_stream_4cc(int stream) {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("sub.get_stream_4cc: called with obj==null");
+            }
             StreamDesc streamDesc = new StreamDesc();
             _API.sub_get_stream_info(obj, stream, ref streamDesc);
             return streamDesc.MP4_4CC;
@@ -107,11 +115,19 @@ public class sub
 
         public bool play(string name)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("sub.play: called with obj==null");
+            }
             return _API.sub_play(obj, name);
         }
 
         public int grab_frame(int streamIndex, System.IntPtr dst, int dstLen, ref FrameInfo info)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("sub.grab_frame: called with obj==null");
+            }
             return _API.sub_grab_frame(obj, streamIndex, dst, dstLen, ref info);
         }
         

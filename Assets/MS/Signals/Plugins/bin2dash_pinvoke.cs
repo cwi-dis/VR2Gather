@@ -57,11 +57,19 @@ public class bin2dash
 
         public bool push_buffer(IntPtr buffer, uint bufferSize)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("bin2dash.push_buffer: called with obj==null");
+            }
             return _API.vrt_push_buffer(obj, buffer, bufferSize);
         }
 
         public long get_media_time(int timescale)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                throw new System.Exception("bin2dash.get_media_time: called with obj==null");
+            }
             return _API.vrt_get_media_time(obj, timescale);
         }
     }
