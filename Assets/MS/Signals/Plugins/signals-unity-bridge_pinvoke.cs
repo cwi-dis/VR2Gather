@@ -134,7 +134,12 @@ public class sub
     {
         if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
         {
+
             // xxxjack should we use another way to find the path?
+            string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
+            if (path == "" || path == null) {
+                UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
+            }
             return;
         }
         if (lastMSpathInstalled == module_base) return;
