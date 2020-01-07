@@ -73,14 +73,14 @@ public class sub
         {
             if (_obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.connection: constructor called with null pointer");
+                UnityEngine.Debug.LogAssertion("sub.connection: constructor called with null pointer");
             }
             obj = _obj;
         }
 
         protected connection()
         {
-            throw new System.Exception("sub.connection: default constructor called");
+            UnityEngine.Debug.LogAssertion("sub.connection: default constructor called");
         }
 
         ~connection() {
@@ -98,7 +98,7 @@ public class sub
         {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.get_stream_count: called with obj==null");
+                UnityEngine.Debug.LogAssertion("sub.get_stream_count: called with obj==null");
             }
             return _API.sub_get_stream_count(obj);
         }
@@ -106,7 +106,7 @@ public class sub
         public uint get_stream_4cc(int stream) {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.get_stream_4cc: called with obj==null");
+                UnityEngine.Debug.LogAssertion("sub.get_stream_4cc: called with obj==null");
             }
             StreamDesc streamDesc = new StreamDesc();
             _API.sub_get_stream_info(obj, stream, ref streamDesc);
@@ -117,7 +117,7 @@ public class sub
         {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.play: called with obj==null");
+                UnityEngine.Debug.LogAssertion("sub.play: called with obj==null");
             }
             return _API.sub_play(obj, name);
         }
@@ -126,7 +126,7 @@ public class sub
         {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.grab_frame: called with obj==null");
+                UnityEngine.Debug.LogAssertion("sub.grab_frame: called with obj==null");
             }
             return _API.sub_grab_frame(obj, streamIndex, dst, dstLen, ref info);
         }

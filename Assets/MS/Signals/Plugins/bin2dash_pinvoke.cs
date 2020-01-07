@@ -33,14 +33,14 @@ public class bin2dash
         {
             if (_obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("bin2dash.connection: constructor called with null pointer");
+                UnityEngine.Debug.LogAssertion("bin2dash.connection: constructor called with null pointer");
             }
             obj = _obj;
         }
 
         protected connection()
         {
-            throw new System.Exception("bin2dash.connection: default constructor called");
+            UnityEngine.Debug.LogAssertion("bin2dash.connection: default constructor called");
         }
 
         ~connection() {
@@ -59,7 +59,7 @@ public class bin2dash
         {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("bin2dash.push_buffer: called with obj==null");
+                UnityEngine.Debug.LogAssertion("bin2dash.push_buffer: called with obj==null");
             }
             return _API.vrt_push_buffer(obj, buffer, bufferSize);
         }
@@ -68,7 +68,7 @@ public class bin2dash
         {
             if (obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("bin2dash.get_media_time: called with obj==null");
+                UnityEngine.Debug.LogAssertion("bin2dash.get_media_time: called with obj==null");
             }
             return _API.vrt_get_media_time(obj, timescale);
         }
