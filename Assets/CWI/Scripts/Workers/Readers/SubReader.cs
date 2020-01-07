@@ -52,7 +52,7 @@ namespace Workers {
                     throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
             }
             catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.LogError($"xxxjack Exception {e.ToString()} caught in SUBReader constructor. Message={e.Message}, stacktrace={e.StackTrace}.");
                 throw e;
             }
         }
