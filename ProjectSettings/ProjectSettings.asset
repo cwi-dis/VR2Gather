@@ -113,7 +113,7 @@ PlayerSettings:
   switchNVNShaderPoolsGranularity: 33554432
   switchNVNDefaultPoolsGranularity: 16777216
   switchNVNOtherPoolsGranularity: 16777216
-  vulkanEnableSetSRGBWrite: 0
+  vulkanEnableSetSRGBWrite: 1
   m_SupportedAspectRatios:
     4:3: 1
     5:4: 1
@@ -300,7 +300,10 @@ PlayerSettings:
     m_APIs: 0b000000
     m_Automatic: 1
   - m_BuildTarget: WindowsStandaloneSupport
-    m_APIs: 0200000008000000
+    m_APIs: 02000000
+    m_Automatic: 1
+  - m_BuildTarget: MacStandaloneSupport
+    m_APIs: 1000000011000000
     m_Automatic: 1
   m_BuildTargetVRSettings:
   - m_BuildTarget: Standalone
@@ -650,7 +653,7 @@ PlayerSettings:
   facebookFrictionlessRequests: 1
   apiCompatibilityLevel: 3
   cloudProjectId: 476445a7-a7f2-4e1f-b807-df9fbc030494
-  framebufferDepthMemorylessMode: 0
+  framebufferDepthMemorylessMode: 2
   projectName: TestBed
   organizationId: xrlabbyentropy
   cloudEnabled: 0

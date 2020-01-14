@@ -153,7 +153,12 @@ public class sub
 
             // xxxjack should we use another way to find the path?
             string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
-            if (path == "" || path == null) {
+            if (path == "" || path == null)
+            {
+                path = Config.Instance.Macintosh.SIGNALS_SMD_PATH;
+            }
+            if (path == "" || path == null)
+            {
                 UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
             }
             return;

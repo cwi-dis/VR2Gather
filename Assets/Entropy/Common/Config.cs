@@ -16,6 +16,13 @@ public class Config {
     public _TVMs TVMs;
 
     [Serializable]
+    public class _Macintosh
+    {
+        public string SIGNALS_SMD_PATH;
+    };
+    public _Macintosh Macintosh;
+
+    [Serializable]
     public class _PCs {
         public Vector3 offsetPosition;
         public Vector3 offsetRotation;
