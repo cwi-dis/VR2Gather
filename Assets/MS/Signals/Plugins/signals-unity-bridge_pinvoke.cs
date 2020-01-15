@@ -21,9 +21,13 @@ public class sub
         public uint quality;
     }
     
-    protected class _API
-    {
+    protected class _API {
+
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        const string myDllName = "signals-unity-bridge.dll";
+#else
         const string myDllName = "signals-unity-bridge.so";
+#endif
 
         // Creates a new pipeline.
         // name: a display name for log messages. Can be NULL.
