@@ -316,16 +316,16 @@ namespace NSpeex
 					 * If true, force "safe" pitch values to handle packet loss
 					 * better
 					 */
-					if (false)
-					{
-						float tot = Math.Abs(gain_cdbk[ptr + 1]);
-						if (gain_cdbk[ptr] > 0)
-							tot += gain_cdbk[ptr];
-						if (gain_cdbk[ptr + 2] > 0)
-							tot += gain_cdbk[ptr + 2];
-						if (tot > 1)
-							continue;
-					}
+					//if (false)
+					//{
+					//	float tot = Math.Abs(gain_cdbk[ptr + 1]);
+					//	if (gain_cdbk[ptr] > 0)
+					//		tot += gain_cdbk[ptr];
+					//	if (gain_cdbk[ptr + 2] > 0)
+					//		tot += gain_cdbk[ptr + 2];
+					//	if (tot > 1)
+					//		continue;
+					//}
 
 					if (sum > best_sum || i == 0)
 					{

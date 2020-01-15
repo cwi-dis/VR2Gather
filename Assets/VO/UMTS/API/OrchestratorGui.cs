@@ -106,42 +106,27 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     [Header("Orchestrator GUI commands")]
     // dropdown to display the list of availbale commands
-    [SerializeField]
-    private Dropdown commandDropdown;
+    [SerializeField] private Dropdown commandDropdown;
 
     // button to send the command
-    [SerializeField]
-    private Button sendCommandButton;
+    [SerializeField] private Button sendCommandButton;
 
     // container that displays the list of parameters for the selected command
-    [SerializeField]
-    private RectTransform paramsContainer;
+    [SerializeField] private RectTransform paramsContainer;
 
     // parameters panels
-    [SerializeField]
-    private RectTransform userIdPanel;
-    [SerializeField]
-    private RectTransform userAdminPanel;
-    [SerializeField]
-    private RectTransform userNamePanel;
-    [SerializeField]
-    private RectTransform userPasswordPanel;
-    [SerializeField]
-    private RectTransform userDataMQnamePanel;
-    [SerializeField]
-    private RectTransform userDataMQurlPanel;
-    [SerializeField]
-    private RectTransform sessionIdPanel;
-    [SerializeField]
-    private RectTransform sessionNamePanel;
-    [SerializeField]
-    private RectTransform sessionDescriptionPanel;
-    [SerializeField]
-    private RectTransform scenarioIdPanel;
-    [SerializeField]
-    private RectTransform roomIdPanel;
-    [SerializeField]
-    private RectTransform messagePanel;
+    [SerializeField] private RectTransform userIdPanel;
+    [SerializeField] private RectTransform userAdminPanel;
+    [SerializeField] private RectTransform userNamePanel;
+    [SerializeField] private RectTransform userPasswordPanel;
+    [SerializeField] private RectTransform userDataMQnamePanel;
+    [SerializeField] private RectTransform userDataMQurlPanel;
+    [SerializeField] private RectTransform sessionIdPanel;
+    [SerializeField] private RectTransform sessionNamePanel;
+    [SerializeField] private RectTransform sessionDescriptionPanel;
+    [SerializeField] private RectTransform scenarioIdPanel;
+    [SerializeField] private RectTransform roomIdPanel;
+    [SerializeField] private RectTransform messagePanel;
 
     #endregion
 

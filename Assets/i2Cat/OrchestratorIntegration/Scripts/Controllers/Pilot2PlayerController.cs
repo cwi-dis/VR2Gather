@@ -11,7 +11,7 @@ public class Pilot2PlayerController : PilotController {
     [SerializeField] VideoDashReceiver livePresenter;
 
     bool socket = false;
-    bool useTVM = true;
+    bool useTVM = false;
     bool audioPCTogether = false;
     bool enter = false;
     float gubInitTimer = 0.0f;
@@ -47,8 +47,7 @@ public class Pilot2PlayerController : PilotController {
             foreach (User u in orchestrator.availableUsers) {
                 if (u.userId == orchestrator.activeSession.sessionUsers[i]) {
                     // TVM
-                    if (false /* xxxjack workaround issue #9 */)
-                    {
+                    if (useTVM) {
                         player.tvm.connectionURI = u.userData.userMQurl;
                         player.tvm.exchangeName = u.userData.userMQexchangeName;
                         //player.tvm.gameObject.SetActive(useTVM);
@@ -75,8 +74,7 @@ public class Pilot2PlayerController : PilotController {
         if (!enter) {
             if (timer >= gubInitTimer && demoController.isLive && !demoController.PresenterGub.activeSelf) demoController.PresenterGub.SetActive(true);
 
-            if (false /* xxxjack workaround issue #9 */)
-            {
+            if (useTVM) {
                 if (timer >= 2.0f && tvmActivater < orchestrator.activeSession.sessionUsers.Length) {
                     players[tvmActivater++].tvm.gameObject.SetActive(useTVM);
                 }
@@ -166,8 +164,7 @@ public class Pilot2PlayerController : PilotController {
 
         foreach (User u in orchestrator.availableUsers) {
             if (u.userId == orchestrator.activeSession.sessionUsers[0]) {
-                if (false /* xxxjack workaround issue #9 */)
-                {
+                if (useTVM) {
                     // TVM
                     player.tvm.connectionURI = u.userData.userMQurl;
                     player.tvm.exchangeName = u.userData.userMQexchangeName;

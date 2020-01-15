@@ -27,7 +27,7 @@ public class VoiceDashReceiver : MonoBehaviour {
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);
             reader.token = token = new Workers.Token();
         } catch (System.Exception e) {
-            Debug.Log(">>ERROR");
+            Debug.Log(">>ERROR " + e);
 
         }
     }

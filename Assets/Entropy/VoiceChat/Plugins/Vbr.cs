@@ -161,7 +161,9 @@ namespace NSpeex
 			int i;
 			float ener = 0, ener1 = 0, ener2 = 0;
 			float qual = 7;
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
 			int va;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
 			float log_energy;
 			float non_st = 0;
 			float voicing;
