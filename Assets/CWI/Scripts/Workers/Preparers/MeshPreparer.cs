@@ -9,6 +9,7 @@ namespace Workers {
         Vector3[] points;
         int[] indices;
         Color32[] colors;
+        float currentCellSize = 0.008f;
 
         public MeshPreparer() : base(WorkerType.End) {
             PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
@@ -32,6 +33,8 @@ namespace Workers {
                 lock (token) {
                     unsafe {
                         int bufferSize = token.currentPointcloud.get_uncompressed_size();
+                        currentCellSize = token.currentPointcloud.cellsize();
+                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         int size = bufferSize / PointCouldVertexSize;
                         int dampedSize = (int)(size * Config.Instance.memoryDamping);
                         if (vertexArray.Length < dampedSize) {
@@ -52,7 +55,7 @@ namespace Workers {
                             indices[i] = i;
                             colors[i] = vertexArray[i].color;
                         }
-                        isReady = true;
+                        lock (this) isReady = true;
                         Next();
                     }
                 }
@@ -60,17 +63,24 @@ namespace Workers {
         }
 
         public bool GetMesh(ref Mesh mesh) {
-            if (isReady) {
-                if (mesh != null) {
-                    mesh.Clear();
-                    mesh.vertices = points;
-                    mesh.colors32 = colors;
-                    mesh.SetIndices(indices, MeshTopology.Points, 0);
+            lock (this) {
+                if (isReady) {
+                    if (mesh != null) {
+                        mesh.Clear();
+                        mesh.vertices = points;
+                        mesh.colors32 = colors;
+                        mesh.SetIndices(indices, MeshTopology.Points, 0);
+                    }
+                    isReady = false;
+                    return true;
                 }
-                isReady = false;
-                return true;
             }
             return false;
+        }
+
+        public float GetPointSize() {
+            if (currentCellSize > 0.0000f) return currentCellSize;
+            else return 0.008f;
         }
     }
 }

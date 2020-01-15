@@ -22,15 +22,16 @@ namespace Workers {
                     Start();
                 }
                 else
-                    throw new System.Exception($"PCRealSense2Reader: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
+                    throw new System.Exception($"B2DWriter: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
             }
             catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.LogError($"B2DWriter({url}:{e.Message}");
                 throw e;
             }
         }
 
         public override void OnStop() {
+            uploader.free();
             uploader = null;
             //bw?.Close();
             base.OnStop();
@@ -40,10 +41,12 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
-                //bw?.Write(token.currentByteArray, 0, token.currentSize);
-                if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
-                    Debug.Log("ERROR sending data");
-                Next();
+                lock (token) {
+                    //bw?.Write(token.currentByteArray, 0, token.currentSize);
+                    if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
+                        Debug.Log("ERROR sending data");
+                    Next();
+                }
             }
         }
     }

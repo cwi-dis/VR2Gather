@@ -23,33 +23,35 @@ public class sub
     
     protected class _API
     {
+        const string myDllName = "signals-unity-bridge.so";
+
         // Creates a new pipeline.
         // name: a display name for log messages. Can be NULL.
         // The returned pipeline must be freed using 'sub_destroy'.
         // SUB_EXPORT sub_handle* sub_create(const char* name);
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline);
 
         // Destroys a pipeline. This frees all the resources.
         // SUB_EXPORT void sub_destroy(sub_handle* h);
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public void sub_destroy(IntPtr handle);
 
 
         // Returns the number of compressed streams.
         // SUB_EXPORT int sub_get_stream_count(sub_handle* h);
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public int sub_get_stream_count(IntPtr handle);
 
 
         // Returns the 4CC of a given stream. Desc is owned by the caller.
         // SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);;
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public bool sub_get_stream_info(IntPtr handle, int streamIndex, ref StreamDesc desc);
 
         // Plays a given URL.
         // SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public bool sub_play(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)]string name);
 
         // Copy the next received compressed frame to a buffer.
@@ -57,7 +59,7 @@ public class sub
         // or zero, if no frame was available for this stream.
         // If 'dst' is null, the frame will not be dequeued, but its size will be returned.
         // SUB_EXPORT size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info);
-        [DllImport("signals-unity-bridge")]
+        [DllImport(myDllName)]
         extern static public int sub_grab_frame(IntPtr handle, int streamIndex, System.IntPtr dst, int dstLen, ref FrameInfo info);
 
 
@@ -71,27 +73,41 @@ public class sub
         {
             if (_obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("sub.connection: constructor called with null pointer");
+                UnityEngine.Debug.LogAssertion("sub.connection: constructor called with null pointer");
             }
             obj = _obj;
         }
 
         protected connection()
         {
-            throw new System.Exception("sub.connection: default constructor called");
+            UnityEngine.Debug.LogAssertion("sub.connection: default constructor called");
         }
 
-        ~connection()
-        {
-            _API.sub_destroy(obj);
+        ~connection() {
+            free();
+        }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API.sub_destroy(obj);
+                obj = System.IntPtr.Zero;
+            }
         }
 
         public int get_stream_count()
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.get_stream_count: called with obj==null");
+            }
             return _API.sub_get_stream_count(obj);
         }
 
         public uint get_stream_4cc(int stream) {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.get_stream_4cc: called with obj==null");
+            }
             StreamDesc streamDesc = new StreamDesc();
             _API.sub_get_stream_info(obj, stream, ref streamDesc);
             return streamDesc.MP4_4CC;
@@ -99,11 +115,19 @@ public class sub
 
         public bool play(string name)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.play: called with obj==null");
+            }
             return _API.sub_play(obj, name);
         }
 
         public int grab_frame(int streamIndex, System.IntPtr dst, int dstLen, ref FrameInfo info)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.grab_frame: called with obj==null");
+            }
             return _API.sub_grab_frame(obj, streamIndex, dst, dstLen, ref info);
         }
         
@@ -124,6 +148,21 @@ public class sub
     // This could be either here or in bin2dash_pinvoke. 
     public static void SetMSPaths(string module_base = "signals-unity-bridge")
     {
+        if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
+        {
+
+            // xxxjack should we use another way to find the path?
+            string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
+            if (path == "" || path == null)
+            {
+                path = Config.Instance.Macintosh.SIGNALS_SMD_PATH;
+            }
+            if (path == "" || path == null)
+            {
+                UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
+            }
+            return;
+        }
         if (lastMSpathInstalled == module_base) return;
 
         IntPtr hMod = API_kernel.GetModuleHandle(module_base);

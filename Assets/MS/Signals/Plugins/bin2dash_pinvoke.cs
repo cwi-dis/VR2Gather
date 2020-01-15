@@ -5,23 +5,23 @@ public class bin2dash
 {
     private class _API
     {
-
+        const string myDllName = "bin2dash.so";
         // Creates a new packager/streamer and starts the streaming session.
         // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
         // The returned pipeline must be freed using vrt_destroy().
-        [DllImport("bin2dash.so")]
+        [DllImport(myDllName)]
         extern static public IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, UInt32 MP4_4CC, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000);
 
         // Destroys a pipeline. This frees all the resources.
-        [DllImport("bin2dash.so")]
+        [DllImport(myDllName)]
         extern static public void vrt_destroy(IntPtr h);
 
         // Pushes a buffer. The caller owns it ; the buffer  as it will be copied internally.
-        [DllImport("bin2dash.so")]
+        [DllImport(myDllName)]
         extern static public bool vrt_push_buffer(IntPtr h, IntPtr buffer, uint bufferSize);
 
         // Gets the current media time in @timescale unit.
-        [DllImport("bin2dash.so")]
+        [DllImport(myDllName)]
         extern static public long vrt_get_media_time(IntPtr h, int timescale);
     }
 
@@ -33,28 +33,43 @@ public class bin2dash
         {
             if (_obj == System.IntPtr.Zero)
             {
-                throw new System.Exception("bin2dash.connection: constructor called with null pointer");
+                UnityEngine.Debug.LogAssertion("bin2dash.connection: constructor called with null pointer");
             }
             obj = _obj;
         }
 
         protected connection()
         {
-            throw new System.Exception("bin2dash.connection: default constructor called");
+            UnityEngine.Debug.LogAssertion("bin2dash.connection: default constructor called");
         }
 
-        ~connection()
-        {
-            _API.vrt_destroy(obj);
+        ~connection() {
+            free();
         }
+
+        public void free() {
+            if (obj != System.IntPtr.Zero) {
+                _API.vrt_destroy(obj);
+                obj = System.IntPtr.Zero;
+            }
+        }
+
 
         public bool push_buffer(IntPtr buffer, uint bufferSize)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("bin2dash.push_buffer: called with obj==null");
+            }
             return _API.vrt_push_buffer(obj, buffer, bufferSize);
         }
 
         public long get_media_time(int timescale)
         {
+            if (obj == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("bin2dash.get_media_time: called with obj==null");
+            }
             return _API.vrt_get_media_time(obj, timescale);
         }
     }

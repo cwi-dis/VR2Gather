@@ -16,13 +16,13 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
+            "x": -0.6899998188018799,
+            "y": 0.6899996995925903,
+            "z": -0.019999805837869645
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 0.0,
+            "y": 147.9993896484375,
             "z": 0.0
         },
         "scale": {
@@ -30,6 +30,9 @@
             "y": 1.0,
             "z": 1.0
         }
+    },
+    "Macintosh" : {
+    	"SIGNALS_SMD_PATH" : "/Users/jack/lib"
     },
     "Users": [
         {
@@ -50,8 +53,9 @@
             },
             "PCSelfConfig": {
                 "configFilename": "../cameraconfig.xml",
+                "voxelSize": 0.005,
                 "Encoder": {
-                    "octreeBits": 8
+                    "octreeBits": 10
                 },
                 "Bin2Dash": {
                     "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
@@ -99,7 +103,7 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
+                "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
                 "streamName": "",
                 "streamNumber": 0
             },
@@ -110,6 +114,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },
@@ -170,6 +175,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },
@@ -230,6 +236,7 @@
             },
             "PCSelfConfig": {
                 "configFilename": "",
+                "voxelSize": 0.0,
                 "Encoder": {
                     "octreeBits": 0
                 },

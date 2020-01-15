@@ -10,6 +10,7 @@ namespace Workers
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr                       currentBuffer;
         int                                 currentSize;
+        float                               currentCellSize = 0.008f;
         public BufferPreparer():base(WorkerType.End) {
             Start();
         }
@@ -17,6 +18,7 @@ namespace Workers
         public override void OnStop() {
             base.OnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
+            Debug.Log("BufferPreparer Stopped");
         }
 
         protected override void Update() {
@@ -25,6 +27,8 @@ namespace Workers
                 lock (token) {
                     unsafe {
                         currentSize = token.currentPointcloud.get_uncompressed_size();
+                        currentCellSize = token.currentPointcloud.cellsize();
+                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                         if (currentSize > 0) {
                             if (currentSize > byteArray.Length) {
                                 if (byteArray.Length != 0) byteArray.Dispose();
@@ -45,7 +49,7 @@ namespace Workers
 
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer) {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
-            int size = currentSize / 16;
+            int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
             if (isReady && size != 0) {
                 unsafe {
                     int dampedSize = (int)(size * Config.Instance.memoryDamping);
@@ -58,6 +62,11 @@ namespace Workers
                 isReady = false;
             }
             return size;
+        }
+
+        public float GetPointSize() {
+            if (currentCellSize > 0.0000f) return currentCellSize*0.71f;
+            else return 0.008f;
         }
 
     }
