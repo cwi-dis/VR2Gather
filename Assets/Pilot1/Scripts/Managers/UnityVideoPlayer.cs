@@ -22,7 +22,7 @@ public class UnityVideoPlayer : MonoBehaviour {
 
     // Use this for initialization
     public virtual void Initialize(string url) {
-        URI = Application.streamingAssetsPath + "/videos/" + url;
+        URI = Application.streamingAssetsPath + "/Pilot1/" + url;
         var renderer = GetComponent<Renderer>();
         video = GetComponent<VideoPlayer>();
         video.prepareCompleted += Video_prepareCompleted;

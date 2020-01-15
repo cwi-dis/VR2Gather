@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Profiling;
 
-public class Profiler : MonoBehaviour
+public class GUIProfiler : MonoBehaviour
 {
     private int     avgFPS;
     private int     minFPS;
@@ -59,8 +56,8 @@ public class Profiler : MonoBehaviour
         maxFPS = 0;
         totalPackets = 0;
         pps = 0;
-        ramUsage = (int)(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / 1048576f);
-        vramUsage = (int)(UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver() / 1048576f);
+        ramUsage = (int)(Profiler.GetTotalAllocatedMemoryLong() / 1048576f);
+        vramUsage = (int)(Profiler.GetAllocatedMemoryForGraphicsDriver() / 1048576f);
 
         cpuInfo =   "CPU: " + SystemInfo.processorType + " [" +
                     SystemInfo.processorCount + " cores]";
@@ -106,8 +103,8 @@ public class Profiler : MonoBehaviour
             ++frameCounter;
         }
         else {
-            ramUsage = (int)(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong() / 1048576f);
-            vramUsage = (int)(UnityEngine.Profiling.Profiler.GetAllocatedMemoryForGraphicsDriver() / 1048576f);
+            ramUsage = (int)(Profiler.GetTotalAllocatedMemoryLong() / 1048576f);
+            vramUsage = (int)(Profiler.GetAllocatedMemoryForGraphicsDriver() / 1048576f);
             avgFPS = frameCounter / (int)timeCounter;
             if (avgFPS > maxFPS) maxFPS = avgFPS;
             if (avgFPS < minFPS) minFPS = avgFPS;
