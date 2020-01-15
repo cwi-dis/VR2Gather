@@ -112,16 +112,22 @@ namespace Workers {
         }
 
         protected void retryPlay() {
-            if (isPlaying) return;
-            //Debug.Log($"Retrying connection with SUB {url}");
             if (subHandle == null) {
-                subHandle = sub.create("source_from_sub");
+                subHandle = sub.create("source_from_sub");  
                 if (subHandle == null) {
                     Debug.LogWarning($"SubReader: retry sub.create({url}) call failed again.");
                     return;
                 }
                 else {
                     Debug.Log($"SubReader: retry sub.create({url}) successful.");
+                    isPlaying = subHandle.play(url);
+                    if (!isPlaying) {
+                        Debug.Log($"SubReader: retry sub.play({url}) failed, will try again later");
+                    }
+                    else {
+                        Debug.Log($"SubReader: retry sub.play({url}) successful.");
+                        streamCount = subHandle.get_stream_count();
+                    }
                 }
             }
             else {
@@ -132,7 +138,6 @@ namespace Workers {
                 else {
                     Debug.Log($"SubReader: retry sub.play({url}) successful.");
                     streamCount = subHandle.get_stream_count();
-                    //Debug.Log($"streamCount {streamCount}");
                 }
             }
         }
@@ -147,26 +152,25 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
-                retryPlay();
+                if (!isPlaying) retryPlay();
+                else {
+                    Cleaner();
 
-                Cleaner();
-
-                // Try to read from audio.
-                if (streamCount > 1 && needsAudio != null && needsAudio()) {
-                    // Attempt to receive, if we are playing
-                    int bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                    // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                    //UnsuccessfulCheck(bytesNeeded);
-                    if (bytesNeeded != 0) {
-                        if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
-                            currentBufferArray = new byte[(int)bytesNeeded];
-                            gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
-                            currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
-                        }
-                        int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
+                    // Try to read from audio.
+                    if (streamCount > 1 && needsAudio != null && needsAudio()) {
+                        // Attempt to receive, if we are playing
+                        int bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                                                                                                                   // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                                                                                                                   //UnsuccessfulCheck(bytesNeeded);
+                        if (bytesNeeded != 0) {
+                            if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
+                                currentBufferArray = new byte[(int)bytesNeeded];
+                                gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
+                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
+                            }
+                            int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
-                                lock (token) 
-                                {
+                                lock (token) {
                                     // All ok, yield to the next process
                                     token.currentBuffer = currentBuffer;
                                     token.currentByteArray = currentBufferArray;
@@ -179,24 +183,23 @@ namespace Workers {
                             }
                             else
                                 Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
-                    }
-                }
-                if (needsVideo == null || needsVideo()) {
-                    // Attempt to receive, if we are playing
-                    int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                    // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                    UnsuccessfulCheck(bytesNeeded);
-                    if (bytesNeeded != 0) {
-                        if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
-                            currentBufferArray = new byte[(int)bytesNeeded];
-                            gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
-                            currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
                         }
-                        int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
+                    }
+                    if (needsVideo == null || needsVideo()) {
+                        // Attempt to receive, if we are playing
+                        int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                                                                                                               // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                        UnsuccessfulCheck(bytesNeeded);
+                        if (bytesNeeded != 0) {
+                            if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
+                                currentBufferArray = new byte[(int)bytesNeeded];
+                                gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
+                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
+                            }
+                            int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
-                            // All ok, yield to the next process
-                                lock (token)  
-                                {
+                                // All ok, yield to the next process
+                                lock (token) {
                                     token.currentBuffer = currentBuffer;
                                     token.currentByteArray = currentBufferArray;
                                     token.currentSize = bytesRead;
@@ -205,11 +208,12 @@ namespace Workers {
                                 }
                                 Next();
                                 return;
+                            }
+                            else
+                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                         }
-                        else
-                            Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                     }
-                }                               
+                }
             }
         }
     }
