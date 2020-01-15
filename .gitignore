@@ -5,5 +5,7 @@ obj/
 Testbed.sln
 Assembly-CSharp.csproj
 .collabignore
+*.csproj
 Exe/
+Build/
 Builds/
