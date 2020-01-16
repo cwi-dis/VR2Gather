@@ -80,13 +80,16 @@ public class GStreamer
 #if UNITY_EDITOR_32
         dllPath = Application.dataPath + "/Plugins/GStreamer/x86";
 #elif UNITY_EDITOR_64
-        dllPath = Application.dataPath + "/Plugins/GStreamer/x86_64";
+        dllPath = Application.dataPath + "/Tools/Plugins/GStreamer/x86_64";
 #endif
+        //Debug.Log(Application.dataPath);
+        //Debug.Log(dllPath);
+        //Debug.Log(currentPath);
 
         if (currentPath != null && currentPath.Contains(dllPath) == false)
             Environment.SetEnvironmentVariable("PATH",
                 dllPath + Path.PathSeparator +
-                dllPath + "/GStreamer/bin" + Path.PathSeparator +
+                //dllPath + "/GStreamer/bin" + Path.PathSeparator +
                 currentPath,
                 EnvironmentVariableTarget.Process);
 #else
