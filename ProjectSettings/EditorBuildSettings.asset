@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/i2Cat/OrchestratorIntegration/Scenes/Orchestrator.unity
+    path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
-    path: Assets/Pilot1/Scenes/Pilot1.unity
+    path: Assets/Pilots/Pilot1/Scenes/Pilot1.unity
     guid: 729c2f5197e10724996923c482b5f533
   - enabled: 1
-    path: Assets/i2Cat/OrchestratorIntegration/Scenes/Pilot2_Presenter.unity
+    path: Assets/Pilots/Pilot2/Scenes/Pilot2_Presenter.unity
     guid: bab88bbc29626f04891faadc31bb6426
   - enabled: 1
-    path: Assets/Entropy/TVSet/Scenes/Pilot2_Player.unity
+    path: Assets/Pilots/Pilot2/Scenes/Pilot2_Player.unity
     guid: a2dca338f69f6bb46a74f5d987bff37d
   m_configObjects: {}
