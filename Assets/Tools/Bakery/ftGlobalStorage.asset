@@ -480,7 +480,43 @@ MonoBehaviour:
   - Assets/Pilot1/Environments/New Assets/Cajones_181112.fbx
   - Assets/Pilot1/Environments/CrimeScene/Sources/cinta.FBX
   - Assets/Pilot1/Environments/CrimeScene/Sources/BarrierMetal_A.FBX
-  uvOverlapAssetList: 00000000ffffffff000000000101000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000010100000101000000000000010100000101000001010000010100000000000000000000
+  - Assets/Pilots/Pilot2/Geo/Presenter.FBX
+  - Assets/Pilots/Pilot1/Art/Environments/SueloMojado/Car.FBX
+  - Assets/Pilots/Pilot2/Geo/SemiSphereVertical.FBX
+  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_3.fbx
+  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_1.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Lamp_00.FBX
+  - Assets/Pilots/Pilot2/Geo/tube.FBX
+  - Assets/Pilots/Pilot2/Geo/V2/TV Set_Animacion01.fbx
+  - Assets/Pilots/Pilot1/Environments/New Assets/Mesa_181109.fbx
+  - Assets/Pilots/Pilot1/Environments/Rooms_noBake/Occluder_box.FBX
+  - Assets/Pilots/Pilot1/Art/Environments/SueloMojado/capsula.FBX
+  - Assets/Pilots/Pilot2/Geo/SceneComplete/SceneComplete.fbx
+  - Assets/Pilots/Pilot2/Geo/SemiSphere.FBX
+  - Assets/Pilots/Pilot1/Environments/New Assets/Puertas_181109.fbx
+  - Assets/Pilots/Pilot2/Geo/Characters/Howard.fbx
+  - Assets/Pilots/Pilot2/Geo/Techo.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/Lamp_01.FBX
+  - Assets/Pilots/Pilot2/Geo/Sphere_360.FBX
+  - Assets/Pilots/Pilot1/Art/Models/sphere2_fbx.fbx
+  - Assets/Pilots/Pilot2/Geo/V2/Window.FBX
+  - Assets/Pilots/Pilot1/Art/Environments/Rooms_noBake/Fan.FBX
+  - Assets/Pilots/Pilot2/Geo/Inverted_Sphere.FBX
+  - Assets/Pilots/Pilot1/Art/Environments/Rooms_noBake/COMISARIA_ALL_BAKE_V1.fbx
+  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_2.fbx
+  - Assets/Pilots/Pilot2/Geo/PanelHoward.FBX
+  - Assets/Pilots/Pilot1/Environments/NewRoom/Comisaria_01.fbx
+  - Assets/Pilots/Pilot2/Geo/V2/TV_Set_Animation.FBX
+  - Assets/Pilots/Pilot1/Environments/New Assets/Marco_181109.fbx
+  - Assets/Pilots/Pilot1/Environments/New Assets/Cajones_181112.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/cylinder.fbx
+  - Assets/Pilots/Pilot2/Geo/V2/animacion05.fbx
+  - Assets/Pilots/Pilot2/Geo/Header/Cabecera_Animacion_01.fbx
+  - Assets/Pilots/Pilot1/Environments/CrimeScene/Sources/cinta.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/Tramoya_02.fbx
+  - Assets/Pilots/Pilot1/Environments/CrimeScene/Sources/BarrierMetal_A.FBX
+  - Assets/Pilots/Pilot2/Geo/SemiSphere1-1.FBX
+  uvOverlapAssetList: 00000000ffffffff000000000101000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000010100000101000000000000010100000101000001010000010100000000000000000000000000000101000000000000000000000000000001010000000000000000000000000000010100000101000001010000000000000101000000000000000000000101000000000000010100000000000000000000000000000101000000000000000000000101000001010000010100000101000000000000000000000000000000000000000000000000000000000000
   xatlasWarningShown: 0
   renderSettingsBounces: 5
   renderSettingsGISamples: 16
