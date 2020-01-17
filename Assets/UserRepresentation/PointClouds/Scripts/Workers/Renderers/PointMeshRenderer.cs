@@ -14,7 +14,9 @@ namespace Workers
         // Start is called before the first frame update
         void Start() {
             if (material == null) {
-                material = new Material(Resources.Load<Shader>("PointCloudMesh"));
+
+                material = new Material(Shader.Find("Entropy/PointCloud40"));
+                //material = new Material(Resources.Load<Shader>("PointCloudMesh"));
                 material.SetFloat("_PointSize", 0.008f );
                 material.SetColor("_Tint", Color.gray);
                 material.hideFlags = HideFlags.DontSave;
