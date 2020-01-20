@@ -78,7 +78,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [SerializeField] private Button joinButton;
     [SerializeField] private Button doneCreateButton;
     [SerializeField] private Button doneJoinButton;
-    [SerializeField] private Button readyLobbyButton; 
+    [SerializeField] private Button readyLobbyButton;
+    [SerializeField] private Button PCCalibButton;
+    [SerializeField] private Button TVMCalibButton;
     
     // Logs container
     [Header("Logs container")]
@@ -778,7 +780,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     void Start() {
         //Hardcoded ClockSync on Windows machines
-        if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
+        //if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
 
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
@@ -789,6 +791,15 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         DontDestroyOnLoad(this);
     }
     
+    void Update() {
+        if (SceneManager.GetActiveScene().name == "LoginManager") {
+            gameObject.GetComponent<Canvas>().enabled = true;
+        }
+        else {
+            gameObject.GetComponent<Canvas>().enabled = false;
+        }
+    }
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -801,6 +812,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 usersPanel.SetActive(false);
                 createButton.gameObject.SetActive(false);
                 joinButton.gameObject.SetActive(false);
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
                 break;
             case State.Login:
                 loginPanel.SetActive(true);
@@ -812,6 +825,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 usersPanel.SetActive(false);
                 createButton.gameObject.SetActive(false);
                 joinButton.gameObject.SetActive(false);
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
                 break;
             case State.Default:
                 loginPanel.SetActive(false);
@@ -825,6 +840,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = true;
                 joinButton.interactable = true;
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
+                PCCalibButton.interactable = true;
+                TVMCalibButton.interactable = true;
                 break;
             case State.Create:
                 loginPanel.SetActive(false);
@@ -838,6 +857,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = false;
                 joinButton.interactable = true;
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
+                PCCalibButton.interactable = true;
+                TVMCalibButton.interactable = true;
                 break;
             case State.Join:
                 loginPanel.SetActive(false);
@@ -851,6 +874,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = true;
                 joinButton.interactable = false;
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
+                PCCalibButton.interactable = true;
+                TVMCalibButton.interactable = true;
                 break;
             case State.Lobby:
                 loginPanel.SetActive(false);
@@ -864,6 +891,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = false;
                 joinButton.interactable = false;
+                PCCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.gameObject.SetActive(true);
+                PCCalibButton.interactable = false;
+                TVMCalibButton.interactable = false;
                 break;
             case State.InGame:
                 break;
@@ -913,6 +944,14 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void ReadyButton() {
         if (isMaster) SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
         else SendMessageToAll(MessageType.READY);
+    }
+
+    public void PCCalib() {
+        SceneManager.LoadScene("PCCalibration");
+    }
+
+    public void TVMCalib() {
+        SceneManager.LoadScene("TVMCalibration");
     }
     
     public void AutoFillButtons(int user) {

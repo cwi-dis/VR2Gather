@@ -44,7 +44,8 @@ public class TVMCalibration : MonoBehaviour {
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9) {
                     if (!axisRInUse) {
                         Debug.Log("Comfortable!");
-                        Application.Quit();
+                        //Application.Quit();
+                        SceneManager.LoadScene("LoginManager");
                         axisRInUse = true;
                     }
                 }
