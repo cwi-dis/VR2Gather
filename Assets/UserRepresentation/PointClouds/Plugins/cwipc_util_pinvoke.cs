@@ -117,6 +117,7 @@ public class cwipc
     public class pointcloud
     {
         protected System.IntPtr obj;
+        protected object objLock = new object();
 
         internal pointcloud(System.IntPtr _obj)
         {
@@ -137,9 +138,13 @@ public class cwipc
         }
 
         public void free() {
-            if (obj != System.IntPtr.Zero) {
-                _API_cwipc_util.cwipc_free(obj);
-                obj = System.IntPtr.Zero;
+            lock (objLock)
+            {
+                if (obj != System.IntPtr.Zero)
+                {
+                    _API_cwipc_util.cwipc_free(obj);
+                    obj = System.IntPtr.Zero;
+                }
             }
         }
 
@@ -183,6 +188,7 @@ public class cwipc
     public class source
     {
         protected System.IntPtr obj;
+        protected object objLock = new object();
 
         internal source(System.IntPtr _obj)
         {
@@ -199,9 +205,13 @@ public class cwipc
         }
 
         public void free() {
-            if (obj != System.IntPtr.Zero) {
-                _API_cwipc_util.cwipc_source_free(obj);
-                obj = System.IntPtr.Zero;
+            lock (objLock)
+            {
+                if (obj != System.IntPtr.Zero)
+                {
+                    _API_cwipc_util.cwipc_source_free(obj);
+                    obj = System.IntPtr.Zero;
+                }
             }
         }
         ~source() {
@@ -253,6 +263,7 @@ public class cwipc
     public class encoder
     {
         protected System.IntPtr obj;
+        protected object objLock = new object();
 
         internal encoder(System.IntPtr _obj)
         {
@@ -269,9 +280,13 @@ public class cwipc
         }
 
         public void free() {
-            if (obj != System.IntPtr.Zero) {
-                _API_cwipc_codec.cwipc_encoder_free(obj);
-                obj = System.IntPtr.Zero;
+            lock (objLock)
+            {
+                if (obj != System.IntPtr.Zero)
+                {
+                    _API_cwipc_codec.cwipc_encoder_free(obj);
+                    obj = System.IntPtr.Zero;
+                }
             }
         }
 
@@ -384,6 +399,5 @@ public class cwipc
         if (rvPtr == System.IntPtr.Zero) return null;
         return new pointcloud(rvPtr);
     }
-
 
 }

@@ -28,6 +28,7 @@ public class bin2dash
     public class connection
     {
         protected System.IntPtr obj;
+        protected object objLock = new object();
 
         internal connection(System.IntPtr _obj)
         {
@@ -48,9 +49,13 @@ public class bin2dash
         }
 
         public void free() {
-            if (obj != System.IntPtr.Zero) {
-                _API.vrt_destroy(obj);
-                obj = System.IntPtr.Zero;
+            lock (objLock)
+            {
+                if (obj != System.IntPtr.Zero)
+                {
+                    _API.vrt_destroy(obj);
+                    obj = System.IntPtr.Zero;
+                }
             }
         }
 
