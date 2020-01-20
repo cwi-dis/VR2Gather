@@ -103,11 +103,16 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
+                "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
+                "streamName": "",
+                "streamNumber": 0
+            },
+            "_SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
                 "streamName": "",
                 "streamNumber": 0
             },
-            "AudioSUBConfig": {
+            "_AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
                 "streamNumber": 0
