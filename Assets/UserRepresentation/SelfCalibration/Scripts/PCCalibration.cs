@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PCCalibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }
@@ -45,7 +46,8 @@ public class PCCalibration : MonoBehaviour {
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9) {
                     if (!axisRInUse) {
                         Debug.Log("Comfortable!");
-                        Application.Quit();
+                        //Application.Quit();
+                        SceneManager.LoadScene("LoginManager");
                         axisRInUse = true;
                     }
                 }
