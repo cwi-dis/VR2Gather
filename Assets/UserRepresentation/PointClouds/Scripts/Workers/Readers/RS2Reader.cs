@@ -48,7 +48,7 @@ namespace Workers {
                             Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
                             return;
                         }
-                        Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {currentPointCloud.count()} point, cellsize={currentPointCloud.cellsize()}");
+                        //Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {currentPointCloud.count()} point, cellsize={currentPointCloud.cellsize()}");
                     }
                     token.currentPointcloud = currentPointCloud;
                     Next();
