@@ -27,6 +27,7 @@ namespace Workers {
         int dampedSize = 0;
         static int subCount;
         string subName;
+        object subLock = new object();
 
         public SUBReader(Config._User._SUBConfig cfg, string _url = "") : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
@@ -38,6 +39,7 @@ namespace Workers {
             streamNumber = cfg.streamNumber;
             try {
                 retryPlay();
+                Start();
             }
             catch (System.Exception e)
             {
@@ -83,8 +85,12 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            subHandle.free();
-            subHandle = null;
+            lock (subLock)
+            {
+                subHandle.free();
+                subHandle = null;
+                isPlaying = false;
+            }
             base.OnStop();
             Cleaner();
             Debug.Log($"SUBReader {subName} {url} Stopped");
@@ -94,12 +100,15 @@ namespace Workers {
             if (_size == 0) {
                 numberOfUnsuccessfulReceives++;
                 if (numberOfUnsuccessfulReceives > 2000) {
-                    Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
-                    subHandle.free();
-                    subHandle = null;
-                    isPlaying = false;
+                    lock (subLock)
+                    {
+                        Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                        subHandle.free();
+                        subHandle = null;
+                        isPlaying = false;
 
-                    numberOfUnsuccessfulReceives = 0;
+                        numberOfUnsuccessfulReceives = 0;
+                    }
                 }
                 return;
             }
@@ -107,23 +116,29 @@ namespace Workers {
         }
 
         protected void retryPlay() {
-            if (isPlaying) return;
-            if (subHandle == null) {
-                subName = $"source_from_sub_{++subCount}";
-                subHandle = sub.create(subName);
-                if (subHandle == null) {
-                    Debug.LogWarning($"SubReader {subName}: sub.create({url}) call failed.");
+            lock (subLock)
+            {
+                if (isPlaying) return;
+                if (subHandle == null)
+                {
+                    subName = $"source_from_sub_{++subCount}";
+                    subHandle = sub.create(subName);
+                    if (subHandle == null)
+                    {
+                        Debug.LogWarning($"SubReader {subName}: sub.create({url}) call failed.");
+                        return;
+                    }
+                    Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
+                }
+                isPlaying = subHandle.play(url);
+                if (!isPlaying)
+                {
+                    Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
-                Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
+                streamCount = subHandle.get_stream_count();
+                Debug.Log($"SubReader {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
-            isPlaying = subHandle.play(url);
-            if (!isPlaying) {
-                Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
-                return;
-            }
-            streamCount = subHandle.get_stream_count();
-            Debug.Log($"SubReader {subName}: sub.play({url}) successful, {streamCount} streams.");
         }
 
         protected void Cleaner() {
