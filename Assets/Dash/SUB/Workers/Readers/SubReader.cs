@@ -28,6 +28,8 @@ namespace Workers {
         static int subCount;
         string subName;
         object subLock = new object();
+        System.DateTime subRetryNotBefore = System.DateTime.Now;
+
 
         public SUBReader(Config._User._SUBConfig cfg, string _url = "") : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
@@ -106,6 +108,7 @@ namespace Workers {
                         subHandle.free();
                         subHandle = null;
                         isPlaying = false;
+                        subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
 
                         numberOfUnsuccessfulReceives = 0;
                     }
@@ -119,9 +122,11 @@ namespace Workers {
             lock (subLock)
             {
                 if (isPlaying) return;
+                if (System.DateTime.Now < subRetryNotBefore) return;
                 if (subHandle == null)
                 {
                     subName = $"source_from_sub_{++subCount}";
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
                     if (subHandle == null)
                     {
@@ -133,6 +138,7 @@ namespace Workers {
                 isPlaying = subHandle.play(url);
                 if (!isPlaying)
                 {
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
