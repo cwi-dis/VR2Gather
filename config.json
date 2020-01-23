@@ -117,7 +117,7 @@
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 20,
+                "initialDelay" : 25,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -180,7 +180,7 @@
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 20,
+                "initialDelay" : 25,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -243,7 +243,7 @@
             "AudioSUBConfig": {
                 "url": "http://192.168.10.94:9000/audio-",
                 "streamName": "audio.mpd",
-                "initialDelay" : 20,
+                "initialDelay" : 25,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
