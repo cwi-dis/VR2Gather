@@ -77,7 +77,7 @@
                 "port": 0
             },
             "Render": {
-                "forceMesh": false,
+                "forceMesh": true,
                 "pointSize": 0.00800000037997961,
                 "position": {
                     "x": 0.0,
@@ -104,20 +104,20 @@
             "plyDirectory": "",
             "_SUBConfig": {
                 "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamName": "",
                 "streamNumber": 0
             },
             "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
                 "streamName": "",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamNumber": 0
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -146,7 +146,7 @@
                 "port": 0
             },
             "Render": {
-                "forceMesh": false,
+                "forceMesh": true,
                 "pointSize": 0.07999999821186066,
                 "position": {
                     "x": 0.0,
@@ -174,13 +174,13 @@
             "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
                 "streamName": "",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamNumber": 0
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -209,7 +209,7 @@
                 "port": 0
             },
             "Render": {
-                "forceMesh": false,
+                "forceMesh": true,
                 "pointSize": 0.07999999821186066,
                 "position": {
                     "x": 0.0,
@@ -236,14 +236,14 @@
             "plyDirectory": "",
             "SUBConfig": {
                 "url": "http://192.168.10.94:9000/pc-",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamName": "testBed.mpd",
                 "streamNumber": 0
             },
             "AudioSUBConfig": {
                 "url": "http://192.168.10.94:9000/audio-",
                 "streamName": "audio.mpd",
-                "initialDelay" : 15,
+                "initialDelay" : 20,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -272,7 +272,7 @@
                 "port": 0
             },
             "Render": {
-                "forceMesh": false,
+                "forceMesh": true,
                 "pointSize": 0.07999999821186066,
                 "position": {
                     "x": 0.0,
