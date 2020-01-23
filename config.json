@@ -61,14 +61,14 @@
                     "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
                     "streamName": "testBed",
                     "segmentSize": 2000,
-                    "segmentLife": 30000,
+                    "segmentLife": 10000,
                     "fileMirroring": false
                 },
                 "AudioBin2Dash": {
                     "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/",
                     "streamName": "audio",
                     "segmentSize": 2000,
-                    "segmentLife": 30000,
+                    "segmentLife": 10000,
                     "fileMirroring": false
                 }
             },
@@ -102,19 +102,22 @@
             "cwicpcDirectory": "",
             "plyFilename": "",
             "plyDirectory": "",
-            "SUBConfig": {
+            "_SUBConfig": {
                 "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
+                "initialDelay" : 15,
                 "streamName": "",
                 "streamNumber": 0
             },
-            "_SUBConfig": {
+            "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
                 "streamName": "",
+                "initialDelay" : 15,
                 "streamNumber": 0
             },
-            "_AudioSUBConfig": {
+            "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
+                "initialDelay" : 15,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -171,11 +174,13 @@
             "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
                 "streamName": "",
+                "initialDelay" : 15,
                 "streamNumber": 0
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
                 "streamName": "",
+                "initialDelay" : 15,
                 "streamNumber": 0
             },
             "PCSelfConfig": {
@@ -231,12 +236,14 @@
             "plyDirectory": "",
             "SUBConfig": {
                 "url": "http://192.168.10.94:9000/pc-",
+                "initialDelay" : 15,
                 "streamName": "testBed.mpd",
                 "streamNumber": 0
             },
             "AudioSUBConfig": {
                 "url": "http://192.168.10.94:9000/audio-",
                 "streamName": "audio.mpd",
+                "initialDelay" : 15,
                 "streamNumber": 0
             },
             "PCSelfConfig": {

@@ -39,6 +39,14 @@ namespace Workers {
             else
                 url = _url + cfg.streamName;
             streamNumber = cfg.streamNumber;
+            if (cfg.initialDelay != 0)
+            {
+                // We do not try to start play straight away, to work around bugs when creating the SUB before
+                // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
+                Debug.Log($"Delaying {cfg.initialDelay} seconds before playing {url}");
+                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
+                Debug.Log($"ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
+            }
             try {
                 retryPlay();
                 Start();
@@ -47,10 +55,6 @@ namespace Workers {
             {
                 Debug.LogError($"xxxjack Exception {e.ToString()} caught in SUBReader constructor. Message={e.Message}, stacktrace={e.StackTrace}.");
                 throw e;
-            }
-            if (subHandle == null)
-            {
-                throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
             }
         }
 
@@ -89,7 +93,7 @@ namespace Workers {
         public override void OnStop() {
             lock (subLock)
             {
-                subHandle.free();
+                if (subHandle != null) subHandle.free();
                 subHandle = null;
                 isPlaying = false;
             }
@@ -105,7 +109,7 @@ namespace Workers {
                     lock (subLock)
                     {
                         Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
-                        subHandle.free();
+                        if (subHandle != null) subHandle.free();
                         subHandle = null;
                         isPlaying = false;
                         subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
@@ -122,7 +126,9 @@ namespace Workers {
             lock (subLock)
             {
                 if (isPlaying) return;
+
                 if (System.DateTime.Now < subRetryNotBefore) return;
+
                 if (subHandle == null)
                 {
                     subName = $"source_from_sub_{++subCount}";
@@ -130,8 +136,7 @@ namespace Workers {
                     subHandle = sub.create(subName);
                     if (subHandle == null)
                     {
-                        Debug.LogWarning($"SubReader {subName}: sub.create({url}) call failed.");
-                        return;
+                        throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
                     }
                     Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
                 }
