@@ -25,6 +25,11 @@ namespace Workers {
         sub.FrameInfo info = new sub.FrameInfo();
         int numberOfUnsuccessfulReceives;
         int dampedSize = 0;
+        static int subCount;
+        string subName;
+        object subLock = new object();
+        System.DateTime subRetryNotBefore = System.DateTime.Now;
+
 
         public SUBReader(Config._User._SUBConfig cfg, string _url = "") : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
@@ -34,24 +39,20 @@ namespace Workers {
             else
                 url = _url + cfg.streamName;
             streamNumber = cfg.streamNumber;
-            try {
-                subHandle = sub.create("source_from_sub");
-                if (subHandle != null) {
-                    Debug.Log($"SubReader: sub.create({url}) successful.");
-                    isPlaying = subHandle.play(url);
-                    if (!isPlaying) {
-                        Debug.Log($"SubReader: sub_play({url}) failed, will try again later");
-                    }
-                    else {
-                        streamCount = subHandle.get_stream_count();
-                        //Debug.Log($"streamCount {streamCount}");
-                    }
-                    Start();
-                }
-                else
-                    throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
+            if (cfg.initialDelay != 0)
+            {
+                // We do not try to start play straight away, to work around bugs when creating the SUB before
+                // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
+                Debug.Log($"Delaying {cfg.initialDelay} seconds before playing {url}");
+                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
+                Debug.Log($"ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
             }
-            catch (System.Exception e) {
+            try {
+                retryPlay();
+                Start();
+            }
+            catch (System.Exception e)
+            {
                 Debug.LogError($"xxxjack Exception {e.ToString()} caught in SUBReader constructor. Message={e.Message}, stacktrace={e.StackTrace}.");
                 throw e;
             }
@@ -64,12 +65,14 @@ namespace Workers {
             streamNumber = 0;
             try {
                 //signals_unity_bridge_pinvoke.SetPaths();
-                subHandle = sub.create("source_from_sub");
+                subName = $"source_from_sub_{++subCount}";
+                subHandle = sub.create(subName);
                 if (subHandle != null) {
+                    Debug.LogError("xxxjack very suspiciously-looking code in SUBReader called...");
                     //Debug.Log($"SubReader: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
-                        Debug.Log($"SubReader: sub_play({url}) failed, will try again later");
+                        Debug.Log($"SubReader {subName}: sub_play({url}) failed, will try again later");
                     } else {
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1) videoStream = 0;
@@ -88,23 +91,31 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            subHandle.free();
-            subHandle = null;
+            lock (subLock)
+            {
+                if (subHandle != null) subHandle.free();
+                subHandle = null;
+                isPlaying = false;
+            }
             base.OnStop();
             Cleaner();
-            Debug.Log($"SUBReader {url} Stopped");
+            Debug.Log($"SUBReader {subName} {url} Stopped");
         }
 
         protected void UnsuccessfulCheck(int _size) {
             if (_size == 0) {
                 numberOfUnsuccessfulReceives++;
                 if (numberOfUnsuccessfulReceives > 2000) {
-                    Debug.LogWarning($"SubReader {url}: Too many receive errors. Closing SUB player, will reopen.");
-                    subHandle.free();
-                    subHandle = null;
-                    isPlaying = false;
+                    lock (subLock)
+                    {
+                        Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                        if (subHandle != null) subHandle.free();
+                        subHandle = null;
+                        isPlaying = false;
+                        subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
 
-                    numberOfUnsuccessfulReceives = 0;
+                        numberOfUnsuccessfulReceives = 0;
+                    }
                 }
                 return;
             }
@@ -112,33 +123,32 @@ namespace Workers {
         }
 
         protected void retryPlay() {
-            if (subHandle == null) {
-                subHandle = sub.create("source_from_sub");  
-                if (subHandle == null) {
-                    Debug.LogWarning($"SubReader: retry sub.create({url}) call failed again.");
+            lock (subLock)
+            {
+                if (isPlaying) return;
+
+                if (System.DateTime.Now < subRetryNotBefore) return;
+
+                if (subHandle == null)
+                {
+                    subName = $"source_from_sub_{++subCount}";
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
+                    subHandle = sub.create(subName);
+                    if (subHandle == null)
+                    {
+                        throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
+                    }
+                    Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
+                }
+                isPlaying = subHandle.play(url);
+                if (!isPlaying)
+                {
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
+                    Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
-                else {
-                    Debug.Log($"SubReader: retry sub.create({url}) successful.");
-                    isPlaying = subHandle.play(url);
-                    if (!isPlaying) {
-                        Debug.Log($"SubReader: retry sub.play({url}) failed, will try again later");
-                    }
-                    else {
-                        Debug.Log($"SubReader: retry sub.play({url}) successful.");
-                        streamCount = subHandle.get_stream_count();
-                    }
-                }
-            }
-            else {
-                isPlaying = subHandle.play(url);
-                if (!isPlaying) {
-                    Debug.LogWarning($"SubReader: retry sub_play({url}) failed, will try again later");
-                }
-                else {
-                    Debug.Log($"SubReader: retry sub.play({url}) successful.");
-                    streamCount = subHandle.get_stream_count();
-                }
+                streamCount = subHandle.get_stream_count();
+                Debug.Log($"SubReader {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
@@ -182,7 +192,7 @@ namespace Workers {
                                 return;
                             }
                             else
-                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+                                Debug.LogError("PCSUBReader {subName}: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                         }
                     }
                     if (needsVideo == null || needsVideo()) {
@@ -210,7 +220,7 @@ namespace Workers {
                                 return;
                             }
                             else
-                                Debug.LogError("PCSUBReader: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+                                Debug.LogError("PCSUBReader {subName}: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
                         }
                     }
                 }

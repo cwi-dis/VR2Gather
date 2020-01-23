@@ -42,6 +42,7 @@ public class Config {
             public string url;
             public string streamName;
             public int streamNumber;
+            public int initialDelay;
         }
         public _SUBConfig SUBConfig;
         public _SUBConfig AudioSUBConfig;
