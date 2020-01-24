@@ -5,6 +5,7 @@ using UnityEngine;
 [Serializable]
 public class Config {
     public float memoryDamping = 1.3f;
+    public bool useAudio;
     [Serializable]
     public class _TVMs
     {

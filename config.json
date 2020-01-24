@@ -1,5 +1,6 @@
 {
     "memoryDamping": 1.2999999523162842,
+    "useAudio" : false,
     "TVMs": {
         "connectionURI": "amqp://tofis:tofis@192.168.1.110:5672",
         "exchangeName": "TVMeshData",
