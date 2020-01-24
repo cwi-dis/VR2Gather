@@ -15,6 +15,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     #region UI
 
     public bool isDebug = false;
+    public bool disableVideo = false;
     public bool useSocketIOAudio = false;
 
     [HideInInspector] public bool isMaster = false;
