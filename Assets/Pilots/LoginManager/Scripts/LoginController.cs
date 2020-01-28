@@ -23,6 +23,13 @@ public class LoginController : PilotController {
         if (msg[0] == MessageType.START) {
             if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
             if (msg[1] == "Pilot 2") {
+                // Check Presenter Toggle
+                if (msg[2] == "True") orchestrator.presenterToggle.isOn = true;
+                else orchestrator.presenterToggle.isOn = false;
+                // Check Live Toggle
+                if (msg[3] == "True") orchestrator.liveToggle.isOn = true;
+                else orchestrator.liveToggle.isOn = false;
+
                 if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
                 else SceneManager.LoadScene("Pilot2_Player");
             }

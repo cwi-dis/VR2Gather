@@ -54,6 +54,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public InputField sessionNameIF;
     public InputField sessionDescriptionIF;
     public Dropdown scenarioIdDrop;
+    public Toggle presenterToggle;
+    public Toggle liveToggle;
 
     [Header("Join")]
     public Dropdown sessionIdDrop;
@@ -799,6 +801,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         else {
             gameObject.GetComponent<Canvas>().enabled = false;
         }
+
+        // Check Pilot number to show optional toggles
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+            presenterToggle.gameObject.SetActive(true); 
+            // Check if presenter is active to show live option
+            if (presenterToggle.isOn) liveToggle.gameObject.SetActive(true);
+            else liveToggle.gameObject.SetActive(false);
+        }
+        else presenterToggle.gameObject.SetActive(false);
+        
     }
 
     public void PanelChanger() {
@@ -943,7 +955,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void ReadyButton() {
-        if (isMaster) SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
+        if (isMaster) {
+            if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
+            else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
+        }
         else SendMessageToAll(MessageType.READY);
     }
 
