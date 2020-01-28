@@ -99,7 +99,16 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
     private void InstantiateAudioListener(string pUserID)
     {
         GameObject lUserAudioReceiver = new GameObject("UserAudioReceiver_" + pUserID);
-        lUserAudioReceiver.transform.parent = this.transform;
+        if (Pilot2PlayerController.Instance != null) {
+            foreach (PlayerManager p in Pilot2PlayerController.Instance.players) {
+                if (p.orchestratorId == pUserID) {
+                    lUserAudioReceiver.transform.parent = p.transform;
+                }
+            }
+        }
+        else {
+            lUserAudioReceiver.transform.parent = this.transform;
+        }
         lUserAudioReceiver.transform.localPosition = new Vector3(0, 0, 0);
 
         AudioReceiver lAudioReceiver = lUserAudioReceiver.AddComponent<AudioReceiver>();
