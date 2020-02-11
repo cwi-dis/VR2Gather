@@ -1,8 +1,8 @@
 {
     "memoryDamping": 1.2999999523162842,
-    "useAudio" : false,
+    "useAudio" : true,
     "TVMs": {
-        "connectionURI": "amqp://tofis:tofis@192.168.1.110:5672",
+        "connectionURI": "amqp://volumetric:capture@192.168.1.1:5672",
         "exchangeName": "TVMeshData",
         "offsetPosition": {
             "x": 0.3199999928474426,
