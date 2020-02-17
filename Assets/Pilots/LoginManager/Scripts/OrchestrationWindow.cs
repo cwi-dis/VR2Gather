@@ -1005,16 +1005,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         else if (user == 4) {
             userNameLoginIF.text = "Jack@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.1.1:5672";
-            exchangeNameLoginIF.text = "TVMeshData";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
+            exchangeNameLoginIF.text = "TVMmpeg-pc";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
         }
         else if (user == 5) {
             userNameLoginIF.text = "Shishir@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.1.1:5672";
-            exchangeNameLoginIF.text = "TVMeshData";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
+            exchangeNameLoginIF.text = "TVMarecibo";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
