@@ -23,11 +23,40 @@ public class LoginController : PilotController {
         if (msg[0] == MessageType.START) {
             if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
             if (msg[1] == "Pilot 2") {
+                // Check Representation
+                if (msg[2] == "0") { // TVM
+                    orchestrator.useTVM = true;
+                    orchestrator.usePC = false;
+                }
+                else { // PC
+                    orchestrator.useTVM = false;
+                    orchestrator.usePC = true;
+                }
+                // Check Audio
+                switch (msg[3]) {
+                    case "0": // Any Audio
+                        orchestrator.useAudio = false;
+                        orchestrator.useSocketIOAudio = false;
+                        orchestrator.useDashAudio = false;
+                        break;
+                    case "1": // Socket Audio
+                        orchestrator.useAudio = true;
+                        orchestrator.useSocketIOAudio = true;
+                        orchestrator.useDashAudio = false;
+                        break;
+                    case "2": // Dash Audio
+                        orchestrator.useAudio = true;
+                        orchestrator.useSocketIOAudio = false;
+                        orchestrator.useDashAudio = true;
+                        break;
+                    default:
+                        break;
+                }
                 // Check Presenter Toggle
-                if (msg[2] == "True") orchestrator.presenterToggle.isOn = true;
+                if (msg[4] == "True") orchestrator.presenterToggle.isOn = true;
                 else orchestrator.presenterToggle.isOn = false;
                 // Check Live Toggle
-                if (msg[3] == "True") orchestrator.liveToggle.isOn = true;
+                if (msg[5] == "True") orchestrator.liveToggle.isOn = true;
                 else orchestrator.liveToggle.isOn = false;
 
                 if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
