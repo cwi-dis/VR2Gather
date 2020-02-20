@@ -15,7 +15,13 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     #region UI
 
     public bool isDebug = false;
+    public bool useTVM = true;
+    public bool usePC = false;
+    public bool useAudio = false;
     public bool useSocketIOAudio = false;
+    public bool useDashAudio = false;
+    private int kindRepresentation = 0;
+    private int kindAudio = 0;
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -55,6 +61,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public Dropdown scenarioIdDrop;
     public Toggle presenterToggle;
     public Toggle liveToggle;
+    public Toggle tvmToggle;
+    public Toggle pcToggle;
+    public Toggle anyAudioToggle;
+    public Toggle socketAudioToggle;
+    public Toggle dashAudioToggle;
 
     [Header("Join")]
     public Dropdown sessionIdDrop;
@@ -788,6 +799,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
         updated = false;
 
+        tvmToggle.isOn = true;
+        pcToggle.isOn = false;
+        anyAudioToggle.isOn = true;
+        socketAudioToggle.isOn = false;
+        dashAudioToggle.isOn = false;
+
         SocketConnect();
 
         DontDestroyOnLoad(this);
@@ -802,14 +819,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
 
         // Check Pilot number to show optional toggles
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            presenterToggle.gameObject.SetActive(true); 
-            // Check if presenter is active to show live option
-            if (presenterToggle.isOn) liveToggle.gameObject.SetActive(true);
-            else liveToggle.gameObject.SetActive(false);
-        }
-        else presenterToggle.gameObject.SetActive(false);
-        
+        Pilot2PresenterToggles();
+        Pilot2UserRepresentationToggle();
+        Pilot2AudioToggle();
     }
 
     public void PanelChanger() {
@@ -915,6 +927,56 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
 
+    private void Pilot2PresenterToggles() {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+            presenterToggle.gameObject.SetActive(true);
+            // Check if presenter is active to show live option
+            if (presenterToggle.isOn) liveToggle.gameObject.SetActive(true);
+            else liveToggle.gameObject.SetActive(false);
+        }
+        else presenterToggle.gameObject.SetActive(false);
+    }
+
+    private void Pilot2UserRepresentationToggle() {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+            tvmToggle.gameObject.SetActive(true);
+            pcToggle.gameObject.SetActive(true);
+
+            useTVM = tvmToggle.isOn;
+            usePC = pcToggle.isOn;
+            if (useTVM) kindRepresentation = 0;
+            else kindRepresentation = 1;
+        }
+        else {
+            tvmToggle.gameObject.SetActive(false);
+            pcToggle.gameObject.SetActive(false);
+        }
+    }
+
+    private void Pilot2AudioToggle() {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+            anyAudioToggle.gameObject.SetActive(true);
+            socketAudioToggle.gameObject.SetActive(true);
+            dashAudioToggle.gameObject.SetActive(true);
+
+            useAudio = !anyAudioToggle.isOn;
+            useSocketIOAudio = socketAudioToggle.isOn;
+            useDashAudio = dashAudioToggle.isOn;
+
+            if (anyAudioToggle.isOn) anyAudioToggle.interactable = false;
+            else anyAudioToggle.interactable = true;
+            if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
+            else socketAudioToggle.interactable = true;
+            if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
+            else dashAudioToggle.interactable = true;
+        }
+        else {
+            anyAudioToggle.gameObject.SetActive(false);
+            socketAudioToggle.gameObject.SetActive(false);
+            dashAudioToggle.gameObject.SetActive(false);
+        }
+    }
+
     #endregion
 
     #region Buttons
@@ -956,7 +1018,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void ReadyButton() {
         if (isMaster) {
             if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
-            else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
+            else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" +
+                                                                                kindRepresentation + "_" + kindAudio + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
+            //else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
         }
         else SendMessageToAll(MessageType.READY);
     }
@@ -1005,16 +1069,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         else if (user == 4) {
             userNameLoginIF.text = "Jack@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://marc:marc@192.168.10.49:5672";
-            exchangeNameLoginIF.text = "Fake1";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
+            exchangeNameLoginIF.text = "TVMmpeg-pc";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
         }
         else if (user == 5) {
             userNameLoginIF.text = "Shishir@CWI";
             userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://marc:marc@192.168.10.49:5672";
-            exchangeNameLoginIF.text = "Fake1";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
+            exchangeNameLoginIF.text = "TVMarecibo";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
@@ -1034,7 +1098,86 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Vincent/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Vincent/audio.mpd";
         }
+        else if (user == 8) {
+            userNameLoginIF.text = "cwibig";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
+            exchangeNameLoginIF.text = "TVMarecibo";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwibig/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwibig/audio.mpd";
+        }
+        else if (user == 9) {
+            userNameLoginIF.text = "cwismall";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
+            exchangeNameLoginIF.text = "TVMmpeg-pc";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwismall/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwismall/audio.mpd";
+        }
+        else if (user == 10) {
+            userNameLoginIF.text = "cwitiny";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.112:5672";
+            exchangeNameLoginIF.text = "TVMgargamel";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwitiny/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwitiny/audio.mpd";
+        }
     }
-    
+
+    #endregion
+
+    #region Toggles
+    public void SetTVM() {
+        useTVM = tvmToggle.isOn;
+        pcToggle.isOn = !tvmToggle.isOn;
+    }
+
+    public void SetPC() {
+        usePC = pcToggle.isOn;
+        tvmToggle.isOn = !pcToggle.isOn;
+    }
+
+    public void SetAudio(int state) {
+        switch (state) {
+            case 0: // Any
+                if (anyAudioToggle.isOn) {
+                    useAudio = false;
+                    useSocketIOAudio = false;
+                    useDashAudio = false;
+
+                    socketAudioToggle.isOn = false;
+                    dashAudioToggle.isOn = false;
+
+                    kindAudio = 0;
+                }
+                break;
+            case 1: // Socket
+                if (socketAudioToggle.isOn) {
+                    useAudio = true;
+                    useSocketIOAudio = true;
+                    useDashAudio = false;
+
+                    anyAudioToggle.isOn = false;
+                    dashAudioToggle.isOn = false;
+
+                    kindAudio = 1;
+                }
+                break;
+            case 2: // Dash
+                if (dashAudioToggle.isOn) {
+                    useAudio = true;
+                    useSocketIOAudio = false;
+                    useDashAudio = true;
+
+                    anyAudioToggle.isOn = false;
+                    socketAudioToggle.isOn = false;
+
+                    kindAudio = 2;
+                }
+                break;
+            default:
+                break;
+        }
+    }
     #endregion
 }

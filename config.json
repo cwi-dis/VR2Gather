@@ -1,19 +1,22 @@
 {
     "memoryDamping": 1.2999999523162842,
-    "useAudio" : false,
+    "useAudio": true,
     "TVMs": {
-        "connectionURI": "amqp://tofis:tofis@192.168.1.110:5672",
+        "connectionURI": "amqp://volumetric:capture@192.168.1.1:5672",
         "exchangeName": "TVMeshData",
         "offsetPosition": {
-            "x": 0.3199999928474426,
-            "y": 0.9549999237060547,
-            "z": -0.4499998688697815
+            "x": -1.9099986553192139,
+            "y": 1.174999713897705,
+            "z": 0.7399995923042297
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 271.0006408691406,
+            "y": 87.00109100341797,
             "z": 0.0
         }
+    },
+    "Macintosh": {
+        "SIGNALS_SMD_PATH": "/Users/jack/lib"
     },
     "PCs": {
         "offsetPosition": {
@@ -32,9 +35,6 @@
             "z": 1.0
         }
     },
-    "Macintosh" : {
-    	"SIGNALS_SMD_PATH" : "/Users/jack/lib"
-    },
     "Users": [
         {
             "sourceType": "pcself",
@@ -45,16 +45,18 @@
             "SUBConfig": {
                 "url": "",
                 "streamName": "",
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 0
             },
             "AudioSUBConfig": {
                 "url": "",
                 "streamName": "",
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 0
             },
             "PCSelfConfig": {
                 "configFilename": "../cameraconfig.xml",
-                "voxelSize": 0.005,
+                "voxelSize": 0.004999999888241291,
                 "Encoder": {
                     "octreeBits": 10
                 },
@@ -103,23 +105,17 @@
             "cwicpcDirectory": "",
             "plyFilename": "",
             "plyDirectory": "",
-            "_SUBConfig": {
-                "url": "https://vrt-pcl2dash.viaccess-orca.com/loot/vrtogether.mpd",
-                "initialDelay" : 20,
-                "streamName": "",
-                "streamNumber": 0
-            },
             "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
                 "streamName": "",
-                "initialDelay" : 20,
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 20
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 25,
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 25
             },
             "PCSelfConfig": {
                 "configFilename": "",
@@ -175,14 +171,14 @@
             "SUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
                 "streamName": "",
-                "initialDelay" : 20,
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 20
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
                 "streamName": "",
-                "initialDelay" : 25,
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 25
             },
             "PCSelfConfig": {
                 "configFilename": "",
@@ -237,15 +233,15 @@
             "plyDirectory": "",
             "SUBConfig": {
                 "url": "http://192.168.10.94:9000/pc-",
-                "initialDelay" : 20,
                 "streamName": "testBed.mpd",
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 20
             },
             "AudioSUBConfig": {
                 "url": "http://192.168.10.94:9000/audio-",
                 "streamName": "audio.mpd",
-                "initialDelay" : 25,
-                "streamNumber": 0
+                "streamNumber": 0,
+                "initialDelay": 25
             },
             "PCSelfConfig": {
                 "configFilename": "",
