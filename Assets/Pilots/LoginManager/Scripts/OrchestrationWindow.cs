@@ -1034,6 +1034,30 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Vincent/testBed.mpd";
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Vincent/audio.mpd";
         }
+        else if (user == 8) {
+            userNameLoginIF.text = "cwibig";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
+            exchangeNameLoginIF.text = "TVMarecibo";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwibig/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwibig/audio.mpd";
+        }
+        else if (user == 9) {
+            userNameLoginIF.text = "cwismall";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
+            exchangeNameLoginIF.text = "TVMmpeg-pc";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwismall/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwismall/audio.mpd";
+        }
+        else if (user == 10) {
+            userNameLoginIF.text = "cwitiny";
+            userPasswordLoginIF.text = "CWI2020";
+            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.112:5672";
+            exchangeNameLoginIF.text = "TVMgargamel";
+            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwitiny/testBed.mpd";
+            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwitiny/audio.mpd";
+        }
     }
     
     #endregion
