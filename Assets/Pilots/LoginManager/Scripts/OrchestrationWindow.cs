@@ -434,7 +434,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetLivePresenterData();
 
             activeScenario = scenario;
-            Debug.Log("XXXXX - " + activeScenario.scenarioName);
         }
         else {
             scenarioIdText.text = "";
@@ -813,15 +812,19 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     void Update() {
         if (SceneManager.GetActiveScene().name == "LoginManager") {
             gameObject.GetComponent<Canvas>().enabled = true;
+
+
         }
         else {
             gameObject.GetComponent<Canvas>().enabled = false;
         }
 
-        // Check Pilot number to show optional toggles
-        Pilot2PresenterToggles();
-        Pilot2UserRepresentationToggle();
-        Pilot2AudioToggle();
+        if(state== State.Create){
+            // Check Pilot number to show optional toggles
+            Pilot2PresenterToggles();
+            Pilot2UserRepresentationToggle();
+            Pilot2AudioToggle();
+        }
     }
 
     public void PanelChanger() {
@@ -944,6 +947,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             useTVM = tvmToggle.isOn;
             usePC = pcToggle.isOn;
+
             if (useTVM) kindRepresentation = 0;
             else kindRepresentation = 1;
         }
