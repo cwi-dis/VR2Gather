@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 //Interfaces to be implemented to supervise the orchestrator
 namespace OrchestratorWrapping
@@ -9,6 +8,8 @@ namespace OrchestratorWrapping
     public interface IMessagesFromOrchestratorListener
     {
         void OnUserMessageReceived(UserMessage userMessage);
+        void OnMasterEventReceived(UserEvent pSceneEventData);
+        void OnUserEventReceived(UserEvent pSceneEventData);
     }
 
     // Interface to implement to listen the user events emitted spontaneously
@@ -17,9 +18,6 @@ namespace OrchestratorWrapping
     {
         void OnUserJoinedSession(string userID);
         void OnUserLeftSession(string userID);
-        
-        //Useless for now
-        //void OnUserDataUpdated(string userID);
     }
 
     // Interface for clients that will use the orchestrator wrapper
@@ -59,6 +57,9 @@ namespace OrchestratorWrapping
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);
+
+        void OnGetAvailableDataStreams(ResponseStatus status, List<DataStream> dataStreams);
+        void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams);
     }
 
     // interface to implement to be updated from messages exchanged on the socketio

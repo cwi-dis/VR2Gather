@@ -95,6 +95,22 @@ namespace OrchestratorWrapping
         public LivePresenterData() { }
     }
 
+    public class DataStream : OrchestratorElement
+    {
+        public string dataStreamUserId = "";
+        public string dataStreamKind = "";
+        public string dataStreamDescription = "";
+
+        // empty constructor callled by the JsonData parser
+        public DataStream() { }
+
+        // Parse a JSonData to a C# object
+        public static DataStream ParseJsonData(JsonData data)
+        {
+            return JsonMapper.ToObject<DataStream>(data.ToJson());
+        }
+    }
+
     public class NtpClock: OrchestratorElement
     {
         public string ntpTime;
@@ -197,13 +213,13 @@ namespace OrchestratorWrapping
         }
     }
 
-
     public class Session : OrchestratorElement
     {
         public string sessionId;
         public string sessionName;
         public string sessionDescription;
         public string sessionAdministrator;
+        public string sessionMaster;
         public string scenarioId; // the scenario ID
         public string[] sessionUsers;
 

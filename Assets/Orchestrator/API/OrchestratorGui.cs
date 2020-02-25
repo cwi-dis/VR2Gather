@@ -5,8 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using OrchestratorWrapping;
 
-public delegate void FunctionToCallOnSendCommandButton();
-
 class GuiCommandDescription
 {
     public string CommandName;
@@ -24,9 +22,9 @@ class GuiCommandDescription
 /**
  * Main Gui class
  * **/
-public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IUserSessionEventsListener
+public class OrchestratorGui : MonoBehaviour
 {
-    #region gui components
+    #region GUI components
 
     //Connection and login components
     [Header("Connection and login components")]
@@ -57,6 +55,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private RectTransform logsContainer;
     [SerializeField]
     private ScrollRect logsScrollRect;
+    [SerializeField]
+    private Button logsClearBtn;
     private Font ArialFont;
 
     // User GUI components
@@ -69,6 +69,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private Text userName;
     [SerializeField]
     private Text userAdmin;
+    [SerializeField]
+    private Text userMaster;
     [SerializeField]
     private Text userMQurl;
     [SerializeField]
@@ -99,85 +101,61 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     #endregion
 
-    #region Gui components panel to select the commands to send and their parameters
+    #region GUI components panel to select the commands to send and their parameters
 
     // The list of available commands
     private List<Dropdown.OptionData> commandsListData = new List<Dropdown.OptionData>();
 
     [Header("Orchestrator GUI commands")]
     // dropdown to display the list of availbale commands
-    [SerializeField] private Dropdown commandDropdown;
+    [SerializeField]
+    private Dropdown commandDropdown;
 
     // button to send the command
-    [SerializeField] private Button sendCommandButton;
+    [SerializeField]
+    private Button sendCommandButton;
 
     // container that displays the list of parameters for the selected command
-    [SerializeField] private RectTransform paramsContainer;
+    [SerializeField]
+    private RectTransform paramsContainer;
 
     // parameters panels
-    [SerializeField] private RectTransform userIdPanel;
-    [SerializeField] private RectTransform userAdminPanel;
-    [SerializeField] private RectTransform userNamePanel;
-    [SerializeField] private RectTransform userPasswordPanel;
-    [SerializeField] private RectTransform userDataMQnamePanel;
-    [SerializeField] private RectTransform userDataMQurlPanel;
-    [SerializeField] private RectTransform sessionIdPanel;
-    [SerializeField] private RectTransform sessionNamePanel;
-    [SerializeField] private RectTransform sessionDescriptionPanel;
-    [SerializeField] private RectTransform scenarioIdPanel;
-    [SerializeField] private RectTransform roomIdPanel;
-    [SerializeField] private RectTransform messagePanel;
+    [SerializeField]
+    private RectTransform userIdPanel;
+    [SerializeField]
+    private RectTransform userAdminPanel;
+    [SerializeField]
+    private RectTransform userNamePanel;
+    [SerializeField]
+    private RectTransform userPasswordPanel;
+    [SerializeField]
+    private RectTransform userDataMQnamePanel;
+    [SerializeField]
+    private RectTransform userDataMQurlPanel;
+    [SerializeField]
+    private RectTransform sessionIdPanel;
+    [SerializeField]
+    private RectTransform sessionNamePanel;
+    [SerializeField]
+    private RectTransform sessionDescriptionPanel;
+    [SerializeField]
+    private RectTransform scenarioIdPanel;
+    [SerializeField]
+    private RectTransform roomIdPanel;
+    [SerializeField]
+    private RectTransform messagePanel;
+    [SerializeField]
+    private RectTransform eventPanel;
 
     #endregion
 
-    #region orchestration logics
-
-    // the wrapper for the orchestrator
-    private OrchestratorWrapper orchestratorWrapper;
+    #region GUI logics
 
     // available commands
     private List<GuiCommandDescription> GuiCommands;
 
     // selected commands
     private GuiCommandDescription selectedCommand;
-
-    //Users
-    private User me;
-    private List<User> connectedUsers;
-    private List<User> availableUserAccounts;
-
-    //Session
-    private Session mySession;
-    private List<Session> availableSessions;
-
-    //Scenario
-    private ScenarioInstance myScenario;
-    private List<Scenario> availableScenarios;
-
-    private List<RoomInstance> availableRoomInstances;
-
-    // user Login state
-    private bool userIsLogged = false;
-
-    // orchestrator connection state
-    private bool connectedToOrchestrator = false;
-
-    // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
-    private bool isAutoRetrievingData = false;
-
-    #endregion
-
-    #region public
-
-    public bool IsConnected { get { return orchestratorConnected; } }
-
-    // Temporal properties added to prevent OrchestrationBridge class missing references exceptions. To be deleted as a new integration class is needed.
-    public Session              ActiveSession           { get { return mySession; } }
-    public ScenarioInstance     ActiveScenario          { get { return myScenario; } }
-    public List<Session>        AvailableSessions       { get { return availableSessions; } }
-    public List<Scenario>       AvailableScenarios      { get { return availableScenarios; } }
-    public List<User>           AvailableUsers          { get { return availableUserAccounts; } }
-    public List<RoomInstance>   AvailableRoomInstances  { get { return availableRoomInstances; } }
 
     #endregion
 
@@ -193,6 +171,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
         disconnectButton.onClick.AddListener(delegate { socketDisconnect(); });
         loginButton.onClick.AddListener(delegate { HeadLogin(); });
         logoutButton.onClick.AddListener(delegate { Logout(); });
+        logsClearBtn.onClick.AddListener(delegate { ClearLogsGUI(); });
 
         // build the commands available at the GUI level
         BuildCommandsPanels();
@@ -217,6 +196,8 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
         // update the states of the enabled or disabled items according to the connection and log states
         UpdateEnabledItems();
+
+        InitialiseControllerEvents();
     }
 
     #endregion
@@ -259,18 +240,27 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             //Messages
             new GuiCommandDescription("SendMessage", new List<RectTransform> { messagePanel, userIdPanel }, SendMessage),
             new GuiCommandDescription("SendMessageToAll", new List<RectTransform> { messagePanel }, SendMessageToAll),
+
+            //User Events
+            new GuiCommandDescription("SendEventToMaster", new List<RectTransform> { eventPanel }, SendEventToMaster),
+            new GuiCommandDescription("SendEventToUser", new List<RectTransform> { eventPanel, userIdPanel }, SendEventToUser),
+            new GuiCommandDescription("SendEventToAll", new List<RectTransform> { eventPanel }, SendEventToAll),
+
+            //Data Stream
+            new GuiCommandDescription("GetAvailableDataStreams", new List<RectTransform> { userIdPanel }, GetAvailableDataStreams),
+            new GuiCommandDescription("GetRegisteredDataStreams", null, GetRegisteredDataStreams)
         };
     }
 
     // update connect and login buttons according to the states
     private void UpdateEnabledItems()
     {
-        connectButton.interactable = !connectedToOrchestrator;
-        disconnectButton.interactable = connectedToOrchestrator;
-        loginButton.interactable = connectedToOrchestrator && (!userIsLogged);
-        logoutButton.interactable = connectedToOrchestrator && userIsLogged;
-        commandDropdown.interactable = connectedToOrchestrator;
-        sendCommandButton.interactable = connectedToOrchestrator;
+        connectButton.interactable = !OrchestratorController.Instance.ConnectedToOrchestrator;
+        disconnectButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
+        loginButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
+        logoutButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
+        commandDropdown.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
+        sendCommandButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
     }
 
     // Select a command
@@ -306,24 +296,25 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     // update the list of connected users in a session to display
     private void UpdateConnectedUsersGUI()
     {
-        if (connectedUsers == null)
+        if (OrchestratorController.Instance.ConnectedUsers == null)
         {
+            userSessionUsers.text = "None";
             return;
         }
 
         userSessionUsers.text = "";
 
-        switch(connectedUsers.Count)
+        switch(OrchestratorController.Instance.ConnectedUsers.Length)
         {
             case 0:
                 userSessionUsers.text = "None";
                 break;
             case 1:
-                userSessionUsers.text = "Me; " + connectedUsers[0].userName;
+                userSessionUsers.text = "Me; " + OrchestratorController.Instance.ConnectedUsers[0].userName;
                 break;
             default:
                 userSessionUsers.text = "Me; ";
-                foreach (User u in connectedUsers)
+                foreach (User u in OrchestratorController.Instance.ConnectedUsers)
                 {
                     userSessionUsers.text += u.userName + "; ";
                 }
@@ -337,8 +328,16 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
         logsScrollRect.verticalScrollbar.value = 0;
     }
 
+    private void ClearLogsGUI()
+    {
+        foreach(Transform child in logsContainer)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
     // Fill a scroll view with a text item
-    public void AddTextComponentOnContent(Transform container, string value)
+    private void AddTextComponentOnContent(Transform container, string value)
     {
         GameObject textGO = new GameObject();
         textGO.name = "Text-" + value;
@@ -363,7 +362,7 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     }
 
     // remove a component from a list
-    public void removeComponentsFromList(Transform container)
+    private void RemoveComponentsFromList(Transform container)
     {
         for (var i = container.childCount - 1; i >= 0; i--)
         {
@@ -375,41 +374,66 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     #endregion
 
+    #region Events listeners
+    
+    // Subscribe to Orchestrator Wrapper Events
+    private void InitialiseControllerEvents()
+    {
+        OrchestratorController.Instance.OnConnectionEvent += OnConnect;
+        OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
+        OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
+        OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
+        OrchestratorController.Instance.OnLoginEvent += OnLogin;
+        OrchestratorController.Instance.OnLogoutEvent += OnLogout;
+        OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
+        OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
+        OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
+        OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
+        OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
+        OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
+        OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+        OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
+        OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
+        OrchestratorController.Instance.OnGetLiveDataEvent += OnGetLivePresenterDataHandler;
+        OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
+        OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
+        OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
+        OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
+        OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
+        OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
+        OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
+        OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
+        OrchestratorController.Instance.OnUserEventReceivedEvent+= OnUserEventReceivedHandler;
+    }
+
+    #endregion
+
     #region Commands
 
     #region Socket.io connect
 
-    // Connect to the orchestrator
     public void SocketConnect()
     {
-        orchestratorWrapper = new OrchestratorWrapper(orchestratorUrlIF.text, this, this, this, this);
-        orchestratorWrapper.Connect();
+        OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
     }
 
-    // implementation des callbacks de retour de l'interface
-    public void OnConnect()
+    private void OnConnect(bool pConnected)
     {
-        connectedToOrchestrator = true;
-        orchestratorConnected.text = connectedToOrchestrator.ToString();
+        orchestratorConnected.text = pConnected.ToString();
         UpdateEnabledItems();
     }
 
-
-    // Disconnect from the orchestrator
     private void socketDisconnect()
     {
-        orchestratorWrapper.Disconnect();
+        OrchestratorController.Instance.socketDisconnect();
     }
 
-    public void OnDisconnect()
+    private void OnDisconnect(bool pConnected)
     {
-        me = null;
-        connectedToOrchestrator = false;
-        userIsLogged = false;
         this.userId.text = "";
         userName.text = "";
         userAdmin.text = "";
-        orchestratorConnected.text = connectedToOrchestrator.ToString();
+        orchestratorConnected.text = pConnected.ToString();
         UpdateEnabledItems();
     }
 
@@ -417,17 +441,17 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     #region Orchestrator Logs
 
-    // Display the received message in the logs
-    public void OnOrchestratorResponse(int status, string response)
+    // Display the sent message in the logs
+    public void OnOrchestratorRequest(string pRequest)
     {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + response);
-        StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, ">>> " + pRequest);
     }
 
-    // Display the sent message in the logs
-    public void OnOrchestratorRequest(string request)
+    // Display the received message in the logs
+    public void OnOrchestratorResponse(string pResponse)
     {
-        AddTextComponentOnContent(logsContainer.transform, ">>> " + request);
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + pResponse);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion
@@ -437,104 +461,49 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     // Login from the main buttons Login & Logout
     private void HeadLogin()
     {
-        orchestratorWrapper.Login(userNameIF.text, userPasswordIF.text);
+        OrchestratorController.Instance.Login(userNameIF.text, userPasswordIF.text);
     }
 
     private void Login()
     {
-        orchestratorWrapper.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
+        OrchestratorController.Instance.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
     }
 
-    public void OnLoginResponse(ResponseStatus status, string userId)
+    private void OnLogin(bool userLoggedSucessfully)
     {
-        Debug.Log("OnLoginResponse()");
-        bool userLoggedSucessfully = (status.Error == 0);
-
-        if (!userIsLogged)
+        if (userLoggedSucessfully)
         {
-            //user was not logged before request
-            if (userLoggedSucessfully)
-            {
-                userIsLogged = true;
-                if (autoRetrieveOrchestratorDataOnConnect.isOn)
-                {
-                    // tag to warn other callbacks that we are auto retrieving data, each call back will call the next one
-                    // to get a full state of the orchestrator
-                    isAutoRetrievingData = true;
-                }
-                else
-                {
-                    isAutoRetrievingData = false;
-                }
 
-                orchestratorWrapper.UpdateUserDataJson(userMQnameIF.text, userMQurlIF.text);
-            }
-            else
-            {
-                userIsLogged = false;
-                this.userId.text = "";
-                userName.text = "";
-                userAdmin.text = "";
-            }
+            OrchestratorController.Instance.IsAutoRetrievingData = autoRetrieveOrchestratorDataOnConnect.isOn;
+            OrchestratorController.Instance.UpdateUserData(userMQnameIF.text, userMQurlIF.text);
         }
         else
         {
-            //user was logged before previously
-            if (!userLoggedSucessfully)
-            {
-                // normal, user previopusly logged, nothing to do
-            }
-            else
-            {
-                // should not occur
-            }
+            this.userId.text = "";
+            userName.text = "";
+            userAdmin.text = "";
         }
-        userLogged.text = userIsLogged.ToString();
+
+        userLogged.text = userLoggedSucessfully.ToString();
         UpdateEnabledItems();
     }
 
 
     private void Logout()
     {
-        orchestratorWrapper.Logout();
+        OrchestratorController.Instance.Logout();
     }
 
-    public void OnLogoutResponse(ResponseStatus status)
+    private void OnLogout(bool userLogoutSucessfully)
     {
-        bool userLoggedOutSucessfully = (status.Error == 0);
-
-        if (!userIsLogged)
+        if (userLogoutSucessfully)
         {
-            //user was not logged before request
-            if (!userLoggedOutSucessfully)
-            {
-                // normal, was not logged, nothing to do
-            }
-            else
-            {
-                // should not occur
-            }
-        }
-        else
-        {
-            //user was logged before request
-            if (userLoggedOutSucessfully)
-            {
-                //normal
-                me = null;
-                userIsLogged = false;
-                userLogged.text = false.ToString();
-                this.userId.text = "";
-                userName.text = "";
-                userAdmin.text = "";
-                userMQname.text = "";
-                userMQurl.text = "";
-            }
-            else
-            {
-                // problem while logout
-                userIsLogged = true;
-            }
+            userLogged.text = false.ToString();
+            this.userId.text = "";
+            userName.text = "";
+            userAdmin.text = "";
+            userMQname.text = "";
+            userMQurl.text = "";
         }
         UpdateEnabledItems();
     }
@@ -545,79 +514,25 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     private void GetNTPTime()
     {
-        Debug.Log("GetNTPTime::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
-        orchestratorWrapper.GetNTPTime();
-    }
-
-    public void OnGetNTPTimeResponse(ResponseStatus status, string time)
-    {
-        Debug.Log("OnGetNTPTimeResponse::NtpTime::" + time);
-        Debug.Log("OnGetNTPTimeResponse::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        OrchestratorController.Instance.GetNTPTime();
     }
 
     #endregion
 
     #region Sessions
 
-    public void GetSessions()
+    private void GetSessions()
     {
-        orchestratorWrapper.GetSessions();
+        OrchestratorController.Instance.GetSessions();
     }
 
-    public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions)
+    private void OnGetSessionsHandler(Session[] sessions)
     {
-        Debug.Log("OnGetSessionsResponse:" + sessions.Count);
-
-        // update the list of available sessions
-        availableSessions = sessions;
-        removeComponentsFromList(orchestratorSessions.transform);
-        sessions.ForEach(delegate (Session element)
+        if(sessions != null && sessions.Length > 0)
         {
-            AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
-        });
-
-        // update the dropdown
-        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-        dd.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        sessions.ForEach(delegate (Session session)
-        {
-            Debug.Log("Session:" + session.GetGuiRepresentation());
-            Debug.Log("users:" + session.sessionUsers.Length);
-            Array.ForEach<string>(session.sessionUsers, delegate (string user)
-            {
-                Debug.Log("userId:" + user);
-            });
-            options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
-        });
-        dd.AddOptions(options);
-
-        if (isAutoRetrievingData)
-        {
-            // auto retriving phase: this was the last call
-            isAutoRetrievingData = false;
-        }
-    }
-
-
-    private void AddSession()
-    {
-        Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.AddSession(availableScenarios[dd.value].scenarioId,
-        sessionNamePanel.GetComponentInChildren<InputField>().text,
-        sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
-    }
-
-    public void OnAddSessionResponse(ResponseStatus status, Session session)
-    {
-        // Is equal to AddSession + Join Session, except that session is returned (not on JoinSession)
-        if (status.Error == 0)
-        {
-            // success
-            availableSessions.Add(session);
             // update the list of available sessions
-            removeComponentsFromList(orchestratorSessions.transform);
-            availableSessions.ForEach(delegate (Session element)
+            RemoveComponentsFromList(orchestratorSessions.transform);
+            Array.ForEach(sessions, delegate (Session element)
             {
                 AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
             });
@@ -626,168 +541,124 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
             dd.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            availableSessions.ForEach(delegate (Session sess)
+            Array.ForEach(sessions, delegate (Session session)
+            {
+                options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
+            });
+            dd.AddOptions(options);
+        }
+    }
+
+    private void AddSession()
+    {
+        Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
+        OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[dd.value].scenarioId,
+        sessionNamePanel.GetComponentInChildren<InputField>().text,
+        sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
+    }
+
+    private void OnAddSessionHandler(Session session)
+    {
+        // Is equal to AddSession + Join Session, except that session is returned (not on JoinSession)
+        if (session != null)
+        {
+            // update the list of available sessions
+            RemoveComponentsFromList(orchestratorSessions.transform);
+            Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session element)
+            {
+                AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
+            });
+
+            // update the dropdown
+            Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
+            dd.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate(Session sess)
             {
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             });
             dd.AddOptions(options);
 
+            userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString(); ;
             userSession.text = session.GetGuiRepresentation();
-
-            // Now retrieve the infos about the scenario instance
             userScenario.text = session.scenarioId;
-            orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
-            mySession = session;
-
-            if (AudioManager.instance != null)
-            {
-                AudioManager.instance.StartRecordAudio();
-            }
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
-
-            mySession = null;
         }
     }
 
-
-    public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario)
+    private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario)
     {
-        if (status.Error == 0)
+        if (scenario != null)
         {
             userScenario.text = scenario.GetGuiRepresentation();
-            
-            //
-            // now retrieve the list of the available rooms
-            //orchestratorWrapper.GetRooms();
-            //
-
-            // now retrieve the url of the Live presenter stream
-            orchestratorWrapper.GetLivePresenterData();
-
-            myScenario = scenario;
         }
     }
-
 
     private void DeleteSession()
     {
         Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.DeleteSession(availableSessions[dd.value].sessionId);
+        OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.AvailableSessions[dd.value].sessionId);
     }
 
-    public void OnDeleteSessionResponse(ResponseStatus status)
+    private void OnDeleteSessionHandler()
     {
         userLiveURL.text = "";
         userVODLiveURL.text = "";
-
-        // update the lists of session, anyway the result
-        orchestratorWrapper.GetSessions();
     }
-
 
     private void JoinSession()
     {
         Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-        string sessionIdToJoin = availableSessions[dd.value].sessionId;
-        userSession.text = sessionIdToJoin;
-        orchestratorWrapper.JoinSession(sessionIdToJoin);
+        string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[dd.value].sessionId;
+        OrchestratorController.Instance.JoinSession(sessionIdToJoin);
     }
 
-    public void OnJoinSessionResponse(ResponseStatus status)
+    private void OnJoinSessionHandler(Session session)
     {
-        if (status.Error == 0)
+        if(session != null)
         {
-            // now we wwill need the session info with the sceanrio instance used for this session
-            orchestratorWrapper.GetSessionInfo();
-        }
-        else
-        {
-            userSession.text = "";
-        }
-    }
-
-    public void OnGetSessionInfoResponse(ResponseStatus status, Session session)
-    {
-        if (status.Error == 0)
-        {
-            // success
             userSession.text = session.GetGuiRepresentation();
             userScenario.text = session.scenarioId;
-            // now retrieve the secnario instance infos
-            orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
-            mySession = session;
-
-            if (AudioManager.instance != null)
-            {
-                AudioManager.instance.StartRecordAudio();
-
-                foreach(string id in session.sessionUsers)
-                {
-                    if(id != me.userId)
-                    {
-                        AudioManager.instance.StartListeningAudio(id);
-                        OnUserJoinedSession(id);
-                    }
-                }
-            }
+            userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
         }
         else
         {
             userSession.text = "";
             userScenario.text = "";
-
-            mySession = null;
+            userMaster.text = "";
         }
     }
 
-
-    public void LeaveSession()
+    private void LeaveSession()
     {
-        orchestratorWrapper.LeaveSession();
-
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.StopRecordAudio();
-        }
+        OrchestratorController.Instance.LeaveSession();
     }
 
-    public void OnLeaveSessionResponse(ResponseStatus status)
+    private void OnLeaveSessionHandler()
     {
-        if (status.Error == 0)
+        userSession.text = "";
+        userScenario.text = "";
+        userMaster.text = "";
+
+        UpdateConnectedUsersGUI();
+    }
+
+    private void OnUserJoinedSessionHandler(string userID)
+    {
+        if (!string.IsNullOrEmpty(userID))
         {
-            // success
-            userSession.text = "";
-            userScenario.text = "";
-
-            mySession = null;
-            myScenario = null;
-            connectedUsers?.Clear();
-            connectedUsers = null;
-
             UpdateConnectedUsersGUI();
         }
     }
 
-    public void OnUserJoinedSession(string userID)
+    private void OnUserLeftSessionHandler(string userID)
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            AddConnectedUser(userID);
-            UpdateConnectedUsersGUI();
-        }
-    }
-
-    public void OnUserLeftSession(string userID)
-    {
-        if (!string.IsNullOrEmpty(userID))
-        {
-            DeletedConnectedUser(userID);
             UpdateConnectedUsersGUI();
         }
     }
@@ -798,41 +669,29 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     private void GetScenarios()
     {
-        orchestratorWrapper.GetScenarios();
+        OrchestratorController.Instance.GetScenarios();
     }
 
-    public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios)
+    private void OnGetScenariosHandler(Scenario[] scenarios)
     {
-        Debug.Log("OnGetScenariosResponse:" + scenarios.Count);
-
-        // update the list of available scenarios
-        availableScenarios = scenarios;
-        removeComponentsFromList(orchestratorScenarios.transform);
-        scenarios.ForEach(delegate (Scenario element)
+        if(scenarios != null && scenarios.Length > 0)
         {
-            AddTextComponentOnContent(orchestratorScenarios.transform, element.GetGuiRepresentation());
-        });
-
-        //update the data in the dropdown
-        Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
-        dd.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        scenarios.ForEach(delegate (Scenario scenario)
-        {
-            Debug.Log("Scenario:" + scenario.GetGuiRepresentation());
-            Debug.Log("ScenarioRooms:" + scenario.scenarioRooms.Count);
-            scenario.scenarioRooms.ForEach(delegate (Room room)
+            // update the list of available scenarios
+            RemoveComponentsFromList(orchestratorScenarios.transform);
+            Array.ForEach(scenarios, delegate (Scenario element)
             {
-                Debug.Log("ScenarioRoom:" + room.GetGuiRepresentation());
+                AddTextComponentOnContent(orchestratorScenarios.transform, element.GetGuiRepresentation());
             });
-            options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-        });
-        dd.AddOptions(options);
 
-        if (isAutoRetrievingData)
-        {
-            // auto retriving phase: call next
-            orchestratorWrapper.GetSessions();
+            //update the data in the dropdown
+            Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
+            dd.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            Array.ForEach(scenarios, delegate (Scenario scenario)
+            {
+                options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+            });
+            dd.AddOptions(options);
         }
     }
 
@@ -840,14 +699,18 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     #region Live
 
-    public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
+    private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
     {
-        //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.remoteAddress);
-
-        userLiveURL.text = liveData.liveAddress;
-        userVODLiveURL.text = liveData.vodAddress;
-
-        orchestratorWrapper.GetRooms();
+        if(liveData != null)
+        {
+            userLiveURL.text = liveData.liveAddress;
+            userVODLiveURL.text = liveData.vodAddress;
+        }
+        else
+        {
+            userLiveURL.text = "";
+            userVODLiveURL.text = "";
+        }
     }
 
     #endregion
@@ -856,112 +719,76 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     private void GetUsers()
     {
-        orchestratorWrapper.GetUsers();
+        OrchestratorController.Instance.GetUsers();
     }
 
-    public void OnGetUsersResponse(ResponseStatus status, List<User> users)
+    private void OnGetUsersHandler(User[] users)
     {
-        Debug.Log("OnGetUsersResponse:" + users.Count);
-
-        // update the list of available users
-        availableUserAccounts = users;
-        removeComponentsFromList(orchestratorUsers.transform);
-        users.ForEach(delegate (User element)
+        if(users != null && users.Length > 0)
         {
-            AddTextComponentOnContent(orchestratorUsers.transform, element.GetGuiRepresentation());
-        });
+            // update the list of available users
+            RemoveComponentsFromList(orchestratorUsers.transform);
+            Array.ForEach(users, delegate (User element)
+            {
+                AddTextComponentOnContent(orchestratorUsers.transform, element.GetGuiRepresentation());
+            });
 
-        //update the data in the dropdown
-        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        dd.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        users.ForEach(delegate (User user)
-        {
-            options.Add(new Dropdown.OptionData(user.GetGuiRepresentation()));
-        });
-        dd.AddOptions(options);
-
-        if (isAutoRetrievingData)
-        {
-            // auto retriving phase: call next
-            orchestratorWrapper.GetScenarios();
+            //update the data in the dropdown
+            Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+            dd.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            Array.ForEach(users, delegate (User user)
+            {
+                options.Add(new Dropdown.OptionData(user.GetGuiRepresentation()));
+            });
+            dd.AddOptions(options);
         }
     }
-
 
     private void AddUser()
     {
-        orchestratorWrapper.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
-            userPasswordPanel.GetComponentInChildren<InputField>().text,
-            userAdminPanel.GetComponentInChildren<Toggle>().isOn);
+        OrchestratorController.Instance.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
+                                        userPasswordPanel.GetComponentInChildren<InputField>().text,
+                                        userAdminPanel.GetComponentInChildren<Toggle>().isOn);
     }
 
-    public void OnAddUserResponse(ResponseStatus status, User user)
+    private void OnAddUserHandler(User user)
     {
-        // update the lists of user, anyway the result
-        orchestratorWrapper.GetUsers();
+        //Nothing to do here, free to add new behaviour.
     }
-
 
     private void UpdateUserData()
     {
-        orchestratorWrapper.UpdateUserDataJson(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
+        OrchestratorController.Instance.UpdateUserData(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
     }
-
-    public void OnUpdateUserDataJsonResponse(ResponseStatus status)
-    {
-        Debug.Log("OnUpdateUserDataJsonResponse()");
-
-        if (status.Error == 0)
-        {
-            orchestratorWrapper.GetUserInfo();
-        }
-    }
-
 
     private void GetUserInfo()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.GetUserInfo(availableUserAccounts[dd.value].userId);
+        OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
     }
 
-    public void OnGetUserInfoResponse(ResponseStatus status, User user)
+    private void OnGetUserInfoHandler(User user)
     {
-        Debug.Log("OnGetUserInfoResponse()");
-
-        if (status.Error == 0)
+        if (user != null)
         {
-            if (string.IsNullOrEmpty(userId.text) || user.userId == me.userId)
+            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
             {
-                me = user;
+                OrchestratorController.Instance.SelfUser = user;
+
                 userId.text = user.userId;
                 userName.text = user.userName;
                 userAdmin.text = user.userAdmin.ToString();
                 userMQname.text = user.userData.userMQexchangeName;
                 userMQurl.text = user.userData.userMQurl;
             }
-
-            if (isAutoRetrievingData)
-            {
-                // auto retriving phase: call next
-                orchestratorWrapper.GetUsers();
-            }
         }
     }
-
 
     private void DeleteUser()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.DeleteUser(availableUserAccounts[dd.value].userId);
-    }
-
-    public void OnDeleteUserResponse(ResponseStatus status)
-    {
-        Debug.Log("OnDeleteUserResponse()");
-
-        // update the lists of user, anyway the result
-        orchestratorWrapper.GetUsers();
+        OrchestratorController.Instance.DeleteUser(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
     }
 
     #endregion
@@ -970,58 +797,49 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
 
     private void GetRooms()
     {
-        orchestratorWrapper.GetRooms();
+        OrchestratorController.Instance.GetRooms();
     }
 
-    public void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms)
+    private void OnGetRoomsHandler(RoomInstance[] rooms)
     {
-        Debug.Log("OnGetRoomsResponse:" + rooms.Count);
-
-        // update the list of available rooms
-        availableRoomInstances = rooms;
-        //updateListComponent(orchestratorUserSessions.transform, Orchestrator.orchestrator.orchestratorUserSessions);
-
-        //update the data in the dropdown
-        Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
-        dd.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        rooms.ForEach(delegate (RoomInstance room)
+        if(rooms != null && rooms.Length > 0)
         {
-            Debug.Log("Room:" + room.GetGuiRepresentation());
-            options.Add(new Dropdown.OptionData(room.GetGuiRepresentation()));
-        });
-        dd.AddOptions(options);
+            //update the data in the dropdown
+            Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
+            dd.ClearOptions();
+            List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            Array.ForEach(rooms, delegate (RoomInstance room)
+            {
+                options.Add(new Dropdown.OptionData(room.GetGuiRepresentation()));
+            });
+            dd.AddOptions(options);
+        }
     }
-
 
     private void JoinRoom()
     {
         Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
-        RoomInstance room = availableRoomInstances[dd.value];
+        RoomInstance room = OrchestratorController.Instance.AvailableRooms[dd.value];
         userRoom.text = room.GetGuiRepresentation();
-        orchestratorWrapper.JoinRoom(room.roomId);
+        OrchestratorController.Instance.JoinRoom(room.roomId);
     }
 
-    public void OnJoinRoomResponse(ResponseStatus status)
+    private void OnJoinRoomHandler(bool hasJoined)
     {
-        if (status.Error != 0)
+        if(!hasJoined)
         {
             userRoom.text = "";
         }
     }
-
 
     private void LeaveRoom()
     {
-        orchestratorWrapper.LeaveRoom();
+        OrchestratorController.Instance.LeaveRoom();
     }
 
-    public void OnLeaveRoomResponse(ResponseStatus status)
+    private void OnLeaveRoomHandler()
     {
-        if (status.Error == 0)
-        {
-            userRoom.text = "";
-        }
+        userRoom.text = "";
     }
 
     #endregion
@@ -1031,71 +849,70 @@ public class OrchestratorGui : MonoBehaviour, IOrchestratorMessageIOListener, IO
     private void SendMessage()
     {
         Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
-        orchestratorWrapper.SendMessage(messagePanel.GetComponentInChildren<InputField>().text,
-            availableUserAccounts[dd.value].userId);
+        OrchestratorController.Instance.SendMessage(messagePanel.GetComponentInChildren<InputField>().text, OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
     }
-
-    public void OnSendMessageResponse(ResponseStatus status)
-    {
-        // nothing to do on the GUI
-    }
-
 
     private void SendMessageToAll()
     {
-        orchestratorWrapper.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
+        OrchestratorController.Instance.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
     }
 
-    public void OnSendMessageToAllResponse(ResponseStatus status)
+    private void OnUserMessageReceivedHandler(UserMessage userMessage)
     {
-        // nothing to do on the GUI
-    }
-
-
-    // Message from a user received spontaneously from the Orchestrator         
-    public void OnUserMessageReceived(UserMessage userMessage)
-    {
-        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message.ToString());
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
         StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion
 
-    #region Logics
+    #region Events
 
-    private void AddConnectedUser(string pUserID)
+    private void SendEventToMaster()
     {
-        if(connectedUsers == null)
+        if(!OrchestratorController.Instance.UserIsMaster)
         {
-            connectedUsers = new List<User>();
-        }
-
-        foreach(User u in availableUserAccounts)
-        {
-            if(u.userId == pUserID)
-            {
-                connectedUsers.Add(u);
-            }
+            OrchestratorController.Instance.SendEventToMaster(eventPanel.GetComponentInChildren<InputField>().text);
         }
     }
 
-    private void DeletedConnectedUser(string pUserID)
+    private void SendEventToUser()
     {
-        if (connectedUsers == null || connectedUsers.Count == 0)
-        {
-            return;
-        }
+        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+        OrchestratorController.Instance.SendEventToUser(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId, eventPanel.GetComponentInChildren<InputField>().text);
+    }
 
-        foreach (User u in connectedUsers)
-        {
-            if (u.userId == pUserID)
-            {
-                connectedUsers.Remove(u);
+    private void SendEventToAll()
+    {
+        OrchestratorController.Instance.SendEventToAll(eventPanel.GetComponentInChildren<InputField>().text);
+    }
 
-                if (connectedUsers.Count == 0)
-                    break;
-            }
-        }
+    private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
+    {
+        //Add your event handling
+        AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
+    }
+
+    private void OnUserEventReceivedHandler (UserEvent pUserEventData)
+    {
+        //Add your event handling
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
+    }
+
+    #endregion
+
+    #region Data Stream
+
+    private void GetAvailableDataStreams()
+    {
+        Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
+        OrchestratorController.Instance.GetAvailableDataStreams(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
+    }
+
+    private void GetRegisteredDataStreams()
+    {
+        OrchestratorController.Instance.GetRegisteredDataStreams();
     }
 
     #endregion

@@ -131,7 +131,11 @@ namespace OrchestratorWSManagement
             if (command.Parameters != null)
             {
                 object[] parameters = new object[command.Parameters.Count];
-                parameters[0] = command.Parameters[0].ParamValue;
+
+                for(int i=0; i<parameters.Length; i++)
+                {
+                    parameters[i] = command.Parameters[i].ParamValue;
+                }
 
                 // emit the packet on socket.io
                 Manager.Socket.Emit(command.SocketEventName, null, parameters);
