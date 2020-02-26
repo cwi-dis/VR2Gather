@@ -40,7 +40,7 @@ namespace Workers {
                         pointCloudData = decoder.get();
                         if (pointCloudData != null) {
                             token.currentPointcloud = pointCloudData;
-                            statsUpdate(pointCloudData.count());
+                            statsUpdate(pointCloudData.count(), pointCloudData.timestamp());
                             Next();
                         }
                         else {
@@ -57,24 +57,30 @@ namespace Workers {
         System.DateTime statsLastTime;
         double statsTotalPoints;
         double statsTotalPointclouds;
+        double statsTotalLatency;
 
-        public void statsUpdate(int pointCount)
+        public void statsUpdate(int pointCount, ulong timeStamp)
         {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            double latency = (double)(sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
             if (statsLastTime == null)
             {
                 statsLastTime = System.DateTime.Now;
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
+                statsTotalLatency = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: PCDecoder: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
+                Debug.Log($"stats: PCDecoder: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
+                statsTotalLatency = 0;
                 statsLastTime = System.DateTime.Now;
             }
             statsTotalPoints += pointCount;
             statsTotalPointclouds += 1;
+            statsTotalLatency += latency;
         }
     }
 }
