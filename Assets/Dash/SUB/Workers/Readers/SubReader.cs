@@ -68,8 +68,8 @@ namespace Workers {
                 subName = $"source_from_sub_{++subCount}";
                 subHandle = sub.create(subName);
                 if (subHandle != null) {
-                    Debug.LogError("xxxjack very suspiciously-looking code in SUBReader called...");
-                    //Debug.Log($"SubReader: sub.create({url}) successful.");
+                    //Debug.LogError("xxxjack very suspiciously-looking code in SUBReader called...");
+                    Debug.Log($"SubReader: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
                         Debug.Log($"SubReader {subName}: sub_play({url}) failed, will try again later");

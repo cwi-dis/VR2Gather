@@ -53,7 +53,7 @@ public class EntityPipeline : MonoBehaviour {
                     forks = 2;
                 }
                 try {
-#if NO_VOICE 
+#if !NO_VOICE 
                     gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
 #endif
                 }
@@ -65,7 +65,7 @@ public class EntityPipeline : MonoBehaviour {
                 reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader); //PC pipeline
-#if NO_VOICE
+#if !NO_VOICE
                   gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
 #endif
                 break;
