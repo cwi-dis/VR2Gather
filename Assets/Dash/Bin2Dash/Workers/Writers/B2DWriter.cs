@@ -41,6 +41,7 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (token != null) {
+                statsUpdate((int)token.currentSize);
                 lock (token) {
                     //bw?.Write(token.currentByteArray, 0, token.currentSize);
                     if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
@@ -48,6 +49,29 @@ namespace Workers {
                     Next();
                 }
             }
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalBytes;
+        double statsTotalPackets;
+
+        public void statsUpdate(int nBytes)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                Debug.Log($"stats: B2DWriter: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalBytes += nBytes;
+            statsTotalPackets += 1;
         }
     }
 }

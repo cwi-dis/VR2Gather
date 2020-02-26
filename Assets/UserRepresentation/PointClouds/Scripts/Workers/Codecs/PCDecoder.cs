@@ -40,6 +40,7 @@ namespace Workers {
                         pointCloudData = decoder.get();
                         if (pointCloudData != null) {
                             token.currentPointcloud = pointCloudData;
+                            statsUpdate(pointCloudData.count());
                             Next();
                         }
                         else {
@@ -51,6 +52,29 @@ namespace Workers {
                         Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
                 }
             }
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalPoints;
+        double statsTotalPointclouds;
+
+        public void statsUpdate(int pointCount)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                Debug.Log($"stats: PCDecoder: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalPoints += pointCount;
+            statsTotalPointclouds += 1;
         }
     }
 }
