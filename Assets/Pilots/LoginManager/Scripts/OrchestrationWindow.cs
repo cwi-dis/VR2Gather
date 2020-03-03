@@ -1184,4 +1184,24 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
+
+
+    public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
+
+    }
+
+    public void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
+
+    }
+
+    public void OnMasterEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+    public void OnUserEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+
+
 }

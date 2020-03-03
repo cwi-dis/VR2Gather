@@ -30,7 +30,7 @@ public class AudioRecorder : MonoBehaviour
         codec = new Workers.VoiceEncoder();
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
 
-        writer = new Workers.SocketIOWriter(SendAudioPacket);
+        writer = new Workers.SocketIOWriter(null,0); // CACA FER
 
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);

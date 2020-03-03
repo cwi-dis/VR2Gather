@@ -45,7 +45,7 @@ public class AudioReceiver : MonoBehaviour
         OrchestratorWrapper.instance.OnDataStreamReceived += OnAudioPacketReceived;
         //OrchestratorWrapper.instance.OnAudioSent += OnAudioPacketReceived;
 
-        reader = new Workers.SocketIOReader();
+        reader = new Workers.SocketIOReader(null,""); // CACA FER
         socketIOreader = (ISocketReader)reader;
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
