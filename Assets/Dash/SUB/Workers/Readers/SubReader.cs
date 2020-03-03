@@ -10,7 +10,9 @@ namespace Workers {
 
         public enum CCCC : int {
             MP4A = 0x6134706D,
-            AVC1 = 0x31637661
+            AVC1 = 0x31637661,
+            AAC = 0x5f636161,
+            H264 = 0x34363268
         };
 
         string url;
@@ -75,7 +77,12 @@ namespace Workers {
                         Debug.Log($"SubReader {subName}: sub_play({url}) failed, will try again later");
                     } else {
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
-                        if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1) videoStream = 0;
+                        CCCC cc;
+                        for (int i = 0; i < streamCount; ++i) {
+                            cc = (CCCC)subHandle.get_stream_4cc(i);
+                            Debug.Log(cc);
+                        }
+                        if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1 || (CCCC)subHandle.get_stream_4cc(0) == CCCC.H264) videoStream = 0;
                         else videoStream = 1;
                         streamNumber = videoStream;
                     }
