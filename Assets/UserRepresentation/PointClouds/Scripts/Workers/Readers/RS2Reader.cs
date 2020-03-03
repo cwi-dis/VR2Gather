@@ -71,7 +71,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: RS2Reader: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: RS2Reader: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsLastTime = System.DateTime.Now;
