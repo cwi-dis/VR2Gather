@@ -44,6 +44,7 @@ public class NetController : MonoBehaviour {
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
+        OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioHandler;
         OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
         OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
         OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
@@ -113,15 +114,32 @@ public class NetController : MonoBehaviour {
         }
     }
 
-    private void OnAddSessionHandler(Session session) {
-        
+    private void OnAddSessionHandler(Session session) 
+    {
+        // Here you should store the retrieved session.
+        /*
         if (session != null) {
             Debug.Log($"OnAddSessionHandler {session.sessionId}");
 //            SubscribeToBinaryChannel();
             OrchestratorController.Instance.JoinSession(session.sessionId);
         } else
             Debug.Log($"OnAddSessionHandler null");
+        */
+    }
 
+    private void OnGetScenarioHandler(ScenarioInstance scenario)
+    {
+        // Here you can join the stored session as no commands calls are proceeded.
+        /*
+        if (session != null)
+        {
+            Debug.Log($"OnAddSessionHandler {session.sessionId}");
+            //            SubscribeToBinaryChannel();
+            OrchestratorController.Instance.JoinSession(session.sessionId);
+        }
+        else
+            Debug.Log($"OnAddSessionHandler null");
+         */
     }
 
     private void OnJoinSessionHandler(Session session) {
