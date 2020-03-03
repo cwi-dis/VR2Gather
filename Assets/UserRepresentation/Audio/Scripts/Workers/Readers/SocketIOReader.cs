@@ -33,6 +33,10 @@ namespace Workers
             Start();
         }
 
+        public SocketIOReader() : base(WorkerType.Init) {
+            Start();
+        }
+
         protected override void Update() {
             base.Update();
             if (token != null && read<write) {
