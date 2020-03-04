@@ -327,7 +327,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             // now retrieve the url of the Live presenter stream
             orchestratorWrapper.GetLivePresenterData();
             myScenario = scenario;
-            OnGetScenarioEvent.Invoke(myScenario);
+            OnGetScenarioEvent?.Invoke(myScenario);
         }
     }
 
@@ -456,7 +456,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
 
-        OnGetLiveDataEvent.Invoke(liveData);
+        OnGetLiveDataEvent?.Invoke(liveData);
         orchestratorWrapper.GetRooms();
     }
 

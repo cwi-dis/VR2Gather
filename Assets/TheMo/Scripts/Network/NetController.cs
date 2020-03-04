@@ -44,7 +44,8 @@ public class NetController : MonoBehaviour {
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
-        OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioHandler;
+        //OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioHandler;
+        OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
         OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
         OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
         OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
@@ -55,12 +56,12 @@ public class NetController : MonoBehaviour {
     }
 
     public void OnOrchestratorRequest(string pRequest) {
-//        Debug.Log($"OnOrchestratorRequest {pRequest}");
+        Debug.Log($"OnOrchestratorRequest {pRequest}");
     }
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse) {
-//        Debug.Log($"OnOrchestratorResponse {pResponse}");
+        Debug.Log($"OnOrchestratorResponse {pResponse}");
     }
 
 
@@ -129,11 +130,12 @@ public class NetController : MonoBehaviour {
         */
     }
 
+    //useless
     private void OnGetScenarioHandler(ScenarioInstance scenario)
     {
-        Debug.Log($"OnGetScenarioHandler {scenario.sessionId} {mySession.sessionId}");
+        //Debug.Log($"OnGetScenarioHandler {scenario.sessionId} {mySession.sessionId}");
         // Here you can join the stored session as no commands calls are proceeded.
-        OrchestratorController.Instance.JoinSession(scenario.sessionId);
+        //OrchestratorController.Instance.JoinSession(scenario.sessionId);
         /*
         if (session != null)
         {
@@ -144,6 +146,14 @@ public class NetController : MonoBehaviour {
         else
             Debug.Log($"OnAddSessionHandler null");
          */
+    }
+
+    private void OnGetRoomsHandler(Room[] rooms)
+    {
+        if(mySession != null)
+        {
+            OrchestratorController.Instance.JoinSession(mySession.sessionId);
+        }
     }
 
     private void OnJoinSessionHandler(Session session) {
