@@ -113,9 +113,11 @@ public class NetController : MonoBehaviour {
             OrchestratorController.Instance.AddSession(scenarioToConnect.scenarioId, "NetController", "Session test.");
         }
     }
-
+    Session mySession;
     private void OnAddSessionHandler(Session session) 
     {
+        mySession = session;
+        Debug.Log($"OnAddSessionHandler {session.sessionId}");
         // Here you should store the retrieved session.
         /*
         if (session != null) {
@@ -129,7 +131,9 @@ public class NetController : MonoBehaviour {
 
     private void OnGetScenarioHandler(ScenarioInstance scenario)
     {
+        Debug.Log($"OnGetScenarioHandler {scenario.sessionId} {mySession.sessionId}");
         // Here you can join the stored session as no commands calls are proceeded.
+        OrchestratorController.Instance.JoinSession(scenario.sessionId);
         /*
         if (session != null)
         {
