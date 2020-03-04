@@ -1041,7 +1041,7 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
             if (showDirWarning)
             {
                 var str = renderDirMode + " maps require special shader";
-                EditorGUI.HelpBox(new Rect(15,y+30,220,40), str, MessageType.Info);
+                EditorGUI.HelpBox(new Rect(15,y+30,220,40), str, UnityEditor.MessageType.Info);
                 y += 45;
             }
             y += 20;
@@ -1511,7 +1511,7 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
                     var msg = ftClient.lastServerMsg;
                     if (ftClient.lastServerScene.Length > 0) msg += "\nScene: "+ftClient.lastServerScene;
                     if (ftClient.serverGetDataMode) msg += "\nDownloading: " + System.Math.Min(ftClient.serverGetFileIterator+1, ftClient.serverGetFileList.Count) + "/" + ftClient.serverGetFileList.Count;
-                    EditorGUI.HelpBox(new Rect(15,y+5,220,40), msg, ftClient.lastServerMsgIsError ? MessageType.Error : MessageType.Info);
+                    EditorGUI.HelpBox(new Rect(15,y+5,220,40), msg, ftClient.lastServerMsgIsError ? UnityEditor.MessageType.Error : UnityEditor.MessageType.Info);
                     y += 40;
                 }
                 y += 10;
@@ -3894,10 +3894,10 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
             lightmapMasks = new List<List<List<string>>>();
             lightmapMaskLights = new List<List<List<Light>>>();
             lightmapMaskDenoise = new List<List<List<bool>>>();
-    #if UNITY_2017_3_OR_NEWER
-    #else
+#if UNITY_2017_3_OR_NEWER
+#else
             maskedLights = new List<Light>();
-    #endif
+#endif
             lightmapHasColor = new List<bool>();
             lightmapHasMask = new List<bool>();
             lightmapHasDir = new List<bool>();
@@ -4473,9 +4473,9 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
 
                     /*else
                     {
-    #if USE_FTRACELIB
+#if USE_FTRACELIB
                         errCode2 = ftRenderPass("add", nm + "_final_HDR" + (compressedOutput ? ".lz4" : ".dds"), PASS_HALF, 0, lmgroup.id, "");
-    #endif
+#endif
                     }
 
                     if (errCode2 != 0)
