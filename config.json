@@ -98,13 +98,13 @@
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
                 "streamName": "",
                 "streamNumber": 0,
-                "initialDelay": 20
+                "initialDelay": 0
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
                 "streamName": "",
                 "streamNumber": 0,
-                "initialDelay": 25
+                "initialDelay": 0
             },
             "PCSelfConfig": {
                 "configFilename": "",
@@ -156,13 +156,13 @@
                 "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
                 "streamName": "",
                 "streamNumber": 0,
-                "initialDelay": 20
+                "initialDelay": 0
             },
             "AudioSUBConfig": {
                 "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
                 "streamName": "",
                 "streamNumber": 0,
-                "initialDelay": 25
+                "initialDelay": 0
             },
             "PCSelfConfig": {
                 "configFilename": "",
@@ -214,13 +214,13 @@
                 "url": "http://192.168.10.94:9000/pc-",
                 "streamName": "testBed.mpd",
                 "streamNumber": 0,
-                "initialDelay": 20
+                "initialDelay": 0
             },
             "AudioSUBConfig": {
                 "url": "http://192.168.10.94:9000/audio-",
                 "streamName": "audio.mpd",
                 "streamNumber": 0,
-                "initialDelay": 25
+                "initialDelay": 0
             },
             "PCSelfConfig": {
                 "configFilename": "",
