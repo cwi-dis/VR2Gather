@@ -132,7 +132,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void OnConnect()
     {
         connectedToOrchestrator = true;
-        OnConnectionEvent.Invoke(connectedToOrchestrator);
+        OnConnectionEvent?.Invoke(connectedToOrchestrator);
     }
 
     // Disconnect from the orchestrator
@@ -147,7 +147,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         me = null;
         connectedToOrchestrator = false;
         userIsLogged = false;
-        OnConnectionEvent.Invoke(connectedToOrchestrator);
+        OnConnectionEvent?.Invoke(connectedToOrchestrator);
     }
 
     #endregion
@@ -157,13 +157,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     // Display the sent message in the logs
     public void OnOrchestratorRequest(string request)
     {
-        OnOrchestratorRequestEvent.Invoke(request);
+        OnOrchestratorRequestEvent?.Invoke(request);
     }
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(int status, string response)
     {
-        OnOrchestratorResponseEvent.Invoke(response);
+        OnOrchestratorResponseEvent?.Invoke(response);
     }
 
     #endregion
@@ -207,7 +207,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             }
         }
 
-        OnLoginEvent(userLoggedSucessfully);
+        OnLoginEvent?.Invoke(userLoggedSucessfully);
     }
 
 
@@ -250,7 +250,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             }
         }
 
-        OnLogoutEvent(userLoggedOutSucessfully);
+        OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
     }
 
     #endregion
@@ -285,7 +285,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         // update the list of available sessions
         availableSessions = sessions;
 
-        OnGetSessionsEvent.Invoke(sessions.ToArray());
+        OnGetSessionsEvent?.Invoke(sessions.ToArray());
         
         if (isAutoRetrievingData)
         {
@@ -309,7 +309,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             userIsMaster = session.sessionMaster == me.userId;
 
             availableSessions.Add(session);
-            OnAddSessionEvent.Invoke(session);
+            OnAddSessionEvent?.Invoke(session);
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
             AudioManager.instance?.StartRecordAudio();
@@ -338,7 +338,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void OnDeleteSessionResponse(ResponseStatus status)
     {
-        OnDeleteSessionEvent.Invoke();
+        OnDeleteSessionEvent?.Invoke();
 
         // update the lists of session, anyway the result
         orchestratorWrapper.GetSessions();
@@ -384,7 +384,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             mySession = null;
         }
-        OnJoinSessionEvent.Invoke(mySession);
+        OnJoinSessionEvent?.Invoke(mySession);
     }
 
     public void LeaveSession()
@@ -402,7 +402,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             myScenario = null;
             connectedUsers?.Clear();
             connectedUsers = null;
-            OnLeaveSessionEvent.Invoke();
+            OnLeaveSessionEvent?.Invoke();
         }
     }
 
@@ -411,7 +411,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (!string.IsNullOrEmpty(userID))
         {
             AddConnectedUser(userID);
-            OnUserJoinSessionEvent(userID);
+            OnUserJoinSessionEvent?.Invoke(userID);
         }
     }
 
@@ -420,7 +420,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (!string.IsNullOrEmpty(userID))
         {
             DeletedConnectedUser(userID);
-            OnUserLeaveSessionEvent(userID);
+            OnUserLeaveSessionEvent?.Invoke(userID);
         }
     }
 
@@ -439,7 +439,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
         // update the list of available scenarios
         availableScenarios = scenarios;
-        OnGetScenariosEvent.Invoke(scenarios.ToArray());
+        OnGetScenariosEvent?.Invoke(scenarios.ToArray());
 
         if (isAutoRetrievingData)
         {
@@ -474,7 +474,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         Debug.Log("[OrchestratorControler][OnGetUsersResponse] Users count:" + users.Count);
 
         availableUserAccounts = users;
-        OnGetUsersEvent.Invoke(users.ToArray());
+        OnGetUsersEvent?.Invoke(users.ToArray());
 
         if (isAutoRetrievingData)
         {
@@ -490,7 +490,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void OnAddUserResponse(ResponseStatus status, User user)
     {
-        OnAddUserEvent.Invoke(user);
+        OnAddUserEvent?.Invoke(user);
         // update the lists of user, anyway the result
         orchestratorWrapper.GetUsers();
     }
@@ -520,7 +520,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
         if (status.Error == 0)
         {
-            OnGetUserInfoEvent.Invoke(user);
+            OnGetUserInfoEvent?.Invoke(user);
 
             if (isAutoRetrievingData)
             {
@@ -558,7 +558,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
         // update the list of available rooms
         availableRoomInstances = rooms;
-        OnGetRoomsEvent(rooms.ToArray());
+        OnGetRoomsEvent?.Invoke(rooms.ToArray());
     }
 
     public void JoinRoom(string pRoomID)
@@ -568,7 +568,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void OnJoinRoomResponse(ResponseStatus status)
     {
-        OnJoinRoomEvent.Invoke(status.Error == 0);
+        OnJoinRoomEvent?.Invoke(status.Error == 0);
     }
 
     public void LeaveRoom()
@@ -580,7 +580,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if (status.Error == 0)
         {
-            OnLeaveRoomEvent.Invoke();
+            OnLeaveRoomEvent?.Invoke();
         }
     }
 
@@ -609,7 +609,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     // Message from a user received spontaneously from the Orchestrator         
     public void OnUserMessageReceived(UserMessage userMessage)
     {
-        OnUserMessageReceivedEvent.Invoke(userMessage);
+        OnUserMessageReceivedEvent?.Invoke(userMessage);
     }
 
     #endregion
@@ -651,7 +651,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (pMasterEventData.fromId != me.userId)
         {
             //Debug.Log("[OrchestratorController][OnMasterEventReceived] Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
-            OnMasterEventReceivedEvent.Invoke(pMasterEventData);
+            OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
         }
     }
 
@@ -660,7 +660,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if(pUserEventData.fromId != me.userId)
         {
             //Debug.Log("[OrchestratorController][OnUserEventReceived] User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
-            OnUserEventReceivedEvent.Invoke(pUserEventData);
+            OnUserEventReceivedEvent?.Invoke(pUserEventData);
         }
     }
 

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWrapping;
 
-public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
+public class AudioManager : MonoBehaviour, IUserSessionEventsListener
+{
     public static AudioManager instance;
 
     private AudioRecorder recorder;
@@ -11,8 +12,10 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
 
     #region Unity
 
-    private void Awake() {
-        if (instance == null) {
+    private void Awake()
+    {
+        if(instance == null)
+        {
             instance = this;
         }
 
@@ -22,14 +25,17 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
         AudioSettings.Reset(ac);
     }
 
-    private IEnumerator Start() {
-        while (OrchestratorWrapper.instance == null) {
+    private IEnumerator Start()
+    {
+        while (OrchestratorWrapper.instance == null)
+        {
             yield return 0;
         }
 
         OrchestratorWrapper.instance.AddUserSessionEventLister(this);
 
-        if (recorder == null) {
+        if(recorder == null)
+        {
             recorder = gameObject.AddComponent<AudioRecorder>();
         }
     }
@@ -38,11 +44,13 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
 
     #region Orchestrator Listeners
 
-    public void OnUserJoinedSession(string userID) {
+    public void OnUserJoinedSession(string userID)
+    {
         StartListeningAudio(userID);
     }
 
-    public void OnUserLeftSession(string userID) {
+    public void OnUserLeftSession(string userID)
+    {
         StopListeningAudio();
     }
 
@@ -50,11 +58,13 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
 
     #region Record Audio
 
-    public void StartRecordAudio() {
+    public void StartRecordAudio()
+    {
         recorder.StartRecordAudio();
     }
 
-    public void StopRecordAudio() {
+    public void StopRecordAudio()
+    {
         recorder.StopRecordAudio();
         StopListeningAudio();
     }
@@ -63,14 +73,19 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
 
     #region Listen Audio
 
-    public void StartListeningAudio(string pUserID) {
+    public void StartListeningAudio(string pUserID)
+    {
         InstantiateAudioListener(pUserID);
     }
 
-    private void StopListeningAudio(string pUserID = "") {
-        for (int i = 0; i < receivers.Count; i++) {
-            if (string.IsNullOrEmpty(pUserID) || receivers[i].userID == pUserID) {
-                if (receivers[i] != null) {
+    private void StopListeningAudio(string pUserID = "")
+    {
+        for(int i=0; i<receivers.Count; i++)
+        {
+            if (string.IsNullOrEmpty(pUserID) || receivers[i].userID == pUserID)
+            {
+                if (receivers[i] != null)
+                {
                     Destroy(receivers[i].gameObject);
                 }
 
@@ -79,7 +94,8 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener {
         }
     }
 
-    private void InstantiateAudioListener(string pUserID) {
+    private void InstantiateAudioListener(string pUserID)
+    {
         GameObject lUserAudioReceiver = new GameObject("UserAudioReceiver_" + pUserID);
         lUserAudioReceiver.transform.parent = this.transform;
 

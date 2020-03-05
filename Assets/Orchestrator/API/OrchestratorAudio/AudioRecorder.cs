@@ -1,26 +1,30 @@
 ﻿using UnityEngine;
 using OrchestratorWrapping;
 
-public class AudioRecorder : MonoBehaviour {
-    public void StartRecordAudio() {
-#if TEST_BED
+public class AudioRecorder : MonoBehaviour
+{
+    public void StartRecordAudio()
+    {
+        #if TEST_BED
         StartRecord();
-#endif
+        #endif
     }
 
-    public void StopRecordAudio() {
-#if TEST_BED
+    public void StopRecordAudio()
+    {
+        #if TEST_BED
         StopRecord();
-#endif
+        #endif
     }
 
-#if TEST_BED
+    #if TEST_BED
 
     private Workers.BaseWorker reader;
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
 
-    private void StartRecord() {
+    private void StartRecord()
+    {
         OrchestratorWrapper.instance.DeclareDataStream("AUDIO");
 
         codec = new Workers.VoiceEncoder();
@@ -32,7 +36,8 @@ public class AudioRecorder : MonoBehaviour {
         reader.token = new Workers.Token(1);
     }
 
-    private void StopRecord() {
+    private void StopRecord()
+    {
         OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
 
         reader?.Stop();
@@ -40,11 +45,13 @@ public class AudioRecorder : MonoBehaviour {
         writer?.Stop();
     }
 
-    private void SendAudioPacket(byte[] pPacket) {
+    private void SendAudioPacket(byte[] pPacket)
+    {
         //OrchestratorWrapper.instance.PushAudioPacket(pPacket);
         OrchestratorWrapper.instance.SendData("AUDIO", pPacket);
     }
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         StopRecordAudio();
     }
 
