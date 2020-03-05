@@ -52,22 +52,22 @@ public class EntityPipeline : MonoBehaviour {
                     reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
                     forks = 2;
                 }
-                try {
-#if NO_VOICE 
-                    gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
-#endif
-                }
-                catch (System.EntryPointNotFoundException e) {
-                    Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                if (temp.useAudio) {
+                    try {
+                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    }
                 }
                 break;
             case "pcsub":
                 reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc);
                 codec = new Workers.PCDecoder();
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader); //PC pipeline
-#if NO_VOICE
-                  gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
-#endif
+                if (temp.useAudio) {
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
+                }
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);

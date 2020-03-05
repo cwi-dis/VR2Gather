@@ -50,10 +50,34 @@ namespace Workers {
                         }
                         //Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {currentPointCloud.count()} point, cellsize={currentPointCloud.cellsize()}");
                     }
+                    statsUpdate(currentPointCloud.count());
                     token.currentPointcloud = currentPointCloud;
                     Next();
                 }
             }
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalPoints;
+        double statsTotalPointclouds;
+
+        public void statsUpdate(int pointCount)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: RS2Reader: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalPoints += pointCount;
+            statsTotalPointclouds += 1;
         }
     }
 }

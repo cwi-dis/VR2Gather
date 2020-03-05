@@ -209,6 +209,7 @@ namespace Workers {
                             int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
                                 // All ok, yield to the next process
+                                statsUpdate(bytesRead);
                                 lock (token) {
                                     token.currentBuffer = currentBuffer;
                                     token.currentByteArray = currentBufferArray;
@@ -225,6 +226,29 @@ namespace Workers {
                     }
                 }
             }
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalBytes;
+        double statsTotalPackets;
+
+        public void statsUpdate(int nBytes)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: SubReader: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                statsTotalBytes = 0;
+                statsTotalPackets = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalBytes += nBytes;
+            statsTotalPackets += 1;
         }
     }
 }

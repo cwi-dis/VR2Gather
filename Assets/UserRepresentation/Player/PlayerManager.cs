@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerManager : MonoBehaviour {
     public int id;
+    public string orchestratorId;
     public Camera cam;
     public GameObject audioSender;
     public DataProviders.NetworkDataProvider tvm;

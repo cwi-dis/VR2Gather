@@ -6,7 +6,8 @@ public class mcu {
 	struct Player {
 		byte myID;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 2)]
-		byte[] fov;
+		int[] fov;
+		int[] lod;
 		string url;
 		[MarshalAs(UnmanagedType.ByValArray, SizeConst = 3)]
 		float[] position;
@@ -21,7 +22,7 @@ public class mcu {
 		internal extern static bool SendDisconnect(byte id);
 
 		[DllImport("MCU-UB")]
-		internal extern static bool SendInit(byte id, [MarshalAs(UnmanagedType.LPStr)]string url, float[] position, float rotation);
+		internal extern static bool SendInit(byte id, [MarshalAs(UnmanagedType.LPStr)]string url, float[] position, float rotation, int[] fov, int[] lod);
 
 		[DllImport("MCU-UB")]
 		internal extern static bool SendPosition(byte id, float[] position);
@@ -30,6 +31,9 @@ public class mcu {
 		internal extern static bool SendRotation(byte id, float rotation);
 
 		[DllImport("MCU-UB")]
-		internal extern static bool SendFOV(byte id, byte[] fov);
+		internal extern static bool SendFOV(byte id, int[] fov);
+
+		[DllImport("MCU-UB")]
+		internal extern static bool SendLOD(byte id, int[] lod);
 	}
 }
