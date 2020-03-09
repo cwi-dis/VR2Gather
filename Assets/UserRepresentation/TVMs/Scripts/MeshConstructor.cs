@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Utils;
 using DataProviders;
 using System.Runtime.InteropServices;
@@ -169,7 +169,7 @@ public class MeshConstructor : MonoBehaviour
             GetComponent<MeshFilter>().mesh.tangents = ids.ToArray();
 
             // Providing all the data needed for the shader
-            GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/TVMeshHologram"); // Shader 's file name
+            GetComponent<MeshRenderer>().material.shader = Shader.Find("Unlit/TVMeshShader"); // Shader 's file name
 
             Texture2D current_tex = null;
 
