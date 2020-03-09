@@ -11,22 +11,25 @@ public class TestWorkers : MonoBehaviour {
     EntityPipeline p5;
     EntityPipeline p6;
     EntityPipeline p7;
+    EntityPipeline p8;
+    EntityPipeline p9;
         
     // Start is called before the first frame update
     void Start() {
         var tmp = Config.Instance;
-        p0 = new GameObject("User_1").AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform); 
-        p1 = new GameObject("User_2").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        //p2 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        p0 = new GameObject("SelfRepresentation&B2DSender").AddComponent<EntityPipeline>().Init(Config.Instance.Users[0], transform); 
+        p1 = new GameObject("SUBReceiver&Representation-1").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
     }
 
     void Update() {
-        if (p1 == null && Input.GetKeyDown(KeyCode.Alpha1)) p1 = new GameObject("User_2").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p2 == null && Input.GetKeyDown(KeyCode.Alpha2)) p2 = new GameObject("User_3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = new GameObject("User_4").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = new GameObject("User_5").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = new GameObject("User_6").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = new GameObject("User_7").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = new GameObject("User_8").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p1 == null && Input.GetKeyDown(KeyCode.Alpha1)) p1 = new GameObject("SUBReceiver&Representation-1").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p2 == null && Input.GetKeyDown(KeyCode.Alpha2)) p2 = new GameObject("SUBReceiver&Representation-2").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = new GameObject("SUBReceiver&Representation-3").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = new GameObject("SUBReceiver&Representation-4").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = new GameObject("SUBReceiver&Representation-5").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = new GameObject("SUBReceiver&Representation-6").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = new GameObject("SUBReceiver&Representation-7").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p8 == null && Input.GetKeyDown(KeyCode.Alpha8)) p8 = new GameObject("SUBReceiver&Representation-8").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+        if (p9 == null && Input.GetKeyDown(KeyCode.Alpha9)) p9 = new GameObject("SUBReceiver&Representation-9").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
     }
 }

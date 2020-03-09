@@ -41,6 +41,7 @@ namespace Workers {
                 lock (token) {
                     if (token.isVideo) {
                         int len = token.currentSize;
+                        Debug.Log("len: " + len);
                         if (videoBufferSize == 0) {
                             videoBufferSize = len * 15;
                             circularVideoBuffer = new byte[videoBufferSize];

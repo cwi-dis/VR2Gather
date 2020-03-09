@@ -56,14 +56,14 @@
                     "octreeBits": 10
                 },
                 "Bin2Dash": {
-                    "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/",
+                    "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing-test/",
                     "streamName": "testBed",
                     "segmentSize": 2000,
                     "segmentLife": 10000,
                     "fileMirroring": false
                 },
                 "AudioBin2Dash": {
-                    "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/",
+                    "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing-test/",
                     "streamName": "audio",
                     "segmentSize": 2000,
                     "segmentLife": 10000,
@@ -95,13 +95,13 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing05/testBed.mpd",
+                "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing-test/testBed.mpd",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing05/audio.mpd",
+                "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing-test/audio.mpd",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
