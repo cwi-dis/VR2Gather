@@ -118,7 +118,8 @@ public class NetController : MonoBehaviour {
         // Here you should store the retrieved session.
         if (session != null) {
             Debug.Log($"OnAddSessionHandler {session.sessionId}");
-            //OrchestratorController.Instance.JoinSession(session.sessionId);
+            SubscribeToBinaryChannel();
+            SendBinaryData();
         } else
             Debug.Log($"OnAddSessionHandler null");
     }
@@ -146,14 +147,18 @@ public class NetController : MonoBehaviour {
         if(mySession != null)
         {
             Debug.Log($"-------> OnGetRoomsHandler {rooms.Length}");
-            SubscribeToBinaryChannel();
+            //SubscribeToBinaryChannel();
 
             // OrchestratorController.Instance.JoinSession(mySession.sessionId);
         } else Debug.Log($"-------> OnGetRoomsHandler  null");
     }
 
     private void OnJoinSessionHandler(Session session) {
-        if (session != null) Debug.Log($"-------> OnJoinSessionHandler {session.sessionId}");
+        if (session != null)
+        {
+            Debug.Log($"-------> OnJoinSessionHandler {session.sessionId}");
+            SubscribeToBinaryChannel();
+        }
         else Debug.Log($"-------> OnJoinSessionHandler null");
     }
 
@@ -167,12 +172,14 @@ public class NetController : MonoBehaviour {
         OrchestratorWrapper.instance.DeclareDataStream("BINARYDATA");
         OrchestratorWrapper.instance.RegisterForDataStream(UserID, "BINARYDATA");
         OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
+    }
 
+    private void SendBinaryData()
+    {
         byte[] data = new byte[] { 1, 2, 3, 4, 5 };
         OrchestratorWrapper.instance.SendData("BINARYDATA", data);
         Debug.Log($"-------> SendingBinaryData {data.Length}");
     }
-
 
     private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
         Debug.Log($"-------> OnDataPacketReceived {pPacket.dataStreamPacket.Length}");
@@ -180,9 +187,6 @@ public class NetController : MonoBehaviour {
             Debug.Log($"!!! DATA {pPacket.dataStreamPacket.Length}");
         }
     }
-
-
-    
 
     private void OnUserLeftSessionHandler(string userID) {
         Debug.Log($"OnUserLeftSessionHandler {userID}");
@@ -198,6 +202,11 @@ public class NetController : MonoBehaviour {
         LocalClock = Time.realtimeSinceStartup;
         NetClock = LocalClock + OffsetClock;
         connection?.Update();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SendBinaryData();
+        }
     }
 
     private void OnDestroy() {
