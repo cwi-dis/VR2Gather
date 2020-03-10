@@ -5,8 +5,6 @@ using OrchestratorWrapping;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager instance;
-
     private AudioRecorder recorder;
     private List<AudioReceiver> receivers = new List<AudioReceiver>();
 
@@ -14,11 +12,6 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if(instance == null)
-        {
-            instance = this;
-        }
-
         AudioConfiguration ac = AudioSettings.GetConfiguration();
         ac.sampleRate = 16000 * 3;
         ac.dspBufferSize = 320 * 3;
