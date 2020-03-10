@@ -163,7 +163,8 @@ public class NetController : MonoBehaviour {
     //string dataChannel;
     private void SubscribeToBinaryChannel() {
 
-      //  dataChannel = $"BINARYTATA_{Random.Range(0, 1000)}";
+        //  dataChannel = $"BINARYTATA_{Random.Range(0, 1000)}";
+        OrchestratorWrapper.instance.DeclareDataStream("BINARYDATA");
         OrchestratorWrapper.instance.RegisterForDataStream(UserID, "BINARYDATA");
         OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 
@@ -189,6 +190,7 @@ public class NetController : MonoBehaviour {
 
     public void Disconnect() {
         OrchestratorWrapper.instance.UnregisterFromDataStream(UserID, "BINARYDATA");
+        OrchestratorWrapper.instance.RemoveDataStream("BINARYDATA");
         connection?.Close();
     }
 
