@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWrapping;
 
-public class AudioManager : MonoBehaviour, IUserSessionEventsListener
+public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
@@ -46,20 +46,10 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 
     private void SubscribeToOrchestratorEvents()
     {
-        OrchestratorWrapper.instance.AddUserSessionEventLister(this);
         OrchestratorController.Instance.OnSessionJoinedEvent += StartRecordAudio;
         OrchestratorController.Instance.OnLeaveSessionEvent += StopRecordAudio;
         OrchestratorController.Instance.OnUserJoinSessionEvent += StartListeningAudio;
-    }
-
-    public void OnUserJoinedSession(string userID)
-    {
-        StartListeningAudio(userID);
-    }
-
-    public void OnUserLeftSession(string userID)
-    {
-        StopListeningAudio();
+        OrchestratorController.Instance.OnUserLeaveSessionEvent += StopListeningAudio;
     }
 
     #endregion
