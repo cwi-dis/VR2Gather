@@ -32,7 +32,7 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
             yield return 0;
         }
 
-        OrchestratorWrapper.instance.AddUserSessionEventLister(this);
+        SubscribeToOrchestratorEvents();
 
         if(recorder == null)
         {
@@ -43,6 +43,14 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
     #endregion
 
     #region Orchestrator Listeners
+
+    private void SubscribeToOrchestratorEvents()
+    {
+        OrchestratorWrapper.instance.AddUserSessionEventLister(this);
+        OrchestratorController.Instance.OnSessionJoinedEvent += StartRecordAudio;
+        OrchestratorController.Instance.OnLeaveSessionEvent += StopRecordAudio;
+        OrchestratorController.Instance.OnUserJoinSessionEvent += StartListeningAudio;
+    }
 
     public void OnUserJoinedSession(string userID)
     {
@@ -58,12 +66,12 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 
     #region Record Audio
 
-    public void StartRecordAudio()
+    private void StartRecordAudio()
     {
         recorder.StartRecordAudio();
     }
 
-    public void StopRecordAudio()
+    private void StopRecordAudio()
     {
         recorder.StopRecordAudio();
         StopListeningAudio();
@@ -73,7 +81,7 @@ public class AudioManager : MonoBehaviour, IUserSessionEventsListener
 
     #region Listen Audio
 
-    public void StartListeningAudio(string pUserID)
+    private void StartListeningAudio(string pUserID)
     {
         InstantiateAudioListener(pUserID);
     }

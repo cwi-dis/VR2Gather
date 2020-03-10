@@ -74,6 +74,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Action<Session[]> OnGetSessionsEvent;
     public Action<Session> OnAddSessionEvent;
     public Action<Session> OnJoinSessionEvent;
+    public Action OnSessionJoinedEvent;
     public Action OnLeaveSessionEvent;
     public Action OnDeleteSessionEvent;
     public Action<string> OnUserJoinSessionEvent;
@@ -310,9 +311,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
+            OnSessionJoinedEvent?.Invoke();
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            AudioManager.instance?.StartRecordAudio();
+            //AudioManager.instance?.StartRecordAudio();
         }
         else
         {
@@ -369,28 +371,30 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            AudioManager.instance?.StartRecordAudio();
+            //AudioManager.instance?.StartRecordAudio();
 
             foreach(string id in session.sessionUsers)
             {
                 if(id != me.userId)
                 {
-                    AudioManager.instance?.StartListeningAudio(id);
+                    //AudioManager.instance?.StartListeningAudio(id);
                     OnUserJoinedSession(id);
                 }
             }
+
+            OnJoinSessionEvent?.Invoke(mySession);
+            OnSessionJoinedEvent?.Invoke();
         }
         else
         {
             mySession = null;
         }
-        OnJoinSessionEvent?.Invoke(mySession);
     }
 
     public void LeaveSession()
     {
         orchestratorWrapper.LeaveSession();
-        AudioManager.instance?.StopRecordAudio();
+        //AudioManager.instance?.StopRecordAudio();
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status)

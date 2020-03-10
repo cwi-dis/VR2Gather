@@ -643,11 +643,8 @@ namespace OrchestratorWrapping
             string lType = jsonResponse[2].ToString();
             string lDescription = jsonResponse[3].ToString();
 
-            //if (myUserID != lUserID)
-            //{
-                UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachments[0]);
-                OnDataStreamReceived?.Invoke(packetReceived);
-            //}
+            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachments[0]);
+            OnDataStreamReceived?.Invoke(packetReceived);
         }
 
         // sessions update events from the orchestrator
