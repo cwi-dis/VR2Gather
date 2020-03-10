@@ -313,8 +313,6 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             OnAddSessionEvent?.Invoke(session);
             OnSessionJoinedEvent?.Invoke();
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
-            //AudioManager.instance?.StartRecordAudio();
         }
         else
         {
@@ -371,13 +369,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             // now retrieve the secnario instance infos
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
-            //AudioManager.instance?.StartRecordAudio();
-
             foreach(string id in session.sessionUsers)
             {
                 if(id != me.userId)
                 {
-                    //AudioManager.instance?.StartListeningAudio(id);
                     OnUserJoinedSession(id);
                 }
             }
@@ -394,7 +389,6 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void LeaveSession()
     {
         orchestratorWrapper.LeaveSession();
-        //AudioManager.instance?.StopRecordAudio();
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status)
