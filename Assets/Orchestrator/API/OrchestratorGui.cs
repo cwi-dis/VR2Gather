@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using OrchestratorWrapping;
 
+public delegate void FunctionToCallOnSendCommandButton();
+
 class GuiCommandDescription
 {
     public string CommandName;
