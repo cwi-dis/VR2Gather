@@ -42,20 +42,23 @@ namespace Workers {
                     if (token.isVideo) {
                         int len = token.currentSize;
                         Debug.Log("len: " + len);
-                        if (videoBufferSize == 0) {
-                            videoBufferSize = len * 15;
-                            circularVideoBuffer = new byte[videoBufferSize];
-                            circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
-                        }
+                        if (len > 20000) { // avoid residual video frames
+                            if (videoBufferSize == 0) {
+                                videoBufferSize = len * 15;
+                                circularVideoBuffer = new byte[videoBufferSize];
+                                circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
+                            }
 
-                        if (writeVideoPosition + len < videoBufferSize) {
-                            Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, len);
-                            writeVideoPosition += len;
-                        } else {
-                            int partLen = videoBufferSize - writeVideoPosition;
-                            Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, partLen);
-                            Marshal.Copy(token.currentBuffer + partLen, circularVideoBuffer, 0, len - partLen);
-                            writeVideoPosition = len - partLen;
+                            if (writeVideoPosition + len < videoBufferSize) {
+                                Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, len);
+                                writeVideoPosition += len;
+                            }
+                            else {
+                                int partLen = videoBufferSize - writeVideoPosition;
+                                Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, partLen);
+                                Marshal.Copy(token.currentBuffer + partLen, circularVideoBuffer, 0, len - partLen);
+                                writeVideoPosition = len - partLen;
+                            }
                         }
                     } else {
                         int len = token.currentSize;
