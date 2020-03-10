@@ -63,7 +63,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public Toggle liveToggle;
     public Toggle tvmToggle;
     public Toggle pcToggle;
-    public Toggle anyAudioToggle;
+    public Toggle noAudioToggle;
     public Toggle socketAudioToggle;
     public Toggle dashAudioToggle;
 
@@ -800,7 +800,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
         tvmToggle.isOn = true;
         pcToggle.isOn = false;
-        anyAudioToggle.isOn = true;
+        noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
 
@@ -959,23 +959,23 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     private void Pilot2AudioToggle() {
         if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            anyAudioToggle.gameObject.SetActive(true);
+            noAudioToggle.gameObject.SetActive(true);
             socketAudioToggle.gameObject.SetActive(true);
             dashAudioToggle.gameObject.SetActive(true);
 
-            useAudio = !anyAudioToggle.isOn;
+            useAudio = !noAudioToggle.isOn;
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
-            if (anyAudioToggle.isOn) anyAudioToggle.interactable = false;
-            else anyAudioToggle.interactable = true;
+            if (noAudioToggle.isOn) noAudioToggle.interactable = false;
+            else noAudioToggle.interactable = true;
             if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
             else socketAudioToggle.interactable = true;
             if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
             else dashAudioToggle.interactable = true;
         }
         else {
-            anyAudioToggle.gameObject.SetActive(false);
+            noAudioToggle.gameObject.SetActive(false);
             socketAudioToggle.gameObject.SetActive(false);
             dashAudioToggle.gameObject.SetActive(false);
         }
@@ -1143,8 +1143,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void SetAudio(int state) {
         switch (state) {
-            case 0: // Any
-                if (anyAudioToggle.isOn) {
+            case 0: // No
+                if (noAudioToggle.isOn) {
                     useAudio = false;
                     useSocketIOAudio = false;
                     useDashAudio = false;
@@ -1161,7 +1161,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     useSocketIOAudio = true;
                     useDashAudio = false;
 
-                    anyAudioToggle.isOn = false;
+                    noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
 
                     kindAudio = 1;
@@ -1173,7 +1173,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     useSocketIOAudio = false;
                     useDashAudio = true;
 
-                    anyAudioToggle.isOn = false;
+                    noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
 
                     kindAudio = 2;

@@ -32,8 +32,8 @@ RectTransform:
   m_Father: {fileID: 685048291}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.000000059604645, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -342,7 +342,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &701358659
 RectTransform:
   m_ObjectHideFlags: 0
@@ -625,7 +625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &967067421
 RectTransform:
   m_ObjectHideFlags: 0
@@ -833,7 +833,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2200,7 +2200,7 @@ GameObject:
   - component: {fileID: 5700228634010912593}
   - component: {fileID: 4787323793348528520}
   m_Layer: 5
-  m_Name: SessionAudioAny
+  m_Name: SessionAudioNone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6012,7 +6012,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Any
+  m_Text: No
 --- !u!1 &5472684451043387809
 GameObject:
   m_ObjectHideFlags: 0
@@ -11138,7 +11138,7 @@ MonoBehaviour:
   liveToggle: {fileID: 7337467795361557477}
   tvmToggle: {fileID: 3688006159028250332}
   pcToggle: {fileID: 1737488500581194595}
-  anyAudioToggle: {fileID: 4787323793348528520}
+  noAudioToggle: {fileID: 4787323793348528520}
   socketAudioToggle: {fileID: 4637641398679321949}
   dashAudioToggle: {fileID: 759047624362577749}
   sessionIdDrop: {fileID: 5690885361743146105}

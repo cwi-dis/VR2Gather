@@ -34,7 +34,7 @@ public class LoginController : PilotController {
                 }
                 // Check Audio
                 switch (msg[3]) {
-                    case "0": // Any Audio
+                    case "0": // No Audio
                         orchestrator.useAudio = false;
                         orchestrator.useSocketIOAudio = false;
                         orchestrator.useDashAudio = false;
