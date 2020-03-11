@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using OrchestratorWrapping;
 
 public class AudioRecorder : MonoBehaviour
 {
@@ -22,26 +23,37 @@ public class AudioRecorder : MonoBehaviour
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
 
-    private void OnDestroy()
-    {
-        StopRecordAudio();
-    }
-
     private void StartRecord()
     {
+        OrchestratorWrapper.instance.DeclareDataStream("AUDIO");
+
         codec = new Workers.VoiceEncoder();
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
 
-        writer = new Workers.SocketIOWriter(null, 0);
+        writer = new Workers.SocketIOWriter(SendAudioPacket);
+
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
     }
 
     private void StopRecord()
     {
+        OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
+
         reader?.Stop();
         codec?.Stop();
         writer?.Stop();
     }
-    #endif
+
+    private void SendAudioPacket(byte[] pPacket)
+    {
+        //OrchestratorWrapper.instance.PushAudioPacket(pPacket);
+        OrchestratorWrapper.instance.SendData("AUDIO", pPacket);
+    }
+    private void OnDestroy()
+    {
+        StopRecordAudio();
+    }
+
+#endif
 }

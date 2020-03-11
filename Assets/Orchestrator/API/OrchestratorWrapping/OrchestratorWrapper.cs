@@ -8,6 +8,7 @@ using LitJson;
 using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
+using System.Text;
 
 namespace OrchestratorWrapping
 {
@@ -28,9 +29,30 @@ namespace OrchestratorWrapping
     // class that stores a user message incoming from the orchestrator
     public class UserMessage
     {
-        public string fromId;
-        public string fromName;
-        public JsonData message;
+        public readonly string fromId;
+        public readonly string fromName;
+        public readonly string message;
+
+        public UserMessage(string pFromID, string pFromName, string pMessage)
+        {
+            fromId = pFromID;
+            fromName = pFromName;
+            message = pMessage;
+        }
+    }
+
+    // class that stores a user event incoming from the orchestrator
+    // necessary new parameters welcomed
+    public class UserEvent
+    {
+        public readonly string fromId;
+        public readonly string message;
+
+        public UserEvent(string pFromID, string pMessage)
+        {
+            fromId = pFromID;
+            message = pMessage;
+        }
     }
 
     // class that stores a user audio packet incoming from the orchestrator
@@ -45,6 +67,26 @@ namespace OrchestratorWrapping
             {
                 audioPacket = pAudioPacket;
                 userID = pUserID;
+            }
+        }
+    }
+
+    // class that stores a user data-stream packet incoming from the orchestrator
+    public class UserDataStreamPacket
+    {
+        public string dataStreamUserID;
+        public string dataStreamType;
+        public string dataStreamDesc;
+        public byte[] dataStreamPacket;
+
+        public UserDataStreamPacket(string pDataStreamUserID, string pDataStreamType, string pDataStreamDesc, byte[] pDataStreamPacket)
+        {
+            if (pDataStreamPacket != null)
+            {
+                dataStreamUserID = pDataStreamUserID;
+                dataStreamType = pDataStreamType;
+                dataStreamDesc = pDataStreamDesc;
+                dataStreamPacket = pDataStreamPacket;
             }
         }
     }
@@ -107,6 +149,7 @@ namespace OrchestratorWrapping
         }
 
         public Action<UserAudioPacket> OnAudioSent;
+        public Action<UserDataStreamPacket> OnDataStreamReceived;
 
         string myUserID = "";
 
@@ -122,7 +165,7 @@ namespace OrchestratorWrapping
         }
         #endregion
 
-        #region commands and responses procession
+        #region commands with Acks and responses
         public void Connect()
         {
             if ((OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected))
@@ -148,7 +191,6 @@ namespace OrchestratorWrapping
         {
             if (ResponsesListener != null) ResponsesListener.OnDisconnect();
         }
-
 
         public bool Login(string userName, string userPassword)
         {
@@ -248,6 +290,8 @@ namespace OrchestratorWrapping
         {
             OrchestratorCommand command = GetOrchestratorCommand("JoinSession");
             command.GetParameter("sessionId").ParamValue = sessionId;
+            // By default canBeMaster is set to false, it needs to be overrided to be sure that a master is affected.
+            command.GetParameter("canBeMaster").ParamValue = true;
             return OrchestrationSocketIoManager.EmitCommand(command);
         }
 
@@ -446,10 +490,114 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
 
+        public void GetAvailableDataStreams(string pDataStreamUserId)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetAvailableDataStreams");
+            command.GetParameter("dataStreamUserId").ParamValue = pDataStreamUserId;
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnGetAvailableDataStreams(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnGetAvailableDataStreams(status, lDataStreams);
+        }
+
+        public void GetRegisteredDataStreams()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetRegisteredDataStreams");
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnGetRegisteredDataStreams(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
+        }
+
+        #endregion
+
+        #region commands - no Acks
+
         public void PushAudioPacket(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
             command.GetParameter("audiodata").ParamValue = pByteArray;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void SendSceneEventPacketToMaster(byte[] pByteArray)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToMaster");
+            command.GetParameter("sceneEventData").ParamValue = pByteArray;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void SendSceneEventPacketToUser(string pUserID, byte[] pByteArray)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToUser");
+            command.GetParameter("userId").ParamValue = pUserID;
+            command.GetParameter("sceneEventData").ParamValue = pByteArray;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void SendSceneEventPacketToAllUsers(byte[] pByteArray)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToAllUsers");
+            command.GetParameter("sceneEventData").ParamValue = pByteArray;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void DeclareDataStream(string pDataStreamType)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("DeclareDataStream");
+            command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
+            command.GetParameter("dataStreamDescription").ParamValue = "";
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void RemoveDataStream(string pDataStreamType)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("RemoveDataStream");
+            command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void RemoveAllDataStreams()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("RemoveAllDataStreams");
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void RegisterForDataStream(string pDataStreamUserId, string pDataStreamType)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("RegisterForDataStream");
+            command.GetParameter("dataStreamUserId").ParamValue = pDataStreamUserId;
+            command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void UnregisterFromDataStream(string pDataStreamUserId, string pDataStreamKind)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UnregisterFromDataStream");
+            command.GetParameter("dataStreamUserId").ParamValue = pDataStreamUserId;
+            command.GetParameter("dataStreamKind").ParamValue = pDataStreamKind;
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void UnregisterFromAllDataStreams()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UnregisterFromAllDataStreams");
+            OrchestrationSocketIoManager.EmitPacket(command);
+        }
+
+        public void SendData(string pDataStreamType, byte[] pDataStreamBytes)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("SendData");
+            command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
+            command.GetParameter("dataStreamBytes").ParamValue = pDataStreamBytes;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
 
@@ -466,11 +614,8 @@ namespace OrchestratorWrapping
             }
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
 
-            UserMessage messageReceived = new UserMessage();
-            messageReceived.fromId = jsonResponse[1]["messageFrom"].ToString();
-            messageReceived.fromName = jsonResponse[1]["messageFromName"].ToString();
-            messageReceived.message = jsonResponse[1]["message"];
-
+            UserMessage messageReceived = new UserMessage(jsonResponse[1]["messageFrom"].ToString(), jsonResponse[1]["messageFromName"].ToString(), jsonResponse[1]["message"].ToString());
+            
             if (MessagesFromOrchestratorListener != null)
             {
                 MessagesFromOrchestratorListener.OnUserMessageReceived(messageReceived);
@@ -483,11 +628,23 @@ namespace OrchestratorWrapping
             JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
             string lUserID = jsonResponse[1]["audioFrom"].ToString();
 
-            if (myUserID != lUserID && OnAudioSent != null)
+            if (myUserID != lUserID)
             {
                 UserAudioPacket packetReceived = new UserAudioPacket(packet.Attachments[0], lUserID);
-                OnAudioSent.Invoke(packetReceived);
+                OnAudioSent?.Invoke(packetReceived);
             }
+        }
+
+        // bit-stream packets from the orchestrator
+        private void OnUserDataReceived(Socket socket, Packet packet, params object[] args)
+        {
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+            string lUserID = jsonResponse[1].ToString();
+            string lType = jsonResponse[2].ToString();
+            string lDescription = jsonResponse[3].ToString();
+
+            UserDataStreamPacket packetReceived = new UserDataStreamPacket(lUserID, lType, lDescription, packet.Attachments[0]);
+            OnDataStreamReceived?.Invoke(packetReceived);
         }
 
         // sessions update events from the orchestrator
@@ -501,7 +658,7 @@ namespace OrchestratorWrapping
             }
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
-            string lUserID = jsonResponse[1]["eventData"][0].ToString(); ;
+            string lUserID = jsonResponse[1]["eventData"][0].ToString();
 
             if (lUserID == myUserID)
             {
@@ -532,6 +689,34 @@ namespace OrchestratorWrapping
             }
         }
 
+        // events packets from master user through the orchestrator
+        private void OnMasterEventReceived(Socket socket, Packet packet, params object[] args)
+        {
+            if (MessagesFromOrchestratorListener != null)
+            {
+                JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+                string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
+                string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
+                UserEvent lUserEvent = new UserEvent(lUserID, lData);
+
+                MessagesFromOrchestratorListener.OnMasterEventReceived(lUserEvent);
+            }
+        }
+
+        // events packets from users through the orchestrator
+        private void OnUserEventReceived(Socket socket, Packet packet, params object[] args)
+        {
+            if (MessagesFromOrchestratorListener != null)
+            {
+                JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+                string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
+                string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
+                UserEvent lUserEvent = new UserEvent(lUserID, lData);
+
+                MessagesFromOrchestratorListener.OnUserEventReceived(lUserEvent);
+            }
+        }
+
         #endregion
 
         #region grammar definition
@@ -539,116 +724,171 @@ namespace OrchestratorWrapping
         public void InitGrammar()
         {
             orchestratorCommands = new List<OrchestratorCommand>
-                {              
-                    //Login & Logout
-                    new OrchestratorCommand("Login", new List<Parameter>
-                        {
-                            new Parameter("userName", typeof(string)),
-                            new Parameter("userPassword", typeof(string))
-                        },
-                        OnLoginResponse),
-                    new OrchestratorCommand("Logout", null, OnLogoutResponse),
+            {              
+                //login & logout
+                new OrchestratorCommand("Login", new List<Parameter>
+                {
+                    new Parameter("userName", typeof(string)),
+                    new Parameter("userPassword", typeof(string))
+                },
+                OnLoginResponse),
+                new OrchestratorCommand("Logout", null, OnLogoutResponse),
 
-                    //NTP
-                    new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
+                //NTP
+                new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
 
-                    //sessions
-                    new OrchestratorCommand("AddSession", new List<Parameter>
-                        {
-                            new Parameter("scenarioId", typeof(string)),
-                            new Parameter("sessionName", typeof(string)),
-                            new Parameter("sessionDescription", typeof(string))
-                        },
-                        OnAddSessionResponse),
-                    new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
-                    new OrchestratorCommand("GetSessionInfo", null, OnGetSessionInfoResponse),
-                    new OrchestratorCommand("DeleteSession", new List<Parameter>
-                        {
-                            new Parameter("sessionId", typeof(string)),
-                        },
-                        OnDeleteSessionResponse),
-                    new OrchestratorCommand("JoinSession", new List<Parameter>
-                        {
-                            new Parameter("sessionId", typeof(string)),
-                        },
-                        OnJoinSessionResponse),
-                    new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
+                //sessions
+                new OrchestratorCommand("AddSession", new List<Parameter>
+                {
+                    new Parameter("scenarioId", typeof(string)),
+                    new Parameter("sessionName", typeof(string)),
+                    new Parameter("sessionDescription", typeof(string))
+                },
+                OnAddSessionResponse),
+                new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
+                new OrchestratorCommand("GetSessionInfo", null, OnGetSessionInfoResponse),
+                new OrchestratorCommand("DeleteSession", new List<Parameter>
+                {
+                    new Parameter("sessionId", typeof(string)),
+                },
+                OnDeleteSessionResponse),
+                new OrchestratorCommand("JoinSession", new List<Parameter>
+                {
+                    new Parameter("sessionId", typeof(string)),
+                    new Parameter("canBeMaster", typeof(bool))
+                },
+                OnJoinSessionResponse),
+                new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
 
-                    // live stream
-                    new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
+                //live stream
+                new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
 
-                    // scenarios
-                    new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
-                    new OrchestratorCommand("GetScenarioInstanceInfo", new List<Parameter>
-                        {
-                            new Parameter("scenarioId", typeof(string))
-                        },
-                        OnGetScenarioInstanceInfoResponse),
+                //scenarios
+                new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
+                new OrchestratorCommand("GetScenarioInstanceInfo", new List<Parameter>
+                {
+                    new Parameter("scenarioId", typeof(string))
+                },
+                OnGetScenarioInstanceInfoResponse),
 
-                    // users
-                    new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
-                    new OrchestratorCommand("GetUserInfo",
-                    new List<Parameter>
-                        {
-                            new Parameter("userId", typeof(string))
-                        }, 
-                        OnGetUserInfoResponse),
-                    new OrchestratorCommand("AddUser", new List<Parameter>
-                        {
-                            new Parameter("userName", typeof(string)),
-                            new Parameter("userPassword", typeof(string)),
-                            new Parameter("userAdmin", typeof(bool))
-                        },
-                        OnAddUserResponse),
-                     new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
-                        {
-                            new Parameter("userDataJson", typeof(string)),
-                        },
-                        OnUpdateUserDataJsonResponse),
-                    new OrchestratorCommand("DeleteUser", new List<Parameter>
-                        {
-                            new Parameter("userId", typeof(string))
-                        },
-                        OnDeleteUserResponse),
+                //users
+                new OrchestratorCommand("GetUsers", null, OnGetUsersResponse),
+                new OrchestratorCommand("GetUserInfo",
+                new List<Parameter>
+                    {
+                        new Parameter("userId", typeof(string))
+                    }, 
+                    OnGetUserInfoResponse),
+                new OrchestratorCommand("AddUser", new List<Parameter>
+                {
+                    new Parameter("userName", typeof(string)),
+                    new Parameter("userPassword", typeof(string)),
+                    new Parameter("userAdmin", typeof(bool))
+                },
+                OnAddUserResponse),
+                new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
+                {
+                    new Parameter("userDataJson", typeof(string))
+                },
+                OnUpdateUserDataJsonResponse),
+                new OrchestratorCommand("DeleteUser", new List<Parameter>
+                {
+                    new Parameter("userId", typeof(string))
+                },
+                OnDeleteUserResponse),
 
-                    // rooms
-                    new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
-                    new OrchestratorCommand("JoinRoom", new List<Parameter>
-                        {
-                            new Parameter("roomId", typeof(string))
-                        },
-                        OnJoinRoomResponse),
-                    new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
+                //rooms
+                new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
+                new OrchestratorCommand("JoinRoom", new List<Parameter>
+                {
+                    new Parameter("roomId", typeof(string))
+                },
+                OnJoinRoomResponse),
+                new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
 
-                    //messages
-                    new OrchestratorCommand("SendMessage", new List<Parameter>
-                        {
-                            new Parameter("message", typeof(string)),
-                            new Parameter("userId", typeof(string))
-                        },
-                        OnSendMessageResponse),
-                    new OrchestratorCommand("SendMessageToAll", new List<Parameter>
-                        {
-                            new Parameter("message", typeof(string))
-                        },
-                        OnSendMessageToAllResponse),
+                //messages
+                new OrchestratorCommand("SendMessage", new List<Parameter>
+                {
+                    new Parameter("message", typeof(string)),
+                    new Parameter("userId", typeof(string))
+                },
+                OnSendMessageResponse),
+                new OrchestratorCommand("SendMessageToAll", new List<Parameter>
+                {
+                    new Parameter("message", typeof(string))
+                },
+                OnSendMessageToAllResponse),
 
-                    //audio packets
-                    new OrchestratorCommand("PushAudio", new List<Parameter>
-                        {
-                            new Parameter("audiodata", typeof(byte[]))
-                        }),
-                };
+                //audio packets
+                new OrchestratorCommand("PushAudio", new List<Parameter>
+                {
+                    new Parameter("audiodata", typeof(byte[]))
+                }),
+
+                //user events
+                new OrchestratorCommand("SendSceneEventToMaster", new List<Parameter>
+                {
+                    new Parameter("sceneEventData", typeof(byte[]))
+                }),
+                new OrchestratorCommand("SendSceneEventToUser", new List<Parameter>
+                {
+                    new Parameter("userId", typeof(string)),
+                    new Parameter("sceneEventData", typeof(byte[]))
+                }),
+                new OrchestratorCommand("SendSceneEventToAllUsers", new List<Parameter>
+                {
+                    new Parameter("sceneEventData", typeof(byte[]))
+                }),
+
+                //user bit-streams
+                new OrchestratorCommand("DeclareDataStream", new List<Parameter>
+                {
+                    new Parameter("dataStreamKind", typeof(string)),
+                    new Parameter("dataStreamDescription", typeof(string))
+                }),
+                new OrchestratorCommand("RemoveDataStream", new List<Parameter>
+                {
+                    new Parameter("dataStreamKind", typeof(string)),
+                }),
+                new OrchestratorCommand("RemoveAllDataStreams", null),
+                new OrchestratorCommand("RegisterForDataStream", new List<Parameter>
+                {
+                    new Parameter("dataStreamUserId", typeof(string)),
+                    new Parameter("dataStreamKind", typeof(string))
+                }),
+                new OrchestratorCommand("UnregisterFromDataStream", new List<Parameter>
+                {
+                    new Parameter("dataStreamUserId", typeof(string)),
+                    new Parameter("dataStreamKind", typeof(string))
+                }),
+                new OrchestratorCommand("UnregisterFromAllDataStreams", null),
+                new OrchestratorCommand("GetAvailableDataStreams", new List<Parameter>
+                {
+                    new Parameter("dataStreamUserId", typeof(string))
+                },
+                OnGetAvailableDataStreams),
+                new OrchestratorCommand("GetRegisteredDataStreams", null, OnGetRegisteredDataStreams),
+                new OrchestratorCommand("SendData", new List<Parameter>
+                {
+                    new Parameter("dataStreamKind", typeof(string)),
+                    new Parameter("dataStreamBytes", typeof(byte[]))
+                })
+            };
 
             orchestratorMessages = new List<OrchestratorMessageReceiver>
-                {              
-                    //messages
-                    new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
-                    //audio packets
-                    new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
-                    //session update events
-                    new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
-                };
+            {              
+                //messages
+                new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
+                //audio packets
+                new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
+                //session update events
+                new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
+                //user events
+                new OrchestratorMessageReceiver("SceneEventToMaster", OnMasterEventReceived),
+                new OrchestratorMessageReceiver("SceneEventToUser", OnUserEventReceived),
+                //user bit-stream
+                new OrchestratorMessageReceiver("DataReceived", OnUserDataReceived)
+            };
         }
 
         // To retrieve the definition of a command by name

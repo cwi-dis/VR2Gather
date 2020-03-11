@@ -397,10 +397,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
-            if (AudioManager.instance != null && useSocketIOAudio) {
-                AudioManager.instance.StartRecordAudio();
-            }
-
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
                 // Make this to show the real name of the user, not the id
@@ -483,12 +479,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
             //scenarioIdText.text = session.scenarioId;
 
-            if (AudioManager.instance != null && useSocketIOAudio && !updated) {
-                AudioManager.instance.StartRecordAudio();
-
+            if (useSocketIOAudio && !updated) {
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
-                        AudioManager.instance.StartListeningAudio(id);
                         OnUserJoinedSession(id);
                     }
                 }
@@ -522,10 +515,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     
     public void LeaveSession() {
         orchestratorWrapper.LeaveSession();
-
-        if (AudioManager.instance != null && useSocketIOAudio) {
-            AudioManager.instance.StopRecordAudio();
-        }
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status) {
@@ -1184,4 +1173,24 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
+
+
+    public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
+
+    }
+
+    public void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
+
+    }
+
+    public void OnMasterEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+    public void OnUserEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+
+
 }

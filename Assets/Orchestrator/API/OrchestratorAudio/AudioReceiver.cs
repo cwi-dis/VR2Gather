@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using OrchestratorWrapping;
 
 public class AudioReceiver : MonoBehaviour
 {
@@ -26,8 +27,9 @@ public class AudioReceiver : MonoBehaviour
     private Workers.Token token;
 
     private float[] tmpBuffer;
-
     private AudioSource audioSource;
+
+    private ISocketReader socketIOreader;
 
     private void StartListening(string pUserID)
     {
@@ -35,14 +37,19 @@ public class AudioReceiver : MonoBehaviour
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        //audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
+        audioSource.clip = AudioClip.Create("clip_" + pUserID, 320, 1, 16000, false);
         audioSource.loop = true;
-        audioSource.spatialBlend = 1.0f;
         audioSource.Play();
 
-        reader = new Workers.SocketIOReader(null, pUserID);
+        OrchestratorWrapper.instance.RegisterForDataStream(pUserID, "AUDIO");
+        OrchestratorWrapper.instance.OnDataStreamReceived += OnAudioPacketReceived;
+        //OrchestratorWrapper.instance.OnAudioSent += OnAudioPacketReceived;
+
+        reader = new Workers.SocketIOReader();
+        socketIOreader = (ISocketReader)reader;
         codec = new Workers.VoiceDecoder();
         preparer = new Workers.AudioPreparer();
+
         reader.AddNext(codec).AddNext(preparer).AddNext(reader);
         reader.token = token = new Workers.Token();
 
@@ -51,9 +58,28 @@ public class AudioReceiver : MonoBehaviour
 
     private void StopListening()
     {
+        OrchestratorWrapper.instance.UnregisterFromDataStream(userID, "AUDIO");
+        userID = "";
+
         reader?.Stop();
         codec?.Stop();
         preparer?.Stop();
+    }
+
+    private void OnAudioPacketReceived(UserAudioPacket pPacket)
+    {
+        if(pPacket.userID == userID)
+        {
+            socketIOreader.OnData(pPacket.audioPacket);
+        }
+    }
+
+    private void OnAudioPacketReceived(UserDataStreamPacket pPacket)
+    {
+        if (pPacket.dataStreamUserID == userID)
+        {
+            socketIOreader.OnData(pPacket.dataStreamPacket);
+        }
     }
 
     // Buffer is filled 2.5 times per second (every 400ms). 

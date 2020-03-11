@@ -1,52 +1,41 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
-using BestHTTP.SocketIO;
 
-namespace Workers
-{
-    public class SocketIOWriter : BaseWorker
-    {
-        byte userID;
-        SocketIOConnection  socketIOConnection;
-        public SocketIOWriter(SocketIOConnection socketIOConnection, int userID) : base(WorkerType.End)
-        {
+namespace Workers {
+    public class SocketIOWriter : BaseWorker {
+        private byte userID;
+        private SocketIOConnection socketIOConnection = null;
+        private Action<byte[]> packetSender;
+
+        public SocketIOWriter(SocketIOConnection socketIOConnection, int userID) : base(WorkerType.End) {
             this.userID = (byte)userID;
             this.socketIOConnection = socketIOConnection;
             Start();
         }
-        protected override void Update()
-        {
+        public SocketIOWriter(Action<byte[]> pSenderDelegate) : base(WorkerType.End) {
+            packetSender = pSenderDelegate;
+            Start();
+        }
+        protected override void Update() {
             base.Update();
-            if (token != null ) {
+            if (token != null) {
                 byte[] tmp = token.currentByteArray;
-                /*if (token.currentSize != tmp.Length) {
-                    tmp = new byte[token.currentSize];
-
-                    System.Array.Copy(token.currentByteArray, tmp, token.currentSize);
-                }*/
                 tmp[0] = userID;
                 token.latency.GetByteArray(tmp, 1);
-                //socketIOConnection.socket.Emit("dataChannel", (object)tmp);
 
-                if (socketIOConnection != null)
-                {
+                if (socketIOConnection != null) {
                     socketIOConnection.socket.Emit("dataChannel", (object)tmp);
                 }
 
-                if (OrchestratorWrapping.OrchestratorWrapper.instance != null)
-                {
-                    OrchestratorWrapping.OrchestratorWrapper.instance.PushAudioPacket(tmp);
-                }
+                packetSender?.Invoke(tmp);
 
                 Next();
             }
         }
 
-        public override void OnStop()
-        {
+        public override void OnStop() {
             base.OnStop();
-            Debug.Log("SocketIOReader Sopped");
+            Debug.Log("[SocketIOWriter][OnStop] SocketIOWriter Sopped.");
         }
-   }
+    }
 }

@@ -1,6 +1,7 @@
 Library/
 Temp/
 obj/
+dlls/
 .vs/
 Testbed.sln
 Assembly-CSharp.csproj
