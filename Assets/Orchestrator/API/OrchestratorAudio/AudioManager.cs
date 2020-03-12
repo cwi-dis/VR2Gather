@@ -5,6 +5,19 @@ using OrchestratorWrapping;
 
 public class AudioManager : MonoBehaviour
 {
+    public static AudioManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new GameObject("AudioManager").AddComponent<AudioManager>();
+            }
+            return instance;
+        }
+    }
+
+    private static AudioManager instance;
     private AudioRecorder recorder;
     private List<AudioReceiver> receivers = new List<AudioReceiver>();
 
@@ -39,37 +52,61 @@ public class AudioManager : MonoBehaviour
 
     private void SubscribeToOrchestratorEvents()
     {
-        OrchestratorController.Instance.OnSessionJoinedEvent += StartRecordAudio;
-        OrchestratorController.Instance.OnLeaveSessionEvent += StopRecordAudio;
-        OrchestratorController.Instance.OnUserJoinSessionEvent += StartListeningAudio;
-        OrchestratorController.Instance.OnUserLeaveSessionEvent += StopListeningAudio;
+        OrchestratorController.Instance.OnSessionJoinedEvent += StartRecord;
+        OrchestratorController.Instance.OnLeaveSessionEvent += StopRecord;
+        OrchestratorController.Instance.OnUserJoinSessionEvent += StartListening;
+        OrchestratorController.Instance.OnUserLeaveSessionEvent += StopListening;
+    }
+
+    #endregion
+
+    #region Public
+
+    public void StartRecordAudio()
+    {
+        StartRecord();
+    }
+
+    public void StopRecordAudio()
+    {
+        StopRecord();
+    }
+
+    public void StartListeningAudio2(string pUserID)
+    {
+        StartListening(pUserID);
+    }
+
+    public void StopListeningAudio2(string pUserID)
+    {
+        StopListening(pUserID);
     }
 
     #endregion
 
     #region Record Audio
 
-    private void StartRecordAudio()
+    private void StartRecord()
     {
         recorder.StartRecordAudio();
     }
 
-    private void StopRecordAudio()
+    private void StopRecord()
     {
         recorder.StopRecordAudio();
-        StopListeningAudio();
+        StopListening();
     }
 
     #endregion
 
     #region Listen Audio
 
-    private void StartListeningAudio(string pUserID)
+    private void StartListening(string pUserID)
     {
         InstantiateAudioListener(pUserID);
     }
 
-    private void StopListeningAudio(string pUserID = "")
+    private void StopListening(string pUserID = "")
     {
         for(int i=0; i<receivers.Count; i++)
         {
