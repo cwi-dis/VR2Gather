@@ -35,7 +35,6 @@ public class NetController : MonoBehaviour {
     public void Connect() {
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
-        OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
 
 
@@ -44,8 +43,6 @@ public class NetController : MonoBehaviour {
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
-        //OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioHandler;
-        OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
         OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
         OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
         OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
@@ -56,12 +53,12 @@ public class NetController : MonoBehaviour {
     }
 
     public void OnOrchestratorRequest(string pRequest) {
-        Debug.Log($"OnOrchestratorRequest {pRequest}");
+    //    Debug.Log($"OnOrchestratorRequest {pRequest}");
     }
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse) {
-        Debug.Log($"OnOrchestratorResponse {pResponse}");
+    //    Debug.Log($"OnOrchestratorResponse {pResponse}");
     }
 
 
@@ -75,7 +72,6 @@ public class NetController : MonoBehaviour {
 
     private void OnGetUsersHandler(User[] users) {
         if (users != null && users.Length > 0) {
-            Debug.Log($"-----> OnGetUsersHandler ({users.Length})");
             for (int i = 0; i < users.Length; ++i) {
                 if (users[i].userName == userName) {
                     OrchestratorController.Instance.GetUserInfo(users[i].userId);
@@ -86,7 +82,6 @@ public class NetController : MonoBehaviour {
     string UserID;
     private void OnGetUserInfoHandler(User user) {
         if (user != null) {
-            Debug.Log($"-----> OnGetUserInfoHandler ({user.userName})");
             UserID = user.userId;
             OrchestratorController.Instance.SelfUser = user;
             OrchestratorController.Instance.GetScenarios();
@@ -95,7 +90,6 @@ public class NetController : MonoBehaviour {
     private void OnGetScenariosHandler(Scenario[] scenarios) {
         if (scenarios.Length > 0) {
             scenarioToConnect = scenarios[0];
-            Debug.Log($"OnGetScenariosHandler ({scenarioToConnect.scenarioName})");
             OrchestratorController.Instance.GetSessions();
         }
     }
@@ -105,80 +99,45 @@ public class NetController : MonoBehaviour {
 
     private void OnGetSessionsHandler(Session[] sessions) {
         if (sessions != null && sessions.Length > 0) {
-            Debug.Log($"-----> OnGetSessionsHandler {sessions.Length}");
+            for (int i = 0; i < sessions.Length; ++i) {
+                if (sessions[i].sessionId.StartsWith("NetController_")) {
+                    OrchestratorController.Instance.JoinSession(sessions[i].sessionId);
+                    break;
+                }
+            }
         } else {
-            Debug.Log($"-----> OnGetScenariosHandler (AddSession({scenarioToConnect.scenarioId}, NetController, Session test) )");
             OrchestratorController.Instance.AddSession( scenarioToConnect.scenarioId, $"NetController_{Random.Range(0,1000)}", "Session test.");
         }
     }
     Session mySession;
-    private void OnAddSessionHandler(Session session) 
-    {
+    private void OnAddSessionHandler(Session session) {
         mySession = session;
         // Here you should store the retrieved session.
         if (session != null) {
-            Debug.Log($"OnAddSessionHandler {session.sessionId}");
             SubscribeToBinaryChannel();
             SendBinaryData();
-        } else
-            Debug.Log($"OnAddSessionHandler null");
-    }
-
-    //useless
-    private void OnGetScenarioHandler(ScenarioInstance scenario)
-    {
-        //Debug.Log($"OnGetScenarioHandler {scenario.sessionId} {mySession.sessionId}");
-        // Here you can join the stored session as no commands calls are proceeded.
-        //OrchestratorController.Instance.JoinSession(scenario.sessionId);
-        /*
-        if (session != null)
-        {
-            Debug.Log($"OnAddSessionHandler {session.sessionId}");
-            //            SubscribeToBinaryChannel();
-            OrchestratorController.Instance.JoinSession(session.sessionId);
-        }
-        else
-            Debug.Log($"OnAddSessionHandler null");
-         */
-    }
-
-    private void OnGetRoomsHandler(Room[] rooms)
-    {
-        if(mySession != null)
-        {
-            Debug.Log($"-------> OnGetRoomsHandler {rooms.Length}");
-            //SubscribeToBinaryChannel();
-
-            // OrchestratorController.Instance.JoinSession(mySession.sessionId);
-        } else Debug.Log($"-------> OnGetRoomsHandler  null");
+        } 
     }
 
     private void OnJoinSessionHandler(Session session) {
-        if (session != null)
-        {
-            Debug.Log($"-------> OnJoinSessionHandler {session.sessionId}");
+        if (session != null) {
             SubscribeToBinaryChannel();
-        }
-        else Debug.Log($"-------> OnJoinSessionHandler null");
+            SendBinaryData();
+        } 
     }
 
-    private void OnUserJoinedSessionHandler(string userID) {
-        Debug.Log($"-------> OnUserJoinedSessionHandler {userID}");
-    }
-    //string dataChannel;
+    string binaryDataChannelName;
     private void SubscribeToBinaryChannel() {
 
-        //  dataChannel = $"BINARYTATA_{Random.Range(0, 1000)}";
-        OrchestratorWrapper.instance.DeclareDataStream("BINARYDATA");
-        OrchestratorWrapper.instance.RegisterForDataStream(UserID, "BINARYDATA");
+        binaryDataChannelName = $"BINARYTATA_{Random.Range(0, 1000)}";
+        OrchestratorWrapper.instance.DeclareDataStream(binaryDataChannelName);
+        OrchestratorWrapper.instance.RegisterForDataStream(UserID, binaryDataChannelName);
         OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
     }
 
-    private void SendBinaryData()
-    {
+    private void SendBinaryData() {
         byte[] data = new byte[] { 1, 2, 3, 4, 5 };
-        OrchestratorWrapper.instance.SendData("BINARYDATA", data);
-        Debug.Log($"-------> SendingBinaryData {data.Length}");
+        OrchestratorWrapper.instance.SendData(binaryDataChannelName, data);
     }
 
     private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
@@ -193,22 +152,17 @@ public class NetController : MonoBehaviour {
     }
 
     public void Disconnect() {
-        OrchestratorWrapper.instance.UnregisterFromDataStream(UserID, "BINARYDATA");
-        OrchestratorWrapper.instance.RemoveDataStream("BINARYDATA");
+        OrchestratorWrapper.instance.UnregisterFromDataStream(UserID, binaryDataChannelName);
+        OrchestratorWrapper.instance.RemoveDataStream(binaryDataChannelName);
         connection?.Close();
     }
-
+/*
     void Update() {
         LocalClock = Time.realtimeSinceStartup;
         NetClock = LocalClock + OffsetClock;
         connection?.Update();
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            SendBinaryData();
-        }
     }
-
+*/
     private void OnDestroy() {
         Disconnect();
     }
