@@ -35,7 +35,7 @@ namespace Workers
             material.SetMatrix("_Transform", transform.localToWorldMatrix);
             material.SetPass(0);
 
-            Graphics.DrawProcedural(MeshTopology.Points, pointCount, 1);
+            Graphics.DrawProceduralNow(MeshTopology.Points, pointCount, 1);
         }
 
         public void OnDestroy() {
