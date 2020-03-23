@@ -22,4 +22,21 @@ MonoBehaviour:
   - Assets/Entropy/TVSet/Geo/Male.FBX
   - Assets/Entropy/TVSet/Geo/Props/Props_TV_Set.fbx
   - Assets/Entropy/TVSet/Geo/Props/PanelTras.FBX
-  modifiedAssetPaddingHash: aaf8cc2e28ed28a38ba46841a6ac21ecb942f501323fd3d9e55031ee7c8f1ac29c06e6e6
+  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
+  - Assets/Pilots/Pilot2/Geo/V2/TV_Set02.fbx
+  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_01.fbx"
+  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_02.fbx"
+  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_03.fbx"
+  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set_02.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/PanelTras.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos1.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Techo.fbx
+  - Assets/Pilots/Pilot2/Geo/tube.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/cylinder.fbx
+  modifiedAssetPaddingHash: aaf8cc2e28ed28a38ba46841a6ac21ecb942f501323fd3d9e55031ee7c8f1ac29c06e6e6363fd3d97e8f1ac281d73af4999cc3f6b82bfd9a6e24a7bc353fd3d931da72aa471df3d3323fd3d9f58126fc3f3fd3d9363fd3d9363fd3d9363fd3d93e3fd3d9383fd3d9
