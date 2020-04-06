@@ -27,6 +27,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
+            decoder?.free();
             decoder = null;
             Debug.Log("PCDecoder Stopped");
         }

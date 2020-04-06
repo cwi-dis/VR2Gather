@@ -23,8 +23,6 @@ public class cwipc
         public int tilenumber;         /**< 0 for encoding full pointclouds, > 0 for selecting a single tile to encode */
         public float voxelsize;        /**< If non-zero run voxelizer with this cell size to get better tiled pointcloud */
     };
-
-
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
@@ -63,7 +61,6 @@ public class cwipc
         internal extern static uint cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, IntPtr tileinfo);
 
     }
-
     private class _API_cwipc_realsense2
     {
         const string myDllName = "cwipc_realsense2";
@@ -72,7 +69,6 @@ public class cwipc
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
     }
-
     private class _API_cwipc_codec
     {
         const string myDllName = "cwipc_codec";
@@ -114,222 +110,119 @@ public class cwipc
 
     }
 
-    public class pointcloud
-    {
-        protected System.IntPtr obj;
-        protected object objLock = new object();
-
-        internal pointcloud(System.IntPtr _obj)
-        {
-            if (_obj == System.IntPtr.Zero)
-            {
-                throw new System.Exception("cwipc_pointcloud: constructor called with null pointer");
-            }
-            obj = _obj;
-        }
-
-        protected pointcloud()
-        {
-            throw new System.Exception("cwipc_pointcloud: default constructor called");
+    public class pointcloud : BaseMemoryChunk<System.IntPtr> {
+        internal pointcloud(System.IntPtr _pointer): base(_pointer) {
         }
 
         ~pointcloud() {
             free();
         }
 
-        public void free() {
-            lock (objLock)
-            {
-                if (obj != System.IntPtr.Zero)
-                {
-                    _API_cwipc_util.cwipc_free(obj);
-                    obj = System.IntPtr.Zero;
-                }
-            }
+        protected override void onfree() {
+            _API_cwipc_util.cwipc_free(pointer);
         }
 
-
-        public void Set(System.IntPtr _obj) {
-            if ( obj != System.IntPtr.Zero)  _API_cwipc_util.cwipc_free(obj);
-            obj = _obj;
+        public UInt64 timestamp()         {
+            return _API_cwipc_util.cwipc_timestamp(pointer);
         }
 
-        public UInt64 timestamp()
-        {
-            return _API_cwipc_util.cwipc_timestamp(obj);
+        public int count() {
+            return (int)_API_cwipc_util.cwipc_count(pointer);
         }
 
-        public int count()
-        {
-            return (int)_API_cwipc_util.cwipc_count(obj);
+        public float cellsize() {
+            return _API_cwipc_util.cwipc_cellsize(pointer);
         }
 
-        public float cellsize()
-        {
-            return _API_cwipc_util.cwipc_cellsize(obj);
+        public int get_uncompressed_size() {
+            return (int)_API_cwipc_util.cwipc_get_uncompressed_size(pointer);
         }
 
-        public int get_uncompressed_size()
-        {
-            return (int)_API_cwipc_util.cwipc_get_uncompressed_size(obj);
+        public int copy_uncompressed(System.IntPtr data, int size) {
+            return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (System.IntPtr)size);
         }
 
-        public int copy_uncompressed(System.IntPtr data, int size)
-        {
-            return _API_cwipc_util.cwipc_copy_uncompressed(obj, data, (System.IntPtr)size);
-        }
-
-        internal System.IntPtr _intptr()
-        {
-            return obj;
+        internal System.IntPtr _intptr() {
+            return pointer;
         }
     }
 
-    public class source
-    {
-        protected System.IntPtr obj;
-        protected object objLock = new object();
-
-        internal source(System.IntPtr _obj)
-        {
-            if (_obj == System.IntPtr.Zero)
-            {
-                throw new System.Exception("cwipc_source: constructor called with null pointer");
-            }
-            obj = _obj;
+    public class source : BaseMemoryChunk<System.IntPtr> {
+        internal source(System.IntPtr _pointer) : base(_pointer) {
         }
 
-        protected source()
-        {
-            throw new System.Exception("cwipc_source: default constructor called");
+        protected override void onfree() {
+            _API_cwipc_util.cwipc_source_free(pointer);
         }
-
-        public void free() {
-            lock (objLock)
-            {
-                if (obj != System.IntPtr.Zero)
-                {
-                    _API_cwipc_util.cwipc_source_free(obj);
-                    obj = System.IntPtr.Zero;
-                }
-            }
-        }
+        /*
         ~source() {
             free();
         }
-
-        public pointcloud get()
-        {
-            System.IntPtr pc = _API_cwipc_util.cwipc_source_get(obj);
+        */
+        public pointcloud get() {
+            System.IntPtr pc = _API_cwipc_util.cwipc_source_get(pointer);
             if (pc == System.IntPtr.Zero) return null;
             return new pointcloud(pc);
         }
 
-        public bool eof()
-        {
-            return _API_cwipc_util.cwipc_source_eof(obj);
+        public bool eof() {
+            return _API_cwipc_util.cwipc_source_eof(pointer);
         }
 
-        public bool available(bool wait)
-        {
-            return _API_cwipc_util.cwipc_source_available(obj, wait);
+        public bool available(bool wait) {
+            return _API_cwipc_util.cwipc_source_available(pointer, wait);
         }
     }
 
-    public class decoder : source
-    {
-
-        internal decoder(System.IntPtr _obj) : base(_obj)
-        {
-            if (_obj == System.IntPtr.Zero)
-            {
+    public class decoder : source {
+        internal decoder(System.IntPtr _obj) : base(_obj) {
+            if (_obj == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc_decoder: constructor called with null pointer");
             }
         }
 
-        protected decoder()
-        {
-            throw new System.Exception("cwipc_decoder: default constructor called");
-        }
-
-        public void feed(IntPtr compFrame, int len)
-        {
-            _API_cwipc_codec.cwipc_decoder_feed(obj, compFrame, len);
+        public void feed(IntPtr compFrame, int len) {
+            _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
         }
 
     }
 
 
-    public class encoder
-    {
-        protected System.IntPtr obj;
-        protected object objLock = new object();
-
-        internal encoder(System.IntPtr _obj)
-        {
-            if (_obj == System.IntPtr.Zero)
-            {
-                throw new System.Exception("cwipc_encoder: constructor called with null pointer");
-            }
-            obj = _obj;
+    public class encoder : source {
+        internal encoder(System.IntPtr _obj):base(_obj) {
         }
-
-        protected encoder()
-        {
-            throw new System.Exception("cwipc_encoder: default constructor called");
-        }
-
-        public void free() {
-            lock (objLock)
-            {
-                if (obj != System.IntPtr.Zero)
-                {
-                    _API_cwipc_codec.cwipc_encoder_free(obj);
-                    obj = System.IntPtr.Zero;
-                }
-            }
-        }
-
+/*
         ~encoder() {
             free();
         }
-
-        public void feed(pointcloud pc)
-        {
-            System.IntPtr pcPtr = pc._intptr();
-            _API_cwipc_codec.cwipc_encoder_feed(obj, pcPtr);
+*/
+        public void feed(pointcloud pc) {
+            _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
         }
 
-        public bool available(bool wait)
-        {
-            return _API_cwipc_codec.cwipc_encoder_available(obj, wait);
+        new public bool available(bool wait) {
+            return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
         }
 
-        public int get_encoded_size()
-        {
-            return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(obj);
+        public int get_encoded_size() {
+            return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer);
         }
 
-        public bool copy_data(System.IntPtr data, int size)
-        {
-            return _API_cwipc_codec.cwipc_encoder_copy_data(obj, data, (System.IntPtr)size);
+        public bool copy_data(System.IntPtr data, int size) {
+            return _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (System.IntPtr)size);
         }
 
-        public bool at_gop_boundary()
-        {
-            return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(obj);
+        public bool at_gop_boundary() {
+            return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer);
         }
 
     }
         
-    public static source synthetic()
-    {
+    public static source synthetic() {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(ref errorPtr);
-        if (rdr == System.IntPtr.Zero)
-        {
-            if (errorPtr == System.IntPtr.Zero)
-            {
+        if (rdr == System.IntPtr.Zero) {
+            if (errorPtr == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc.synthetic: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
@@ -337,14 +230,11 @@ public class cwipc
         return new source(rdr);
     }
 
-    public static source realsense2(string filename)
-    {
+    public static source realsense2(string filename) {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_realsense2.cwipc_realsense2(filename, ref errorPtr);
-        if (rdr == System.IntPtr.Zero)
-        {
-            if (errorPtr == System.IntPtr.Zero)
-            {
+        if (rdr == System.IntPtr.Zero) {
+            if (errorPtr == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc.realsense2: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
@@ -352,14 +242,11 @@ public class cwipc
         return new source(rdr);
     }
 
-    public static decoder new_decoder()
-    {
+    public static decoder new_decoder() {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr dec = _API_cwipc_codec.cwipc_new_decoder(ref errorPtr);
-        if (dec == System.IntPtr.Zero)
-        {
-            if (errorPtr == System.IntPtr.Zero)
-            {
+        if (dec == System.IntPtr.Zero) {
+            if (errorPtr == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc.new_decoder: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
@@ -368,14 +255,11 @@ public class cwipc
 
     }
 
-    public static encoder new_encoder(encoder_params par)
-    {
+    public static encoder new_encoder(encoder_params par) {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr enc = _API_cwipc_codec.cwipc_new_encoder(_API_cwipc_codec.CWIPC_ENCODER_PARAM_VERSION, ref par, ref errorPtr);
-        if (enc == System.IntPtr.Zero)
-        {
-            if (errorPtr == System.IntPtr.Zero)
-            {
+        if (enc == System.IntPtr.Zero) {
+            if (errorPtr == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc.new_encoder: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
@@ -384,20 +268,17 @@ public class cwipc
 
     }
 
-    public static pointcloud downsample(pointcloud pc, float voxelSize)
-    {
+    public static pointcloud downsample(pointcloud pc, float voxelSize) {
         System.IntPtr pcPtr = pc._intptr();
         System.IntPtr rvPtr = _API_cwipc_codec.cwipc_downsample(pcPtr, voxelSize);
         if (rvPtr == System.IntPtr.Zero) return null;
         return new pointcloud(rvPtr);
     }
 
-    public static pointcloud tilefilter(pointcloud pc, int tileNum)
-    {
+    public static pointcloud tilefilter(pointcloud pc, int tileNum) {
         System.IntPtr pcPtr = pc._intptr();
         System.IntPtr rvPtr = _API_cwipc_codec.cwipc_tilefilter(pcPtr, tileNum);
         if (rvPtr == System.IntPtr.Zero) return null;
         return new pointcloud(rvPtr);
     }
-
 }

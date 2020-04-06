@@ -31,7 +31,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            encoder.free();
+            encoder?.free();
             encoder = null;
             Debug.Log("PCEncoder Stopped");
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
@@ -43,6 +43,7 @@ namespace Workers {
                 lock (token) {
                     if (token.currentPointcloud != null) {
                         encoder.feed(token.currentPointcloud);
+                        token.currentPointcloud.free();
                     }
                     if (encoder.available(true)) {
                         unsafe {
