@@ -34,7 +34,8 @@ abstract public class PilotController : MonoBehaviour {
     // Start is called before the first frame update
     public virtual void Start() {
         background = GameObject.Find("Background");
-        orchestrator = GameObject.Find("ManagerTest").GetComponent<OrchestrationWindow>();
+        GameObject managerTest = GameObject.Find("ManagerTest");
+        if(managerTest!=null) orchestrator = managerTest.GetComponent<OrchestrationWindow>();
         var tmp = Config.Instance;
     }
 
