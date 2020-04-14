@@ -112,33 +112,48 @@ public class cwipc
 
     public class pointcloud : BaseMemoryChunk {
         internal pointcloud(System.IntPtr _pointer): base(_pointer) {
+            if (_pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.pointcloud called with NULL pointer argument");
         }
 
         ~pointcloud() {
             free();
         }
+        
+        protected void _check()
+        {
+            if (pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.pointcloud method called after free()");
+
+        }
 
         protected override void onfree() {
+            _check();
             _API_cwipc_util.cwipc_free(pointer);
         }
 
-        public UInt64 timestamp()         {
+        public UInt64 timestamp() {
+            _check();
             return _API_cwipc_util.cwipc_timestamp(pointer);
         }
 
         public int count() {
+            _check();
             return (int)_API_cwipc_util.cwipc_count(pointer);
         }
 
         public float cellsize() {
+            _check();
             return _API_cwipc_util.cwipc_cellsize(pointer);
         }
 
         public int get_uncompressed_size() {
+            _check();
             return (int)_API_cwipc_util.cwipc_get_uncompressed_size(pointer);
         }
 
         public int copy_uncompressed(System.IntPtr data, int size) {
+            _check();
             return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (System.IntPtr)size);
         }
 
@@ -149,27 +164,41 @@ public class cwipc
 
     public class source : BaseMemoryChunk {
         internal source(System.IntPtr _pointer) : base(_pointer) {
+            if (_pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.source called with NULL pointer argument");
         }
 
         protected override void onfree() {
+            _check();
             _API_cwipc_util.cwipc_source_free(pointer);
         }
+
+        protected void _check()
+        {
+            if (pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.source method called after free()");
+
+        }
+
         /*
         ~source() {
             free();
         }
         */
         public pointcloud get() {
+            _check();
             System.IntPtr pc = _API_cwipc_util.cwipc_source_get(pointer);
             if (pc == System.IntPtr.Zero) return null;
             return new pointcloud(pc);
         }
 
         public bool eof() {
+            _check();
             return _API_cwipc_util.cwipc_source_eof(pointer);
         }
 
         public bool available(bool wait) {
+            _check();
             return _API_cwipc_util.cwipc_source_available(pointer, wait);
         }
     }
@@ -181,7 +210,15 @@ public class cwipc
             }
         }
 
+        protected void _check()
+        {
+            if (pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.decoder method called after free()");
+
+        }
+
         public void feed(IntPtr compFrame, int len) {
+            _check();
             _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
         }
 
@@ -190,29 +227,43 @@ public class cwipc
 
     public class encoder : source {
         internal encoder(System.IntPtr _obj):base(_obj) {
+            if (pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.pointcloud called with NULL pointer argument");
         }
-/*
-        ~encoder() {
-            free();
+        protected void _check()
+        {
+            if (pointer == System.IntPtr.Zero)
+                throw new System.Exception("cwipc.encoder method called after free()");
+
         }
-*/
+
+        /*
+                ~encoder() {
+                    free();
+                }
+        */
         public void feed(pointcloud pc) {
+            _check();
             _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
         }
 
         new public bool available(bool wait) {
+            _check();
             return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
         }
 
         public int get_encoded_size() {
+            _check();
             return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer);
         }
 
         public bool copy_data(System.IntPtr data, int size) {
+            _check();
             return _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (System.IntPtr)size);
         }
 
         public bool at_gop_boundary() {
+            _check();
             return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer);
         }
 
