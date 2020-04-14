@@ -119,27 +119,27 @@ public class cwipc
         }
 
         protected override void onfree() {
-            _API_cwipc_util.cwipc_free(pointer);
+            if( pointer != IntPtr.Zero ) _API_cwipc_util.cwipc_free(pointer);
         }
 
         public UInt64 timestamp()         {
-            return _API_cwipc_util.cwipc_timestamp(pointer);
+            return pointer != IntPtr.Zero ? _API_cwipc_util.cwipc_timestamp(pointer):0;
         }
 
         public int count() {
-            return (int)_API_cwipc_util.cwipc_count(pointer);
+            return pointer != IntPtr.Zero ? (int)_API_cwipc_util.cwipc_count(pointer):0;
         }
 
         public float cellsize() {
-            return _API_cwipc_util.cwipc_cellsize(pointer);
+            return pointer != IntPtr.Zero ? _API_cwipc_util.cwipc_cellsize(pointer):0;
         }
 
         public int get_uncompressed_size() {
-            return (int)_API_cwipc_util.cwipc_get_uncompressed_size(pointer);
+            return pointer!=IntPtr.Zero?(int)_API_cwipc_util.cwipc_get_uncompressed_size(pointer):0;
         }
 
         public int copy_uncompressed(System.IntPtr data, int size) {
-            return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (System.IntPtr)size);
+            return pointer != IntPtr.Zero ? _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (System.IntPtr)size):0;
         }
 
         internal System.IntPtr _intptr() {
@@ -152,7 +152,7 @@ public class cwipc
         }
 
         protected override void onfree() {
-            _API_cwipc_util.cwipc_source_free(pointer);
+            if (pointer != IntPtr.Zero) _API_cwipc_util.cwipc_source_free(pointer);
         }
         /*
         ~source() {
@@ -160,17 +160,20 @@ public class cwipc
         }
         */
         public pointcloud get() {
-            System.IntPtr pc = _API_cwipc_util.cwipc_source_get(pointer);
-            if (pc == System.IntPtr.Zero) return null;
-            return new pointcloud(pc);
+            if (pointer != IntPtr.Zero) {
+                IntPtr pc = _API_cwipc_util.cwipc_source_get(pointer);
+                if (pc == System.IntPtr.Zero) return null;
+                return new pointcloud(pc);
+            }
+            return null;
         }
 
         public bool eof() {
-            return _API_cwipc_util.cwipc_source_eof(pointer);
+            return pointer != IntPtr.Zero ? _API_cwipc_util.cwipc_source_eof(pointer):false;
         }
 
         public bool available(bool wait) {
-            return _API_cwipc_util.cwipc_source_available(pointer, wait);
+            return pointer != IntPtr.Zero ? _API_cwipc_util.cwipc_source_available(pointer, wait):false;
         }
     }
 
@@ -182,7 +185,7 @@ public class cwipc
         }
 
         public void feed(IntPtr compFrame, int len) {
-            _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
+            if(pointer != IntPtr.Zero ) _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
         }
 
     }
@@ -197,23 +200,23 @@ public class cwipc
         }
 */
         public void feed(pointcloud pc) {
-            _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
+            if (pointer != IntPtr.Zero) _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
         }
 
         new public bool available(bool wait) {
-            return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
+            return pointer != IntPtr.Zero?_API_cwipc_codec.cwipc_encoder_available(pointer, wait):false;
         }
 
         public int get_encoded_size() {
-            return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer);
+            return pointer != IntPtr.Zero?(int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer):0;
         }
 
         public bool copy_data(System.IntPtr data, int size) {
-            return _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (System.IntPtr)size);
+            return pointer != IntPtr.Zero ? _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (System.IntPtr)size):false;
         }
 
         public bool at_gop_boundary() {
-            return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer);
+            return pointer != IntPtr.Zero ? _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer):false;
         }
 
     }

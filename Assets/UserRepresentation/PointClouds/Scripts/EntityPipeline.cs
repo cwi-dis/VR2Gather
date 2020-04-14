@@ -94,9 +94,16 @@ public class EntityPipeline : MonoBehaviour {
 
     // Update is called once per frame
     void OnDestroy() {
+    /*
         reader?.Stop();
         codec?.Stop();
         writer?.Stop();
         preparer?.Stop();
+    */
+        reader?.StopAndWait();
+        codec?.StopAndWait();
+        writer?.StopAndWait();
+        preparer?.StopAndWait();
+        BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }
