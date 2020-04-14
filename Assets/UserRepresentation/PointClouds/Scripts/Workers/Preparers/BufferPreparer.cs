@@ -37,6 +37,7 @@ namespace Workers
                             }
                             int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
                             token.currentPointcloud.free();
+                            token.currentPointcloud = null;
                             if (ret * 16 != currentSize) {
                                 Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
                             }

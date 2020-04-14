@@ -44,6 +44,7 @@ namespace Workers {
                     if (token.currentPointcloud != null) {
                         encoder.feed(token.currentPointcloud);
                         token.currentPointcloud.free();
+                        token.currentPointcloud = null;
                     }
                     if (encoder.available(true)) {
                         unsafe {
