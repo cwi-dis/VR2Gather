@@ -120,13 +120,6 @@ public class cwipc
             free();
         }
         
-        protected void _check()
-        {
-            if (pointer == System.IntPtr.Zero)
-                throw new System.Exception("cwipc.pointcloud method called after free()");
-
-        }
-
         protected override void onfree() {
             if( pointer != IntPtr.Zero ) _API_cwipc_util.cwipc_free(pointer);
         }
@@ -164,13 +157,6 @@ public class cwipc
 
         protected override void onfree() {
             if (pointer != IntPtr.Zero) _API_cwipc_util.cwipc_source_free(pointer);
-        }
-
-        protected void _check()
-        {
-            if (pointer == System.IntPtr.Zero)
-                throw new System.Exception("cwipc.source method called after free()");
-
         }
 
         /*
@@ -214,12 +200,6 @@ public class cwipc
         internal encoder(System.IntPtr _obj):base(_obj) {
             if (pointer == System.IntPtr.Zero)
                 throw new System.Exception("cwipc.pointcloud called with NULL pointer argument");
-        }
-        protected void _check()
-        {
-            if (pointer == System.IntPtr.Zero)
-                throw new System.Exception("cwipc.encoder method called after free()");
-
         }
 
         /*
