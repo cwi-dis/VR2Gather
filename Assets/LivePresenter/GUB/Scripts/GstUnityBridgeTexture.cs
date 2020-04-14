@@ -262,11 +262,10 @@ public class GstUnityBridgeTexture : MonoBehaviour
                                                           Mathf.Abs(mat.mainTextureScale.y) * (m_FlipY ? -1F : 1F)));
             }
             else
-            if (GetComponent<GUITexture>())
-            {
-                GetComponent<GUITexture>().texture = m_Texture;
-            }
+            /*
+            if (GetComponent<GUITexture>()) GetComponent<GUITexture>().texture = m_Texture;
             else
+            */
             {
                 Debug.LogWarning(string.Format("[{0}] There is no Renderer or guiTexture attached to this GameObject, and TargetMaterial is not set.", name + GetInstanceID()));
             }

@@ -2245,7 +2245,7 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
                     var mf = obj.GetComponent<MeshFilter>();
                     var tr = obj.GetComponent<Terrain>();
                     //if (((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.LightmapStatic) == 0) && areaLight==null) continue; // skip dynamic
-                    if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.LightmapStatic) == 0) continue; // skip dynamic
+                    if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.ContributeGI) == 0) continue; // skip dynamic
 
                     if (mr != null && mr.enabled && mf != null && mf.sharedMesh != null)
                     {
@@ -2589,7 +2589,7 @@ public class ftRenderLightmap : EditorWindow//ScriptableWizard
                 if (path != "") continue; // must belond to scene
                 //if ((obj.hideFlags & (HideFlags.DontSave|HideFlags.HideAndDontSave)) != 0) continue; // skip temp objects
                 //if (obj.tag == "EditorOnly") continue; // skip temp objects
-                if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.LightmapStatic) != 0) continue; // skip static
+                if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.ContributeGI) != 0) continue; // skip static
                 var mr = obj.GetComponent<MeshRenderer>();
                 var mf = obj.GetComponent<MeshFilter>();
                 if (mr == null || mf == null) continue; // must have visible mesh
