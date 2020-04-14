@@ -110,7 +110,7 @@ public class cwipc
 
     }
 
-    public class pointcloud : BaseMemoryChunk<System.IntPtr> {
+    public class pointcloud : BaseMemoryChunk {
         internal pointcloud(System.IntPtr _pointer): base(_pointer) {
         }
 
@@ -147,7 +147,7 @@ public class cwipc
         }
     }
 
-    public class source : BaseMemoryChunk<System.IntPtr> {
+    public class source : BaseMemoryChunk {
         internal source(System.IntPtr _pointer) : base(_pointer) {
         }
 

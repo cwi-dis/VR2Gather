@@ -48,16 +48,6 @@ namespace Workers {
                 Update();
                 System.Threading.Thread.Sleep(1);
             }
-            /*
-            // Wait to stop.
-            bool waitNext = false;
-            do{
-                waitNext = false;
-                for (int i = 0; i < nexts.Count; ++i)
-                    if (nexts[i].type != WorkerType.Init && nexts[i].bRunning)
-                        waitNext = true;
-            } while (waitNext) ;
-            */
             OnStop();
             isStopped = true;
         }
