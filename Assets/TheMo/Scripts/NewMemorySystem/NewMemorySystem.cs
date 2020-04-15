@@ -24,11 +24,6 @@ public class NewMemorySystem : MonoBehaviour
         reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
         encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, decoderQueue);
         decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
-
-//        reader.AddNext(preparer).AddNext(reader); // <- local render tine.
-//        reader.AddNext(encoder).AddNext(decoder).AddNext(preparer).AddNext(reader); // <- local render tine.
-
-        reader.token = new Workers.Token();
     }
 
     void OnDestroy() {

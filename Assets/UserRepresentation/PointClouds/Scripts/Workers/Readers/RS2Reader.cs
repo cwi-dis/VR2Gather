@@ -6,12 +6,12 @@ namespace Workers {
     public class RS2Reader : BaseWorker {
         cwipc.source reader;
         float voxelSize;
-        QueueThreadSafe preparerQueue;
-        QueueThreadSafe encoderQueue;
+        QueueThreadSafe outQueue;
+        QueueThreadSafe out2Queue;
 
-        public RS2Reader(Config._User._PCSelfConfig cfg, QueueThreadSafe _preparerQueue, QueueThreadSafe _encoderQueue=null) : base(WorkerType.Init) {
-            preparerQueue = _preparerQueue;
-            encoderQueue = _encoderQueue;
+        public RS2Reader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+            outQueue = _outQueue;
+            out2Queue = _out2Queue;
             voxelSize = cfg.voxelSize;
             try {
                 reader = cwipc.realsense2(cfg.configFilename);  
@@ -36,21 +36,17 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) {  // Wait for token
-                lock (token) {
-                    cwipc.pointcloud pc = reader.get();
-                    if (pc == null) return;
-                    if (voxelSize != 0) {
-                        var tmp = pc;
-                        pc = cwipc.downsample(tmp, voxelSize);
-                        tmp.free();
-                        if (pc== null)  throw new System.Exception($"Voxelating pointcloud with {voxelSize} got rid of all points?");
-                    }
-                    statsUpdate(pc.count());
-                    preparerQueue?.Enqueue( pc.AddRef() );
-                    if (encoderQueue!=null && encoderQueue.Count<2)  encoderQueue.Enqueue(pc.AddRef());
-                }
+            cwipc.pointcloud pc = reader.get();
+            if (pc == null) return;
+            if (voxelSize != 0) {
+                var tmp = pc;
+                pc = cwipc.downsample(tmp, voxelSize);
+                tmp.free();
+                if (pc== null)  throw new System.Exception($"Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
+            statsUpdate(pc.count());
+            outQueue?.Enqueue( pc.AddRef() );
+            if (out2Queue!=null && out2Queue.Count<2)  out2Queue.Enqueue(pc.AddRef());
         }
 
         System.DateTime statsLastTime;
