@@ -25,12 +25,18 @@ public class BaseMemoryChunkReferences {
 }
 
 public class BaseMemoryChunk {
+    const bool debugAllocations = true; 
     IntPtr          _pointer;
     int             refCount;
 
+    protected void _debugPrint(string message)
+    {
+        Debug.Log($"BaseMemoryChunk {this.GetType().Name}({this.GetHashCode()}): {message}");
+    }
     protected BaseMemoryChunk(IntPtr _pointer) {
-        if (_pointer== IntPtr.Zero)  throw new Exception("BaseMemoryChunk: constructor called with null pointer");
+        if (_pointer== IntPtr.Zero)  throw new Exception($"{this.GetType().Name} {this.GetHashCode()}: constructor called with null pointer");
         this._pointer = _pointer;
+        if (debugAllocations) _debugPrint("allocated");
         refCount = 0;
         BaseMemoryChunkReferences.AddReference( this.GetType() );
     }
@@ -39,18 +45,36 @@ public class BaseMemoryChunk {
         throw new Exception("BaseMemoryChunk: default constructor called");
     }
 
-    public IntPtr reference { get {  refCount++; return _pointer; } }
-    public IntPtr pointer { get { return _pointer; } }
+    public IntPtr reference { 
+        get {
+            if (_pointer == IntPtr.Zero) throw new Exception($"{this.GetType().Name} {this.GetHashCode()}: reference called after free()");
+            refCount++;
+            if (debugAllocations) _debugPrint($"reference, count={refCount}");
+            return _pointer; 
+        } 
+    }
+    public IntPtr pointer { 
+        get {
+            if (_pointer == IntPtr.Zero) throw new Exception($"{this.GetType().Name} {this.GetHashCode()}: pointer called after free()");
+            return _pointer; 
+        } 
+    }
 
     public void free() {
-        if( --refCount < 1) {
+        if (_pointer == IntPtr.Zero) throw new Exception($"{this.GetType().Name} {this.GetHashCode()}: free() called after free()");
+        if ( --refCount < 1) {
             lock (this) {
+                if (debugAllocations) _debugPrint($"free, count={refCount}, onfree()");
                 if (_pointer!=IntPtr.Zero) {
                     onfree();
                     _pointer = IntPtr.Zero;
                     BaseMemoryChunkReferences.DeleteReference(this.GetType());
                 }
             }
+        } else
+        {
+            if (debugAllocations) _debugPrint($"free, count={refCount}");
+
         }
     }
 
