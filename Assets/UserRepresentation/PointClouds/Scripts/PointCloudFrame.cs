@@ -41,7 +41,7 @@ public class PointCloudFrame
                 if (size > byteArray.Length)
                 {
                     if (byteArray.Length != 0) byteArray.Dispose();
-                    byteArray = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.TempJob);
+                    byteArray = new Unity.Collections.NativeArray<byte>(size, Unity.Collections.Allocator.Persistent);
 
                 }
                 System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
@@ -87,7 +87,7 @@ public class PointCloudFrame
         {
             int size = pc.get_uncompressed_size(); 
             var sizeT = Marshal.SizeOf(typeof(PointCouldVertex));
-            vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.TempJob);
+            vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(size / sizeT, Unity.Collections.Allocator.Persistent);
             System.IntPtr ptr = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
             int ret = pc.copy_uncompressed(ptr, size);
         }

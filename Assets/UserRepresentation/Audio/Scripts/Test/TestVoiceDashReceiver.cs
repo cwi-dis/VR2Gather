@@ -26,7 +26,7 @@ public class TestVoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
         try {
-            reader = new Workers.SUBReader(cfg);
+            reader = new Workers.SUBReader(cfg, null, null); // TODO: Fix new Queue mode.
             codec = new Workers.VoiceDecoder();
             preparer = new Workers.AudioPreparer();
             reader.AddNext(codec).AddNext(preparer).AddNext(reader);

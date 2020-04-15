@@ -6,8 +6,12 @@ namespace Workers {
     public class RS2Reader : BaseWorker {
         cwipc.source reader;
         float voxelSize;
+        QueueThreadSafe preparerQueue;
+        QueueThreadSafe encoderQueue;
 
-        public RS2Reader(Config._User._PCSelfConfig cfg) : base(WorkerType.Init) {
+        public RS2Reader(Config._User._PCSelfConfig cfg, QueueThreadSafe _preparerQueue, QueueThreadSafe _encoderQueue=null) : base(WorkerType.Init) {
+            preparerQueue = _preparerQueue;
+            encoderQueue = _encoderQueue;
             voxelSize = cfg.voxelSize;
             try {
                 reader = cwipc.realsense2(cfg.configFilename);  
@@ -25,34 +29,26 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            if (currentPointCloud != null) currentPointCloud.free();
             reader?.free();
             reader = null;
             Debug.Log("RS2Reader Stopped");
         }
 
-        cwipc.pointcloud currentPointCloud;
         protected override void Update() {
             base.Update();
             if (token != null) {  // Wait for token
                 lock (token) {
-                    if (currentPointCloud != null) currentPointCloud.free();
-                    currentPointCloud = reader.get();
-                    if (currentPointCloud == null) return;
+                    cwipc.pointcloud pc = reader.get();
+                    if (pc == null) return;
                     if (voxelSize != 0) {
-                        int oldCount = currentPointCloud.count();
-                        var tmp = currentPointCloud;
-                        currentPointCloud = cwipc.downsample(tmp, voxelSize);
+                        var tmp = pc;
+                        pc = cwipc.downsample(tmp, voxelSize);
                         tmp.free();
-                        if (currentPointCloud == null) {
-                            Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
-                            return;
-                        }
-                        //Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {currentPointCloud.count()} point, cellsize={currentPointCloud.cellsize()}");
+                        if (pc== null)  throw new System.Exception($"Voxelating pointcloud with {voxelSize} got rid of all points?");
                     }
-                    statsUpdate(currentPointCloud.count());
-                    token.currentPointcloud = currentPointCloud;
-                    Next();
+                    statsUpdate(pc.count());
+                    preparerQueue?.Enqueue( pc.AddRef() );
+                    if (encoderQueue!=null && encoderQueue.Count<2)  encoderQueue.Enqueue(pc.AddRef());
                 }
             }
         }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// TODO: Fix new Queue mode.
 public class VoiceDashSender : MonoBehaviour
 {
     Workers.BaseWorker reader;
@@ -12,7 +14,7 @@ public class VoiceDashSender : MonoBehaviour
     public void Init(Config._User._PCSelfConfig._Bin2Dash cfg, string _url = "") {
         codec = new Workers.VoiceEncoder();
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
-        writer = new Workers.B2DWriter(cfg, _url);
+        writer = new Workers.B2DWriter(cfg, _url, null);
         reader.AddNext(codec).AddNext(writer).AddNext(reader);
         reader.token = new Workers.Token(1);
     }

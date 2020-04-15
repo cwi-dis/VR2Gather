@@ -32,11 +32,15 @@ namespace Workers {
         object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
 
+        QueueThreadSafe outQueue;
+        QueueThreadSafe out2Queue;
 
-        public SUBReader(Config._User._SUBConfig cfg, string _url = "") : base(WorkerType.Init) { // Orchestrator Based SUB
+        public SUBReader(Config._User._SUBConfig cfg, string _url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
             needsAudio = null;
-            if (_url == string.Empty)
+            outQueue = _outQueue;
+            out2Queue = _out2Queue;
+            if (string.IsNullOrEmpty(_url) )
                 url = cfg.url;
             else
                 url = _url + cfg.streamName;
@@ -180,22 +184,10 @@ namespace Workers {
                                                                                                                    // If we are not playing or if we didn't receive anything we restart after 1000 failures.
                                                                                                                    //UnsuccessfulCheck(bytesNeeded);
                         if (bytesNeeded != 0) {
-                            if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
-                                currentBufferArray = new byte[(int)bytesNeeded];
-                                gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
-                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
-                            }
-                            int bytesRead = subHandle.grab_frame(1 - streamNumber, currentBuffer, bytesNeeded, ref info);
+                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                            int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
-                                lock (token) {
-                                    // All ok, yield to the next process
-                                    token.currentBuffer = currentBuffer;
-                                    token.currentByteArray = currentBufferArray;
-                                    token.currentSize = bytesRead;
-                                    token.info = info;
-                                    token.isVideo = false;
-                                }
-                                Next();
+                                out2Queue.Enqueue(mc);
                                 return;
                             }
                             else
@@ -208,23 +200,12 @@ namespace Workers {
                                                                                                                // If we are not playing or if we didn't receive anything we restart after 1000 failures.
                         UnsuccessfulCheck(bytesNeeded);
                         if (bytesNeeded != 0) {
-                            if (currentBufferArray == null || bytesNeeded > currentBufferArray.Length) {
-                                currentBufferArray = new byte[(int)bytesNeeded];
-                                gch = System.Runtime.InteropServices.GCHandle.Alloc(currentBufferArray, System.Runtime.InteropServices.GCHandleType.Pinned);
-                                currentBuffer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(currentBufferArray, 0);
-                            }
+                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
                             int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
                             if (bytesRead == bytesNeeded) {
                                 // All ok, yield to the next process
                                 statsUpdate(bytesRead);
-                                lock (token) {
-                                    token.currentBuffer = currentBuffer;
-                                    token.currentByteArray = currentBufferArray;
-                                    token.currentSize = bytesRead;
-                                    token.info = info;
-                                    token.isVideo = true;
-                                }
-                                Next();
+                                outQueue.Enqueue(mc);
                                 return;
                             }
                             else
@@ -239,16 +220,13 @@ namespace Workers {
         double statsTotalBytes;
         double statsTotalPackets;
 
-        public void statsUpdate(int nBytes)
-        {
-            if (statsLastTime == null)
-            {
+        public void statsUpdate(int nBytes) {
+            if (statsLastTime == null) {
                 statsLastTime = System.DateTime.Now;
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
-            {
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
                 Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: SubReader: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;

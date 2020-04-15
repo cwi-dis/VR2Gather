@@ -11,6 +11,11 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  preparer;
     MonoBehaviour       render;
 
+    QueueThreadSafe preparerQueue = new QueueThreadSafe();
+    QueueThreadSafe codecQueue = new QueueThreadSafe();
+    QueueThreadSafe writerQueue = new QueueThreadSafe();
+
+
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
     /// <param name="parent"> Transform parent where attach it </param>
@@ -19,13 +24,14 @@ public class EntityPipeline : MonoBehaviour {
     public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
         var temp = Config.Instance;
         Config._PCs configTransform = temp.PCs;
+        cfg.Render.forceMesh = true;
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
-            preparer = new Workers.MeshPreparer();
+            preparer = new Workers.MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
             ((Workers.PointMeshRenderer)render).preparer = (Workers.MeshPreparer)preparer;
         }
         else { // Buffer
-            preparer = new Workers.BufferPreparer();
+            preparer = new Workers.BufferPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
@@ -33,17 +39,16 @@ public class EntityPipeline : MonoBehaviour {
         int forks = 1;
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
-                reader = new Workers.RS2Reader(cfg.PCSelfConfig);
-                reader.AddNext(preparer).AddNext(reader); // <- local render tine.
-
+                reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue, codecQueue);
+                //reader.AddNext(preparer).AddNext(reader); // <- local render tine.
                 try {
-                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder);
+                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, codecQueue, writerQueue);
                 }
                 catch (System.EntryPointNotFoundException) {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                 }
                 try {
-                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, url_pcc);
+                    writer = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, url_pcc, writerQueue);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -52,6 +57,7 @@ public class EntityPipeline : MonoBehaviour {
                     reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
                     forks = 2;
                 }
+                /*
                 if (temp.useAudio) {
                     try {
                         gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
@@ -60,18 +66,18 @@ public class EntityPipeline : MonoBehaviour {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
                 }
+                */
                 break;
             case "pcsub":
-                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc);
-                codec = new Workers.PCDecoder();
-                reader.AddNext(codec).AddNext(preparer).AddNext(reader); //PC pipeline
+                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc, codecQueue); // TODO: Fix new Queue mode.
+                codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 if (temp.useAudio) {
                     gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
                 }
                 break;
             case "net":
                 reader = new Workers.NetReader(cfg.NetConfig);
-                codec = new Workers.PCDecoder();
+                codec = new Workers.PCDecoder(codecQueue,null);// TODO: Fix new Queue mode.
                 reader.AddNext(codec).AddNext(preparer).AddNext(reader);
                 break;
         }        
