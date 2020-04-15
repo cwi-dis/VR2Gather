@@ -39,7 +39,7 @@ public class BaseMemoryChunk {
         throw new Exception("BaseMemoryChunk: default constructor called");
     }
 
-    public IntPtr reference { get {  refCount++; return _pointer; } }
+    public BaseMemoryChunk AddRef() { refCount++; return this; }
     public IntPtr pointer { get { return _pointer; } }
 
     public void free() {
