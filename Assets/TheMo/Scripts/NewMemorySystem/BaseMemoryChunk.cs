@@ -45,12 +45,12 @@ public class BaseMemoryChunk {
         throw new Exception("BaseMemoryChunk: default constructor called");
     }
 
-    public IntPtr reference { 
+    public BaseMemoryChunk AddRef { 
         get {
             if (_pointer == IntPtr.Zero) throw new Exception($"{this.GetType().Name} {this.GetHashCode()}: reference called after free()");
             refCount++;
             if (debugAllocations) _debugPrint($"reference, count={refCount}");
-            return _pointer; 
+            return this; 
         } 
     }
     public IntPtr pointer { 
