@@ -20,7 +20,7 @@ namespace Workers {
                     url = _url;
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
-//                    Debug.Log($"Bin2Dash vrt_create(url={url + cfg.streamName}.mpd)");
+                    Debug.Log($"B2DWriter({url + cfg.streamName}: started");
                     Start();
                 }
                 else
