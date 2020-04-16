@@ -20,7 +20,7 @@ namespace Workers {
                     url = _url;
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
-                    Debug.Log($"Bin2Dash vrt_create(url={url + cfg.streamName}.mpd)");
+//                    Debug.Log($"Bin2Dash vrt_create(url={url + cfg.streamName}.mpd)");
                     Start();
                 }
                 else
@@ -39,15 +39,20 @@ namespace Workers {
             base.OnStop();
             Debug.Log($"B2DWriter {url} Stopped");
         }
-
+        bool firstTime = true;
         protected override void Update() {
             base.Update();
             if (inQueue.Count>0 ) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
                 statsUpdate((int)mc.length);
-                //bw?.Write(token.currentByteArray, 0, token.currentSize);
-                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
-                    Debug.Log("ERROR sending data");
+//                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
+//                    Debug.Log("ERROR sending data");
+                if (firstTime) {
+                    Debug.Log($"Sending {mc.length} from SUB");
+                    if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
+                        Debug.Log("ERROR sending data");
+                    firstTime = false;
+                }
                 mc.free();
             }
         }

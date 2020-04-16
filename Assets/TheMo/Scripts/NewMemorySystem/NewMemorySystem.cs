@@ -7,10 +7,13 @@ public class NewMemorySystem : MonoBehaviour
     Workers.BaseWorker reader;
     Workers.BaseWorker encoder;
     Workers.BaseWorker decoder;
-//    Workers.BaseWorker writer;
+    Workers.BaseWorker dashWriter;
+    Workers.BaseWorker dashReader;
+
     Workers.BaseWorker preparer;
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
     QueueThreadSafe encoderQueue = new QueueThreadSafe();
+    QueueThreadSafe writerQueue = new QueueThreadSafe();
     QueueThreadSafe decoderQueue = new QueueThreadSafe();
     MonoBehaviour render;
     // Start is called before the first frame update
@@ -22,11 +25,20 @@ public class NewMemorySystem : MonoBehaviour
         ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
 
         reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
-        encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, decoderQueue);
+
+        encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, writerQueue);
+
+        string uuid = System.Guid.NewGuid().ToString();
+        dashWriter = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, "https://vrt-evanescent.viaccess-orca.com/"+uuid+"/", writerQueue);
+
+        dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/"+ uuid + "/testBed.mpd", decoderQueue);
+
         decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
     }
 
     void OnDestroy() {
+        dashWriter?.StopAndWait();
+        dashReader?.StopAndWait();
         reader?.StopAndWait();
         encoder?.StopAndWait();
         decoder?.StopAndWait();

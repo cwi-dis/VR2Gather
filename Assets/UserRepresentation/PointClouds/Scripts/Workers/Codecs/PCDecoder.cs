@@ -47,7 +47,7 @@ namespace Workers {
                     statsUpdate(pc.count(), pc.timestamp());
                 }
                 else
-                    Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {token.currentSize}");
+                    Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {mc.length}");
             }
         }
 

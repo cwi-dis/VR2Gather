@@ -124,7 +124,6 @@ namespace Workers {
                         subHandle = null;
                         isPlaying = false;
                         subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-
                         numberOfUnsuccessfulReceives = 0;
                     }
                 }
@@ -134,26 +133,20 @@ namespace Workers {
         }
 
         protected void retryPlay() {
-            lock (subLock)
-            {
+            lock (subLock) {
                 if (isPlaying) return;
-
                 if (System.DateTime.Now < subRetryNotBefore) return;
-
-                if (subHandle == null)
-                {
+                if (subHandle == null) {
                     subName = $"source_from_sub_{++subCount}";
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
-                    if (subHandle == null)
-                    {
+                    if (subHandle == null) {
                         throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
                     }
                     Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
                 }
                 isPlaying = subHandle.play(url);
-                if (!isPlaying)
-                {
+                if (!isPlaying) {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
                     return;
@@ -172,45 +165,43 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) {  // Wait for token
-                if (!isPlaying) retryPlay();
-                else {
-                    Cleaner();
-
-                    // Try to read from audio.
-                    if (streamCount > 1 && needsAudio != null && needsAudio()) {
-                        // Attempt to receive, if we are playing
-                        int bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                                                                                                                   // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                                                                                                                   //UnsuccessfulCheck(bytesNeeded);
-                        if (bytesNeeded != 0) {
-                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                            int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, bytesNeeded, ref info);
-                            if (bytesRead == bytesNeeded) {
-                                out2Queue.Enqueue(mc);
-                                return;
-                            }
-                            else
-                                Debug.LogError("PCSUBReader {subName}: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+            if (!isPlaying) retryPlay();
+            else {
+                Cleaner();
+                // Try to read from audio.
+                if (streamCount > 1 && needsAudio != null && needsAudio()) {
+                    // Attempt to receive, if we are playing
+                    int bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                                                                                                                // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                                                                                                                //UnsuccessfulCheck(bytesNeeded);
+                    if (bytesNeeded != 0) {
+                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                        int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, bytesNeeded, ref info);
+                        if (bytesRead == bytesNeeded) {
+                            out2Queue?.Enqueue(mc);
+                            return;
                         }
+                        else
+                            Debug.LogError($"PCSUBReader {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     }
-                    if (needsVideo == null || needsVideo()) {
-                        // Attempt to receive, if we are playing
-                        int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                                                                                                               // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                        UnsuccessfulCheck(bytesNeeded);
-                        if (bytesNeeded != 0) {
-                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                            int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
-                            if (bytesRead == bytesNeeded) {
-                                // All ok, yield to the next process
-                                statsUpdate(bytesRead);
-                                outQueue.Enqueue(mc);
-                                return;
-                            }
-                            else
-                                Debug.LogError("PCSUBReader {subName}: sub_grab_frame returned " + bytesRead + " bytes after promising " + bytesNeeded);
+                }
+                if (needsVideo == null || needsVideo()) {
+                    // Attempt to receive, if we are playing
+                    int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
+                                                                                                            // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                    UnsuccessfulCheck(bytesNeeded);
+                    if (bytesNeeded != 0) {
+                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                        int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
+                        if (bytesRead == bytesNeeded) {
+                            Debug.Log($"Enqueueing {bytesRead} from SUB");
+                            // All ok, yield to the next process
+                            statsUpdate(bytesRead);
+                            if (outQueue.Count < 2) outQueue.Enqueue(mc);
+                            else                    mc.free();
                         }
+                        else
+                            Debug.LogError($"PCSUBReader {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}" );
                     }
                 }
             }
