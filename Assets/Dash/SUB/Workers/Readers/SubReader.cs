@@ -111,7 +111,12 @@ namespace Workers {
 
         protected void UnsuccessfulCheck(int _size) {
             if (_size == 0) {
+                //
+                // We want to delay a bit before retrying. Ideally we delay until we know the next frame will
+                // be available, but that is difficult. 10ms is about 30% of a pointcloud frame duration. But it
+                // may be far too long for audio. Need to check.
                 numberOfUnsuccessfulReceives++;
+                System.Threading.Thread.Sleep(10);
                 if (numberOfUnsuccessfulReceives > 2000) {
                     lock (this) {
                         Debug.Log($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
