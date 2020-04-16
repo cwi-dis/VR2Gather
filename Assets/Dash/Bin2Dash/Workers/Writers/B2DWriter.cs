@@ -39,20 +39,14 @@ namespace Workers {
             base.OnStop();
             Debug.Log($"B2DWriter {url} Stopped");
         }
-        int counter = 10;
+
         protected override void Update() {
             base.Update();
             if (inQueue.Count>0 ) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
                 statsUpdate((int)mc.length);
-//                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
-//                    Debug.Log("ERROR sending data");
-                if (counter>0) {
-                    Debug.Log($"TMP_FPA: Sending {mc.length} from SUB");
-                    if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
-                        Debug.Log("ERROR sending data");
-                    counter--;
-                }
+                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
+                    Debug.Log($"B2DWriter {url}: ERROR sending data");
                 mc.free();
             }
         }
