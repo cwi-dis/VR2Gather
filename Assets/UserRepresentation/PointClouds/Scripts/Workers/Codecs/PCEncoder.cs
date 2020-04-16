@@ -51,7 +51,10 @@ namespace Workers {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
                         if (encoder.copy_data(mc.pointer, mc.length))
-                            outQueue.Enqueue(mc);
+                            if (outQueue.Count < 2)
+                                outQueue.Enqueue(mc);
+                            else
+                                mc.free();
                         else
                             Debug.LogError("PCEncoder: cwipc_encoder_copy_data returned false");
                     }

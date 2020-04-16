@@ -39,7 +39,7 @@ namespace Workers {
             base.OnStop();
             Debug.Log($"B2DWriter {url} Stopped");
         }
-        bool firstTime = true;
+        int counter = 10;
         protected override void Update() {
             base.Update();
             if (inQueue.Count>0 ) {
@@ -47,11 +47,11 @@ namespace Workers {
                 statsUpdate((int)mc.length);
 //                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
 //                    Debug.Log("ERROR sending data");
-                if (firstTime) {
-                    Debug.Log($"Sending {mc.length} from SUB");
+                if (counter>0) {
+                    Debug.Log($"TMP_FPA: Sending {mc.length} from SUB");
                     if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
                         Debug.Log("ERROR sending data");
-                    firstTime = false;
+                    counter--;
                 }
                 mc.free();
             }

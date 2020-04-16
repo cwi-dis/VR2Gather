@@ -49,9 +49,9 @@ namespace Workers {
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"Delaying {cfg.initialDelay} seconds before playing {url}");
+                Debug.Log($"SUBReader: Delaying {cfg.initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
-                Debug.Log($"ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
+                Debug.Log($"SUBReader: ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
             }
             try {
                 retryPlay();
@@ -78,7 +78,7 @@ namespace Workers {
                     Debug.Log($"SubReader: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
-                        Debug.Log($"SubReader {subName}: sub_play({url}) failed, will try again later");
+                        Debug.Log($"SUBReader {subName}: sub_play({url}) failed, will try again later");
                     } else {
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         CCCC cc;
@@ -194,7 +194,7 @@ namespace Workers {
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
                         int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
                         if (bytesRead == bytesNeeded) {
-                            Debug.Log($"Enqueueing {bytesRead} from SUB");
+                            Debug.Log($"TMP_FPA: Enqueueing {bytesRead} from SUB");
                             // All ok, yield to the next process
                             statsUpdate(bytesRead);
                             if (outQueue.Count < 2) outQueue.Enqueue(mc);

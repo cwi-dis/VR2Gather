@@ -17,7 +17,7 @@ public class BaseMemoryChunkReferences {
 
     public static void ShowTotalRefCount() {
         lock (types) {
-            Debug.Log($"{types.Count} TotalRefCount pending.");
+            Debug.Log($"BaseMemoryChunkReferences: {types.Count} TotalRefCount pending.");
             for (int i = 0; i < types.Count; ++i)
                 Debug.Log($"({i})--> {types[i]}");
         }
