@@ -51,7 +51,6 @@ namespace Workers {
                 Debug.Log($"SUBReader: ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
             }
             try {
-                retryPlay();
                 Start();
             }
             catch (System.Exception e)
@@ -114,9 +113,8 @@ namespace Workers {
             if (_size == 0) {
                 numberOfUnsuccessfulReceives++;
                 if (numberOfUnsuccessfulReceives > 2000) {
-                    lock (this)
-                    {
-                        Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                    lock (this) {
+                        Debug.Log($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
                         subHandle = null;
                         isPlaying = false;
@@ -131,15 +129,12 @@ namespace Workers {
 
         protected void retryPlay() {
             lock (this) {
-                if (isPlaying) return;
                 if (System.DateTime.Now < subRetryNotBefore) return;
                 if (subHandle == null) {
                     subName = $"source_from_sub_{++subCount}";
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
-                    if (subHandle == null) {
-                        throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
-                    }
+                    if (subHandle == null) throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
                     Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
                 }
                 isPlaying = subHandle.play(url);
