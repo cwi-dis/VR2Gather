@@ -21,15 +21,12 @@ namespace Workers {
         int videoStream = 0;
         sub.connection subHandle;
         bool isPlaying;
-        byte[] currentBufferArray;
-        System.IntPtr currentBuffer;
-        System.Runtime.InteropServices.GCHandle gch;
         sub.FrameInfo info = new sub.FrameInfo();
         int numberOfUnsuccessfulReceives;
         int dampedSize = 0;
         static int subCount;
         string subName;
-        object subLock = new object();
+//        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
 
         QueueThreadSafe outQueue;
@@ -102,7 +99,7 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            lock (subLock)
+            lock (this)
             {
                 if (subHandle != null) subHandle.free();
                 subHandle = null;
@@ -117,7 +114,7 @@ namespace Workers {
             if (_size == 0) {
                 numberOfUnsuccessfulReceives++;
                 if (numberOfUnsuccessfulReceives > 2000) {
-                    lock (subLock)
+                    lock (this)
                     {
                         Debug.LogWarning($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
@@ -133,7 +130,7 @@ namespace Workers {
         }
 
         protected void retryPlay() {
-            lock (subLock) {
+            lock (this) {
                 if (isPlaying) return;
                 if (System.DateTime.Now < subRetryNotBefore) return;
                 if (subHandle == null) {
@@ -157,9 +154,6 @@ namespace Workers {
         }
 
         protected void Cleaner() {
-            if (gch.IsAllocated) gch.Free();
-            currentBufferArray = null;
-            currentBuffer = System.IntPtr.Zero;
             //info = new sub.FrameInfo { dsi = new byte[256], dsi_size = 256 };
         }
 
@@ -176,7 +170,7 @@ namespace Workers {
                                                                                                                 //UnsuccessfulCheck(bytesNeeded);
                     if (bytesNeeded != 0) {
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, bytesNeeded, ref info);
+                        int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, mc.length, ref info);
                         if (bytesRead == bytesNeeded) {
                             out2Queue?.Enqueue(mc);
                             return;
@@ -188,14 +182,12 @@ namespace Workers {
                 if (needsVideo == null || needsVideo()) {
                     // Attempt to receive, if we are playing
                     int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                                                                                                            // If we are not playing or if we didn't receive anything we restart after 1000 failures.
+                                                                                                           // If we are not playing or if we didn't receive anything we restart after 1000 failures.
                     UnsuccessfulCheck(bytesNeeded);
                     if (bytesNeeded != 0) {
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(streamNumber, currentBuffer, bytesNeeded, ref info);
+                        int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
                         if (bytesRead == bytesNeeded) {
-                            Debug.Log($"TMP_FPA: Enqueueing {bytesRead} from SUB");
-                            // All ok, yield to the next process
                             statsUpdate(bytesRead);
                             if (outQueue.Count < 2) outQueue.Enqueue(mc);
                             else                    mc.free();
