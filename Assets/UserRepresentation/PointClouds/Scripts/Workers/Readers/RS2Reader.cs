@@ -17,7 +17,7 @@ namespace Workers {
                 reader = cwipc.realsense2(cfg.configFilename);  
                 if (reader != null) {
                     Start();
-                    Debug.Log("RS2Reader Inited");
+                    Debug.Log("PCRealSense2Reader: Started.");
                 } else
                     throw new System.Exception($"PCRealSense2Reader: cwipc_realsense2 could not be created"); // Should not happen, should throw exception
             }
@@ -31,7 +31,7 @@ namespace Workers {
             base.OnStop();
             reader?.free();
             reader = null;
-            Debug.Log("RS2Reader Stopped");
+            Debug.Log("PCRealSense2Reader: Stopped.");
         }
 
         protected override void Update() {
@@ -42,11 +42,20 @@ namespace Workers {
                 var tmp = pc;
                 pc = cwipc.downsample(tmp, voxelSize);
                 tmp.free();
-                if (pc== null)  throw new System.Exception($"Voxelating pointcloud with {voxelSize} got rid of all points?");
+                if (pc== null)  throw new System.Exception($"PCRealSense2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
+            pc.AddRef(); pc.AddRef();
             statsUpdate(pc.count());
-            outQueue?.Enqueue( pc.AddRef() );
-            if (out2Queue!=null && out2Queue.Count<2)  out2Queue.Enqueue(pc.AddRef());
+
+            if (outQueue != null && outQueue.Count < 2)
+                outQueue?.Enqueue(pc);
+            else
+                pc.free();
+
+            if (out2Queue != null && out2Queue.Count < 2)
+                out2Queue.Enqueue(pc);
+            else
+                pc.free();
         }
 
         System.DateTime statsLastTime;
