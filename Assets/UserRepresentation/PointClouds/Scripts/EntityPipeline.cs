@@ -39,7 +39,6 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
                 reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue, codecQueue);
-                //reader.AddNext(preparer).AddNext(reader); // <- local render tine.
                 try {
                     codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, codecQueue, writerQueue);
                 }
@@ -73,12 +72,6 @@ public class EntityPipeline : MonoBehaviour {
                 codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 break;
         }        
-
-        //transform.parent = parent;
-        //if (url_pcc == string.Empty || url_audio == string.Empty) {
-        //    transform.position = new Vector3(cfg.Render.position.x, cfg.Render.position.y, cfg.Render.position.z);
-        //    transform.rotation = Quaternion.Euler(cfg.Render.rotation);
-        //}
 
         //Position depending on config calibration
         transform.localPosition = configTransform.offsetPosition;
