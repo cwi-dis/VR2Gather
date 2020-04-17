@@ -261,11 +261,9 @@ public class GstUnityBridgeTexture : MonoBehaviour
                 mat.SetTextureScale(tex_name, new Vector2(Mathf.Abs(mat.mainTextureScale.x) * (m_FlipX ? -1F : 1F),
                                                           Mathf.Abs(mat.mainTextureScale.y) * (m_FlipY ? -1F : 1F)));
             }
-            else/*
-            if (GetComponent<GUITexture>())
-            {
-                GetComponent<GUITexture>().texture = m_Texture;
-            }
+            else
+            /*
+            if (GetComponent<GUITexture>()) GetComponent<GUITexture>().texture = m_Texture;
             else
             */
             {
