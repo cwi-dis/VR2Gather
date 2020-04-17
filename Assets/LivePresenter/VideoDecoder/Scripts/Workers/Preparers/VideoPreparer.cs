@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-
+// TODO(FPA): Fix new Queue mode.
 namespace Workers {
     public class VideoPreparer : BaseWorker {
         float[] circularAudioBuffer;
@@ -37,6 +37,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
+            /*
             if (token != null) {
                 lock (token) {
                     if (token.isVideo) {
@@ -76,6 +77,7 @@ namespace Workers {
                 }
                 Next();
             }
+            */
         }
 
         public int availableAudio {

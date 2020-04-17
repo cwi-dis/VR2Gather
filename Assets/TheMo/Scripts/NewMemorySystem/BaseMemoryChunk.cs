@@ -25,8 +25,10 @@ public class BaseMemoryChunkReferences {
 }
 
 public class BaseMemoryChunk {
-    IntPtr          _pointer;
-    int             refCount;
+    protected IntPtr        _pointer;
+    int                     refCount;
+    public NTPTools.NTPTime timeStamp;
+    public int              length { get; protected set; }
 
     protected BaseMemoryChunk(IntPtr _pointer) {
         if (_pointer== IntPtr.Zero)  throw new Exception("BaseMemoryChunk: constructor called with null pointer");
@@ -36,7 +38,8 @@ public class BaseMemoryChunk {
     }
 
     protected BaseMemoryChunk() {
-        throw new Exception("BaseMemoryChunk: default constructor called");
+        refCount = 0;
+        BaseMemoryChunkReferences.AddReference(this.GetType());
     }
 
     public BaseMemoryChunk AddRef() { refCount++; return this; }

@@ -1,9 +1,11 @@
 ﻿using System;
 
 public class NativeMemoryChunk : BaseMemoryChunk {
-    public int length { get; private set; }
     public NativeMemoryChunk(int len) : base(AllocMemory(len)) {
         length = len;
+    }
+
+    protected NativeMemoryChunk() : base() {
     }
 
     static IntPtr AllocMemory(int len) {

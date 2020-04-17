@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
-
+// TODO(FPA): Fix new Queue mode.
 namespace Workers {
     public class VideoFrame {
         int width;
@@ -49,6 +49,7 @@ namespace Workers {
         System.IntPtr audioData = System.IntPtr.Zero;
         protected override void Update() {
             base.Update();
+            /*
             if (token != null) {
                 lock (token) {
                     if (token.isVideo) {
@@ -121,8 +122,9 @@ namespace Workers {
                     Next();
                 }
             }
+            */
         }
-
+        /*
         void CreateVideoCodec() {
             codecVideo = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
             if (codecVideo != null) {
@@ -179,7 +181,7 @@ namespace Workers {
                 } else Debug.Log("avcodec_alloc_context3 ERROR");
             } else Debug.Log("avcodec_find_decoder ERROR");
         }
-
+        */
         byte** dst_data;
         int dst_linesize;
         int max_dst_nb_samples;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO(FPA): Fix new Queue mode.
 public class VideoDashReceiver : MonoBehaviour
 {
     new public Renderer renderer;
@@ -43,8 +44,6 @@ public class VideoDashReceiver : MonoBehaviour
             } );
             codec = new Workers.VideoDecoder();
             preparer = new Workers.VideoPreparer();
-            reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = token =  new Workers.Token();
         }
         catch (System.Exception e) {
             Debug.Log($">>ERROR {e}");

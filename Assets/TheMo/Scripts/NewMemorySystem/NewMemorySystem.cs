@@ -19,7 +19,7 @@ public class NewMemorySystem : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         Config._User cfg = Config.Instance.Users[0];
-
+        /*
         preparer = new Workers.BufferPreparer(preparerQueue);
         render = gameObject.AddComponent<Workers.PointBufferRenderer>();
         ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
@@ -34,6 +34,11 @@ public class NewMemorySystem : MonoBehaviour
         dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/"+ uuid + "/testBed.mpd", decoderQueue);
 
         decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+        */
+
+        string uuid = System.Guid.NewGuid().ToString();
+        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
+        gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
     }
 
     void OnDestroy() {

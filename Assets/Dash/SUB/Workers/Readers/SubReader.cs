@@ -105,7 +105,6 @@ namespace Workers {
                 isPlaying = false;
             }
             base.OnStop();
-            Cleaner();
             Debug.Log($"SUBReader {subName} {url} Stopped");
         }
 
@@ -153,15 +152,10 @@ namespace Workers {
             }
         }
 
-        protected void Cleaner() {
-            //info = new sub.FrameInfo { dsi = new byte[256], dsi_size = 256 };
-        }
-
         protected override void Update() {
             base.Update();
             if (!isPlaying) retryPlay();
             else {
-                Cleaner();
                 // Try to read from audio.
                 if (streamCount > 1 && needsAudio != null && needsAudio()) {
                     // Attempt to receive, if we are playing

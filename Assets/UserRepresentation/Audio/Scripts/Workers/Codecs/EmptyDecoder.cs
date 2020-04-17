@@ -17,9 +17,6 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                Next();
-            }
         }
     }
 }

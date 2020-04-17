@@ -36,7 +36,6 @@ public class EntityPipeline : MonoBehaviour {
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
 
-        int forks = 1;
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
                 reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue, codecQueue);
@@ -53,11 +52,6 @@ public class EntityPipeline : MonoBehaviour {
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                 }
-                if (codec != null && writer != null) {
-                    reader.AddNext(codec).AddNext(writer).AddNext(reader); // <- encoder and bin2dash tine.
-                    forks = 2;
-                }
-                /*
                 if (temp.useAudio) {
                     try {
                         gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
@@ -66,19 +60,17 @@ public class EntityPipeline : MonoBehaviour {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
                 }
-                */
                 break;
             case "pcsub":
-                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc, codecQueue); // TODO: Fix new Queue mode.
+                reader = new Workers.SUBReader(cfg.SUBConfig, url_pcc, codecQueue);
                 codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 if (temp.useAudio) {
                     gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio); //Audio Pipeline
                 }
                 break;
             case "net":
-                reader = new Workers.NetReader(cfg.NetConfig);
-                codec = new Workers.PCDecoder(codecQueue,null);// TODO: Fix new Queue mode.
-                reader.AddNext(codec).AddNext(preparer).AddNext(reader);
+                reader = new Workers.NetReader(cfg.NetConfig); // TODO(FPA): Fix new Queue mode.
+                codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 break;
         }        
 

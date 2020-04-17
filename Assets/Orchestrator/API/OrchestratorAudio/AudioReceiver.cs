@@ -47,11 +47,8 @@ public class AudioReceiver : MonoBehaviour
 
         reader = new Workers.SocketIOReader();
         socketIOreader = (ISocketReader)reader;
-        codec = new Workers.VoiceDecoder();
-        preparer = new Workers.AudioPreparer();
-
-        reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-        reader.token = token = new Workers.Token();
+        codec = new Workers.VoiceDecoder(null,null); // TODO(FPA): Fix new Queue mode.
+        preparer = new Workers.AudioPreparer(null); // TODO(FPA): Fix new Queue mode.
 
         userID = pUserID;
     }
