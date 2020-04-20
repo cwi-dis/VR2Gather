@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class MoveCamera : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class MoveCamera : MonoBehaviour
     float xRotation = 0f;
 
     public Transform playerBody;
+
+    void Awake() {
+        if (XRDevice.isPresent) enabled = false;
+    }
 
     void Start() {
         Cursor.lockState = CursorLockMode.Confined;
