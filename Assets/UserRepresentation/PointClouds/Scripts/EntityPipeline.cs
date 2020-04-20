@@ -54,19 +54,11 @@ public class EntityPipeline : MonoBehaviour {
                 Debug.Log($"temp.useAudio {temp.useAudio}");
                 if (temp.useAudio) {
                     try {
-
-                        string uuid = System.Guid.NewGuid().ToString();
-                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
-                        gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
-
-                        /*
-                                                // FPA_HACK: Fix doble audio in the url_audio --->
-                                                if (url_audio.Contains("/audio/audio"))
-                                                    url_audio = url_audio.Replace("/audio/audio", "/audio");
-                                                // <---
-                                                gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
-                                                gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio+ "/audio.mpd"); //Audio Pipeline
-                        */
+                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
+                        // FPA_TEMP
+                        // Debug.Log($"FPA_TEMP: Writer url_audio {url_audio} reader {url_audio}/audio.mpd");
+                        // gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio+ "/audio.mpd"); //Audio Pipeline
+                        // FPA_TEMP
 
 
                     } catch (System.EntryPointNotFoundException e) {
