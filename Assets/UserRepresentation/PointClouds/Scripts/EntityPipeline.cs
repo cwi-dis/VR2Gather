@@ -54,13 +54,22 @@ public class EntityPipeline : MonoBehaviour {
                 Debug.Log($"temp.useAudio {temp.useAudio}");
                 if (temp.useAudio) {
                     try {
-                        // FPA_HACK: Fix doble audio in the url_audio --->
-                        if (url_audio.Contains("/audio/audio"))
-                            url_audio = url_audio.Replace("/audio/audio", "/audio");
-                        // <---
-                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
-                    }
-                    catch (System.EntryPointNotFoundException e) {
+
+                        string uuid = System.Guid.NewGuid().ToString();
+                        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
+                        gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
+
+                        /*
+                                                // FPA_HACK: Fix doble audio in the url_audio --->
+                                                if (url_audio.Contains("/audio/audio"))
+                                                    url_audio = url_audio.Replace("/audio/audio", "/audio");
+                                                // <---
+                                                gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
+                                                gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio+ "/audio.mpd"); //Audio Pipeline
+                        */
+
+
+                    } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
                 }
