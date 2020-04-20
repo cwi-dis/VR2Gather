@@ -46,7 +46,6 @@ namespace Workers {
                         mcOut.buffer[i * 6 + 5] = temporalBuffer[i];
                     }
                     outQueue.Enqueue(mcOut);
-                    Debug.Log("FPA_TEMP: VoiceDecoder: Enqueue decompressed buffer.");
                 }
                 mcIn.free();
             }

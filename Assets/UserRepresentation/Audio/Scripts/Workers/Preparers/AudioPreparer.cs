@@ -41,7 +41,6 @@ namespace Workers {
                 }
 
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.Dequeue();
-                Debug.Log("FPA_TEMP: AudioPreparer: Add data to play.");
 
                 int len = mc.elements;
                 //Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");

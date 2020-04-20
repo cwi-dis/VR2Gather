@@ -42,8 +42,6 @@ namespace Workers
                     NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
                     Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
                     outQueue.Enqueue(mcOut);
-                    Debug.Log("FPA_TEMP: VoiceEncoder: Enqueue compressed buffer.");
-
                 } else
                     mcIn.free();
             }
