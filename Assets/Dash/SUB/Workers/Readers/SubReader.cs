@@ -48,14 +48,12 @@ namespace Workers {
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
                 Debug.Log($"SUBReader: Delaying {cfg.initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
-                Debug.Log($"SUBReader: ctor xxxjack now={System.DateTime.Now} retryNotBefore={subRetryNotBefore}");
             }
             try {
                 Start();
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"xxxjack Exception {e.ToString()} caught in SUBReader constructor. Message={e.Message}, stacktrace={e.StackTrace}.");
                 throw e;
             }
         }
@@ -70,7 +68,6 @@ namespace Workers {
                 subName = $"source_from_sub_{++subCount}";
                 subHandle = sub.create(subName);
                 if (subHandle != null) {
-                    //Debug.LogError("xxxjack very suspiciously-looking code in SUBReader called...");
                     Debug.Log($"SubReader: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
