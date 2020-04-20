@@ -66,7 +66,7 @@ namespace Workers
                 samples = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
+                Debug.Log($"VoiceReader: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
                 bufferTime = bufferLength / (float)samples;
                 timer = Time.realtimeSinceStartup;
 
@@ -83,7 +83,7 @@ namespace Workers
                             float currentRead = Time.realtimeSinceStartup;
                             lastRead = currentRead;
                             if (!recorder.GetData(readBuffer, readPosition)) {
-                                Debug.Log($"ERROR!!! IsRecording {Microphone.IsRecording(null)}");
+                                Debug.LogError($"VoiceReader: ERROR!!! IsRecording {Microphone.IsRecording(null)}");
                             }
                             // Write all data from microphone.
                             lock (circularBuffer) {
@@ -109,7 +109,7 @@ namespace Workers
                     yield return null;
                 }
             } else
-                Debug.LogError("No Micros detected.");
+                Debug.LogError("VoiceReader: No Microphones detected.");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("AudioPreparer: Sopped");
+            Debug.Log("AudioPreparer: Stopped");
         }
 
         protected override void Update() {
