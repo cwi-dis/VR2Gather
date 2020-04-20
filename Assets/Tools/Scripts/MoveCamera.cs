@@ -4,24 +4,23 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-    public float speed = 5.0f;
-    public float rotationSpeed = 50.0f;
+    public float mouseSensitivity = 100.0f;
+    float xRotation = 0f;
+
+    public Transform playerBody;
+
+    void Start() {
+        Cursor.lockState = CursorLockMode.Confined;
+    }
 
     void Update() {
-        // Get the horizontal and vertical axis.
-        // By default they are mapped to the arrow keys.
-        // The value is in the range -1 to 1
-        float translation = Input.GetAxis("Vertical") * speed;
-        float rotation = Input.GetAxis("Horizontal") * rotationSpeed;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-        // Make it move 10 meters per second instead of 10 meters per frame...
-        translation *= Time.deltaTime;
-        rotation *= Time.deltaTime;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // Move translation along the object's z-axis
-        transform.Translate(0, 0, translation);
-
-        // Rotate around our y-axis
-        transform.Rotate(0, rotation, 0);
+        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+        playerBody.Rotate(Vector3.up * mouseX);
     }
 }
