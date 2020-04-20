@@ -10,6 +10,8 @@ public class NewMemorySystem : MonoBehaviour
 {
 
     public bool         forceMesh = true;
+    public bool         localPCs = false;
+    public bool         useVoice = false;
     Workers.BaseWorker  reader;
     Workers.BaseWorker  encoder;
     Workers.BaseWorker  decoder;
@@ -31,7 +33,6 @@ public class NewMemorySystem : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         Config._User cfg = Config.Instance.Users[0];
-#if TEST_LOCAL_PC
         if (forceMesh) {
             preparer = new Workers.MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -41,31 +42,25 @@ public class NewMemorySystem : MonoBehaviour
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
-        reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue);
-#endif
 
-#if TEST_PC
-        preparer = new Workers.BufferPreparer(preparerQueue);
-        render = gameObject.AddComponent<Workers.PointBufferRenderer>();
-        ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
 
-        reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
+        if (localPCs)
+            reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue);
+        else {
+            reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
+            encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, writerQueue);
+            string uuid = System.Guid.NewGuid().ToString();
+            dashWriter = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", writerQueue);
+            dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/testBed.mpd", decoderQueue);
+            decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+        }
 
-        encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, writerQueue);
+        if (useVoice) {
+            string uuid = System.Guid.NewGuid().ToString();
+            gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
 
-        string uuid = System.Guid.NewGuid().ToString();
-        dashWriter = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, "https://vrt-evanescent.viaccess-orca.com/"+uuid+"/", writerQueue);
-
-        dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/"+ uuid + "/testBed.mpd", decoderQueue);
-
-        decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
-#endif
-
-#if TEST_VOICECHAT
-        string uuid = System.Guid.NewGuid().ToString();
-        gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
-        gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
-#endif
+        }
     }
 
     void OnDestroy() {
