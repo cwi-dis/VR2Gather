@@ -8,17 +8,19 @@ namespace Workers {
         bin2dash.connection uploader;
         //BinaryWriter bw;
         string url;
+        QueueThreadSafe inQueue;
 
-        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url = "") : base(WorkerType.End) {
+        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url, QueueThreadSafe _inQueue) : base(WorkerType.End) {
             try {
+                inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
-                if (_url == string.Empty)
+                if ( string.IsNullOrEmpty(_url))
                     url = cfg.url;
                 else
                     url = _url;
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
-                    Debug.Log($"Bin2Dash vrt_create(url={url + cfg.streamName}.mpd)");
+                    Debug.Log($"B2DWriter({url + cfg.streamName}: started");
                     Start();
                 }
                 else
@@ -40,14 +42,12 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                statsUpdate((int)token.currentSize);
-                lock (token) {
-                    //bw?.Write(token.currentByteArray, 0, token.currentSize);
-                    if (!uploader.push_buffer(token.currentBuffer, (uint)token.currentSize))
-                        Debug.Log("ERROR sending data");
-                    Next();
-                }
+            if (inQueue.Count>0 ) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
+                statsUpdate((int)mc.length);
+                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
+                    Debug.Log($"B2DWriter {url}: ERROR sending data");
+                mc.free();
             }
         }
 
@@ -55,16 +55,13 @@ namespace Workers {
         double statsTotalBytes;
         double statsTotalPackets;
 
-        public void statsUpdate(int nBytes)
-        {
-            if (statsLastTime == null)
-            {
+        public void statsUpdate(int nBytes) {
+            if (statsLastTime == null) {
                 statsLastTime = System.DateTime.Now;
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
-            {
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
                 Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;

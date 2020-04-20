@@ -11,7 +11,9 @@ namespace Workers
         System.IntPtr                       currentBuffer;
         int                                 currentSize;
         float                               currentCellSize = 0.008f;
-        public BufferPreparer():base(WorkerType.End) {
+        QueueThreadSafe                     InQueue;
+        public BufferPreparer(QueueThreadSafe _InQueue):base(WorkerType.End) {
+            InQueue = _InQueue;
             Start();
         }
 
@@ -23,25 +25,25 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (token != null && !isReady) {
-                lock (token) {
-                    unsafe {
-                        currentSize = token.currentPointcloud.get_uncompressed_size();
-                        currentCellSize = token.currentPointcloud.cellsize();
-                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
-                        if (currentSize > 0) {
-                            if (currentSize > byteArray.Length) {
-                                if (byteArray.Length != 0) byteArray.Dispose();
-                                byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.TempJob);
-                                currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
-                            }
-                            int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, currentSize);
-                            if (ret * 16 != currentSize) {
-                                Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
-                            }
-                            isReady = true;
-                            Next();
+            if (InQueue.Count>0 && !isReady) {
+                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.Dequeue();
+                unsafe {
+                    currentSize = pc.get_uncompressed_size();
+                    currentCellSize = pc.cellsize();
+                    // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
+                    if (currentSize > 0) {
+                        if (currentSize > byteArray.Length) {
+                            if (byteArray.Length != 0) byteArray.Dispose();
+                            byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
+                            currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                         }
+                        int ret = pc.copy_uncompressed(currentBuffer, currentSize);
+                        pc.free();
+                        if (ret * 16 != currentSize) {
+                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                        }
+                        lock (this) isReady = true;
+                        // Next();
                     }
                 }
             }
@@ -50,16 +52,18 @@ namespace Workers
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer) {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
             int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
-            if (isReady && size != 0) {
-                unsafe {
-                    int dampedSize = (int)(size * Config.Instance.memoryDamping);
-                    if (computeBuffer == null || computeBuffer.count < dampedSize) {
-                        if (computeBuffer != null) computeBuffer.Release();
-                        computeBuffer = new ComputeBuffer(dampedSize, sizeof(float) * 4);
+            lock (this) {
+                if (isReady && size != 0) {
+                    unsafe {
+                        int dampedSize = (int)(size * Config.Instance.memoryDamping);
+                        if (computeBuffer == null || computeBuffer.count < dampedSize) {
+                            if (computeBuffer != null) computeBuffer.Release();
+                            computeBuffer = new ComputeBuffer(dampedSize, sizeof(float) * 4);
+                        }
+                        computeBuffer.SetData<byte>(byteArray, 0, 0, byteArray.Length);
                     }
-                    computeBuffer.SetData<byte>(byteArray, 0, 0, byteArray.Length);
+                    isReady = false;
                 }
-                isReady = false;
             }
             return size;
         }

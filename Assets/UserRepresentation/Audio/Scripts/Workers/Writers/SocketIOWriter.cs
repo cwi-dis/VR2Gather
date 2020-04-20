@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+// TODO(FPA): Fix new Queue mode.
 namespace Workers {
     public class SocketIOWriter : BaseWorker {
         private byte userID;
@@ -18,6 +19,7 @@ namespace Workers {
         }
         protected override void Update() {
             base.Update();
+            /*
             if (token != null) {
                 byte[] tmp = token.currentByteArray;
                 tmp[0] = userID;
@@ -31,6 +33,7 @@ namespace Workers {
 
                 Next();
             }
+            */
         }
 
         public override void OnStop() {
