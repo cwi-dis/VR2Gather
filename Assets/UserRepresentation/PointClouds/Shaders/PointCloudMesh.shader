@@ -31,6 +31,7 @@
                 struct v2f {
                     float4  position : SV_Position;
                     half3   color : COLOR;
+					float   size : PSIZE;
                 };
 
                 v2f Vertex(appdata v) {
@@ -56,26 +57,31 @@
                     // Copy the basic information.
                     v2f o = input[0];
                     o.position.xzw = origin.xzw;
+					o.size = 1;
 
                     // Bottom side vertex
                     o.position.x = origin.x;
                     o.position.y = origin.y + extent.y;
-                    outStream.Append(o);
+					o.size = 1;
+					outStream.Append(o);
 
                     // Left vertex
                     o.position.x = origin.x - extent.x;
                     o.position.y = origin.y;
+					o.size = 1;
                     outStream.Append(o);
 
                     // Right side vertex
                     o.position.x = origin.x + extent.x;
                     o.position.y = origin.y;
-                    outStream.Append(o);
+					o.size = 1;
+					outStream.Append(o);
 
                     // Top vertex
                     o.position.x = origin.x;
                     o.position.y = origin.y - extent.y;
-                    outStream.Append(o);
+					o.size = 1;
+					outStream.Append(o);
 
                     outStream.RestartStrip();
                 }
