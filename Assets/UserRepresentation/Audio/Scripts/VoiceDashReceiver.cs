@@ -20,9 +20,9 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.SUBReader(cfg, url, decoderQueue);// TODO: Fix new Queue mode.
-        codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
-        preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+        reader      = new Workers.SUBReader(cfg, url, decoderQueue);
+        codec       = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
+        preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
 
     void OnDestroy() {
