@@ -51,8 +51,13 @@ public class EntityPipeline : MonoBehaviour {
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                 }
+                Debug.Log($"temp.useAudio {temp.useAudio}");
                 if (temp.useAudio) {
                     try {
+                        // FPA_HACK: Fix doble audio in the url_audio --->
+                        if (url_audio.Contains("/audio/audio"))
+                            url_audio = url_audio.Replace("/audio/audio", "/audio");
+                        // <---
                         gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
                     }
                     catch (System.EntryPointNotFoundException e) {
