@@ -22,31 +22,30 @@ namespace Workers
             this.circularBuffer = new float[circularBufferSize];
             this.monoBehaviour = monoBehaviour;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder());
-            Debug.Log("VoiceReader: Started.");
+            Debug.Log($"VoiceReader: Started bufferLength {bufferLength}.");
             Start();
         }
 
         protected override void Update() {
             base.Update();
             int bytesInAudioBuffer = 0;
-            lock (this) {
+            lock (circularBuffer) {
                 if (circularBufferWritePosition < circularBufferReadPosition) bytesInAudioBuffer = (circularBufferSize - circularBufferReadPosition) + circularBufferWritePosition;
                 else bytesInAudioBuffer = circularBufferWritePosition - circularBufferReadPosition;
-            }
-            if (outQueue.Count < 2 && bytesInAudioBuffer>= bufferLength) {
-                lock (this) {
-                    FloatMemoryChunk mc = new FloatMemoryChunk( bufferLength );
+
+                if (outQueue.Count < 2 && bytesInAudioBuffer >= bufferLength) {
+                    FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
                     System.Array.Copy(circularBuffer, circularBufferReadPosition, mc.buffer, 0, bufferLength);
                     mc.timeStamp = NTPTools.GetNTPTime();
                     outQueue.Enqueue(mc);
-                    circularBufferReadPosition = (circularBufferReadPosition+bufferLength) % circularBufferSize;
+                    circularBufferReadPosition = (circularBufferReadPosition + bufferLength) % circularBufferSize;
                 }
             }
         }
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VoiceReader: Stopped.");
+            Debug.Log($"VoiceReader: Stopped device {device}.");
         }
 
         string device;
@@ -57,36 +56,40 @@ namespace Workers
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
-                Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
+                Microphone.GetDeviceCaps(null, out currentMinFreq, out samples);
                 samples = 16000;
-                recorder = Microphone.Start(device, true, 1, samples);
+                recorder = Microphone.Start(null, true, 1, samples);
                 samples = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
+                Debug.Log($"Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
 
                 int readPosition = 0;
-                while (true) {
-                    int writePosition = Microphone.GetPosition(device);
+                while ( Microphone.IsRecording(null) ) {
+                    int writePosition = Microphone.GetPosition(null);
                     int available;
                     if (writePosition < readPosition)   available = (samples - readPosition) + writePosition;
                     else                                available = writePosition - readPosition;
+                    float lastRead = Time.realtimeSinceStartup;
                     while(available >= bufferLength) {
-                        recorder.GetData(readBuffer, readPosition);
+                        float currentRead = Time.realtimeSinceStartup;
+                        lastRead = currentRead;
+                        if ( !recorder.GetData(readBuffer, readPosition)) {
+                            Debug.Log($"ERROR!!! IsRecording {Microphone.IsRecording(null)}");
+                        }
                         // Write all data from microphone.
-                        lock (this) {
+                        lock (circularBuffer) {
                             System.Array.Copy(readBuffer, 0, circularBuffer, circularBufferWritePosition, bufferLength);
                             circularBufferWritePosition = (circularBufferWritePosition + bufferLength) % circularBufferSize;
-                            available -= bufferLength;
                         }
                         readPosition = (readPosition + bufferLength) % samples;
+                        available -= bufferLength;
                     }
                     yield return null;
                 }
-            }
-            else
+                Debug.LogError($"VoiceReader: microphone {device} stops recording.");
+            } else
                 Debug.LogError("No Micros detected.");
-
         }
     }
 }

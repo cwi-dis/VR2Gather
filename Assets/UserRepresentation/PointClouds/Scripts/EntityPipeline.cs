@@ -24,7 +24,6 @@ public class EntityPipeline : MonoBehaviour {
     public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
         var temp = Config.Instance;
         Config._PCs configTransform = temp.PCs;
-        cfg.Render.forceMesh = true;
         if (cfg.Render.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
             preparer = new Workers.MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -55,12 +54,6 @@ public class EntityPipeline : MonoBehaviour {
                 if (temp.useAudio) {
                     try {
                         gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, url_audio); //Audio Pipeline
-                        // FPA_TEMP
-                        // Debug.Log($"FPA_TEMP: Writer url_audio {url_audio} reader {url_audio}/audio.mpd");
-                        // gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, url_audio+ "/audio.mpd"); //Audio Pipeline
-                        // FPA_TEMP
-
-
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
