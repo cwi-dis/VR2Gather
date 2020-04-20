@@ -397,6 +397,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
+            if (AudioManager.Instance != null) { // Load Socket.io Audio
+                AudioManager.Instance.StartRecordAudio();
+            }
+
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
                 // Make this to show the real name of the user, not the id
@@ -477,9 +481,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
-            //scenarioIdText.text = session.scenarioId;
+            //scenarioIdText.text = session.scenarioId;            
 
-            if (useSocketIOAudio && !updated) {
+            if (!updated) {
+                if (AudioManager.Instance != null) { // Load Socket.io Audio
+                    AudioManager.Instance.StartRecordAudio();
+                }
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
                         OnUserJoinedSession(id);
@@ -538,6 +545,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
+            if (AudioManager.Instance != null) {
+                AudioManager.Instance.StartListeningAudio2(_userID);
+            }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
             foreach (User u in availableUsers) {
@@ -1190,7 +1200,5 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnUserEventReceived(UserEvent pSceneEventData) {
 
     }
-
-
-
+       
 }

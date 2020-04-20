@@ -486,7 +486,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_PrimaryIndexTrigger
+    m_Name: PrimaryTriggerLeft
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -502,7 +502,7 @@ InputManager:
     axis: 8
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_SecondaryIndexTrigger
+    m_Name: PrimaryTriggerRight
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -518,7 +518,7 @@ InputManager:
     axis: 9
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_PrimaryHandTrigger
+    m_Name: SecondaryTriggerLeft
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -534,7 +534,7 @@ InputManager:
     axis: 10
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_SecondaryHandTrigger
+    m_Name: SecondaryTriggerRight
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 

@@ -11,7 +11,12 @@ public class AudioManager : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = new GameObject("AudioManager").AddComponent<AudioManager>();
+                if (GameObject.Find("AudioManager") != null) {
+                    instance = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+                }
+                else {
+                    instance = new GameObject("AudioManager").AddComponent<AudioManager>();
+                }
             }
             return instance;
         }
@@ -88,7 +93,7 @@ public class AudioManager : MonoBehaviour
 
     private void StartRecord()
     {
-        recorder.StartRecordAudio();
+        recorder.StartRecordAudio();        
     }
 
     private void StopRecord()
