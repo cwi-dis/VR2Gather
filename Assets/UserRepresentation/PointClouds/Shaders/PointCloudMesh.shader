@@ -41,7 +41,7 @@
                     half3 col = v.color.rgb;
                     col *= _Tint.rgb * 2;
                     o.color = col;
-                    
+					o.size = 1;
                     return o;
                 }
 
