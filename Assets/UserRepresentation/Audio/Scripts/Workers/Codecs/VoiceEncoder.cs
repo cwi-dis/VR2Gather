@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#define USE_SPEEX
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -34,16 +35,21 @@ namespace Workers
             base.Update();
             if (inQueue.Count >0 ) {
                 FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
-                if (sendBuffer == null) sendBuffer = new byte[(int)(mcIn.length)]; // La priemera vez
+                if (sendBuffer == null) sendBuffer = new byte[(int)(mcIn.length)];
                 // Necesito calcular el tamaño del buffer.
                 if (outQueue.Count < 2) {
+#if USE_SPEEX
                     int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
-                    mcIn.free();
                     NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
                     Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
+#else
+                    int len = mcIn.elements;
+                    NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
+                    Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
+#endif
                     outQueue.Enqueue(mcOut);
-                } else
-                    mcIn.free();
+                }
+                mcIn.free();
             }
         }
     }

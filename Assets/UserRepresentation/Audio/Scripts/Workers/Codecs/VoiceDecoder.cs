@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#define USE_SPEEX
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,11 +32,16 @@ namespace Workers {
             if (inQueue.Count > 0) { 
                 NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
                 if (outQueue.Count < 2) {
+#if USE_SPEEX
                     byte[] buffer = new byte[mcIn.length];
                     if (temporalBuffer == null) temporalBuffer = new float[mcIn.length * 10]; // mcIn.length*10
                     System.Runtime.InteropServices.Marshal.Copy(mcIn.pointer, buffer, 0, mcIn.length);
-                    int len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, mcIn.length);
-                    // Fix frequency and stereo.
+                    int len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
+#else
+                    int len = mcIn.length / 4;
+                    if (temporalBuffer == null) temporalBuffer = new float[len];
+                    System.Runtime.InteropServices.Marshal.Copy(mcIn.pointer, temporalBuffer, 0, len);
+#endif
                     FloatMemoryChunk mcOut = new FloatMemoryChunk(len * 6);
                     for (int i = 0; i < len; ++i) {
                         mcOut.buffer[i * 6 + 0] =
