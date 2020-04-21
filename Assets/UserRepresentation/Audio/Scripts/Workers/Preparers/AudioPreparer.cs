@@ -14,6 +14,7 @@ namespace Workers {
 
         public AudioPreparer(QueueThreadSafe _inQueue, int _preferredBufferFill=0) : base(WorkerType.End) {
             inQueue = _inQueue;
+            if (inQueue == null) Debug.LogError($"AudioPreparer: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
             if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
             preferredBufferFill = _preferredBufferFill;
