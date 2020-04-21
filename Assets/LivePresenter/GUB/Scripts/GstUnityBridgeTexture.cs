@@ -229,34 +229,27 @@ public class GstUnityBridgeTexture : MonoBehaviour
         }
     }
 
-    public void Initialize()
-    {
-        if (!m_HasBeenInitialized)
-        {
+    public void Initialize() {
+        if (!m_HasBeenInitialized) {
             Debug.Log("FPA GstUnityBrideTexture Initialize");
             m_HasBeenInitialized = true;
 
             m_EventProcessor = GetComponent<EventProcessor>();
-            if (m_EventProcessor == null)
-            {
+            if (m_EventProcessor == null) {
                 m_EventProcessor = gameObject.AddComponent<EventProcessor>();
             }
 
             m_instanceHandle = GCHandle.Alloc(this);
-
             m_Pipeline = new GstUnityBridgePipeline(name + GetInstanceID(), OnFinish, OnError, OnQos, (IntPtr)m_instanceHandle);
-
             Resize(m_Width, m_Height);
 
             Material mat = m_TargetMaterial;
-            if (mat == null && GetComponent<Renderer>())
-            {
+            if (mat == null && GetComponent<Renderer>()) {
                 // If no material is given, use the first one in the Renderer component
                 mat = GetComponent<Renderer>().material;
             }
 
-            if (mat != null)
-            {
+            if (mat != null) {
                 string tex_name = m_IsAlpha ? "_AlphaTex" : "_MainTex";
                 mat.SetTexture(tex_name, m_Texture);
                 mat.SetTextureScale(tex_name, new Vector2(Mathf.Abs(mat.mainTextureScale.x) * (m_FlipX ? -1F : 1F),
