@@ -402,6 +402,8 @@ MonoBehaviour:
   - Assets/Bakery/examples/content/floor_lamp.FBX
   uvOverlapAssetList: 00000000ffffffff
   xatlasWarningShown: 0
+  checkerPreviewOn: 0
+  rtSceneViewPreviewOn: 0
   renderSettingsBounces: 5
   renderSettingsGISamples: 16
   renderSettingsGIBackFaceWeight: 0
@@ -422,9 +424,11 @@ MonoBehaviour:
   renderSettingsOverwriteWarning: 0
   renderSettingsAutoAtlas: 1
   renderSettingsUnwrapUVs: 1
+  renderSettingsForceDisableUnwrapUVs: 0
   renderSettingsMaxAutoResolution: 4096
   renderSettingsMinAutoResolution: 16
   renderSettingsUnloadScenes: 1
+  renderSettingsAdjustSamples: 1
   renderSettingsGILODMode: 0
   renderSettingsGILODModeEnabled: 1
   renderSettingsCheckOverlaps: 0
@@ -454,14 +458,24 @@ MonoBehaviour:
   renderSettingsPrefabWarning: 1
   renderSettingsSplitByScene: 0
   renderSettingsUVPaddingMax: 0
+  renderSettingsPostPacking: 1
+  renderSettingsHoleFilling: 0
   renderSettingsBeepOnFinish: 0
   renderSettingsExportTerrainAsHeightmap: 1
   renderSettingsRTXMode: 0
-  renderSettingsLightProbeMode: 0
+  renderSettingsLightProbeMode: 1
   renderSettingsClientMode: 0
   renderSettingsServerAddress: 127.0.0.1
   renderSettingsUnwrapper: 0
   renderSettingsExportTerrainTrees: 0
   renderSettingsShowPerf: 1
+  renderSettingsSampleDiv: 1
+  renderSettingsLegacyDenoiser: 0
+  renderSettingsAtlasPacker: 0
+  renderSettingsBatchPoints: 1
+  renderSettingsRTPVExport: 1
+  renderSettingsRTPVSceneView: 0
+  renderSettingsRTPVWidth: 640
+  renderSettingsRTPVHeight: 360
   modifiedMeshPaddingArray: 
   modifiedMeshUnwrapperArray: 

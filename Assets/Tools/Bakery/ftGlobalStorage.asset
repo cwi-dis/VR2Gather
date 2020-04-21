@@ -14,32 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modifiedAssetPathList:
   - Assets/Bakery/examples/content/sponza/sponza.FBX
-  - "Assets/Entropy/TVSet/Geo/Props/Geometr\xEDa_Foco_01.fbx"
-  - "Assets/Entropy/TVSet/Geo/Props/Geometr\xEDa_Foco_02.fbx"
-  - "Assets/Entropy/TVSet/Geo/Props/Geometr\xEDa_Foco_03.fbx"
-  - Assets/Entropy/TVSet/Geo/V2/TV_Set02.fbx
-  - Assets/Entropy/TVSet/Geo/Props/Props_TV_Set_02.fbx
-  - Assets/Entropy/TVSet/Geo/Male.FBX
-  - Assets/Entropy/TVSet/Geo/Props/Props_TV_Set.fbx
-  - Assets/Entropy/TVSet/Geo/Props/PanelTras.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
-  - Assets/Pilots/Pilot2/Geo/V2/TV_Set02.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Techo.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set_02.fbx
   - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_01.fbx"
   - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_02.fbx"
   - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_03.fbx"
-  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set_02.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/PanelTras.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos1.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Techo.fbx
   - Assets/Pilots/Pilot2/Geo/tube.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/Lamp_01.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/Lamp_00.FBX
   - Assets/Pilots/Pilot2/Geo/Props/cylinder.fbx
-  modifiedAssetPaddingHash: aaf8cc2e28ed28a38ba46841a6ac21ecb942f501323fd3d9e55031ee7c8f1ac29c06e6e6363fd3d97e8f1ac281d73af4999cc3f6b82bfd9a6e24a7bc353fd3d931da72aa471df3d3323fd3d9f58126fc3f3fd3d9363fd3d9363fd3d9363fd3d93e3fd3d9383fd3d9
+  - Assets/Pilots/Pilot2/Geo/Props/PanelTras.FBX
+  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos1.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
+  modifiedAssetPaddingHash: 00000000363fd3d9363fd3d9383fd3d9fedaef608ba46841d07fbf76343fd3d9343fd3d9323fd3d9393fd3d9e6a8fae55e8f1ac2363fd3d9333fd3d9363fd3d9343fd3d9618f1ac2
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -423,11 +415,23 @@ MonoBehaviour:
     padding: 2e000000460000002a000000110000000e0000000c0000000400000033000000330000003300000033000000330000003300000033000000330000000a00000007000000060000002b0000002b00000011000000140000001400000014000000140000002a0000001d000000320000003200000032000000320000002a000000080000000d0000000500000087000000fa00000087000000fa00000087000000fa00000087000000fa00000087000000fb00000087000000fb00000087000000fb00000087000000fb00000087000000fb00000051000000510000005100000051000000510000005100000051000000510000005100000051000000510000000c00000006000000060000002700000028000000390000002b000000150000002700000000010000ba0000009b0000009b000000b70000009d000000b7000000b7000000b70000009b000000b70000009d000000b7000000b7000000b70000009b0000009b0000009b00000083000000ba00000000010000ba0000009b0000009b000000b70000009d000000b7000000b7000000b70000009b000000b70000009d000000b7000000b7000000b70000009b0000009b0000009b00000083000000000100002700000006000000270000002700000027000000270000002d0000001000000010000000230000006a000000000100006a000000000100006a000000000100006a000000000100001e0000002c000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000210000005c000000000100005c000000000100005c000000000100005c000000000100001a00000026000000230000006a000000000100006a000000000100006a000000000100006a000000000100001e0000002c000000630000004300000000010000000100004300000000010000430000000001000043000000430000009400000094000000430000009400000043000000940000004300000024000000270000004600000030000000360000002d000000360000001d0000001d0000001d0000001d0000001d0000001d0000001d0000001d00000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad0000000001000000010000ad000000000100001b0000001b0000001b0000001b0000001b0000001b0000001b0000001b0000001b0000001b000000000100000001000000010000000100008c00000000010000000100000001000000010000000100000001000000010000000100008c00000000010000000100000001000000010000000100000001000000010000000100008c00000000010000000100000001000000010000000100000001000000010000000100008c000000000100000001000000010000000100004600000046000000460000004900000049000000490000004900000024000000240000002400000024000000220000001800000004000000
     unwrapper: 
   - meshName:
+    - Pared
+    padding: 01000000
+    unwrapper: 00000000
+  - meshName:
+    - Techo
+    padding: 01000000
+    unwrapper: 00000000
+  - meshName:
+    - Tramoya
+    padding: 03000000
+    unwrapper: 00000000
+  - meshName:
+    - Asa01
     - cuerpo01
     - lampara01
     - palas01
-    - Asa01
-    padding: 19000000810000002700000046000000
+    padding: 4600000019000000810000001c000000
     unwrapper: 00000000000000000000000000000000
   - meshName:
     - Asa02
@@ -438,201 +442,68 @@ MonoBehaviour:
     - Asa03
     - cuerpo03
     - Palas03
-    padding: 430000002000000036000000
+    padding: 430000002000000026000000
     unwrapper: 000000000000000000000000
   - meshName:
-    - Plataforma_Presentador
-    - Paredes_Lat
-    - Suelo
-    - Columnas
-    - Techo
-    padding: 0d00000002000000010000000200000001000000
-    unwrapper: 0000000000000000000000000000000000000000
+    - Tube001
+    padding: 07000000
+    unwrapper: 00000000
   - meshName:
-    - Tramoya
+    - Cylinder001
+    padding: 07000000
+    unwrapper: 00000000
+  - meshName:
+    - lamp1
     padding: 05000000
     unwrapper: 00000000
   - meshName:
-    - head_jim001
-    padding: 11000000
+    - Cylinder
+    padding: 02000000
     unwrapper: 00000000
   - meshName:
-    - Plataforma_presentador
-    - Plataforma_2
-    padding: 0500000003000000
-    unwrapper: 0000000000000000
-  - meshName:
-    - polySurface29
-    - Letras
-    - pSphere3
-    - pTorus7
-    - pSphere4
     - geo02
-    padding: 07000000090000003500000012000000350000000a000000
+    - Letras
+    - polySurface29
+    - pSphere3
+    - pSphere4
+    - pTorus7
+    padding: 0a0000000900000007000000350000003500000012000000
     unwrapper: 000000000000000000000000000000000000000000000000
+  - meshName:
+    - Escalon
+    - Escalon01
+    padding: 0400000004000000
+    unwrapper: 0000000000000000
   - meshName:
     - cilindro focos
     padding: 01000000
     unwrapper: 00000000
   - meshName:
-    - Escalon01
-    - Escalon
-    padding: 0500000005000000
-    unwrapper: 0000000000000000
-  - meshName:
-    - Pared
-    - Paredes_Lat
-    - Suelo
-    - Columnas
-    - Techo
-    padding: 0200000010000000020000000300000002000000
-    unwrapper: 0000000000000000000000000000000000000000
-  - meshName:
-    - cuerpo01
-    - lampara01
-    - palas01
-    - Asa01
-    padding: 1e0000009b0000002f00000054000000
-    unwrapper: 00000000000000000000000000000000
-  - meshName:
-    - Asa02
-    - cuerpo02
-    padding: 5200000021000000
-    unwrapper: 0000000000000000
-  - meshName:
-    - Asa03
-    - cuerpo03
-    - Palas03
-    padding: 500000002700000041000000
-    unwrapper: 000000000000000000000000
-  - meshName:
-    - Tramoya
-    padding: 06000000
+    - cilindro focos.001
+    padding: 04000000
     unwrapper: 00000000
   - meshName:
-    - Plataforma_presentador
-    - Plataforma_2
-    - Tramoya
-    padding: 23000000120000002d000000
-    unwrapper: 000000000000000000000000
+    - Suelo
+    padding: 01000000
+    unwrapper: 00000000
   - meshName:
-    - polySurface29
-    - Letras
-    - pSphere3
-    - pTorus7
-    - pSphere4
-    - geo02
-    padding: 080000000b0000004000000016000000400000000c000000
-    unwrapper: 000000000000000000000000000000000000000000000000
-  - meshName:
-    - cilindro focos.001
-    padding: 05000000
+    - Mesa
+    padding: 07000000
     unwrapper: 00000000
   - meshName:
     - Panel
     - Panel.001
-    padding: 050000000b000000
+    padding: 0400000009000000
     unwrapper: 0000000000000000
-  - meshName:
-    - Mesa
-    padding: 08000000
-    unwrapper: 00000000
-  - meshName:
-    - Suelo
-    padding: 01000000
-    unwrapper: 00000000
-  - meshName:
-    - Pared
-    padding: 01000000
-    unwrapper: 00000000
-  - meshName:
-    - Techo
-    padding: 01000000
-    unwrapper: 00000000
-  - meshName:
-    - Tube001
-    padding: 09000000
-    unwrapper: 00000000
-  - meshName:
-    - Cylinder
-    padding: 03000000
-    unwrapper: 00000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
   - Assets/Bakery/examples/content/floor_lamp.FBX
-  - Assets/Entropy/TVSet/Geo/Props/Tramoya_02.fbx
-  - Assets/Entropy/TVSet/Geo/Props/Lamp_01.FBX
-  - Assets/Entropy/TVSet/Geo/Props/Lamp_00.FBX
-  - Assets/Entropy/TVSet/Geo/tube.FBX
-  - Assets/Entropy/TVSet/Geo/Characters/Advisor_3.fbx
-  - Assets/Entropy/TVSet/Geo/Characters/Advisor_1.fbx
-  - Assets/Entropy/TVSet/Geo/Characters/Howard.fbx
-  - Assets/Entropy/TVSet/Geo/Characters/Advisor_2.fbx
-  - Assets/Entropy/TVSet/Geo/PanelHoward.FBX
-  - Assets/Entropy/TVSet/Geo/Props/cylinder.fbx
-  - Assets/Entropy/TVSet/Geo/Presenter.FBX
-  - Assets/Pilot1/Art/Environments/SueloMojado/Car.FBX
-  - Assets/Pilot1/Environments/New Assets/Mesa_181109.fbx
-  - Assets/Pilot1/Environments/Rooms_noBake/Occluder_box.FBX
-  - Assets/Pilot1/Art/Environments/SueloMojado/capsula.FBX
-  - Assets/Pilot1/Environments/New Assets/Puertas_181109.fbx
-  - Assets/Pilot1/Art/Models/sphere2_fbx.fbx
-  - Assets/Pilot1/Art/Environments/Rooms_noBake/Fan.FBX
-  - Assets/Pilot1/Art/Environments/Rooms_noBake/COMISARIA_ALL_BAKE_V1.fbx
-  - Assets/Pilot1/Environments/NewRoom/Comisaria_01.fbx
-  - Assets/Pilot1/Environments/New Assets/Marco_181109.fbx
-  - Assets/Pilot1/Environments/New Assets/Cajones_181112.fbx
-  - Assets/Pilot1/Environments/CrimeScene/Sources/cinta.FBX
-  - Assets/Pilot1/Environments/CrimeScene/Sources/BarrierMetal_A.FBX
-  - Assets/Pilots/Pilot2/Geo/Presenter.FBX
-  - Assets/Pilots/Pilot1/Art/Environments/SueloMojado/Car.FBX
-  - Assets/Pilots/Pilot2/Geo/SemiSphereVertical.FBX
-  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_3.fbx
-  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_1.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Lamp_00.FBX
-  - Assets/Pilots/Pilot2/Geo/tube.FBX
-  - Assets/Pilots/Pilot2/Geo/V2/TV Set_Animacion01.fbx
-  - Assets/Pilots/Pilot1/Environments/New Assets/Mesa_181109.fbx
-  - Assets/Pilots/Pilot1/Environments/Rooms_noBake/Occluder_box.FBX
-  - Assets/Pilots/Pilot1/Art/Environments/SueloMojado/capsula.FBX
-  - Assets/Pilots/Pilot2/Geo/SceneComplete/SceneComplete.fbx
-  - Assets/Pilots/Pilot2/Geo/SemiSphere.FBX
-  - Assets/Pilots/Pilot1/Environments/New Assets/Puertas_181109.fbx
-  - Assets/Pilots/Pilot2/Geo/Characters/Howard.fbx
-  - Assets/Pilots/Pilot2/Geo/Techo.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Lamp_01.FBX
-  - Assets/Pilots/Pilot2/Geo/Sphere_360.FBX
-  - Assets/Pilots/Pilot1/Art/Models/sphere2_fbx.fbx
-  - Assets/Pilots/Pilot2/Geo/V2/Window.FBX
-  - Assets/Pilots/Pilot1/Art/Environments/Rooms_noBake/Fan.FBX
-  - Assets/Pilots/Pilot2/Geo/Inverted_Sphere.FBX
-  - Assets/Pilots/Pilot1/Art/Environments/Rooms_noBake/COMISARIA_ALL_BAKE_V1.fbx
-  - Assets/Pilots/Pilot2/Geo/Characters/Advisor_2.fbx
-  - Assets/Pilots/Pilot2/Geo/PanelHoward.FBX
-  - Assets/Pilots/Pilot1/Environments/NewRoom/Comisaria_01.fbx
-  - Assets/Pilots/Pilot2/Geo/V2/TV_Set_Animation.FBX
-  - Assets/Pilots/Pilot1/Environments/New Assets/Marco_181109.fbx
-  - Assets/Pilots/Pilot1/Environments/New Assets/Cajones_181112.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cylinder.fbx
-  - Assets/Pilots/Pilot2/Geo/V2/animacion05.fbx
-  - Assets/Pilots/Pilot2/Geo/Header/Cabecera_Animacion_01.fbx
-  - Assets/Pilots/Pilot1/Environments/CrimeScene/Sources/cinta.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Tramoya_02.fbx
-  - Assets/Pilots/Pilot1/Environments/CrimeScene/Sources/BarrierMetal_A.FBX
-  - Assets/Pilots/Pilot2/Geo/SemiSphere1-1.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos1.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Techo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Escama.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Base_users.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Plataforma_suelo.fbx
   - Assets/Pilots/Pilot2/Geo/Props/luztecho.fbx
-  uvOverlapAssetList: 00000000ffffffff000000000101000001010000000000000000000000000000000000000000000000000000000000000000000001010000000000000101000001010000010100000101000000000000010100000101000001010000010100000000000000000000000000000101000000000000000000000000000001010000000000000000000000000000010100000101000001010000000000000101000000000000000000000101000000000000010100000000000000000000000000000101000000000000000000000101000001010000010100000101000000000000000000000000000000000000000000000000000000000000010100000101000001010000000000000101000001010000010100000101000001010000010100000000000000000000
+  - Assets/Pilots/Pilot2/Geo/Props/Escama.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Plataforma_suelo.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Base_users.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/Tramoya_02.fbx
+  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000
   xatlasWarningShown: 0
   renderSettingsBounces: 5
   renderSettingsGISamples: 16
@@ -689,11 +560,11 @@ MonoBehaviour:
   renderSettingsBeepOnFinish: 0
   renderSettingsExportTerrainAsHeightmap: 1
   renderSettingsRTXMode: 0
-  renderSettingsLightProbeMode: 0
+  renderSettingsLightProbeMode: 1
   renderSettingsClientMode: 0
   renderSettingsServerAddress: 127.0.0.1
   renderSettingsUnwrapper: 0
   renderSettingsExportTerrainTrees: 0
   renderSettingsShowPerf: 1
-  modifiedMeshPaddingArray: 050000000b000000
-  modifiedMeshUnwrapperArray: 0000000000000000
+  modifiedMeshPaddingArray: 4600000019000000810000001c000000
+  modifiedMeshUnwrapperArray: 00000000000000000000000000000000

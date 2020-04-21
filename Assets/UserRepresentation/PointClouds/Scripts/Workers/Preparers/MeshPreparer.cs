@@ -10,8 +10,10 @@ namespace Workers {
         int[] indices;
         Color32[] colors;
         float currentCellSize = 0.008f;
+        QueueThreadSafe InQueue;
 
-        public MeshPreparer() : base(WorkerType.End) {
+        public MeshPreparer(QueueThreadSafe _InQueue) : base(WorkerType.End) {
+            InQueue = _InQueue;
             PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
             Start();
         }
@@ -29,35 +31,36 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null && !isReady) {
-                lock (token) {
-                    unsafe {
-                        int bufferSize = token.currentPointcloud.get_uncompressed_size();
-                        currentCellSize = token.currentPointcloud.cellsize();
-                        // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
-                        int size = bufferSize / PointCouldVertexSize;
-                        int dampedSize = (int)(size * Config.Instance.memoryDamping);
-                        if (vertexArray.Length < dampedSize) {
-                            vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(dampedSize, Unity.Collections.Allocator.TempJob);
-                            currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
-                        }
-                        int ret = token.currentPointcloud.copy_uncompressed(currentBuffer, bufferSize);
-                        // Check that sizes make sense. Note that copy_uncompressed returns the number of points
-                        if (ret != size) {
-                            Debug.LogError($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
-                        }
+            if (InQueue.Count>0 && !isReady) {
+                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.Dequeue();
+                unsafe {
+                    int bufferSize = pc.get_uncompressed_size();
+                    currentCellSize = pc.cellsize();
 
-                        points = new Vector3[size];
-                        indices = new int[size];
-                        colors = new Color32[size];
-                        for (int i = 0; i < size; i++) {
-                            points[i] = vertexArray[i].vertex;
-                            indices[i] = i;
-                            colors[i] = vertexArray[i].color;
-                        }
-                        lock (this) isReady = true;
-                        Next();
+                    // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
+                    int size = bufferSize / PointCouldVertexSize;
+                    int dampedSize = (int)(size * Config.Instance.memoryDamping);
+                    if (vertexArray.Length < dampedSize) {
+                        vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(dampedSize, Unity.Collections.Allocator.Persistent);
+                        currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
                     }
+                    int ret = pc.copy_uncompressed(currentBuffer, bufferSize);
+                    pc.free();
+                    // Check that sizes make sense. Note that copy_uncompressed returns the number of points
+                    if (ret != size) {
+                        Debug.LogError($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
+                    }
+
+                    points = new Vector3[size];
+                    indices = new int[size];
+                    colors = new Color32[size];
+                    for (int i = 0; i < size; i++) {
+                        points[i] = vertexArray[i].vertex;
+                        indices[i] = i;
+                        colors[i] = vertexArray[i].color;
+                    }
+                    lock (this) isReady = true;
+                    //Next();
                 }
             }
         }
@@ -65,12 +68,11 @@ namespace Workers {
         public bool GetMesh(ref Mesh mesh) {
             lock (this) {
                 if (isReady) {
-                    if (mesh != null) {
-                        mesh.Clear();
-                        mesh.vertices = points;
-                        mesh.colors32 = colors;
-                        mesh.SetIndices(indices, MeshTopology.Points, 0);
-                    }
+                    mesh.Clear();
+                    mesh.vertices = points;
+                    mesh.colors32 = colors;
+                    // mesh.SetIndices(indices, 0, indices.Length, MeshTopology.Points, 0);
+                    mesh.SetIndices(indices, MeshTopology.Points, 0);
                     isReady = false;
                     return true;
                 }

@@ -28,13 +28,16 @@ public class sub
 #else
         const string myDllName = "signals-unity-bridge.so";
 #endif
+        // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
+        // after matching the API used here with that in the C++ code.
+        const System.Int64 SUB_API_VERSION = 0x20200327A;
 
         // Creates a new pipeline.
         // name: a display name for log messages. Can be NULL.
         // The returned pipeline must be freed using 'sub_destroy'.
         // SUB_EXPORT sub_handle* sub_create(const char* name);
         [DllImport(myDllName)]
-        extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline);
+        extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, System.Int64 api_version = SUB_API_VERSION);
 
         // Destroys a pipeline. This frees all the resources.
         // SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -52,6 +55,16 @@ public class sub
         // SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);;
         [DllImport(myDllName)]
         extern static public bool sub_get_stream_info(IntPtr handle, int streamIndex, ref StreamDesc desc);
+
+        // Enables a quality or disables a tile. There is at most one stream enabled per tile.
+        // Associations between streamIndex and tiles are given by sub_get_stream_info().
+        // Beware that disabling all qualities from all tiles will stop the session.
+        // SUB_EXPORT bool sub_enable_stream(sub_handle* h, int tileNumber, int quality);
+        // SUB_EXPORT bool sub_disable_stream(sub_handle* h, int tileNumber);
+        [DllImport(myDllName)]
+        extern static public bool sub_enable_stream(IntPtr handle, int tileNumber, int quality);
+        [DllImport(myDllName)]
+        extern static public bool sub_disable_stream(IntPtr handle, int tileNumber);
 
         // Plays a given URL.
         // SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
