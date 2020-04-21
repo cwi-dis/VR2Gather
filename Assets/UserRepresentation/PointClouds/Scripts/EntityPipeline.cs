@@ -67,7 +67,7 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 break;
             case "net":
-                reader = new Workers.NetReader(cfg.NetConfig); // TODO(FPA): Fix new Queue mode.
+                reader = new Workers.NetReader(cfg.NetConfig, codecQueue);
                 codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 break;
         }        

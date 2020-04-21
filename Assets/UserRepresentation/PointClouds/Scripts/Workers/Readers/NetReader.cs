@@ -16,14 +16,15 @@ namespace Workers
         System.IntPtr subHandle;
         System.IntPtr currentBuffer;
         int currentSize = 0;
+        QueueThreadSafe outQueue;
 
-        public NetReader(Config._User._NetConfig cfg) :base(WorkerType.Init) {
+        public NetReader(Config._User._NetConfig cfg, QueueThreadSafe _outQueue) :base(WorkerType.Init) {
+            outQueue = _outQueue;
             hostName = cfg.hostName;
             port = cfg.port;
         }
 
-        public override void OnStop()
-        {
+        public override void OnStop() {
             base.OnStop();
             if (currentBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(currentBuffer);
         }
@@ -33,8 +34,7 @@ namespace Workers
             base.Update();
             TcpClient clt = new TcpClient(hostName, port);
             List<byte> allData = new List<byte>();
-            using (NetworkStream stream = clt.GetStream())
-            {
+            using (NetworkStream stream = clt.GetStream()) {
                 byte[] data = new byte[1024];
                 do {
                     int numBytesRead = stream.Read(data, 0, data.Length);

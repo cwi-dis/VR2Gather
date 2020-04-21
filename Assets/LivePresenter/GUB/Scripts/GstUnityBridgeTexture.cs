@@ -233,6 +233,7 @@ public class GstUnityBridgeTexture : MonoBehaviour
     {
         if (!m_HasBeenInitialized)
         {
+            Debug.Log("FPA GstUnityBrideTexture Initialize");
             m_HasBeenInitialized = true;
 
             m_EventProcessor = GetComponent<EventProcessor>();
