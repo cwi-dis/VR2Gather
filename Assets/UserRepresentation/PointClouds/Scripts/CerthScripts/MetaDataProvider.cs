@@ -7,7 +7,7 @@ using System.IO;
 namespace DataProviders
 {
 
-    public class MetaDataProvider : MonoBehaviour, IDataProvider
+    public class MetaDataProvider : MonoBehaviour, PCLIdataProvider
     {
         public string MetaDataRMQExchangeName = "";
         private bool isReceiverConnected = false;

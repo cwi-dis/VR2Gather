@@ -3,7 +3,7 @@ using Utils;
 
 namespace DataProviders
 {
-    public interface IDataProvider
+    public interface PCLIdataProvider
     {
         event EventHandler<EventArgs<byte[]>> OnNewPCLData;
         event EventHandler<EventArgs<byte[]>> OnNewMetaData;

@@ -44,7 +44,7 @@ namespace DataProviders
 
     }
 
-    public class PCLDataProvider : MonoBehaviour, IDataProvider
+    public class PCLDataProvider : MonoBehaviour, PCLIdataProvider
     {
         public string PCLDataExchangeName = "";
         private bool isReceiverConnected = false;

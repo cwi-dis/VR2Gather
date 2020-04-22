@@ -19,8 +19,8 @@ public class PointCloudConstructor : MonoBehaviour
     private static bool received_new_pcl = false;
     private object m_lockobj = new object();
     private int ind = 0;
-    private IDataProvider m_DataProvider;
-    private IDataProvider p_DataProvider;
+    private PCLIdataProvider m_DataProvider;
+    private PCLIdataProvider p_DataProvider;
     private static float[] minAndMaxCoords = { -0.6f, 0.6f, -2.0f, 5.0f, -0.5f, 0.5f }; // Bounding box 
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch1 = new System.Diagnostics.Stopwatch();
