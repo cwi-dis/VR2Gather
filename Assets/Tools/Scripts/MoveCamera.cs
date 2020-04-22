@@ -15,7 +15,7 @@ public class MoveCamera : MonoBehaviour
     }
 
     void Start() {
-        Cursor.lockState = CursorLockMode.Confined;
+        //Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update() {
