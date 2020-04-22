@@ -50,8 +50,13 @@
                 "initialDelay": 0
             },
             "PCSelfConfig": {
-                "configFilename": "../cameraconfig.xml",
-                "voxelSize": 0.004999999888241291,
+            	"RS2ReaderConfig" : {
+					"configFilename": "../cameraconfig.xml",
+				},
+            	"CerthReaderConfig" : {
+					"configFilename": "../cameraconfig.xml",
+				},
+				"voxelSize": 0.004999999888241291,
                 "Encoder": {
                     "octreeBits": 10
                 },

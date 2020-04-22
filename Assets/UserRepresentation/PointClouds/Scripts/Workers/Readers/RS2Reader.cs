@@ -14,7 +14,7 @@ namespace Workers {
             out2Queue = _out2Queue;
             voxelSize = cfg.voxelSize;
             try {
-                reader = cwipc.realsense2(cfg.configFilename);  
+                reader = cwipc.realsense2(cfg.RS2ReaderConfig.configFilename);  
                 if (reader != null) {
                     Start();
                     Debug.Log("PCRealSense2Reader: Started.");
