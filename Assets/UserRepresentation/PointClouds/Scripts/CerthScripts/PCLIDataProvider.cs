@@ -1,7 +1,7 @@
 ﻿using System;
 using Utils;
 
-namespace DataProviders
+namespace PCLDataProviders
 {
     public interface PCLIdataProvider
     {

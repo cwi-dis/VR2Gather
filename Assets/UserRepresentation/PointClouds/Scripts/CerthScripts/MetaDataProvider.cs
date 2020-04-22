@@ -4,7 +4,7 @@ using Utils;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace DataProviders
+namespace PCLDataProviders
 {
 
     public class MetaDataProvider : MonoBehaviour, PCLIdataProvider
