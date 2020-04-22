@@ -73,7 +73,7 @@ public class PointCloudConstructor : MonoBehaviour
                 var buffer = e.Value; // Buffer 's data
                 var gcRes = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                 var pnt = gcRes.AddrOfPinnedObject(); // Buffer 's address
-                metadataReceived = DllFunctions.received_metadata(pnt, buffer.Length, pcl_id);
+                metadataReceived = native_pointcloud_receiver_pinvoke.received_metadata(pnt, buffer.Length, pcl_id);
             }
         }
     }
@@ -93,9 +93,9 @@ public class PointCloudConstructor : MonoBehaviour
                 var buffer = e.Value; // Buffer 's data
                 var gcRes = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                 var pnt = gcRes.AddrOfPinnedObject(); // Buffer 's address
-                IntPtr pclPtr = DllFunctions.callColorizedPCloudFrameDLL(pnt, buffer.Length, pcl_id); // Pointer of the returned structure
+                IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(pnt, buffer.Length, pcl_id); // Pointer of the returned structure
 
-                DllFunctions.PointCloud currentPcl = (DllFunctions.PointCloud)Marshal.PtrToStructure(pclPtr, typeof(DllFunctions.PointCloud)); // C# struct equivalent of the one produced by the native C++ DLL
+                native_pointcloud_receiver_pinvoke.PointCloud currentPcl = (native_pointcloud_receiver_pinvoke.PointCloud)Marshal.PtrToStructure(pclPtr, typeof(native_pointcloud_receiver_pinvoke.PointCloud)); // C# struct equivalent of the one produced by the native C++ DLL
                 stopWatch.Stop();
 
                 // Clearing the lists of the deserialized buffer 's data
@@ -223,7 +223,7 @@ public class PointCloudConstructor : MonoBehaviour
     }
 
     // Allocating memory and marshalling for the metadata
-    void AllocateMemForParams(DllFunctions.PointCloud pcl)
+    void AllocateMemForParams(native_pointcloud_receiver_pinvoke.PointCloud pcl)
     {
         cameraVertices = new int[pcl.numDevices]; // vertices per camera
         vertexChannels = new int[pcl.numDevices]; // channels per vertex
@@ -242,7 +242,7 @@ public class PointCloudConstructor : MonoBehaviour
     }
 
     // Allocating memory the pointcloud data
-    void AllocateMemForData(DllFunctions.PointCloud pcl)
+    void AllocateMemForData(native_pointcloud_receiver_pinvoke.PointCloud pcl)
     {
         vertices = new float[pcl.numDevices][];
         normals = new float[pcl.numDevices][];
@@ -257,7 +257,7 @@ public class PointCloudConstructor : MonoBehaviour
     }
 
     // Defining pointcloud 's metadata
-    void DefineParams(DllFunctions.PointCloud pcl)
+    void DefineParams(native_pointcloud_receiver_pinvoke.PointCloud pcl)
     {
         lock (m_lockobj)
         {
@@ -270,7 +270,7 @@ public class PointCloudConstructor : MonoBehaviour
     }
 
     // Defining pointcloud 's data for the shader
-    void DefineVertsNormsColors(DllFunctions.PointCloud pcl)
+    void DefineVertsNormsColors(native_pointcloud_receiver_pinvoke.PointCloud pcl)
     {
         //Marshaling for the vertices
         IntPtr[] vertexPtr = new IntPtr[pcl.numDevices];

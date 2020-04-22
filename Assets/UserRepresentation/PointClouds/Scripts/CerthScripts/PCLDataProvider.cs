@@ -68,7 +68,7 @@ namespace DataProviders
         private void Start()
         {
             if (PCLDataExchangeName == "pclData.json")
-                DllFunctions.set_number_wrappers(1);
+                native_pointcloud_receiver_pinvoke.set_number_wrappers(1);
 
             config = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(Application.streamingAssetsPath + "/" + PCLDataExchangeName));
             m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = config.remote_tvm_address;

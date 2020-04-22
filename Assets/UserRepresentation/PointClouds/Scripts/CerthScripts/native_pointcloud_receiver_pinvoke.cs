@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-public static class DllFunctions
+public static class native_pointcloud_receiver_pinvoke
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct PointCloud
