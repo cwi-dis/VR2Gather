@@ -174,14 +174,6 @@ namespace NSpeex
                 return 0;
 
             return bits.Write(outData, outOffset, outCount);
-
-            /*
-
-
-            int result = encoder.Encode(bits, inData);
-            if (result == 0) return 0;
-            return bits.Write(outData, outOffset, outCount);
-            */
         }
 
 
