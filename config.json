@@ -51,10 +51,10 @@
             },
             "PCSelfConfig": {
             	"RS2ReaderConfig" : {
-					"configFilename": "../cameraconfig.xml",
+					"configFilename": "../cameraconfig.xml"
 				},
             	"CerthReaderConfig" : {
-					"configFilename": "../cameraconfig.xml",
+					"configFilename": "../cameraconfig.xml"
 				},
 				"voxelSize": 0.004999999888241291,
                 "Encoder": {
