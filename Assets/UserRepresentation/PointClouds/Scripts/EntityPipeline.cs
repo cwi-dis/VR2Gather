@@ -37,7 +37,15 @@ public class EntityPipeline : MonoBehaviour {
 
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
-                reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue, codecQueue);
+            case "pccerth":
+                if (cfg.sourceType == "pcself")
+                {
+                    reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue, codecQueue);
+                }
+                else // sourcetype == pccerth: same as pcself but using Certh capturer
+                {
+                    reader = new Workers.CerthReader(cfg.PCSelfConfig, preparerQueue, codecQueue);
+                }
                 try {
                     codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, codecQueue, writerQueue);
                 }
