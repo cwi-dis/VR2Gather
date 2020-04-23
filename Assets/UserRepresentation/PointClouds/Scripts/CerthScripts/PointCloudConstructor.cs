@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
+// xxxjack this class is no longer needed. Keeping it here for now, for reference.
+
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MetaDataProvider))]

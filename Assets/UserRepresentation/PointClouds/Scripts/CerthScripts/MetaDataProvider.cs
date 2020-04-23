@@ -6,6 +6,8 @@ using System.IO;
 
 namespace PCLDataProviders
 {
+    // xxxjack This class needs to get its configuration parameters (ultimately coming from config.json) as a parameter
+    // xxxjack Wonder whether this class serves a purpose or can be combined with PCLIDataProvider and metaDataProvider (because they're doing the same in the new structure).
 
     public class MetaDataProvider : MonoBehaviour, PCLIdataProvider
     {
