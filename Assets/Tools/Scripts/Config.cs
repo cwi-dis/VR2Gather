@@ -76,6 +76,14 @@ public class Config {
                 public int segmentLife;
                 public bool fileMirroring;
             }
+            [Serializable]
+            public class _TVMs {
+                public string PCLConnectionURI;
+                public string PCLExchangeName;
+                public string MetaConnectionURI;
+                public string MetaExchangeName;
+            }
+            public _TVMs     TVMs;
             public _Bin2Dash Bin2Dash;
             public _Bin2Dash AudioBin2Dash;
         }
