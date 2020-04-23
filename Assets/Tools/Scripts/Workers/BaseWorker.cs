@@ -6,7 +6,7 @@ namespace Workers {
     public class BaseWorker {
         public enum WorkerType { Init, Run, End };
 
-        bool                    bRunning = false;
+        protected bool          bRunning = false;
         public bool             isStopped { get; private set; }
         System.Threading.Thread thread;
         public bool isRunning { get { return bRunning; } }
@@ -41,20 +41,9 @@ namespace Workers {
                 Update();
                 System.Threading.Thread.Sleep(1);
             }
-            /*
-            // Wait to stop.
-            bool waitNext = false;
-            do {
-                for (int i = 0; i < nexts.Count; ++i)
-                    if (nexts[i].type != WorkerType.Init && nexts[i].bRunning)
-                        waitNext = true;
-            } while (waitNext);
-            */
             OnStop();
             isStopped = true;
         }
         protected virtual void Update(){ }
-//        public virtual int  available { get { return 0; } }
-//        public virtual bool GetBuffer(float[] dst, int len) { return false;  }
     }
 }

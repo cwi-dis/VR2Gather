@@ -37,7 +37,7 @@ namespace Workers
                 FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
                 if (sendBuffer == null) sendBuffer = new byte[(int)(mcIn.length)];
                 // Necesito calcular el tamaño del buffer.
-                if (outQueue.Count < 2) {
+                if (outQueue.Count < outQueue.Size) {
 #if USE_SPEEX
                     int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
                     NativeMemoryChunk mcOut = new NativeMemoryChunk(len);

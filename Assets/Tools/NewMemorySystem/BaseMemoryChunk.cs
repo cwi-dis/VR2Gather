@@ -28,6 +28,7 @@ public class BaseMemoryChunk {
     protected IntPtr        _pointer;
     int                     refCount;
     public NTPTools.NTPTime timeStamp;
+    public sub.FrameInfo    info;
     public int              length { get; protected set; }
 
     protected BaseMemoryChunk(IntPtr _pointer) {
