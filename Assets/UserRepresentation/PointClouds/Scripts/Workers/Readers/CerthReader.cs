@@ -6,7 +6,7 @@ using PCLDataProviders;
 using Utils;
 
 namespace Workers {
-    public class CerthReader : BaseWorker {
+    public class CerthReader{
         float voxelSize;
         QueueThreadSafe outQueue;
 
@@ -19,7 +19,7 @@ namespace Workers {
         private RabbitMQReceiver PLCRabbitMQReceiver = new RabbitMQReceiver();
         private RabbitMQReceiver MetaRabbitMQReceiver = new RabbitMQReceiver();
 
-        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue ) : base(WorkerType.Init) {
+        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue ){
             outQueue = _outQueue;
             voxelSize = cfg.voxelSize;
 
@@ -34,8 +34,11 @@ namespace Workers {
             MetaRabbitMQReceiver.Enabled = true;
         }
 
-        public override void OnStop() {
-            base.OnStop();
+        public void StopAndWait() {
+            Stop();
+        }
+
+        public void Stop() {
             PLCRabbitMQReceiver.OnDataReceived -= OnNewPCLData;
             PLCRabbitMQReceiver.Enabled = false;
             MetaRabbitMQReceiver.OnDataReceived -= OnNewMetaData;
