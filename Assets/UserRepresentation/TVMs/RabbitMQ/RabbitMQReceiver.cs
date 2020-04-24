@@ -76,6 +76,7 @@ public class RabbitMQReceiver
         try
         {
             m_ConnectionFactory.Uri = m_ConnectionProperties.ConnectionURI;
+            UnityEngine.Debug.Log($"xxxjack RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI}, exchange={m_ConnectionProperties.ExchangeName}");
             m_Connection = m_ConnectionFactory.CreateConnection();
             m_Model = m_Connection.CreateModel();
             if (String.IsNullOrEmpty(m_ConnectionProperties.QueueName))

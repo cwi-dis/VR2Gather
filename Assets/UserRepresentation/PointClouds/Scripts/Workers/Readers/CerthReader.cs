@@ -6,6 +6,16 @@ using PCLDataProviders;
 using Utils;
 
 namespace Workers {
+    public class MyRabbitMQReceiver : RabbitMQReceiver
+    {
+        public MyRabbitMQReceiver(string uri, string exchange)
+        {
+            ConnectionProperties.ConnectionURI = uri;
+            ConnectionProperties.ExchangeName = exchange;
+            Debug.Log($"xxxjack MyRabbitMQReceiver: uri={uri}, exchange={exchange}");
+        }
+    }
+
     public class CerthReader : BaseWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
     {
         float voxelSize;
@@ -19,8 +29,8 @@ namespace Workers {
         cwipc.pointcloud mostRecentPc;          // Stores the most recently received pointcloud (if any)
         const int pcl_id = 0;                   // Index of Cert pc constructor (constant for now)
 
-        private RabbitMQReceiver PCLRabbitMQReceiver = new RabbitMQReceiver();
-        private RabbitMQReceiver MetaRabbitMQReceiver = new RabbitMQReceiver();
+        private RabbitMQReceiver PCLRabbitMQReceiver;
+        private RabbitMQReceiver MetaRabbitMQReceiver;
 
         public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
@@ -28,30 +38,30 @@ namespace Workers {
             out2Queue = _out2Queue;
             voxelSize = cfg.voxelSize;
 
-            if (PCLRabbitMQReceiver == null)
-            {
-                Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
-                return;
-            }
-            if (MetaRabbitMQReceiver == null)
-            {
-                Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
-                return;
-            }
             if (cfg.CerthReaderConfig == null)
             {
                 Debug.LogError("CerthReader: CerthReaderConfig is null");
                 return;
             }
-            Debug.Log($"xxxjack certh config: uri={cfg.CerthReaderConfig.ConnectionURI}, pcl={cfg.CerthReaderConfig.PCLExchangeName}, meta={cfg.CerthReaderConfig.MetaExchangeName}");
+
+            PCLRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.PCLExchangeName);
+            if (PCLRabbitMQReceiver == null)
+            {
+                Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
+                return;
+            }
+
+            MetaRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.MetaExchangeName);
+            if (MetaRabbitMQReceiver == null)
+            {
+                Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
+                return;
+            }
+
             PCLRabbitMQReceiver.OnDataReceived += OnNewPCLData;
-            PCLRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.CerthReaderConfig.ConnectionURI;
-            PCLRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.CerthReaderConfig.PCLExchangeName;
             PCLRabbitMQReceiver.Enabled = true;
 
             MetaRabbitMQReceiver.OnDataReceived += OnNewMetaData;
-            MetaRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.CerthReaderConfig.ConnectionURI;
-            MetaRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.CerthReaderConfig.MetaExchangeName;
             MetaRabbitMQReceiver.Enabled = true;
         }
 
