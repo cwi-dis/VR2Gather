@@ -6,31 +6,47 @@ using PCLDataProviders;
 using Utils;
 
 namespace Workers {
-    public class CerthReader{
+    public class CerthReader : BaseWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
+    {
         float voxelSize;
         QueueThreadSafe outQueue;
+        QueueThreadSafe out2Queue;
 
         private PCLIdataProvider dataProvider;  // Connection to RabbitMQ over which normal RGBD data comes in.
         private PCLIdataProvider metaDataProvider;  // Connection to RabbitMQ over which metadata comes in.
         bool metaDataReceived = false;          // Set to true once metadata has been received
         GCHandle metaDataHandle;                // Set to unmanaged memory handle where metadata has been stored.
         cwipc.pointcloud mostRecentPc;          // Stores the most recently received pointcloud (if any)
+        const int pcl_id = 0;                   // Index of Cert pc constructor (constant for now)
 
-        private RabbitMQReceiver PLCRabbitMQReceiver = new RabbitMQReceiver();
+        private RabbitMQReceiver PCLRabbitMQReceiver = new RabbitMQReceiver();
         private RabbitMQReceiver MetaRabbitMQReceiver = new RabbitMQReceiver();
 
-        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue ){
+        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        {
             outQueue = _outQueue;
+            out2Queue = _out2Queue;
             voxelSize = cfg.voxelSize;
 
-            PLCRabbitMQReceiver.OnDataReceived += OnNewPCLData;
-            PLCRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.TVMs.PCLConnectionURI;
-            PLCRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.TVMs.PCLExchangeName;
-            PLCRabbitMQReceiver.Enabled = true;
+            if (PCLRabbitMQReceiver == null)
+            {
+                Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
+                return;
+            }
+            if (MetaRabbitMQReceiver == null)
+            {
+                Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
+                return;
+            }
+            Debug.Log($"xxxjack certh config: uri={cfg.CerthReaderConfig.ConnectionURI}, pcl={cfg.CerthReaderConfig.PCLExchangeName}, meta={cfg.CerthReaderConfig.MetaExchangeName}");
+            PCLRabbitMQReceiver.OnDataReceived += OnNewPCLData;
+            PCLRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.CerthReaderConfig.ConnectionURI;
+            PCLRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.CerthReaderConfig.PCLExchangeName;
+            PCLRabbitMQReceiver.Enabled = true;
 
             MetaRabbitMQReceiver.OnDataReceived += OnNewMetaData;
-            MetaRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.TVMs.MetaConnectionURI;
-            MetaRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.TVMs.MetaExchangeName;
+            MetaRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.CerthReaderConfig.ConnectionURI;
+            MetaRabbitMQReceiver.ConnectionProperties.ExchangeName = cfg.CerthReaderConfig.MetaExchangeName;
             MetaRabbitMQReceiver.Enabled = true;
         }
 
@@ -39,8 +55,8 @@ namespace Workers {
         }
 
         public void Stop() {
-            PLCRabbitMQReceiver.OnDataReceived -= OnNewPCLData;
-            PLCRabbitMQReceiver.Enabled = false;
+            PCLRabbitMQReceiver.OnDataReceived -= OnNewPCLData;
+            PCLRabbitMQReceiver.Enabled = false;
             MetaRabbitMQReceiver.OnDataReceived -= OnNewMetaData;
             MetaRabbitMQReceiver.Enabled = false;
 
@@ -78,7 +94,24 @@ namespace Workers {
                     GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                     System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
                     System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
-                    outQueue.Enqueue(cwipc.from_certh(pclPtr));
+                    if (pclPtr == System.IntPtr.Zero)
+                    {
+                        Debug.LogWarning("CerthReader: callColorizedPCloudFrameDLL returned NULL");
+                        return;
+                    }
+                    float[] bbox = { -1f, 1f, -1f, 0.5f, -3f, 1f };
+                    System.UInt64 timestamp = 0;
+                    cwipc.pointcloud pc = cwipc.from_certh(pclPtr, bbox, timestamp);
+                    if (pc == null)
+                    {
+                        Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
+                    }
+                    else
+                    {
+                        outQueue.Enqueue(pc);
+                        out2Queue.Enqueue(pc);
+
+                    }
                     // Freeing the GCHandler
                     rgbdHandle.Free();
                 }

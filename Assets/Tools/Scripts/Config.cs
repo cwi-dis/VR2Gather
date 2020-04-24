@@ -59,7 +59,9 @@ public class Config {
             public _RS2ReaderConfig RS2ReaderConfig;
             public class _CerthReaderConfig
             {
-                public string configFilename;
+                public string ConnectionURI;
+                public string PCLExchangeName;
+                public string MetaExchangeName;
             }
             public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;
@@ -76,14 +78,6 @@ public class Config {
                 public int segmentLife;
                 public bool fileMirroring;
             }
-            [Serializable]
-            public class _TVMs {
-                public string PCLConnectionURI;
-                public string PCLExchangeName;
-                public string MetaConnectionURI;
-                public string MetaExchangeName;
-            }
-            public _TVMs     TVMs;
             public _Bin2Dash Bin2Dash;
             public _Bin2Dash AudioBin2Dash;
         }
