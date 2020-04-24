@@ -57,6 +57,7 @@ public class Config {
                 public string configFilename;
             }
             public _RS2ReaderConfig RS2ReaderConfig;
+            [Serializable]
             public class _CerthReaderConfig
             {
                 public string ConnectionURI;

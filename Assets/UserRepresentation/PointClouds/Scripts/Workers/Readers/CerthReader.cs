@@ -38,6 +38,11 @@ namespace Workers {
                 Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
                 return;
             }
+            if (cfg.CerthReaderConfig == null)
+            {
+                Debug.LogError("CerthReader: CerthReaderConfig is null");
+                return;
+            }
             Debug.Log($"xxxjack certh config: uri={cfg.CerthReaderConfig.ConnectionURI}, pcl={cfg.CerthReaderConfig.PCLExchangeName}, meta={cfg.CerthReaderConfig.MetaExchangeName}");
             PCLRabbitMQReceiver.OnDataReceived += OnNewPCLData;
             PCLRabbitMQReceiver.ConnectionProperties.ConnectionURI = cfg.CerthReaderConfig.ConnectionURI;
