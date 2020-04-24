@@ -72,14 +72,16 @@ namespace Workers {
                     return;
 
                 }
-                // Flaging that a new buffer is received
-                var buffer = e.Value; // Buffer 's data
-                GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
-                System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
-                System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
-                outQueue.Enqueue( cwipc.from_certh(pclPtr) );
-                // Freeing the GCHandler
-                rgbdHandle.Free();
+                if (outQueue.Count < 2) { // FPA_TODO: Fix this using queue.Size
+                    // Flaging that a new buffer is received
+                    var buffer = e.Value; // Buffer 's data
+                    GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
+                    System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
+                    System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
+                    outQueue.Enqueue(cwipc.from_certh(pclPtr));
+                    // Freeing the GCHandler
+                    rgbdHandle.Free();
+                }
             }
         }
     }
