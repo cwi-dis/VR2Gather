@@ -6,14 +6,9 @@ using PCLDataProviders;
 using Utils;
 
 namespace Workers {
-
-    [RequireComponent(typeof(MetaDataProvider))]
-    [RequireComponent(typeof(PCLDataProvider))]
-    public class CerthReader : BaseWorker // xxxjack also needs MonoBehaviour?
-    {
+    public class CerthReader : BaseWorker {
         float voxelSize;
-        QueueThreadSafe outPLCQueue;
-        QueueThreadSafe outMetaQueue;
+        QueueThreadSafe outQueue;
 
         private PCLIdataProvider dataProvider;  // Connection to RabbitMQ over which normal RGBD data comes in.
         private PCLIdataProvider metaDataProvider;  // Connection to RabbitMQ over which metadata comes in.
@@ -24,9 +19,8 @@ namespace Workers {
         private RabbitMQReceiver PLCRabbitMQReceiver = new RabbitMQReceiver();
         private RabbitMQReceiver MetaRabbitMQReceiver = new RabbitMQReceiver();
 
-        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outPLCQueue, QueueThreadSafe _outMetaQueue ) : base(WorkerType.Init) {
-            outPLCQueue  = _outPLCQueue;
-            outMetaQueue = _outMetaQueue;
+        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue ) : base(WorkerType.Init) {
+            outQueue = _outQueue;
             voxelSize = cfg.voxelSize;
 
             PLCRabbitMQReceiver.OnDataReceived += OnNewPCLData;
@@ -48,10 +42,6 @@ namespace Workers {
             MetaRabbitMQReceiver.Enabled = false;
 
             Debug.Log("PCCerthReader: Stopped.");
-        }
-
-        protected override void Update() {
-            base.Update();
         }
 
         // Informing that the metadata were received
@@ -84,14 +74,7 @@ namespace Workers {
                 GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                 System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
                 System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
-                cwipc.pointcloud pc = cwipc.from_certh(pclPtr);
-                // Atomically store it, for update to pick it up. Delete any previously stored pointcloud that hasn't been picked up yet.
-                lock(this)
-                {
-                    cwipc.pointcloud prevPc = mostRecentPc;
-                    mostRecentPc = pc;
-                    if (prevPc) prevPc.free();
-                }
+                outQueue.Enqueue( cwipc.from_certh(pclPtr) );
                 // Freeing the GCHandler
                 rgbdHandle.Free();
             }
