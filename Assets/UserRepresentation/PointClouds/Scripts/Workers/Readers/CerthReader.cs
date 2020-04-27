@@ -139,8 +139,10 @@ namespace Workers {
                         }
                         else
                         {
-                            outQueue.Enqueue(pc);
-                            out2Queue.Enqueue(pc);
+                            Debug.Log($"xxxjack CerthReader: pointcloud has {pc.count()} points");
+                            outQueue.Enqueue(pc.AddRef());
+                            out2Queue.Enqueue(pc.AddRef());
+                            //pc.free();
 
                         }
                         // Freeing the GCHandler
