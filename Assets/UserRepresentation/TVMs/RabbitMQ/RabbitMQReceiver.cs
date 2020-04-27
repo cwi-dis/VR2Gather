@@ -37,7 +37,7 @@ public class RabbitMQReceiver
 
         while (!m_BGWorker.CancellationPending)
         {
-            
+
             Subscription subscription = Connect();
             if (subscription == null)
             {
@@ -76,7 +76,6 @@ public class RabbitMQReceiver
         try
         {
             m_ConnectionFactory.Uri = m_ConnectionProperties.ConnectionURI;
-            UnityEngine.Debug.Log($"xxxjack RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI}, exchange={m_ConnectionProperties.ExchangeName}");
             m_Connection = m_ConnectionFactory.CreateConnection();
             m_Model = m_Connection.CreateModel();
             if (String.IsNullOrEmpty(m_ConnectionProperties.QueueName))
@@ -89,11 +88,12 @@ public class RabbitMQReceiver
             m_Subscription = new Subscription(m_Model, m_QueueDeclareResult.QueueName, false);
             m_Connected = true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Disconnect();
             m_Connected = false;
             m_Subscription = null;
+            UnityEngine.Debug.LogWarning($"RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI} caught exception {e.Message}");
         }
         return m_Subscription;
     }
