@@ -54,7 +54,7 @@
 					"configFilename": "../cameraconfig.xml"
 				},
             	"CerthReaderConfig" : {
-					"ConnectionURI": "https://volumetric:capture@vrtiny.local:5672",
+					"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
 					"PCLExchangeName": "VolumetricData",
 					"MetaExchangeName": "VolumetricMetaData"
 				},
