@@ -42,12 +42,19 @@ public class BaseMemoryChunk {
         BaseMemoryChunkReferences.AddReference(this.GetType());
     }
 
-    public BaseMemoryChunk AddRef() { refCount++; return this; }
+    public BaseMemoryChunk AddRef() {
+        lock (this)
+        {
+            refCount++;
+            return this;
+        }
+    }
     public IntPtr pointer { get { return _pointer; } }
 
     public void free() {
-        if( --refCount < 1) {
-            lock (this) {
+        lock (this)
+        {
+            if ( --refCount < 1) {
                 if (_pointer!=IntPtr.Zero) {
                     onfree();
                     _pointer = IntPtr.Zero;
