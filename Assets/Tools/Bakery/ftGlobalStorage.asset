@@ -31,7 +31,7 @@ MonoBehaviour:
   - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  modifiedAssetPaddingHash: 00000000363fd3d9363fd3d9383fd3d9fedaef608ba46841d07fbf76343fd3d9343fd3d9323fd3d9393fd3d9e6a8fae55e8f1ac2363fd3d9333fd3d9363fd3d9343fd3d9618f1ac2
+  modifiedAssetPaddingHash: 00000000353fd3d9333fd3d91b3a80337a867dcac6ce28f5d22624f76d67e2a86d67e2a88c67e2a8af67e2a8b1ab23069e248725383fd3d9e55031ee333fd3d9b4c2a693d1d7aff3
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -416,49 +416,49 @@ MonoBehaviour:
     unwrapper: 
   - meshName:
     - Pared
-    padding: 01000000
+    padding: 06000000
     unwrapper: 00000000
   - meshName:
     - Techo
-    padding: 01000000
+    padding: 04000000
     unwrapper: 00000000
   - meshName:
     - Tramoya
-    padding: 03000000
+    padding: 0f000000
     unwrapper: 00000000
   - meshName:
     - Asa01
     - cuerpo01
     - lampara01
     - palas01
-    padding: 4600000019000000810000001c000000
+    padding: 00010000650000000001000070000000
     unwrapper: 00000000000000000000000000000000
   - meshName:
     - Asa02
     - cuerpo02
-    padding: 440000001b000000
+    padding: 000100006f000000
     unwrapper: 0000000000000000
   - meshName:
     - Asa03
     - cuerpo03
     - Palas03
-    padding: 430000002000000026000000
+    padding: 00010000820000009a000000
     unwrapper: 000000000000000000000000
   - meshName:
     - Tube001
-    padding: 07000000
+    padding: 1f000000
     unwrapper: 00000000
   - meshName:
     - Cylinder001
-    padding: 07000000
+    padding: 1f000000
     unwrapper: 00000000
   - meshName:
     - lamp1
-    padding: 05000000
+    padding: 15000000
     unwrapper: 00000000
   - meshName:
     - Cylinder
-    padding: 02000000
+    padding: 0b000000
     unwrapper: 00000000
   - meshName:
     - geo02
@@ -467,33 +467,33 @@ MonoBehaviour:
     - pSphere3
     - pSphere4
     - pTorus7
-    padding: 0a0000000900000007000000350000003500000012000000
+    padding: 28000000270000001d000000d6000000d600000049000000
     unwrapper: 000000000000000000000000000000000000000000000000
   - meshName:
     - Escalon
     - Escalon01
-    padding: 0400000004000000
+    padding: 1100000013000000
     unwrapper: 0000000000000000
   - meshName:
     - cilindro focos
-    padding: 01000000
+    padding: 03000000
     unwrapper: 00000000
   - meshName:
     - cilindro focos.001
-    padding: 04000000
+    padding: 11000000
     unwrapper: 00000000
   - meshName:
     - Suelo
-    padding: 01000000
+    padding: 04000000
     unwrapper: 00000000
   - meshName:
     - Mesa
-    padding: 07000000
+    padding: 1d000000
     unwrapper: 00000000
   - meshName:
     - Panel
     - Panel.001
-    padding: 0400000009000000
+    padding: 1200000025000000
     unwrapper: 0000000000000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
@@ -566,5 +566,5 @@ MonoBehaviour:
   renderSettingsUnwrapper: 0
   renderSettingsExportTerrainTrees: 0
   renderSettingsShowPerf: 1
-  modifiedMeshPaddingArray: 4600000019000000810000001c000000
-  modifiedMeshUnwrapperArray: 00000000000000000000000000000000
+  modifiedMeshPaddingArray: 1200000025000000
+  modifiedMeshUnwrapperArray: 0000000000000000
