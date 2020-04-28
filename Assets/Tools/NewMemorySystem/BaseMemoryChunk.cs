@@ -55,6 +55,10 @@ public class BaseMemoryChunk {
         lock (this)
         {
             if ( --refCount < 1) {
+                if (refCount < 0)
+                {
+                    throw new System.Exception($"BaseMemoryChunk.free: refCount={refCount}");
+                }
                 if (_pointer!=IntPtr.Zero) {
                     onfree();
                     _pointer = IntPtr.Zero;
