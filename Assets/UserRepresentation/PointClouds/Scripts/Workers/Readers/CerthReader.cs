@@ -25,18 +25,24 @@ namespace Workers {
         cwipc.pointcloud mostRecentPc;          // Stores the most recently received pointcloud (if any)
         const int pcl_id = 0;                   // Index of Cert pc constructor (constant for now)
         const int numWrappers = 1;              // Total number of pc constructors (constant for now)
+        object constructorLock;                 // Lock around PC constructor and its (static) return value
 
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
         public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
+            constructorLock = new object();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             voxelSize = cfg.voxelSize;
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
-            native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
+            // Locking here only for completeness (no-one else can have a reference yet)
+            lock (constructorLock)
+            {
+                native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
+            }
 
             if (cfg.CerthReaderConfig == null)
             {
@@ -84,7 +90,7 @@ namespace Workers {
             try
             {
                 Debug.Log($"xxxjack received metadata");
-                lock (e)
+                lock (constructorLock)
                 {
                     if (e.Value != null && !metaDataReceived)
                     {
@@ -108,7 +114,7 @@ namespace Workers {
         // Updating the pointcloud every time a new buffer is received from the network
         private void OnNewPCLData(object sender, EventArgs<byte[]> e) {
             try {
-                lock (e) {
+                lock (constructorLock) {
                     if (e.Value == null) {
                         Debug.LogWarning("CerthReader: OnNewPCLData: received null data");
                         return;
@@ -119,49 +125,60 @@ namespace Workers {
                         return;
 
                     }
-                    if (outQueue.Count < 2) { // FPA_TODO: Fix this using queue.Size
-                        // Flaging that a new buffer is received
-                        var buffer = e.Value; // Buffer 's data
-                        GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
-                        System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
-                        System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
-                        if (pclPtr == System.IntPtr.Zero)
-                        {
-                            Debug.LogWarning("CerthReader: callColorizedPCloudFrameDLL returned NULL");
-                            return;
-                        }
-                        float[] bbox = { -1f, 1f, -1f, 0.5f, -3f, 1f };
-                        System.UInt64 timestamp = 0;
-                        cwipc.pointcloud pc = cwipc.from_certh(pclPtr, bbox, timestamp);
-                        if (pc == null)
-                        {
-                            Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
-                        }
-                        else
-                        {
-                            Debug.Log($"xxxjack CerthReader: pointcloud has {pc.count()} points");
-                            if (outQueue != null && outQueue.Count < 2)
-                            {
-                                outQueue.Enqueue(pc.AddRef());
-                            }
-                            else
-                            {
-                                pc.free();
-                            }
-                            if (out2Queue != null && out2Queue.Count < 2)
-                            {
-                                out2Queue.Enqueue(pc.AddRef());
-                            }
-                            else
-                            {
-                                pc.free();
-                            }
-                            // xxxjack add when initial ref to pc is counted: pc.free();
-
-                        }
-                        // Freeing the GCHandler
-                        rgbdHandle.Free();
+                    //
+                    // Get the RGBD data from the rabbitMQ message
+                    //
+                    var buffer = e.Value; // Buffer 's data
+                    GCHandle rgbdHandle = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
+                    System.IntPtr rgbdPtr = rgbdHandle.AddrOfPinnedObject(); // Buffer 's address
+                    //
+                    // Convert the RGBD data to a Certh-style pointcloud
+                    //
+                    System.IntPtr pclPtr = native_pointcloud_receiver_pinvoke.callColorizedPCloudFrameDLL(rgbdPtr, buffer.Length, pcl_id); // Pointer of the returned structure
+                    if (pclPtr == System.IntPtr.Zero)
+                    {
+                        Debug.LogWarning("CerthReader: callColorizedPCloudFrameDLL returned NULL");
+                        return;
                     }
+                    //
+                    // Convert the Certh pointcloud to a cwipc pointcloud
+                    //
+                    float[] bbox = { -1f, 1f, -1f, 0.5f, -3f, 1f };
+                    System.UInt64 timestamp = 0;
+                    cwipc.pointcloud pc = cwipc.from_certh(pclPtr, bbox, timestamp);
+                    //
+                    // We can now safely free the RGBD data
+                    //
+                    rgbdHandle.Free();
+                    //
+                    // Push the cwipc pointcloud to the consumers
+                    //
+                    if (pc == null)
+                    {
+                        Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
+                        return;
+                    }
+                    pc.AddRef(); // xxxjack
+                    statsUpdate(pc.count());
+
+                    if (outQueue != null && outQueue.Count < 2)
+                    {
+                        outQueue.Enqueue(pc.AddRef());
+                    }
+                    else
+                    {
+                        pc.free();
+                    }
+                    if (out2Queue != null && out2Queue.Count < 2)
+                    {
+                        out2Queue.Enqueue(pc.AddRef());
+                    }
+                    else
+                    {
+                        pc.free();
+                    }
+                    // xxxjack add when initial ref to pc is counted: pc.free();
+
                 }
             }
             catch (System.Exception exc)
@@ -170,6 +187,28 @@ namespace Workers {
                 throw exc;
             }
 
+        }
+        System.DateTime statsLastTime;
+        double statsTotalPoints;
+        double statsTotalPointclouds;
+
+        public void statsUpdate(int pointCount)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: CerthReader: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud");
+                statsTotalPoints = 0;
+                statsTotalPointclouds = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalPoints += pointCount;
+            statsTotalPointclouds += 1;
         }
     }
 }
