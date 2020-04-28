@@ -140,9 +140,23 @@ namespace Workers {
                         else
                         {
                             Debug.Log($"xxxjack CerthReader: pointcloud has {pc.count()} points");
-                            outQueue.Enqueue(pc.AddRef());
-                            out2Queue.Enqueue(pc.AddRef());
-                            //pc.free();
+                            if (outQueue != null && outQueue.Count < 2)
+                            {
+                                outQueue.Enqueue(pc.AddRef());
+                            }
+                            else
+                            {
+                                pc.free();
+                            }
+                            if (out2Queue != null && out2Queue.Count < 2)
+                            {
+                                out2Queue.Enqueue(pc.AddRef());
+                            }
+                            else
+                            {
+                                pc.free();
+                            }
+                            // xxxjack add when initial ref to pc is counted: pc.free();
 
                         }
                         // Freeing the GCHandler
