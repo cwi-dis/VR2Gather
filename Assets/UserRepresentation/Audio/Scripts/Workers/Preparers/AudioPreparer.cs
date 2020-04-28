@@ -44,7 +44,6 @@ namespace Workers {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.Dequeue();
 
                 int len = mc.elements;
-                //Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
                 if (writePosition + len < bufferSize) {
                     System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
                     writePosition += len;

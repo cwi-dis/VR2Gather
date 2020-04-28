@@ -36,15 +36,17 @@ namespace Workers {
 
         protected override void Update(){
             base.Update();
-            if (inQueue.Count >0 ) {
+            if (inQueue.Count > 0 ) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
                 decoder.feed(mc.pointer, mc.length);
                 mc.free();
                 if (decoder.available(true)) {
                     cwipc.pointcloud pc = decoder.get();
-                    if (pc != null) outQueue.Enqueue(pc);
-                    else throw new System.Exception("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
-                    statsUpdate(pc.count(), pc.timestamp());
+                    if (pc != null) {
+                        statsUpdate(pc.count(), pc.timestamp());
+                        if (inQueue.Count < outQueue.Size) outQueue.Enqueue(pc);
+                        else pc.free();
+                    } else throw new System.Exception("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
                 else
                     Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {mc.length}");
@@ -56,8 +58,7 @@ namespace Workers {
         double statsTotalPointclouds;
         double statsTotalLatency;
 
-        public void statsUpdate(int pointCount, ulong timeStamp)
-        {
+        public void statsUpdate(int pointCount, ulong timeStamp) {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             double latency = (double)(sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
             if (statsLastTime == null)
