@@ -31,7 +31,11 @@ MonoBehaviour:
   - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  modifiedAssetPaddingHash: 00000000353fd3d9333fd3d91b3a80337a867dcac6ce28f5d22624f76d67e2a86d67e2a88c67e2a8af67e2a8b1ab23069e248725383fd3d9e55031ee333fd3d9b4c2a693d1d7aff3
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Armarios.fbx
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Lamp_Lexinton/Lamp_Lexinton.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/balda.fbx
+  modifiedAssetPaddingHash: 00000000353fd3d9333fd3d91b3a80337a867dcac6ce28f5d22624f76d67e2a86d67e2a88c67e2a8af67e2a8b1ab23069e248725383fd3d9e55031ee333fd3d9b4c2a693d1d7aff3323fd3d93d6ce508c054d1a7797e9363
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -495,6 +499,26 @@ MonoBehaviour:
     - Panel.001
     padding: 1200000025000000
     unwrapper: 0000000000000000
+  - meshName:
+    - Armarios
+    padding: 05000000
+    unwrapper: 00000000
+  - meshName:
+    - Object
+    - Rectangle012
+    padding: 0001000013000000
+    unwrapper: 0000000000000000
+  - meshName:
+    - Walls_Rodapie
+    - Walls_floor.001
+    - Walls_floor
+    - Walls_oclussion
+    padding: 05000000050000000100000000010000
+    unwrapper: 00000000000000000000000000000000
+  - meshName:
+    - BAlda
+    padding: 0d000000
+    unwrapper: 00000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
   - Assets/Bakery/examples/content/floor_lamp.FBX
@@ -503,8 +527,29 @@ MonoBehaviour:
   - Assets/Pilots/Pilot2/Geo/Props/Plataforma_suelo.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Base_users.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Tramoya_02.fbx
-  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Trees/SilverBirch_01_Vertex.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Candle_Set2/Candle_Set2.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Shower/Shower.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Mirror.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Frame4/Frame4D.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Sanitary/Sanitary.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Sinnesro/Sinnesro.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Strandmon/Strandmon.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Pictures2/Pictures2.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Carpet_Bronden/Carpet_Bronden.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Trees/Tree_03_Vertex.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Nimo/Nimo.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Towel_Heater/Towel_Heater.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Elvengen/Elvengen.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom.fbx
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Stocksund.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/BathroomFront/Bathroom front.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Carpet_Kollund/Carpet_Kollund.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Frame_v5/Frame_v5.FBX
+  uvOverlapAssetList: 00000000ffffffff000000000101000000000000010100000000000001010000010100000101000000000000010100000000000001010000010100000101000000000000010100000101000000000000010100000101000000000000010100000000000000000000
   xatlasWarningShown: 0
+  checkerPreviewOn: 0
+  rtSceneViewPreviewOn: 0
   renderSettingsBounces: 5
   renderSettingsGISamples: 16
   renderSettingsGIBackFaceWeight: 0
@@ -525,9 +570,11 @@ MonoBehaviour:
   renderSettingsOverwriteWarning: 0
   renderSettingsAutoAtlas: 1
   renderSettingsUnwrapUVs: 1
+  renderSettingsForceDisableUnwrapUVs: 0
   renderSettingsMaxAutoResolution: 4096
   renderSettingsMinAutoResolution: 16
   renderSettingsUnloadScenes: 1
+  renderSettingsAdjustSamples: 1
   renderSettingsGILODMode: 0
   renderSettingsGILODModeEnabled: 1
   renderSettingsCheckOverlaps: 0
@@ -557,6 +604,8 @@ MonoBehaviour:
   renderSettingsPrefabWarning: 1
   renderSettingsSplitByScene: 0
   renderSettingsUVPaddingMax: 0
+  renderSettingsPostPacking: 1
+  renderSettingsHoleFilling: 0
   renderSettingsBeepOnFinish: 0
   renderSettingsExportTerrainAsHeightmap: 1
   renderSettingsRTXMode: 0
@@ -566,5 +615,13 @@ MonoBehaviour:
   renderSettingsUnwrapper: 0
   renderSettingsExportTerrainTrees: 0
   renderSettingsShowPerf: 1
-  modifiedMeshPaddingArray: 1200000025000000
+  renderSettingsSampleDiv: 1
+  renderSettingsLegacyDenoiser: 0
+  renderSettingsAtlasPacker: 0
+  renderSettingsBatchPoints: 1
+  renderSettingsRTPVExport: 1
+  renderSettingsRTPVSceneView: 0
+  renderSettingsRTPVWidth: 640
+  renderSettingsRTPVHeight: 360
+  modifiedMeshPaddingArray: 0001000013000000
   modifiedMeshUnwrapperArray: 0000000000000000

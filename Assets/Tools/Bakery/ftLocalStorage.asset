@@ -30,4 +30,8 @@ MonoBehaviour:
   - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  modifiedAssetPaddingHash: 363fd3d9363fd3d9383fd3d9fedaef608ba46841d07fbf76343fd3d9343fd3d9323fd3d9393fd3d9e6a8fae55e8f1ac2363fd3d9333fd3d9363fd3d9343fd3d9618f1ac2
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Armarios.fbx
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Lamp_Lexinton/Lamp_Lexinton.FBX
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
+  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/balda.fbx
+  modifiedAssetPaddingHash: 363fd3d9363fd3d9383fd3d9fedaef608ba46841d07fbf76343fd3d9343fd3d9323fd3d9393fd3d9e6a8fae55e8f1ac2363fd3d9333fd3d9363fd3d9343fd3d9618f1ac2323fd3d93d6ce508c054d1a7797e9363
