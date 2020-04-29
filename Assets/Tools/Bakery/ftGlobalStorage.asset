@@ -35,7 +35,7 @@ MonoBehaviour:
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Lamp_Lexinton/Lamp_Lexinton.FBX
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/balda.fbx
-  modifiedAssetPaddingHash: 00000000353fd3d9333fd3d91b3a80337a867dcac6ce28f5d22624f76d67e2a86d67e2a88c67e2a8af67e2a8b1ab23069e248725383fd3d9e55031ee333fd3d9b4c2a693d1d7aff3323fd3d93d6ce508c054d1a7797e9363
+  modifiedAssetPaddingHash: 00000000353fd3d9333fd3d91b3a80337a867dcac6ce28f5d22624f76d67e2a86d67e2a88c67e2a8af67e2a8b1ab23069e248725383fd3d9e55031ee333fd3d9b4c2a693d1d7aff3d7c2a6938f26a0db819341b6eddb894b
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -501,23 +501,23 @@ MonoBehaviour:
     unwrapper: 0000000000000000
   - meshName:
     - Armarios
-    padding: 05000000
+    padding: 13000000
     unwrapper: 00000000
   - meshName:
     - Object
     - Rectangle012
-    padding: 0001000013000000
+    padding: 0001000040000000
     unwrapper: 0000000000000000
   - meshName:
     - Walls_Rodapie
     - Walls_floor.001
     - Walls_floor
     - Walls_oclussion
-    padding: 05000000050000000100000000010000
+    padding: 12000000120000000400000000010000
     unwrapper: 00000000000000000000000000000000
   - meshName:
     - BAlda
-    padding: 0d000000
+    padding: 2e000000
     unwrapper: 00000000
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
@@ -623,5 +623,5 @@ MonoBehaviour:
   renderSettingsRTPVSceneView: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  modifiedMeshPaddingArray: 0001000013000000
+  modifiedMeshPaddingArray: 0001000040000000
   modifiedMeshUnwrapperArray: 0000000000000000
