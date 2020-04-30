@@ -63,7 +63,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public Toggle liveToggle;
     public Toggle tvmToggle;
     public Toggle pcToggle;
-    public Toggle anyAudioToggle;
+    public Toggle noAudioToggle;
     public Toggle socketAudioToggle;
     public Toggle dashAudioToggle;
 
@@ -397,8 +397,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
-            if (AudioManager.instance != null && useSocketIOAudio) {
-                AudioManager.instance.StartRecordAudio();
+            if (AudioManager.Instance != null) { // Load Socket.io Audio
+                AudioManager.Instance.StartRecordAudio();
             }
 
             removeComponentsFromList(usersSession.transform);
@@ -481,14 +481,14 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
-            //scenarioIdText.text = session.scenarioId;
+            //scenarioIdText.text = session.scenarioId;            
 
-            if (AudioManager.instance != null && useSocketIOAudio && !updated) {
-                AudioManager.instance.StartRecordAudio();
-
+            if (!updated) {
+                if (AudioManager.Instance != null) { // Load Socket.io Audio
+                    AudioManager.Instance.StartRecordAudio();
+                }
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
-                        AudioManager.instance.StartListeningAudio(id);
                         OnUserJoinedSession(id);
                     }
                 }
@@ -522,10 +522,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     
     public void LeaveSession() {
         orchestratorWrapper.LeaveSession();
-
-        if (AudioManager.instance != null && useSocketIOAudio) {
-            AudioManager.instance.StopRecordAudio();
-        }
     }
 
     public void OnLeaveSessionResponse(ResponseStatus status) {
@@ -549,6 +545,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
+            if (AudioManager.Instance != null) {
+                AudioManager.Instance.StartListeningAudio2(_userID);
+            }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
             foreach (User u in availableUsers) {
@@ -800,7 +799,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
         tvmToggle.isOn = true;
         pcToggle.isOn = false;
-        anyAudioToggle.isOn = true;
+        noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
 
@@ -959,23 +958,23 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     private void Pilot2AudioToggle() {
         if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            anyAudioToggle.gameObject.SetActive(true);
+            noAudioToggle.gameObject.SetActive(true);
             socketAudioToggle.gameObject.SetActive(true);
             dashAudioToggle.gameObject.SetActive(true);
 
-            useAudio = !anyAudioToggle.isOn;
+            useAudio = !noAudioToggle.isOn;
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
-            if (anyAudioToggle.isOn) anyAudioToggle.interactable = false;
-            else anyAudioToggle.interactable = true;
+            if (noAudioToggle.isOn) noAudioToggle.interactable = false;
+            else noAudioToggle.interactable = true;
             if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
             else socketAudioToggle.interactable = true;
             if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
             else dashAudioToggle.interactable = true;
         }
         else {
-            anyAudioToggle.gameObject.SetActive(false);
+            noAudioToggle.gameObject.SetActive(false);
             socketAudioToggle.gameObject.SetActive(false);
             dashAudioToggle.gameObject.SetActive(false);
         }
@@ -1143,8 +1142,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void SetAudio(int state) {
         switch (state) {
-            case 0: // Any
-                if (anyAudioToggle.isOn) {
+            case 0: // No
+                if (noAudioToggle.isOn) {
                     useAudio = false;
                     useSocketIOAudio = false;
                     useDashAudio = false;
@@ -1161,7 +1160,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     useSocketIOAudio = true;
                     useDashAudio = false;
 
-                    anyAudioToggle.isOn = false;
+                    noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
 
                     kindAudio = 1;
@@ -1173,7 +1172,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     useSocketIOAudio = false;
                     useDashAudio = true;
 
-                    anyAudioToggle.isOn = false;
+                    noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
 
                     kindAudio = 2;
@@ -1184,4 +1183,22 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
+
+
+    public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
+
+    }
+
+    public void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
+
+    }
+
+    public void OnMasterEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+    public void OnUserEventReceived(UserEvent pSceneEventData) {
+
+    }
+       
 }

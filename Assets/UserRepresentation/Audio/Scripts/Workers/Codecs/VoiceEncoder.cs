@@ -1,49 +1,55 @@
-﻿using System.Collections;
+﻿#define USE_SPEEX
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace Workers
 {
     public class VoiceEncoder : BaseWorker
     {
-        public int bufferSize { get; private set; }
-        int frames;
+        public int          bufferSize { get; private set; }
+        int                 frames;
         NSpeex.SpeexEncoder encoder;
-        public VoiceEncoder(int frames=1) : base(WorkerType.Run) {
+
+        QueueThreadSafe inQueue;
+        QueueThreadSafe outQueue;
+        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames =1) : base(WorkerType.Run) {
+            inQueue = _inQueue;
+            outQueue = _outQueue;
             this.frames = frames;
-            encoder = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
+            encoder = new NSpeex.SpeexEncoder( NSpeex.BandMode.Wide );
             bufferSize = encoder.FrameSize * frames;
             encoder.Quality = 5;
+            Debug.Log("VoiceEncoder: Started.");
             Start();
         }
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VoiceEncoder Sopped");
+            Debug.Log("VoiceEncoder: Stopped.");
         }
 
         byte[]          sendBuffer;
-        System.IntPtr   sendBufferPtr;
-        public byte     counter = 0;
         protected override void Update() {
-            const int offset = 1 + 8;
             base.Update();
-            int len;
-            if (token != null) {
-                if (sendBuffer == null) {
-                    byte[] tmp = new byte[token.currentSize];
-                    len = encoder.Encode(token.currentFloatArray, 0, bufferSize, tmp, 0, token.currentSize);
-                    sendBuffer = new byte[len + offset];
-                    sendBufferPtr = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(sendBuffer, 0);
+            if (inQueue.Count >0 ) {
+                FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
+                if (sendBuffer == null) sendBuffer = new byte[(int)(mcIn.length)];
+                // Necesito calcular el tamaño del buffer.
+                if (outQueue.Count < outQueue.Size) {
+#if USE_SPEEX
+                    int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
+                    NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
+                    Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
+#else
+                    int len = mcIn.elements;
+                    NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
+                    Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
+#endif
+                    outQueue.Enqueue(mcOut);
                 }
-                len = encoder.Encode(token.currentFloatArray, 0, bufferSize, sendBuffer, offset, sendBuffer.Length - offset);
-
-                //token.latency.GetByteArray(sendBuffer, 0); //NTP Sending
-
-                token.currentByteArray = sendBuffer;
-                token.currentBuffer= sendBufferPtr;
-                token.currentSize = sendBuffer.Length;
-                Next();                
+                mcIn.free();
             }
         }
     }

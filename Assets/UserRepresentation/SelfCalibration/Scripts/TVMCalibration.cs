@@ -41,7 +41,7 @@ public class TVMCalibration : MonoBehaviour {
                 #endregion
                 #region INPUT
                 // I'm Comfortabler
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxisRaw("PrimaryTriggerRight") >= 0.9) {
                     if (!axisRInUse) {
                         Debug.Log("Comfortable!");
                         //Application.Quit();
@@ -50,7 +50,7 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // I'm not comfortable
-                if (Input.GetKeyDown(KeyCode.Keypad0) || Input.GetAxisRaw("Oculus_CrossPlatform_PrimaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Keypad0) || Input.GetAxisRaw("PrimaryTriggerLeft") >= 0.9) {
                     if (!axisLInUse) {
                         Debug.Log("Calibration ON!");
                         state = State.Mode;
@@ -58,8 +58,8 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // ResetAxisTrigger
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_PrimaryIndexTrigger") == 0) axisLInUse = false;
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") == 0) axisRInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerLeft") == 0) axisLInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerRight") == 0) axisRInUse = false;
                 #endregion
                 break;
             case State.Mode:
@@ -80,8 +80,8 @@ public class TVMCalibration : MonoBehaviour {
                     Debug.Log("Rotation Mode");
                     state = State.Rotation;
                 }
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9 ||
-                    Input.GetAxis("Oculus_CrossPlatform_PrimaryIndexTrigger") >= 0.9) {                    
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9 ||
+                    Input.GetAxis("PrimaryTriggerLeft") >= 0.9) {                    
                     if (!axisLInUse && !axisRInUse) {
                         Debug.Log("Calibration OFF!");
                         cfg.WriteConfig(cfg);
@@ -91,8 +91,8 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // ResetAxisTrigger
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_PrimaryIndexTrigger") == 0) axisLInUse = false;
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") == 0) axisRInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerLeft") == 0) axisLInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerRight") == 0) axisRInUse = false;
                 #endregion
                 break;
             case State.Translation:
@@ -123,7 +123,7 @@ public class TVMCalibration : MonoBehaviour {
                     this.transform.Translate(new Vector3(0, -_translationSlightStep, 0), Space.World);
                 }
                 // Save Translation
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
                     if (!axisRInUse) {
                         var pos = this.transform.localPosition;
                         PlayerPrefs.SetFloat("x_pos", pos.x);
@@ -138,7 +138,7 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // Back
-                if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("Oculus_CrossPlatform_PrimaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("PrimaryTriggerLeft") >= 0.9) {
                     if (!axisLInUse) {
                         this.transform.localPosition = tvm.offsetPosition;
 
@@ -148,8 +148,8 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // ResetAxisTrigger
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_PrimaryIndexTrigger") == 0) axisLInUse = false;
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") == 0) axisRInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerLeft") == 0) axisLInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerRight") == 0) axisRInUse = false;
                 #endregion
                 break;
             case State.Rotation:
@@ -168,7 +168,7 @@ public class TVMCalibration : MonoBehaviour {
                     this.transform.Rotate(Vector3.up, _rotationSlightStep, Space.Self);
                 }
                 // Save Translation
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("Oculus_CrossPlatform_SecondaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
                     if (!axisRInUse) {                      
                         var rot = this.transform.localRotation.eulerAngles;
                         PlayerPrefs.SetFloat("x", rot.x);
@@ -183,7 +183,7 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // Back
-                if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("Oculus_CrossPlatform_PrimaryIndexTrigger") >= 0.9) {
+                if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("PrimaryTriggerLeft") >= 0.9) {
                     if (!axisLInUse) {
                         this.transform.localRotation = Quaternion.Euler(tvm.offsetRotation);
 
@@ -193,8 +193,8 @@ public class TVMCalibration : MonoBehaviour {
                     }
                 }
                 // ResetAxisTrigger
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_PrimaryIndexTrigger") == 0) axisLInUse = false;
-                if (Input.GetAxisRaw("Oculus_CrossPlatform_SecondaryIndexTrigger") == 0) axisRInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerLeft") == 0) axisLInUse = false;
+                if (Input.GetAxisRaw("PrimaryTriggerRight") == 0) axisRInUse = false;
                 #endregion
                 break;
             default:

@@ -2,72 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-namespace Workers
-{
-    public class AudioPreparer : BaseWorker
-    {
+namespace Workers {
+    public class AudioPreparer : BaseWorker {
         float[] circularBuffer;
         int bufferSize;
         int writePosition;
         int readPosition;
         int preferredBufferFill;
 
-        public AudioPreparer(int _preferredBufferFill=0) : base(WorkerType.End) {
+        QueueThreadSafe inQueue;
+
+        public AudioPreparer(QueueThreadSafe _inQueue, int _preferredBufferFill=0) : base(WorkerType.End) {
+            inQueue = _inQueue;
+            if (inQueue == null) Debug.LogError($"AudioPreparer: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
             if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
             preferredBufferFill = _preferredBufferFill;
             circularBuffer = new float[bufferSize];
             writePosition = 0;
             readPosition = 0;
-            
-
+            Debug.Log("AudioPreparer: Started.");
             Start();
         }
 
         public override void OnStop() {
             base.OnStop();
-            //            if (byteArray.Length != 0) byteArray.Dispose();
-            Debug.Log("AudioPreparer Sopped");
+            Debug.Log("AudioPreparer: Stopped");
         }
 
         protected override void Update() {
             base.Update();
-
-            if (token != null) {
+            if (inQueue.Count >0) {
                 // xxxjack attempting to drop audio if there is too much in the buffer already                
                 int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
-
-                //if (readPosition >= writePosition) bytesInAudioBuffer = readPosition - writePosition;
-                //else bytesInAudioBuffer = (bufferSize - writePosition) + readPosition;
-
                 if (bytesInAudioBuffer > preferredBufferFill) {
                     Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
-                    Next();
+                    inQueue.Dequeue().free();
                     return;
                 }
 
-                int len = token.currentSize;
+                FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.Dequeue();
 
-                //if (preferredBufferFill > 0) {
-                //    preferredBufferFill -= len;
-                //    Next();
-                //    return;
-                //}
-
-                // Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
+                int len = mc.elements;
                 if (writePosition + len < bufferSize) {
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, len);
+                    System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
                     writePosition += len;
-                }
-                else {
+                } else {
                     int partLen = bufferSize - writePosition;
-                    System.Array.Copy(token.currentFloatArray, 0, circularBuffer, writePosition, partLen);
-                    System.Array.Copy(token.currentFloatArray, partLen, circularBuffer, 0, len - partLen);
+                    System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, partLen);
+                    System.Array.Copy(mc.buffer, partLen, circularBuffer, 0, len - partLen);
                     writePosition = len - partLen;
                 }
-                // Debug.Log($"ADD_BUFFER writePosition {writePosition} readPosition {readPosition}");
-                Next();
+                mc.free();
             }
         }
 

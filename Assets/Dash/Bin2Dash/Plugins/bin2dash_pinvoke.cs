@@ -30,18 +30,13 @@ public class bin2dash
         protected System.IntPtr obj;
         protected object objLock = new object();
 
-        internal connection(System.IntPtr _obj)
-        {
-            if (_obj == System.IntPtr.Zero)
-            {
-                UnityEngine.Debug.LogAssertion("bin2dash.connection: constructor called with null pointer");
-            }
+        internal connection(System.IntPtr _obj) {
+            if (_obj == System.IntPtr.Zero) throw new Exception("bin2dash.connection: constructor called with null pointer");
             obj = _obj;
         }
 
-        protected connection()
-        {
-            UnityEngine.Debug.LogAssertion("bin2dash.connection: default constructor called");
+        protected connection() {
+            throw new Exception("bin2dash.connection: default constructor called");
         }
 
         ~connection() {
@@ -59,28 +54,18 @@ public class bin2dash
             }
         }
 
-
-        public bool push_buffer(IntPtr buffer, uint bufferSize)
-        {
-            if (obj == System.IntPtr.Zero)
-            {
-                UnityEngine.Debug.LogAssertion("bin2dash.push_buffer: called with obj==null");
-            }
+        public bool push_buffer(IntPtr buffer, uint bufferSize) {
+            if (obj == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with obj==null");
             return _API.vrt_push_buffer(obj, buffer, bufferSize);
         }
 
-        public long get_media_time(int timescale)
-        {
-            if (obj == System.IntPtr.Zero)
-            {
-                UnityEngine.Debug.LogAssertion("bin2dash.get_media_time: called with obj==null");
-            }
+        public long get_media_time(int timescale) {
+            if (obj == System.IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with obj==null");
             return _API.vrt_get_media_time(obj, timescale);
         }
     }
 
-    public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000)
-    {
+    public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
         System.IntPtr obj;
         sub.SetMSPaths("bin2dash.so");
         obj = _API.vrt_create(name, MP4_4CC, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);

@@ -1276,7 +1276,7 @@ public class ftBuildGraphics : ScriptableWizard
                             props.SetFloat("intensity", areaLightMesh.intensity);
                             if (areaLightMesh.texture != null) props.SetTexture("_MainTex", areaLightMesh.texture);
                             mr.SetPropertyBlock(props);
-                            GameObjectUtility.SetStaticEditorFlags(areaObj, StaticEditorFlags.LightmapStatic);
+                            GameObjectUtility.SetStaticEditorFlags(areaObj, StaticEditorFlags.ContributeGI);
                             temporaryAreaLightMeshList.Add(areaObj);
                             temporaryAreaLightMeshList2.Add(areaLightMesh);
 
@@ -1301,7 +1301,7 @@ public class ftBuildGraphics : ScriptableWizard
                     if (!obj.activeInHierarchy) continue;
                     if ((obj.hideFlags & (HideFlags.DontSave|HideFlags.HideAndDontSave)) != 0) continue; // skip temp objects
                     if (obj.tag == "EditorOnly") continue; // skip temp objects
-                    if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.LightmapStatic) == 0) continue; // skip dynamic
+                    if ((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.ContributeGI) == 0) continue; // skip dynamic
 
                     var so = new SerializedObject(terr);
                     var scaleInLmTerr = so.FindProperty("m_ScaleInLightmap").floatValue;
@@ -1568,7 +1568,7 @@ public class ftBuildGraphics : ScriptableWizard
 
                         var terrGO = new GameObject();
                         terrGO.name = "__ExportTerrain";
-                        GameObjectUtility.SetStaticEditorFlags(terrGO, StaticEditorFlags.LightmapStatic);
+                        GameObjectUtility.SetStaticEditorFlags(terrGO, StaticEditorFlags.ContributeGI);
                         terrGO.transform.parent = terrParent.transform;
                         var mf = terrGO.AddComponent<MeshFilter>();
                         var mr = terrGO.AddComponent<MeshRenderer>();
@@ -1645,7 +1645,7 @@ public class ftBuildGraphics : ScriptableWizard
 
                                 var terrGO = new GameObject();
                                 terrGO.name = "__ExportTerrain";
-                                GameObjectUtility.SetStaticEditorFlags(terrGO, StaticEditorFlags.LightmapStatic);
+                                GameObjectUtility.SetStaticEditorFlags(terrGO, StaticEditorFlags.ContributeGI);
                                 terrGO.transform.parent = terrParent.transform;
                                 var mf = terrGO.AddComponent<MeshFilter>();
                                 var mr = terrGO.AddComponent<MeshRenderer>();
@@ -1682,7 +1682,7 @@ public class ftBuildGraphics : ScriptableWizard
                                 var renderers = newObj.GetComponentsInChildren<MeshRenderer>();
                                 for(int r=0; r<renderers.Length; r++)
                                 {
-                                    GameObjectUtility.SetStaticEditorFlags(renderers[r].gameObject, StaticEditorFlags.LightmapStatic);
+                                    GameObjectUtility.SetStaticEditorFlags(renderers[r].gameObject, StaticEditorFlags.ContributeGI);
                                     var s = new SerializedObject(renderers[r]);
                                     s.FindProperty("m_ScaleInLightmap").floatValue = 0;
                                     s.ApplyModifiedProperties();
@@ -1695,7 +1695,7 @@ public class ftBuildGraphics : ScriptableWizard
                                 {
                                     for (int h = 0; h < lods[tl].renderers.Length; h++)
                                     {
-                                        GameObjectUtility.SetStaticEditorFlags(lods[tl].renderers[h].gameObject, tl==0 ? StaticEditorFlags.LightmapStatic : 0);
+                                        GameObjectUtility.SetStaticEditorFlags(lods[tl].renderers[h].gameObject, tl==0 ? StaticEditorFlags.ContributeGI : 0);
                                         if (tl == 0)
                                         {
                                             var s = new SerializedObject(lods[tl].renderers[h]);
@@ -1763,7 +1763,7 @@ public class ftBuildGraphics : ScriptableWizard
                             if (!r.gameObject.activeInHierarchy) continue;
                             if ((r.gameObject.hideFlags & (HideFlags.DontSave|HideFlags.HideAndDontSave)) != 0) continue; // skip temp objects
                             if (r.gameObject.tag == "EditorOnly") continue; // skip temp objects
-                            if ((GameObjectUtility.GetStaticEditorFlags(r.gameObject) & StaticEditorFlags.LightmapStatic) == 0) continue; // skip dynamic
+                            if ((GameObjectUtility.GetStaticEditorFlags(r.gameObject) & StaticEditorFlags.ContributeGI) == 0) continue; // skip dynamic
                             var mr = r.gameObject.GetComponent<MeshRenderer>();
                             var mf = r.gameObject.GetComponent<MeshFilter>();
                             if (mr == null || mf == null) continue; // must have visible mesh
@@ -2000,7 +2000,7 @@ public class ftBuildGraphics : ScriptableWizard
                     }
 #endif
 
-                    if (((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.LightmapStatic) == 0) && areaLight==null)
+                    if (((GameObjectUtility.GetStaticEditorFlags(obj) & StaticEditorFlags.ContributeGI) == 0) && areaLight==null)
                     {
                         mr.lightmapIndex = 0xFFFF;
                         continue; // skip dynamic
