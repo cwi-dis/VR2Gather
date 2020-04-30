@@ -91,7 +91,6 @@ namespace Workers {
         private void OnNewMetaData(object sender, EventArgs<byte[]> e) {
             try
             {
-                Debug.Log($"xxxjack received metadata");
                 lock (constructorLock)
                 {
                     if (e.Value != null && !metaDataReceived)
@@ -115,7 +114,6 @@ namespace Workers {
 
         // Updating the pointcloud every time a new buffer is received from the network
         private void OnNewPCLData(object sender, EventArgs<byte[]> e) {
-            Debug.Log("xxxjack OnNewPCLData");
             try {
                 lock (constructorLock) {
                     if (e.Value == null) {
@@ -180,7 +178,7 @@ namespace Workers {
                     {
                         pc.free();
                     }
-                    // xxxjack add when initial ref to pc is counted: pc.free();
+                    pc.free();
 
                 }
             }
@@ -189,7 +187,6 @@ namespace Workers {
                 Debug.LogError($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
                 throw exc;
             }
-            Debug.Log("xxxjack OnNewPCLData returning");
 
 
         }
