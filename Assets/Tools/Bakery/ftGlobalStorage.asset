@@ -35,7 +35,7 @@ MonoBehaviour:
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Lamp_Lexinton/Lamp_Lexinton.FBX
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/balda.fbx
-  modifiedAssetPaddingHash: 00000000393fd3d9363fd3d9323fd3d9b8cdd892f3a283c62e6da465af67e2a8af67e2a8343fd3d9333fd3d91ac98f439e248725363fd3d9353fd3d9363fd3d9af67e2a8e3283014d7c2a6938f26a0db819341b6eddb894b
+  modifiedAssetPaddingHash: 00000000393fd3d9383fd3d9af67e2a8a2d1d3df83f3d20b2f10eacc567e9363567e93631b3a80333f3fd3d968a8f1ed9e248725363fd3d9797e9363383fd3d9bb09ecc05a083ca8d7c2a6938f26a0db819341b6eddb894b
   modifiedMeshList: []
   modifiedMeshPaddingList: 
   modifiedAssets:
@@ -424,45 +424,45 @@ MonoBehaviour:
     unwrapper: 00000000
   - meshName:
     - Techo
-    padding: 01000000
+    padding: 03000000
     unwrapper: 00000000
   - meshName:
     - Tramoya
-    padding: 05000000
+    padding: 0b000000
     unwrapper: 00000000
   - meshName:
     - Asa01
     - cuerpo01
     - lampara01
     - palas01
-    padding: 6900000025000000c20000002a000000
+    padding: d20000004b0000000001000054000000
     unwrapper: 00000000000000000000000000000000
   - meshName:
     - Asa02
     - cuerpo02
-    padding: 6700000029000000
+    padding: ce00000053000000
     unwrapper: 0000000000000000
   - meshName:
     - Asa03
     - cuerpo03
     - Palas03
-    padding: 65000000300000003a000000
+    padding: ca0000006100000074000000
     unwrapper: 000000000000000000000000
   - meshName:
     - Tube001
-    padding: 0b000000
+    padding: 17000000
     unwrapper: 00000000
   - meshName:
     - Cylinder001
-    padding: 0b000000
+    padding: 17000000
     unwrapper: 00000000
   - meshName:
     - lamp1
-    padding: 07000000
+    padding: 0f000000
     unwrapper: 00000000
   - meshName:
     - Cylinder
-    padding: 04000000
+    padding: 08000000
     unwrapper: 00000000
   - meshName:
     - geo02
@@ -471,7 +471,7 @@ MonoBehaviour:
     - pSphere3
     - pSphere4
     - pTorus7
-    padding: 0f0000000e0000000b00000050000000500000001b000000
+    padding: 1e0000001d00000016000000a0000000a000000037000000
     unwrapper: 000000000000000000000000000000000000000000000000
   - meshName:
     - Escalon
@@ -484,20 +484,20 @@ MonoBehaviour:
     unwrapper: 00000000
   - meshName:
     - cilindro focos.001
-    padding: 06000000
+    padding: 0d000000
     unwrapper: 00000000
   - meshName:
     - Suelo
-    padding: 01000000
+    padding: 03000000
     unwrapper: 00000000
   - meshName:
     - Mesa
-    padding: 0b000000
+    padding: 16000000
     unwrapper: 00000000
   - meshName:
     - Panel
     - Panel.001
-    padding: 060000000e000000
+    padding: 0d0000001c000000
     unwrapper: 0000000000000000
   - meshName:
     - Armarios
@@ -548,7 +548,9 @@ MonoBehaviour:
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Frame_v5/Frame_v5.FBX
   - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
   - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
-  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000001010000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000
+  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
+  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
+  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000010100000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0
@@ -625,5 +627,5 @@ MonoBehaviour:
   renderSettingsRTPVSceneView: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  modifiedMeshPaddingArray: 060000000e000000
+  modifiedMeshPaddingArray: 0d0000001c000000
   modifiedMeshUnwrapperArray: 0000000000000000
