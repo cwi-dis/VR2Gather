@@ -33,12 +33,12 @@ public class BaseMemoryChunk {
     protected BaseMemoryChunk(IntPtr _pointer) {
         if (_pointer== IntPtr.Zero)  throw new Exception("BaseMemoryChunk: constructor called with null pointer");
         this._pointer = _pointer;
-        refCount = 0;
+        refCount = 1;
         BaseMemoryChunkReferences.AddReference( this.GetType() );
     }
 
     protected BaseMemoryChunk() {
-        refCount = 0;
+        refCount = 1;
         BaseMemoryChunkReferences.AddReference(this.GetType());
     }
 
