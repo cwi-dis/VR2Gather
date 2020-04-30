@@ -44,18 +44,15 @@ namespace Workers {
                 tmp.free();
                 if (pc== null)  throw new System.Exception($"PCRealSense2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
-            pc.AddRef(); pc.AddRef();
             statsUpdate(pc.count());
 
             if (outQueue != null && outQueue.Count < 2)
-                outQueue?.Enqueue(pc);
-            else
-                pc.free();
+                outQueue?.Enqueue( pc.AddRef() );
 
             if (out2Queue != null && out2Queue.Count < 2)
-                out2Queue.Enqueue(pc);
-            else
-                pc.free();
+                out2Queue.Enqueue( pc.AddRef() );
+
+            pc.free();
         }
 
         System.DateTime statsLastTime;
