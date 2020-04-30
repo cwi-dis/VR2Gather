@@ -22,11 +22,11 @@ namespace Workers {
             thread.Start();
         }
 
-        public void Stop() {
+        public virtual void Stop() {
             bRunning = false;
         }
 
-        public void StopAndWait() {
+        public virtual void StopAndWait() {
             Stop();
             while (!isStopped) {
                 System.Threading.Thread.Sleep(10);

@@ -72,11 +72,13 @@ namespace Workers {
             MetaRabbitMQReceiver.Enabled = true;
         }
 
-        public void StopAndWait() {
+        public override void StopAndWait() {
             Stop();
         }
 
-        public void Stop() {
+        public override void Stop() {
+            Debug.Log("PCCerthReader: Stopping...");
+            base.Stop();
             PCLRabbitMQReceiver.Enabled = false;
             MetaRabbitMQReceiver.Enabled = false;
             PCLRabbitMQReceiver.OnDataReceived -= OnNewPCLData;
@@ -113,6 +115,7 @@ namespace Workers {
 
         // Updating the pointcloud every time a new buffer is received from the network
         private void OnNewPCLData(object sender, EventArgs<byte[]> e) {
+            Debug.Log("xxxjack OnNewPCLData");
             try {
                 lock (constructorLock) {
                     if (e.Value == null) {
@@ -186,6 +189,8 @@ namespace Workers {
                 Debug.LogError($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
                 throw exc;
             }
+            Debug.Log("xxxjack OnNewPCLData returning");
+
 
         }
         System.DateTime statsLastTime;
