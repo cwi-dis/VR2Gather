@@ -41,6 +41,11 @@ namespace Workers {
                 url = cfg.url;
             else
                 url = _url + cfg.streamName;
+            if (url == "" || url == null)
+            {
+                Debug.LogError("SubReader: configuration error: url or streamName not set");
+                throw new System.Exception("SubReader: configuration error: url or streamName not set");
+            }
             streamNumber = cfg.streamNumber;
             if (cfg.initialDelay != 0)
             {

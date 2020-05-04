@@ -32,7 +32,7 @@
     },
     "Users": [
         {
-            "sourceType": "pccerth",
+            "sourceType": "pcself",
             "cwicpcFilename": "",
             "cwicpcDirectory": "",
             "plyFilename": "",
@@ -63,14 +63,14 @@
                     "octreeBits": 10
                 },
                 "Bin2Dash": {
-                    "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing-test/",
+                    "url": "",
                     "streamName": "testBed",
                     "segmentSize": 2000,
                     "segmentLife": 10000,
                     "fileMirroring": false
                 },
                 "AudioBin2Dash": {
-                    "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing-test/",
+                    "url": "",
                     "streamName": "audio",
                     "segmentSize": 2000,
                     "segmentLife": 10000,
@@ -102,13 +102,13 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/pc-testing-test/testBed.mpd",
+                "url": "",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/audio-testing-test/audio.mpd",
+                "url": "",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
@@ -160,13 +160,13 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/pc-fernando/testBed.mpd",
+                "url": "d",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "https://vrt-evanescent.viaccess-orca.com/audio-fernando/audio.mpd",
+                "url": "",
                 "streamName": "",
                 "streamNumber": 0,
                 "initialDelay": 0
@@ -218,13 +218,13 @@
             "plyFilename": "",
             "plyDirectory": "",
             "SUBConfig": {
-                "url": "http://192.168.10.94:9000/pc-",
+                "url": "",
                 "streamName": "testBed.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "http://192.168.10.94:9000/audio-",
+                "url": "",
                 "streamName": "audio.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
