@@ -11,11 +11,6 @@ namespace Workers {
         QueueThreadSafe inQueue;
 
         public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url, QueueThreadSafe _inQueue) : base(WorkerType.End) {
-            if (cfg.url == "" || cfg.url == null || cfg.streamName == "" || cfg.streamName == null)
-            {
-                Debug.LogError("B2DWriter: configuration error: url or streamName not set");
-                throw new System.Exception("B2DWriter: configuration error: url or streamName not set");
-            }
             try {
                 inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
@@ -23,6 +18,11 @@ namespace Workers {
                     url = cfg.url;
                 else
                     url = _url;
+                if (url == "" || url == null || cfg.streamName == "" || cfg.streamName == null)
+                {
+                    Debug.LogError("B2DWriter: configuration error: url or streamName not set");
+                    throw new System.Exception("B2DWriter: configuration error: url or streamName not set");
+                }
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
                     Debug.Log($"B2DWriter({url + cfg.streamName}: started");
