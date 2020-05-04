@@ -3,14 +3,32 @@ using System.Runtime.InteropServices;
 
 public class bin2dash
 {
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct StreamDesc
+    {
+        public UInt32 MP4_4CC;
+        public UInt32 objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
+        public UInt32 objectY;    // In VRTogether, for pointclouds, we use this field for quality
+        public UInt32 objectWidth;
+        public UInt32 objectHeight;
+        public UInt32 totalWidth;
+        public UInt32 totalHeight;
+    }
+
     private class _API
     {
         const string myDllName = "bin2dash.so";
+
+        // The BIN2DASH_API_VERSION must match with the DLL version. Copy from bin2dash.hpp
+        // after matching the API used here with that in the C++ code.
+        const System.Int64 BIN2DASH_API_VERSION = 0x20200327A;
+
+
         // Creates a new packager/streamer and starts the streaming session.
         // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
         // The returned pipeline must be freed using vrt_destroy().
         [DllImport(myDllName)]
-        extern static public IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, UInt32 MP4_4CC, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000);
+        extern static public IntPtr vrt_create_ext([MarshalAs(UnmanagedType.LPStr)]string name, int num_streams, ref StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, Int64 api_version = BIN2DASH_API_VERSION);
 
         // Destroys a pipeline. This frees all the resources.
         [DllImport(myDllName)]
@@ -18,7 +36,7 @@ public class bin2dash
 
         // Pushes a buffer. The caller owns it ; the buffer  as it will be copied internally.
         [DllImport(myDllName)]
-        extern static public bool vrt_push_buffer(IntPtr h, IntPtr buffer, uint bufferSize);
+        extern static public bool vrt_push_buffer_ext(IntPtr h, int stream_index, IntPtr buffer, uint bufferSize);
 
         // Gets the current media time in @timescale unit.
         [DllImport(myDllName)]
@@ -56,7 +74,8 @@ public class bin2dash
 
         public bool push_buffer(IntPtr buffer, uint bufferSize) {
             if (obj == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with obj==null");
-            return _API.vrt_push_buffer(obj, buffer, bufferSize);
+            const int stream_index = 0;
+            return _API.vrt_push_buffer_ext(obj, stream_index, buffer, bufferSize);
         }
 
         public long get_media_time(int timescale) {
@@ -68,7 +87,12 @@ public class bin2dash
     public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
         System.IntPtr obj;
         sub.SetMSPaths("bin2dash.so");
-        obj = _API.vrt_create(name, MP4_4CC, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+        StreamDesc descriptor = new StreamDesc();
+        descriptor.MP4_4CC = MP4_4CC;
+        descriptor.objectX = 0; 
+        descriptor.objectY = 0;
+        StreamDesc[] descriptors = new StreamDesc[1] { descriptor };
+        obj = _API.vrt_create_ext(name, 1, ref descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);

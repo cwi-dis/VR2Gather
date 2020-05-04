@@ -15,12 +15,17 @@ public class sub
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct StreamDesc {
-        public uint MP4_4CC;
-        public uint tileNumber;
-        public uint quality;
+    public struct StreamDesc
+    {
+        public UInt32 MP4_4CC;
+        public UInt32 objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
+        public UInt32 objectY;    // In VRTogether, for pointclouds, we use this field for quality
+        public UInt32 objectWidth;
+        public UInt32 objectHeight;
+        public UInt32 totalWidth;
+        public UInt32 totalHeight;
     }
-    
+
     protected class _API {
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
