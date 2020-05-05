@@ -45,7 +45,7 @@ public class QueueThreadSafe {
                 if (window[i % auxSize] != null)
                     write = i;
             }
-            UnityEngine.Debug.Log($"alloc {alloc} position {position} write {write} read {read} ");
+//            UnityEngine.Debug.Log($"alloc {alloc} position {position} write {write} read {read} ");
         }
     }
 
