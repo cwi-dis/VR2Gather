@@ -51,7 +51,7 @@ namespace Workers {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
                         if (encoder.copy_data(mc.pointer, mc.length))
-                            if (outQueue.Count < outQueue.Size)
+                            if (outQueue.Free())
                                 outQueue.Enqueue(mc);
                             else
                                 mc.free();

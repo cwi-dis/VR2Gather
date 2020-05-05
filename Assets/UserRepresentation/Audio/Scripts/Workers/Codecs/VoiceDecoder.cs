@@ -31,7 +31,7 @@ namespace Workers {
             base.Update();
             if (inQueue.Count > 0) { 
                 NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
-                if (outQueue.Count < outQueue.Size) {
+                if (outQueue.Free()) {
 #if USE_SPEEX
                     byte[] buffer = new byte[mcIn.length];
                     if (temporalBuffer == null) temporalBuffer = new float[mcIn.length * 10]; // mcIn.length*10

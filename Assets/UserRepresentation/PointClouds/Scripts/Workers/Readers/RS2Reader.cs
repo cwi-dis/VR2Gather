@@ -46,10 +46,10 @@ namespace Workers {
             }
             statsUpdate(pc.count());
 
-            if (outQueue != null && outQueue.Count < 2)
+            if (outQueue != null && outQueue.Free())
                 outQueue?.Enqueue( pc.AddRef() );
 
-            if (out2Queue != null && out2Queue.Count < 2)
+            if (out2Queue != null && out2Queue.Free())
                 out2Queue.Enqueue( pc.AddRef() );
 
             pc.free();
