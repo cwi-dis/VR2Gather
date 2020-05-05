@@ -32,27 +32,25 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public SUBReader(Config._User._SUBConfig cfg, string _url, QueueThreadSafe _outQueue) : base(WorkerType.Init) { // Orchestrator Based SUB
+        public SUBReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue) : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
             needsAudio = null;
             outQueue = _outQueue;
             out2Queue = null;
-            if (string.IsNullOrEmpty(_url) )
-                url = cfg.url;
-            else
-                url = _url + cfg.streamName;
+            if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
+            url = _url + _streamName;
             if (url == "" || url == null)
             {
                 Debug.LogError("SubReader: configuration error: url or streamName not set");
                 throw new System.Exception("SubReader: configuration error: url or streamName not set");
             }
-            streamNumber = cfg.streamNumber;
-            if (cfg.initialDelay != 0)
+            streamNumber = _streamNumber;
+            if (_initialDelay != 0)
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"SUBReader: Delaying {cfg.initialDelay} seconds before playing {url}");
-                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
+                Debug.Log($"SUBReader: Delaying {_initialDelay} seconds before playing {url}");
+                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
             try {
                 Start();

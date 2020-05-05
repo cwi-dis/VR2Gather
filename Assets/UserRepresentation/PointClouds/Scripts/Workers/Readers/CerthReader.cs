@@ -30,41 +30,34 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
             constructorLock = new object();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            voxelSize = cfg.voxelSize;
+            voxelSize = _voxelSize;
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
-            lock (constructorLock)
-            {
+            lock (constructorLock) {
                 native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
             }
 
-            if (cfg.CerthReaderConfig == null)
-            {
-                Debug.LogError("CerthReader: CerthReaderConfig is null");
-                return;
-            }
-
-            PCLRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.PCLExchangeName);
+            PCLRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _PCLExchangeName);
             if (PCLRabbitMQReceiver == null)
             {
                 Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
                 return;
             }
 
-            MetaRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.MetaExchangeName);
+            MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
                 Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
                 return;
             }
 
-            Debug.Log($"PCCertReader: receiving PCs from {cfg.CerthReaderConfig.ConnectionURI}");
+            Debug.Log($"PCCertReader: receiving PCs from {_ConnectionURI}");
             PCLRabbitMQReceiver.OnDataReceived += OnNewPCLData;
             PCLRabbitMQReceiver.Enabled = true;
 
