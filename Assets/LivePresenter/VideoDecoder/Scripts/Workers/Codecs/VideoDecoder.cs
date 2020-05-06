@@ -57,7 +57,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inVideoQueue.Count >0 && outVideoQueue.Count < outAudioQueue.Size) {
+            if (inVideoQueue.Count >0 && outVideoQueue.Free()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
                 ffmpeg.av_init_packet(videoPacket);
@@ -87,7 +87,7 @@ namespace Workers {
                 mc.free();
             }
 
-            if (inAudioQueue.Count > 0 && outAudioQueue.Count < outAudioQueue.Size) {
+            if (inAudioQueue.Count > 0 && outAudioQueue.Free()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
                 // Audio-
                 if (codecAudio == null) CreateAudioCodec(mc);

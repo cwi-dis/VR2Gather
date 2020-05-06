@@ -11,7 +11,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string url = "") {
+    public void Init(string _url, string _streamName, int _streamNumber, int _initialDelay) {
         //        const int frequency = 16000;
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
@@ -20,7 +20,7 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader      = new Workers.SUBReader(cfg, url, decoderQueue);
+        reader      = new Workers.SUBReader( _url, _streamName, _streamNumber, _initialDelay, decoderQueue);
         codec       = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
