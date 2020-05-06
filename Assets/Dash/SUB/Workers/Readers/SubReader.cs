@@ -32,6 +32,9 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+
         public SUBReader(Config._User._SUBConfig cfg, string _url, QueueThreadSafe _outQueue) : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
             needsAudio = null;
@@ -43,15 +46,15 @@ namespace Workers {
                 url = _url + cfg.streamName;
             if (url == "" || url == null)
             {
-                Debug.LogError("SubReader: configuration error: url or streamName not set");
-                throw new System.Exception("SubReader: configuration error: url or streamName not set");
+                Debug.LogError($"SUBReader#{instanceNumber}: configuration error: url or streamName not set");
+                throw new System.Exception($"SUBReader#{instanceNumber}: configuration error: url or streamName not set");
             }
             streamNumber = cfg.streamNumber;
             if (cfg.initialDelay != 0)
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"SUBReader: Delaying {cfg.initialDelay} seconds before playing {url}");
+                Debug.Log($"SUBReader#{instanceNumber}: Delaying {cfg.initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(cfg.initialDelay);
             }
             try {
@@ -75,10 +78,10 @@ namespace Workers {
                 subName = $"source_from_sub_{++subCount}";
                 subHandle = sub.create(subName);
                 if (subHandle != null) {
-                    Debug.Log($"SubReader: sub.create({url}) successful.");
+                    Debug.Log($"SUBReader#{instanceNumber}: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
-                        Debug.Log($"SUBReader {subName}: sub_play({url}) failed, will try again later");
+                        Debug.Log($"SUBReader#{instanceNumber}: sub_play({url}) failed, will try again later");
                     } else {
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         CCCC cc;
@@ -93,7 +96,7 @@ namespace Workers {
                     Start();
                 }
                 else
-                    throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
+                    throw new System.Exception($"SUBReader#{instanceNumber}: sub_create({url}) failed");
             }
             catch (System.Exception e) {
                 Debug.LogError(e.Message);
@@ -109,7 +112,7 @@ namespace Workers {
                 isPlaying = false;
             }
             base.OnStop();
-            Debug.Log($"SUBReader {subName} {url} Stopped");
+            Debug.Log($"SUBReader#{instanceNumber} {subName} {url} Stopped");
         }
 
         protected void UnsuccessfulCheck(int _size) {
@@ -122,7 +125,7 @@ namespace Workers {
                 System.Threading.Thread.Sleep(10);
                 if (numberOfUnsuccessfulReceives > 2000) {
                     lock (this) {
-                        Debug.Log($"SubReader {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                        Debug.Log($"SUBReader#{instanceNumber} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
                         subHandle = null;
                         isPlaying = false;
@@ -143,16 +146,16 @@ namespace Workers {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
                     if (subHandle == null) throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
-                    Debug.Log($"SubReader {subName}: retry sub.create({url}) successful.");
+                    Debug.Log($"SUBReader#{instanceNumber} {subName}: retry sub.create({url}) successful.");
                 }
                 isPlaying = subHandle.play(url);
                 if (!isPlaying) {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"SubReader {subName}: sub.play({url}) failed, will try again later");
+                    Debug.Log($"SUBReader#{instanceNumber} {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
                 streamCount = subHandle.get_stream_count();
-                Debug.Log($"SubReader {subName}: sub.play({url}) successful, {streamCount} streams.");
+                Debug.Log($"SUBReader#{instanceNumber} {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
@@ -174,7 +177,7 @@ namespace Workers {
                             out2Queue.Enqueue(mc);
                         }
                         else
-                            Debug.LogError($"PCSUBReader {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            Debug.LogError($"SUBReader#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     }
                 }
                 if (outQueue.Count < outQueue.Size) {
@@ -190,7 +193,7 @@ namespace Workers {
                             statsUpdate(bytesRead);
                             outQueue.Enqueue(mc);
                         } else
-                            Debug.LogError($"PCSUBReader {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            Debug.LogError($"SUBReader#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     }
                 }
             }
@@ -207,7 +210,7 @@ namespace Workers {
                 statsTotalPackets = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: SubReader: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: SubReader#{instanceNumber}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
                 statsLastTime = System.DateTime.Now;

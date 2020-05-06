@@ -7,6 +7,8 @@ namespace Workers {
         cwipc.decoder decoder;
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) :base(WorkerType.Run) {
             try {
                 inQueue = _inQueue;
@@ -16,7 +18,7 @@ namespace Workers {
                     throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
                 else {
                     Start();
-                    Debug.Log("PCDecoder Inited");
+                    Debug.Log($"PCDecoder#{instanceNumber} Inited");
                 }
 
             }
@@ -31,7 +33,7 @@ namespace Workers {
             base.OnStop();
             decoder?.free();
             decoder = null;
-            Debug.Log("PCDecoder Stopped");
+            Debug.Log($"PCDecoder#{instanceNumber} Stopped");
         }
 
         protected override void Update(){
@@ -46,10 +48,10 @@ namespace Workers {
                         statsUpdate(pc.count(), pc.timestamp());
                         if (inQueue.Count < outQueue.Size) outQueue.Enqueue(pc);
                         else pc.free();
-                    } else throw new System.Exception("PCSUBReader: cwipc_decoder: available() true, but did not return a pointcloud");
+                    } else throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
                 else
-                    Debug.LogError($"PCSUBReader: cwipc_decoder: no pointcloud available currentSize {mc.length}");
+                    Debug.LogError($"PCDecoder#{instanceNumber}: cwipc_decoder: no pointcloud available currentSize {mc.length}");
             }
         }
 
@@ -70,7 +72,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PCDecoder: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PCDecoder#{instanceNumber}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;
