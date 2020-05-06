@@ -8,16 +8,19 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
-  - enabled: 1
-    path: Assets/Pilots/Pilot1/Scenes/Pilot1.unity
-    guid: 729c2f5197e10724996923c482b5f533
   - enabled: 0
     path: Assets/Pilots/Pilot2/Scenes/Pilot2_Presenter.unity
     guid: bab88bbc29626f04891faadc31bb6426
   - enabled: 1
+    path: Assets/Pilots/Pilot1/Scenes/Pilot1.unity
+    guid: 729c2f5197e10724996923c482b5f533
+  - enabled: 1
     path: Assets/Pilots/Pilot2/Scenes/Pilot2_Player.unity
     guid: 411fba5423c48c14ab54d9f0a44740dc
   - enabled: 1
+    path: Assets/Pilots/Pilot1/Scenes/CreditsScene.unity
+    guid: 2e847e5cfaa3a37418174230b21db977
+  - enabled: 0
     path: Assets/UserRepresentation/SelfCalibration/Scenes/PCCalibration.unity
     guid: 07862ddece24e19458a9bc680a61f421
   - enabled: 0
