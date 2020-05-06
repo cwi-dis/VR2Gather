@@ -57,7 +57,7 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 try {
                     var b2d = cfg.PCSelfConfig.Bin2Dash;
-                    writer = new Workers.B2DWriter(url_pcc, b2d.streamName, b2d.segmentSize, b2d.segmentLife, writerQueue);
+                    writer = new Workers.B2DWriter(url_pcc, "pointcloud", b2d.segmentSize, b2d.segmentLife, writerQueue);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -66,7 +66,7 @@ public class EntityPipeline : MonoBehaviour {
                 if (temp.useAudio) {
                     try {
                         var audioB2D = cfg.PCSelfConfig.AudioBin2Dash;
-                        gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
+                        gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "audio", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
@@ -74,11 +74,11 @@ public class EntityPipeline : MonoBehaviour {
                 break;
             case "pcsub":
                 var SUBConfig = cfg.SUBConfig;
-                reader = new Workers.SUBReader(url_pcc, "", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, codecQueue);
+                reader = new Workers.SUBReader(url_pcc,"pointcloud", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, codecQueue);
                 codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 if (temp.useAudio) {
                     var audioConfig = cfg.AudioSUBConfig;
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
                 }
                 break;
             case "net":
