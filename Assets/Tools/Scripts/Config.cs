@@ -70,7 +70,7 @@ public class Config {
             public class _Encoder {
                 public int octreeBits;
             }
-            public _Encoder Encoder;
+            public _Encoder[] Encoders;
             [Serializable]
             public class _Bin2Dash {
                 public string url;

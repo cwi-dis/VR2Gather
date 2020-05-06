@@ -59,9 +59,11 @@
 					"MetaExchangeName": "VolumetricMetaData"
 				},
 				"voxelSize": 0.004999999888241291,
-                "Encoder": {
-                    "octreeBits": 10
-                },
+                "Encoders": [
+					{
+						"octreeBits": 10
+					}
+                ],
                 "Bin2Dash": {
                     "url": "",
                     "streamName": "testBed",
@@ -116,9 +118,9 @@
             "PCSelfConfig": {
                 "configFilename": "",
                 "voxelSize": 0.0,
-                "Encoder": {
+                "Encoders": [{
                     "octreeBits": 0
-                },
+                }],
                 "Bin2Dash": {
                     "url": "",
                     "streamName": "",
@@ -174,9 +176,9 @@
             "PCSelfConfig": {
                 "configFilename": "",
                 "voxelSize": 0.0,
-                "Encoder": {
+                "Encoders": [{
                     "octreeBits": 0
-                },
+                }],
                 "Bin2Dash": {
                     "url": "",
                     "streamName": "",
@@ -232,9 +234,9 @@
             "PCSelfConfig": {
                 "configFilename": "",
                 "voxelSize": 0.0,
-                "Encoder": {
+                "Encoders": [{
                     "octreeBits": 0
-                },
+                }],
                 "Bin2Dash": {
                     "url": "",
                     "streamName": "",

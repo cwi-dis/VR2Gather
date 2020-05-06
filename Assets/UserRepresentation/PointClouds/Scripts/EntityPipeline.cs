@@ -46,8 +46,10 @@ public class EntityPipeline : MonoBehaviour {
                 {
                     reader = new Workers.CerthReader(cfg.PCSelfConfig, preparerQueue, codecQueue);
                 }
+                // xxxjack For now, we only create an encoder and bin2dash for the first set of encoder parameters.
+                // At some point we need to create multiple queues and all that.
                 try {
-                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, codecQueue, writerQueue);
+                    codec = new Workers.PCEncoder(cfg.PCSelfConfig.Encoders[0], codecQueue, writerQueue);
                 }
                 catch (System.EntryPointNotFoundException) {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
@@ -75,6 +77,7 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 break;
             case "net":
+                // xxxjack unfinished test code. Will disappear.
                 reader = new Workers.NetReader(cfg.NetConfig, codecQueue);
                 codec = new Workers.PCDecoder(codecQueue, preparerQueue);
                 break;

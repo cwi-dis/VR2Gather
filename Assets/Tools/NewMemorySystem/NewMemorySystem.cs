@@ -48,7 +48,7 @@ public class NewMemorySystem : MonoBehaviour
             reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue);
         else {
             reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
-            encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, writerQueue);
+            encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoders[0], encoderQueue, writerQueue);
             string uuid = System.Guid.NewGuid().ToString();
             dashWriter = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", writerQueue);
             dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/testBed.mpd", decoderQueue);
