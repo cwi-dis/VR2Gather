@@ -6,14 +6,12 @@ using UnityEngine;
 namespace Workers {
     public class B2DWriter : BaseWorker {
         bin2dash.connection uploader;
-        //BinaryWriter bw;
         string url;
         QueueThreadSafe inQueue;
 
         public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url, QueueThreadSafe _inQueue) : base(WorkerType.End) {
             try {
                 inQueue = _inQueue;
-                //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 if ( string.IsNullOrEmpty(_url))
                     url = cfg.url;
                 else
@@ -40,7 +38,6 @@ namespace Workers {
         public override void OnStop() {
             uploader.free();
             uploader = null;
-            //bw?.Close();
             base.OnStop();
             Debug.Log($"B2DWriter {url} Stopped");
         }

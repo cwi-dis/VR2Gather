@@ -74,7 +74,6 @@ public class Config {
                 public string streamName;
                 public int segmentSize;
                 public int segmentLife;
-                public bool fileMirroring;
             }
             public _Bin2Dash Bin2Dash;
             public _Bin2Dash AudioBin2Dash;
