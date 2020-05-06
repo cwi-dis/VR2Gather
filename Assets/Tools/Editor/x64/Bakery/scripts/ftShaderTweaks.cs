@@ -39,6 +39,10 @@ public class ftShaderTweaks : ScriptableWizard
     string unityGetShadowCoord4 = "unityShadowCoord4 lightCoord = mul(unity_WorldToLight, unityShadowCoord4(worldPos, 1));";
     string unityGetShadow = "fixed shadow = UNITY_SHADOW_ATTENUATION(input, worldPos);";
     string ftLightFalloff = "fixed destName = ftLightFalloff(unity_WorldToLight, worldPos)";
+    string unityLightFalloffNew = "UnitySpotAttenuate(lightCoord.xyz)";
+    string ftLightFalloffNew = "ftLightFalloff(unity_WorldToLight, worldPos)";
+    string unityLightFalloffNew2 = "UnitySpotAttenuate(worldPos)";
+    string ftLightFalloffNew2 = "ftLightFalloff(unity_WorldToLight, worldPos)";
     string unitySpotFalloffDeferred = "atten *= tex2D (_LightTextureB0,";
     string ftSpotFalloffDeferred = "atten *= ftLightFalloff(_LightPos, wpos);";
     string unityPointFalloffDeferred = "float atten = tex2D (_LightTextureB0, ";
@@ -528,6 +532,35 @@ public class ftShaderTweaks : ScriptableWizard
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
+
+                    //if (line.IndexOf(unityLightFalloffNew) >= 0)
+                    //{
+                    //    lines.Add(ftSignatureBegin);
+                    //    lines.Add("/*");
+                    //    lines.Add(ftSignatureEnd);
+//
+                    //    lines.Add(line);
+//
+                    //    lines.Add(ftSignatureBegin);
+                    //    lines.Add("*/");
+                    //    lines.Add(line.Replace(unityLightFalloffNew, ftLightFalloffNew));
+                    //    lines.Add(ftSignatureEnd);
+                    //    continue;
+                    //}
+                    //else if (line.IndexOf(unityLightFalloffNew2) >= 0)
+                    //{
+                    //    lines.Add(ftSignatureBegin);
+                    //    lines.Add("/*");
+                    //    lines.Add(ftSignatureEnd);
+//
+                    //    lines.Add(line);
+//
+                    //    lines.Add(ftSignatureBegin);
+                    //    lines.Add("*/");
+                    //    lines.Add(line.Replace(unityLightFalloffNew2, ftLightFalloffNew2));
+                    //    lines.Add(ftSignatureEnd);
+                    //    continue;
+                    //}
 
                     if (line.IndexOf("#if") >= 0) lastIfdef = lines.Count;
                     if (line.IndexOf("define UNITY_LIGHT_ATTENUATION") >= 0 || line.IndexOf("define LIGHT_ATTENUATION") >= 0)

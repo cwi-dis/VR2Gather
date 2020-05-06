@@ -20,6 +20,7 @@ public class ftDirectLightInspector : UnityEditor.Editor
     SerializedProperty ftraceLightShadowmask;
     SerializedProperty ftraceLightShadowmaskDenoise;
     SerializedProperty ftraceLightIndirectIntensity;
+    SerializedProperty ftraceLightTexture, ftraceLightCSTilingX, ftraceLightCSTilingY, ftraceLightCSOffsetX, ftraceLightCSOffsetY;
 
     ftLightmapsStorage storage;
 
@@ -48,6 +49,11 @@ public class ftDirectLightInspector : UnityEditor.Editor
         ftraceLightBakeToIndirect = obj.FindProperty("bakeToIndirect");
         ftraceLightShadowmask = obj.FindProperty("shadowmask");
         ftraceLightShadowmaskDenoise = obj.FindProperty("shadowmaskDenoise");
+        ftraceLightTexture = obj.FindProperty("cloudShadow");
+        ftraceLightCSTilingX = obj.FindProperty("cloudShadowTilingX");
+        ftraceLightCSTilingY = obj.FindProperty("cloudShadowTilingY");
+        ftraceLightCSOffsetX = obj.FindProperty("cloudShadowOffsetX");
+        ftraceLightCSOffsetY = obj.FindProperty("cloudShadowOffsetY");
 
         isHDRP = (target as BakeryDirectLight).GetComponent("HDAdditionalLightData") != null;
     }
@@ -74,10 +80,10 @@ public class ftDirectLightInspector : UnityEditor.Editor
             return;
         }
 
-        SerializedProperty hdrpInt2 = so.FindProperty("displayLightIntensity");
+        SerializedProperty hdrpInt2 = so.FindProperty("m_Intensity");
         if (hdrpInt2 == null)
         {
-            Debug.LogWarning("HDRP: no displayLightIntensity");
+            Debug.LogWarning("HDRP: no m_Intensity");
             return;
         }
         hdrpInt2.floatValue = l.intensity;
@@ -193,6 +199,15 @@ public class ftDirectLightInspector : UnityEditor.Editor
             }
 
             EditorGUILayout.PropertyField(ftraceLightIndirectIntensity, new GUIContent("Indirect intensity", "Non-physical GI multiplier for this light"));
+
+            EditorGUILayout.PropertyField(ftraceLightTexture, new GUIContent("Texture projection", "Tiled projected texture"));
+            if (ftraceLightTexture.objectReferenceValue != null)
+            {
+                EditorGUILayout.PropertyField(ftraceLightCSTilingX, new GUIContent("Tiling U", "Cloud shadow U tiling"));
+                EditorGUILayout.PropertyField(ftraceLightCSTilingY, new GUIContent("Tiling V", "Cloud shadow V tiling"));
+                EditorGUILayout.PropertyField(ftraceLightCSOffsetX, new GUIContent("Offset U", "Cloud shadow U tiling"));
+                EditorGUILayout.PropertyField(ftraceLightCSOffsetY, new GUIContent("Offset V", "Cloud shadow V tiling"));
+            }
 
             serializedObject.ApplyModifiedProperties();
         //}

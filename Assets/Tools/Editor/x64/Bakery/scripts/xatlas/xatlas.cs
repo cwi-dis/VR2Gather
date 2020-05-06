@@ -18,13 +18,22 @@ public class xatlas
     public static extern int xatlasAddMesh(System.IntPtr atlas, int vertexCount, System.IntPtr positions, System.IntPtr normals, System.IntPtr uv, int indexCount, int[] indices32);
 
     [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
+    public static extern int xatlasAddUVMesh(System.IntPtr atlas, int vertexCount, System.IntPtr uv, int indexCount, int[] indices32, bool allowRotate);
+
+    [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
     public static extern void xatlasParametrize(System.IntPtr atlas);
 
     [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
-    public static extern void xatlasPack(System.IntPtr atlas, int attempts, float texelsPerUnit, int resolution, int maxChartSize, int padding);
+    public static extern void xatlasPack(System.IntPtr atlas, int attempts, float texelsPerUnit, int resolution, int maxChartSize, int padding, bool bruteForce);//, bool allowRotate);
 
     [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
-    public static extern void xatlasNormalize(System.IntPtr atlas);
+    public static extern void xatlasNormalize(System.IntPtr atlas, int[] atlasSizes);
+
+    [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
+    public static extern int xatlasGetAtlasCount(System.IntPtr atlas);
+
+    [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
+    public static extern int xatlasGetAtlasIndex(System.IntPtr atlas, int meshIndex, int chartIndex);
 
     [DllImport ("xatlasLib", CallingConvention=CallingConvention.Cdecl)]
     public static extern int xatlasGetVertexCount(System.IntPtr atlas, int meshIndex);
@@ -58,6 +67,11 @@ public class xatlas
         */
     }
 
+    public static double GetTime()
+    {
+        return (System.DateTime.Now.Ticks / System.TimeSpan.TicksPerMillisecond) / 1000.0;
+    }
+
     public static void Unwrap(Mesh m, UnwrapParam uparams)
     {
         //EditorUtility.DisplayDialog("Bakery", "xatlas start", "OK");
@@ -67,7 +81,7 @@ public class xatlas
         newUVBuffer = null;
         newXrefBuffer = null;
 
-        var t = ftRenderLightmap.GetTime();
+        var t = GetTime();
 
         var positions = m.vertices;
         var normals = m.normals;
@@ -115,7 +129,7 @@ public class xatlas
                 xatlasParametrize(atlas);
                 //EditorUtility.DisplayDialog("Bakery", "xatlas param done", "OK");
 
-                xatlasPack(atlas, 4096, 0, 0, 1024, padding);
+                xatlasPack(atlas, 4096, 0, 0, 1024, padding, false);//, true);
                 //EditorUtility.DisplayDialog("Bakery", "xatlas pack done", "OK");
             }
         }
@@ -132,8 +146,8 @@ public class xatlas
             return;
         }
 
-        Debug.Log("xatlas time: " + (ftRenderLightmap.GetTime() - t));
-        t = ftRenderLightmap.GetTime();
+        Debug.Log("xatlas time: " + (GetTime() - t));
+        t = GetTime();
 
         //EditorUtility.DisplayDialog("Bakery", "xatlas unwrap start", "OK");
         //var uv2 = new Vector2[m.vertexCount];
@@ -150,7 +164,7 @@ public class xatlas
             newXrefBuffer.Add(0);
         }
 
-        xatlasNormalize(atlas);
+        xatlasNormalize(atlas, null);
 
         // Collect UVs/xrefs/indices
         for(int i=0; i<m.subMeshCount; i++)
@@ -221,7 +235,17 @@ public class xatlas
         //EditorUtility.DisplayDialog("Bakery", "xatlas unwrap end", "OK");
 
         int vertCount = m.vertexCount;
-        //bool is32bit = newUVBuffer.Count >= 0xFFFF;// (vertCount + newUV2.Count) >= 0xFFFF;
+
+        bool origIs16bit = true;
+#if UNITY_2017_3_OR_NEWER
+        origIs16bit = m.indexFormat == UnityEngine.Rendering.IndexFormat.UInt16;
+#endif
+        bool is32bit = newUVBuffer.Count >= 65000;//0xFFFF;
+        if (is32bit && origIs16bit)
+        {
+            Debug.LogError("Unwrap failed: original mesh (" + m.name + ") has 16 bit indices, but unwrapped requires 32 bit.");
+            return;
+        }
 
         // Duplicate attributes
         //if (newXrefBuffer.Count > m.vertexCount) // commented because can be also swapped around
@@ -258,7 +282,7 @@ public class xatlas
             m.SetTriangles(indexBuffers[i], i);
         }
 
-        //Debug.Log("post-xatlas mesh building time: " + (ftRenderLightmap.GetTime() - t));
+        //Debug.Log("post-xatlas mesh building time: " + GetTime() - t));
 
         xatlasClear(atlas);
     }

@@ -36,6 +36,11 @@ public class ftPointLightInspector : UnityEditor.Editor
     bool isHDRP = false;
     bool isLWRP = false;
 
+    int projModeCached = -1;
+    int texCached = -1;
+    int tex2DCached = -1;
+    int iesCached = -1;
+
     static string[] selStrings = new string[] {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16",
                                                 "17","18","19","20","21","22","23","24","25","26","27","28","29","30"};//,"31"};
 
@@ -63,8 +68,14 @@ public class ftPointLightInspector : UnityEditor.Editor
         isHDRP = hdrpLight != null;
 
 #if UNITY_2018_1_OR_NEWER
+
+#if UNITY_2019_3_OR_NEWER
+        var rpipe = GraphicsSettings.currentRenderPipeline;
+#else
         var rpipe = GraphicsSettings.renderPipelineAsset;
-        if (rpipe != null && rpipe.GetType().Name.Substring(0,11) == "Lightweight")
+#endif
+
+        if (rpipe != null && (rpipe.GetType().Name.StartsWith("Lightweight") || rpipe.GetType().Name.StartsWith("Universal")))
         {
             isLWRP = true;
         }
@@ -112,6 +123,36 @@ public class ftPointLightInspector : UnityEditor.Editor
         }
     }
 
+    bool CompareWithLWRP(Light l, ref string why)
+    {
+        if (l.type == LightType.Spot)
+        {
+            var so = new SerializedObject(l);
+            if (so == null)
+            {
+                why = "no SerializedObject";
+                return false;
+            }
+            if (ftraceLightProj.intValue != (int)BakeryPointLight.ftLightProjectionMode.Cone)
+            {
+                why = "spot shape doesn't match.";
+                return false;
+            }
+            SerializedProperty innerAngle = so.FindProperty("m_InnerSpotAngle");
+            if (innerAngle == null)
+            {
+                why = "no m_InnerSpotAngle";
+                return false;
+            }
+            if (Mathf.Abs(((ftraceLightInnerAngle.floatValue * 0.01f) * ftraceLightAngle.floatValue) - innerAngle.floatValue) > 0.001f)
+            {
+                why = "inner angle doesn't match.";
+                return false;
+            }
+        }
+        return true;
+    }
+
     bool CompareWithHDRP(Light l, ref string why)
     {
         var hdrpLight = l.GetComponent("HDAdditionalLightData");
@@ -126,10 +167,10 @@ public class ftPointLightInspector : UnityEditor.Editor
             why = "no SerializedObject";
             return false;
         }
-        SerializedProperty hdrpLightTypeExtent = so.FindProperty("lightTypeExtent");
+        SerializedProperty hdrpLightTypeExtent = so.FindProperty("m_PointlightHDType");
         if (hdrpLightTypeExtent == null)
         {
-            why = "no lightTypeExtent";
+            why = "no m_PointlightHDType";
             return false;
         }
 
@@ -180,6 +221,17 @@ public class ftPointLightInspector : UnityEditor.Editor
     {
         ftraceLightRealisticFalloff.boolValue = true;
         ftraceLightFalloffMinRadius.floatValue = 0.01f;
+        if (l.type == LightType.Spot)
+        {
+            ftraceLightProj.intValue = (int)BakeryPointLight.ftLightProjectionMode.Cone;
+
+            var so = new SerializedObject(l);
+            if (so == null) return;
+
+            SerializedProperty lightInnerAngle = so.FindProperty("m_InnerSpotAngle");
+            if (lightInnerAngle == null) return;
+            ftraceLightInnerAngle.floatValue = (lightInnerAngle.floatValue / ftraceLightAngle.floatValue) * 100;
+        }
     }
 
     void MatchToHDRPLight(Light l)
@@ -195,7 +247,7 @@ public class ftPointLightInspector : UnityEditor.Editor
         var so = new SerializedObject(hdrpLight);
         if (so == null) return;
 
-        SerializedProperty hdrpLightTypeExtent = so.FindProperty("lightTypeExtent");
+        SerializedProperty hdrpLightTypeExtent = so.FindProperty("m_PointlightHDType");
         if (hdrpLightTypeExtent == null) return;
 
         int extendedLightType = hdrpLightTypeExtent.intValue;
@@ -217,6 +269,22 @@ public class ftPointLightInspector : UnityEditor.Editor
         ftraceLightInnerAngle.floatValue = hdrpLightInnerAngle.floatValue;
     }
 
+    void SetLWRPLight(Light l)
+    {
+        if (ftraceLightProj.enumValueIndex == (int)BakeryPointLight.ftLightProjectionMode.Cone)
+        {
+            var so = new SerializedObject(l);
+            if (so == null) return;
+
+            SerializedProperty lightInnerAngle = so.FindProperty("m_InnerSpotAngle");
+            if (lightInnerAngle == null) return;
+
+            lightInnerAngle.floatValue = (ftraceLightInnerAngle.floatValue * 0.01f) * ftraceLightAngle.floatValue;
+
+            so.ApplyModifiedProperties();
+        }
+    }
+
     void SetHDRPLight(Light l)
     {
 #if UNITY_2019_1_OR_NEWER
@@ -231,13 +299,13 @@ public class ftPointLightInspector : UnityEditor.Editor
         var so = new SerializedObject(hdrpLight);
         if (so == null) return;
 
-        SerializedProperty hdrpUnits = so.FindProperty("lightUnit");
+        SerializedProperty hdrpUnits = so.FindProperty("m_LightUnit");
         if (hdrpUnits != null) hdrpUnits.intValue = 1; // candela
 
-        SerializedProperty hdrpInt2 = so.FindProperty("displayLightIntensity");
+        SerializedProperty hdrpInt2 = so.FindProperty("m_Intensity");
         if (hdrpInt2 != null) hdrpInt2.floatValue = l.intensity;
 
-        SerializedProperty hdrpLightTypeExtent = so.FindProperty("lightTypeExtent");
+        SerializedProperty hdrpLightTypeExtent = so.FindProperty("m_PointlightHDType");
         if (hdrpLightTypeExtent == null) return;
         hdrpLightTypeExtent.intValue = 0; // punctual
 
@@ -255,12 +323,39 @@ public class ftPointLightInspector : UnityEditor.Editor
         so.ApplyModifiedProperties();
     }
 
+    void TestPreviewRefreshProperty(ref int cached, int newVal)
+    {
+        if (cached >= 0)
+        {
+            if (cached != newVal)
+            {
+                BakeryPointLight.lightsChanged = 2;
+            }
+        }
+        cached = newVal;
+    }
+
+    void TestPreviewRefreshProperty(ref int cached, UnityEngine.Object newVal)
+    {
+        if (newVal == null)
+        {
+            TestPreviewRefreshProperty(ref cached, 0);
+            return;
+        }
+        TestPreviewRefreshProperty(ref cached, newVal.GetInstanceID());
+    }
+
     public override void OnInspectorGUI() {
         //if (showFtrace)
         {
             OnEnable();
 
             serializedObject.Update();
+
+            TestPreviewRefreshProperty(ref projModeCached, ftraceLightProj.intValue);
+            TestPreviewRefreshProperty(ref texCached, ftraceLightTexture.objectReferenceValue);
+            TestPreviewRefreshProperty(ref tex2DCached, ftraceLightTexture2D.objectReferenceValue);
+            TestPreviewRefreshProperty(ref iesCached, ftraceLightIES.objectReferenceValue);
 
             EditorGUILayout.PropertyField(ftraceLightColor, new GUIContent("Color", "Color of the light"));
             EditorGUILayout.PropertyField(ftraceLightIntensity, new GUIContent("Intensity", "Color multiplier (Candela / PI)"));
@@ -392,15 +487,6 @@ public class ftPointLightInspector : UnityEditor.Editor
                 if (ftraceLightShadowmask.boolValue) shadowmaskNoDynamicLight = true;
             }
 
-            if (isLWRP)
-            {
-                if (!ftraceLightRealisticFalloff.boolValue || Mathf.Abs(ftraceLightFalloffMinRadius.floatValue - 0.01f) > 0.0001f)
-                {
-                    match = false;
-                    why = "falloff doesn't match LWRP";
-                }
-            }
-
             if (isHDRP)
             {
                 if (!ftraceLightRealisticFalloff.boolValue || Mathf.Abs(ftraceLightFalloffMinRadius.floatValue - 0.01f) > 0.0001f)
@@ -411,6 +497,19 @@ public class ftPointLightInspector : UnityEditor.Editor
                 else
                 {
                     match = CompareWithHDRP(light, ref why);
+                }
+            }
+
+            if (isLWRP)
+            {
+                if (!ftraceLightRealisticFalloff.boolValue || Mathf.Abs(ftraceLightFalloffMinRadius.floatValue - 0.01f) > 0.0001f)
+                {
+                    match = false;
+                    why = "falloff doesn't match URP";
+                }
+                else
+                {
+                    match = CompareWithLWRP(light, ref why);
                 }
             }
 
@@ -692,6 +791,7 @@ public class ftPointLightInspector : UnityEditor.Editor
                     light.bounceIntensity = ftraceLightIndirectIntensity.floatValue;
 
                     if (isHDRP) SetHDRPLight(light);
+                    if (isLWRP) SetLWRPLight(light);
                 }
             }
         }
