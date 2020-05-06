@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using System.IO;
 using System.Collections.Generic;
 
 public class ftModelPostProcessorInternal : AssetPostprocessor
@@ -12,6 +13,16 @@ public class ftModelPostProcessorInternal : AssetPostprocessor
 
 public partial class ftModelPostProcessor : ftModelPostProcessorInternal
 {
+    public static bool unwrapError = false;
+    public static string lastUnwrapErrorAsset = "";
+
+    // Deprecated but leave it for now just in case
+    public class ftSavedPadding : ScriptableObject
+    {
+        [SerializeField]
+        public ftGlobalStorage.AdjustedMesh data;
+    }
+
     static ftGlobalStorage storage;
     UnwrapParam uparams;
     const int res = 1024;
@@ -20,6 +31,7 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
     public static Texture2D tex;
 
     static Dictionary<string, bool> assetHasPaddingAdjustment = new Dictionary<string, bool>();
+    static Dictionary<string, ftSavedPadding2> assetSavedPaddingAdjustment = new Dictionary<string, ftSavedPadding2>();
 
 #if UNITY_2017_1_OR_NEWER
     bool deserializedSuccess = false;
@@ -40,20 +52,25 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
 
     void OnPreprocessModel()
     {
+        Init();
+
         assetHasPaddingAdjustment[assetPath] = false;
+        assetSavedPaddingAdjustment[assetPath] = null;
 
         if (storage == null) return;
-        if (storage.modifiedAssetPathList.IndexOf(assetPath) < 0) return;
+        bool hasGlobalPaddingAdjustment = storage.modifiedAssetPathList.IndexOf(assetPath) >= 0;
+        var savedAdjustment = AssetDatabase.LoadAssetAtPath(
+            Path.GetDirectoryName(assetPath) + "/" + Path.GetFileNameWithoutExtension(assetPath) + "_padding.asset", typeof(ftSavedPadding2)) as ftSavedPadding2;
+        if (!hasGlobalPaddingAdjustment && savedAdjustment == null) return;
 
         ModelImporter importer = (ModelImporter)assetImporter;
         assetHasPaddingAdjustment[assetPath] = importer.generateSecondaryUV;
         importer.generateSecondaryUV = false; // disable built-in unwrapping for models with padding adjustment
+        assetSavedPaddingAdjustment[assetPath] = savedAdjustment;
     }
 
     void OnPostprocessModel(GameObject g)
     {
-        Init();
-
         ModelImporter importer = (ModelImporter)assetImporter;
         if (importer.generateSecondaryUV || assetHasPaddingAdjustment[assetPath])
         {
@@ -68,7 +85,15 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
             //if (ftLightmaps.IsModelProcessed(assetPath)) return;
 
             //g.tag = "BakeryProcessed";
-            Debug.Log("Bakery: processing auto-unwrapped asset " + assetPath);
+            var saved = assetSavedPaddingAdjustment[assetPath];
+            if (saved != null)
+            {
+                Debug.Log("Bakery: processing auto-unwrapped asset (saved UV padding) " + assetPath);
+            }
+            else
+            {
+                Debug.Log("Bakery: processing auto-unwrapped asset " + assetPath);
+            }
             if (storage != null) ftLightmaps.MarkModelProcessed(assetPath, true);
 
             uparams = new UnwrapParam();
@@ -94,7 +119,7 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
             if (storage != null) storage.InitModifiedMeshMap(assetPath);
 
             var tt = GetTime();
-            AdjustUV(g.transform);
+            AdjustUV(g.transform, saved);
             Debug.Log("UV adjustment time: " + (GetTime() - tt));
         }
         else
@@ -218,25 +243,54 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
     bool ValidateMesh(Mesh m, ftGlobalStorage.Unwrapper unwrapper)
     {
 #if UNITY_2017_3_OR_NEWER
+    #if UNITY_2018_4_OR_NEWER
+        // Bug was fixed in 2018.3.5, but the closest define is for 2018.4
+    #else
         if (m.indexFormat == UnityEngine.Rendering.IndexFormat.UInt32 && unwrapper == ftGlobalStorage.Unwrapper.Default)
         {
             Debug.LogError("Can't adjust UV padding for " + m.name + " due to Unity bug. Please set Index Format to 16-bit on the asset or use xatlas.");
             return false;
         }
+    #endif
 #endif
         return true;
     }
 
-    void AdjustUV(Transform t)
+    void AdjustUV(Transform t, ftSavedPadding2 saved = null)
     {
         var mf = t.GetComponent<MeshFilter>();
         if (mf != null && mf.sharedMesh != null)
         {
             var m = mf.sharedMesh;
             var nm = m.name;
+            int modifiedMeshID;
 
+            if (saved != null)
+            {
+                // Get padding from asset
+                int mindex = saved.data.meshName.IndexOf(nm);
+                if (mindex < 0)
+                {
+                    //Debug.LogError("Unable to find padding value for mesh " + nm);
+                    // This is fine. Apparently caused by parts of models being lightmapped,
+                    // while other parts are not baked, yet still a part of the model.
+                }
+                else
+                {
+                    var padding = saved.data.padding[mindex];
+
+                    ftGlobalStorage.Unwrapper unwrapper = ftGlobalStorage.Unwrapper.Default;
+                    if (saved.data.unwrapper != null && saved.data.unwrapper.Count > mindex)
+                        unwrapper = (ftGlobalStorage.Unwrapper)saved.data.unwrapper[mindex];
+
+                    if (!ValidateMesh(m, unwrapper)) return;
+
+                    uparams.packMargin = padding/1024.0f;
+                    Unwrap(m, uparams, unwrapper);
+                }
+            }
 #if UNITY_2017_1_OR_NEWER
-            if (deserializedSuccess && deserialized.meshName != null && deserialized.padding != null)
+            else if (deserializedSuccess && deserialized.meshName != null && deserialized.padding != null)
             {
                 // Get padding from extraUserProperties (new)
                 int mindex = deserialized.meshName.IndexOf(nm);
@@ -263,7 +317,6 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
             else
             {
                 // Get padding from GlobalStorage (old)
-                int modifiedMeshID;
                 if (storage != null && storage.modifiedMeshMap.TryGetValue(nm, out modifiedMeshID))
                 {
                     var padding = storage.modifiedMeshPaddingArray[modifiedMeshID];
@@ -279,8 +332,7 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
                 }
             }
 #else
-            int modifiedMeshID;
-            if (storage != null && storage.modifiedMeshMap.TryGetValue(nm, out modifiedMeshID))
+            else if (storage != null && storage.modifiedMeshMap.TryGetValue(nm, out modifiedMeshID))
             {
                 var padding = storage.modifiedMeshPaddingArray[modifiedMeshID];
 
@@ -298,7 +350,7 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
 
         // Recurse
         foreach (Transform child in t)
-            AdjustUV(child);
+            AdjustUV(child, saved);
     }
 
     static bool RenderMeshes(Transform t, bool deep)
@@ -339,6 +391,12 @@ public partial class ftModelPostProcessor : ftModelPostProcessorInternal
         {
             var tt = GetTime();
             Unwrapping.GenerateSecondaryUVSet(m, uparams);
+            if (m.uv2 == null || m.uv2.Length == 0)
+            {
+                Debug.LogError("Unity failed to unwrap mesh. Options: a) Use 32-bit indices and Unity >= 2018.4. b) Split it into multiple chunks. c) Disable 'Adjust UV Padding'.");
+                unwrapError = true;
+                lastUnwrapErrorAsset = assetPath;
+            }
             Debug.Log("Unity unwrap time: " + (GetTime() - tt));
         }
     }

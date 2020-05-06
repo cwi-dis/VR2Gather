@@ -1,5 +1,9 @@
 #if UNITY_EDITOR
 
+// Disable 'obsolete' warnings
+#pragma warning disable 0618
+#pragma warning disable 0612
+
 using System;
 using UnityEngine;
 

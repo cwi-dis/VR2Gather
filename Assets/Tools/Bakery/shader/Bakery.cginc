@@ -27,7 +27,7 @@ float bakeryLightmapMode;
 
 #ifndef _NORMALMAP
     #undef BAKERY_RNM
-    #undef BAKERY_SH
+    //#undef BAKERY_SH
 #endif
 
 #ifndef UNITY_SHOULD_SAMPLE_SH

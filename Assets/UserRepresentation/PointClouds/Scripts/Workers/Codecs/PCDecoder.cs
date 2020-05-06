@@ -46,7 +46,7 @@ namespace Workers {
                     cwipc.pointcloud pc = decoder.get();
                     if (pc != null) {
                         statsUpdate(pc.count(), pc.timestamp());
-                        if (inQueue.Count < outQueue.Size) outQueue.Enqueue(pc);
+                        if (inQueue.Free()) outQueue.Enqueue(pc);
                         else pc.free();
                     } else throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }

@@ -52,9 +52,11 @@ public class ftLightmapsStorage : MonoBehaviour{
         public bool renderSettingsOverwriteWarning = false;
         public bool renderSettingsAutoAtlas = true;
         public bool renderSettingsUnwrapUVs = true;
+        public bool renderSettingsForceDisableUnwrapUVs = false;
         public int renderSettingsMaxAutoResolution = 4096;
         public int renderSettingsMinAutoResolution = 16;
         public bool renderSettingsUnloadScenes = true;
+        public bool renderSettingsAdjustSamples = true;
         public int renderSettingsGILODMode = 0;
         public bool renderSettingsGILODModeEnabled = true;
         public bool renderSettingsCheckOverlaps = false;
@@ -84,15 +86,25 @@ public class ftLightmapsStorage : MonoBehaviour{
         public bool renderSettingsPrefabWarning = true;
         public bool renderSettingsSplitByScene = false;
         public bool renderSettingsUVPaddingMax = false;
+        public bool renderSettingsPostPacking = true;
+        public bool renderSettingsHoleFilling = false;
         public bool renderSettingsBeepOnFinish = false;
         public bool renderSettingsExportTerrainAsHeightmap = true;
         public bool renderSettingsRTXMode = false;
-        public int renderSettingsLightProbeMode = 0;
+        public int renderSettingsLightProbeMode = 1;
         public bool renderSettingsClientMode = false;
         public string renderSettingsServerAddress = "127.0.0.1";
         public int renderSettingsUnwrapper = 0;
         public bool renderSettingsExportTerrainTrees = false;
         public bool renderSettingsShowPerf = true;
+        public int renderSettingsSampleDiv = 1;
+        public bool renderSettingsLegacyDenoiser = false;
+        public ftGlobalStorage.AtlasPacker renderSettingsAtlasPacker = ftGlobalStorage.AtlasPacker.xatlas;
+        public bool renderSettingsBatchPoints = true;
+        public bool renderSettingsRTPVExport = true;
+        public bool renderSettingsRTPVSceneView = false;
+        public int renderSettingsRTPVWidth = 640;
+        public int renderSettingsRTPVHeight = 360;
         public int lastBakeTime = 0;
 
         public bool enlightenWarningShown = false;
@@ -179,9 +191,11 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsOverwriteWarning = src.renderSettingsOverwriteWarning;
             dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
             dest.renderSettingsUnwrapUVs = src.renderSettingsUnwrapUVs;
+            dest.renderSettingsForceDisableUnwrapUVs = src.renderSettingsForceDisableUnwrapUVs;
             dest.renderSettingsMaxAutoResolution = src.renderSettingsMaxAutoResolution;
             dest.renderSettingsMinAutoResolution = src.renderSettingsMinAutoResolution;
             dest.renderSettingsUnloadScenes = src.renderSettingsUnloadScenes;
+            dest.renderSettingsAdjustSamples = src.renderSettingsAdjustSamples;
             dest.renderSettingsGILODMode = src.renderSettingsGILODMode;
             dest.renderSettingsGILODModeEnabled = src.renderSettingsGILODModeEnabled;
             dest.renderSettingsCheckOverlaps = src.renderSettingsCheckOverlaps;
@@ -211,6 +225,8 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
+            dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
+            dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
             dest.renderSettingsBeepOnFinish = src.renderSettingsBeepOnFinish;
             dest.renderSettingsExportTerrainAsHeightmap = src.renderSettingsExportTerrainAsHeightmap;
             dest.renderSettingsRTXMode = src.renderSettingsRTXMode;
@@ -219,6 +235,15 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsServerAddress = src.renderSettingsServerAddress;
             dest.renderSettingsUnwrapper = src.renderSettingsUnwrapper;
             dest.renderSettingsExportTerrainTrees = src.renderSettingsExportTerrainTrees;
+            dest.renderSettingsSampleDiv = src.renderSettingsSampleDiv;
+            dest.renderSettingsLegacyDenoiser = src.renderSettingsLegacyDenoiser;
+            dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
+            dest.renderSettingsBatchPoints = src.renderSettingsBatchPoints;
+            dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
+            dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
+            dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
+            dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
             dest.renderSettingsShowPerf = src.renderSettingsShowPerf;
         }
 
@@ -244,9 +269,11 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsOverwriteWarning = src.renderSettingsOverwriteWarning;
             dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
             dest.renderSettingsUnwrapUVs = src.renderSettingsUnwrapUVs;
+            dest.renderSettingsForceDisableUnwrapUVs = src.renderSettingsForceDisableUnwrapUVs;
             dest.renderSettingsMaxAutoResolution = src.renderSettingsMaxAutoResolution;
             dest.renderSettingsMinAutoResolution = src.renderSettingsMinAutoResolution;
             dest.renderSettingsUnloadScenes = src.renderSettingsUnloadScenes;
+            dest.renderSettingsAdjustSamples = src.renderSettingsAdjustSamples;
             dest.renderSettingsGILODMode = src.renderSettingsGILODMode;
             dest.renderSettingsGILODModeEnabled = src.renderSettingsGILODModeEnabled;
             dest.renderSettingsCheckOverlaps = src.renderSettingsCheckOverlaps;
@@ -276,6 +303,8 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
+            dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
+            dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
             dest.renderSettingsBeepOnFinish = src.renderSettingsBeepOnFinish;
             dest.renderSettingsExportTerrainAsHeightmap = src.renderSettingsExportTerrainAsHeightmap;
             dest.renderSettingsRTXMode = src.renderSettingsRTXMode;
@@ -285,6 +314,15 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsUnwrapper = src.renderSettingsUnwrapper;
             dest.renderSettingsExportTerrainTrees = src.renderSettingsExportTerrainTrees;
             dest.renderSettingsShowPerf = src.renderSettingsShowPerf;
+            dest.renderSettingsSampleDiv = src.renderSettingsSampleDiv;
+            dest.renderSettingsLegacyDenoiser = src.renderSettingsLegacyDenoiser;
+            dest.renderSettingsBatchPoints = src.renderSettingsBatchPoints;
+            dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
+            dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
+            dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
+            dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
+            dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
         }
 
         public static void CopySettings(ftGlobalStorage src, ftLightmapsStorage dest)
@@ -309,9 +347,11 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsOverwriteWarning = src.renderSettingsOverwriteWarning;
             dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
             dest.renderSettingsUnwrapUVs = src.renderSettingsUnwrapUVs;
+            dest.renderSettingsForceDisableUnwrapUVs = src.renderSettingsForceDisableUnwrapUVs;
             dest.renderSettingsMaxAutoResolution = src.renderSettingsMaxAutoResolution;
             dest.renderSettingsMinAutoResolution = src.renderSettingsMinAutoResolution;
             dest.renderSettingsUnloadScenes = src.renderSettingsUnloadScenes;
+            dest.renderSettingsAdjustSamples = src.renderSettingsAdjustSamples;
             dest.renderSettingsGILODMode = src.renderSettingsGILODMode;
             dest.renderSettingsGILODModeEnabled = src.renderSettingsGILODModeEnabled;
             dest.renderSettingsCheckOverlaps = src.renderSettingsCheckOverlaps;
@@ -341,6 +381,8 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsPrefabWarning = src.renderSettingsPrefabWarning;
             dest.renderSettingsSplitByScene = src.renderSettingsSplitByScene;
             dest.renderSettingsUVPaddingMax = src.renderSettingsUVPaddingMax;
+            dest.renderSettingsPostPacking = src.renderSettingsPostPacking;
+            dest.renderSettingsHoleFilling = src.renderSettingsHoleFilling;
             dest.renderSettingsBeepOnFinish = src.renderSettingsBeepOnFinish;
             dest.renderSettingsExportTerrainAsHeightmap = src.renderSettingsExportTerrainAsHeightmap;
             dest.renderSettingsRTXMode = src.renderSettingsRTXMode;
@@ -350,6 +392,15 @@ public class ftLightmapsStorage : MonoBehaviour{
             dest.renderSettingsUnwrapper = src.renderSettingsUnwrapper;
             dest.renderSettingsExportTerrainTrees = src.renderSettingsExportTerrainTrees;
             dest.renderSettingsShowPerf = src.renderSettingsShowPerf;
+            dest.renderSettingsSampleDiv = src.renderSettingsSampleDiv;
+            dest.renderSettingsLegacyDenoiser = src.renderSettingsLegacyDenoiser;
+            dest.renderSettingsBatchPoints = src.renderSettingsBatchPoints;
+            dest.renderSettingsRTPVExport = src.renderSettingsRTPVExport;
+            dest.renderSettingsRTPVSceneView = src.renderSettingsRTPVSceneView;
+            dest.renderSettingsRTPVWidth = src.renderSettingsRTPVWidth;
+            dest.renderSettingsRTPVHeight = src.renderSettingsRTPVHeight;
+            dest.renderSettingsAtlasPacker = src.renderSettingsAtlasPacker;
+            dest.renderSettingsAutoAtlas = src.renderSettingsAutoAtlas;
         }
 #endif
 
@@ -363,7 +414,7 @@ public class ftLightmapsStorage : MonoBehaviour{
     public List<int> mapsMode = new List<int>();
 
     // new props
-    public List<MeshRenderer> bakedRenderers = new List<MeshRenderer>();
+    public List<Renderer> bakedRenderers = new List<Renderer>();
     public List<int> bakedIDs = new List<int>();
     public List<Vector4> bakedScaleOffset = new List<Vector4>();
 #if UNITY_EDITOR
@@ -371,7 +422,7 @@ public class ftLightmapsStorage : MonoBehaviour{
 #endif
     public List<Mesh> bakedVertexColorMesh = new List<Mesh>();
 
-    public List<MeshRenderer> nonBakedRenderers = new List<MeshRenderer>();
+    public List<Renderer> nonBakedRenderers = new List<Renderer>();
 
     public List<Light> bakedLights = new List<Light>();
     public List<int> bakedLightChannels = new List<int>();
