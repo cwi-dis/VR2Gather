@@ -23,11 +23,8 @@ public class LoginController : PilotController {
         while (orchestrator.watingForUser) {
             yield return null;
         }
-        Debug.Log("Load!!!");
-        /*
         if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
         else SceneManager.LoadScene("Pilot2_Player");
-        */
     }
 
 public override void MessageActivation(string message) {
