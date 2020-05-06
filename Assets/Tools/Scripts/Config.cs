@@ -28,16 +28,13 @@ public class Config {
         public Vector3 offsetPosition;
         public Vector3 offsetRotation;
         public Vector3 scale;
+        public bool forceMesh;
     };
     public _PCs PCs;
 
     [Serializable]
     public class _User {
         public string sourceType;
-        public string cwicpcFilename;
-        public string cwicpcDirectory;
-        public string plyFilename;
-        public string plyDirectory;
         [Serializable]
         public class _SUBConfig {
             public string url;
@@ -85,18 +82,8 @@ public class Config {
         public _PCSelfConfig PCSelfConfig;
 
         [Serializable]
-        public class _NetConfig
-        {
-            public string hostName;
-            public int port;
-        }
-        public _NetConfig NetConfig;
-
-
-        [Serializable]
         public class _Render
         {
-            public bool forceMesh;
             public float pointSize = 0.008f;
             public Vector3 position;
             public Vector3 rotation;
