@@ -10,26 +10,25 @@ namespace Workers {
         string url;
         QueueThreadSafe inQueue;
 
-        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url, QueueThreadSafe _inQueue) : base(WorkerType.End) {
+
+        // Config._User._PCSelfConfig._Bin2Dash cfg, 
+        public B2DWriter(string _url, string _streamName, int _segmentSize, int _segmentLife, QueueThreadSafe _inQueue) : base(WorkerType.End) {
             try {
                 inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
-                if ( string.IsNullOrEmpty(_url))
-                    url = cfg.url;
-                else
-                    url = _url;
-                if (url == "" || url == null || cfg.streamName == "" || cfg.streamName == null)
+                url = _url;
+                if ( string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName) )
                 {
                     Debug.LogError("B2DWriter: configuration error: url or streamName not set");
                     throw new System.Exception("B2DWriter: configuration error: url or streamName not set");
                 }
-                uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
+                uploader = bin2dash.create(_streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, _segmentSize, _segmentLife);
                 if (uploader != null) {
-                    Debug.Log($"B2DWriter({url + cfg.streamName}: started");
+                    Debug.Log($"B2DWriter({url + _streamName}.mdp: started");
                     Start();
                 }
                 else
-                    throw new System.Exception($"B2DWriter: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
+                    throw new System.Exception($"B2DWriter: vrt_create: failed to create uploader {url + _streamName}.mpd");
             }
             catch (System.Exception e) {
                 Debug.LogError($"B2DWriter({url}:{e.Message}");

@@ -44,21 +44,28 @@ public class NewMemorySystem : MonoBehaviour
         }
 
 
+        var pcSelfConfig = cfg.PCSelfConfig;
         if (localPCs)
-            reader = new Workers.RS2Reader(cfg.PCSelfConfig, preparerQueue);
+            reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, preparerQueue);
         else {
-            reader = new Workers.RS2Reader(cfg.PCSelfConfig, encoderQueue);
-            encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder, encoderQueue, writerQueue);
+            reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
+            encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoder.octreeBits, encoderQueue, writerQueue);
             string uuid = System.Guid.NewGuid().ToString();
-            dashWriter = new Workers.B2DWriter(cfg.PCSelfConfig.Bin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", writerQueue);
-            dashReader = new Workers.SUBReader(cfg.SUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/testBed.mpd", decoderQueue);
+            var b2d = cfg.PCSelfConfig.Bin2Dash;
+            dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", b2d.segmentSize, b2d.segmentLife, writerQueue);
+            var SUBConfig = cfg.SUBConfig;
+            dashReader = new Workers.SUBReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
         if (useVoice) {
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceDashSender>().Init(cfg.PCSelfConfig.AudioBin2Dash, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/"); //Audio Pipeline
-            gameObject.AddComponent<VoiceDashReceiver>().Init(cfg.AudioSUBConfig, "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio.mpd"); //Audio Pipeline
+            var audioB2D = cfg.PCSelfConfig.AudioBin2Dash;
+
+            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
+
+            var audioConfig = cfg.AudioSUBConfig;
+            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
 
         }
     }
