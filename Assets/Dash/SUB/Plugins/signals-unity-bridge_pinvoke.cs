@@ -30,14 +30,17 @@ public class sub
 #endif
         // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
         // after matching the API used here with that in the C++ code.
-        const System.Int64 SUB_API_VERSION = 0x20200327A;
+        const System.Int64 SUB_API_VERSION = 0x20200420A;
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline);
 
         // Creates a new pipeline.
         // name: a display name for log messages. Can be NULL.
         // The returned pipeline must be freed using 'sub_destroy'.
-        // SUB_EXPORT sub_handle* sub_create(const char* name);
+        // SUB_EXPORT sub_handle* sub_create(const char* name, void (* onError) (const char* msg), uint64_t api_version = SUB_API_VERSION);
         [DllImport(myDllName)]
-        extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, System.Int64 api_version = SUB_API_VERSION);
+        extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, System.Int64 api_version = SUB_API_VERSION);
 
         // Destroys a pipeline. This frees all the resources.
         // SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -160,7 +163,7 @@ public class sub
     {
         System.IntPtr obj;
         SetMSPaths();
-        obj = _API.sub_create(pipeline);
+        obj = _API.sub_create(pipeline, (msg)=> { UnityEngine.Debug.Log($"SUB: Internal message {msg}"); });
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);

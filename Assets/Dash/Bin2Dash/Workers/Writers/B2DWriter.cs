@@ -18,6 +18,11 @@ namespace Workers {
                     url = cfg.url;
                 else
                     url = _url;
+                if (url == "" || url == null || cfg.streamName == "" || cfg.streamName == null)
+                {
+                    Debug.LogError("B2DWriter: configuration error: url or streamName not set");
+                    throw new System.Exception("B2DWriter: configuration error: url or streamName not set");
+                }
                 uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
                 if (uploader != null) {
                     Debug.Log($"B2DWriter({url + cfg.streamName}: started");

@@ -36,7 +36,6 @@ namespace Workers
                 if (outQueue.Count < 16 && bytesInAudioBuffer >= bufferLength) {
                     FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
                     System.Array.Copy(circularBuffer, circularBufferReadPosition, mc.buffer, 0, bufferLength);
-                    mc.timeStamp = NTPTools.GetNTPTime();
                     outQueue.Enqueue(mc);
                     circularBufferReadPosition = (circularBufferReadPosition + bufferLength) % circularBufferSize;
                 }

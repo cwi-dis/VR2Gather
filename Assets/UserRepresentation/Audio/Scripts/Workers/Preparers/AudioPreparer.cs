@@ -14,6 +14,7 @@ namespace Workers {
 
         public AudioPreparer(QueueThreadSafe _inQueue, int _preferredBufferFill=0) : base(WorkerType.End) {
             inQueue = _inQueue;
+            if (inQueue == null) Debug.LogError($"AudioPreparer: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
             if (_preferredBufferFill == 0) _preferredBufferFill = bufferSize + 1;
             preferredBufferFill = _preferredBufferFill;
@@ -43,7 +44,6 @@ namespace Workers {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.Dequeue();
 
                 int len = mc.elements;
-                //Debug.Log($"BEFORE len {len} writePosition {writePosition} readPosition {readPosition}");
                 if (writePosition + len < bufferSize) {
                     System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
                     writePosition += len;
