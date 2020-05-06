@@ -33,21 +33,32 @@ public class BaseMemoryChunk {
     protected BaseMemoryChunk(IntPtr _pointer) {
         if (_pointer== IntPtr.Zero)  throw new Exception("BaseMemoryChunk: constructor called with null pointer");
         this._pointer = _pointer;
-        refCount = 0;
+        refCount = 1;
         BaseMemoryChunkReferences.AddReference( this.GetType() );
     }
 
     protected BaseMemoryChunk() {
-        refCount = 0;
+        refCount = 1;
         BaseMemoryChunkReferences.AddReference(this.GetType());
     }
 
-    public BaseMemoryChunk AddRef() { refCount++; return this; }
+    public BaseMemoryChunk AddRef() {
+        lock (this)
+        {
+            refCount++;
+            return this;
+        }
+    }
     public IntPtr pointer { get { return _pointer; } }
 
     public void free() {
-        if( --refCount < 1) {
-            lock (this) {
+        lock (this)
+        {
+            if ( --refCount < 1) {
+                if (refCount < 0)
+                {
+                    throw new System.Exception($"BaseMemoryChunk.free: refCount={refCount}");
+                }
                 if (_pointer!=IntPtr.Zero) {
                     onfree();
                     _pointer = IntPtr.Zero;

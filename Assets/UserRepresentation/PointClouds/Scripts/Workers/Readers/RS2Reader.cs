@@ -9,12 +9,12 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public RS2Reader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+        public RS2Reader(string _configFilename, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            voxelSize = cfg.voxelSize;
+            voxelSize = _voxelSize;
             try {
-                reader = cwipc.realsense2(cfg.configFilename);  
+                reader = cwipc.realsense2(_configFilename);  
                 if (reader != null) {
                     Start();
                     Debug.Log("PCRealSense2Reader: Started.");
@@ -44,18 +44,15 @@ namespace Workers {
                 tmp.free();
                 if (pc== null)  throw new System.Exception($"PCRealSense2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
-            pc.AddRef(); pc.AddRef();
             statsUpdate(pc.count());
 
-            if (outQueue != null && outQueue.Count < 2)
-                outQueue?.Enqueue(pc);
-            else
-                pc.free();
+            if (outQueue != null && outQueue.Free())
+                outQueue?.Enqueue( pc.AddRef() );
 
-            if (out2Queue != null && out2Queue.Count < 2)
-                out2Queue.Enqueue(pc);
-            else
-                pc.free();
+            if (out2Queue != null && out2Queue.Free())
+                out2Queue.Enqueue( pc.AddRef() );
+
+            pc.free();
         }
 
         System.DateTime statsLastTime;

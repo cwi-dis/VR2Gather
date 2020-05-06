@@ -44,8 +44,22 @@ public class BakeryPointLight : MonoBehaviour
     const float GIZMO_SCALE = 0.01f;
     float screenRadius = GIZMO_MAXSIZE;
 
+    public static int lightsChanged = 0; // 1 = const, 2 = full
 
 #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (lightsChanged == 0) lightsChanged = 1;
+    }
+    void OnEnable()
+    {
+        lightsChanged = 2;
+    }
+    void OnDisable()
+    {
+        lightsChanged = 2;
+    }
+
     void Start()
     {
         if (gameObject.GetComponent<BakeryDirectLight>() != null ||

@@ -11,11 +11,11 @@ namespace Workers {
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
 
-        public PCEncoder(Config._User._PCSelfConfig._Encoder cfg, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
+        public PCEncoder( int _octreeBits, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
             inQueue = _inQueue;
             outQueue = _outQueue;
             try {
-                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = cfg.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
+                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = _octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
                 encoder = cwipc.new_encoder(parms);
                 if (encoder != null) {
                     Start();
@@ -51,7 +51,7 @@ namespace Workers {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
                         if (encoder.copy_data(mc.pointer, mc.length))
-                            if (outQueue.Count < outQueue.Size)
+                            if (outQueue.Free())
                                 outQueue.Enqueue(mc);
                             else
                                 mc.free();

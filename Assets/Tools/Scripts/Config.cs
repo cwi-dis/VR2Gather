@@ -51,7 +51,20 @@ public class Config {
         [Serializable]
         public class _PCSelfConfig
         {
-            public string configFilename;
+            [Serializable]
+            public class _RS2ReaderConfig
+            {
+                public string configFilename;
+            }
+            public _RS2ReaderConfig RS2ReaderConfig;
+            [Serializable]
+            public class _CerthReaderConfig
+            {
+                public string ConnectionURI;
+                public string PCLExchangeName;
+                public string MetaExchangeName;
+            }
+            public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;
             [Serializable]
             public class _Encoder {
