@@ -30,6 +30,10 @@ public class bin2dash
         [DllImport(myDllName)]
         extern static public IntPtr vrt_create_ext([MarshalAs(UnmanagedType.LPStr)]string name, int num_streams, ref StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, Int64 api_version = BIN2DASH_API_VERSION);
 
+        // Legacy API
+        [DllImport(myDllName)]
+        extern static public IntPtr vrt_create([MarshalAs(UnmanagedType.LPStr)]string name, UInt32 MP4_4CC, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, Int64 api_version = BIN2DASH_API_VERSION);
+
         // Destroys a pipeline. This frees all the resources.
         [DllImport(myDllName)]
         extern static public void vrt_destroy(IntPtr h);
@@ -37,11 +41,16 @@ public class bin2dash
         // Pushes a buffer. The caller owns it ; the buffer  as it will be copied internally.
         [DllImport(myDllName)]
         extern static public bool vrt_push_buffer_ext(IntPtr h, int stream_index, IntPtr buffer, uint bufferSize);
+        // Legacy API
+        [DllImport(myDllName)]
+        extern static public bool vrt_push_buffer(IntPtr h, IntPtr buffer, uint bufferSize);
 
         // Gets the current media time in @timescale unit.
         [DllImport(myDllName)]
         extern static public long vrt_get_media_time(IntPtr h, int timescale);
     }
+
+    const bool useLegacy = false;
 
     public class connection
     {
@@ -75,7 +84,14 @@ public class bin2dash
         public bool push_buffer(IntPtr buffer, uint bufferSize) {
             if (obj == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with obj==null");
             const int stream_index = 0;
-            return _API.vrt_push_buffer_ext(obj, stream_index, buffer, bufferSize);
+            if (useLegacy)
+            {
+                return _API.vrt_push_buffer(obj, buffer, bufferSize);
+            }
+            else
+            {
+                return _API.vrt_push_buffer_ext(obj, stream_index, buffer, bufferSize);
+            }
         }
 
         public long get_media_time(int timescale) {
@@ -87,12 +103,20 @@ public class bin2dash
     public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
         System.IntPtr obj;
         sub.SetMSPaths("bin2dash.so");
-        StreamDesc descriptor = new StreamDesc();
-        descriptor.MP4_4CC = MP4_4CC;
-        descriptor.objectX = 0; 
-        descriptor.objectY = 0;
-        StreamDesc[] descriptors = new StreamDesc[1] { descriptor };
-        obj = _API.vrt_create_ext(name, 1, ref descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+        UnityEngine.Debug.Log($"xxxjack MP4_4CC={MP4_4CC:X}");
+        if (useLegacy)
+        {
+            obj = _API.vrt_create(name, MP4_4CC, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+        }
+        else
+        {
+            StreamDesc descriptor = new StreamDesc();
+            descriptor.MP4_4CC = MP4_4CC;
+            descriptor.objectX = 0;
+            descriptor.objectY = 0;
+            StreamDesc[] descriptors = new StreamDesc[1] { descriptor };
+            obj = _API.vrt_create_ext(name, 1, ref descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+        }
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);
