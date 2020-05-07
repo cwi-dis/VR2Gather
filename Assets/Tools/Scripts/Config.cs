@@ -37,8 +37,6 @@ public class Config {
         public string sourceType;
         [Serializable]
         public class _SUBConfig {
-            public string url;
-            public string streamName;
             public int streamNumber;
             public int initialDelay;
         }
@@ -70,8 +68,6 @@ public class Config {
             public _Encoder[] Encoders;
             [Serializable]
             public class _Bin2Dash {
-                public string url;
-                public string streamName;
                 public int segmentSize;
                 public int segmentLife;
             }

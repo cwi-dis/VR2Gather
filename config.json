@@ -50,14 +50,10 @@
 					}
                 ],
                 "Bin2Dash": {
-                    "url": "",
-                    "streamName": "testbed-pc",
                     "segmentSize": 2000,
                     "segmentLife": 10000
                 },
                 "AudioBin2Dash": {
-                    "url": "",
-                    "streamName": "testbed-audio",
                     "segmentSize": 2000,
                     "segmentLife": 10000
                 }
@@ -78,14 +74,10 @@
         {
             "sourceType": "pcsub",
             "SUBConfig": {
-                "url": "",
-                "streamName": "testbed-pc.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "",
-                "streamName": "testbed-audio.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
@@ -106,14 +98,10 @@
         {
             "sourceType": "pcsub",
             "SUBConfig": {
-                "url": "",
-                "streamName": "testbed-pc.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "",
-                "streamName": "testbed-audio.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
@@ -134,14 +122,10 @@
         {
             "sourceType": "pcsub",
             "SUBConfig": {
-                "url": "",
-                "streamName": "testbed-pc.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
             "AudioSUBConfig": {
-                "url": "",
-                "streamName": "testbed-audio.mpd",
                 "streamNumber": 0,
                 "initialDelay": 0
             },
