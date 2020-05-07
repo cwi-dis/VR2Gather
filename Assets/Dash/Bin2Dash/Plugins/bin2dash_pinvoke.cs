@@ -28,7 +28,7 @@ public class bin2dash
         // @MP4_4CC: codec identifier. Build with VRT_4CC(). For example VRT_4CC('c','w','i','1') for "cwi1".
         // The returned pipeline must be freed using vrt_destroy().
         [DllImport(myDllName)]
-        extern static public IntPtr vrt_create_ext([MarshalAs(UnmanagedType.LPStr)]string name, int num_streams, ref StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, Int64 api_version = BIN2DASH_API_VERSION);
+        extern static public IntPtr vrt_create_ext([MarshalAs(UnmanagedType.LPStr)]string name, int num_streams, StreamDesc[] streams, [MarshalAs(UnmanagedType.LPStr)]string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000, Int64 api_version = BIN2DASH_API_VERSION);
 
         // Legacy API
         [DllImport(myDllName)]
@@ -115,7 +115,7 @@ public class bin2dash
             descriptor.objectX = 0;
             descriptor.objectY = 0;
             StreamDesc[] descriptors = new StreamDesc[1] { descriptor };
-            obj = _API.vrt_create_ext(name, 1, ref descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
+            obj = _API.vrt_create_ext(name, 1, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
         }
         if (obj == System.IntPtr.Zero)
             return null;
