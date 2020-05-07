@@ -29,7 +29,7 @@
             "y": 0.0,
             "z": 0.0
         },
-		"forceMesh": true
+		"forceMesh": false
     },
     "Users": [
         {
