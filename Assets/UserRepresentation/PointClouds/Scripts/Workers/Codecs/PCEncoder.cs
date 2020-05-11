@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace Workers {
     public class PCEncoder : BaseWorker {
-        cwipc.encoder encoder;
+        cwipc.encodergroup encoderGroup;
+        cwipc.encoder[] encoderOutputs;
         System.IntPtr encoderBuffer;
         cwipc.pointcloud pointCloudData;
         int dampedSize = 0;
@@ -28,27 +29,31 @@ namespace Workers {
             }
             inQueue = _inQueue;
             outputs = _outputs;
-            try {
-                cwipc.encoder_params parms = new cwipc.encoder_params { 
-                    octree_bits = outputs[0].octreeBits, 
-                    do_inter_frame = false, 
-                    exp_factor = 0, 
-                    gop_size = 1, 
-                    jpeg_quality = 75, 
-                    macroblock_size = 0, 
-                    tilenumber = outputs[0].tileNumber, 
-                    voxelsize = 0 
-                };
-                encoder = cwipc.new_encoder(parms);
-                if (encoder != null) {
-                    Start();
-                    Debug.Log("PCEncoder Inited");
-
-                } else
+            int nOutputs = outputs.Length;
+            encoderOutputs = new cwipc.encoder[nOutputs];
+            try
+            {
+                encoderGroup = cwipc.new_encodergroup();
+                for (int i = 0; i < nOutputs; i++)
                 {
-                    Debug.LogError("PCEncoder: cloud not create cwipc_encoder"); // Should not happen, should thorw an exception
-                }
+                    var op = outputs[i];
+                    cwipc.encoder_params parms = new cwipc.encoder_params
+                    {
+                        octree_bits = op.octreeBits,
+                        do_inter_frame = false,
+                        exp_factor = 0,
+                        gop_size = 1,
+                        jpeg_quality = 75,
+                        macroblock_size = 0,
+                        tilenumber = op.tileNumber,
+                        voxelsize = 0
+                    };
+                    var encoder = encoderGroup.addencoder(parms);
+                    encoderOutputs[i] = encoder;
 
+                }
+                Start();
+                Debug.Log("PCEncoder Inited");
             }
             catch (System.Exception e) {
                 Debug.LogError($"Exception during call to PCEncoder constructor: {e.Message}");
@@ -58,9 +63,15 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            encoder?.free();
-            encoder = null;
+            foreach (var enc in encoderOutputs)
+            {
+                enc.free();
+            }
+            encoderOutputs = null;
+            encoderGroup?.free();
+            encoderGroup = null;
             Debug.Log("PCEncoder Stopped");
+            // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
 
@@ -68,11 +79,12 @@ namespace Workers {
             base.Update();
             if (inQueue.Count>0) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-                encoder.feed(pc);
+                encoderGroup.feed(pc);
                 pc.free();
                 // xxxjack next bit of code should go to per-stream handler
                 int stream_number = 0;
                 QueueThreadSafe outQueue = outputs[stream_number].outQueue;
+                var encoder = encoderOutputs[stream_number];
                 if (encoder.available(true)) {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );

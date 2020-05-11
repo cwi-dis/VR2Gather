@@ -106,6 +106,18 @@ public class cwipc
         internal extern static bool cwipc_encoder_at_gop_boundary(IntPtr enc);
 
         [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_new_encodergroup(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
+        [DllImport(myDllName)]
+        internal extern static void cwipc_encodergroup_free(IntPtr enc);
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_encodergroup_addencoder(IntPtr enc, int paramVersion, ref encoder_params encParams, ref System.IntPtr errorMessage);
+
+        [DllImport(myDllName)]
+        internal extern static void cwipc_encodergroup_feed(IntPtr enc, IntPtr pc);
+
+        [DllImport(myDllName)]
         internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
 
         [DllImport(myDllName)]
@@ -169,7 +181,7 @@ public class cwipc
             _API_cwipc_util.cwipc_source_free(pointer);
         }
 
-        /*
+        /* xxxjack need to check how this works with BaseMemoryChunk
         ~source() {
             free();
         }
@@ -205,43 +217,85 @@ public class cwipc
     }
 
 
-    public class encoder : source {
-        internal encoder(System.IntPtr _obj):base(_obj) {
+    public class encoder : source
+    {
+        internal encoder(System.IntPtr _obj) : base(_obj)
+        {
             if (pointer == System.IntPtr.Zero) throw new System.Exception("cwipc.encoder called with NULL pointer argument");
         }
 
-        /*
+        /* xxxjack need to check how this works with BaseMemoryChunk
                 ~encoder() {
                     free();
                 }
         */
-        public void feed(pointcloud pc) {
+        public void feed(pointcloud pc)
+        {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.feed called with NULL pointer argument");
             _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
         }
 
-        new public bool available(bool wait) {
+        new public bool available(bool wait)
+        {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.available called with NULL pointer argument");
             return _API_cwipc_codec.cwipc_encoder_available(pointer, wait);
         }
 
-        public int get_encoded_size() {
+        public int get_encoded_size()
+        {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.get_encoded_size called with NULL pointer argument");
             return (int)_API_cwipc_codec.cwipc_encoder_get_encoded_size(pointer);
         }
 
-        public bool copy_data(System.IntPtr data, int size) {
+        public bool copy_data(System.IntPtr data, int size)
+        {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.copy_data called with NULL pointer argument");
             return _API_cwipc_codec.cwipc_encoder_copy_data(pointer, data, (System.IntPtr)size);
         }
 
-        public bool at_gop_boundary() {
+        public bool at_gop_boundary()
+        {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.at_gop_boundary called with NULL pointer argument");
             return _API_cwipc_codec.cwipc_encoder_at_gop_boundary(pointer);
         }
 
     }
-        
+
+    public class encodergroup : BaseMemoryChunk
+    {
+        internal encodergroup(System.IntPtr _obj) : base(_obj)
+        {
+            if (pointer == System.IntPtr.Zero) throw new System.Exception("cwipc.encodergroup called with NULL pointer argument");
+        }
+
+        /* xxxjack need to check how this works with BaseMemoryChunk
+                ~encodergroup() {
+                    free();
+                }
+        */
+        public void feed(pointcloud pc)
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encodergroup.feed called with NULL pointer argument");
+            _API_cwipc_codec.cwipc_encodergroup_feed(pointer, pc.pointer);
+        }
+
+        public encoder addencoder(encoder_params par)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr enc = _API_cwipc_codec.cwipc_encodergroup_addencoder(pointer, _API_cwipc_codec.CWIPC_ENCODER_PARAM_VERSION, ref par, ref errorPtr);
+            if (enc == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.encodergroup.addencoder: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_encoder_addencoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new encoder(enc);
+
+        }
+    }
+
     public static source synthetic() {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(ref errorPtr);
@@ -279,16 +333,35 @@ public class cwipc
 
     }
 
-    public static encoder new_encoder(encoder_params par) {
+    public static encoder new_encoder(encoder_params par)
+    {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr enc = _API_cwipc_codec.cwipc_new_encoder(_API_cwipc_codec.CWIPC_ENCODER_PARAM_VERSION, ref par, ref errorPtr);
-        if (enc == System.IntPtr.Zero) {
-            if (errorPtr == System.IntPtr.Zero) {
+        if (enc == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
                 throw new System.Exception("cwipc.new_encoder: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
         return new encoder(enc);
+
+    }
+
+    public static encodergroup new_encodergroup()
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr enc = _API_cwipc_codec.cwipc_new_encodergroup(ref errorPtr);
+        if (enc == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.new_encodergroup: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc_new_encodergroup: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        return new encodergroup(enc);
 
     }
 

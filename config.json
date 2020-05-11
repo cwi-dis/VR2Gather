@@ -43,10 +43,10 @@
 					"PCLExchangeName": "VolumetricData",
 					"MetaExchangeName": "VolumetricMetaData"
 				},
-				"voxelSize": 0.004999999888241291,
+				"voxelSize": 0.01,
                 "Encoders": [
 					{
-						"octreeBits": 10
+						"octreeBits": 7
 					}
                 ],
                 "Bin2Dash": {

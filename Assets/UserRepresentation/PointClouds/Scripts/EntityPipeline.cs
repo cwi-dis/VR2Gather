@@ -103,9 +103,6 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create encoders for transmission
                 //
-                // xxxjack For now, we only create an encoder and bin2dash for the first set of encoder parameters.
-                // At some point we need to create multiple queues and all that.
-                if (Encoders.Length != 1) throw new System.Exception("EntityPipeline: self-user PCSelfConfig.Encoders must have exactly 1 entry");
                 try {
                     codec = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                 }
