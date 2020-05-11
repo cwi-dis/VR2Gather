@@ -37,6 +37,10 @@ namespace Workers {
         int instanceNumber = instanceCounter++;
 
         public SUBReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue, bool _bDropFrames=false) : base(WorkerType.Init) { // Orchestrator Based SUB
+            if (_outQueue == null)
+            {
+                throw new System.Exception("SUBReader: outQueue is null");
+            }
             needsVideo = null;
             needsAudio = null;
             outQueue = _outQueue;

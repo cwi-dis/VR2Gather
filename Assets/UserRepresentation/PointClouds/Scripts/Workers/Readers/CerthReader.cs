@@ -32,6 +32,10 @@ namespace Workers {
 
         public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
+            if (_outQueue == null)
+            {
+                throw new System.Exception("CerthReader: outQueue is null");
+            }
             constructorLock = new object();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
@@ -46,15 +50,13 @@ namespace Workers {
             PCLRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _PCLExchangeName);
             if (PCLRabbitMQReceiver == null)
             {
-                Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
-                return;
+                throw new System.Exception("CerthReader: PCLRabbitMQReceiver is null");
             }
 
             MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
-                Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
-                return;
+                throw new System.Exception("CerthReader: MetaRabbitMQReceiver is null");
             }
 
             Debug.Log($"PCCertReader: receiving PCs from {_ConnectionURI}");
@@ -94,7 +96,7 @@ namespace Workers {
                         metaDataReceived = native_pointcloud_receiver_pinvoke.received_metadata(pnt, buffer.Length, pcl_id);
                         if (!metaDataReceived)
                         {
-                            Debug.LogError("PCCerthReader: metadata received, but native_pointcloud_receiver_pinvoke.received_metadata() returned false");
+                            throw new System.Exception("PCCerthReader: metadata received, but native_pointcloud_receiver_pinvoke.received_metadata() returned false");
                         }
                     }
                 }

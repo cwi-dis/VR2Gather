@@ -12,9 +12,9 @@ public class EntityPipeline : MonoBehaviour {
     MonoBehaviour       render;
 
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
-    QueueThreadSafe encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe decoderQueue = new QueueThreadSafe();
-    QueueThreadSafe writerQueue = new QueueThreadSafe();
+    QueueThreadSafe encoderQueue;
+    QueueThreadSafe decoderQueue;
+    QueueThreadSafe writerQueue;
 
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
@@ -23,6 +23,9 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
+        //
+        // Start by creating the preparer, which will prepare pointclouds for display in the scene.
+        //
         //
         // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
         // We 
@@ -44,6 +47,14 @@ public class EntityPipeline : MonoBehaviour {
             case "pccerth":
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
+                //
+                // Allocate queues we need for this sourceType
+                //
+                encoderQueue = new QueueThreadSafe();
+                writerQueue = new QueueThreadSafe();
+                //
+                // Create reader
+                //
                 if (cfg.sourceType == "pcself")
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
@@ -57,6 +68,9 @@ public class EntityPipeline : MonoBehaviour {
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
                     reader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
                 }
+                //
+                // Create encoders for transmission
+                //
                 // xxxjack For now, we only create an encoder and bin2dash for the first set of encoder parameters.
                 // At some point we need to create multiple queues and all that.
                 var Encoders = PCSelfConfig.Encoders;
@@ -68,6 +82,9 @@ public class EntityPipeline : MonoBehaviour {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                     throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                 }
+                //
+                // Create bin2dash writer for PC transmission
+                //
                 var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
                 if (Bin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                 try
@@ -78,6 +95,10 @@ public class EntityPipeline : MonoBehaviour {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                 }
+                //
+                // Create pipeline for audio, if needed.
+                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                //
                 Debug.Log($"Config.Instance.useAudio {Config.Instance.useAudio}");
                 if (Config.Instance.useAudio) {
                     var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
@@ -94,8 +115,20 @@ public class EntityPipeline : MonoBehaviour {
             case "pcsub":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
+                // Allocate queues we need for this pipeline
+                decoderQueue = new QueueThreadSafe();
+                //
+                // Create sub receiver
+                //
                 reader = new Workers.SUBReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+                //
+                // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
+                //
                 codec = new Workers.PCDecoder(decoderQueue, preparerQueue);
+                //
+                // Create pipeline for audio, if needed.
+                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                //
                 if (Config.Instance.useAudio) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
@@ -103,7 +136,10 @@ public class EntityPipeline : MonoBehaviour {
                 }
                 break;
         }        
-
+        //
+        // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
+        // in the scene.
+        //
         //Position depending on config calibration
         transform.localPosition = PCs.offsetPosition;
         transform.rotation = Quaternion.Euler(PCs.offsetRotation);

@@ -10,7 +10,16 @@ namespace Workers {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) :base(WorkerType.Run) {
-            try {
+            if (_inQueue == null)
+            {
+                throw new System.Exception("PCDecoder: inQueue is null");
+            }
+            if (_outQueue == null)
+            {
+                throw new System.Exception("PCDecoder: outQueue is null");
+            }
+            try
+            {
                 inQueue = _inQueue;
                 outQueue = _outQueue;
                 decoder = cwipc.new_decoder();

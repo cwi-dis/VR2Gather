@@ -14,7 +14,12 @@ namespace Workers {
 
         // Config._User._PCSelfConfig._Bin2Dash cfg, 
         public B2DWriter(string _url, string _streamName, int _segmentSize, int _segmentLife, QueueThreadSafe _inQueue) : base(WorkerType.End) {
-            try {
+            if (_inQueue == null)
+            {
+                throw new System.Exception("B2DWriter: inQueue is null");
+            }
+            try
+            {
                 inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 url = _url;

@@ -12,6 +12,14 @@ namespace Workers {
         QueueThreadSafe outQueue;
 
         public PCEncoder( int _octreeBits, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
+            if (_inQueue == null)
+            {
+                throw new System.Exception("PCEncoder: inQueue is null");
+            }
+            if (_outQueue == null)
+            {
+                throw new System.Exception("PCEncoder: outQueue is null");
+            }
             inQueue = _inQueue;
             outQueue = _outQueue;
             try {
