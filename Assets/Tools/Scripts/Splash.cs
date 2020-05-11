@@ -10,20 +10,20 @@ public class Splash : MonoBehaviour {
 
     private void Awake() {
         scale = transform.localScale;
-        transform.localScale = new Vector3(0.4f,0.4f,0.4f);
+        transform.localScale = new Vector3(scale.x / 2, scale.y / 2, scale.z / 2);
     }
 
     //bool first = true;
     // Update is called once per frame
     void LateUpdate () {
-        Vector3 forward = Camera.main.transform.forward;
-        forward.y = 0;
-        forward = forward.normalized;
+        //Vector3 forward = Camera.main.transform.forward;
+        //forward.y = 0;
+        //forward = forward.normalized;
 
-        Vector3 position = Camera.main.transform.position + forward * distance;
-        Quaternion rotation = Quaternion.LookRotation(forward);
-        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
-        transform.position = Vector3.Lerp(transform.position, position, velocity);
+        //Vector3 position = Camera.main.transform.position + forward * distance;
+        //Quaternion rotation = Quaternion.LookRotation(forward);
+        //transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
+        //transform.position = Vector3.Lerp(transform.position, position, velocity);
         transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
         //first = false;
 
