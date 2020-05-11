@@ -800,6 +800,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
 
+        // Set status to offline
+        OnDisconnect();
+        PanelChanger();
+
+        // Try to connect
         SocketConnect();
 
         DontDestroyOnLoad(this);

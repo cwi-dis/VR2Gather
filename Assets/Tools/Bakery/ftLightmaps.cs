@@ -63,7 +63,7 @@ public class ftLightmaps {
                 }
                 if (assetGUIDs.Length > 1)
                 {
-                    Debug.LogError("ftDefaultAreaLightMat was found in more than one folder. Do you have multiple installations of Bakery?");
+                    //Debug.LogError("ftDefaultAreaLightMat was found in more than one folder. Do you have multiple installations of Bakery?");
                 }
                 var guid = assetGUIDs[0];
                 _bakeryRuntimePath = System.IO.Path.GetDirectoryName(AssetDatabase.GUIDToAssetPath(guid)) + "/";
