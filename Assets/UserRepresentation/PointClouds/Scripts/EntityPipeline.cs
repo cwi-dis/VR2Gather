@@ -87,9 +87,13 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
                 if (Bin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
+                Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
+                b2dStreams[0].inQueue = writerQueue;
+                b2dStreams[0].tileNum = 0;
+                b2dStreams[0].quality = 0;
                 try
                 {
-                    writer = new Workers.B2DWriter(url_pcc, "pointcloud", Bin2Dash.segmentSize, Bin2Dash.segmentLife, writerQueue);
+                    writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");

@@ -5,22 +5,39 @@ using UnityEngine;
 
 namespace Workers {
     public class B2DWriter : BaseWorker {
+        public struct DashStreamDescription
+        {
+            public uint tileNum;
+            public uint quality;
+            public QueueThreadSafe inQueue;
+        };
+
         bin2dash.connection uploader;
         string url;
-        QueueThreadSafe inQueue;
+        DashStreamDescription[] descriptions;
+        int stream_index = 0;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
 
-        // Config._User._PCSelfConfig._Bin2Dash cfg, 
-        public B2DWriter(string _url, string _streamName, int _segmentSize, int _segmentLife, QueueThreadSafe _inQueue) : base(WorkerType.End) {
-            if (_inQueue == null)
+        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base(WorkerType.End)
+        {
+            if (_descriptions == null || _descriptions.Length == 0)
             {
-                throw new System.Exception("B2DWriter: inQueue is null");
+                throw new System.Exception("B2DWriter: descriptions is null or empty");
             }
+            if (_descriptions.Length != 1)
+            {
+                throw new System.Exception("B2DWriter: descriptions must have length 1");
+            }
+            if (fourcc.Length != 4)
+            {
+                throw new System.Exception($"B2DWriter: 4CC is \"{fourcc}\" which is not exactly 4 characters");
+            }
+            uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+            descriptions = _descriptions; 
             try
             {
-                inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 url = _url;
                 if ( string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName) )
@@ -28,7 +45,18 @@ namespace Workers {
                     Debug.LogError($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                     throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                 }
-                uploader = bin2dash.create(_streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, _segmentSize, _segmentLife);
+                bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
+                for (int i = 0; i < descriptions.Length; i++)
+                {
+                    b2dDescriptors[i].MP4_4CC = fourccInt;
+                    b2dDescriptors[i].tileNumber = descriptions[i].tileNum;
+                    b2dDescriptors[i].quality = descriptions[i].quality;
+                    if (descriptions[i].inQueue == null)
+                    {
+                        throw new System.Exception($"B2DWriter#{instanceNumber}.{i}: inQueue");
+                    }
+                }
+                uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
                 if (uploader != null) {
                     Debug.Log($"B2DWriter({url + _streamName}.mpd: started");
                     Start();
@@ -51,11 +79,12 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inQueue.Count>0 ) {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
+            QueueThreadSafe queue = descriptions[stream_index].inQueue;
+            if (queue.Count>0 ) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                 statsUpdate((int)mc.length);
-                if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
-                    Debug.Log($"B2DWriter#{instanceNumber}({url}): ERROR sending data");
+                if (!uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
+                    Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}({url}): ERROR sending data");
                 mc.free();
             }
         }
@@ -71,7 +100,7 @@ namespace Workers {
                 statsTotalPackets = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{instanceNumber}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{instanceNumber}.{stream_index}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
                 statsLastTime = System.DateTime.Now;
