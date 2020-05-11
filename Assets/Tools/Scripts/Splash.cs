@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Splash : MonoBehaviour {
-    public float distance = 10;
-    public float velocity = 0.1f;
+    public float distance;
+    public float velocity;
+    public float scaleVel;
+    Vector3 scale;
+
+    private void Awake() {
+        scale = transform.localScale;
+        transform.localScale = new Vector3(0,0,0);
+    }
 
     //bool first = true;
     // Update is called once per frame
@@ -17,6 +24,7 @@ public class Splash : MonoBehaviour {
         Quaternion rotation = Quaternion.LookRotation(forward);
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
         transform.position = Vector3.Lerp(transform.position, position, velocity);
+        transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
         //first = false;
 
     }
