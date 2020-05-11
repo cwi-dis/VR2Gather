@@ -10,7 +10,7 @@ public class Splash : MonoBehaviour {
 
     private void Awake() {
         scale = transform.localScale;
-        transform.localScale = new Vector3(0,0,0);
+        transform.localScale = new Vector3(0.4f,0.4f,0.4f);
     }
 
     //bool first = true;
