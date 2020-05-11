@@ -7,7 +7,7 @@ namespace Workers {
     public class B2DWriter : BaseWorker {
         public struct DashStreamDescription
         {
-            public uint tileNum;
+            public uint tileNumber;
             public uint quality;
             public QueueThreadSafe inQueue;
         };
@@ -45,12 +45,16 @@ namespace Workers {
                     Debug.LogError($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                     throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                 }
+                // xxxjack Is this the correct way to initialize an array of structs?
                 bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
-                    b2dDescriptors[i].MP4_4CC = fourccInt;
-                    b2dDescriptors[i].tileNumber = descriptions[i].tileNum;
-                    b2dDescriptors[i].quality = descriptions[i].quality;
+                    b2dDescriptors[i] = new bin2dash.StreamDesc
+                    {
+                        MP4_4CC = fourccInt,
+                        tileNumber = descriptions[i].tileNumber,
+                        quality = descriptions[i].quality
+                    };
                     if (descriptions[i].inQueue == null)
                     {
                         throw new System.Exception($"B2DWriter#{instanceNumber}.{i}: inQueue");

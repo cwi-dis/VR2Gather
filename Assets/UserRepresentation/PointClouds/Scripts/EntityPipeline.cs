@@ -12,9 +12,10 @@ public class EntityPipeline : MonoBehaviour {
     MonoBehaviour       render;
 
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
-    QueueThreadSafe encoderQueue;
+    QueueThreadSafe encoderQueue; 
+    Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
+    Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     QueueThreadSafe decoderQueue;
-    QueueThreadSafe writerQueue;
 
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
@@ -51,7 +52,6 @@ public class EntityPipeline : MonoBehaviour {
                 // Allocate queues we need for this sourceType
                 //
                 encoderQueue = new QueueThreadSafe();
-                writerQueue = new QueueThreadSafe();
                 //
                 // Create reader
                 //
@@ -69,14 +69,45 @@ public class EntityPipeline : MonoBehaviour {
                     reader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
                 }
                 //
+                // allocate and initialize per-stream outgoing stream datastructures
+                //
+                var Encoders = PCSelfConfig.Encoders;
+                int nTile = 1; // xxxjack For now
+                int nQuality = Encoders.Length;
+                int nStream = nQuality*nTile;
+                // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
+                encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
+                dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
+                for (int it = 0; it < nTile; it++)
+                {
+                    for (int iq=0; iq < nQuality; iq++)
+                    {
+                        int i = it * nQuality + iq;
+                        QueueThreadSafe thisQueue = new QueueThreadSafe();
+                        int octreeBits = Encoders[iq].octreeBits;
+                        encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription
+                        {
+                            octreeBits = octreeBits,
+                            tileNumber = it,
+                            outQueue = thisQueue
+                        };
+                        dashStreamDescriptions[i] = new Workers.B2DWriter.DashStreamDescription
+                        {
+                            tileNumber = (uint)it,
+                            quality = (uint)(100 * octreeBits + 75),
+                            inQueue = thisQueue
+                        };
+                    }
+                }
+
+                //
                 // Create encoders for transmission
                 //
                 // xxxjack For now, we only create an encoder and bin2dash for the first set of encoder parameters.
                 // At some point we need to create multiple queues and all that.
-                var Encoders = PCSelfConfig.Encoders;
                 if (Encoders.Length != 1) throw new System.Exception("EntityPipeline: self-user PCSelfConfig.Encoders must have exactly 1 entry");
                 try {
-                    codec = new Workers.PCEncoder(Encoders[0].octreeBits, encoderQueue, writerQueue);
+                    codec = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                 }
                 catch (System.EntryPointNotFoundException) {
                     Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
@@ -87,13 +118,9 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
                 if (Bin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
-                Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
-                b2dStreams[0].inQueue = writerQueue;
-                b2dStreams[0].tileNum = 0;
-                b2dStreams[0].quality = 0;
                 try
                 {
-                    writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
+                    writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");

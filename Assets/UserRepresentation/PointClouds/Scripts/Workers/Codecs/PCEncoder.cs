@@ -9,21 +9,36 @@ namespace Workers {
         cwipc.pointcloud pointCloudData;
         int dampedSize = 0;
         QueueThreadSafe inQueue;
-        QueueThreadSafe outQueue;
+        public struct EncoderStreamDescription
+        {
+            public int octreeBits;
+            public int tileNumber;
+            public QueueThreadSafe outQueue;
+        };
+        EncoderStreamDescription[] outputs;
 
-        public PCEncoder( int _octreeBits, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
+        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs ) :base(WorkerType.Run) {
             if (_inQueue == null)
             {
                 throw new System.Exception("PCEncoder: inQueue is null");
             }
-            if (_outQueue == null)
+            if (_outputs.Length != 1)
             {
-                throw new System.Exception("PCEncoder: outQueue is null");
+                throw new System.Exception("PCEncoder: outputs length must be 1");
             }
             inQueue = _inQueue;
-            outQueue = _outQueue;
+            outputs = _outputs;
             try {
-                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = _octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
+                cwipc.encoder_params parms = new cwipc.encoder_params { 
+                    octree_bits = outputs[0].octreeBits, 
+                    do_inter_frame = false, 
+                    exp_factor = 0, 
+                    gop_size = 1, 
+                    jpeg_quality = 75, 
+                    macroblock_size = 0, 
+                    tilenumber = outputs[0].tileNumber, 
+                    voxelsize = 0 
+                };
                 encoder = cwipc.new_encoder(parms);
                 if (encoder != null) {
                     Start();
@@ -55,6 +70,9 @@ namespace Workers {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
                 encoder.feed(pc);
                 pc.free();
+                // xxxjack next bit of code should go to per-stream handler
+                int stream_number = 0;
+                QueueThreadSafe outQueue = outputs[stream_number].outQueue;
                 if (encoder.available(true)) {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
@@ -67,7 +85,7 @@ namespace Workers {
                             Debug.LogError("PCEncoder: cwipc_encoder_copy_data returned false");
                     }
                 } else {
-                    Debug.Log("NO FRAME!!!! Frame available");
+                    Debug.Log("PCEncoder: available(true) after feed() returned false");
                 }
             }
         }
