@@ -15,6 +15,10 @@ namespace Workers {
             H264 = 0x34363268
         };
 
+        const int sleepWhenNoDataReceived = 10;     // Sleep 10ms when SUB has no data for us
+        const int maxUnsuccessfulReceives = 2000;   // After 2000 times not receiving data we give up.
+        const int subRetryWaitTime = 2;             // After unsuccessful start() we wait 2 seconds before retrying.
+
         string url;
         int streamNumber;
         int streamCount;
@@ -127,8 +131,8 @@ namespace Workers {
                 // be available, but that is difficult. 10ms is about 30% of a pointcloud frame duration. But it
                 // may be far too long for audio. Need to check.
                 numberOfUnsuccessfulReceives++;
-                System.Threading.Thread.Sleep(10);
-                if (numberOfUnsuccessfulReceives > 2000) {
+                System.Threading.Thread.Sleep(sleepWhenNoDataReceived);
+                if (numberOfUnsuccessfulReceives > maxUnsuccessfulReceives) {
                     lock (this) {
                         Debug.Log($"SUBReader#{instanceNumber} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
@@ -148,7 +152,7 @@ namespace Workers {
                 if (System.DateTime.Now < subRetryNotBefore) return;
                 if (subHandle == null) {
                     subName = $"source_from_sub_{++subCount}";
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(subRetryWaitTime);
                     subHandle = sub.create(subName);
                     if (subHandle == null) throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
                     Debug.Log($"SUBReader#{instanceNumber} {subName}: retry sub.create({url}) successful.");
