@@ -30,7 +30,7 @@
                 struct v2f {
                     float4  position : SV_Position;
                     half3   color : COLOR;
-					float   size : PSIZE;
+//					float4  size : PSIZE;
                 };
 
                 v2f Vertex(appdata v) {
@@ -40,7 +40,7 @@
                     half3 col = v.color.rgb;
                     col *= _Tint.rgb * 2;
                     o.color = col;
-					o.size = (_PointSize*50) * o.position.w; // 50->Magic number to fatten pixels.
+//					o.size = (_PointSize*50) * o.position.w; // 50->Magic number to fatten pixels.
                     return o;
                 }
 
