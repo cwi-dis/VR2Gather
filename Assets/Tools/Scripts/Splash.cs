@@ -10,7 +10,7 @@ public class Splash : MonoBehaviour {
 
     private void Awake() {
         scale = transform.localScale;
-        transform.localScale = new Vector3(scale.x / 2, scale.y / 2, scale.z / 2);
+        //transform.localScale = new Vector3(scale.x / 2, scale.y / 2, scale.z / 2);
     }
 
     //bool first = true;
@@ -24,7 +24,7 @@ public class Splash : MonoBehaviour {
         //Quaternion rotation = Quaternion.LookRotation(forward);
         //transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
         //transform.position = Vector3.Lerp(transform.position, position, velocity);
-        transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
+        //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
         //first = false;
 
     }
