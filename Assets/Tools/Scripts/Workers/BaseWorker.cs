@@ -36,10 +36,14 @@ namespace Workers {
         public virtual void OnStop() { }
 
         void _Update() {
-            isStopped = false;
-            while (bRunning) {
-                Update();
-                System.Threading.Thread.Sleep(1);
+            try {
+                isStopped = false;
+                while (bRunning) {
+                    Update();
+                    System.Threading.Thread.Sleep(1);
+                }
+            }catch(System.Exception e) {
+                Debug.LogWarning($"Exception catched at {this.GetType()}: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
             isStopped = true;
