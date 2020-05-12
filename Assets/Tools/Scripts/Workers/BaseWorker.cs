@@ -7,16 +7,17 @@ namespace Workers {
         public enum WorkerType { Init, Run, End };
 
         protected bool          bRunning = false;
-        public bool             isStopped { get; private set; }
         System.Threading.Thread thread;
         public bool isRunning { get { return bRunning; } }
         WorkerType type;
+        const int loopInterval = 1; // How many milliseconds to sleep in the runloop
+        const int joinTimeout = 1000; // How many milliseconds to wait for thread completion before we abort it.
 
         public BaseWorker(WorkerType _type= WorkerType.Run) {
             type = _type;
         }
 
-        protected void Start() {
+        protected virtual void Start() {
             bRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
             thread.Start();
@@ -28,21 +29,26 @@ namespace Workers {
 
         public virtual void StopAndWait() {
             Stop();
-            while (!isStopped) {
-                System.Threading.Thread.Sleep(10);
+            if (!thread.Join(joinTimeout))
+            {
+                Debug.LogWarning($"{this.GetType().Name}: thread did not stop. Aborting.");
+                thread.Abort();
             }
+            thread.Join();
+            // xxxjack test whether multiple joins is safe
+            thread.Join();
+            Debug.Log($"xxxjack {this.GetType().Name}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            isStopped = false;
+            Debug.Log($"xxxjack {this.GetType().Name}: thread started");
             while (bRunning) {
                 Update();
-                System.Threading.Thread.Sleep(1);
+                System.Threading.Thread.Sleep(loopInterval);
             }
             OnStop();
-            isStopped = true;
         }
         protected virtual void Update(){ }
     }
