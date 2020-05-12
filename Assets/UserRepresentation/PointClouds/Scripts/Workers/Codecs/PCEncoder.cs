@@ -34,9 +34,9 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            base.OnStop();
             encoder?.free();
             encoder = null;
+            base.OnStop();
             Debug.Log("PCEncoder Stopped");
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
@@ -45,6 +45,7 @@ namespace Workers {
             base.Update();
             if (inQueue.Count>0) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+                if (encoder == null) return; // Terminating
                 encoder.feed(pc);
                 pc.free();
                 if (encoder.available(true)) {
