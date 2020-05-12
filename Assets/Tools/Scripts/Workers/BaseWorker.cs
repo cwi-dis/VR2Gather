@@ -31,19 +31,17 @@ namespace Workers {
             Stop();
             if (!thread.Join(joinTimeout))
             {
-                Debug.LogWarning($"{this.GetType().Name}: thread did not stop. Aborting.");
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: thread did not stop. Aborting.");
                 thread.Abort();
             }
             thread.Join();
-            // xxxjack test whether multiple joins is safe
-            thread.Join();
-            Debug.Log($"xxxjack {this.GetType().Name}: thread joined");
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            Debug.Log($"xxxjack {this.GetType().Name}: thread started");
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
             while (bRunning) {
                 Update();
                 System.Threading.Thread.Sleep(loopInterval);
