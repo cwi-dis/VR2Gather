@@ -43,7 +43,6 @@ namespace Workers {
         void _Update() {
             Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
             try {
-                isStopped = false;
                 while (bRunning) {
                     Update();
                     System.Threading.Thread.Sleep(loopInterval);
