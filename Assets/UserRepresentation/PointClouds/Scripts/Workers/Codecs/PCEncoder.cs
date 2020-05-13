@@ -79,12 +79,8 @@ namespace Workers {
             base.Update();
             if (inQueue.Count>0) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-<<<<<<< HEAD
+                if (encoderGroup == null) return; // Terminating
                 encoderGroup.feed(pc);
-=======
-                if (encoder == null) return; // Terminating
-                encoder.feed(pc);
->>>>>>> develop
                 pc.free();
                 // xxxjack next bit of code should go to per-stream handler
                 int stream_number = 0;
