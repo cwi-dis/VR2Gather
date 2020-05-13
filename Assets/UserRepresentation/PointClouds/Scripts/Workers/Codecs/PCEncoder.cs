@@ -62,14 +62,12 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            foreach (var enc in encoderOutputs)
-            {
-                enc.free();
-            }
-            encoderOutputs = null;
-            encoderGroup?.free();
+            encoderGroup.close();
+            var tmp = encoderGroup;
             encoderGroup = null;
             base.OnStop();
+            tmp?.free();
+            encoderOutputs = null;
             Debug.Log("PCEncoder Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }

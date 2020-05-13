@@ -23,10 +23,39 @@ public class cwipc
         public int tilenumber;         /**< 0 for encoding full pointclouds, > 0 for selecting a single tile to encode */
         public float voxelsize;        /**< If non-zero run voxelizer with this cell size to get better tiled pointcloud */
     };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct vector
+    {
+        public double x;
+        public double y;
+        public double z;
+    };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct point
+    {
+        public float x;
+        public float y;
+        public float z;
+        public System.Byte r;
+        public System.Byte g;
+        public System.Byte b;
+        public System.Byte tile;
+    };
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct tileinfo
+    {
+        public vector normal;
+        [MarshalAs(UnmanagedType.LPStr)] public string camera;
+        public System.Byte ncamera;
+    };
+
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
-        public const System.UInt64 CWIPC_API_VERSION = 0x20190522;
+        public const System.UInt64 CWIPC_API_VERSION = 0x20200512;
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -53,12 +82,21 @@ public class cwipc
         internal extern static void cwipc_source_free(IntPtr src);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_synthetic(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
-
-        [DllImport(myDllName)]
         internal extern static int cwipc_tiledsource_maxtile(IntPtr src);
         [DllImport(myDllName)]
-        internal extern static uint cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, IntPtr tileinfo);
+        internal extern static uint cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, ref tileinfo _tileinfo);
+
+        [DllImport(myDllName)]
+        internal extern static int cwipc_sink_free(IntPtr sink);
+        [DllImport(myDllName)]
+        internal extern static int cwipc_sink_feed(IntPtr sink, IntPtr pc, bool clear);
+        [DllImport(myDllName)]
+        internal extern static int cwipc_sink_caption(IntPtr sink, [MarshalAs(UnmanagedType.LPStr)]string caption);
+        [DllImport(myDllName)]
+        internal extern static int cwipc_sink_interact(IntPtr sink, [MarshalAs(UnmanagedType.LPStr)]string prompt, [MarshalAs(UnmanagedType.LPStr)]string responses, System.Int32 millis);
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_synthetic(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, IntPtr bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -83,10 +121,16 @@ public class cwipc
         internal extern static void cwipc_decoder_feed(IntPtr dec, IntPtr compFrame, int len);
 
         [DllImport(myDllName)]
+        internal extern static void cwipc_decoder_close(IntPtr dec);
+
+        [DllImport(myDllName)]
         internal extern static IntPtr cwipc_new_encoder(int paramVersion, ref encoder_params encParams, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encoder_free(IntPtr enc);
+
+        [DllImport(myDllName)]
+        internal extern static void cwipc_encoder_close(IntPtr enc);
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encoder_feed(IntPtr enc, IntPtr pc);
@@ -108,6 +152,9 @@ public class cwipc
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encodergroup_free(IntPtr enc);
+
+        [DllImport(myDllName)]
+        internal extern static void cwipc_encodergroup_close(IntPtr enc);
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_encodergroup_addencoder(IntPtr enc, int paramVersion, ref encoder_params encParams, ref System.IntPtr errorMessage);
@@ -207,9 +254,16 @@ public class cwipc
             if (_obj == System.IntPtr.Zero)  throw new System.Exception("cwipc.decoder: constructor called with null pointer");
         }
 
-        public void feed(IntPtr compFrame, int len) {
-            if (pointer == IntPtr.Zero ) throw new System.Exception("cwipc.decoder.feed called with NULL pointer");
+        public void feed(IntPtr compFrame, int len)
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.decoder.feed called with NULL pointer");
             _API_cwipc_codec.cwipc_decoder_feed(pointer, compFrame, len);
+        }
+
+        public void close()
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.decoder.close called with NULL pointer");
+            _API_cwipc_codec.cwipc_decoder_close(pointer);
         }
 
     }
@@ -231,6 +285,12 @@ public class cwipc
         {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.feed called with NULL pointer argument");
             _API_cwipc_codec.cwipc_encoder_feed(pointer, pc.pointer);
+        }
+
+        public void close()
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.close called with NULL pointer argument");
+            _API_cwipc_codec.cwipc_encoder_close(pointer);
         }
 
         new public bool available(bool wait)
@@ -275,6 +335,12 @@ public class cwipc
         {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encodergroup.feed called with NULL pointer argument");
             _API_cwipc_codec.cwipc_encodergroup_feed(pointer, pc.pointer);
+        }
+
+        public void close()
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encodergroup.close called with NULL pointer argument");
+            _API_cwipc_codec.cwipc_encodergroup_close(pointer);
         }
 
         public encoder addencoder(encoder_params par)
