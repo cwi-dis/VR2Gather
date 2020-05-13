@@ -42,9 +42,14 @@ namespace Workers {
 
         void _Update() {
             Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
-            while (bRunning) {
-                Update();
-                System.Threading.Thread.Sleep(loopInterval);
+            try {
+                isStopped = false;
+                while (bRunning) {
+                    Update();
+                    System.Threading.Thread.Sleep(loopInterval);
+                }
+            }catch(System.Exception e) {
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
         }
