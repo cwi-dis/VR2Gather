@@ -139,6 +139,9 @@ public class cwipc
         internal extern static bool cwipc_encoder_available(IntPtr enc, bool wait);
 
         [DllImport(myDllName)]
+        internal extern static bool cwipc_encoder_eof(IntPtr enc);
+
+        [DllImport(myDllName)]
         internal extern static System.IntPtr cwipc_encoder_get_encoded_size(IntPtr enc);
 
         [DllImport(myDllName)]
@@ -291,6 +294,12 @@ public class cwipc
         {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.close called with NULL pointer argument");
             _API_cwipc_codec.cwipc_encoder_close(pointer);
+        }
+
+        public bool eof()
+        {
+            if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.eof called with NULL pointer argument");
+            return _API_cwipc_codec.cwipc_encoder_eof(pointer);
         }
 
         new public bool available(bool wait)
