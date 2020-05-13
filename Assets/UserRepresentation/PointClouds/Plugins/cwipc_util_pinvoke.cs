@@ -26,7 +26,7 @@ public class cwipc
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
-        const System.UInt64 CWIPC_API_VERSION = 0x20190522;
+        public const System.UInt64 CWIPC_API_VERSION = 0x20190522;
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -68,24 +68,22 @@ public class cwipc
     {
         const string myDllName = "cwipc_realsense2";
 
-        const System.UInt64 CWIPC_API_VERSION = 0x20190522;
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
     }
     private class _API_cwipc_codec
     {
         const string myDllName = "cwipc_codec";
-        const System.UInt64 CWIPC_API_VERSION = 0x20190522;
         public const int CWIPC_ENCODER_PARAM_VERSION = 0x20190506;
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_new_decoder(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_new_decoder(ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
         internal extern static void cwipc_decoder_feed(IntPtr dec, IntPtr compFrame, int len);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_new_encoder(int paramVersion, ref encoder_params encParams, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_new_encoder(int paramVersion, ref encoder_params encParams, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encoder_free(IntPtr enc);
@@ -106,7 +104,7 @@ public class cwipc
         internal extern static bool cwipc_encoder_at_gop_boundary(IntPtr enc);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_new_encodergroup(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_new_encodergroup(ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encodergroup_free(IntPtr enc);
