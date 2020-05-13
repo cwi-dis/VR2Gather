@@ -62,7 +62,6 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            base.OnStop();
             foreach (var enc in encoderOutputs)
             {
                 enc.free();
@@ -70,6 +69,7 @@ namespace Workers {
             encoderOutputs = null;
             encoderGroup?.free();
             encoderGroup = null;
+            base.OnStop();
             Debug.Log("PCEncoder Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
@@ -79,7 +79,12 @@ namespace Workers {
             base.Update();
             if (inQueue.Count>0) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+<<<<<<< HEAD
                 encoderGroup.feed(pc);
+=======
+                if (encoder == null) return; // Terminating
+                encoder.feed(pc);
+>>>>>>> develop
                 pc.free();
                 // xxxjack next bit of code should go to per-stream handler
                 int stream_number = 0;
