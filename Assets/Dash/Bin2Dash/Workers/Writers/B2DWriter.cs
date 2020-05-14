@@ -15,7 +15,7 @@ namespace Workers {
         bin2dash.connection uploader;
         string url;
         DashStreamDescription[] descriptions;
-        int stream_index = 0;
+        System.Threading.Thread[] pusherThreads;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -74,23 +74,83 @@ namespace Workers {
             }
         }
 
+        protected override void Start()
+        {
+            base.Start();
+            int nThreads = descriptions.Length;
+            pusherThreads = new System.Threading.Thread[nThreads];
+            for (int i = 0; i < nThreads; i++)
+            {
+                // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
+                int stream_number = i;
+                pusherThreads[i] = new System.Threading.Thread(
+                    () => PusherThread(stream_number)
+                    );
+            }
+            foreach (var t in pusherThreads)
+            {
+                t.Start();
+            }
+        }
+
         public override void OnStop() {
-            uploader.free();
+            // Signal that no more data is forthcoming to every pusher
+            foreach(var d in descriptions)
+            {
+                d.inQueue.Closed = true;
+            }
+            // wait for pusherThreads to terminate
+            foreach (var t in pusherThreads)
+            {
+                t.Join();
+            }
+            // Stop our thread
+            var tmp = uploader;
             uploader = null;
             base.OnStop();
+            tmp?.free();
             Debug.Log($"B2DWriter#{instanceNumber} {url} Stopped");
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
-            QueueThreadSafe queue = descriptions[stream_index].inQueue;
-            if (queue.Count>0 ) {
-                NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
-                statsUpdate((int)mc.length);
-                if (!uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                    Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}({url}): ERROR sending data");
-                mc.free();
+            // xxxjack anything to do?
+            System.Threading.Thread.Sleep(10);
+        }
+
+        protected void PusherThread(int stream_index)
+        {
+            try
+            {
+                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread started");
+                QueueThreadSafe queue = descriptions[stream_index].inQueue;
+                while (!queue.Closed)
+                {
+                    if (queue.Count > 0)
+                    {
+                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
+                        statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
+                        if (!uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
+                            Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}({url}): ERROR sending data");
+                        mc.free();
+                    }
+                    else
+                    {
+                        System.Threading.Thread.Sleep(10);
+                    }
+                }
+                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread started");
             }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"B2DWriter#{stream_index}: Exception: {e.Message} Stack: {e.StackTrace}");
+#if UNITY_EDITOR
+                if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
+                    UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
+
         }
 
         System.DateTime statsLastTime;
@@ -98,6 +158,7 @@ namespace Workers {
         double statsTotalPackets;
 
         public void statsUpdate(int nBytes) {
+            int stream_index = 999;
             if (statsLastTime == null) {
                 statsLastTime = System.DateTime.Now;
                 statsTotalBytes = 0;
