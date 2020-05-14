@@ -24,10 +24,6 @@ namespace Workers {
             {
                 throw new System.Exception("PCEncoder: inQueue is null");
             }
-            if (_outputs.Length != 1)
-            {
-                throw new System.Exception("PCEncoder: outputs length must be 1");
-            }
             inQueue = _inQueue;
             outputs = _outputs;
             int nOutputs = outputs.Length;

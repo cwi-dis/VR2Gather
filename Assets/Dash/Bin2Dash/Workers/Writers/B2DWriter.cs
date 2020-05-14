@@ -26,10 +26,6 @@ namespace Workers {
             {
                 throw new System.Exception("B2DWriter: descriptions is null or empty");
             }
-            if (_descriptions.Length != 1)
-            {
-                throw new System.Exception("B2DWriter: descriptions must have length 1");
-            }
             if (fourcc.Length != 4)
             {
                 throw new System.Exception($"B2DWriter: 4CC is \"{fourcc}\" which is not exactly 4 characters");

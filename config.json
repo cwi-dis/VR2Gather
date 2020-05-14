@@ -46,7 +46,10 @@
 				"voxelSize": 0.01,
                 "Encoders": [
 					{
-						"octreeBits": 7
+						"octreeBits": 6
+					},
+ 					{
+						"octreeBits": 9
 					}
                 ],
                 "Bin2Dash": {
