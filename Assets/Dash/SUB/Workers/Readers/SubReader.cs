@@ -7,6 +7,7 @@ namespace Workers {
 
         NeedsSomething needsVideo;
         NeedsSomething needsAudio;
+        bool isFunnyAVSub = false;
 
         public enum CCCC : int {
             MP4A = 0x6134706D,
@@ -77,6 +78,7 @@ namespace Workers {
         public SUBReader(string cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
             this.needsVideo = needsVideo;
             this.needsAudio = needsAudio;
+            isFunnyAVSub = true;
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             url = cfg;
@@ -174,7 +176,7 @@ namespace Workers {
             if (!isPlaying) retryPlay();
             else {
                 // Try to read from audio.
-                if (streamCount > 1 && ( out2Queue.Free() || bDropFrames)) {
+                if (isFunnyAVSub && streamCount > 1 && ( out2Queue.Free() || bDropFrames)) {
                     // Attempt to receive, if we are playing
                     bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info);
                     if (bytesNeeded != 0 && out2Queue != null) {
