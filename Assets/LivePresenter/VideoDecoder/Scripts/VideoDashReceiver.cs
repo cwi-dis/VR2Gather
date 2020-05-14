@@ -34,7 +34,7 @@ public class VideoDashReceiver : MonoBehaviour {
         try {
             codec = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
-            reader = new Workers.SUBReader(url, videoCodecQueue, audioCodecQueue);
+            reader = new Workers.AVSubReader(url, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
             Debug.Log($">>ERROR {e}");

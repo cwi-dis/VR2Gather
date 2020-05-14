@@ -1,6 +1,12 @@
 using UnityEngine;
 
 namespace Workers {
-	public class PCSubReader : BaseSubReader { 
-	}
+	public class PCSubReader : BaseSubReader {
+        public PCSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue, bool _bDropFrames = false) 
+        : base(_url, _streamName, _streamNumber, _initialDelay, _outQueue, _bDropFrames)
+        {
+
+        }
+
+    }
 }

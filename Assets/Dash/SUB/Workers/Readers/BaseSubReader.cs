@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 namespace Workers {
-    public class SUBReader : BaseWorker {
+    public class BaseSubReader : BaseWorker {
 
         public delegate bool NeedsSomething();
 
@@ -36,7 +36,7 @@ namespace Workers {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        public SUBReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue, bool _bDropFrames=false) : base(WorkerType.Init) { // Orchestrator Based SUB
+        public BaseSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue, bool _bDropFrames=false) : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
             needsAudio = null;
             outQueue = _outQueue;
@@ -44,8 +44,8 @@ namespace Workers {
             bDropFrames = _bDropFrames;
             if (_url == "" || _url == null || _streamName == "" || _streamName == null)
             {
-                Debug.LogError($"SUBReader#{instanceNumber}: configuration error: url or streamName not set");
-                throw new System.Exception($"SUBReader#{instanceNumber}: configuration error: url or streamName not set");
+                Debug.LogError($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
+                throw new System.Exception($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
             }
             if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
             url = _url + _streamName;
@@ -54,7 +54,7 @@ namespace Workers {
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"SUBReader#{instanceNumber}: Delaying {_initialDelay} seconds before playing {url}");
+                Debug.Log($"{this.GetType().Name}#{instanceNumber}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
             try {
@@ -66,7 +66,7 @@ namespace Workers {
             }
         }
 
-        public SUBReader(string cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
+        public BaseSubReader(string cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
             this.needsVideo = needsVideo;
             this.needsAudio = needsAudio;
             outQueue = _outQueue;
@@ -79,10 +79,10 @@ namespace Workers {
                 subName = $"source_from_sub_{++subCount}";
                 subHandle = sub.create(subName);
                 if (subHandle != null) {
-                    Debug.Log($"SUBReader#{instanceNumber}: sub.create({url}) successful.");
+                    Debug.Log($"{this.GetType().Name}#{instanceNumber}: sub.create({url}) successful.");
                     isPlaying = subHandle.play(url);
                     if (!isPlaying) {
-                        Debug.Log($"SUBReader#{instanceNumber}: sub_play({url}) failed, will try again later");
+                        Debug.Log($"{this.GetType().Name}#{instanceNumber}: sub_play({url}) failed, will try again later");
                     } else {
                         streamCount = Mathf.Min(2, subHandle.get_stream_count());
                         CCCC cc;
@@ -97,7 +97,7 @@ namespace Workers {
                     Start();
                 }
                 else
-                    throw new System.Exception($"SUBReader#{instanceNumber}: sub_create({url}) failed");
+                    throw new System.Exception($"{this.GetType().Name}#{instanceNumber}: sub_create({url}) failed");
             }
             catch (System.Exception e) {
                 Debug.LogError(e.Message);
@@ -113,7 +113,7 @@ namespace Workers {
                 isPlaying = false;
             }
             base.OnStop();
-            Debug.Log($"SUBReader#{instanceNumber} {subName} {url} Stopped");
+            Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName} {url} Stopped");
         }
 
         protected void UnsuccessfulCheck(int _size) {
@@ -126,7 +126,7 @@ namespace Workers {
                 System.Threading.Thread.Sleep(10);
                 if (numberOfUnsuccessfulReceives > 2000) {
                     lock (this) {
-                        Debug.Log($"SUBReader#{instanceNumber} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                        Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
                         subHandle = null;
                         isPlaying = false;
@@ -146,17 +146,17 @@ namespace Workers {
                     subName = $"source_from_sub_{++subCount}";
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
-                    if (subHandle == null) throw new System.Exception($"PCSUBReader: sub_create({url}) failed");
-                    Debug.Log($"SUBReader#{instanceNumber} {subName}: retry sub.create({url}) successful.");
+                    if (subHandle == null) throw new System.Exception($"{this.GetType().Name}: sub_create({url}) failed");
+                    Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: retry sub.create({url}) successful.");
                 }
                 isPlaying = subHandle.play(url);
                 if (!isPlaying) {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"SUBReader#{instanceNumber} {subName}: sub.play({url}) failed, will try again later");
+                    Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
                 streamCount = subHandle.get_stream_count();
-                Debug.Log($"SUBReader#{instanceNumber} {subName}: sub.play({url}) successful, {streamCount} streams.");
+                Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
@@ -178,11 +178,11 @@ namespace Workers {
                                 //while(bRunning && out2Queue.Count > 2) { System.Threading.Thread.Sleep(10); }
                                 out2Queue.Enqueue(mc);
                             } else {
-                                Debug.LogError($"PCSUBReader#{instanceNumber} {subName}: frame dropped.");
+                                Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: frame dropped.");
                                 mc.free();
                             }
                         } else
-                            Debug.LogError($"PCSUBReader {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            Debug.LogError($"{this.GetType().Name} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     }
                 }
                 if (outQueue.Free() || bDropFrames) {
@@ -199,11 +199,11 @@ namespace Workers {
                                 statsUpdate(bytesRead);
                                 outQueue.Enqueue(mc);
                             } else {
-                                Debug.Log($"PCSUBReader {subName}: frame droped.");
+                                Debug.Log($"{this.GetType().Name} {subName}: frame droped.");
                                 mc.free();
                             }
                         } else
-                            Debug.LogError($"SUBReader#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                     }
                 }
             }
