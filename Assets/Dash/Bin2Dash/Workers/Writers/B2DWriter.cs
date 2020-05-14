@@ -99,16 +99,15 @@ namespace Workers {
             {
                 d.inQueue.Closed = true;
             }
+            // Stop our thread
+            base.OnStop();
+            uploader?.free();
+            uploader = null;
             // wait for pusherThreads to terminate
             foreach (var t in pusherThreads)
             {
                 t.Join();
             }
-            // Stop our thread
-            var tmp = uploader;
-            uploader = null;
-            base.OnStop();
-            tmp?.free();
             Debug.Log($"B2DWriter#{instanceNumber} {url} Stopped");
         }
 
@@ -140,7 +139,7 @@ namespace Workers {
                         System.Threading.Thread.Sleep(10);
                     }
                 }
-                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread started");
+                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread stopped");
             }
             catch (System.Exception e)
             {
