@@ -48,7 +48,7 @@ namespace Workers {
                     System.Threading.Thread.Sleep(loopInterval);
                 }
             }catch(System.Exception e) {
-                Debug.LogWarning($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
         }
