@@ -22,9 +22,11 @@ public class QueueThreadSafe {
 
     public QueueThreadSafe(int _size = 2) { Size = _size; auxSize = _size * 2; window = new BaseMemoryChunk[auxSize]; }
     public int Size { get; private set; }
+    public bool Closed { get; set; }
     public bool Free() { lock (window) { return alloc - read < Size; } } // retorna el hueco libre incluso los prereservados
     public int Count { get { lock (window) { return write -read; } } } // Retorna los datos reales disponibles.
     public int Alloc() { lock (window) { return alloc++; } }
+
 
     public BaseMemoryChunk Peek() { lock (window) { return window[read % auxSize]; } }
     public BaseMemoryChunk Dequeue() {
