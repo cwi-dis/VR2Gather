@@ -117,38 +117,51 @@ namespace Workers {
 
         protected  void PusherThread(int stream_number)
         {
-            Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
-            // Get encoder and output queue for our stream
-            cwipc.encoder encoder = encoderOutputs[stream_number];
-            QueueThreadSafe outQueue = outputs[stream_number].outQueue;
-            // Loop until feeder signals no more data is forthcoming
-            while (!encoder.eof()) {
-                if (encoder.available(true))
+            try
+            {
+                Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
+                // Get encoder and output queue for our stream
+                cwipc.encoder encoder = encoderOutputs[stream_number];
+                QueueThreadSafe outQueue = outputs[stream_number].outQueue;
+                // Loop until feeder signals no more data is forthcoming
+                while (!encoder.eof())
                 {
-                    NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
-                    if (encoder.copy_data(mc.pointer, mc.length))
+                    if (encoder.available(true))
                     {
-                        if (outQueue.Free())
+                        NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                        if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            outQueue.Enqueue(mc);
+                            if (outQueue.Free())
+                            {
+                                outQueue.Enqueue(mc);
+                            }
+                            else
+                            {
+                                mc.free();
+                                Debug.Log($"PCEncoder#{stream_number}: Dropped frame, outQueue full");
+                            }
                         }
                         else
                         {
-                            mc.free();
-                            Debug.Log($"PCEncoder#{stream_number}: Dropped frame, outQueue full");
+                            Debug.LogError($"PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
                         }
                     }
                     else
                     {
-                        Debug.LogError($"PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
+                        System.Threading.Thread.Sleep(10);
                     }
                 }
-                else
-                {
-                    System.Threading.Thread.Sleep(10);
-                }
+                outQueue.Closed = true;
+                Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
             }
-            Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
+            catch (System.Exception e)
+            {
+                Debug.LogError($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
+#if UNITY_EDITOR
+                if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
+                    UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
         }
     }
 }
