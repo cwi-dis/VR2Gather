@@ -37,7 +37,8 @@ public class VideoDashReceiver : MonoBehaviour {
             reader = new Workers.AVSubReader(url, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
-            Debug.Log($">>ERROR {e}");
+            Debug.LogError($"VideoDashReceiver.Init: Exception: {e.Message}\n{e.StackTrace}");
+            throw e;
         }
     }
 
