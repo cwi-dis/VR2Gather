@@ -54,7 +54,7 @@ public class NewMemorySystem : MonoBehaviour
             var b2d = cfg.PCSelfConfig.Bin2Dash;
             dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", b2d.segmentSize, b2d.segmentLife, writerQueue);
             var SUBConfig = cfg.SUBConfig;
-            dashReader = new Workers.SUBReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 

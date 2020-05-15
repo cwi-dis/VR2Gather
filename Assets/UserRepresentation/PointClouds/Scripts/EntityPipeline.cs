@@ -94,7 +94,7 @@ public class EntityPipeline : MonoBehaviour {
             case "pcsub":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
-                reader = new Workers.SUBReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
                 codec = new Workers.PCDecoder(decoderQueue, preparerQueue);
                 if (Config.Instance.useAudio) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
