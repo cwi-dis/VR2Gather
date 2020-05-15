@@ -148,7 +148,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create sub receiver
                 //
-                reader = new Workers.PCSUBReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
