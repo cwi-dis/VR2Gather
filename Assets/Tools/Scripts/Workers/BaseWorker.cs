@@ -51,6 +51,7 @@ namespace Workers {
                 Debug.LogError($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread stopped");
         }
         protected virtual void Update(){ }
     }

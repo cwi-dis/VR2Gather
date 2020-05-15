@@ -20,7 +20,7 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader      = new Workers.SUBReader( _url, _streamName, _streamNumber, _initialDelay, decoderQueue);
+        reader      = new Workers.AudioSubReader( _url, _streamName, _streamNumber, _initialDelay, decoderQueue);
         codec       = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }

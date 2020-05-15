@@ -143,6 +143,7 @@ public class EntityPipeline : MonoBehaviour {
             case "pcsub":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
+<<<<<<< HEAD
                 // Allocate queues we need for this pipeline
                 decoderQueue = new QueueThreadSafe();
                 //
@@ -152,6 +153,9 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
+=======
+                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+>>>>>>> develop
                 codec = new Workers.PCDecoder(decoderQueue, preparerQueue);
                 //
                 // Create pipeline for audio, if needed.
