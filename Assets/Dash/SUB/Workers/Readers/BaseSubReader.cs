@@ -30,17 +30,15 @@ namespace Workers {
 //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
 
-        QueueThreadSafe outQueue;
-        QueueThreadSafe out2Queue;
+        protected QueueThreadSafe[] outQueues;
+        protected int[] streamIndexes;
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        public BaseSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue, bool _bDropFrames=false) : base(WorkerType.Init) { // Orchestrator Based SUB
+        protected BaseSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, bool _bDropFrames = false) : base(WorkerType.Init) { // Orchestrator Based SUB
             needsVideo = null;
             needsAudio = null;
-            outQueue = _outQueue;
-            out2Queue = null;
             bDropFrames = _bDropFrames;
             if (_url == "" || _url == null || _streamName == "" || _streamName == null)
             {
@@ -66,11 +64,9 @@ namespace Workers {
             }
         }
 
-        public BaseSubReader(string cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
+        protected BaseSubReader(string cfg, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
             this.needsVideo = needsVideo;
             this.needsAudio = needsAudio;
-            outQueue = _outQueue;
-            out2Queue = _out2Queue;
             url = cfg;
             streamNumber = 0;
             bDropFrames = _bDropFrames;
@@ -161,51 +157,47 @@ namespace Workers {
         }
 
         protected override void Update() {
-            int bytesNeeded;
             base.Update();
-            if (!isPlaying) retryPlay();
-            else {
-                // Try to read from audio.
-                if (streamCount > 1 && ( out2Queue.Free() || bDropFrames)) {
-                    // Attempt to receive, if we are playing
-                    bytesNeeded = subHandle.grab_frame(1 - streamNumber, System.IntPtr.Zero, 0, ref info);
-                    if (bytesNeeded != 0 && out2Queue != null) {
-                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(1 - streamNumber, mc.pointer, mc.length, ref info);
-                        if (bytesRead == bytesNeeded) {
-                            if (out2Queue.Free()) {
-                                mc.info = info;
-                                //while(bRunning && out2Queue.Count > 2) { System.Threading.Thread.Sleep(10); }
-                                out2Queue.Enqueue(mc);
-                            } else {
-                                Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: frame dropped.");
-                                mc.free();
-                            }
-                        } else
-                            Debug.LogError($"{this.GetType().Name} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                    }
+            if (!isPlaying) {
+                retryPlay();
+                return;
+            }
+            // We loop over all streams, reading data and pushing into the queue (or dropping)for every stream.
+            for (int outIndex = 0; outIndex < outQueues.Length; outIndex++)
+            {
+                int stream_number = streamIndexes[outIndex];
+                QueueThreadSafe outQueue = outQueues[outIndex];
+                // Skip this stream if the output queue is full and we don't wan to drop frames.
+                if (!outQueue.Free() && !bDropFrames)
+                {
+                    continue;
                 }
-                if (outQueue.Free() || bDropFrames) {
-                    // Attempt to receive, if we are playing
-                    bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info); // Get buffer length.
-                                                                                                       // If we are not playing or if we didn't receive anything we restart after 1000 failures.
-                    UnsuccessfulCheck(bytesNeeded);
-                    if (bytesNeeded != 0) {
-                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
-                        if (bytesRead == bytesNeeded) {
-                            if (outQueue.Free()) {
-                                mc.info = info;
-                                statsUpdate(bytesRead);
-                                outQueue.Enqueue(mc);
-                            } else {
-                                Debug.Log($"{this.GetType().Name} {subName}: frame droped.");
-                                mc.free();
-                            }
-                        } else
-                            Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                    }
+                // See how many bytes we need to allocate
+                int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info);
+                // Sideline: count number of unsuccessful receives so we can try and repoen the stream
+                UnsuccessfulCheck(bytesNeeded);
+                // If not data is currently available on this stream there is nothing more to do (for this stream)
+                if (bytesNeeded == 0)
+                {
+                    continue;
                 }
+                // Allocate and read.
+                NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
+                if (bytesRead != bytesNeeded)
+                {
+                    Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                    mc.free();
+                    continue;
+                }
+                if (!outQueue.Free())
+                {
+                    Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
+                    mc.free();
+                }
+                mc.info = info;
+                statsUpdate(bytesRead);
+                outQueue.Enqueue(mc);
             }
         }
 
