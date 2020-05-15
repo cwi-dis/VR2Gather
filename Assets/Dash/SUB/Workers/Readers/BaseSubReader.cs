@@ -5,49 +5,39 @@ namespace Workers {
 
         public delegate bool NeedsSomething();
 
-        NeedsSomething needsVideo;
-        NeedsSomething needsAudio;
-
-        public enum CCCC : int {
-            MP4A = 0x6134706D,
-            AVC1 = 0x31637661,
-            AAC = 0x5f636161,
-            H264 = 0x34363268
-        };
-
         string url;
-        int streamNumber;
-        int streamCount;
-        int videoStream = 0;
+        protected int streamCount;
+        protected uint[] stream4CCs;
         bool bDropFrames=false;
         sub.connection subHandle;
         bool isPlaying;
         sub.FrameInfo info = new sub.FrameInfo();
         int numberOfUnsuccessfulReceives;
-        int dampedSize = 0;
-        static int subCount;
-        string subName;
 //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
 
         protected QueueThreadSafe[] outQueues;
         protected int[] streamIndexes;
 
+        // Mainly for debug messages:
+        static int subCount;
+        string subName;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        protected BaseSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, bool _bDropFrames = false) : base(WorkerType.Init) { // Orchestrator Based SUB
-            needsVideo = null;
-            needsAudio = null;
+        protected BaseSubReader(string _url, string _streamName, int _initialDelay, bool _bDropFrames = false) : base(WorkerType.Init) { // Orchestrator Based SUB
             bDropFrames = _bDropFrames;
-            if (_url == "" || _url == null || _streamName == "" || _streamName == null)
+            if (_url == "" || _url == null || _streamName == "")
             {
                 Debug.LogError($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
                 throw new System.Exception($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
             }
-            if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
-            url = _url + _streamName;
-            streamNumber = _streamNumber;
+            if (_streamName != null)
+            {
+                if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
+                _url += _streamName;
+            }
+            url = _url;
             if (_initialDelay != 0)
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
@@ -55,50 +45,7 @@ namespace Workers {
                 Debug.Log($"{this.GetType().Name}#{instanceNumber}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
-            try {
-                Start();
-            }
-            catch (System.Exception e)
-            {
-                throw e;
-            }
-        }
-
-        protected BaseSubReader(string cfg, NeedsSomething needsVideo = null, NeedsSomething needsAudio = null, bool _bDropFrames = false) : base(WorkerType.Init) { // VideoDecoder Based SUB
-            this.needsVideo = needsVideo;
-            this.needsAudio = needsAudio;
-            url = cfg;
-            streamNumber = 0;
-            bDropFrames = _bDropFrames;
-            try {
-                //signals_unity_bridge_pinvoke.SetPaths();
-                subName = $"source_from_sub_{++subCount}";
-                subHandle = sub.create(subName);
-                if (subHandle != null) {
-                    Debug.Log($"{this.GetType().Name}#{instanceNumber}: sub.create({url}) successful.");
-                    isPlaying = subHandle.play(url);
-                    if (!isPlaying) {
-                        Debug.Log($"{this.GetType().Name}#{instanceNumber}: sub_play({url}) failed, will try again later");
-                    } else {
-                        streamCount = Mathf.Min(2, subHandle.get_stream_count());
-                        CCCC cc;
-                        for (int i = 0; i < streamCount; ++i) {
-                            cc = (CCCC)subHandle.get_stream_4cc(i);
-                            Debug.Log(cc);
-                        }
-                        if ((CCCC)subHandle.get_stream_4cc(0) == CCCC.AVC1 || (CCCC)subHandle.get_stream_4cc(0) == CCCC.H264) videoStream = 0;
-                        else videoStream = 1;
-                        streamNumber = videoStream;
-                    }
-                    Start();
-                }
-                else
-                    throw new System.Exception($"{this.GetType().Name}#{instanceNumber}: sub_create({url}) failed");
-            }
-            catch (System.Exception e) {
-                Debug.LogError(e.Message);
-                throw e;
-            }
+            Start();
         }
 
         public override void OnStop() {
@@ -135,7 +82,7 @@ namespace Workers {
             numberOfUnsuccessfulReceives = 0;
         }
 
-        protected void retryPlay() {
+        protected void InitDash() {
             lock (this) {
                 if (System.DateTime.Now < subRetryNotBefore) return;
                 if (subHandle == null) {
@@ -152,6 +99,11 @@ namespace Workers {
                     return;
                 }
                 streamCount = subHandle.get_stream_count();
+                stream4CCs = new uint[streamCount];
+                for (int i = 0; i < streamCount; i++)
+                {
+                    stream4CCs[i] = subHandle.get_stream_4cc(i);
+                }
                 Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
@@ -159,28 +111,30 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (!isPlaying) {
-                retryPlay();
+                InitDash();
                 return;
             }
             // We loop over all streams, reading data and pushing into the queue (or dropping)for every stream.
             for (int outIndex = 0; outIndex < outQueues.Length; outIndex++)
             {
-                int stream_number = streamIndexes[outIndex];
+                int streamNumber = streamIndexes[outIndex];
                 QueueThreadSafe outQueue = outQueues[outIndex];
+
+                // Ignore if this stream was not found in the MPD
+                if (streamNumber < 0) continue;
+
                 // Skip this stream if the output queue is full and we don't wan to drop frames.
-                if (!outQueue.Free() && !bDropFrames)
-                {
-                    continue;
-                }
+                if (!outQueue.Free() && !bDropFrames) continue;
+
                 // See how many bytes we need to allocate
                 int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info);
+
                 // Sideline: count number of unsuccessful receives so we can try and repoen the stream
                 UnsuccessfulCheck(bytesNeeded);
+
                 // If not data is currently available on this stream there is nothing more to do (for this stream)
-                if (bytesNeeded == 0)
-                {
-                    continue;
-                }
+                if (bytesNeeded == 0) continue;
+
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
                 int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
@@ -195,9 +149,12 @@ namespace Workers {
                     Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
                     mc.free();
                 }
+
+                // Push to queue
                 mc.info = info;
-                statsUpdate(bytesRead);
                 outQueue.Enqueue(mc);
+
+                statsUpdate(bytesRead);
             }
         }
 
