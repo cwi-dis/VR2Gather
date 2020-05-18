@@ -128,9 +128,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     // user Login state
     private bool userIsLogged = false;
 
-    // orchestrator connection state
-    private bool connectedToOrchestrator = false;
-
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
     private bool isAutoRetrievingData = false;
 
@@ -190,7 +187,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     // implementation des callbacks de retour de l'interface
     public void OnConnect() {
-        connectedToOrchestrator = true;
         statusText.text = "Online";
         statusText.color = onlineCol;
         state = State.Login;
@@ -204,7 +200,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnDisconnect() {
-        connectedToOrchestrator = false;
         userIsLogged = false;
         userID = "";
         idText.text = "";
