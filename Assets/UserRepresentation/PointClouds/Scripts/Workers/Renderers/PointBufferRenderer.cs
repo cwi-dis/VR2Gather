@@ -22,6 +22,19 @@ namespace Workers
             }
         }
 
+        private void Update() {
+            material.SetFloat("_PointSize", preparer.GetPointSize());
+            pointCount = preparer.GetComputeBuffer(ref pointBuffer);
+            if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+
+            // TODO: Do view frustum culling here.
+            material.SetBuffer("_PointBuffer", pointBuffer);
+            material.SetMatrix("_Transform", transform.localToWorldMatrix);
+
+            Graphics.DrawProcedural(material, new Bounds(Vector3.zero, Vector3.one*2), MeshTopology.Points, pointCount, 1);
+            statsUpdate(pointCount);
+        }
+        /*
         void OnRenderObject() {
             material.SetFloat("_PointSize", preparer.GetPointSize());
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
@@ -38,7 +51,7 @@ namespace Workers
             Graphics.DrawProceduralNow(MeshTopology.Points, pointCount, 1);
             statsUpdate(pointCount);
         }
-
+        */
         public void OnDestroy() {
             if (pointBuffer != null) { pointBuffer.Release(); pointBuffer = null; }
             if (material != null) { Destroy(material); material = null; }
