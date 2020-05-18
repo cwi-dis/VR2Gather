@@ -1,4 +1,5 @@
 {
+    "targetFrameRate": 90,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
     "TVMs": {
@@ -43,7 +44,7 @@
 					"PCLExchangeName": "VolumetricData",
 					"MetaExchangeName": "VolumetricMetaData"
 				},
-				"voxelSize": 0.004999999888241291,
+				"voxelSize": 0.01,
                 "Encoders": [
 					{
 						"octreeBits": 10
