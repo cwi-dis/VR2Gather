@@ -36,6 +36,7 @@ namespace Workers
             material.SetPass(0);
 
             Graphics.DrawProceduralNow(MeshTopology.Points, pointCount, 1);
+            statsUpdate(pointCount);
         }
 
         public void OnDestroy() {
