@@ -31,7 +31,7 @@ namespace Workers
             material.SetBuffer("_PointBuffer", pointBuffer);
             material.SetMatrix("_Transform", transform.localToWorldMatrix);
 
-            Graphics.DrawProcedural(material, new Bounds(Vector3.zero, Vector3.one*2), MeshTopology.Points, pointCount, 1);
+            Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one*2), MeshTopology.Points, pointCount, 1);
             statsUpdate(pointCount);
         }
         /*
