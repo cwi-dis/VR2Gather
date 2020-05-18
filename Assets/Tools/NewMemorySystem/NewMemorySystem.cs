@@ -11,6 +11,7 @@ public class NewMemorySystem : MonoBehaviour
 
     public bool         forceMesh = true;
     public bool         localPCs = false;
+    public bool         useCompression = true;
     public bool         useVoice = false;
     Workers.BaseWorker  reader;
     Workers.BaseWorker  encoder;
@@ -45,16 +46,22 @@ public class NewMemorySystem : MonoBehaviour
 
 
         var pcSelfConfig = cfg.PCSelfConfig;
-        if (localPCs)
-            reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, preparerQueue);
-        else {
+        if (localPCs) {
+            if(!useCompression)
+                reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, preparerQueue);
+            else {
+                reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
+                encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoders[0].octreeBits, encoderQueue, writerQueue);
+                decoder = new Workers.PCDecoder(writerQueue, preparerQueue);
+            }
+        } else {
             reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
             encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoders[0].octreeBits, encoderQueue, writerQueue);
             string uuid = System.Guid.NewGuid().ToString();
             var b2d = cfg.PCSelfConfig.Bin2Dash;
-            dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", b2d.segmentSize, b2d.segmentLife, writerQueue);
+            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", b2d.segmentSize, b2d.segmentLife, writerQueue);
             var SUBConfig = cfg.SUBConfig;
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "testBed", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
@@ -62,10 +69,10 @@ public class NewMemorySystem : MonoBehaviour
             string uuid = System.Guid.NewGuid().ToString();
             var audioB2D = cfg.PCSelfConfig.AudioBin2Dash;
 
-            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/", "audio", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
 
             var audioConfig = cfg.AudioSUBConfig;
-            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/", "audio", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
 
         }
     }
