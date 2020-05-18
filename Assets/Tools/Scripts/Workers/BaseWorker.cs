@@ -7,42 +7,51 @@ namespace Workers {
         public enum WorkerType { Init, Run, End };
 
         protected bool          bRunning = false;
-        public bool             isStopped { get; private set; }
         System.Threading.Thread thread;
         public bool isRunning { get { return bRunning; } }
         WorkerType type;
+        const int loopInterval = 1; // How many milliseconds to sleep in the runloop
+        const int joinTimeout = 1000; // How many milliseconds to wait for thread completion before we abort it.
 
         public BaseWorker(WorkerType _type= WorkerType.Run) {
             type = _type;
         }
 
-        protected void Start() {
+        protected virtual void Start() {
             bRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
             thread.Start();
         }
 
-        public void Stop() {
+        public virtual void Stop() {
             bRunning = false;
         }
 
-        public void StopAndWait() {
+        public virtual void StopAndWait() {
             Stop();
-            while (!isStopped) {
-                System.Threading.Thread.Sleep(10);
+            if (!thread.Join(joinTimeout))
+            {
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: thread did not stop. Aborting.");
+                thread.Abort();
             }
+            thread.Join();
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            isStopped = false;
-            while (bRunning) {
-                Update();
-                System.Threading.Thread.Sleep(1);
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
+            try {
+                while (bRunning) {
+                    Update();
+                    System.Threading.Thread.Sleep(loopInterval);
+                }
+            }catch(System.Exception e) {
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
-            isStopped = true;
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread stopped");
         }
         protected virtual void Update(){ }
     }

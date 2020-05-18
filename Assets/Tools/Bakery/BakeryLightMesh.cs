@@ -28,7 +28,14 @@ public class BakeryLightMesh : MonoBehaviour
 
     public int lmid = -2;
 
+    public static int lightsChanged = 0;
+
 #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (lightsChanged == 0) lightsChanged = 1;
+    }
+
     void Start()
     {
         if (gameObject.GetComponent<BakeryDirectLight>() != null ||

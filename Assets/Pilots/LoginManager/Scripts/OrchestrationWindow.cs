@@ -128,9 +128,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     // user Login state
     private bool userIsLogged = false;
 
-    // orchestrator connection state
-    private bool connectedToOrchestrator = false;
-
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
     private bool isAutoRetrievingData = false;
 
@@ -190,7 +187,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     // implementation des callbacks de retour de l'interface
     public void OnConnect() {
-        connectedToOrchestrator = true;
         statusText.text = "Online";
         statusText.color = onlineCol;
         state = State.Login;
@@ -204,7 +200,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnDisconnect() {
-        connectedToOrchestrator = false;
         userIsLogged = false;
         userID = "";
         idText.text = "";
@@ -237,7 +232,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnLoginResponse(ResponseStatus status, string _userId) {
-        Debug.Log("OnLoginResponse()");
         bool userLoggedSucessfully = (status.Error == 0);
 
         if (!userIsLogged) {
@@ -334,8 +328,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions) {
-        Debug.Log("OnGetSessionsResponse:" + sessions.Count);
-
         // update the list of available sessions
         availableSessions = sessions;
         removeComponentsFromList(orchestratorSessions.transform);
@@ -348,11 +340,13 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         availableSessions.ForEach(delegate (Session session) {
+            /*
             Debug.Log("Session:" + session.GetGuiRepresentation());
             Debug.Log("users:" + session.sessionUsers.Length);
             Array.ForEach<string>(session.sessionUsers, delegate (string user) {
                 Debug.Log("userId:" + user);
             });
+            */
             options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
@@ -477,7 +471,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
         if (status.Error == 0) {
             // success
-            Debug.Log("OnGetSessionInfoResponse()");
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
             sessionNumUsersText.text = session.sessionUsers.Length.ToString() + "/" + "4"; // To change the max users depending the pilot
@@ -550,10 +543,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
+            /*
             foreach (User u in availableUsers) {
                 if (u.userId == _userID)
                     Debug.Log(u.userName + " Joined");
             }
+            */
         }
     }
 
@@ -561,10 +556,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
             //orchestratorWrapper.GetUserInfo(_userID);
+            /*
             foreach (User u in availableUsers) {
                 if (u.userId == _userID)
                     Debug.Log(u.userName + " Leaved");
             }
+            */
         }
     }
 
@@ -577,7 +574,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
-        Debug.Log("OnGetScenariosResponse:" + scenarios.Count);
+//        Debug.Log("OnGetScenariosResponse:" + scenarios.Count);
 
         availableScenarios = scenarios;
 
@@ -586,11 +583,13 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         scenarios.ForEach(delegate (Scenario scenario) {
+            /*
             Debug.Log("Scenario:" + scenario.GetGuiRepresentation());
             Debug.Log("ScenarioRooms:" + scenario.scenarioRooms.Count);
             scenario.scenarioRooms.ForEach(delegate (Room room) {
                 Debug.Log("ScenarioRoom:" + room.GetGuiRepresentation());
             });
+            */
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
@@ -609,10 +608,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (livePresenterData == null) livePresenterData = new LivePresenterData();
         livePresenterData.liveAddress = liveData.liveAddress;
         livePresenterData.vodAddress = liveData.vodAddress;
-
+        /*
         Debug.Log("Live: " + liveData.liveAddress);
         Debug.Log("VoD: " + liveData.vodAddress);
-
+        */
         orchestratorWrapper.GetRooms();
     }
 
@@ -620,20 +619,22 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     #region Users
 
-    private void GetUsers() {
+    public bool watingForUser = false;
+
+    public void GetUsers() {
+        watingForUser = true;
         orchestratorWrapper.GetUsers();
     }
 
     public void OnGetUsersResponse(ResponseStatus status, List<User> users) {
-        Debug.Log("OnGetUsersResponse:" + users.Count);
-
+        watingForUser = false;
         // update the list of available users
         availableUsers = users;
-
-        //users.ForEach(delegate (User user) {
-        //    Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_gen);
-        //});
-
+/*
+        users.ForEach(delegate (User user) {
+            Debug.Log("Name: " + user.userName + " -- URL: " + user.sfuData.url_pcc);
+        });
+*/
         if (isAutoRetrievingData) {
             // auto retriving phase: call next
             orchestratorWrapper.GetScenarios();
@@ -651,7 +652,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnAddUserResponse(ResponseStatus status, User user) {
         // update the lists of user, anyway the result
-        orchestratorWrapper.GetUsers();
+        GetUsers();
     }
     
     private void UpdateUserData() {
@@ -659,8 +660,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnUpdateUserDataJsonResponse(ResponseStatus status) {
-        Debug.Log("OnUpdateUserDataJsonResponse()");
-
         if (status.Error == 0) {
             orchestratorWrapper.GetUserInfo();
         }
@@ -675,8 +674,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnGetUserInfoResponse(ResponseStatus status, User user) {
-        Debug.Log("OnGetUserInfoResponse()");
-
         if (status.Error == 0) {
             if (string.IsNullOrEmpty(idText.text) || user.userId == idText.text) {
                 userID = user.userId;
@@ -689,7 +686,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             }
 
 
-            orchestratorWrapper.GetUsers();
+            GetUsers();
             //if (isAutoRetrievingData || updated) {
             //}
         }
@@ -701,10 +698,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnDeleteUserResponse(ResponseStatus status) {
-        Debug.Log("OnDeleteUserResponse()");
-
         // update the lists of user, anyway the result
-        orchestratorWrapper.GetUsers();
+        GetUsers();
     }
 
     #endregion
@@ -716,8 +711,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms) {
-        Debug.Log("OnGetRoomsResponse:" + rooms.Count);
-
         // update the list of available rooms
         availableRoomInstances = rooms;
         //updateListComponent(orchestratorUserSessions.transform, Orchestrator.orchestrator.orchestratorUserSessions);
@@ -772,7 +765,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         StartCoroutine(ScrollLogsToBottom());
 
         controller.MessageActivation(userMessage.message.ToString());
-        Debug.Log(userMessage.fromName + ": " + userMessage.message.ToString());
     }
 
     #endregion
@@ -803,6 +795,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
 
+        // Set status to offline
+        OnDisconnect();
+        PanelChanger();
+
+        // Try to connect
         SocketConnect();
 
         DontDestroyOnLoad(this);
@@ -911,6 +908,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
+                if (isMaster) readyLobbyButton.interactable = true;
+                else readyLobbyButton.interactable = false;
                 sessionPanel.SetActive(false);
                 usersPanel.SetActive(true);
                 createButton.gameObject.SetActive(true);
@@ -966,10 +965,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
+            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
-            if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
-            else socketAudioToggle.interactable = true;
+            //if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
+            //else socketAudioToggle.interactable = true;
             if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
             else dashAudioToggle.interactable = true;
         }
@@ -985,7 +986,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     #region Buttons
 
     public void GetUsersButton() {
-        orchestratorWrapper.GetUsers();
+        GetUsers();
     }
 
     public void LoginButton() {

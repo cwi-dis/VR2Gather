@@ -28,20 +28,15 @@ public class Config {
         public Vector3 offsetPosition;
         public Vector3 offsetRotation;
         public Vector3 scale;
+        public bool forceMesh;
     };
     public _PCs PCs;
 
     [Serializable]
     public class _User {
         public string sourceType;
-        public string cwicpcFilename;
-        public string cwicpcDirectory;
-        public string plyFilename;
-        public string plyDirectory;
         [Serializable]
         public class _SUBConfig {
-            public string url;
-            public string streamName;
             public int streamNumber;
             public int initialDelay;
         }
@@ -51,20 +46,30 @@ public class Config {
         [Serializable]
         public class _PCSelfConfig
         {
-            public string configFilename;
+            [Serializable]
+            public class _RS2ReaderConfig
+            {
+                public string configFilename;
+            }
+            public _RS2ReaderConfig RS2ReaderConfig;
+            [Serializable]
+            public class _CerthReaderConfig
+            {
+                public string ConnectionURI;
+                public string PCLExchangeName;
+                public string MetaExchangeName;
+            }
+            public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;
             [Serializable]
             public class _Encoder {
                 public int octreeBits;
             }
-            public _Encoder Encoder;
+            public _Encoder[] Encoders;
             [Serializable]
             public class _Bin2Dash {
-                public string url;
-                public string streamName;
                 public int segmentSize;
                 public int segmentLife;
-                public bool fileMirroring;
             }
             public _Bin2Dash Bin2Dash;
             public _Bin2Dash AudioBin2Dash;
@@ -72,18 +77,8 @@ public class Config {
         public _PCSelfConfig PCSelfConfig;
 
         [Serializable]
-        public class _NetConfig
-        {
-            public string hostName;
-            public int port;
-        }
-        public _NetConfig NetConfig;
-
-
-        [Serializable]
         public class _Render
         {
-            public bool forceMesh;
             public float pointSize = 0.008f;
             public Vector3 position;
             public Vector3 rotation;

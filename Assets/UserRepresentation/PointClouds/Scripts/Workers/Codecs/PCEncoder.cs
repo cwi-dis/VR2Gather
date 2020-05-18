@@ -11,11 +11,11 @@ namespace Workers {
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
 
-        public PCEncoder(Config._User._PCSelfConfig._Encoder cfg, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
+        public PCEncoder( int _octreeBits, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
             inQueue = _inQueue;
             outQueue = _outQueue;
             try {
-                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = cfg.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
+                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = _octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
                 encoder = cwipc.new_encoder(parms);
                 if (encoder != null) {
                     Start();
@@ -34,9 +34,9 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            base.OnStop();
             encoder?.free();
             encoder = null;
+            base.OnStop();
             Debug.Log("PCEncoder Stopped");
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
@@ -45,13 +45,14 @@ namespace Workers {
             base.Update();
             if (inQueue.Count>0) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+                if (encoder == null) return; // Terminating
                 encoder.feed(pc);
                 pc.free();
                 if (encoder.available(true)) {
                     unsafe {
                         NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
                         if (encoder.copy_data(mc.pointer, mc.length))
-                            if (outQueue.Count < outQueue.Size)
+                            if (outQueue.Free())
                                 outQueue.Enqueue(mc);
                             else
                                 mc.free();

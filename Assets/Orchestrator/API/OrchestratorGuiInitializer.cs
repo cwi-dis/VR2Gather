@@ -7,29 +7,29 @@ public class OrchestratorGuiInitializer : MonoBehaviour
     bool overrideFields = false;
     [Header("User Credentials")]
     [SerializeField]
-    private string defaulOrchURL;
+    private string defaulOrchURL = null;
     [SerializeField]
-    private InputField defaulOrchUrlIF;
+    private InputField defaulOrchUrlIF = null;
 
     [Header("User Credentials")]
     [SerializeField]
-    private string defaultUserName;
+    private string defaultUserName = null;
     [SerializeField]
-    private InputField userNameIF;
+    private InputField userNameIF = null;
     [SerializeField]
-    private string defaultUserPassword;
+    private string defaultUserPassword = null;
     [SerializeField]
-    private InputField userPasswordIF;
+    private InputField userPasswordIF = null;
 
     [Header("Rabbit MQ")]
     [SerializeField]
-    private string defaultMQurl;
+    private string defaultMQurl = null;
     [SerializeField]
-    private InputField MQurlIF;
+    private InputField MQurlIF = null;
     [SerializeField]
-    private string defaultMQname;
+    private string defaultMQname = null;
     [SerializeField]
-    private InputField MQnameIF;
+    private InputField MQnameIF = null;
 
     #if UNITY_EDITOR
     void Awake()

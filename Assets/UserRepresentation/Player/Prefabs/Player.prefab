@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4434842229477826213}
   - component: {fileID: 2766275335830324908}
+  - component: {fileID: 7417336769330361896}
+  - component: {fileID: 1214882919958284219}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -48,11 +50,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 0
+  orchestratorId: 
   cam: {fileID: 4434842230143733182}
   audioSender: {fileID: 5775089999482747020}
-  audioReceiver: {fileID: 0}
   tvm: {fileID: 1701608656947646053}
   pc: {fileID: 7392659942812053531}
+--- !u!114 &7417336769330361896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434842229477826214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  controller: {fileID: 1214882919958284219}
+--- !u!143 &1214882919958284219
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4434842229477826214}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4434842230143733153
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,9 +132,10 @@ Camera:
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -148,8 +183,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  rotationSpeed: 50
+  mouseSensitivity: 100
+  playerBody: {fileID: 4434842229477826213}
 --- !u!1 &5775089999482747020
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,11 +252,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4434842229477826213}
     m_Modifications:
-    - target: {fileID: 6505926999242552122, guid: 5d9e1f582b9ac2b4f8ea19b2aa15dafc,
-        type: 3}
-      propertyPath: m_Name
-      value: TVMesh
-      objectReference: {fileID: 0}
     - target: {fileID: 6505926999242552119, guid: 5d9e1f582b9ac2b4f8ea19b2aa15dafc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -276,6 +306,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6505926999242552122, guid: 5d9e1f582b9ac2b4f8ea19b2aa15dafc,
+        type: 3}
+      propertyPath: m_Name
+      value: TVMesh
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5d9e1f582b9ac2b4f8ea19b2aa15dafc, type: 3}

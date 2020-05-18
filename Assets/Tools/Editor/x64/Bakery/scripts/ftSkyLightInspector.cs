@@ -34,6 +34,30 @@ public class ftSkyLightInspector : UnityEditor.Editor
     SerializedProperty ftraceLightIndirectIntensity;
     SerializedProperty ftraceTangentSH;
 
+    int texCached = -1;
+
+    void TestPreviewRefreshProperty(ref int cached, int newVal)
+    {
+        if (cached >= 0)
+        {
+            if (cached != newVal)
+            {
+                BakerySkyLight.lightsChanged = 2;
+            }
+        }
+        cached = newVal;
+    }
+
+    void TestPreviewRefreshProperty(ref int cached, UnityEngine.Object newVal)
+    {
+        if (newVal == null)
+        {
+            TestPreviewRefreshProperty(ref cached, 0);
+            return;
+        }
+        TestPreviewRefreshProperty(ref cached, newVal.GetInstanceID());
+    }
+
     static string ftSkyboxShaderName = "Skybox/Bakery Skybox";
 
     ftLightmapsStorage storage;
@@ -61,6 +85,8 @@ public class ftSkyLightInspector : UnityEditor.Editor
     public override void OnInspectorGUI() {
         {
             serializedObject.Update();
+
+            TestPreviewRefreshProperty(ref texCached, ftraceLightTexture.objectReferenceValue);
 
             EditorGUILayout.PropertyField(ftraceLightColor, new GUIContent("Color", "Sky color. Multiplies texture color."));
             EditorGUILayout.PropertyField(ftraceLightIntensity, new GUIContent("Intensity", "Color multiplier"));

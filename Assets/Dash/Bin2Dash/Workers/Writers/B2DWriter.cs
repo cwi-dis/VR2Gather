@@ -6,28 +6,33 @@ using UnityEngine;
 namespace Workers {
     public class B2DWriter : BaseWorker {
         bin2dash.connection uploader;
-        //BinaryWriter bw;
         string url;
         QueueThreadSafe inQueue;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
 
-        public B2DWriter(Config._User._PCSelfConfig._Bin2Dash cfg, string _url, QueueThreadSafe _inQueue) : base(WorkerType.End) {
+
+        // Config._User._PCSelfConfig._Bin2Dash cfg, 
+        public B2DWriter(string _url, string _streamName, int _segmentSize, int _segmentLife, QueueThreadSafe _inQueue) : base(WorkerType.End) {
             try {
                 inQueue = _inQueue;
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
-                if ( string.IsNullOrEmpty(_url))
-                    url = cfg.url;
-                else
-                    url = _url;
-                uploader = bin2dash.create(cfg.streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, cfg.segmentSize, cfg.segmentLife);
+                url = _url;
+                if ( string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName) )
+                {
+                    Debug.LogError($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
+                    throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
+                }
+                uploader = bin2dash.create(_streamName, bin2dash.VRT_4CC('c', 'w', 'i', '1'), url, _segmentSize, _segmentLife);
                 if (uploader != null) {
-                    Debug.Log($"B2DWriter({url + cfg.streamName}: started");
+                    Debug.Log($"B2DWriter({url + _streamName}.mpd: started");
                     Start();
                 }
                 else
-                    throw new System.Exception($"B2DWriter: vrt_create: failed to create uploader {url + cfg.streamName}.mpd");
+                    throw new System.Exception($"B2DWriter#{instanceNumber}: vrt_create: failed to create uploader {url + _streamName}.mpd");
             }
             catch (System.Exception e) {
-                Debug.LogError($"B2DWriter({url}:{e.Message}");
+                Debug.LogError($"B2DWriter#{instanceNumber}({url}:{e.Message}");
                 throw e;
             }
         }
@@ -35,9 +40,8 @@ namespace Workers {
         public override void OnStop() {
             uploader.free();
             uploader = null;
-            //bw?.Close();
             base.OnStop();
-            Debug.Log($"B2DWriter {url} Stopped");
+            Debug.Log($"B2DWriter#{instanceNumber} {url} Stopped");
         }
 
         protected override void Update() {
@@ -46,7 +50,7 @@ namespace Workers {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
                 statsUpdate((int)mc.length);
                 if (!uploader.push_buffer(mc.pointer, (uint)mc.length))
-                    Debug.Log($"B2DWriter {url}: ERROR sending data");
+                    Debug.Log($"B2DWriter#{instanceNumber}({url}): ERROR sending data");
                 mc.free();
             }
         }
@@ -62,7 +66,7 @@ namespace Workers {
                 statsTotalPackets = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{instanceNumber}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                 statsTotalBytes = 0;
                 statsTotalPackets = 0;
                 statsLastTime = System.DateTime.Now;

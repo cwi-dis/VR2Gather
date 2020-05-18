@@ -31,75 +31,75 @@ public class OrchestratorGui : MonoBehaviour
     //Connection and login components
     [Header("Connection and login components")]
     [SerializeField]
-    private InputField orchestratorUrlIF;
+    private InputField orchestratorUrlIF = null;
     [SerializeField]
-    private Button connectButton;
+    private Button connectButton = null;
     [SerializeField]
-    private Button disconnectButton;
+    private Button disconnectButton = null;
     [SerializeField]
-    private Toggle autoRetrieveOrchestratorDataOnConnect;
+    private Toggle autoRetrieveOrchestratorDataOnConnect = null;
     [SerializeField]
-    private InputField userNameIF;
+    private InputField userNameIF = null;
     [SerializeField]
-    private InputField userPasswordIF;
+    private InputField userPasswordIF = null;
     [SerializeField]
-    private InputField userMQurlIF;
+    private InputField userMQurlIF = null;
     [SerializeField]
-    private InputField userMQnameIF;
+    private InputField userMQnameIF = null;
     [SerializeField]
-    private Button loginButton;
+    private Button loginButton = null;
     [SerializeField]
-    private Button logoutButton;
+    private Button logoutButton = null;
 
     // Logs container
     [Header("Logs container")]
     [SerializeField]
-    private RectTransform logsContainer;
+    private RectTransform logsContainer = null;
     [SerializeField]
-    private ScrollRect logsScrollRect;
+    private ScrollRect logsScrollRect = null;
     [SerializeField]
-    private Button logsClearBtn;
+    private Button logsClearBtn = null;
     private Font ArialFont;
 
     // User GUI components
     [Header("User GUI components")]
     [SerializeField]
-    private Text userLogged;
+    private Text userLogged = null;
     [SerializeField]
-    private Text userId;
+    private Text userId = null;
     [SerializeField]
-    private Text userName;
+    private Text userName = null;
     [SerializeField]
-    private Text userAdmin;
+    private Text userAdmin = null;
     [SerializeField]
-    private Text userMaster;
+    private Text userMaster = null;
     [SerializeField]
-    private Text userMQurl;
+    private Text userMQurl = null;
     [SerializeField]
-    private Text userMQname;
+    private Text userMQname = null;
     [SerializeField]
-    private Text userSession;
+    private Text userSession = null;
     [SerializeField]
-    private Text userSessionUsers;
+    private Text userSessionUsers = null;
     [SerializeField]
-    private Text userScenario;
+    private Text userScenario = null;
     [SerializeField]
-    private Text userLiveURL;
+    private Text userLiveURL = null;
     [SerializeField]
-    private Text userVODLiveURL;
+    private Text userVODLiveURL = null;
     [SerializeField]
-    private Text userRoom;
+    private Text userRoom = null;
 
     // Orchestrator GUI components
     [Header("Orchestrator GUI components")]
     [SerializeField]
-    private Text orchestratorConnected;
+    private Text orchestratorConnected = null;
     [SerializeField]
-    private RectTransform orchestratorUsers;
+    private RectTransform orchestratorUsers = null;
     [SerializeField]
-    private RectTransform orchestratorScenarios;
+    private RectTransform orchestratorScenarios = null;
     [SerializeField]
-    private RectTransform orchestratorSessions;
+    private RectTransform orchestratorSessions = null;
 
     #endregion
 
@@ -111,43 +111,43 @@ public class OrchestratorGui : MonoBehaviour
     [Header("Orchestrator GUI commands")]
     // dropdown to display the list of availbale commands
     [SerializeField]
-    private Dropdown commandDropdown;
+    private Dropdown commandDropdown = null;
 
     // button to send the command
     [SerializeField]
-    private Button sendCommandButton;
+    private Button sendCommandButton = null;
 
     // container that displays the list of parameters for the selected command
     [SerializeField]
-    private RectTransform paramsContainer;
+    private RectTransform paramsContainer = null;
 
     // parameters panels
     [SerializeField]
-    private RectTransform userIdPanel;
+    private RectTransform userIdPanel = null;
     [SerializeField]
-    private RectTransform userAdminPanel;
+    private RectTransform userAdminPanel = null;
     [SerializeField]
-    private RectTransform userNamePanel;
+    private RectTransform userNamePanel = null;
     [SerializeField]
-    private RectTransform userPasswordPanel;
+    private RectTransform userPasswordPanel = null;
     [SerializeField]
-    private RectTransform userDataMQnamePanel;
+    private RectTransform userDataMQnamePanel = null;
     [SerializeField]
-    private RectTransform userDataMQurlPanel;
+    private RectTransform userDataMQurlPanel = null;
     [SerializeField]
-    private RectTransform sessionIdPanel;
+    private RectTransform sessionIdPanel = null;
     [SerializeField]
-    private RectTransform sessionNamePanel;
+    private RectTransform sessionNamePanel = null;
     [SerializeField]
-    private RectTransform sessionDescriptionPanel;
+    private RectTransform sessionDescriptionPanel = null;
     [SerializeField]
-    private RectTransform scenarioIdPanel;
+    private RectTransform scenarioIdPanel = null;
     [SerializeField]
-    private RectTransform roomIdPanel;
+    private RectTransform roomIdPanel = null;
     [SerializeField]
-    private RectTransform messagePanel;
+    private RectTransform messagePanel = null;
     [SerializeField]
-    private RectTransform eventPanel;
+    private RectTransform eventPanel = null;
 
     #endregion
 

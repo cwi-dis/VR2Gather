@@ -60,6 +60,9 @@ public class cwipc
         [DllImport(myDllName)]
         internal extern static uint cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, IntPtr tileinfo);
 
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, IntPtr bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
     }
     private class _API_cwipc_realsense2
     {
@@ -300,6 +303,22 @@ public class cwipc
         System.IntPtr pcPtr = pc._intptr();
         System.IntPtr rvPtr = _API_cwipc_codec.cwipc_tilefilter(pcPtr, tileNum);
         if (rvPtr == System.IntPtr.Zero) return null;
+        return new pointcloud(rvPtr);
+    }
+
+    public static pointcloud from_certh(IntPtr certhPC, float[] bbox, UInt64 timestamp)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        // xxxjack don't know yet how to pass the optional float[6] array. Passing NULL for now.
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, System.IntPtr.Zero, timestamp, ref errorPtr);
+        if (rvPtr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.from_certh: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
         return new pointcloud(rvPtr);
     }
 }

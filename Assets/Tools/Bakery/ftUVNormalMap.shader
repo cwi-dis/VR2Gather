@@ -73,8 +73,7 @@ Shader "Hidden/ftUVNormalMap"
             float4 frag_meta2 (v2f_meta2 i): SV_Target
             {
                 float3 normalMap = UnpackNormal(tex2D(_BumpMap, i.uv));
-                float3x3 TBN = float3x3(normalize(i.tangent), normalize(i.binormal), normalize(i.normal));
-                float3 normal = mul(normalMap, TBN);
+                float3 normal = normalize(i.tangent * normalMap.x + i.binormal * normalMap.y + i.normal * normalMap.z);
                 return float4(EncodeNormalBestFit(normal),1);
             }
 
