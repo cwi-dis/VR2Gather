@@ -908,6 +908,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
+                if (isMaster) readyLobbyButton.interactable = true;
+                else readyLobbyButton.interactable = false;
                 sessionPanel.SetActive(false);
                 usersPanel.SetActive(true);
                 createButton.gameObject.SetActive(true);
