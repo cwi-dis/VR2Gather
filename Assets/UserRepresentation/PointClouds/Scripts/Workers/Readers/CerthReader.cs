@@ -147,30 +147,43 @@ namespace Workers {
                     //
                     // Push the cwipc pointcloud to the consumers
                     //
+                    statsUpdate(pc.count());
                     if (pc == null)
                     {
                         Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
                         return;
                     }
-                    pc.AddRef(); // xxxjack
-                    statsUpdate(pc.count());
+                    if (outQueue == null)
+                    {
+                        Debug.LogError($"CerthReader: no outQueue, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (outQueue.Free())
+                        {
+                            outQueue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue full, dropping pointcloud");
+                        }
+                    }
+                    if (out2Queue == null)
+                    {
+                        // This is not an error. Debug.LogError($"RS2Reader: no outQueue2, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (out2Queue.Free())
+                        {
+                            out2Queue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue2 full, dropping pointcloud");
+                        }
+                    }
 
-                    if (outQueue != null && outQueue.Free())
-                    {
-                        outQueue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
-                    if (out2Queue != null && out2Queue.Free())
-                    {
-                        out2Queue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
                     pc.free();
 
                 }
