@@ -965,10 +965,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
+            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
-            if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
-            else socketAudioToggle.interactable = true;
+            //if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
+            //else socketAudioToggle.interactable = true;
             if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
             else dashAudioToggle.interactable = true;
         }
