@@ -51,7 +51,11 @@ public class NewMemorySystem : MonoBehaviour
                 reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, preparerQueue);
             else {
                 reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
-                encoder = new Workers.PCEncoder(cfg.PCSelfConfig.Encoders[0].octreeBits, encoderQueue, writerQueue);
+                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                encStreams[0].octreeBits = 10;
+                encStreams[0].tileNumber = 0;
+                encStreams[0].outQueue = writerQueue;
+                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
                 decoder = new Workers.PCDecoder(writerQueue, preparerQueue);
             }
         } else {
@@ -67,7 +71,7 @@ public class NewMemorySystem : MonoBehaviour
             b2dStreams[0].tileNumber = 0;
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
-            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", b2d.segmentSize, b2d.segmentLife, b2dStreams);
+            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", b2d.segmentSize, b2d.segmentLife, b2dStreams);
             var SUBConfig = cfg.SUBConfig;
             dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
