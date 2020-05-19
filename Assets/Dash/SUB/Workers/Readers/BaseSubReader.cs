@@ -126,35 +126,44 @@ namespace Workers {
                 // Skip this stream if the output queue is full and we don't wan to drop frames.
                 if (!outQueue.Free() && !bDropFrames) continue;
 
-                // See how many bytes we need to allocate
-                int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info);
-
-                // Sideline: count number of unsuccessful receives so we can try and repoen the stream
-                UnsuccessfulCheck(bytesNeeded);
-
-                // If not data is currently available on this stream there is nothing more to do (for this stream)
-                if (bytesNeeded == 0) continue;
-
-                // Allocate and read.
-                NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
-                if (bytesRead != bytesNeeded)
+                lock (this)
                 {
-                    Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                    mc.free();
-                    continue;
-                }
-                if (!outQueue.Free())
-                {
-                    Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
-                    mc.free();
-                }
+                    // Shoulnd't happen, but's let make sure
+                    if (subHandle == null)
+                    {
+                        Debug.Log("{this.GetType().Name}#{instanceNumber} {subName}: subHandle was closed");
+                        return;
+                    }
+                    // See how many bytes we need to allocate
+                    int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info);
 
-                // Push to queue
-                mc.info = info;
-                outQueue.Enqueue(mc);
+                    // Sideline: count number of unsuccessful receives so we can try and repoen the stream
+                    UnsuccessfulCheck(bytesNeeded);
 
-                statsUpdate(bytesRead);
+                    // If not data is currently available on this stream there is nothing more to do (for this stream)
+                    if (bytesNeeded == 0) continue;
+
+                    // Allocate and read.
+                    NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                    int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
+                    if (bytesRead != bytesNeeded)
+                    {
+                        Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                        mc.free();
+                        continue;
+                    }
+                    if (!outQueue.Free())
+                    {
+                        Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
+                        mc.free();
+                    }
+
+                    // Push to queue
+                    mc.info = info;
+                    outQueue.Enqueue(mc);
+
+                    statsUpdate(bytesRead);
+                }
             }
         }
 

@@ -52,14 +52,11 @@ public class bin2dash
 
     const bool useLegacy = false;
 
-    public class connection
+    public class connection : BaseMemoryChunk
     {
-        protected System.IntPtr obj;
-        protected object objLock = new object();
 
-        internal connection(System.IntPtr _obj) {
-            if (_obj == System.IntPtr.Zero) throw new Exception("bin2dash.connection: constructor called with null pointer");
-            obj = _obj;
+        internal connection(System.IntPtr _pointer) : base(_pointer) {
+            if (_pointer == System.IntPtr.Zero) throw new Exception("bin2dash.connection: constructor called with null pointer");
         }
 
         protected connection() {
@@ -70,40 +67,33 @@ public class bin2dash
             free();
         }
 
-        public void free() {
-            lock (objLock)
-            {
-                if (obj != System.IntPtr.Zero)
-                {
-                    _API.vrt_destroy(obj);
-                    obj = System.IntPtr.Zero;
-                }
-            }
+        protected override void onfree()
+        {
+            _API.vrt_destroy(pointer);
         }
 
         public bool push_buffer(IntPtr buffer, uint bufferSize) {
-            if (obj == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with obj==null");
+            if (pointer == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with pointer==null");
             const int stream_index = 0;
             if (useLegacy)
             {
-                return _API.vrt_push_buffer(obj, buffer, bufferSize);
+                return _API.vrt_push_buffer(pointer, buffer, bufferSize);
             }
             else
             {
-                return _API.vrt_push_buffer_ext(obj, stream_index, buffer, bufferSize);
+                return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
             }
         }
 
         public long get_media_time(int timescale) {
-            if (obj == System.IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with obj==null");
-            return _API.vrt_get_media_time(obj, timescale);
+            if (pointer == System.IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with pointer==null");
+            return _API.vrt_get_media_time(pointer, timescale);
         }
     }
 
     public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
         System.IntPtr obj;
         sub.SetMSPaths("bin2dash.so");
-        UnityEngine.Debug.Log($"xxxjack MP4_4CC={MP4_4CC:X}");
         if (useLegacy)
         {
             obj = _API.vrt_create(name, MP4_4CC, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
