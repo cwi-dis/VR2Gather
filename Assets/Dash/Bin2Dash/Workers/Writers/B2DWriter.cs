@@ -4,7 +4,8 @@ using System.IO;
 using UnityEngine;
 
 namespace Workers {
-    public class B2DWriter : BaseWorker {
+    public class B2DWriter : BaseWorker
+    {
         public struct DashStreamDescription
         {
             public uint tileNumber;
@@ -12,12 +13,96 @@ namespace Workers {
             public QueueThreadSafe inQueue;
         };
 
-        bin2dash.connection uploader;
-        string url;
-        DashStreamDescription[] descriptions;
-        System.Threading.Thread[] pusherThreads;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
+
+        public bin2dash.connection uploader;
+        public string url;
+        DashStreamDescription[] descriptions;
+        public class PusherThread
+        {
+            B2DWriter parent;
+            int stream_index;
+            DashStreamDescription description;
+            System.Threading.Thread myThread;
+
+            public PusherThread(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
+            {
+                parent = _parent;
+                stream_index = _stream_index;
+                description = _description;
+                myThread = new System.Threading.Thread(run);
+            }
+
+            public void Start()
+            {
+                myThread.Start();
+            }
+
+            public void Join()
+            {
+                myThread.Join();
+            }
+
+            protected void run()
+            {
+                try
+                {
+                    Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread started");
+                    QueueThreadSafe queue = description.inQueue;
+                    while (!queue.Closed)
+                    {
+                        if (queue.Count > 0)
+                        {
+                            NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
+                            statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
+                            if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
+                                Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}({parent.url}): ERROR sending data");
+                            mc.free();
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                    Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread stopped");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"B2DWriter#{stream_index}: Exception: {e.Message} Stack: {e.StackTrace}");
+#if UNITY_EDITOR
+                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
+                        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                }
+
+            }
+
+            System.DateTime statsLastTime;
+            double statsTotalBytes;
+            double statsTotalPackets;
+
+            public void statsUpdate(int nBytes)
+            {
+                if (statsLastTime == null)
+                {
+                    statsLastTime = System.DateTime.Now;
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                }
+                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+                {
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{parent.instanceNumber}.{stream_index}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                    statsLastTime = System.DateTime.Now;
+                }
+                statsTotalBytes += nBytes;
+                statsTotalPackets += 1;
+            }
+        }
+
+        PusherThread[] pusherThreads;
 
 
         public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base(WorkerType.End)
@@ -31,17 +116,18 @@ namespace Workers {
                 throw new System.Exception($"B2DWriter: 4CC is \"{fourcc}\" which is not exactly 4 characters");
             }
             uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
-            descriptions = _descriptions; 
+            descriptions = _descriptions;
             try
             {
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
                 url = _url;
-                if ( string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName) )
+                if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName))
                 {
                     Debug.LogError($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                     throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
+                Debug.Log($"xxxjack B2DWriter: {descriptions.Length} output streams");
                 bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
@@ -57,14 +143,16 @@ namespace Workers {
                     }
                 }
                 uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
-                if (uploader != null) {
+                if (uploader != null)
+                {
                     Debug.Log($"B2DWriter({url + _streamName}.mpd: started");
                     Start();
                 }
                 else
                     throw new System.Exception($"B2DWriter#{instanceNumber}: vrt_create: failed to create uploader {url + _streamName}.mpd");
             }
-            catch (System.Exception e) {
+            catch (System.Exception e)
+            {
                 Debug.LogError($"B2DWriter#{instanceNumber}({url}:{e.Message}");
                 throw e;
             }
@@ -74,14 +162,12 @@ namespace Workers {
         {
             base.Start();
             int nThreads = descriptions.Length;
-            pusherThreads = new System.Threading.Thread[nThreads];
+            pusherThreads = new PusherThread[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new System.Threading.Thread(
-                    () => PusherThread(stream_number)
-                    );
+                pusherThreads[i] = new PusherThread(this, i, descriptions[i]);
             }
             foreach (var t in pusherThreads)
             {
@@ -89,9 +175,10 @@ namespace Workers {
             }
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             // Signal that no more data is forthcoming to every pusher
-            foreach(var d in descriptions)
+            foreach (var d in descriptions)
             {
                 d.inQueue.Closed = true;
             }
@@ -112,61 +199,6 @@ namespace Workers {
             base.Update();
             // xxxjack anything to do?
             System.Threading.Thread.Sleep(10);
-        }
-
-        protected void PusherThread(int stream_index)
-        {
-            try
-            {
-                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread started");
-                QueueThreadSafe queue = descriptions[stream_index].inQueue;
-                while (!queue.Closed)
-                {
-                    if (queue.Count > 0)
-                    {
-                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
-                        statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
-                        if (!uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                            Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}({url}): ERROR sending data");
-                        mc.free();
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-                Debug.Log($"B2DWriter#{instanceNumber}.{stream_index}: PusherThread stopped");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"B2DWriter#{stream_index}: Exception: {e.Message} Stack: {e.StackTrace}");
-#if UNITY_EDITOR
-                if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
-                    UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            }
-
-        }
-
-        System.DateTime statsLastTime;
-        double statsTotalBytes;
-        double statsTotalPackets;
-
-        public void statsUpdate(int nBytes) {
-            int stream_index = 999;
-            if (statsLastTime == null) {
-                statsLastTime = System.DateTime.Now;
-                statsTotalBytes = 0;
-                statsTotalPackets = 0;
-            }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{instanceNumber}.{stream_index}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
-                statsTotalBytes = 0;
-                statsTotalPackets = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalBytes += nBytes;
-            statsTotalPackets += 1;
         }
     }
 }
