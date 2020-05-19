@@ -128,9 +128,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     // user Login state
     private bool userIsLogged = false;
 
-    // orchestrator connection state
-    private bool connectedToOrchestrator = false;
-
     // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios)
     private bool isAutoRetrievingData = false;
 
@@ -190,7 +187,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     // implementation des callbacks de retour de l'interface
     public void OnConnect() {
-        connectedToOrchestrator = true;
         statusText.text = "Online";
         statusText.color = onlineCol;
         state = State.Login;
@@ -204,7 +200,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnDisconnect() {
-        connectedToOrchestrator = false;
         userIsLogged = false;
         userID = "";
         idText.text = "";
@@ -913,6 +908,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
+                if (isMaster) readyLobbyButton.interactable = true;
+                else readyLobbyButton.interactable = false;
                 sessionPanel.SetActive(false);
                 usersPanel.SetActive(true);
                 createButton.gameObject.SetActive(true);
@@ -968,10 +965,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
+            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
-            if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
-            else socketAudioToggle.interactable = true;
+            //if (socketAudioToggle.isOn) socketAudioToggle.interactable = false;
+            //else socketAudioToggle.interactable = true;
             if (dashAudioToggle.isOn) dashAudioToggle.interactable = false;
             else dashAudioToggle.interactable = true;
         }

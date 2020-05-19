@@ -50,14 +50,11 @@ public class bin2dash
         extern static public long vrt_get_media_time(IntPtr h, int timescale);
     }
 
-    public class connection
+    public class connection : BaseMemoryChunk
     {
-        protected System.IntPtr obj;
-        protected object objLock = new object();
 
-        internal connection(System.IntPtr _obj) {
-            if (_obj == System.IntPtr.Zero) throw new Exception("bin2dash.connection: constructor called with null pointer");
-            obj = _obj;
+        internal connection(System.IntPtr _pointer) : base(_pointer) {
+            if (_pointer == System.IntPtr.Zero) throw new Exception("bin2dash.connection: constructor called with null pointer");
         }
 
         protected connection() {
@@ -68,25 +65,19 @@ public class bin2dash
             free();
         }
 
-        public void free() {
-            lock (objLock)
-            {
-                if (obj != System.IntPtr.Zero)
-                {
-                    _API.vrt_destroy(obj);
-                    obj = System.IntPtr.Zero;
-                }
-            }
+        protected override void onfree()
+        {
+            _API.vrt_destroy(pointer);
         }
 
         public bool push_buffer(int stream_index, IntPtr buffer, uint bufferSize) {
-            if (obj == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with obj==null");
-            return _API.vrt_push_buffer_ext(obj, stream_index, buffer, bufferSize);
+            if (pointer == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with pointer==null");
+            return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
         }
 
         public long get_media_time(int timescale) {
-            if (obj == System.IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with obj==null");
-            return _API.vrt_get_media_time(obj, timescale);
+            if (pointer == System.IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with pointer==null");
+            return _API.vrt_get_media_time(pointer, timescale);
         }
     }
 

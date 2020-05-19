@@ -4,6 +4,7 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
+    public int targetFrameRate = 90;
     public float memoryDamping = 1.3f;
     public bool useAudio;
     [Serializable]
@@ -94,6 +95,7 @@ public class Config {
             if (_Instance == null) {
                 var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
                 _Instance = JsonUtility.FromJson<Config>(file);
+                Application.targetFrameRate = _Instance.targetFrameRate;
             }
             return _Instance;
         }

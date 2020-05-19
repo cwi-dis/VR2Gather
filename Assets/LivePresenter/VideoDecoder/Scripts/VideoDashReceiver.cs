@@ -16,13 +16,14 @@ public class VideoDashReceiver : MonoBehaviour {
 
     Workers.Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
+    public string streamName = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
     public Texture2D texture;
     AudioSource audioSource;
 
     private void Start() {
-        var pp =Config.Instance;
-        Init(url);
+        var pp = Config.Instance;
+        Init();
         audioSource = gameObject.GetComponent<AudioSource>();
         if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
@@ -30,11 +31,11 @@ public class VideoDashReceiver : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public void Init(string url) {
+    public void Init() {
         try {
             codec = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
-            reader = new Workers.AVSubReader(url, videoCodecQueue, audioCodecQueue);
+            reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
             Debug.LogError($"VideoDashReceiver.Init: Exception: {e.Message}\n{e.StackTrace}");
