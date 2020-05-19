@@ -69,7 +69,6 @@ public class bin2dash
 
         protected override void onfree()
         {
-            UnityEngine.Debug.Log("xxxjack calling vrt_destroy");
             _API.vrt_destroy(pointer);
         }
 

@@ -111,9 +111,8 @@ public class sub
             free();
         }
 
-        public void onFree()
+        protected override void onfree()
         {
-            UnityEngine.Debug.Log("xxxjack calling sub_destroy");
             _API.sub_destroy(pointer);
         }
 
@@ -185,7 +184,6 @@ public class sub
                 UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
             }
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
-            UnityEngine.Debug.Log($"xxxjack: mac-specific: SIGNALS_SMD_PATH=${path}");
             return;
         }
         if (lastMSpathInstalled == module_base) return;
