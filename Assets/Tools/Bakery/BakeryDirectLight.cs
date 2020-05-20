@@ -22,10 +22,29 @@ public class BakeryDirectLight : MonoBehaviour
     public bool shadowmask = false;
     public bool shadowmaskDenoise = false;
     public float indirectIntensity = 1.0f;
+    public Texture2D cloudShadow;
+    public float cloudShadowTilingX = 0.01f;
+    public float cloudShadowTilingY = 0.01f;
+    public float cloudShadowOffsetX, cloudShadowOffsetY;
 
     public int UID;
 
+    public static int lightsChanged = 0; // 1 = const, 2 = full
+
 #if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (lightsChanged == 0) lightsChanged = 1;
+    }
+    void OnEnable()
+    {
+        lightsChanged = 2;
+    }
+    void OnDisable()
+    {
+        lightsChanged = 2;
+    }
+
     void Start()
     {
         if (gameObject.GetComponent<BakerySkyLight>() != null ||

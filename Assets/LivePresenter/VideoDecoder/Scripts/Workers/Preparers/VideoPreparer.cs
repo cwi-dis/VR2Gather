@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-
 namespace Workers {
     public class VideoPreparer : BaseWorker {
         float[] circularAudioBuffer;
@@ -17,9 +16,19 @@ namespace Workers {
         int writeVideoPosition;
         int readVideoPosition;
 
-        public VideoPreparer() : base(WorkerType.End) {
+        QueueThreadSafe inVideoQueue;
+        QueueThreadSafe inAudioQueue;
+
+        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(WorkerType.End) {
+            inVideoQueue = _inVideoQueue;
+            inAudioQueue = _inAudioQueue;
+
             audioBufferSize = 24000*8;
             circularAudioBuffer = new float[audioBufferSize];
+            availableAudio = 0;
+            availableVideo = 0;
+
+
             writeAudioPosition = 0;
             readAudioPosition = 0;
 
@@ -37,59 +46,54 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                lock (token) {
-                    if (token.isVideo) {
-                        int len = token.currentSize;
-                        Debug.Log("len: " + len);
-                        if (videoBufferSize == 0) {
-                            videoBufferSize = len * 15;
-                            circularVideoBuffer = new byte[videoBufferSize];
-                            circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
-                        }
-
-                        if (writeVideoPosition + len < videoBufferSize) {
-                            Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, len);
-                            writeVideoPosition += len;
-                        } else {
-                            int partLen = videoBufferSize - writeVideoPosition;
-                            Marshal.Copy(token.currentBuffer, circularVideoBuffer, writeVideoPosition, partLen);
-                            Marshal.Copy(token.currentBuffer + partLen, circularVideoBuffer, 0, len - partLen);
-                            writeVideoPosition = len - partLen;
-                        }
-                    } else {
-                        int len = token.currentSize;
-                        if (writeAudioPosition + len < audioBufferSize) {
-                            Marshal.Copy(token.currentBuffer, circularAudioBuffer, writeAudioPosition, len);
-                            writeAudioPosition += len;
-                        } else {
-                            int partLen = audioBufferSize - writeAudioPosition;
-                            Marshal.Copy(token.currentBuffer, circularAudioBuffer, writeAudioPosition, partLen);
-                            Marshal.Copy(token.currentBuffer + partLen, circularAudioBuffer, 0, len - partLen);
-                            writeAudioPosition = len - partLen;
-                        }
-
-                    }
+            if (inVideoQueue.Count>0) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Peek();
+                int len = mc.length;
+                if (videoBufferSize == 0) {
+                    videoBufferSize = len * 15;
+                    circularVideoBuffer = new byte[videoBufferSize];
+                    circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
                 }
-                Next();
+                if (len < freeVideo) {
+                    mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                    if (writeVideoPosition + len < videoBufferSize) {
+                        Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
+                        writeVideoPosition += len;
+                    } else {
+                        int partLen = videoBufferSize - writeVideoPosition;
+                        Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, partLen);
+                        Marshal.Copy(mc.pointer + partLen, circularVideoBuffer, 0, len - partLen);
+                        writeVideoPosition = len - partLen;
+                    }
+                    lock (this) { availableVideo += len; }
+                    mc.free();
+                }
+            }
+
+            if (inAudioQueue.Count > 0) {
+                FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue.Peek();
+                int len = mc.elements;
+                if (len < freeAudio) {
+                    mc = (FloatMemoryChunk)inAudioQueue.Dequeue();
+                    if (writeAudioPosition + len < audioBufferSize) {
+                        Marshal.Copy(mc.pointer, circularAudioBuffer, writeAudioPosition, len);
+                        writeAudioPosition += len;
+                    } else {
+                        int partLen = audioBufferSize - writeAudioPosition;
+                        Marshal.Copy(mc.pointer, circularAudioBuffer, writeAudioPosition, partLen);
+                        Marshal.Copy(mc.pointer + partLen, circularAudioBuffer, 0, len - partLen);
+                        writeAudioPosition = len - partLen;
+                    }
+                    lock (this) { availableAudio += len; }
+                    mc.free();
+                }
             }
         }
 
-        public int availableAudio {
-            get {
-                if (writeAudioPosition < readAudioPosition)
-                    return (audioBufferSize - readAudioPosition) + writeAudioPosition; // Looped
-                return writeAudioPosition - readAudioPosition;
-            }
-        }
-
-        public int availableVideo {
-            get {
-                if (writeVideoPosition < readVideoPosition)
-                    return (videoBufferSize - readVideoPosition) + writeVideoPosition; // Looped
-                return writeVideoPosition - readVideoPosition;
-            }
-        }
+        public int availableAudio { get; private set; }
+        public int availableVideo { get; private set; }
+        public int freeAudio { get { return audioBufferSize - availableAudio; } }
+        public int freeVideo { get { return videoBufferSize - availableVideo; } }
 
         bool firstTime = true;
         float lastTime = 0;
@@ -102,19 +106,19 @@ namespace Workers {
                         if (partLen > len) {
                             System.Array.Copy(circularAudioBuffer, readAudioPosition, dst, 0, len);
                             readAudioPosition += len;
-                        }
-                        else {
+                        } else {
                             System.Array.Copy(circularAudioBuffer, readAudioPosition, dst, 0, partLen);
                             System.Array.Copy(circularAudioBuffer, 0, dst, partLen, len - partLen);
                             readAudioPosition = len - partLen;
                         }
-                    }
-                    else {
+                    } else {
                         System.Array.Copy(circularAudioBuffer, readAudioPosition, dst, 0, len);
                         readAudioPosition += len;
                     }
+                    lock (this) { availableAudio -= len; }
                     return true;
-                }
+                } else
+                    Debug.Log("Buffer audio sin datos.");
             }
             return false;
         }
@@ -123,6 +127,7 @@ namespace Workers {
             var ret = circularVideoBufferPtr + readVideoPosition;
             readVideoPosition += len;
             if (readVideoPosition >= videoBufferSize) readVideoPosition -= videoBufferSize;
+            lock (this) { availableVideo -= len; }
             return ret;
         }
     }

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Disable 'obsolete' warnings
+#pragma warning disable 0618
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -25,7 +28,7 @@ public class ftLightmaps {
 
     static List<int> lightmapRefCount;
     static List<LightmapAdditionalData> globalMapsAdditional;
-    static bool directionalMode;
+    static int directionalMode; // -1 undefined, 0 off, 1 on
     //static List<ftLightmapsStorage> loadedStorages;
 
 #if UNITY_EDITOR
@@ -60,7 +63,7 @@ public class ftLightmaps {
                 }
                 if (assetGUIDs.Length > 1)
                 {
-                    Debug.LogError("ftDefaultAreaLightMat was found in more than one folder. Do you have multiple installations of Bakery?");
+                    //Debug.LogError("ftDefaultAreaLightMat was found in more than one folder. Do you have multiple installations of Bakery?");
                 }
                 var guid = assetGUIDs[0];
                 _bakeryRuntimePath = System.IO.Path.GetDirectoryName(AssetDatabase.GUIDToAssetPath(guid)) + "/";
@@ -292,9 +295,14 @@ public class ftLightmaps {
     }
 #endif
 
+    static void SetDirectionalMode()
+    {
+        if (directionalMode >= 0) LightmapSettings.lightmapsMode =  directionalMode==1 ? LightmapsMode.CombinedDirectional : LightmapsMode.NonDirectional;
+    }
+
     static void OnSceneChangedPlay(Scene prev, Scene next) {
         //if (Lightmapping.lightingDataAsset == null) {
-            LightmapSettings.lightmapsMode =  directionalMode ? LightmapsMode.CombinedDirectional : LightmapsMode.NonDirectional;
+            SetDirectionalMode();
         //}
     }
 
@@ -303,7 +311,7 @@ public class ftLightmaps {
         // Unity can modify directional mode on scene change, have to force the correct one
         // activeSceneChangedInEditMode isn't always available
         //if (Lightmapping.lightingDataAsset == null) {
-            LightmapSettings.lightmapsMode =  directionalMode ? LightmapsMode.CombinedDirectional : LightmapsMode.NonDirectional;
+            SetDirectionalMode();
         //}
     }
 
@@ -311,6 +319,7 @@ public class ftLightmaps {
         //Refresh();
         if (scene.name == "_tempScene") return;
         mustReloadRenderSettings = true;
+        directionalMode = -1;
         /*if (!finalInitDone)
         {
             CreateGlobalStorageAsset();
@@ -405,17 +414,16 @@ public class ftLightmaps {
 
         // Decide which global engine lightmapping mode to use
         // TODO: allow mixing different modes
-        directionalMode = storage.dirMaps.Count != 0;
+        directionalMode = storage.dirMaps.Count != 0 ? 1 : 0;
         bool patchedDirection = false;
-        LightmapSettings.lightmapsMode =  directionalMode ? LightmapsMode.CombinedDirectional : LightmapsMode.NonDirectional;
-
+        SetDirectionalMode();
 
         // Set dummy directional tex for non-directional lightmaps in directional mode
-        if (directionalMode)
+        if (directionalMode == 1)
         {
             for(int i=0; i<existingLmaps.Length; i++)
             {
-                if (directionalMode && existingLmaps[i].lightmapDir == null)
+                if (existingLmaps[i].lightmapDir == null)
                 {
                     var lm = existingLmaps[i];
                     lm.lightmapDir = GetEmptyDirectionTex(storage);
@@ -536,7 +544,7 @@ public class ftLightmaps {
                     {
                         lm.lightmapDir = texdir;
                     }
-                    else if (directionalMode)
+                    else if (directionalMode == 1)
                     {
                         lm.lightmapDir = GetEmptyDirectionTex(storage);
                     }
@@ -598,7 +606,7 @@ public class ftLightmaps {
         // Set editor lighting mode
         Lightmapping.giWorkflowMode = Lightmapping.GIWorkflowMode.OnDemand;
         Lightmapping.realtimeGI = storage.usesRealtimeGI;
-        Lightmapping.bakedGI = true;
+        //Lightmapping.bakedGI = true; // ? only used for enlighten ? makes editor laggy ?
 #endif
 
         // Replace the lightmap array if needed
@@ -666,11 +674,19 @@ public class ftLightmaps {
 
             if (vmesh != null)
             {
-                r.additionalVertexStreams = vmesh;
-                r.lightmapIndex = 0xFFFF;
-                var prop = new MaterialPropertyBlock();
-                prop.SetFloat("bakeryLightmapMode", 1);
-                r.SetPropertyBlock(prop);
+                var r2 = r as MeshRenderer;
+                if (r2 == null)
+                {
+                    Debug.LogError("Unity cannot use additionalVertexStreams on non-MeshRenderer");
+                }
+                else
+                {
+                    r2.additionalVertexStreams = vmesh;
+                    r2.lightmapIndex = 0xFFFF;
+                    var prop = new MaterialPropertyBlock();
+                    prop.SetFloat("bakeryLightmapMode", 1);
+                    r2.SetPropertyBlock(prop);
+                }
                 continue;
             }
 
@@ -743,7 +759,7 @@ public class ftLightmaps {
             {
                 output.lightmapBakeType = LightmapBakeType.Mixed;
                 output.mixedLightingMode = channel > 100 ? MixedLightingMode.Subtractive : MixedLightingMode.Shadowmask;
-                output.occlusionMaskChannel = channel;
+                output.occlusionMaskChannel = channel > 100 ? -1 : channel;
                 output.probeOcclusionLightIndex  = storage.bakedLights[i].bakingOutput.probeOcclusionLightIndex;
             }
             storage.bakedLights[i].bakingOutput = output;
@@ -838,7 +854,7 @@ public class ftLightmaps {
     }
 
     public static void RefreshScene2(Scene scene, ftLightmapsStorage storage) {
-        MeshRenderer r;
+        Renderer r;
         int id;
         for(int i=0; i<storage.bakedRenderers.Count; i++)
         {

@@ -33,6 +33,13 @@ public class ftGlobalStorage : ScriptableObject
         xatlas
     };
 
+    [System.Serializable]
+    public enum AtlasPacker
+    {
+        Default,
+        xatlas
+    }
+
     // UV adjustment
 
     [SerializeField]
@@ -61,6 +68,11 @@ public class ftGlobalStorage : ScriptableObject
     [SerializeField]
     public bool xatlasWarningShown = false;
 
+    [SerializeField]
+    public bool checkerPreviewOn = false;
+
+    [SerializeField]
+    public bool rtSceneViewPreviewOn = false;
 
     // Defaults
     [SerializeField]
@@ -104,11 +116,15 @@ public class ftGlobalStorage : ScriptableObject
     [SerializeField]
     public bool renderSettingsUnwrapUVs = true;
     [SerializeField]
+    public bool renderSettingsForceDisableUnwrapUVs = false;
+    [SerializeField]
     public int renderSettingsMaxAutoResolution = 4096;
     [SerializeField]
     public int renderSettingsMinAutoResolution = 16;
     [SerializeField]
     public bool renderSettingsUnloadScenes = true;
+    [SerializeField]
+    public bool renderSettingsAdjustSamples = true;
     [SerializeField]
     public int renderSettingsGILODMode = 0;
     [SerializeField]
@@ -168,13 +184,17 @@ public class ftGlobalStorage : ScriptableObject
     [SerializeField]
     public bool renderSettingsUVPaddingMax = false;
     [SerializeField]
+    public bool renderSettingsPostPacking = true;
+    [SerializeField]
+    public bool renderSettingsHoleFilling = false;
+    [SerializeField]
     public bool renderSettingsBeepOnFinish = false;
     [SerializeField]
     public bool renderSettingsExportTerrainAsHeightmap = true;
     [SerializeField]
     public bool renderSettingsRTXMode = false;
     [SerializeField]
-    public int renderSettingsLightProbeMode = 0;
+    public int renderSettingsLightProbeMode = 1;
     [SerializeField]
     public bool renderSettingsClientMode = false;
     [SerializeField]
@@ -185,7 +205,22 @@ public class ftGlobalStorage : ScriptableObject
     public bool renderSettingsExportTerrainTrees = false;
     [SerializeField]
     public bool renderSettingsShowPerf = true;
-
+    [SerializeField]
+    public int renderSettingsSampleDiv = 1;
+    [SerializeField]
+    public bool renderSettingsLegacyDenoiser = false;
+    [SerializeField]
+    public AtlasPacker renderSettingsAtlasPacker = AtlasPacker.Default;
+    [SerializeField]
+    public bool renderSettingsBatchPoints = true;
+    [SerializeField]
+    public bool renderSettingsRTPVExport = true;
+    [SerializeField]
+    public bool renderSettingsRTPVSceneView = false;
+    [SerializeField]
+    public int renderSettingsRTPVWidth = 640;
+    [SerializeField]
+    public int renderSettingsRTPVHeight = 360;
 
     // Temp
 
@@ -284,6 +319,42 @@ public class ftGlobalStorage : ScriptableObject
         importer.extraUserProperties = props;
     }
 #endif
+
+    public void ClearAssetModifications(int index)
+    {
+        var importer = AssetImporter.GetAtPath(modifiedAssetPathList[index]) as ModelImporter;
+        if (importer == null)
+        {
+            Debug.LogError("Can't get importer for " + modifiedAssetPathList[index]);
+            return;
+        }
+
+        modifiedAssetPathList.RemoveAt(index);
+        modifiedAssets.RemoveAt(index);
+        modifiedAssetPaddingHash.RemoveAt(index);
+        EditorUtility.SetDirty(this);
+
+#if UNITY_2017_1_OR_NEWER
+        var props = importer.extraUserProperties;
+        if (props == null)
+        {
+            Debug.LogError("extraUserProperties is null");
+            return;
+        }
+        var newProps = new List<string>();
+        for(int i=0; i<props.Length; i++)
+        {
+            var prop = props[i];
+            if (prop.Substring(0,7) != "#BAKERY")
+            {
+                newProps.Add(prop);
+            }
+        }
+        importer.extraUserProperties = newProps.ToArray();
+#endif
+
+        importer.SaveAndReimport();
+    }
 
 #endif
 

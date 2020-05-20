@@ -5,6 +5,7 @@ using BestHTTP.SocketIO;
 using OrchestratorWrapping;
 using System;
 
+// TODO(FPA): Fix new Queue mode.
 namespace Workers
 {
     public class SocketIOReader : BaseWorker, ISocketReader {
@@ -33,16 +34,19 @@ namespace Workers
             Start();
         }
 
+        public SocketIOReader() : base(WorkerType.Init) {
+            Start();
+        }
+
         protected override void Update() {
             base.Update();
-            if (token != null && read<write) {
+            if (read<write) {
                // lock (pending)
                 {
                     byte[] tmp = pending[read%10];
                     read++;
-                    token.currentByteArray = tmp;
-                    token.currentSize = tmp.Length;
-                    Next();
+                //    token.currentByteArray = tmp;
+                //    token.currentSize = tmp.Length;
                 }
             }
         }

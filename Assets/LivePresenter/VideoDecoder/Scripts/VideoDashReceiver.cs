@@ -2,62 +2,51 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VideoDashReceiver : MonoBehaviour
-{
+public class VideoDashReceiver : MonoBehaviour {
     new public Renderer renderer;
 
-    Workers.BaseWorker reader;
-    Workers.VideoDecoder codec;
-    Workers.VideoPreparer preparer;
+    Workers.BaseWorker      reader;
+    Workers.VideoDecoder    codec;
+    Workers.VideoPreparer   preparer;
+
+    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
+    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
+    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
+    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
+
     Workers.Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
+    public string streamName = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
     public Texture2D texture;
     AudioSource audioSource;
 
     private void Start() {
-        var pp =Config.Instance;
-        Init(url);
+        var pp = Config.Instance;
+        Init();
         audioSource = gameObject.GetComponent<AudioSource>();
         if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
         audioSource.Stop();
-        //audioSource.Play();
     }
 
     // Start is called before the first frame update
-    public void Init(string url) {
+    public void Init() {
         try {
-            reader = new Workers.SUBReader(url, () => {
-                bool val = false;
-                lock (preparer) {
-                    val = (preparer != null && preparer.availableVideo < codec.videoDataSize * 5) || codec.videoDataSize==0;
-                }
-                return val;
-            }, ()=> {
-                bool val = false;
-                lock (preparer) {
-                    val = preparer != null && preparer.availableAudio < 12000;
-                }
-                return val;
-            } );
-            codec = new Workers.VideoDecoder();
-            preparer = new Workers.VideoPreparer();
-            reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = token =  new Workers.Token();
+            codec = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
+            preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
+            reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
-            Debug.Log($">>ERROR {e}");
+            Debug.LogError($"VideoDashReceiver.Init: Exception: {e.Message}\n{e.StackTrace}");
+            throw e;
         }
     }
-
 
     bool firstFrame = true;
     float timeToWait = 0;
     float currentTime = 0;
     float lastFrame = 0;
-
-    string log = "";
 
     void Update() {
         lock (preparer) {
@@ -86,10 +75,13 @@ public class VideoDashReceiver : MonoBehaviour
     }
 
     void OnDestroy() {
-        reader?.Stop();
-        codec?.Stop();
-        preparer?.Stop();
-        //System.IO.File.WriteAllText("c:/tmp/log.txt", log);
+        Debug.Log("VideoDashReceiver: OnDestroy");
+        reader?.StopAndWait();
+        codec?.StopAndWait();
+        preparer?.StopAndWait();
+
+        Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue.Count} audioCodecQueue {audioCodecQueue.Count} videoPreparerQueue {videoPreparerQueue.Count} audioPreparerQueue {audioPreparerQueue.Count}");
+        BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 
     void OnAudioRead(float[] data) {

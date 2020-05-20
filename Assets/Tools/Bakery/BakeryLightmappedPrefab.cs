@@ -3,6 +3,9 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
+// Disable 'obsolete' warnings
+#pragma warning disable 0618
+
 [DisallowMultipleComponent]
 public class BakeryLightmappedPrefab : MonoBehaviour
 {
@@ -51,6 +54,7 @@ public class BakeryLightmappedPrefab : MonoBehaviour
         {
             for(int i=0; i<mods.Length; i++)
             {
+                if (mods[i] == null) continue;
 #if UNITY_2018_3_OR_NEWER
                 if (PrefabUtility.IsDefaultOverride(mods[i])) continue;
 #endif
@@ -58,7 +62,7 @@ public class BakeryLightmappedPrefab : MonoBehaviour
                 if (mods[i].propertyPath == "errorMessage") continue;
                 if (mods[i].propertyPath == "enableBaking") continue;
                 if (mods[i].propertyPath.IndexOf("idremap") >= 0) continue;
-                if (mods[i].target.name == gameObject.name)
+                if (mods[i].target != null && mods[i].target.name == gameObject.name)
                 {
                     if (mods[i].propertyPath.Contains("m_LocalPosition")) continue;
                     if (mods[i].propertyPath.Contains("m_LocalRotation")) continue;

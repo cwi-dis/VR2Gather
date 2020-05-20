@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
-
+// TODO(FPA): Fix new Queue mode.
 namespace Workers {
     public class VideoFrame {
         int width;
@@ -34,8 +34,17 @@ namespace Workers {
 
 //        public System.IntPtr videoData { get; private set; }
         public int videoDataSize { get; private set; }
+        QueueThreadSafe inVideoQueue;
+        QueueThreadSafe inAudioQueue;
+        QueueThreadSafe outVideoQueue;
+        QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder() : base(WorkerType.Run) {
+        public VideoDecoder(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+            inVideoQueue = _inVideoQueue;
+            inAudioQueue = _inAudioQueue;
+            outVideoQueue = _outVideoQueue;
+            outAudioQueue = _outAudioQueue;
+
             videoPacket = ffmpeg.av_packet_alloc();
             audioPacket = ffmpeg.av_packet_alloc();
             Start();
@@ -43,87 +52,79 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VideoDecoder Stopped");
+            Debug.Log("VideoDecoder: Stopped");
         }
 
-        System.IntPtr audioData = System.IntPtr.Zero;
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                lock (token) {
-                    if (token.isVideo) {
-                        if (codecVideo == null) CreateVideoCodec();
-                        ffmpeg.av_init_packet(videoPacket);
-                        videoPacket->data = (byte*)token.currentBuffer; // <-- Romain way
-                        videoPacket->size = token.currentSize;
-                        videoPacket->pts = token.info.timestamp;
-                        if (videoPacket->size > 0) {
-                            int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
-                            if (ret2 < 0) {
-                                ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {token.currentSize} videoPacket->size {videoPacket->size}");
-                            } else {
-                                while (ret2 >= 0) {
-                                    ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
-                                    if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                        CreateYUV2RGBFilter();
-                                        int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
-                                        videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
-                                        token.currentBuffer = (System.IntPtr)tmpDataArray[0];
-                                        token.currentSize = tmpLineSizeArray[0] * videoFrame->height;
-                                    } else
-                                        if (ret2 != -11)
-                                        Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
-
-                                }
-                            }
-                        }
+            if (inVideoQueue.Count >0 && outVideoQueue.Free()) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                if (codecVideo == null) CreateVideoCodec(mc);
+                ffmpeg.av_init_packet(videoPacket);
+                videoPacket->data = (byte*)mc.pointer; // <-- Romain way
+                videoPacket->size = mc.length;
+                videoPacket->pts = mc.info.timestamp;
+                if (videoPacket->size > 0) {
+                    int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
+                    if (ret2 < 0) {
+                        ShowError(ret2, $"Error sending a packet for video decoding token.currentSize {mc.length} videoPacket->size {videoPacket->size}");
                     } else {
-                        // Audio-
-                        if (codecAudio == null) CreateAudioCodec();
-                        ffmpeg.av_init_packet(audioPacket);
-                        audioPacket->data = (byte*)token.currentBuffer; // <-- Romain way2
-                        audioPacket->size = token.currentSize;
-                        audioPacket->pts = token.info.timestamp;
-                        if (audioPacket->size > 0) {
-                            int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
-                            if (ret2 < 0) {
-                                ShowError(ret2, $"Error sending a packet for audio decoding token.currentSize {token.currentSize} audioPacket->size {audioPacket->size}");
-                            } else {
-                                while (ret2 >= 0) {
-                                    ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
-                                    if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
-                                        //                                    CreateResampleFilter();
-                                        fixed (byte** tmp = (byte*[])audioFrame->data) {
-                                            //                                        int ret = ffmpeg.swr_convert(swrCtx, dst_data, dst_nb_samples, tmp, audioFrame->nb_samples);
-                                            //                                        if (ret < 0) {
-                                            //                                            ShowError(ret, "Error while converting");
-                                            //                                        } else 
-                                            {
-                                                if (audioData == System.IntPtr.Zero) audioData = Marshal.AllocHGlobal(audioFrame->nb_samples * 8);
-                                                float* src = (float*)tmp[0];
-                                                float* dst = (float*)audioData.ToInt64();
-                                                for (int i = 0; i < audioFrame->nb_samples; i++) {
-                                                    dst[i * 2 + 0] = src[i];
-                                                    dst[i * 2 + 1] = src[i];
-                                                }
-                                                token.currentBuffer = (System.IntPtr)audioData;
-                                                token.currentSize = audioFrame->nb_samples * 2;
-                                            }
-                                        }
-                                    } else
-                                        if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_INVALIDDATA) {
-                                        ShowError(ret2, $"Error receiving frame for audio decoding");
+                        while (ret2 >= 0) {
+                            ret2 = ffmpeg.avcodec_receive_frame(codecVideo_ctx, videoFrame);
+                            if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                CreateYUV2RGBFilter();
+                                int ret = ffmpeg.sws_scale(swsYUV2RGBCtx, videoFrame->data, videoFrame->linesize, 0, videoFrame->height, tmpDataArray, tmpLineSizeArray);
+                                videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
+                                NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
+                                System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
+                                outVideoQueue.Enqueue(videoData);
+                            } else
+                                if (ret2 != -11)
+                                Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+                        }
+                    }
+                }
+                mc.free();
+            }
+
+            if (inAudioQueue.Count > 0 && outAudioQueue.Free()) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
+                // Audio-
+                if (codecAudio == null) CreateAudioCodec(mc);
+                ffmpeg.av_init_packet(audioPacket);
+                audioPacket->data = (byte*)mc.pointer; // <-- Romain way2
+                audioPacket->size = mc.length;
+                audioPacket->pts = (long)mc.info.timestamp; // token.info.timestamp;
+                if (audioPacket->size > 0) {
+                    int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
+                    if (ret2 < 0) {
+                        ShowError(ret2, $"Error sending a packet for audio decoding token.currentSize {mc.length} audioPacket->size {audioPacket->size}");
+                    } else {
+                        while (ret2 >= 0) {
+                            ret2 = ffmpeg.avcodec_receive_frame(codecAudio_ctx, audioFrame);
+                            if (ret2 >= 0 && ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF) {
+                                fixed (byte** tmp = (byte*[])audioFrame->data)  {
+                                    FloatMemoryChunk audioData = new FloatMemoryChunk(audioFrame->nb_samples * 2);
+                                    float* src = (float*)tmp[0];
+                                    float* dst = (float*)audioData.pointer.ToInt64();
+                                    for (int i = 0; i < audioFrame->nb_samples; i++) {
+                                        audioData.buffer[i * 2 + 0] = src[i];
+                                        audioData.buffer[i * 2 + 1] = src[i];
                                     }
+                                    outAudioQueue.Enqueue(audioData);
                                 }
+                            } else
+                                if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_INVALIDDATA) {
+                                ShowError(ret2, $"Error receiving frame for audio decoding");
                             }
                         }
                     }
-                    Next();
                 }
+                mc.free();
             }
         }
 
-        void CreateVideoCodec() {
+        void CreateVideoCodec(NativeMemoryChunk mc) {
             codecVideo = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
@@ -132,7 +133,7 @@ namespace Workers {
                     if (videoParser != null) {
                         //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         //copy decoder specific info
-                        var info = token.info;
+                        var info = mc.info;
                         codecVideo_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
                         Marshal.Copy(info.dsi, 0, (System.IntPtr)codecVideo_ctx->extradata, info.dsi_size);
                         codecVideo_ctx->extradata_size = info.dsi_size;
@@ -157,8 +158,7 @@ namespace Workers {
                 Height = videoFrame->height;
             }
         }
-
-        void CreateAudioCodec() {
+        void CreateAudioCodec(NativeMemoryChunk mc) {
             codecAudio = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_AAC);
             if (codecAudio != null) {
                 codecAudio_ctx = ffmpeg.avcodec_alloc_context3(codecAudio);
@@ -167,7 +167,7 @@ namespace Workers {
                     if (audioParser != null) {
                         //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         //copy decoder specific info
-                        var info = token.info;
+                        var info = mc.info;
                         codecAudio_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
                         Marshal.Copy(info.dsi, 0, (System.IntPtr)codecAudio_ctx->extradata, info.dsi_size);
                         codecAudio_ctx->extradata_size = info.dsi_size;
@@ -179,7 +179,7 @@ namespace Workers {
                 } else Debug.Log("avcodec_alloc_context3 ERROR");
             } else Debug.Log("avcodec_find_decoder ERROR");
         }
-
+        
         byte** dst_data;
         int dst_linesize;
         int max_dst_nb_samples;

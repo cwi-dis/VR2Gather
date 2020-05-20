@@ -17,19 +17,25 @@ public class ftClient
     public const byte SERVERTASK_DENOISEMASK = 5;
     public const byte SERVERTASK_DENOISE = 6;
     public const byte SERVERTASK_DENOISESH = 7;
-    public const byte SERVERTASK_HF2HDR = 8;
-    public const byte SERVERTASK_RGBA2TGA = 9;
-    public const byte SERVERTASK_SEAMFIX = 10;
-    public const byte SERVERTASK_LMREBAKE = 11;
-    public const byte SERVERTASK_LMREBAKESIMPLE = 12;
-    public const byte SERVERTASK_LODGEN = 13;
-    public const byte SERVERTASK_LODGENINIT = 14;
-    public const byte SERVERTASK_GIPARAMS = 15;
-    public const byte SERVERTASK_RECEIVEFILE = 16;
-    public const byte SERVERTASK_REPORTSTATUS = 17;
-    public const byte SERVERTASK_SETSCENENAME = 18;
-    public const byte SERVERTASK_GETDATA = 19;
-    public const byte SERVERTASK_GETDATAREADY = 20;
+
+    public const byte SERVERTASK_DENOISEDIRLEGACY = 8;
+    public const byte SERVERTASK_DENOISEMASKLEGACY = 9;
+    public const byte SERVERTASK_DENOISELEGACY = 10;
+    public const byte SERVERTASK_DENOISESHLEGACY = 11;
+
+    public const byte SERVERTASK_HF2HDR = 12;
+    public const byte SERVERTASK_RGBA2TGA = 13;
+    public const byte SERVERTASK_SEAMFIX = 14;
+    public const byte SERVERTASK_LMREBAKE = 15;
+    public const byte SERVERTASK_LMREBAKESIMPLE = 16;
+    public const byte SERVERTASK_LODGEN = 17;
+    public const byte SERVERTASK_LODGENINIT = 18;
+    public const byte SERVERTASK_GIPARAMS = 19;
+    public const byte SERVERTASK_RECEIVEFILE = 20;
+    public const byte SERVERTASK_REPORTSTATUS = 21;
+    public const byte SERVERTASK_SETSCENENAME = 22;
+    public const byte SERVERTASK_GETDATA = 23;
+    public const byte SERVERTASK_GETDATAREADY = 24;
 
     public const byte SERVERERROR_IDLE = 0;
     public const byte SERVERERROR_COPY = 1;
@@ -81,6 +87,12 @@ public class ftClient
         {"denoiseMask", SERVERTASK_DENOISEMASK},
         {"denoiser", SERVERTASK_DENOISE},
         {"denoiseSH", SERVERTASK_DENOISESH},
+
+        {"denoiseDirLegacy", SERVERTASK_DENOISEDIRLEGACY},
+        {"denoiseMaskLegacy", SERVERTASK_DENOISEMASKLEGACY},
+        {"denoiserLegacy", SERVERTASK_DENOISELEGACY},
+        {"denoiseSHLegacy", SERVERTASK_DENOISESHLEGACY},
+
         {"halffloat2hdr", SERVERTASK_HF2HDR},
         {"rgba2tga", SERVERTASK_RGBA2TGA},
         {"seamfixer", SERVERTASK_SEAMFIX},

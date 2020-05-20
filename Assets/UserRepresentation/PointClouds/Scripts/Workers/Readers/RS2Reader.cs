@@ -6,14 +6,18 @@ namespace Workers {
     public class RS2Reader : BaseWorker {
         cwipc.source reader;
         float voxelSize;
+        QueueThreadSafe outQueue;
+        QueueThreadSafe out2Queue;
 
-        public RS2Reader(Config._User._PCSelfConfig cfg) : base(WorkerType.Init) {
-            voxelSize = cfg.voxelSize;
+        public RS2Reader(string _configFilename, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+            outQueue = _outQueue;
+            out2Queue = _out2Queue;
+            voxelSize = _voxelSize;
             try {
-                reader = cwipc.realsense2(cfg.configFilename);  
+                reader = cwipc.realsense2(_configFilename);  
                 if (reader != null) {
                     Start();
-                    Debug.Log("RS2Reader Inited");
+                    Debug.Log("PCRealSense2Reader: Started.");
                 } else
                     throw new System.Exception($"PCRealSense2Reader: cwipc_realsense2 could not be created"); // Should not happen, should throw exception
             }
@@ -25,36 +29,54 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            if (currentPointCloud != null) currentPointCloud.free();
-            reader.free();
+            reader?.free();
             reader = null;
-            Debug.Log("RS2Reader Stopped");
+            Debug.Log("PCRealSense2Reader: Stopped.");
         }
 
-        cwipc.pointcloud currentPointCloud;
         protected override void Update() {
             base.Update();
-            if (token != null) {  // Wait for token
-                lock (token) {
-                    if (currentPointCloud != null) currentPointCloud.free();
-                    currentPointCloud = reader.get();
-                    if (currentPointCloud == null) return;
-                    if (voxelSize != 0) {
-                        int oldCount = currentPointCloud.count();
-                        var tmp = currentPointCloud;
-                        currentPointCloud = cwipc.downsample(tmp, voxelSize);
-                        tmp.free();
-                        if (currentPointCloud == null) {
-                            Debug.LogError($"Voxelating pointcloud with {voxelSize} got rid of all points?");
-                            return;
-                        }
-                        //Debug.Log($"xxxjack voxelSize={voxelSize} from {oldCount} to {currentPointCloud.count()} point, cellsize={currentPointCloud.cellsize()}");
-                    }
-                    statsUpdate(currentPointCloud.count());
-                    token.currentPointcloud = currentPointCloud;
-                    Next();
+            cwipc.pointcloud pc = reader.get();
+            if (pc == null) return;
+            if (voxelSize != 0) {
+                var tmp = pc;
+                pc = cwipc.downsample(tmp, voxelSize);
+                tmp.free();
+                if (pc== null)  throw new System.Exception($"RS2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
+            }
+            statsUpdate(pc.count());
+
+            if (outQueue == null)
+            {
+                Debug.LogError($"RS2Reader: no outQueue, dropping pointcloud");
+            }
+            else
+            {
+                if (outQueue.Free())
+                {
+                    outQueue.Enqueue(pc.AddRef());
+                }
+                else
+                {
+                    Debug.Log($"RS2Reader: outQueue full, dropping pointcloud");
                 }
             }
+            if (out2Queue == null)
+            {
+                // This is not an error. Debug.LogError($"RS2Reader: no outQueue2, dropping pointcloud");
+            }
+            else
+            {
+                if (out2Queue.Free())
+                {
+                    out2Queue.Enqueue(pc.AddRef());
+                }
+                else
+                {
+                    Debug.Log($"RS2Reader: outQueue2 full, dropping pointcloud");
+                }
+            }
+            pc.free();
         }
 
         System.DateTime statsLastTime;

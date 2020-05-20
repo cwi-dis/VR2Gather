@@ -3,39 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VoiceDashReceiver : MonoBehaviour {
+    Workers.BaseWorker      reader;
+    Workers.BaseWorker      codec;
+    Workers.AudioPreparer   preparer;
 
-    Workers.BaseWorker reader;
-    Workers.BaseWorker codec;
-    Workers.AudioPreparer preparer;
-    Workers.Token token;
-    AudioSource audioSource;
+    QueueThreadSafe decoderQueue = new QueueThreadSafe();
+    QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(Config._User._SUBConfig cfg, string url = "") {
-        const int frequency = 16000;
-        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
-        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
-        audioSource = gameObject.AddComponent<AudioSource>();
+    public void Init(string _url, string _streamName, int _streamNumber, int _initialDelay) {
+        //        const int frequency = 16000;
+        //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
+        //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
+        AudioSource audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialBlend = 1.0f;
-        //audioSource.clip = AudioClip.Create("clip0", 320, 1, 16000, false);
         audioSource.loop = true;
         audioSource.Play();
-        try {
-            reader = new Workers.SUBReader(cfg, url);
-            codec = new Workers.VoiceDecoder();
-            preparer = new Workers.AudioPreparer(optimalAudioBufferSize);
-            reader.AddNext(codec).AddNext(preparer).AddNext(reader);
-            reader.token = token = new Workers.Token();
-        } catch (System.Exception e) {
-            Debug.Log(">>ERROR " + e);
 
-        }
+        reader      = new Workers.AudioSubReader( _url, _streamName, _streamNumber, _initialDelay, decoderQueue);
+        codec       = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
+        preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
 
     void OnDestroy() {
-        reader?.Stop();
-        codec?.Stop();
-        preparer?.Stop();
+        reader?.StopAndWait();
+        codec?.StopAndWait();
+        preparer?.StopAndWait();
     }
 
     void OnAudioRead(float[] data) {

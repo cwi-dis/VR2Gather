@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class LoginController : PilotController {
 
     //AsyncOperation async;
-    bool load = false;
+    Coroutine loadCoroutine = null;
 
     public override void Start() {
         base.Start();
@@ -17,7 +17,17 @@ public class LoginController : PilotController {
         base.Update();
     }
 
-    public override void MessageActivation(string message) {
+    IEnumerator RefreshAndLoad() {
+        yield return null;
+        orchestrator.GetUsers();
+        while (orchestrator.watingForUser) {
+            yield return null;
+        }
+        if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
+        else SceneManager.LoadScene("Pilot2_Player");
+    }
+
+public override void MessageActivation(string message) {
         Debug.Log(message);
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
@@ -34,7 +44,7 @@ public class LoginController : PilotController {
                 }
                 // Check Audio
                 switch (msg[3]) {
-                    case "0": // Any Audio
+                    case "0": // No Audio
                         orchestrator.useAudio = false;
                         orchestrator.useSocketIOAudio = false;
                         orchestrator.useDashAudio = false;
@@ -59,8 +69,7 @@ public class LoginController : PilotController {
                 if (msg[5] == "True") orchestrator.liveToggle.isOn = true;
                 else orchestrator.liveToggle.isOn = false;
 
-                if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
-                else SceneManager.LoadScene("Pilot2_Player");
+                if (loadCoroutine==null)  loadCoroutine = StartCoroutine(RefreshAndLoad());
             }
         }
         else if (msg[0] == MessageType.READY) {

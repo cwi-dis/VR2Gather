@@ -8,10 +8,14 @@ namespace Workers {
         System.IntPtr encoderBuffer;
         cwipc.pointcloud pointCloudData;
         int dampedSize = 0;
+        QueueThreadSafe inQueue;
+        QueueThreadSafe outQueue;
 
-        public PCEncoder(Config._User._PCSelfConfig._Encoder cfg):base(WorkerType.Run) {
+        public PCEncoder( int _octreeBits, QueueThreadSafe _inQueue, QueueThreadSafe _outQueue ) :base(WorkerType.Run) {
+            inQueue = _inQueue;
+            outQueue = _outQueue;
             try {
-                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = cfg.octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
+                cwipc.encoder_params parms = new cwipc.encoder_params { octree_bits = _octreeBits, do_inter_frame = false, exp_factor = 0, gop_size = 1, jpeg_quality = 75, macroblock_size = 0, tilenumber = 0, voxelsize = 0 };
                 encoder = cwipc.new_encoder(parms);
                 if (encoder != null) {
                     Start();
@@ -30,38 +34,33 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            base.OnStop();
-            encoder.free();
+            encoder?.free();
             encoder = null;
+            base.OnStop();
             Debug.Log("PCEncoder Stopped");
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
 
         protected override void Update() {
             base.Update();
-            if (token != null) {
-                lock (token) {
-                    if (token.currentPointcloud != null) {
-                        encoder.feed(token.currentPointcloud);
+            if (inQueue.Count>0) {
+                cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+                if (encoder == null) return; // Terminating
+                encoder.feed(pc);
+                pc.free();
+                if (encoder.available(true)) {
+                    unsafe {
+                        NativeMemoryChunk mc = new NativeMemoryChunk( encoder.get_encoded_size() );
+                        if (encoder.copy_data(mc.pointer, mc.length))
+                            if (outQueue.Free())
+                                outQueue.Enqueue(mc);
+                            else
+                                mc.free();
+                        else
+                            Debug.LogError("PCEncoder: cwipc_encoder_copy_data returned false");
                     }
-                    if (encoder.available(true)) {
-                        unsafe {
-                            int size = encoder.get_encoded_size();
-                            if (dampedSize < size) {
-                                dampedSize = (int)(size * Config.Instance.memoryDamping);
-                                if (encoderBuffer != System.IntPtr.Zero) System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer);
-                                encoderBuffer = System.Runtime.InteropServices.Marshal.AllocHGlobal(dampedSize);
-                            }
-                            if (encoder.copy_data(encoderBuffer, dampedSize)) {
-                                token.currentBuffer = encoderBuffer;
-                                token.currentSize = size;
-                                Next();
-                            } else
-                                Debug.LogError("PCRealSense2Reader: cwipc_encoder_copy_data returned false");
-                        }
-                    } else {
-                        Debug.Log("NO FRAME!!!! Frame available");
-                    }
+                } else {
+                    Debug.Log("NO FRAME!!!! Frame available");
                 }
             }
         }

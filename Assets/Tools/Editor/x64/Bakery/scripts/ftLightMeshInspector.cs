@@ -26,6 +26,8 @@ public class ftLightMeshInspector : UnityEditor.Editor
 
     ftLightmapsStorage storage;
 
+    int texCached = -1;
+
     static string[] selStrings = new string[] {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16",
                                                 "17","18","19","20","21","22","23","24","25","26","27","28","29","30"};//,"31"};
 
@@ -46,6 +48,28 @@ public class ftLightMeshInspector : UnityEditor.Editor
     void OnEnable()
     {
         InitSerializedProperties(serializedObject);
+    }
+
+    void TestPreviewRefreshProperty(ref int cached, int newVal)
+    {
+        if (cached >= 0)
+        {
+            if (cached != newVal)
+            {
+                BakeryLightMesh.lightsChanged = 2;
+            }
+        }
+        cached = newVal;
+    }
+
+    void TestPreviewRefreshProperty(ref int cached, UnityEngine.Object newVal)
+    {
+        if (newVal == null)
+        {
+            TestPreviewRefreshProperty(ref cached, 0);
+            return;
+        }
+        TestPreviewRefreshProperty(ref cached, newVal.GetInstanceID());
     }
 
     void GetLinearLightParameters(Light light, out float lightR, out float lightG, out float lightB, out float lightInt)
@@ -78,11 +102,94 @@ public class ftLightMeshInspector : UnityEditor.Editor
         }
     }
 
+    public static Vector2 GetAreaLightSize(Light obj)
+    {
+        Vector2 areaSize = obj.areaSize;
+
+        var hdrpLight = obj.GetComponent("HDAdditionalLightData");
+        if (hdrpLight != null)
+        {
+            var so = new SerializedObject(hdrpLight);
+            if (so != null)
+            {
+                var hdrpLightTypeExtent = so.FindProperty("m_PointlightHDType");
+                var hdrpLightTypeExtent2 = so.FindProperty("m_AreaLightShape");
+                if (hdrpLightTypeExtent != null && hdrpLightTypeExtent2 != null)
+                {
+                    int extendedLightType = hdrpLightTypeExtent.intValue;
+                    int extendedLightType2 = hdrpLightTypeExtent2.intValue;
+                    if (extendedLightType == 1 && // area
+                        extendedLightType2 == 0) // rectangle
+                    {
+                        var hdrpLightShapeWidth = so.FindProperty("m_ShapeWidth");
+                        var hdrpLightShapeHeight = so.FindProperty("m_ShapeHeight");
+                        areaSize = new Vector2(hdrpLightShapeWidth != null ? hdrpLightShapeWidth.floatValue : 1,
+                                               hdrpLightShapeHeight != null ? hdrpLightShapeHeight.floatValue : 1);
+                    }
+                    else
+                    {
+                        Debug.LogError(obj.name + " HDRP light type unsupported: " + extendedLightType + ", " + extendedLightType2);
+                    }
+                }
+            }
+        }
+        return areaSize;
+    }
+
+    public static Vector3[] GetAreaLightCorners(Light obj)
+    {
+        var areaSize = GetAreaLightSize(obj);
+
+        var t = obj.transform;
+        var pos = t.position;
+        var right = t.right;
+        var up = t.up;
+        var extents = areaSize * 0.5f;
+        var corners = new Vector3[4];
+        corners[0] = pos - right * extents.x - up * extents.y;
+        corners[1] = pos - right * extents.x + up * extents.y;
+        corners[2] = pos + right * extents.x + up * extents.y;
+        corners[3] = pos + right * extents.x - up * extents.y;
+
+        return corners;
+    }
+
+    public static bool IsArea(Light obj)
+    {
+        var hdrpLight = obj.GetComponent("HDAdditionalLightData");
+        if (hdrpLight != null)
+        {
+            var so = new SerializedObject(hdrpLight);
+            if (so != null)
+            {
+                var hdrpLightTypeExtent = so.FindProperty("m_PointlightHDType");
+                var hdrpLightTypeExtent2 = so.FindProperty("m_AreaLightShape");
+                if (hdrpLightTypeExtent != null && hdrpLightTypeExtent2 != null)
+                {
+                    int extendedLightType = hdrpLightTypeExtent.intValue;
+                    int extendedLightType2 = hdrpLightTypeExtent2.intValue;
+                    if (extendedLightType == 1 && // area
+                        extendedLightType2 == 0) // rectangle
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            return obj.type == LightType.Area;
+        }
+        return false;
+    }
+
     public override void OnInspectorGUI() {
         //if (showFtrace)
         {
             OnEnable();
             serializedObject.Update();
+
+            TestPreviewRefreshProperty(ref texCached, ftraceLightTexture.objectReferenceValue);
 
             EditorGUILayout.PropertyField(ftraceLightColor, new GUIContent("Color", "Color of the light"));
             EditorGUILayout.PropertyField(ftraceLightIntensity, new GUIContent("Intensity", "Color multiplier"));
@@ -161,7 +268,7 @@ public class ftLightMeshInspector : UnityEditor.Editor
             var mr = selectedLight.GetComponent<MeshRenderer>();
             var mf = selectedLight.GetComponent<MeshFilter>();
             var areaLight = selectedLight.GetComponent<Light>();
-            if (areaLight != null && areaLight.type != LightType.Area) areaLight = null;
+            if (areaLight != null && !IsArea(areaLight)) areaLight = null;
 
             if (mr == null && areaLight == null)
             {

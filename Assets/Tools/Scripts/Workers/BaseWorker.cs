@@ -6,73 +6,53 @@ namespace Workers {
     public class BaseWorker {
         public enum WorkerType { Init, Run, End };
 
-        bool                    bRunning = false;
+        protected bool          bRunning = false;
         System.Threading.Thread thread;
-        public Token        token { get; set; }
-        protected List<BaseWorker>  nexts =  new List<BaseWorker>();
-
+        public bool isRunning { get { return bRunning; } }
         WorkerType type;
+        const int loopInterval = 1; // How many milliseconds to sleep in the runloop
+        const int joinTimeout = 1000; // How many milliseconds to wait for thread completion before we abort it.
 
         public BaseWorker(WorkerType _type= WorkerType.Run) {
             type = _type;
         }
 
-        public BaseWorker AddNext(BaseWorker _next) {
-            nexts.Add(_next);
-            return _next;
-        }
-
-        protected void Start() {
+        protected virtual void Start() {
             bRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
             thread.Start();
         }
 
-        public void Stop() {
+        public virtual void Stop() {
             bRunning = false;
+        }
+
+        public virtual void StopAndWait() {
+            Stop();
+            if (!thread.Join(joinTimeout))
+            {
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: thread did not stop. Aborting.");
+                thread.Abort();
+            }
+            thread.Join();
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            while (bRunning) {
-                Update();
-                System.Threading.Thread.Sleep(1);
-            }
-            // Wait to stop.
-            bool waitNext = false;
-            do{
-                for (int i = 0; i < nexts.Count; ++i)
-                    if (nexts[i].type != WorkerType.Init && nexts[i].bRunning)
-                        waitNext = true;
-            } while (waitNext) ;
-            OnStop();
-        }
-
-        protected virtual void Update(){ }
-
-        public void Next() {
-                if (type == WorkerType.Init)
-                    token.currentForks = token.totalForks;
-                else {
-                    if (type == WorkerType.End) {
-                        if (token.original != null) token = token.original;
-                        token.currentForks--;
-                        if (token.currentForks != 0) {
-                            token = null;
-                            return;
-                        }
-                    }
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
+            try {
+                while (bRunning) {
+                    Update();
+                    System.Threading.Thread.Sleep(loopInterval);
                 }
-                for (int i = 0; i < nexts.Count; ++i)
-                    if (i > 0)
-                        nexts[i].token = new Token(token);
-                    else
-                        nexts[i].token = token;
-                token = null;
+            }catch(System.Exception e) {
+                Debug.LogWarning($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
+            }
+            OnStop();
+            Debug.Log($"BaseWorker {this.GetType().Name}: thread stopped");
         }
-
-//        public virtual int  available { get { return 0; } }
-//        public virtual bool GetBuffer(float[] dst, int len) { return false;  }
+        protected virtual void Update(){ }
     }
 }
