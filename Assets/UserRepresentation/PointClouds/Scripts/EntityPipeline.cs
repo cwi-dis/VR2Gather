@@ -16,13 +16,11 @@ public class EntityPipeline : MonoBehaviour {
     QueueThreadSafe decoderQueue = new QueueThreadSafe();
     QueueThreadSafe writerQueue = new QueueThreadSafe();
 
-
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
-    /// <param name="parent"> Transform parent where attach it </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
+    public EntityPipeline Init(Config._User cfg, string url_pcc = "", string url_audio = "") {
         //
         // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
         // We 
