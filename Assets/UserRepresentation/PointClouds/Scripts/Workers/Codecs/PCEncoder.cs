@@ -6,8 +6,6 @@ namespace Workers {
     public class PCEncoder : BaseWorker {
         cwipc.encoder encoder;
         System.IntPtr encoderBuffer;
-        cwipc.pointcloud pointCloudData;
-        int dampedSize = 0;
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
 
