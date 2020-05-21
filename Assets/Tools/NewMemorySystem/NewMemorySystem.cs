@@ -19,9 +19,8 @@ public class NewMemorySystem : MonoBehaviour
     Workers.BaseWorker  dashWriter;
     Workers.BaseWorker  dashReader;
 
-    Workers.BaseWorker  binWriter;
-    Workers.BaseWorker  binReader;
-
+    //Workers.BaseWorker  binWriter;
+    //Workers.BaseWorker  binReader;
 
     Workers.BaseWorker  preparer;
     QueueThreadSafe     preparerQueue = new QueueThreadSafe();
@@ -72,8 +71,8 @@ public class NewMemorySystem : MonoBehaviour
     void OnDestroy() {
         dashWriter?.StopAndWait();
         dashReader?.StopAndWait();
-        binWriter?.StopAndWait();
-        binReader?.StopAndWait();
+        //binWriter?.StopAndWait();
+        //binReader?.StopAndWait();
 
         reader?.StopAndWait();
         encoder?.StopAndWait();
