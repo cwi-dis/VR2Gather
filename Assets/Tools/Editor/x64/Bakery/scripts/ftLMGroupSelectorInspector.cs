@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 [CustomEditor(typeof(BakeryLightmapGroupSelector))]
 [CanEditMultipleObjects]
@@ -30,6 +32,17 @@ public class ftLMGroupSelectorInspector : UnityEditor.Editor
         ftraceResolution = serializedObject.FindProperty("instanceResolution");
     }
 
+    void ForceSavePrefabOverride(UnityEngine.Object[] targets)
+    {
+#if UNITY_2018_3_OR_NEWER
+        foreach(BakeryLightmapGroupSelector obj in targets)
+        {
+            PrefabUtility.RecordPrefabInstancePropertyModifications(obj);
+            EditorUtility.SetDirty(obj);
+        }
+#endif
+    }
+
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
@@ -50,6 +63,7 @@ public class ftLMGroupSelectorInspector : UnityEditor.Editor
                 {
                     Undo.RecordObject(obj, "Change LMGroup");
                     obj.lmgroupAsset = selectedLMGroup;
+                    ForceSavePrefabOverride(targets);
                 }
             }
 
@@ -60,6 +74,7 @@ public class ftLMGroupSelectorInspector : UnityEditor.Editor
                 if (group.mode != BakeryLightmapGroup.ftLMGroupMode.PackAtlas && ftraceOverride.boolValue)
                 {
                     ftraceOverride.boolValue = false;
+                    ForceSavePrefabOverride(targets);
                 }
 
                 //EditorGUILayout.LabelField("Packed atlas: " + (group.mode == BakeryLightmapGroup.ftLMGroupMode.PackAtlas ? "yes" : "no"));
@@ -100,6 +115,7 @@ public class ftLMGroupSelectorInspector : UnityEditor.Editor
                     if (ftraceOverride.boolValue)
                     {
                         ftraceResolution.intValue = EditorGUILayout.IntSlider("Resolution", ftraceResolution.intValue, 1, 8192);
+                        ForceSavePrefabOverride(targets);
                     }
                 }
             }
@@ -125,7 +141,19 @@ public class ftLMGroupSelectorInspector : UnityEditor.Editor
                     newGroup.bitmask = newMask;
                     newGroup.mode = newMode;
                     newGroup.renderDirMode = newDirMode;
-                    AssetDatabase.CreateAsset(newGroup, "Assets/" + newName + ".asset");
+
+                    string fname;
+                    var activeScene = SceneManager.GetActiveScene();
+                    if (activeScene.path.Length > 0)
+                    {
+                        fname = Path.GetDirectoryName(activeScene.path) + "/" + newName;
+                    }
+                    else
+                    {
+                        fname = "Assets/" + newName;
+                    }
+
+                    AssetDatabase.CreateAsset(newGroup, fname + ".asset");
                     AssetDatabase.SaveAssets();
                     ftraceAsset.objectReferenceValue = newGroup;
                 }

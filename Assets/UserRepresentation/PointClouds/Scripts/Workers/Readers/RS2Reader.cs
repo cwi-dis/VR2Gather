@@ -9,12 +9,12 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public RS2Reader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+        public RS2Reader(string _configFilename, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            voxelSize = cfg.voxelSize;
+            voxelSize = _voxelSize;
             try {
-                reader = cwipc.realsense2(cfg.RS2ReaderConfig.configFilename);  
+                reader = cwipc.realsense2(_configFilename);  
                 if (reader != null) {
                     Start();
                     Debug.Log("PCRealSense2Reader: Started.");
@@ -42,16 +42,40 @@ namespace Workers {
                 var tmp = pc;
                 pc = cwipc.downsample(tmp, voxelSize);
                 tmp.free();
-                if (pc== null)  throw new System.Exception($"PCRealSense2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
+                if (pc== null)  throw new System.Exception($"RS2Reader: Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
             statsUpdate(pc.count());
 
-            if (outQueue != null && outQueue.Count < 2)
-                outQueue?.Enqueue( pc.AddRef() );
-
-            if (out2Queue != null && out2Queue.Count < 2)
-                out2Queue.Enqueue( pc.AddRef() );
-
+            if (outQueue == null)
+            {
+                Debug.LogError($"RS2Reader: no outQueue, dropping pointcloud");
+            }
+            else
+            {
+                if (outQueue.Free())
+                {
+                    outQueue.Enqueue(pc.AddRef());
+                }
+                else
+                {
+                    Debug.Log($"RS2Reader: outQueue full, dropping pointcloud");
+                }
+            }
+            if (out2Queue == null)
+            {
+                // This is not an error. Debug.LogError($"RS2Reader: no outQueue2, dropping pointcloud");
+            }
+            else
+            {
+                if (out2Queue.Free())
+                {
+                    out2Queue.Enqueue(pc.AddRef());
+                }
+                else
+                {
+                    Debug.Log($"RS2Reader: outQueue2 full, dropping pointcloud");
+                }
+            }
             pc.free();
         }
 

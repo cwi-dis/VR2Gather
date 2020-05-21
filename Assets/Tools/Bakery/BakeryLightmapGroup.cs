@@ -7,7 +7,7 @@ using UnityEditor;
 public struct BakeryLightmapGroupPlain
 {
     public string name;
-    public int resolution, id, renderMode, renderDirMode;
+    public int resolution, id, renderMode, renderDirMode, atlasPacker;
     public bool vertexBake;
     public bool containsTerrains;
     public bool probes;
@@ -18,6 +18,8 @@ public struct BakeryLightmapGroupPlain
     public float sssR, sssG, sssB;
     public float fakeShadowBias;
     public bool transparentSelfShadow;
+    public bool flipNormal;
+    public string parentName;
 };
 
 [CreateAssetMenu(menuName = "Bakery lightmap group")]
@@ -48,6 +50,13 @@ public class BakeryLightmapGroup : ScriptableObject
         RNM = 3,
         SH = 4,
         ProbeSH = 5,
+        Auto = 1000
+    };
+
+    public enum AtlasPacker
+    {
+        Default = 0,
+        xatlas = 1,
         Auto = 1000
     };
 
@@ -95,6 +104,9 @@ public class BakeryLightmapGroup : ScriptableObject
     [SerializeField]
     public RenderDirMode renderDirMode = RenderDirMode.Auto;
 
+    [SerializeField]
+    public AtlasPacker atlasPacker = AtlasPacker.Auto;
+
     //[SerializeField]
     //public bool aoIsThickness = false;
 
@@ -116,6 +128,15 @@ public class BakeryLightmapGroup : ScriptableObject
     [SerializeField]
     public bool transparentSelfShadow = false;
 
+    [SerializeField]
+    public bool flipNormal = false;
+
+    [SerializeField]
+    public string parentName;
+
+    [SerializeField]
+    public string overridePath = "";
+
     public BakeryLightmapGroupPlain GetPlainStruct()
     {
         BakeryLightmapGroupPlain str;
@@ -126,6 +147,7 @@ public class BakeryLightmapGroup : ScriptableObject
         str.isImplicit = isImplicit;
         str.renderMode = (int)renderMode;
         str.renderDirMode = (int)renderDirMode;
+        str.atlasPacker = (int)atlasPacker;
         str.computeSSS = computeSSS;
         str.sssSamples = sssSamples;
         str.sssDensity = sssDensity;
@@ -136,6 +158,8 @@ public class BakeryLightmapGroup : ScriptableObject
         str.probes = probes;
         str.fakeShadowBias = fakeShadowBias;
         str.transparentSelfShadow = transparentSelfShadow;
+        str.flipNormal = flipNormal;
+        str.parentName = parentName;
         return str;
     }
 }

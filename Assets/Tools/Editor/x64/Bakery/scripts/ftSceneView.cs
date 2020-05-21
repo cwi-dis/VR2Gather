@@ -43,6 +43,7 @@ public class ftSceneView
 
         Debug.Log("Atlasing...");
         ftBuildGraphics.modifyLightmapStorage = false;
+        ftBuildGraphics.validateLightmapStorageImmutability = false;
         var exportSceneFunc = ftBuildGraphics.ExportScene(null, false, true);
         while(exportSceneFunc.MoveNext())
         {
@@ -59,7 +60,7 @@ public class ftSceneView
         }
         Debug.Log("Atlasing done");
         //ftRenderLightmap.simpleProgressBarEnd();
-        ftBuildGraphics.ProgressBarEnd();
+        ftBuildGraphics.ProgressBarEnd(true);
     }
 
     static void ApplyNewProperties()
@@ -71,6 +72,7 @@ public class ftSceneView
         var ids = ftBuildGraphics.atlasOnlyID;
         var existingLmaps = LightmapSettings.lightmaps.ToList();
         tempTextures = new List<Texture2D>();
+        int maxLM = 0;
         for(int i=0; i<objs.Count; i++)
         {
             if (objs[i] == null) continue;
@@ -93,10 +95,17 @@ public class ftSceneView
             var prop = new MaterialPropertyBlock();
             objs[i].GetPropertyBlock(prop);
             prop.SetFloat("bakeryLightmapSize", size[i]);
-            UnityEngine.Random.InitState(ids[i]);
+            int lmid = ids[i];
+            if (lmid < 1000)
+            {
+                if (lmid > maxLM) maxLM = lmid;
+            }
+            UnityEngine.Random.InitState(lmid);
             prop.SetVector("bakeryLightmapID", UnityEngine.Random.ColorHSV(0, 1, 0.3f, 0.3f, 1, 1));
             objs[i].SetPropertyBlock(prop);
         }
+
+        Debug.Log("Lightmap count with current settings: " + (maxLM+1));
 
         LightmapSettings.lightmaps = existingLmaps.ToArray();
     }
@@ -118,6 +127,10 @@ public class ftSceneView
             sceneView.SetSceneViewShaderReplace(null, null);
             ftLightmaps.RefreshFull();
             enabled = false;
+
+            var gstorage = ftLightmaps.GetGlobalStorage();
+            gstorage.checkerPreviewOn = false;
+            EditorUtility.SetDirty(gstorage);
         }
         else
         {
@@ -134,6 +147,11 @@ public class ftSceneView
             //var sceneCameras = SceneView.GetAllSceneCameras();
             //for(int i=0; i<sceneCameras.Length; i++) sceneCameras[i].renderingPath = RenderingPath.Forward;
             enabled = true;
+
+            var gstorage = ftLightmaps.GetGlobalStorage();
+            gstorage.checkerPreviewOn = true;
+            EditorUtility.SetDirty(gstorage);
+
             Atlas();
             ApplyNewProperties();
         }

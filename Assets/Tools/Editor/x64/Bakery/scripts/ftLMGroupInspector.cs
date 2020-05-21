@@ -14,6 +14,7 @@ public class ftLMGroupInspector : UnityEditor.Editor
     SerializedProperty ftraceMode;
     SerializedProperty ftraceRenderMode;
     SerializedProperty ftraceRenderDirMode;
+    SerializedProperty ftraceAtlasPacker;
     SerializedProperty ftraceBitmask;
     SerializedProperty ftraceThickness;
     SerializedProperty ftraceSSS;
@@ -22,6 +23,7 @@ public class ftLMGroupInspector : UnityEditor.Editor
     SerializedProperty ftraceSSSColor;
     SerializedProperty ftraceFakeShadowBias;
     SerializedProperty ftraceTransparentSelfShadow;
+    SerializedProperty ftraceFlipNormal;
 
     static string[] selStrings = new string[] {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16",
                                                 "17","18","19","20","21","22","23","24","25","26","27","28","29","30"};//,"31"};
@@ -32,6 +34,7 @@ public class ftLMGroupInspector : UnityEditor.Editor
         ftraceMode = serializedObject.FindProperty("mode");
         ftraceRenderMode = serializedObject.FindProperty("renderMode");
         ftraceRenderDirMode = serializedObject.FindProperty("renderDirMode");
+        ftraceAtlasPacker = serializedObject.FindProperty("atlasPacker");
         ftraceBitmask = serializedObject.FindProperty("bitmask");
         //ftraceThickness = serializedObject.FindProperty("aoIsThickness");
         ftraceSSS = serializedObject.FindProperty("computeSSS");
@@ -40,6 +43,7 @@ public class ftLMGroupInspector : UnityEditor.Editor
         ftraceSSSColor = serializedObject.FindProperty("sssColor");
         ftraceFakeShadowBias = serializedObject.FindProperty("fakeShadowBias");
         ftraceTransparentSelfShadow = serializedObject.FindProperty("transparentSelfShadow");
+        ftraceFlipNormal = serializedObject.FindProperty("flipNormal");
     }
 
     public override void OnInspectorGUI() {
@@ -50,7 +54,9 @@ public class ftLMGroupInspector : UnityEditor.Editor
 
         if (ftraceMode.intValue != 2)
         {
+            var prev = ftraceResolution.intValue;
             ftraceResolution.intValue = (int)Mathf.ClosestPowerOfTwo(EditorGUILayout.IntSlider("Resolution", ftraceResolution.intValue, 1, 8192));
+            if (ftraceResolution.intValue != prev) EditorUtility.SetDirty(target);
         }
 
         EditorGUILayout.PropertyField(ftraceMode, new GUIContent("Packing mode", "Determines how lightmaps are packed. In Simple mode they are not packed, and all objects sharing this group are drawn on top of each other. This is desired in case they were all unwrapped together and do not overlap. If UVs of different objects overlap, choose PackAtlas to arrange their lightmaps together into a single packed atlas."));
@@ -58,6 +64,8 @@ public class ftLMGroupInspector : UnityEditor.Editor
         EditorGUILayout.PropertyField(ftraceRenderMode, new GUIContent("Render Mode", ""));
 
         EditorGUILayout.PropertyField(ftraceRenderDirMode, new GUIContent("Directional mode", ""));
+
+        EditorGUILayout.PropertyField(ftraceAtlasPacker, new GUIContent("Atlas packer", ""));
 
         ftraceBitmask.intValue = EditorGUILayout.MaskField(new GUIContent("Bitmask", "Lights only affect renderers with overlapping bits"), ftraceBitmask.intValue, selStrings);
 
@@ -75,6 +83,7 @@ public class ftLMGroupInspector : UnityEditor.Editor
 
         EditorGUILayout.PropertyField(ftraceFakeShadowBias, new GUIContent("Normal offset", "Fake normal offset for surface samples. Might be useful when applying very strong normal maps."));
         EditorGUILayout.PropertyField(ftraceTransparentSelfShadow, new GUIContent("Transparent selfshadow", "Start rays behind the surface so it doesn't cast shadows on self. Might be useful for translucent foliage."));
+        EditorGUILayout.PropertyField(ftraceFlipNormal, new GUIContent("Flip normal", "Treat faces as flipped."));
 
         serializedObject.ApplyModifiedProperties();
     }

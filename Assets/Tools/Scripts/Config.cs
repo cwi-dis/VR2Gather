@@ -4,6 +4,7 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
+    public int targetFrameRate = 90;
     public float memoryDamping = 1.3f;
     public bool useAudio;
     [Serializable]
@@ -28,20 +29,15 @@ public class Config {
         public Vector3 offsetPosition;
         public Vector3 offsetRotation;
         public Vector3 scale;
+        public bool forceMesh;
     };
     public _PCs PCs;
 
     [Serializable]
     public class _User {
         public string sourceType;
-        public string cwicpcFilename;
-        public string cwicpcDirectory;
-        public string plyFilename;
-        public string plyDirectory;
         [Serializable]
         public class _SUBConfig {
-            public string url;
-            public string streamName;
             public int streamNumber;
             public int initialDelay;
         }
@@ -70,14 +66,11 @@ public class Config {
             public class _Encoder {
                 public int octreeBits;
             }
-            public _Encoder Encoder;
+            public _Encoder[] Encoders;
             [Serializable]
             public class _Bin2Dash {
-                public string url;
-                public string streamName;
                 public int segmentSize;
                 public int segmentLife;
-                public bool fileMirroring;
             }
             public _Bin2Dash Bin2Dash;
             public _Bin2Dash AudioBin2Dash;
@@ -85,18 +78,8 @@ public class Config {
         public _PCSelfConfig PCSelfConfig;
 
         [Serializable]
-        public class _NetConfig
-        {
-            public string hostName;
-            public int port;
-        }
-        public _NetConfig NetConfig;
-
-
-        [Serializable]
         public class _Render
         {
-            public bool forceMesh;
             public float pointSize = 0.008f;
             public Vector3 position;
             public Vector3 rotation;
@@ -104,7 +87,8 @@ public class Config {
         }
         public _Render Render;
     };
-    public _User[] Users;
+    public _User LocalUser;
+    public _User RemoteUser;
 
     static Config _Instance;
     public static Config Instance {
@@ -112,6 +96,7 @@ public class Config {
             if (_Instance == null) {
                 var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
                 _Instance = JsonUtility.FromJson<Config>(file);
+                Application.targetFrameRate = _Instance.targetFrameRate;
             }
             return _Instance;
         }

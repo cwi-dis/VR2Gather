@@ -1,4 +1,5 @@
 {
+    "targetFrameRate": 90,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
     "TVMs": {
@@ -28,246 +29,81 @@
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
+        },
+		"forceMesh": false
+    },
+    "LocalUser": {
+        "sourceType": "pcself",
+        "PCSelfConfig": {
+            "RS2ReaderConfig" : {
+				"configFilename": "../cameraconfig.xml"
+			},
+            "CerthReaderConfig" : {
+				"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+				"PCLExchangeName": "VolumetricData",
+				"MetaExchangeName": "VolumetricMetaData"
+			},
+			"voxelSize": 0.01,
+            "Encoders": [
+				{
+					"octreeBits": 10
+				}
+            ],
+            "Bin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
+            },
+            "AudioBin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
+            }
+        },
+        "Render": {
+            "pointSize": 0.00800000037997961,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": -1.0
+            }
         }
     },
-    "Users": [
-        {
-            "sourceType": "pcself",
-            "cwicpcFilename": "",
-            "cwicpcDirectory": "",
-            "plyFilename": "",
-            "plyDirectory": "",
-            "SUBConfig": {
-                "url": "",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "AudioSUBConfig": {
-                "url": "",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "PCSelfConfig": {
-            	"RS2ReaderConfig" : {
-					"configFilename": "../cameraconfig.xml"
-				},
-            	"CerthReaderConfig" : {
-					"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
-					"PCLExchangeName": "VolumetricData",
-					"MetaExchangeName": "VolumetricMetaData"
-				},
-				"voxelSize": 0.004999999888241291,
-                "Encoder": {
-                    "octreeBits": 10
-                },
-                "Bin2Dash": {
-                    "url": "",
-                    "streamName": "testBed",
-                    "segmentSize": 2000,
-                    "segmentLife": 10000,
-                    "fileMirroring": false
-                },
-                "AudioBin2Dash": {
-                    "url": "",
-                    "streamName": "audio",
-                    "segmentSize": 2000,
-                    "segmentLife": 10000,
-                    "fileMirroring": false
-                }
-            },
-            "NetConfig": {
-                "hostName": "",
-                "port": 0
-            },
-            "Render": {
-                "forceMesh": false,
-                "pointSize": 0.00800000037997961,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }            }
+    "RemoteUser": {
+        "sourceType": "pcsub",
+        "SUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
         },
-        {
-            "sourceType": "pcsub",
-            "cwicpcFilename": "",
-            "cwicpcDirectory": "",
-            "plyFilename": "",
-            "plyDirectory": "",
-            "SUBConfig": {
-                "url": "",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "AudioSUBConfig": {
-                "url": "",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "PCSelfConfig": {
-                "configFilename": "",
-                "voxelSize": 0.0,
-                "Encoder": {
-                    "octreeBits": 0
-                },
-                "Bin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                },
-                "AudioBin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                }
-            },
-            "NetConfig": {
-                "hostName": "",
-                "port": 0
-            },
-            "Render": {
-                "forceMesh": false,
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
-			}
+        "AudioSUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
         },
-        {
-            "sourceType": "pcsub",
-            "cwicpcFilename": "",
-            "cwicpcDirectory": "",
-            "plyFilename": "",
-            "plyDirectory": "",
-            "SUBConfig": {
-                "url": "d",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
+        "Render": {
+            "pointSize": 0.07999999821186066,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "AudioSUBConfig": {
-                "url": "",
-                "streamName": "",
-                "streamNumber": 0,
-                "initialDelay": 0
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "PCSelfConfig": {
-                "configFilename": "",
-                "voxelSize": 0.0,
-                "Encoder": {
-                    "octreeBits": 0
-                },
-                "Bin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                },
-                "AudioBin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                }
-            },
-            "NetConfig": {
-                "hostName": "",
-                "port": 0
-            },
-            "Render": {
-                "forceMesh": false,
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
-            }
-        },
-        {
-            "sourceType": "pcsub",
-            "cwicpcFilename": "",
-            "cwicpcDirectory": "",
-            "plyFilename": "",
-            "plyDirectory": "",
-            "SUBConfig": {
-                "url": "",
-                "streamName": "testBed.mpd",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "AudioSUBConfig": {
-                "url": "",
-                "streamName": "audio.mpd",
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "PCSelfConfig": {
-                "configFilename": "",
-                "voxelSize": 0.0,
-                "Encoder": {
-                    "octreeBits": 0
-                },
-                "Bin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                },
-                "AudioBin2Dash": {
-                    "url": "",
-                    "streamName": "",
-                    "segmentSize": 0,
-                    "segmentLife": 0,
-                    "fileMirroring": false
-                }
-            },
-            "NetConfig": {
-                "hostName": "",
-                "port": 0
-            },
-            "Render": {
-                "forceMesh": false,
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": -1.0
             }
         }
-    ]
+    }
 }

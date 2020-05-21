@@ -30,41 +30,34 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(Config._User._PCSelfConfig cfg, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
             constructorLock = new object();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            voxelSize = cfg.voxelSize;
+            voxelSize = _voxelSize;
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
-            lock (constructorLock)
-            {
+            lock (constructorLock) {
                 native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
             }
 
-            if (cfg.CerthReaderConfig == null)
-            {
-                Debug.LogError("CerthReader: CerthReaderConfig is null");
-                return;
-            }
-
-            PCLRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.PCLExchangeName);
+            PCLRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _PCLExchangeName);
             if (PCLRabbitMQReceiver == null)
             {
                 Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
                 return;
             }
 
-            MetaRabbitMQReceiver = new MyRabbitMQReceiver(cfg.CerthReaderConfig.ConnectionURI, cfg.CerthReaderConfig.MetaExchangeName);
+            MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
                 Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
                 return;
             }
 
-            Debug.Log($"PCCertReader: receiving PCs from {cfg.CerthReaderConfig.ConnectionURI}");
+            Debug.Log($"PCCertReader: receiving PCs from {_ConnectionURI}");
             PCLRabbitMQReceiver.OnDataReceived += OnNewPCLData;
             PCLRabbitMQReceiver.Enabled = true;
 
@@ -154,30 +147,43 @@ namespace Workers {
                     //
                     // Push the cwipc pointcloud to the consumers
                     //
+                    statsUpdate(pc.count());
                     if (pc == null)
                     {
                         Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
                         return;
                     }
-                    pc.AddRef(); // xxxjack
-                    statsUpdate(pc.count());
+                    if (outQueue == null)
+                    {
+                        Debug.LogError($"CerthReader: no outQueue, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (outQueue.Free())
+                        {
+                            outQueue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue full, dropping pointcloud");
+                        }
+                    }
+                    if (out2Queue == null)
+                    {
+                        // This is not an error. Debug.LogError($"RS2Reader: no outQueue2, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (out2Queue.Free())
+                        {
+                            out2Queue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue2 full, dropping pointcloud");
+                        }
+                    }
 
-                    if (outQueue != null && outQueue.Count < 2)
-                    {
-                        outQueue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
-                    if (out2Queue != null && out2Queue.Count < 2)
-                    {
-                        out2Queue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
                     pc.free();
 
                 }
