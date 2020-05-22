@@ -35,7 +35,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (InQueue.Count>0 && !isReady) {
+            if (InQueue.CanDequeue() && !isReady) {
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.Dequeue();
                 unsafe {
                     int bufferSize = pc.get_uncompressed_size();

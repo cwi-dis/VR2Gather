@@ -32,7 +32,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inQueue.Count >0) {
+            if (inQueue.CanDequeue()) {
                 // xxxjack attempting to drop audio if there is too much in the buffer already                
                 int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
                 if (bytesInAudioBuffer > preferredBufferFill) {

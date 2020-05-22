@@ -50,9 +50,9 @@ namespace Workers {
                 {
                     Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread started");
                     QueueThreadSafe queue = description.inQueue;
-                    while (!queue.Closed)
+                    while (!queue.IsClosed())
                     {
-                        if (queue.Count > 0)
+                        if (queue.CanDequeue())
                         {
                             NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                             statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
@@ -180,7 +180,7 @@ namespace Workers {
             // Signal that no more data is forthcoming to every pusher
             foreach (var d in descriptions)
             {
-                d.inQueue.Closed = true;
+                d.inQueue.Close();
             }
             // Stop our thread
             base.OnStop();

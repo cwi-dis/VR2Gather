@@ -33,7 +33,7 @@ namespace Workers
                 if (circularBufferWritePosition < circularBufferReadPosition) bytesInAudioBuffer = (circularBufferSize - circularBufferReadPosition) + circularBufferWritePosition;
                 else bytesInAudioBuffer = circularBufferWritePosition - circularBufferReadPosition;
 
-                if (outQueue.Free() && bytesInAudioBuffer >= bufferLength) {
+                if (outQueue.CanEnqueue() && bytesInAudioBuffer >= bufferLength) {
                     FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
                     System.Array.Copy(circularBuffer, circularBufferReadPosition, mc.buffer, 0, bufferLength);
                     outQueue.Enqueue(mc);

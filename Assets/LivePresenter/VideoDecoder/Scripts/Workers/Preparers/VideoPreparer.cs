@@ -46,7 +46,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inVideoQueue.Count>0) {
+            if (inVideoQueue.CanDequeue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Peek();
                 int len = mc.length;
                 if (videoBufferSize == 0) {
@@ -70,7 +70,7 @@ namespace Workers {
                 }
             }
 
-            if (inAudioQueue.Count > 0) {
+            if (inAudioQueue.CanDequeue()) {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue.Peek();
                 int len = mc.elements;
                 if (len < freeAudio) {

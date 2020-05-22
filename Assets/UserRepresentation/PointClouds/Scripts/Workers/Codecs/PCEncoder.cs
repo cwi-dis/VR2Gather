@@ -99,7 +99,7 @@ namespace Workers {
         protected override void Update()
         {
             base.Update();
-            if (inQueue.Count > 0)
+            if (inQueue.CanDequeue())
             {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
                 if (encoderGroup == null) return; // Terminating
@@ -125,7 +125,7 @@ namespace Workers {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            if (outQueue.Free())
+                            if (outQueue.CanEnqueue())
                             {
                                 outQueue.Enqueue(mc);
                             }
@@ -145,7 +145,7 @@ namespace Workers {
                         System.Threading.Thread.Sleep(10);
                     }
                 }
-                outQueue.Closed = true;
+                outQueue.Close();
                 Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
             }
             catch (System.Exception e)
