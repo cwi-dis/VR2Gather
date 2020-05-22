@@ -63,13 +63,11 @@ public class NewMemorySystem : MonoBehaviour
             encStreams[0].outQueue = writerQueue;
             encoder = new Workers.PCEncoder(encoderQueue, encStreams);
             string uuid = System.Guid.NewGuid().ToString();
-            var b2d = cfg.PCSelfConfig.Bin2Dash;
             Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
             b2dStreams[0].tileNumber = 0;
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
             dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
-            var SUBConfig = cfg.SUBConfig;
             dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
