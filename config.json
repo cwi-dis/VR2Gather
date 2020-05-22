@@ -47,10 +47,7 @@
 			"voxelSize": 0.01,
             "Encoders": [
 				{
-					"octreeBits": 10
-				},
-				{
-					"octreeBits": 6
+					"octreeBits": 9
 				}
 				
             ],
