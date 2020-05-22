@@ -19,9 +19,8 @@ public class NewMemorySystem : MonoBehaviour
     Workers.BaseWorker  dashWriter;
     Workers.BaseWorker  dashReader;
 
-    Workers.BaseWorker  binWriter;
-    Workers.BaseWorker  binReader;
-
+    //Workers.BaseWorker  binWriter;
+    //Workers.BaseWorker  binReader;
 
     Workers.BaseWorker  preparer;
     QueueThreadSafe     preparerQueue = new QueueThreadSafe();
@@ -33,7 +32,7 @@ public class NewMemorySystem : MonoBehaviour
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
-        Config._User cfg = Config.Instance.Users[0];
+        Config config = Config.Instance;
         if (forceMesh) {
             preparer = new Workers.MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
@@ -44,13 +43,11 @@ public class NewMemorySystem : MonoBehaviour
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
 
-
-        var pcSelfConfig = cfg.PCSelfConfig;
         if (localPCs) {
             if(!useCompression)
-                reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, preparerQueue);
+                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, preparerQueue);
             else {
-                reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
+                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, encoderQueue);
                 Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
                 encStreams[0].octreeBits = 10;
                 encStreams[0].tileNumber = 0;
@@ -59,7 +56,7 @@ public class NewMemorySystem : MonoBehaviour
                 decoder = new Workers.PCDecoder(writerQueue, preparerQueue);
             }
         } else {
-            reader = new Workers.RS2Reader(pcSelfConfig.RS2ReaderConfig.configFilename, pcSelfConfig.voxelSize, encoderQueue);
+            reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, encoderQueue);
             Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
             encStreams[0].octreeBits = 10;
             encStreams[0].tileNumber = 0;
@@ -71,20 +68,16 @@ public class NewMemorySystem : MonoBehaviour
             b2dStreams[0].tileNumber = 0;
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
-            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", b2d.segmentSize, b2d.segmentLife, b2dStreams);
+            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
             var SUBConfig = cfg.SUBConfig;
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", cfg.SUBConfig.streamNumber, cfg.SUBConfig.initialDelay, decoderQueue, true);
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue, true);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
         if (useVoice) {
             string uuid = System.Guid.NewGuid().ToString();
-            var audioB2D = cfg.PCSelfConfig.AudioBin2Dash;
-
-            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/", "audio", audioB2D.segmentSize, audioB2D.segmentLife); //Audio Pipeline
-
-            var audioConfig = cfg.AudioSUBConfig;
-            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/", "audio", audioConfig.streamNumber, audioConfig.initialDelay); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", 2000, 10000); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", 0, 1); //Audio Pipeline
 
         }
     }
@@ -92,8 +85,8 @@ public class NewMemorySystem : MonoBehaviour
     void OnDestroy() {
         dashWriter?.StopAndWait();
         dashReader?.StopAndWait();
-        binWriter?.StopAndWait();
-        binReader?.StopAndWait();
+        //binWriter?.StopAndWait();
+        //binReader?.StopAndWait();
 
         reader?.StopAndWait();
         encoder?.StopAndWait();

@@ -87,7 +87,8 @@ public class Config {
         }
         public _Render Render;
     };
-    public _User[] Users;
+    public _User LocalUser;
+    public _User RemoteUser;
 
     static Config _Instance;
     public static Config Instance {

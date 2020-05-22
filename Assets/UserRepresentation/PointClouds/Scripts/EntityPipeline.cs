@@ -17,13 +17,11 @@ public class EntityPipeline : MonoBehaviour {
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     QueueThreadSafe decoderQueue;
 
-
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
-    /// <param name="parent"> Transform parent where attach it </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public EntityPipeline Init(Config._User cfg, Transform parent, string url_pcc = "", string url_audio = "") {
+    public EntityPipeline Init(Config._User cfg, string url_pcc = "", string url_audio = "") {
         //
         // Start by creating the preparer, which will prepare pointclouds for display in the scene.
         //

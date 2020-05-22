@@ -32,120 +32,83 @@
         },
 		"forceMesh": false
     },
-    "Users": [
-        {
-            "sourceType": "pcself",
-            "PCSelfConfig": {
-            	"RS2ReaderConfig" : {
-					"configFilename": "../cameraconfig.xml"
+
+    "LocalUser": {
+        "sourceType": "pcself",
+        "PCSelfConfig": {
+            "RS2ReaderConfig" : {
+				"configFilename": "../cameraconfig.xml"
+			},
+            "CerthReaderConfig" : {
+				"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+				"PCLExchangeName": "VolumetricData",
+				"MetaExchangeName": "VolumetricMetaData"
+			},
+			"voxelSize": 0.01,
+            "Encoders": [
+				{
+					"octreeBits": 10
 				},
-            	"CerthReaderConfig" : {
-					"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
-					"PCLExchangeName": "VolumetricData",
-					"MetaExchangeName": "VolumetricMetaData"
+				{
+					"octreeBits": 6
 				},
-				"voxelSize": 0.01,
-                "Encoders": [
-					{
-						"octreeBits": 6
-					},
- 					{
-						"octreeBits": 9
-					}
-                ],
-                "Bin2Dash": {
-                    "segmentSize": 2000,
-                    "segmentLife": 10000
-                },
-                "AudioBin2Dash": {
-                    "segmentSize": 2000,
-                    "segmentLife": 10000
-                }
+				
+            ],
+            "Bin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
             },
-            "Render": {
-                "pointSize": 0.00800000037997961,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }            }
-        },
-        {
-            "sourceType": "pcsub",
-            "SUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "AudioSUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "Render": {
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
-			}
-        },
-        {
-            "sourceType": "pcsub",
-            "SUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "AudioSUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
-            },
-            "Render": {
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
+            "AudioBin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
             }
         },
-        {
-            "sourceType": "pcsub",
-            "SUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
+        "Render": {
+            "pointSize": 0.00800000037997961,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "AudioSUBConfig": {
-                "streamNumber": 0,
-                "initialDelay": 0
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
             },
-            "Render": {
-                "pointSize": 0.07999999821186066,
-                "position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                }
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": -1.0
             }
         }
-    ]
+    },
+    "RemoteUser": {
+        "sourceType": "pcsub",
+        "SUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
+        "AudioSUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
+        "Render": {
+            "pointSize": 0.07999999821186066,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": -1.0
+            }
+        }
+    }
 }

@@ -8,8 +8,6 @@ namespace Workers {
         cwipc.encoder[] encoderOutputs;
         System.Threading.Thread[] pusherThreads;
         System.IntPtr encoderBuffer;
-        cwipc.pointcloud pointCloudData;
-        int dampedSize = 0;
         QueueThreadSafe inQueue;
         public struct EncoderStreamDescription
         {

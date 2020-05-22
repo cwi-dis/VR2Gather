@@ -11,8 +11,6 @@ public class TVMCalibration : MonoBehaviour {
     private bool axisRInUse = false;
     private float _rotationSlightStep = 1f;
     private float _translationSlightStep = 0.01f;
-    private string auxT = "";
-    private string auxR = "";
     private State state = State.Comfort;
     public GameObject ComfortUI;
     public GameObject CalibrationModeUI;

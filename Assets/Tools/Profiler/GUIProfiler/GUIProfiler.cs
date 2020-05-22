@@ -27,22 +27,14 @@ public class GUIProfiler : MonoBehaviour
     private float   timeCounter = 0.0f;
     private int     frameCounter = 0;
 
-    [SerializeField]
-    private Text cpuText;
-    [SerializeField]
-    private Text ramText;
-    [SerializeField]
-    private Text gpuText;
-    [SerializeField]
-    private Text vramText;
-    [SerializeField]
-    private Text fpsText;
-    [SerializeField]
-    private Text userText;
-    [SerializeField]
-    private Text packetsText;
-    [SerializeField]
-    private Text ppsText;
+    [SerializeField] private Text cpuText = null;
+    [SerializeField] private Text ramText = null;
+    [SerializeField] private Text gpuText = null;
+    [SerializeField] private Text vramText = null;
+    [SerializeField] private Text fpsText = null;
+    [SerializeField] private Text userText = null;
+    [SerializeField] private Text packetsText = null;
+    [SerializeField] private Text ppsText = null;
 
     //[SerializeField]
     //private ShowTVMs[] playersTVM;
