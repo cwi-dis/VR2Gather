@@ -7,8 +7,8 @@ public class bin2dash
     public struct StreamDesc
     {
         public UInt32 MP4_4CC;
-        public UInt32 objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
-        public UInt32 objectY;    // In VRTogether, for pointclouds, we use this field for quality
+        public UInt32 tileNumber;    // objectX, officially. In VRTogether, for pointclouds, we use this field for tileNumber
+        public UInt32 quality;    // objectY, officially. In VRTogether, for pointclouds, we use this field for quality
         public UInt32 objectWidth;
         public UInt32 objectHeight;
         public UInt32 totalWidth;
@@ -50,8 +50,6 @@ public class bin2dash
         extern static public long vrt_get_media_time(IntPtr h, int timescale);
     }
 
-    const bool useLegacy = false;
-
     public class connection : BaseMemoryChunk
     {
 
@@ -72,17 +70,9 @@ public class bin2dash
             _API.vrt_destroy(pointer);
         }
 
-        public bool push_buffer(IntPtr buffer, uint bufferSize) {
+        public bool push_buffer(int stream_index, IntPtr buffer, uint bufferSize) {
             if (pointer == System.IntPtr.Zero) throw new Exception( $"bin2dash.push_buffer: called with pointer==null");
-            const int stream_index = 0;
-            if (useLegacy)
-            {
-                return _API.vrt_push_buffer(pointer, buffer, bufferSize);
-            }
-            else
-            {
-                return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
-            }
+            return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
         }
 
         public long get_media_time(int timescale) {
@@ -91,22 +81,10 @@ public class bin2dash
         }
     }
 
-    public static connection create(string name, UInt32 MP4_4CC, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
+    public static connection create(string name, StreamDesc[] descriptors, string publish_url = "", int seg_dur_in_ms = 10000, int timeshift_buffer_depth_in_ms = 30000) {
         System.IntPtr obj;
         sub.SetMSPaths("bin2dash.so");
-        if (useLegacy)
-        {
-            obj = _API.vrt_create(name, MP4_4CC, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
-        }
-        else
-        {
-            StreamDesc descriptor = new StreamDesc();
-            descriptor.MP4_4CC = MP4_4CC;
-            descriptor.objectX = 0;
-            descriptor.objectY = 0;
-            StreamDesc[] descriptors = new StreamDesc[1] { descriptor };
-            obj = _API.vrt_create_ext(name, 1, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
-        }
+        obj = _API.vrt_create_ext(name, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);

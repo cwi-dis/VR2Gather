@@ -13,6 +13,10 @@ namespace Workers {
         QueueThreadSafe InQueue;
 
         public MeshPreparer(QueueThreadSafe _InQueue) : base(WorkerType.End) {
+            if (_InQueue == null)
+            {
+                throw new System.Exception("MeshPreparer: InQueue is null");
+            }
             InQueue = _InQueue;
             PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
             Start();

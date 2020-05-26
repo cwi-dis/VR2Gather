@@ -11,7 +11,7 @@ namespace Workers {
         public bool isRunning { get { return bRunning; } }
         WorkerType type;
         const int loopInterval = 1; // How many milliseconds to sleep in the runloop
-        const int joinTimeout = 1000; // How many milliseconds to wait for thread completion before we abort it.
+        const int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
 
         public BaseWorker(WorkerType _type= WorkerType.Run) {
             type = _type;
@@ -48,7 +48,7 @@ namespace Workers {
                     System.Threading.Thread.Sleep(loopInterval);
                 }
             }catch(System.Exception e) {
-                Debug.LogWarning($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
             Debug.Log($"BaseWorker {this.GetType().Name}: thread stopped");

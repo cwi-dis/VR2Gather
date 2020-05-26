@@ -37,6 +37,7 @@
         },
         "forceMesh": false
     },
+
     "LocalUser": {
         "sourceType": "pcself",
         "SUBConfig": {
@@ -58,9 +59,10 @@
             },
             "voxelSize": 0.009999999776482582,
             "Encoders": [
-                {
-                    "octreeBits": 10
-                }
+				{
+					"octreeBits": 9
+				}
+				
             ],
             "Bin2Dash": {
                 "segmentSize": 2000,

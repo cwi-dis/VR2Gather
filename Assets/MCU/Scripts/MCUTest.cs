@@ -13,7 +13,7 @@ public class MCUTest : MonoBehaviour {
     float rotation = 0.0f;
     public int[] fov = { 1, 1 };
     public int[] lod = { 0, 3 };
-    [SerializeField] CheckVisibility p;
+    [SerializeField] CheckVisibility p = null;
 
     // Start is called before the first frame update
     void Start() {
