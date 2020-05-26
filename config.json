@@ -21,33 +21,46 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+            "x": 0.8699994683265686,
+            "y": 0.23000003397464753,
+            "z": -0.6399996876716614
         },
         "offsetRotation": {
+            "x": 0.0,
+            "y": 16.999603271484376,
+            "z": 0.0
+        },
+        "scale": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
         },
-		"forceMesh": false
+        "forceMesh": false
     },
     "LocalUser": {
         "sourceType": "pcself",
+        "SUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
+        "AudioSUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
         "PCSelfConfig": {
-            "RS2ReaderConfig" : {
-				"configFilename": "../cameraconfig.xml"
-			},
-            "CerthReaderConfig" : {
-				"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
-				"PCLExchangeName": "VolumetricData",
-				"MetaExchangeName": "VolumetricMetaData"
-			},
-			"voxelSize": 0.01,
+            "RS2ReaderConfig": {
+                "configFilename": "../cameraconfig.xml"
+            },
+            "CerthReaderConfig": {
+                "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+                "PCLExchangeName": "VolumetricData",
+                "MetaExchangeName": "VolumetricMetaData"
+            },
+            "voxelSize": 0.009999999776482582,
             "Encoders": [
-				{
-					"octreeBits": 10
-				}
+                {
+                    "octreeBits": 10
+                }
             ],
             "Bin2Dash": {
                 "segmentSize": 2000,
@@ -86,6 +99,26 @@
         "AudioSUBConfig": {
             "streamNumber": 0,
             "initialDelay": 0
+        },
+        "PCSelfConfig": {
+            "RS2ReaderConfig": {
+                "configFilename": ""
+            },
+            "CerthReaderConfig": {
+                "ConnectionURI": "",
+                "PCLExchangeName": "",
+                "MetaExchangeName": ""
+            },
+            "voxelSize": 0.0,
+            "Encoders": [],
+            "Bin2Dash": {
+                "segmentSize": 0,
+                "segmentLife": 0
+            },
+            "AudioBin2Dash": {
+                "segmentSize": 0,
+                "segmentLife": 0
+            }
         },
         "Render": {
             "pointSize": 0.07999999821186066,
