@@ -23,29 +23,30 @@ public class AudioRecorder : MonoBehaviour
     private Workers.BaseWorker codec;
     private Workers.BaseWorker writer;
 
-    QueueThreadSafe encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe senderQueue = new QueueThreadSafe();
-
-
     private void StartRecord()
     {
         OrchestratorWrapper.instance.DeclareDataStream("AUDIO");
 
-        codec = new Workers.VoiceEncoder(encoderQueue, senderQueue);
-        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
+        codec = new Workers.VoiceEncoder();
+        reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize);
 
-        writer = new Workers.SocketIOWriter(SendAudioPacket); // TODO(FPA): Fix new Queue mode.
+        writer = new Workers.SocketIOWriter(SendAudioPacket);
+
+        reader.AddNext(codec).AddNext(writer).AddNext(reader);
+        reader.token = new Workers.Token(1);
     }
 
-    private void StopRecord() {
+    private void StopRecord()
+    {
         OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
 
-        reader?.StopAndWait();
-        codec?.StopAndWait();
-        writer?.StopAndWait();
+        reader?.Stop();
+        codec?.Stop();
+        writer?.Stop();
     }
 
-    private void SendAudioPacket(byte[] pPacket) {
+    private void SendAudioPacket(byte[] pPacket)
+    {
         //OrchestratorWrapper.instance.PushAudioPacket(pPacket);
         OrchestratorWrapper.instance.SendData("AUDIO", pPacket);
     }

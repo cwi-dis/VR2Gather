@@ -51,7 +51,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     { 
         get 
         { 
-            if(instance == null)
+            if(instance is null)
             {
                 instance = new GameObject("OrchestratorController").AddComponent<OrchestratorController>();
             }
@@ -115,6 +115,18 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
     public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
     public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+
+    #endregion
+
+    #region Unity
+
+    private void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }
 
     #endregion
 

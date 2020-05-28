@@ -125,7 +125,7 @@ namespace OrchestratorWrapping
 
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessageIOListener messagesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IUserSessionEventsListener userSessionEventslistener)
         {
-            if(instance == null)
+            if(instance is null)
             {
                 instance = this;
             }
