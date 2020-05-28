@@ -8,8 +8,8 @@ public class PCCalibration : MonoBehaviour {
 
     private bool axisLInUse = false;
     private bool axisRInUse = false;
-    private float _rotationSlightStep = 1f;
-    private float _translationSlightStep = 0.01f;
+    public float _rotationSlightStep = 1f;
+    public float _translationSlightStep = 0.01f;
     private State state = State.Comfort;
     public GameObject ComfortUI;
     public GameObject CalibrationModeUI;
@@ -25,8 +25,7 @@ public class PCCalibration : MonoBehaviour {
         cfg = Config.Instance;
         pc = cfg.PCs;
 
-        //p0 = new GameObject("PC_to_calibrate").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        p0 = gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.LocalUser);
+        p0 = gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.LocalUser, "", "", true);
     }
 
     // Update is called once per frame
