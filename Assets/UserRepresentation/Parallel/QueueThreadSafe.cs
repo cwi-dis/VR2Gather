@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 
 public class QueueThreadSafe {
     /*
@@ -13,79 +14,124 @@ public class QueueThreadSafe {
     public void Enqueue(BaseMemoryChunk item) { lock (queue) { queue.Enqueue(item); } }
     */
 
-    BaseMemoryChunk[] window;
-    int alloc = 0;
-    int write = 0;
-    int read = 0;
+    //BaseMemoryChunk[] window;
+    //int alloc = 0;
+    //int write = 0;
+    //int read = 0;
 
-    int auxSize;
-    bool isClosed = false;
+    int size;
+    CancellationTokenSource isClosed;
+    Queue<BaseMemoryChunk> queue;
+    SemaphoreSlim empty;
+    SemaphoreSlim full;
 
-    public QueueThreadSafe(int _size = 2) { Size = _size; auxSize = _size * 2; window = new BaseMemoryChunk[auxSize]; }
-    private int Size { get; set; }
-
+    public QueueThreadSafe(int _size = 2)
+    {
+        size = _size;
+        queue = new Queue<BaseMemoryChunk>(size);
+        empty = new SemaphoreSlim(size, size);
+        full = new SemaphoreSlim(0, size);
+        isClosed = new CancellationTokenSource();
+    }
     // Close the queue for further pushes, signals to consumers that we are about to stop
     public void Close()
     {
-        if (isClosed) throw new System.Exception("QueueThreadSafe: operation on closed queue");
-        isClosed = true;
-
+        if (isClosed.Token.IsCancellationRequested) throw new System.Exception("QueueThreadSafe: operation on closed queue");
+        isClosed.Cancel();
     }
 
     // Return true if the queue is closed and we are about to stop
     public bool IsClosed() 
-    { 
-        return isClosed; 
+    {
+        return isClosed.Token.IsCancellationRequested;
     }
 
     // Return true if we can probably enqueue something (but note that there is no guarantee if we have multiple producers)
     public bool CanEnqueue() {
-        lock (window) { 
-            return alloc - read < Size; 
+        try
+        {
+            if (empty.Wait(0, isClosed.Token))
+            {
+                // A slot is available. We got that slot, se we immedeately  return it.
+                empty.Release();
+                return true;
+            }
         }
+        catch (System.OperationCanceledException)
+        {
+        }
+        return false;
     } // retorna el hueco libre incluso los prereservados
 
     // Return true if we can probably dequeue something (but note that there is no guarantee if we have multiple consumers) 
     public bool CanDequeue() {
-        lock (window) {
-            return (write - read) > 0; 
+        try
+        {
+            if (full.Wait(0, isClosed.Token))
+            {
+                // A slot is available. We got that slot, se we immedeately  return it.
+                full.Release();
+                return true;
+            }
         }
+        catch (System.OperationCanceledException)
+        {
+        }
+        return false;
     }
 
     // Return number of items in the queue (but note that active producers or consumers can cause this value to change quickly)
-    public int Count { get { lock (window) { return write - read; } } } // Retorna los datos reales disponibles.
+    public int Count { 
+        get {
+            try
+            {
+                if (full.Wait(0, isClosed.Token))
+                {
+                    int count = full.Release();
+                    return count + 1;
+                }
+            }
+            catch(System.OperationCanceledException)
+            {
+            }
+            return 0;
+        } 
+    } // Retorna los datos reales disponibles.
 
     // Return the item that will probably be returned by the next Dequeue (but unsafe if we have multiple consumers)
     public BaseMemoryChunk Peek() {
-        lock (window) {
-            return window[read % auxSize]; 
-        }
+        return queue.Peek();
     }
 
     // Get the next item from the queue.
-    // Wait semantics: currently does not wait but raises exception if nothing is available.
+    // Wait semantics: waits until something is available.
     public BaseMemoryChunk Dequeue() {
-        lock (window) {
-            if (write - read > 0) {
-                BaseMemoryChunk tmp = window[read % auxSize];
-                window[read++ % auxSize] = null; // Borra la referencia.
-                return tmp;
-            }
-            throw new System.Exception("No data on window");
+        try
+        {
+            full.Wait(isClosed.Token);
+            BaseMemoryChunk item = queue.Dequeue();
+            empty.Release();
+            return item;
         }
+        catch (System.OperationCanceledException)
+        {
+        }
+        return null;
     }
 
     // Put an item in the queue.
     // Wait semantics: currently does not wait but overwrites old item. Without calling free().
     public void Enqueue(BaseMemoryChunk item) {
-        lock (window) {
-            int position=alloc++;
-            window[position % auxSize] = item;
-            for(int i=write; i != alloc;++i) {
-                if (window[i % auxSize] != null)
-                    write = i;
-            }
-//            UnityEngine.Debug.Log($"alloc {alloc} position {position} write {write} read {read} ");
+        try
+        {
+            empty.Wait(isClosed.Token);
+            queue.Enqueue(item);
+            full.Release();
+        }
+        catch (System.OperationCanceledException)
+        {
+            UnityEngine.Debug.LogError("QueueThreadSafe: Enqueue on closed queue");
+            item.free();
         }
     }
 
