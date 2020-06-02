@@ -10,7 +10,16 @@ namespace Workers {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) :base(WorkerType.Run) {
-            try {
+            if (_inQueue == null)
+            {
+                throw new System.Exception("PCDecoder: inQueue is null");
+            }
+            if (_outQueue == null)
+            {
+                throw new System.Exception("PCDecoder: outQueue is null");
+            }
+            try
+            {
                 inQueue = _inQueue;
                 outQueue = _outQueue;
                 decoder = cwipc.new_decoder();
@@ -40,14 +49,27 @@ namespace Workers {
             base.Update();
             if (inQueue.Count > 0 ) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
+                if (!outQueue.Free())
+                {
+                    Debug.Log($"PCDecoder#{instanceNumber}: skip decode, no room in outQueue");
+                    mc.free();
+                    return;
+                }
                 decoder.feed(mc.pointer, mc.length);
                 mc.free();
                 if (decoder.available(true)) {
                     cwipc.pointcloud pc = decoder.get();
                     if (pc != null) {
-                        statsUpdate(pc.count(), pc.timestamp());
-                        if (inQueue.Free()) outQueue.Enqueue(pc);
-                        else pc.free();
+                        if (outQueue.Free())
+                        {
+                            statsUpdate(pc.count(), pc.timestamp());
+                            outQueue.Enqueue(pc);
+                        }
+                        else
+                        {
+                            Debug.LogError($"PCDecoder#{instanceNumber}: after decode, no room in outQueue any more");
+                            pc.free();
+                        }
                     } else throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
                 else

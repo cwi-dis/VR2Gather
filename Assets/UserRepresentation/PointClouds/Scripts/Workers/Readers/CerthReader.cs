@@ -32,6 +32,10 @@ namespace Workers {
 
         public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
         {
+            if (_outQueue == null)
+            {
+                throw new System.Exception("CerthReader: outQueue is null");
+            }
             constructorLock = new object();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
@@ -46,15 +50,13 @@ namespace Workers {
             PCLRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _PCLExchangeName);
             if (PCLRabbitMQReceiver == null)
             {
-                Debug.LogError("CerthReader: PCLRabbitMQReceiver is null");
-                return;
+                throw new System.Exception("CerthReader: PCLRabbitMQReceiver is null");
             }
 
             MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
-                Debug.LogError("CerthReader: MetaRabbitMQReceiver is null");
-                return;
+                throw new System.Exception("CerthReader: MetaRabbitMQReceiver is null");
             }
 
             Debug.Log($"PCCertReader: receiving PCs from {_ConnectionURI}");
@@ -94,7 +96,7 @@ namespace Workers {
                         metaDataReceived = native_pointcloud_receiver_pinvoke.received_metadata(pnt, buffer.Length, pcl_id);
                         if (!metaDataReceived)
                         {
-                            Debug.LogError("PCCerthReader: metadata received, but native_pointcloud_receiver_pinvoke.received_metadata() returned false");
+                            throw new System.Exception("PCCerthReader: metadata received, but native_pointcloud_receiver_pinvoke.received_metadata() returned false");
                         }
                     }
                 }
@@ -147,30 +149,43 @@ namespace Workers {
                     //
                     // Push the cwipc pointcloud to the consumers
                     //
+                    statsUpdate(pc.count());
                     if (pc == null)
                     {
                         Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
                         return;
                     }
-                    pc.AddRef(); // xxxjack
-                    statsUpdate(pc.count());
+                    if (outQueue == null)
+                    {
+                        Debug.LogError($"CerthReader: no outQueue, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (outQueue.Free())
+                        {
+                            outQueue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue full, dropping pointcloud");
+                        }
+                    }
+                    if (out2Queue == null)
+                    {
+                        // This is not an error. Debug.LogError($"RS2Reader: no outQueue2, dropping pointcloud");
+                    }
+                    else
+                    {
+                        if (out2Queue.Free())
+                        {
+                            out2Queue.Enqueue(pc.AddRef());
+                        }
+                        else
+                        {
+                            Debug.Log($"CerthReader: outQueue2 full, dropping pointcloud");
+                        }
+                    }
 
-                    if (outQueue != null && outQueue.Free())
-                    {
-                        outQueue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
-                    if (out2Queue != null && out2Queue.Free())
-                    {
-                        out2Queue.Enqueue(pc.AddRef());
-                    }
-                    else
-                    {
-                        pc.free();
-                    }
                     pc.free();
 
                 }

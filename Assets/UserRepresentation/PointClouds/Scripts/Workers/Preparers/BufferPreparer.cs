@@ -13,6 +13,10 @@ namespace Workers
         float                               currentCellSize = 0.008f;
         QueueThreadSafe                     InQueue;
         public BufferPreparer(QueueThreadSafe _InQueue):base(WorkerType.End) {
+            if (_InQueue == null)
+            {
+                throw new System.Exception("BufferPreparer: InQueue is null");
+            }
             InQueue = _InQueue;
             Start();
         }

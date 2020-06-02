@@ -96,7 +96,6 @@ namespace Workers {
         public int freeVideo { get { return videoBufferSize - availableVideo; } }
 
         bool firstTime = true;
-        float lastTime = 0;
         public  bool GetAudioBuffer(float[] dst, int len) {
             if ((firstTime && availableAudio >= len) || !firstTime) {
                 firstTime = false;

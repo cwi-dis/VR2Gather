@@ -13,7 +13,7 @@ public class MCUTest : MonoBehaviour {
     float rotation = 0.0f;
     public int[] fov = { 1, 1 };
     public int[] lod = { 0, 3 };
-    [SerializeField] CheckVisibility p;
+    [SerializeField] CheckVisibility p = null;
 
     // Start is called before the first frame update
     void Start() {
@@ -35,7 +35,7 @@ public class MCUTest : MonoBehaviour {
             if (!initialized) initialized = mcu._API.SendInit(id, url, pos, rotation, fov, lod);
             else {
 
-                if (fusedPC == null) fusedPC = new GameObject("FusedPC").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
+                if (fusedPC == null) fusedPC = new GameObject("FusedPC").AddComponent<EntityPipeline>().Init(Config.Instance.RemoteUser);
                 if (Input.GetKeyDown(KeyCode.Alpha1)) mcu._API.SendPosition(id, pos);
                 //if (Input.GetKeyDown(KeyCode.Alpha2)) mcu._API.SendRotation(id, rotation);
                 if (Input.GetKeyDown(KeyCode.Alpha3)) mcu._API.SendFOV(id, fov);

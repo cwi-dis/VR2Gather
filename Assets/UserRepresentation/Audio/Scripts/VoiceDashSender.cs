@@ -14,7 +14,10 @@ public class VoiceDashSender : MonoBehaviour {
     public void Init(string _url, string _streamName, int _segmentSize, int _segmentLife) {
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
-        writer = new Workers.B2DWriter(_url,  _streamName, _segmentSize, _segmentLife, senderQueue);
+        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
+        b2dStreams[0].inQueue = senderQueue;
+        // xxxjack invented VR2a 4CC here. Is there a correct one?
+        writer = new Workers.B2DWriter(_url,  _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
     }
 
     void OnDestroy() {
