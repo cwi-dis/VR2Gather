@@ -9,14 +9,9 @@ public class AudioManager : MonoBehaviour
     {
         get
         {
-            if (instance == null)
+            if (instance is null)
             {
-                if (GameObject.Find("AudioManager") != null) {
-                    instance = GameObject.Find("AudioManager").GetComponent<AudioManager>();
-                }
-                else {
-                    instance = new GameObject("AudioManager").AddComponent<AudioManager>();
-                }
+                instance = new GameObject("AudioManager").AddComponent<AudioManager>();
             }
             return instance;
         }
@@ -30,6 +25,11 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+
         AudioConfiguration ac = AudioSettings.GetConfiguration();
         ac.sampleRate = 16000 * 3;
         ac.dspBufferSize = 320 * 3;
@@ -93,7 +93,7 @@ public class AudioManager : MonoBehaviour
 
     private void StartRecord()
     {
-        recorder.StartRecordAudio();        
+        recorder.StartRecordAudio();
     }
 
     private void StopRecord()

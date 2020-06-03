@@ -30,21 +30,34 @@
             "y": 0.0,
             "z": 0.0
         },
-		"forceMesh": false
+        "scale": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "forceMesh": false
     },
 
     "LocalUser": {
         "sourceType": "pcself",
+        "SUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
+        "AudioSUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
         "PCSelfConfig": {
-            "RS2ReaderConfig" : {
-				"configFilename": "../cameraconfig.xml"
-			},
-            "CerthReaderConfig" : {
-				"ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
-				"PCLExchangeName": "VolumetricData",
-				"MetaExchangeName": "VolumetricMetaData"
-			},
-			"voxelSize": 0.01,
+            "RS2ReaderConfig": {
+                "configFilename": "../cameraconfig.xml"
+            },
+            "CerthReaderConfig": {
+                "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+                "PCLExchangeName": "VolumetricData",
+                "MetaExchangeName": "VolumetricMetaData"
+            },
+            "voxelSize": 0.009999999776482582,
             "Encoders": [
 				{
 					"octreeBits": 9
@@ -88,6 +101,26 @@
         "AudioSUBConfig": {
             "streamNumber": 0,
             "initialDelay": 0
+        },
+        "PCSelfConfig": {
+            "RS2ReaderConfig": {
+                "configFilename": ""
+            },
+            "CerthReaderConfig": {
+                "ConnectionURI": "",
+                "PCLExchangeName": "",
+                "MetaExchangeName": ""
+            },
+            "voxelSize": 0.0,
+            "Encoders": [],
+            "Bin2Dash": {
+                "segmentSize": 0,
+                "segmentLife": 0
+            },
+            "AudioBin2Dash": {
+                "segmentSize": 0,
+                "segmentLife": 0
+            }
         },
         "Render": {
             "pointSize": 0.07999999821186066,
