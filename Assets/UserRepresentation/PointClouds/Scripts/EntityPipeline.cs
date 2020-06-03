@@ -11,7 +11,7 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  preparer;
     MonoBehaviour       render;
 
-    QueueThreadSafe preparerQueue = new QueueThreadSafe();
+    QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
@@ -49,7 +49,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe();
+                encoderQueue = new QueueThreadSafe(2, true);
                 //
                 // Create reader
                 //
@@ -81,7 +81,7 @@ public class EntityPipeline : MonoBehaviour {
                     for (int iq=0; iq < nQuality; iq++)
                     {
                         int i = it * nQuality + iq;
-                        QueueThreadSafe thisQueue = new QueueThreadSafe();
+                        QueueThreadSafe thisQueue = new QueueThreadSafe(2, false);
                         int octreeBits = Encoders[iq].octreeBits;
                         encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription
                         {
@@ -142,7 +142,7 @@ public class EntityPipeline : MonoBehaviour {
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
                 // Allocate queues we need for this pipeline
-                decoderQueue = new QueueThreadSafe();
+                decoderQueue = new QueueThreadSafe(2, true);
                 //
                 // Create sub receiver
                 //

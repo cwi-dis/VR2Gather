@@ -137,10 +137,13 @@ public class QueueThreadSafe {
     {
         try
         {
-            full.Wait(millisecondsTimeout, isClosed.Token);
-            BaseMemoryChunk item = queue.Dequeue();
-            empty.Release();
-            return item;
+            bool gotItem = full.Wait(millisecondsTimeout, isClosed.Token);
+            if (gotItem)
+            {
+                BaseMemoryChunk item = queue.Dequeue();
+                empty.Release();
+                return item;
+            }
         }
         catch (System.OperationCanceledException)
         {
@@ -153,24 +156,25 @@ public class QueueThreadSafe {
     // The ownership of the item is transferred to the queue (so it will be freed
     // if there is no space and the caller should not reuse or free this item
     // unless it has done ann AddRef()).
-    public void Enqueue(BaseMemoryChunk item)
+    public bool Enqueue(BaseMemoryChunk item)
     {
         if (dropWhenFull)
         {
-            TryEnqueue(0, item);
-            return;
+            return TryEnqueue(0, item);
         }
         try
         {
             empty.Wait(isClosed.Token);
             queue.Enqueue(item);
             full.Release();
+            return true;
         }
         catch (System.OperationCanceledException)
         {
             UnityEngine.Debug.LogError("QueueThreadSafe: Enqueue on closed queue");
             item.free();
         }
+        return false;
     }
 
     // Put an item in the queue.
@@ -179,18 +183,22 @@ public class QueueThreadSafe {
     // The ownership of the item is transferred to the queue (so it will be freed
     // if there is no space and the caller should not reuse or free this item
     // unless it has done ann AddRef()).
-    public void TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
+    public bool TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
     {
         try
         {
-            empty.Wait(millisecondsTimeout, isClosed.Token);
-            queue.Enqueue(item);
-            full.Release();
+            bool gotSlot = empty.Wait(millisecondsTimeout, isClosed.Token);
+            if (gotSlot) {
+                queue.Enqueue(item);
+                full.Release();
+                return true;
+            }
         }
         catch (System.OperationCanceledException)
         {
-            item.free();
         }
+        item.free();
+        return false;
     }
 
 }

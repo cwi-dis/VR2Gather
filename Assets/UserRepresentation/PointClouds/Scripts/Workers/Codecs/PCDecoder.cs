@@ -47,33 +47,18 @@ namespace Workers {
 
         protected override void Update(){
             base.Update();
-            if (inQueue._CanDequeue()) {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
-                if (!outQueue._CanEnqueue())
+            NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
+            if (mc == null) return;
+            decoder.feed(mc.pointer, mc.length);
+            mc.free();
+            while (decoder.available(true)) {
+                cwipc.pointcloud pc = decoder.get();
+                if (pc == null)
                 {
-                    Debug.Log($"PCDecoder#{instanceNumber}: skip decode, no room in outQueue");
-                    mc.free();
-                    return;
+                    throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                decoder.feed(mc.pointer, mc.length);
-                mc.free();
-                if (decoder.available(true)) {
-                    cwipc.pointcloud pc = decoder.get();
-                    if (pc != null) {
-                        if (outQueue._CanEnqueue())
-                        {
-                            statsUpdate(pc.count(), pc.timestamp());
-                            outQueue.Enqueue(pc);
-                        }
-                        else
-                        {
-                            Debug.LogError($"PCDecoder#{instanceNumber}: after decode, no room in outQueue any more");
-                            pc.free();
-                        }
-                    } else throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
-                }
-                else
-                    Debug.LogError($"PCDecoder#{instanceNumber}: cwipc_decoder: no pointcloud available currentSize {mc.length}");
+                outQueue.Enqueue(pc);
+                statsUpdate(pc.count(), pc.timestamp());
             }
         }
 

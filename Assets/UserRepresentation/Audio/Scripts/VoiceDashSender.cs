@@ -7,6 +7,7 @@ public class VoiceDashSender : MonoBehaviour {
     Workers.BaseWorker codec;
     Workers.BaseWorker writer;
 
+    // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe encoderQueue = new QueueThreadSafe();
     QueueThreadSafe senderQueue = new QueueThreadSafe();
 

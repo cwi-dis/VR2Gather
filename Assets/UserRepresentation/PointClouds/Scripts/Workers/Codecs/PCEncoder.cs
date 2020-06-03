@@ -99,14 +99,13 @@ namespace Workers {
         protected override void Update()
         {
             base.Update();
-            if (inQueue._CanDequeue())
-            {
-                cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-                if (encoderGroup == null) return; // Terminating
+            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+            if (pc == null) return; // Terminating
+            if (encoderGroup != null) {
+                // Not terminating yet
                 encoderGroup.feed(pc);
-                pc.free();
-            } 
-            // xxxjack else should we sleep?
+            }
+            pc.free();
         }
 
         protected  void PusherThread(int stream_number)
@@ -125,15 +124,7 @@ namespace Workers {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            if (outQueue._CanEnqueue())
-                            {
-                                outQueue.Enqueue(mc);
-                            }
-                            else
-                            {
-                                mc.free();
-                                Debug.Log($"PCEncoder#{stream_number}: Dropped frame, outQueue full");
-                            }
+                            outQueue.Enqueue(mc);
                         }
                         else
                         {

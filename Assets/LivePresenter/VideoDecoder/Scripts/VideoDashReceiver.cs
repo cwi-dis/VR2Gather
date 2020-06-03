@@ -9,6 +9,7 @@ public class VideoDashReceiver : MonoBehaviour {
     Workers.VideoDecoder    codec;
     Workers.VideoPreparer   preparer;
 
+    // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);

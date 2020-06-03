@@ -7,6 +7,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
 
+    // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe decoderQueue = new QueueThreadSafe();
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 

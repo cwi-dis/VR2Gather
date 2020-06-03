@@ -52,18 +52,12 @@ namespace Workers {
                     QueueThreadSafe queue = description.inQueue;
                     while (!queue.IsClosed())
                     {
-                        if (queue._CanDequeue())
-                        {
-                            NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
-                            statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
-                            if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                                Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}({parent.url}): ERROR sending data");
-                            mc.free();
-                        }
-                        else
-                        {
-                            System.Threading.Thread.Sleep(10);
-                        }
+                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
+                        if (mc == null) continue; // Probably closing...
+                        statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
+                        if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
+                            Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}({parent.url}): ERROR sending data");
+                        mc.free();
                     }
                     Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread stopped");
                 }
