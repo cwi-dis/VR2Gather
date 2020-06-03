@@ -20,14 +20,20 @@ public class QueueThreadSafe {
     //int read = 0;
 
     int size;
+    bool dropWhenFull;
     CancellationTokenSource isClosed;
     Queue<BaseMemoryChunk> queue;
     SemaphoreSlim empty;
     SemaphoreSlim full;
 
-    public QueueThreadSafe(int _size = 2)
+    // Concurrent queue with limited capacity.
+    // Enqueue semantics depend on _dropWhenFull: for _dropWhenFull=true the item
+    // will be discarded, for _dropWhenFull the call will wait until space is available.
+    // Dequeue always waits for an item to become available.
+    public QueueThreadSafe(int _size = 2, bool _dropWhenFull=false)
     {
         size = _size;
+        dropWhenFull = _dropWhenFull;
         queue = new Queue<BaseMemoryChunk>(size);
         empty = new SemaphoreSlim(size, size);
         full = new SemaphoreSlim(0, size);
@@ -106,7 +112,10 @@ public class QueueThreadSafe {
 
     // Get the next item from the queue.
     // Wait semantics: waits until something is available.
-    public BaseMemoryChunk Dequeue() {
+    // The caller gets ownership of the returned object.
+    // If the queue was closed null will be returned. 
+    public BaseMemoryChunk Dequeue()
+    {
         try
         {
             full.Wait(isClosed.Token);
@@ -120,9 +129,37 @@ public class QueueThreadSafe {
         return null;
     }
 
+    // Get the next item from the queue, waiting at most millisecondsTimeout
+    // (which can be 0) for an item to become available.
+    // Ownership of the item is transferred to the caller.
+    // If no item is available in time null is returned.
+    public BaseMemoryChunk TryDequeue(int millisecondsTimeout)
+    {
+        try
+        {
+            full.Wait(millisecondsTimeout, isClosed.Token);
+            BaseMemoryChunk item = queue.Dequeue();
+            empty.Release();
+            return item;
+        }
+        catch (System.OperationCanceledException)
+        {
+        }
+        return null;
+    }
+
     // Put an item in the queue.
-    // Wait semantics: currently does not wait but overwrites old item. Without calling free().
-    public void Enqueue(BaseMemoryChunk item) {
+    // If there is no space this call waits until there is space available.
+    // The ownership of the item is transferred to the queue (so it will be freed
+    // if there is no space and the caller should not reuse or free this item
+    // unless it has done ann AddRef()).
+    public void Enqueue(BaseMemoryChunk item)
+    {
+        if (dropWhenFull)
+        {
+            TryEnqueue(0, item);
+            return;
+        }
         try
         {
             empty.Wait(isClosed.Token);
@@ -132,6 +169,26 @@ public class QueueThreadSafe {
         catch (System.OperationCanceledException)
         {
             UnityEngine.Debug.LogError("QueueThreadSafe: Enqueue on closed queue");
+            item.free();
+        }
+    }
+
+    // Put an item in the queue.
+    // If there is no space this call waits for at most millisecondsTimeout until there 
+    // is space available.
+    // The ownership of the item is transferred to the queue (so it will be freed
+    // if there is no space and the caller should not reuse or free this item
+    // unless it has done ann AddRef()).
+    public void TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
+    {
+        try
+        {
+            empty.Wait(millisecondsTimeout, isClosed.Token);
+            queue.Enqueue(item);
+            full.Release();
+        }
+        catch (System.OperationCanceledException)
+        {
             item.free();
         }
     }
