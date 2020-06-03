@@ -167,15 +167,21 @@ public class EntityPipeline : MonoBehaviour {
         // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
         // in the scene.
         //
-        if (cfg.sourceType == "pcself" || cfg.sourceType == "pccerth") {
-            //Position depending on config calibration done by PCCalibration Scene
-            transform.localPosition = PCs.offsetPosition;
-            transform.rotation = Quaternion.Euler(PCs.offsetRotation);
-        }
-        else {
-            //Position in the center
-            transform.localPosition = new Vector3(0,0,0);
-            transform.rotation = Quaternion.Euler(0,0,0);
+        //Position depending on config calibration done by PCCalibration Scene
+        switch (cfg.sourceType) {
+            case "pcself":
+                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                break;
+            case "pccerth":
+                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                break;
+            default:
+                //Position in the center
+                transform.localPosition = new Vector3(0, 0, 0);
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                break;
         }
 
         transform.localScale = cfg.Render.scale;
