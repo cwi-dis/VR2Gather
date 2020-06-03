@@ -36,9 +36,6 @@ namespace DataProviders {
             m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = connectionURI;
             m_RabbitMQReceiver.ConnectionProperties.ExchangeName = exchangeName;
             m_RabbitMQReceiver.Enabled = true;
-
-            this.transform.localPosition = tvm.offsetPosition;
-            this.transform.localRotation = Quaternion.Euler(tvm.offsetRotation);
         }
 
         private void OnEnable() {

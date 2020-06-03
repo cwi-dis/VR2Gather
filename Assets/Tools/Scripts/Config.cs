@@ -12,8 +12,6 @@ public class Config {
     {
         public string   connectionURI;
         public string   exchangeName;
-        public Vector3  offsetPosition;
-        public Vector3  offsetRotation;
     };
     public _TVMs TVMs;
 
@@ -26,8 +24,6 @@ public class Config {
 
     [Serializable]
     public class _PCs {
-        public Vector3 offsetPosition;
-        public Vector3 offsetRotation;
         public Vector3 scale;
         public bool forceMesh;
     };
