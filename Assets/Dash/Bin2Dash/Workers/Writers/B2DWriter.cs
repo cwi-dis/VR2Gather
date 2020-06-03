@@ -52,7 +52,7 @@ namespace Workers {
                     QueueThreadSafe queue = description.inQueue;
                     while (!queue.IsClosed())
                     {
-                        if (queue.CanDequeue())
+                        if (queue._CanDequeue())
                         {
                             NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                             statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream

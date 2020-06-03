@@ -90,7 +90,7 @@ public class NewMemorySystem : MonoBehaviour
         encoder?.StopAndWait();
         decoder?.StopAndWait();
         preparer?.StopAndWait();
-        Debug.Log($"NewMemorySystem: Queues references counting: preparerQueue {preparerQueue.Count} encoderQueue {encoderQueue.Count} writerQueue {writerQueue.Count} decoderQueue {decoderQueue.Count}");
+        Debug.Log($"NewMemorySystem: Queues references counting: preparerQueue {preparerQueue._Count} encoderQueue {encoderQueue._Count} writerQueue {writerQueue._Count} decoderQueue {decoderQueue._Count}");
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }

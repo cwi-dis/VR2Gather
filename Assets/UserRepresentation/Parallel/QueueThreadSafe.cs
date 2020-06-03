@@ -33,6 +33,7 @@ public class QueueThreadSafe {
         full = new SemaphoreSlim(0, size);
         isClosed = new CancellationTokenSource();
     }
+
     // Close the queue for further pushes, signals to consumers that we are about to stop
     public void Close()
     {
@@ -47,7 +48,7 @@ public class QueueThreadSafe {
     }
 
     // Return true if we can probably enqueue something (but note that there is no guarantee if we have multiple producers)
-    public bool CanEnqueue() {
+    public bool _CanEnqueue() {
         try
         {
             if (empty.Wait(0, isClosed.Token))
@@ -61,10 +62,10 @@ public class QueueThreadSafe {
         {
         }
         return false;
-    } // retorna el hueco libre incluso los prereservados
+    }
 
     // Return true if we can probably dequeue something (but note that there is no guarantee if we have multiple consumers) 
-    public bool CanDequeue() {
+    public bool _CanDequeue() {
         try
         {
             if (full.Wait(0, isClosed.Token))
@@ -81,7 +82,7 @@ public class QueueThreadSafe {
     }
 
     // Return number of items in the queue (but note that active producers or consumers can cause this value to change quickly)
-    public int Count { 
+    public int _Count { 
         get {
             try
             {
@@ -96,10 +97,10 @@ public class QueueThreadSafe {
             }
             return 0;
         } 
-    } // Retorna los datos reales disponibles.
+    }
 
     // Return the item that will probably be returned by the next Dequeue (but unsafe if we have multiple consumers)
-    public BaseMemoryChunk Peek() {
+    public BaseMemoryChunk _Peek() {
         return queue.Peek();
     }
 

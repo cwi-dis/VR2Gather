@@ -29,9 +29,9 @@ namespace Workers {
         NTPTools.NTPTime tempTime;
         protected override void Update() {
             base.Update();
-            if (inQueue.CanDequeue()) { 
+            if (inQueue._CanDequeue()) { 
                 NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
-                if (outQueue.CanEnqueue()) {
+                if (outQueue._CanEnqueue()) {
 #if USE_SPEEX
                     byte[] buffer = new byte[mcIn.length];
                     if (temporalBuffer == null) temporalBuffer = new float[mcIn.length * 10]; // mcIn.length*10

@@ -99,7 +99,7 @@ namespace Workers {
         protected override void Update()
         {
             base.Update();
-            if (inQueue.CanDequeue())
+            if (inQueue._CanDequeue())
             {
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
                 if (encoderGroup == null) return; // Terminating
@@ -125,7 +125,7 @@ namespace Workers {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            if (outQueue.CanEnqueue())
+                            if (outQueue._CanEnqueue())
                             {
                                 outQueue.Enqueue(mc);
                             }

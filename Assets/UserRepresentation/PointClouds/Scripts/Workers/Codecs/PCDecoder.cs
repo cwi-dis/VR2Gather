@@ -47,9 +47,9 @@ namespace Workers {
 
         protected override void Update(){
             base.Update();
-            if (inQueue.CanDequeue()) {
+            if (inQueue._CanDequeue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
-                if (!outQueue.CanEnqueue())
+                if (!outQueue._CanEnqueue())
                 {
                     Debug.Log($"PCDecoder#{instanceNumber}: skip decode, no room in outQueue");
                     mc.free();
@@ -60,7 +60,7 @@ namespace Workers {
                 if (decoder.available(true)) {
                     cwipc.pointcloud pc = decoder.get();
                     if (pc != null) {
-                        if (outQueue.CanEnqueue())
+                        if (outQueue._CanEnqueue())
                         {
                             statsUpdate(pc.count(), pc.timestamp());
                             outQueue.Enqueue(pc);

@@ -124,7 +124,7 @@ namespace Workers {
                 if (streamNumber < 0) continue;
 
                 // Skip this stream if the output queue is full and we don't wan to drop frames.
-                if (!outQueue.CanEnqueue() && !bDropFrames) continue;
+                if (!outQueue._CanEnqueue() && !bDropFrames) continue;
 
                 lock (this)
                 {
@@ -152,7 +152,7 @@ namespace Workers {
                         mc.free();
                         continue;
                     }
-                    if (!outQueue.CanEnqueue())
+                    if (!outQueue._CanEnqueue())
                     {
                         Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
                         mc.free();
