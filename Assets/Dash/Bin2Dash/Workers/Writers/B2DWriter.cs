@@ -180,7 +180,10 @@ namespace Workers {
             // Signal that no more data is forthcoming to every pusher
             foreach (var d in descriptions)
             {
-                d.inQueue.Close();
+                if (!d.inQueue.IsClosed()) {
+                    Debug.LogWarning($"B2DWriter#{instanceNumber}: input queue not closed. Closing.");
+                    d.inQueue.Close();
+                }
             }
             // Stop our thread
             base.OnStop();
