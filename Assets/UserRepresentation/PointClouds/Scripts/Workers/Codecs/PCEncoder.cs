@@ -90,7 +90,10 @@ namespace Workers {
             base.OnStop();
             // Clear the encoderGroup including all of its encoders
             tmp?.free();
-            encoderOutputs = null;
+            foreach(var eo in encoderOutputs)
+            {
+                eo.free();
+            }
             Debug.Log("PCEncoder: Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
