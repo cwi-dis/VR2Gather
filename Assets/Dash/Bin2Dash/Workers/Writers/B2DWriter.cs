@@ -103,7 +103,7 @@ namespace Workers {
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
-                throw new System.Exception("B2DWriter: descriptions is null or empty");
+                throw new System.Exception($"B2DWriter: descriptions is null or empty");
             }
             if (fourcc.Length != 4)
             {
@@ -121,7 +121,7 @@ namespace Workers {
                     throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
-                Debug.Log($"xxxjack B2DWriter: {descriptions.Length} output streams");
+                Debug.Log($"xxxjack B2DWriter#{instanceNumber}: {descriptions.Length} output streams");
                 bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
@@ -139,7 +139,7 @@ namespace Workers {
                 uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
                 if (uploader != null)
                 {
-                    Debug.Log($"B2DWriter({url + _streamName}.mpd: started");
+                    Debug.Log($"B2DWriter#{instanceNumber}: started {url + _streamName}.mpd");
                     Start();
                 }
                 else
@@ -172,10 +172,11 @@ namespace Workers {
         public override void OnStop()
         {
             // Signal that no more data is forthcoming to every pusher
-            foreach (var d in descriptions)
+            for(int i=0; i<descriptions.Length; i++)
             {
+                var d = descriptions[i];
                 if (!d.inQueue.IsClosed()) {
-                    Debug.LogWarning($"B2DWriter#{instanceNumber}: input queue not closed. Closing.");
+                    Debug.LogWarning($"B2DWriter#{instanceNumber}.{i}: input queue not closed. Closing.");
                     d.inQueue.Close();
                 }
             }
