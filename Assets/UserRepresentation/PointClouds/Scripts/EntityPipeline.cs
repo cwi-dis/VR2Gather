@@ -180,6 +180,7 @@ public class EntityPipeline : MonoBehaviour {
         codec?.StopAndWait();
         writer?.StopAndWait();
         preparer?.StopAndWait();
+        // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }
