@@ -45,6 +45,7 @@ namespace Workers
         public override void OnStop() {
             base.OnStop();
             Debug.Log($"VoiceReader: Stopped device {device}.");
+            outQueue.Close();
         }
 
         string      device;

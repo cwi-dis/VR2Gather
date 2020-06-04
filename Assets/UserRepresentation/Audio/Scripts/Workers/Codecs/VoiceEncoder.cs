@@ -27,6 +27,7 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
+            outQueue.Close();
             Debug.Log("VoiceEncoder: Stopped.");
         }
 
