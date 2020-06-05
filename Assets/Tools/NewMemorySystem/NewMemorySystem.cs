@@ -74,8 +74,8 @@ public class NewMemorySystem : MonoBehaviour
 
         if (useVoice) {
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", 2000, 10000); //Audio Pipeline
-            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/", "audio", 0, 1); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio/", "audio", 2000, 10000); //Audio Pipeline
+            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio/", "audio", 0, 1); //Audio Pipeline
 
         }
     }
