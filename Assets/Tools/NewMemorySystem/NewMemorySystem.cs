@@ -9,7 +9,7 @@ using UnityEngine;
 public class NewMemorySystem : MonoBehaviour
 {
 
-    public bool         forceMesh = true;
+    public bool         forceMesh = false;
     public bool         localPCs = false;
     public bool         useCompression = true;
     public bool         useVoice = false;
@@ -67,8 +67,8 @@ public class NewMemorySystem : MonoBehaviour
             b2dStreams[0].tileNumber = 0;
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
-            dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue);
+            dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
