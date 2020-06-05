@@ -26,7 +26,7 @@ public class NewMemorySystem : MonoBehaviour
     QueueThreadSafe     preparerQueue = new QueueThreadSafe();
     QueueThreadSafe     encoderQueue = new QueueThreadSafe();
     QueueThreadSafe     writerQueue = new QueueThreadSafe();
-    QueueThreadSafe     decoderQueue = new QueueThreadSafe();
+    QueueThreadSafe     decoderQueue = new QueueThreadSafe(2, true);
     MonoBehaviour       render;
 
     // rtmp://127.0.0.1:1935/live/signals
@@ -68,7 +68,7 @@ public class NewMemorySystem : MonoBehaviour
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
             dashWriter = new Workers.B2DWriter("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue, true);
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent1.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 

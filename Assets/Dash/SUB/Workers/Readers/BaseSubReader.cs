@@ -8,7 +8,6 @@ namespace Workers {
         string url;
         protected int streamCount;
         protected uint[] stream4CCs;
-        bool bDropFrames=false;
         sub.connection subHandle;
         bool isPlaying;
         sub.FrameInfo info = new sub.FrameInfo();
@@ -25,8 +24,7 @@ namespace Workers {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        protected BaseSubReader(string _url, string _streamName, int _initialDelay, bool _bDropFrames = false) : base(WorkerType.Init) { // Orchestrator Based SUB
-            bDropFrames = _bDropFrames;
+        protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
             if (_url == "" || _url == null || _streamName == "")
             {
                 Debug.LogError($"{Name()}: configuration error: url or streamName not set");
@@ -133,7 +131,7 @@ namespace Workers {
                 if (streamNumber < 0) continue;
 
                 // Skip this stream if the output queue is full and we don't wan to drop frames.
-                if (!outQueue._CanEnqueue() && !bDropFrames) continue;
+                if (!outQueue._CanEnqueue()) continue;
 
                 lock (this)
                 {
