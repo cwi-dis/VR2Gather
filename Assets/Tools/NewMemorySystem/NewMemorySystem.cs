@@ -81,13 +81,13 @@ public class NewMemorySystem : MonoBehaviour
     }
 
     void OnDestroy() {
+
+        reader?.StopAndWait();
+        encoder?.StopAndWait();
         dashWriter?.StopAndWait();
         dashReader?.StopAndWait();
         //binWriter?.StopAndWait();
         //binReader?.StopAndWait();
-
-        reader?.StopAndWait();
-        encoder?.StopAndWait();
         decoder?.StopAndWait();
         preparer?.StopAndWait();
         Debug.Log($"NewMemorySystem: Queues references counting: preparerQueue {preparerQueue._Count} encoderQueue {encoderQueue._Count} writerQueue {writerQueue._Count} decoderQueue {decoderQueue._Count}");
