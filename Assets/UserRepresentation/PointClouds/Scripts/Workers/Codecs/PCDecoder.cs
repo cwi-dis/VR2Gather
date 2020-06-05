@@ -45,15 +45,24 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            decoder?.free();
-            decoder = null;
+            lock (this)
+            {
+                decoder?.free();
+                decoder = null;
+                outQueue.Close();
+            }
             Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update(){
             base.Update();
-            NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
-            if (mc == null) return;
+            NativeMemoryChunk mc;
+            lock (this)
+            {
+                mc = (NativeMemoryChunk)inQueue.Dequeue();
+                if (mc == null) return;
+                if (decoder == null) return;
+            }
             decoder.feed(mc.pointer, mc.length);
             mc.free();
             while (decoder.available(false)) {
