@@ -35,7 +35,9 @@ namespace Workers {
             base.OnStop();
             reader?.free();
             reader = null;
-            Debug.Log("{Name()}: Stopped.");
+            outQueue?.Close();
+            out2Queue?.Close();
+            Debug.Log($"{Name()}: Stopped.");
         }
 
         protected override void Update() {
@@ -56,11 +58,8 @@ namespace Workers {
             }
             else
             {
-                if (outQueue._CanEnqueue())
-                {
-                    outQueue.Enqueue(pc.AddRef());
-                }
-                else
+                bool ok = outQueue.Enqueue(pc.AddRef());
+                if (!ok)
                 {
                     Debug.Log($"{Name()}: outQueue full, dropping pointcloud");
                 }
@@ -71,11 +70,8 @@ namespace Workers {
             }
             else
             {
-                if (out2Queue._CanEnqueue())
-                {
-                    out2Queue.Enqueue(pc.AddRef());
-                }
-                else
+                bool ok = out2Queue.Enqueue(pc.AddRef());
+                if (!ok)
                 {
                     Debug.Log($"{Name()}: outQueue2 full, dropping pointcloud");
                 }
