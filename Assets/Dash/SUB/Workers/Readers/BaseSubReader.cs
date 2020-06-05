@@ -130,9 +130,6 @@ namespace Workers {
                 // Ignore if this stream was not found in the MPD
                 if (streamNumber < 0) continue;
 
-                // Skip this stream if the output queue is full and we don't wan to drop frames.
-                if (!outQueue._CanEnqueue()) continue;
-
                 lock (this)
                 {
                     // Shoulnd't happen, but's let make sure
@@ -158,11 +155,6 @@ namespace Workers {
                         Debug.LogError($"{Name()} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                         mc.free();
                         continue;
-                    }
-                    if (!outQueue._CanEnqueue())
-                    {
-                        Debug.Log($"{this.GetType().Name} {subName}: frame dropped.");
-                        mc.free();
                     }
 
                     // Push to queue
