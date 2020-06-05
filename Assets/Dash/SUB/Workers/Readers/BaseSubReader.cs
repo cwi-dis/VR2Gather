@@ -29,8 +29,8 @@ namespace Workers {
             bDropFrames = _bDropFrames;
             if (_url == "" || _url == null || _streamName == "")
             {
-                Debug.LogError($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
-                throw new System.Exception($"{this.GetType().Name}#{instanceNumber}: configuration error: url or streamName not set");
+                Debug.LogError($"{Name()}: configuration error: url or streamName not set");
+                throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
             }
             if (_streamName != null)
             {
@@ -42,10 +42,15 @@ namespace Workers {
             {
                 // We do not try to start play straight away, to work around bugs when creating the SUB before
                 // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"{this.GetType().Name}#{instanceNumber}: Delaying {_initialDelay} seconds before playing {url}");
+                Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
             Start();
+        }
+
+        public virtual string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
         }
 
         public override void OnStop() {
@@ -56,7 +61,7 @@ namespace Workers {
                 isPlaying = false;
             }
             base.OnStop();
-            Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName} {url} Stopped");
+            Debug.Log($"{Name()} {subName} {url} Stopped");
         }
 
         protected void UnsuccessfulCheck(int _size) {
@@ -69,7 +74,7 @@ namespace Workers {
                 System.Threading.Thread.Sleep(10);
                 if (numberOfUnsuccessfulReceives > 2000) {
                     lock (this) {
-                        Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
+                        Debug.Log($"{Name()} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
                         if (subHandle != null) subHandle.free();
                         subHandle = null;
                         isPlaying = false;
@@ -90,12 +95,12 @@ namespace Workers {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                     subHandle = sub.create(subName);
                     if (subHandle == null) throw new System.Exception($"{this.GetType().Name}: sub_create({url}) failed");
-                    Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: retry sub.create({url}) successful.");
+                    Debug.Log($"{Name()} {subName}: retry sub.create({url}) successful.");
                 }
                 isPlaying = subHandle.play(url);
                 if (!isPlaying) {
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: sub.play({url}) failed, will try again later");
+                    Debug.Log($"{Name()} {subName}: sub.play({url}) failed, will try again later");
                     return;
                 }
                 streamCount = subHandle.get_stream_count();
@@ -104,7 +109,7 @@ namespace Workers {
                 {
                     stream4CCs[i] = subHandle.get_stream_4cc(i);
                 }
-                Debug.Log($"{this.GetType().Name}#{instanceNumber} {subName}: sub.play({url}) successful, {streamCount} streams.");
+                Debug.Log($"{Name()} {subName}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
@@ -131,7 +136,7 @@ namespace Workers {
                     // Shoulnd't happen, but's let make sure
                     if (subHandle == null)
                     {
-                        Debug.Log("{this.GetType().Name}#{instanceNumber} {subName}: subHandle was closed");
+                        Debug.Log("{Name()} {subName}: subHandle was closed");
                         return;
                     }
                     // See how many bytes we need to allocate
@@ -148,7 +153,7 @@ namespace Workers {
                     int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
                     if (bytesRead != bytesNeeded)
                     {
-                        Debug.LogError($"{this.GetType().Name}#{instanceNumber} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                        Debug.LogError($"{Name()} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                         mc.free();
                         continue;
                     }

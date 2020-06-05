@@ -27,7 +27,7 @@ namespace Workers {
                     throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
                 else {
                     Start();
-                    Debug.Log($"PCDecoder#{instanceNumber} Inited");
+                    Debug.Log($"{Name()} Inited");
                 }
 
             }
@@ -38,11 +38,16 @@ namespace Workers {
             
         }
 
+        public virtual string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
         public override void OnStop() {
             base.OnStop();
             decoder?.free();
             decoder = null;
-            Debug.Log($"PCDecoder#{instanceNumber} Stopped");
+            Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update(){
@@ -55,7 +60,7 @@ namespace Workers {
                 cwipc.pointcloud pc = decoder.get();
                 if (pc == null)
                 {
-                    throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
+                    throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
                 outQueue.Enqueue(pc);
                 statsUpdate(pc.count(), pc.timestamp());
@@ -79,7 +84,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PCDecoder#{instanceNumber}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;

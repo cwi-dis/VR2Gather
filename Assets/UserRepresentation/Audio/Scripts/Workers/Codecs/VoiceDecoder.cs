@@ -14,7 +14,7 @@ namespace Workers {
             outQueue = _outQueue;
             decoder = new NSpeex.SpeexDecoder(NSpeex.BandMode.Wide);
             // playerFrequency = decoder.SampleRate;
-            Debug.Log("VoiceDecoder: Started.");
+            Debug.Log($"{Name()}: Started.");
 
             Start();
         }
@@ -22,7 +22,7 @@ namespace Workers {
         public override void OnStop() {
             base.OnStop();
             outQueue.Close();
-            Debug.Log("VoiceDecoder: Stopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
         float[] temporalBuffer;

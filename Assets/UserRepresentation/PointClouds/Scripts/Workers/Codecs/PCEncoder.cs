@@ -20,7 +20,7 @@ namespace Workers {
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs ) :base(WorkerType.Run) {
             if (_inQueue == null)
             {
-                throw new System.Exception("PCEncoder: inQueue is null");
+                throw new System.Exception("{Name()}: inQueue is null");
             }
             inQueue = _inQueue;
             outputs = _outputs;
@@ -48,7 +48,7 @@ namespace Workers {
 
                 }
                 Start();
-                Debug.Log("PCEncoder: Inited");
+                Debug.Log("{Name()}: Inited");
             }
             catch (System.Exception e) {
                 Debug.LogError($"Exception during call to PCEncoder constructor: {e.Message}");
@@ -94,7 +94,7 @@ namespace Workers {
             {
                 eo.free();
             }
-            Debug.Log("PCEncoder: Stopped");
+            Debug.Log("{Name()}: Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }

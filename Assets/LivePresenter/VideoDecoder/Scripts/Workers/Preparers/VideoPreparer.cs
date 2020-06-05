@@ -41,7 +41,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VideoPreparer Stopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
         protected override void Update() {
@@ -117,7 +117,7 @@ namespace Workers {
                     lock (this) { availableAudio -= len; }
                     return true;
                 } else
-                    Debug.Log("Buffer audio sin datos.");
+                    Debug.Log($"{Name()}: Buffer audio sin datos.");
             }
             return false;
         }

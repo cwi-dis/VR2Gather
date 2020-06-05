@@ -52,7 +52,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VideoDecoder: Stopped");
+            Debug.Log("{Name()}: Stopped");
         }
 
         protected override void Update() {
@@ -222,7 +222,7 @@ namespace Workers {
             if(errbuf==null) errbuf = (byte*)Marshal.AllocHGlobal(128);
             ffmpeg.av_strerror(err, errbuf, 128);
             string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
-            Debug.Log($"{message} {err} {err_txt}");
+            Debug.Log($"{Name()}: {message} {err} {err_txt}");
 
         }
     }

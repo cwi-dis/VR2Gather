@@ -21,14 +21,14 @@ namespace Workers
             encoder = new NSpeex.SpeexEncoder( NSpeex.BandMode.Wide );
             bufferSize = encoder.FrameSize * frames;
             encoder.Quality = 5;
-            Debug.Log("VoiceEncoder: Started.");
+            Debug.Log($"{Name()}: Started.");
             Start();
         }
 
         public override void OnStop() {
             base.OnStop();
             outQueue.Close();
-            Debug.Log("VoiceEncoder: Stopped.");
+            Debug.Log($"{Name()}: Stopped.");
         }
 
         byte[]          sendBuffer;
