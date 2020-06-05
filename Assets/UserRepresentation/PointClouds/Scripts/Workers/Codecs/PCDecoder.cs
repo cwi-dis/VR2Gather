@@ -56,7 +56,7 @@ namespace Workers {
             if (mc == null) return;
             decoder.feed(mc.pointer, mc.length);
             mc.free();
-            while (decoder.available(true)) {
+            while (decoder.available(false)) {
                 cwipc.pointcloud pc = decoder.get();
                 if (pc == null)
                 {
