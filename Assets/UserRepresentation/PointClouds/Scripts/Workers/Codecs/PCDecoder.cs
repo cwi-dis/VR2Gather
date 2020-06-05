@@ -38,7 +38,7 @@ namespace Workers {
             
         }
 
-        public virtual string Name()
+        public override string Name()
         {
             return $"{this.GetType().Name}#{instanceNumber}";
         }

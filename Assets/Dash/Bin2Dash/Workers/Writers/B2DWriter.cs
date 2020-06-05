@@ -35,9 +35,9 @@ namespace Workers {
                 myThread.Name = Name();
             }
 
-            public virtual string Name()
+            public string Name()
             {
-                return $"{this.GetType().Name}#{parent.instanceNumber}.{stream_index}";
+                return $"{parent.Name()}.{stream_index}";
             }
 
             public void Start()
@@ -157,6 +157,12 @@ namespace Workers {
                 throw e;
             }
         }
+
+        public override string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
 
         protected override void Start()
         {

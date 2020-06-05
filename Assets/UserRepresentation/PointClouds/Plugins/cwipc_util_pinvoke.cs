@@ -296,7 +296,7 @@ public class cwipc
             _API_cwipc_codec.cwipc_encoder_close(pointer);
         }
 
-        public bool eof()
+        public new bool eof()
         {
             if (pointer == IntPtr.Zero) throw new System.Exception("cwipc.encoder.eof called with NULL pointer argument");
             return _API_cwipc_codec.cwipc_encoder_eof(pointer);

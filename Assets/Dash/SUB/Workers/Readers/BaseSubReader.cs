@@ -48,7 +48,7 @@ namespace Workers {
             Start();
         }
 
-        public virtual string Name()
+        public override string Name()
         {
             return $"{this.GetType().Name}#{instanceNumber}";
         }
@@ -59,6 +59,10 @@ namespace Workers {
                 if (subHandle != null) subHandle.free();
                 subHandle = null;
                 isPlaying = false;
+                foreach(var oq in outQueues)
+                {
+                    oq.Close();
+                }
             }
             base.OnStop();
             Debug.Log($"{Name()} {subName} {url} Stopped");
