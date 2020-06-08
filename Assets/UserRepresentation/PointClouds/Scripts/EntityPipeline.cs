@@ -58,7 +58,7 @@ public class EntityPipeline : MonoBehaviour {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
-                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
+                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, preparerQueue, encoderQueue);
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
                 {

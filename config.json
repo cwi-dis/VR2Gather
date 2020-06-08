@@ -58,6 +58,7 @@
                 "MetaExchangeName": "VolumetricMetaData"
             },
             "voxelSize": 0.009999999776482582,
+            "frameRate" : 15,
             "Encoders": [
 				{
 					"octreeBits": 9

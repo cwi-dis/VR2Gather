@@ -45,9 +45,9 @@ public class NewMemorySystem : MonoBehaviour
 
         if (localPCs) {
             if(!useCompression)
-                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, preparerQueue);
+                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, preparerQueue);
             else {
-                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, encoderQueue);
+                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, encoderQueue);
                 Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
                 encStreams[0].octreeBits = 10;
                 encStreams[0].tileNumber = 0;
@@ -56,7 +56,7 @@ public class NewMemorySystem : MonoBehaviour
                 decoder = new Workers.PCDecoder(writerQueue, preparerQueue);
             }
         } else {
-            reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, encoderQueue);
+            reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, encoderQueue);
             Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
             encStreams[0].octreeBits = 10;
             encStreams[0].tileNumber = 0;
