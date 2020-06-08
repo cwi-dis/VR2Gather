@@ -42,21 +42,8 @@ namespace Workers
             Debug.Log($"{Name()}: Stopped.");
             OrchestratorWrapper.instance.UnregisterFromDataStream(userID, "AUDIO");
         }
-        /*
-        private void OnAudioPacketReceived2(UserAudioPacket pPacket ) {
-            //if (pPacket.dataStreamUserID == userID) 
-            {
-                Debug.Log($"SocketOIReader {pPacket.audioPacket.Length}");
-                BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.audioPacket.Length);
-                System.Runtime.InteropServices.Marshal.Copy(pPacket.audioPacket, 0, chunk.pointer, chunk.length);
-                outQueue.Enqueue(chunk);
-                OnData(pPacket.audioPacket);
-            }
-        }
-        */
         private void OnAudioPacketReceived(UserDataStreamPacket pPacket) {
-            //if (pPacket.dataStreamUserID == userID) 
-                {
+            if (pPacket.dataStreamUserID == userID) {
                 BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                 System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
                 outQueue.Enqueue(chunk);
