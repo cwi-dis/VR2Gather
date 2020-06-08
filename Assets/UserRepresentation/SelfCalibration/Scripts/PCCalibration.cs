@@ -26,7 +26,7 @@ public class PCCalibration : MonoBehaviour {
         pc = cfg.PCs;
 
         //p0 = new GameObject("PC_to_calibrate").AddComponent<EntityPipeline>().Init(Config.Instance.Users[1], transform);
-        p0 = gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.LocalUser);
+        p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser);
     }
 
     // Update is called once per frame
