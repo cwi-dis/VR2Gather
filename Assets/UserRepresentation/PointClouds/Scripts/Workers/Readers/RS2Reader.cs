@@ -6,10 +6,12 @@ namespace Workers {
     public class RS2Reader : BaseWorker {
         cwipc.source reader;
         float voxelSize;
+        System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
+        System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public RS2Reader(string _configFilename, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+        public RS2Reader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
             if (_outQueue == null)
             {
                 throw new System.Exception("{Name()}: outQueue is null");
@@ -17,6 +19,10 @@ namespace Workers {
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             voxelSize = _voxelSize;
+            if (_frameRate > 0)
+            {
+                frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
+            }
             try {
                 reader = cwipc.realsense2(_configFilename);  
                 if (reader != null) {
@@ -42,6 +48,22 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
+            //
+            // Limit framerate, if required
+            //
+            if (earliestNextCapture != null)
+            {
+                System.TimeSpan sleepDuration = earliestNextCapture - System.DateTime.Now;
+                if (sleepDuration > System.TimeSpan.FromSeconds(0))
+                {
+                    Debug.Log($"{Name()}: xxxjack: sleep for {sleepDuration}");
+                    System.Threading.Thread.Sleep(sleepDuration);
+                }
+            }
+            if (frameInterval != null)
+            {
+                earliestNextCapture = System.DateTime.Now + frameInterval;
+            }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
             if (voxelSize != 0) {

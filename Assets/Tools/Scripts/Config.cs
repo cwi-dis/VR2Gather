@@ -62,6 +62,7 @@ public class Config {
             }
             public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;
+            public float frameRate;
             [Serializable]
             public class _Encoder {
                 public int octreeBits;
