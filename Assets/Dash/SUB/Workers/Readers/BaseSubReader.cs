@@ -91,7 +91,7 @@ namespace Workers {
                             continue;
                         }
 
-                        // xxxjack lastSuccessfulReceive = System.DataTime.Now;
+                        lastSuccessfulReceive = System.DateTime.Now;
 
                         // Allocate and read.
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
@@ -148,7 +148,6 @@ namespace Workers {
             }
         }
         SubPullThread[] threads;
-        // xxxjack
 
         protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
             if (_url == "" || _url == null || _streamName == "")
@@ -178,14 +177,8 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            lock (this)
-            {
-                _DeinitDash();
-                foreach(var oq in outQueues)
-                {
-                    oq.Close();
-                }
-            }
+            Debug.Log($"{Name()}: Stopping");
+            _DeinitDash(true);
             base.OnStop();
             Debug.Log($"{Name()}: Stopped");
         }
@@ -251,21 +244,26 @@ namespace Workers {
             }
         }
 
-        private void _DeinitDash()
+        private void _DeinitDash(bool closeQueues)
         {
-            lock(this)
+            lock (this)
             {
                 if (subHandle != null) subHandle.free();
                 subHandle = null;
                 isPlaying = false;
             }
+            if (closeQueues)
+            {
+                foreach (var oq in outQueues)
+                {
+                    oq.Close();
+                }
+            }
             if (threads == null) return;
-            Debug.Log($"{Name()}: xxxjack joining threads");
-            foreach(var t in threads)
+            foreach (var t in threads)
             {
                 t.Join();
             }
-            Debug.Log($"{Name()}: xxxjack joined threads");
             threads = null;
         }
 
@@ -274,7 +272,7 @@ namespace Workers {
             // If we should stop playing we stop
             if (!isPlaying)
             {
-                _DeinitDash();
+                _DeinitDash(false);
             }
             // If we are not playing we start
             if (subHandle == null)
