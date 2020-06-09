@@ -962,7 +962,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
-            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+          //  socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
 
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
@@ -1084,8 +1084,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
         else if (user == 6) {
-            userNameLoginIF.text = "Fernando@ENTROPY";
-            userPasswordLoginIF.text = "ENTROPY2020";
+            userNameLoginIF.text = "Fernando@THEMO";
+            userPasswordLoginIF.text = "THEMO2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "fernando";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";

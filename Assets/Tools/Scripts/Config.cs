@@ -4,9 +4,15 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
-    public int targetFrameRate = 90;
-    public float memoryDamping = 1.3f;
-    public bool useAudio;
+    public enum AudioType {
+        None,
+        Dash,
+        SocketIO
+    };
+
+    public int          targetFrameRate = 90;
+    public float        memoryDamping = 1.3f;
+    public AudioType    audioType = AudioType.None;
     [Serializable]
     public class _TVMs
     {

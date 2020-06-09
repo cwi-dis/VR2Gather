@@ -21,7 +21,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public EntityPipeline Init(Config._User cfg, string url_pcc = "", string url_audio = "") {
+    public EntityPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "") {
         //
         // Start by creating the preparer, which will prepare pointclouds for display in the scene.
         //
@@ -125,13 +125,22 @@ public class EntityPipeline : MonoBehaviour {
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                 //
-                Debug.Log($"Config.Instance.useAudio {Config.Instance.useAudio}");
-                if (Config.Instance.useAudio) {
+                Debug.Log($"Config.Instance.audioType {Config.Instance.audioType}");
+                if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
                     if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                     try
                     {
                         gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                    } catch (System.EntryPointNotFoundException e) {
+                        Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                        throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    }
+                } else {
+                    var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                    if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
+                    try {
+                        gameObject.AddComponent<VoiceIOSender>().Init(userID, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
@@ -155,10 +164,15 @@ public class EntityPipeline : MonoBehaviour {
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                 //
-                if (Config.Instance.useAudio) {
+                if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                     gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                } else
+                if (Config.Instance.audioType == Config.AudioType.SocketIO) {
+                    var AudioSUBConfig = cfg.AudioSUBConfig;
+                    if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
+                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 }
                 break;
         }        
