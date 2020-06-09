@@ -9,20 +9,146 @@ namespace Workers {
         protected int streamCount;
         protected uint[] stream4CCs;
         sub.connection subHandle;
-        bool isPlaying;
-        sub.FrameInfo info = new sub.FrameInfo();
+        protected bool isPlaying;
         int numberOfUnsuccessfulReceives;
 //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
+        System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
         protected QueueThreadSafe[] outQueues;
         protected int[] streamIndexes;
 
         // Mainly for debug messages:
-        static int subCount;
-        string subName;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
+
+        // xxxjack
+        public class SubPullThread
+        {
+            BaseSubReader parent;
+            int stream_index;
+            System.Threading.Thread myThread;
+            QueueThreadSafe outQueue;
+            System.DateTime lastSuccessfulReceive;
+            System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(5);
+            System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
+
+            public SubPullThread(BaseSubReader _parent, int _stream_index, QueueThreadSafe _outQueue)
+            {
+                parent = _parent;
+                stream_index = _stream_index;
+                outQueue = _outQueue;
+                myThread = new System.Threading.Thread(run);
+                myThread.Name = Name();
+                lastSuccessfulReceive = System.DateTime.Now;
+            }
+
+            public string Name()
+            {
+                return $"{parent.Name()}.{stream_index}";
+            }
+
+            public void Start()
+            {
+                myThread.Start();
+            }
+
+            public void Join()
+            {
+                myThread.Join();
+            }
+
+            protected void run()
+            {
+                try
+                {
+                    while (true)
+                    {
+                        sub.FrameInfo info = new sub.FrameInfo();
+                        sub.connection subHandle = parent.getSubHandle();
+                        // Shouldn't happen, but's let make sure
+                        if (subHandle == null)
+                        {
+                            Debug.Log($"{Name()}: subHandle was closed");
+                            return;
+                        }
+
+                        // See whether data is available, and how many bytes we need to allocate
+                        int bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref info);
+
+                        // If no data is available we may want to close the subHandle, or sleep a bit
+                        if (bytesNeeded == 0)
+                        {
+                            System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
+                            if (noReceives > maxNoReceives)
+                            {
+                                Debug.LogWarning($"{Name()}: No data received for {noReceives}, closing subHandle");
+                                subHandle.free();
+                                parent.playFailed();
+                                return;
+                            }
+                            System.Threading.Thread.Sleep(receiveInterval);
+                            continue;
+                        }
+
+                        // xxxjack lastSuccessfulReceive = System.DataTime.Now;
+
+                        // Allocate and read.
+                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                        int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref info);
+                        // We no longer need subHandle
+                        subHandle.free();
+
+                        if (bytesRead != bytesNeeded)
+                        {
+                            Debug.LogError($"{Name()}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            mc.free();
+                            continue;
+                        }
+
+                        // Push to queue
+                        mc.info = info;
+                        outQueue.Enqueue(mc);
+
+                        statsUpdate(bytesRead);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+#if UNITY_EDITOR
+                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in SubPullThread", "Stop", "Continue"))
+                        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                }
+
+            }
+
+            System.DateTime statsLastTime;
+            double statsTotalBytes;
+            double statsTotalPackets;
+
+            public void statsUpdate(int nBytes)
+            {
+                if (statsLastTime == null)
+                {
+                    statsLastTime = System.DateTime.Now;
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                }
+                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+                {
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                    statsLastTime = System.DateTime.Now;
+                }
+                statsTotalBytes += nBytes;
+                statsTotalPackets += 1;
+            }
+        }
+        SubPullThread[] threads;
+        // xxxjack
 
         protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
             if (_url == "" || _url == null || _streamName == "")
@@ -54,136 +180,107 @@ namespace Workers {
         public override void OnStop() {
             lock (this)
             {
-                if (subHandle != null) subHandle.free();
-                subHandle = null;
-                isPlaying = false;
+                _DeinitDash();
                 foreach(var oq in outQueues)
                 {
                     oq.Close();
                 }
             }
             base.OnStop();
-            Debug.Log($"{Name()} {subName} {url} Stopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
-        protected void UnsuccessfulCheck(int _size) {
-            if (_size == 0) {
-                //
-                // We want to delay a bit before retrying. Ideally we delay until we know the next frame will
-                // be available, but that is difficult. 10ms is about 30% of a pointcloud frame duration. But it
-                // may be far too long for audio. Need to check.
-                numberOfUnsuccessfulReceives++;
-                System.Threading.Thread.Sleep(10);
-                if (numberOfUnsuccessfulReceives > 2000) {
-                    lock (this) {
-                        Debug.Log($"{Name()} {subName} {url}: Too many receive errors. Closing SUB player, will reopen.");
-                        if (subHandle != null) subHandle.free();
-                        subHandle = null;
-                        isPlaying = false;
-                        subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                        numberOfUnsuccessfulReceives = 0;
-                    }
-                }
-                return;
+        protected sub.connection getSubHandle()
+        {
+            lock(this)
+            {
+                if (!isPlaying) return null;
+                return (sub.connection)subHandle.AddRef();
             }
-            numberOfUnsuccessfulReceives = 0;
+        }
+
+
+        protected void playFailed()
+        {
+            lock(this)
+            {
+                isPlaying = false;
+            }
         }
 
         protected void InitDash() {
-            lock (this) {
-                if (System.DateTime.Now < subRetryNotBefore) return;
-                if (subHandle == null) {
-                    subName = $"source_from_sub_{++subCount}";
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    subHandle = sub.create(subName);
-                    if (subHandle == null) throw new System.Exception($"{this.GetType().Name}: sub_create({url}) failed");
-                    Debug.Log($"{Name()} {subName}: retry sub.create({url}) successful.");
-                }
-                isPlaying = subHandle.play(url);
-                if (!isPlaying) {
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                    Debug.Log($"{Name()} {subName}: sub.play({url}) failed, will try again later");
-                    return;
-                }
-                streamCount = subHandle.get_stream_count();
-                stream4CCs = new uint[streamCount];
-                for (int i = 0; i < streamCount; i++)
-                {
-                    stream4CCs[i] = subHandle.get_stream_4cc(i);
-                }
-                Debug.Log($"{Name()} {subName}: sub.play({url}) successful, {streamCount} streams.");
+            if (System.DateTime.Now < subRetryNotBefore) return;
+            subRetryNotBefore = System.DateTime.Now + subRetryInterval;
+            //
+            // Create SUB instance
+            //
+            subHandle = sub.create(Name());
+            if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+            Debug.Log($"{Name()}: retry sub.create() successful.");
+            //
+            // Start playing
+            //
+            isPlaying = subHandle.play(url);
+            if (!isPlaying) {
+                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
+                Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
+                return;
             }
+            //
+            // Get stream information
+            //
+            streamCount = subHandle.get_stream_count();
+            stream4CCs = new uint[streamCount];
+            for (int i = 0; i < streamCount; i++)
+            {
+                stream4CCs[i] = subHandle.get_stream_4cc(i);
+            }
+            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
+            //
+            // Start threads
+            //
+            int threadCount = streamIndexes.Length;
+            threads = new SubPullThread[threadCount];
+            for (int i=0; i<threadCount; i++)
+            {
+                threads[i] = new SubPullThread(this, streamIndexes[i], outQueues[i]);
+            }
+            foreach(var t in threads)
+            {
+                t.Start();
+            }
+        }
+
+        private void _DeinitDash()
+        {
+            lock(this)
+            {
+                if (subHandle != null) subHandle.free();
+                subHandle = null;
+                isPlaying = false;
+            }
+            if (threads == null) return;
+            Debug.Log($"{Name()}: xxxjack joining threads");
+            foreach(var t in threads)
+            {
+                t.Join();
+            }
+            Debug.Log($"{Name()}: xxxjack joined threads");
+            threads = null;
         }
 
         protected override void Update() {
             base.Update();
-            if (!isPlaying) {
-                InitDash();
-                return;
-            }
-            // We loop over all streams, reading data and pushing into the queue (or dropping)for every stream.
-            for (int outIndex = 0; outIndex < outQueues.Length; outIndex++)
+            // If we should stop playing we stop
+            if (!isPlaying)
             {
-                int streamNumber = streamIndexes[outIndex];
-                QueueThreadSafe outQueue = outQueues[outIndex];
-
-                // Ignore if this stream was not found in the MPD
-                if (streamNumber < 0) continue;
-
-                lock (this)
-                {
-                    // Shoulnd't happen, but's let make sure
-                    if (subHandle == null)
-                    {
-                        Debug.Log("{Name()} {subName}: subHandle was closed");
-                        return;
-                    }
-                    // See how many bytes we need to allocate
-                    int bytesNeeded = subHandle.grab_frame(streamNumber, System.IntPtr.Zero, 0, ref info);
-
-                    // Sideline: count number of unsuccessful receives so we can try and repoen the stream
-                    UnsuccessfulCheck(bytesNeeded);
-
-                    // If not data is currently available on this stream there is nothing more to do (for this stream)
-                    if (bytesNeeded == 0) continue;
-
-                    // Allocate and read.
-                    NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                    int bytesRead = subHandle.grab_frame(streamNumber, mc.pointer, mc.length, ref info);
-                    if (bytesRead != bytesNeeded)
-                    {
-                        Debug.LogError($"{Name()} {subName}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                        mc.free();
-                        continue;
-                    }
-
-                    // Push to queue
-                    mc.info = info;
-                    outQueue.Enqueue(mc);
-
-                    statsUpdate(bytesRead);
-                }
+                _DeinitDash();
             }
-        }
-
-        System.DateTime statsLastTime;
-        double statsTotalBytes;
-        double statsTotalPackets;
-
-        public void statsUpdate(int nBytes) {
-            if (statsLastTime == null) {
-                statsLastTime = System.DateTime.Now;
-                statsTotalBytes = 0;
-                statsTotalPackets = 0;
+            // If we are not playing we start
+            if (subHandle == null)
+            {
+                InitDash();
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10)) {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: SubReader#{instanceNumber}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
-                statsTotalBytes = 0;
-                statsTotalPackets = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalBytes += nBytes;
-            statsTotalPackets += 1;
         }
     }
 }

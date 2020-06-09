@@ -159,7 +159,7 @@ public class sub
     {
         System.IntPtr obj;
         SetMSPaths();
-        obj = _API.sub_create(pipeline, (msg)=> { UnityEngine.Debug.Log($"SUB: Internal message {msg}"); });
+        obj = _API.sub_create(pipeline, (msg)=> { UnityEngine.Debug.LogError($"sub_create: error: {msg}"); });
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);
