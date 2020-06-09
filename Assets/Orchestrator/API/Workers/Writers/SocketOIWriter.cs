@@ -33,7 +33,11 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            inQueue?.Close();
+            if (!inQueue.IsClosed())
+            {
+                Debug.LogWarning($"{Name()}: inQueue not closed, closing");
+                inQueue.Close();
+            }
             Debug.Log($"{Name()}: Stopped.");
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
         }
@@ -42,6 +46,7 @@ namespace Workers
             base.Update();
             if (OrchestratorWrapper.instance!=null) {
                 BaseMemoryChunk chk = inQueue.Dequeue();
+                if (chk == null) return;
                 var buf = new byte[chk.length];
                 // Debug.Log($"SocketOIWriter {chk.length}");
 
