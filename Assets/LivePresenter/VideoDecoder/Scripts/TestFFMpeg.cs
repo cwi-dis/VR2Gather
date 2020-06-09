@@ -15,7 +15,6 @@ public unsafe class TestFFMpeg : MonoBehaviour {
     public string outfilepath;
 
     public bool wDecoder;
-    private bool finish = false;
 
     AVCodec* codec;
     AVCodecParserContext* parser;

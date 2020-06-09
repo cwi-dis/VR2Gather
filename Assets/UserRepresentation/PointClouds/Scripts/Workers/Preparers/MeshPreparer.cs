@@ -13,6 +13,10 @@ namespace Workers {
         QueueThreadSafe InQueue;
 
         public MeshPreparer(QueueThreadSafe _InQueue) : base(WorkerType.End) {
+            if (_InQueue == null)
+            {
+                throw new System.Exception("MeshPreparer: InQueue is null");
+            }
             InQueue = _InQueue;
             PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
             Start();
@@ -31,8 +35,14 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (InQueue.Count>0 && !isReady) {
-                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.Dequeue();
+            lock (this)
+            {
+                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
+                // xxxjack Also: the 0 timeout to TryDecode may need thought.
+                if (isReady) return;    // We already have one.
+                if (InQueue.IsClosed()) return; // Weare shutting down
+                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
+                if (pc == null) return;
                 unsafe {
                     int bufferSize = pc.get_uncompressed_size();
                     currentCellSize = pc.cellsize();
@@ -59,8 +69,7 @@ namespace Workers {
                         indices[i] = i;
                         colors[i] = vertexArray[i].color;
                     }
-                    lock (this) isReady = true;
-                    //Next();
+                    isReady = true;
                 }
             }
         }

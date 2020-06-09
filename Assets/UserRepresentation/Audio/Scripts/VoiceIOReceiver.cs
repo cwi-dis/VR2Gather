@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VoiceDashReceiver : MonoBehaviour {
+public class VoiceIOReceiver : MonoBehaviour {
     Workers.BaseWorker      reader;
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
@@ -12,7 +12,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string _url, string _streamName, int _streamNumber, int _initialDelay) {
+    public void Init(string userID, string _url, string _streamName, int _streamNumber, int _initialDelay) {
         //        const int frequency = 16000;
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
@@ -21,8 +21,7 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.AudioSubReader(_url, _streamName, _streamNumber, _initialDelay, decoderQueue);
-//        reader = new Workers.SocketIOReader(userID, decoderQueue);
+        reader = new Workers.SocketIOReader(userID, decoderQueue);
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }

@@ -22,7 +22,7 @@ namespace Workers
             this.circularBuffer = new float[circularBufferSize];
             this.monoBehaviour = monoBehaviour;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder());
-            Debug.Log($"VoiceReader: Started bufferLength {bufferLength}.");
+            Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
             Start();
         }
 
@@ -33,7 +33,7 @@ namespace Workers
                 if (circularBufferWritePosition < circularBufferReadPosition) bytesInAudioBuffer = (circularBufferSize - circularBufferReadPosition) + circularBufferWritePosition;
                 else bytesInAudioBuffer = circularBufferWritePosition - circularBufferReadPosition;
 
-                if (outQueue.Free() && bytesInAudioBuffer >= bufferLength) {
+                if (outQueue._CanEnqueue() && bytesInAudioBuffer >= bufferLength) {
                     FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
                     System.Array.Copy(circularBuffer, circularBufferReadPosition, mc.buffer, 0, bufferLength);
                     outQueue.Enqueue(mc);
@@ -44,7 +44,8 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log($"VoiceReader: Stopped device {device}.");
+            Debug.Log($"{Name()}: Stopped device {device}.");
+            outQueue.Close();
         }
 
         string      device;
@@ -65,7 +66,7 @@ namespace Workers
                 samples = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"VoiceReader: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
+                Debug.Log($"{Name()}: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
                 bufferTime = bufferLength / (float)samples;
                 timer = Time.realtimeSinceStartup;
 
@@ -82,7 +83,7 @@ namespace Workers
                             float currentRead = Time.realtimeSinceStartup;
                             lastRead = currentRead;
                             if (!recorder.GetData(readBuffer, readPosition)) {
-                                Debug.LogError($"VoiceReader: ERROR!!! IsRecording {Microphone.IsRecording(null)}");
+                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(null)}");
                             }
                             // Write all data from microphone.
                             lock (circularBuffer) {
@@ -94,7 +95,7 @@ namespace Workers
                         }
                         timer = Time.realtimeSinceStartup;
                     } else {
-                        if (recording) { recording = false; Debug.LogError($"VoiceReader: microphone {device} stops recording."); }
+                        if (recording) { recording = false; Debug.LogError($"{Name()}: microphone {device} stops recording."); }
                         if ((Time.realtimeSinceStartup - timer) > bufferTime) {
                             timer += bufferTime;
                             lock (circularBuffer) {
@@ -108,7 +109,7 @@ namespace Workers
                     yield return null;
                 }
             } else
-                Debug.LogError("VoiceReader: No Microphones detected.");
+                Debug.LogError("{Name()}: No Microphones detected.");
         }
     }
 }

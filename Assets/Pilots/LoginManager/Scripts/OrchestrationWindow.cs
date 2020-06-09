@@ -33,9 +33,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [Header("Status")]
     public string orchestratorUrl;
     public bool autoRetrieveOrchestratorDataOnConnect;
-    [SerializeField] private Text statusText;
-    [SerializeField] private Text idText;
-    [SerializeField] private Text nameText;
+    [SerializeField] private Text statusText = null;
+    [SerializeField] private Text idText = null;
+    [SerializeField] private Text nameText = null;
 
     [Header("Login")]
     public InputField userNameLoginIF;
@@ -77,28 +77,25 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public Text sessionNumUsersText;
 
     [Header("Panels")]
-    [SerializeField] private GameObject loginPanel;
-    [SerializeField] private GameObject infoPanel;
-    [SerializeField] private GameObject createPanel;
-    [SerializeField] private GameObject joinPanel;
-    [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private GameObject sessionPanel;
-    [SerializeField] private GameObject usersPanel;
+    [SerializeField] private GameObject loginPanel = null;
+    [SerializeField] private GameObject infoPanel = null;
+    [SerializeField] private GameObject createPanel = null;
+    [SerializeField] private GameObject joinPanel = null;
+    [SerializeField] private GameObject lobbyPanel = null;
+    [SerializeField] private GameObject sessionPanel = null;
+    [SerializeField] private GameObject usersPanel = null;
 
     [Header("Buttons")]
-    [SerializeField] private Button loginButton;
-    [SerializeField] private Button createButton;
-    [SerializeField] private Button joinButton;
-    [SerializeField] private Button doneCreateButton;
-    [SerializeField] private Button doneJoinButton;
-    [SerializeField] private Button readyLobbyButton;
-    [SerializeField] private Button PCCalibButton;
-    [SerializeField] private Button TVMCalibButton;
+    [SerializeField] private Button createButton = null;
+    [SerializeField] private Button joinButton = null;
+    [SerializeField] private Button readyLobbyButton = null;
+    [SerializeField] private Button PCCalibButton = null;
+    [SerializeField] private Button TVMCalibButton = null;
     
     // Logs container
     [Header("Logs container")]
-    [SerializeField] private RectTransform logsContainer;
-    [SerializeField] private ScrollRect logsScrollRect;
+    [SerializeField] private RectTransform logsContainer = null;
+    [SerializeField] private ScrollRect logsScrollRect = null;
     private Font ArialFont;
 
     #endregion
@@ -110,7 +107,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     #region orchestration logics
 
-    [HideInInspector] public PilotController controller;
+    [HideInInspector] public PilotController controller = null;
 
     // the wrapper for the orchestrator
     private OrchestratorWrapper orchestratorWrapper;
@@ -965,7 +962,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
-            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+          //  socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
 
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
@@ -1087,8 +1084,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
         else if (user == 6) {
-            userNameLoginIF.text = "Fernando@ENTROPY";
-            userPasswordLoginIF.text = "ENTROPY2020";
+            userNameLoginIF.text = "Fernando@THEMO";
+            userPasswordLoginIF.text = "THEMO2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "fernando";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";
