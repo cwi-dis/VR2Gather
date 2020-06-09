@@ -94,7 +94,7 @@ namespace Workers {
             {
                 eo.free();
             }
-            Debug.Log("{Name()}: Stopped");
+            Debug.Log($"{Name()}: Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
