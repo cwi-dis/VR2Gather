@@ -48,15 +48,26 @@ namespace Workers {
 
         void _Update() {
             Debug.Log($"{Name()}: thread started");
-            try {
-                while (bRunning) {
+            try
+            {
+                while (bRunning)
+                {
                     Update();
                     System.Threading.Thread.Sleep(loopInterval);
                 }
-            }catch(System.Exception e) {
-                Debug.LogError($"{Name()}: Exception: {e.Message}\n{e.StackTrace}");
             }
-            OnStop();
+            catch (System.Exception e)
+            {
+                Debug.LogError($"{Name()}: Exception: {e}\n{e.StackTrace}");
+            }
+            try
+            {
+                OnStop();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
+            }
             Debug.Log($"{Name()}: thread stopped");
         }
         protected virtual void Update(){ }
