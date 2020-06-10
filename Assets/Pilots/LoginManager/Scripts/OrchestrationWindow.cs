@@ -355,8 +355,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
     
     private void AddSession() {
-        orchestratorWrapper.AddSession( availableScenarios[scenarioIdDrop.value].scenarioId,
-                                        sessionNameIF.text, sessionDescriptionIF.text);
+        orchestratorWrapper.AddSession( availableScenarios[scenarioIdDrop.value].scenarioId,sessionNameIF.text, sessionDescriptionIF.text);
+
     }
 
     public void OnAddSessionResponse(ResponseStatus status, Session session) {
@@ -590,6 +590,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+        dd.value = 999;
 
         if (isAutoRetrievingData) {
             // auto retriving phase: call next
