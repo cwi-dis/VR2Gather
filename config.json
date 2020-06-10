@@ -36,7 +36,9 @@
             "y": 0.0,
             "z": 0.0
         },
-        "forceMesh": false
+        "forceMesh": false,
+		"defaultCellSize": 0.01,
+		"cellSizeFactor": 0.8
     },
 
     "LocalUser": {

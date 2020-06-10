@@ -33,6 +33,8 @@ public class Config {
     public class _PCs {
         public Vector3 scale;
         public bool forceMesh;
+        public float defaultCellSize;
+        public float cellSizeFactor;
     };
     public _PCs PCs;
 
