@@ -6,26 +6,26 @@ namespace Workers
 {
     public class PointBufferRenderer : MonoBehaviour
     {
-        ComputeBuffer   pointBuffer;
-        int             pointCount = 0;
-        Material        material;
+        ComputeBuffer           pointBuffer;
+        int                     pointCount = 0;
+        Material                material;
+        MaterialPropertyBlock   block;
         public Workers.BufferPreparer preparer;
 
         // Start is called before the first frame update
         void Start() {
             if (material == null)  material = Resources.Load<Material>("PointClouds");
+            block = new MaterialPropertyBlock();
         }
 
         private void Update() {
-            material.SetFloat("_PointSize", preparer.GetPointSize());
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+            block.SetBuffer("_PointBuffer", pointBuffer);
+            block.SetFloat("_PointSize", preparer.GetPointSize());
+            block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
-            // TODO: Do view frustum culling here.
-            material.SetBuffer("_PointBuffer", pointBuffer);
-            material.SetMatrix("_Transform", transform.localToWorldMatrix);
-
-            Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one*2), MeshTopology.Points, pointCount, 1);
+            Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one*2), MeshTopology.Points, pointCount, 1, null, block);
             statsUpdate(pointCount);
         }
      
