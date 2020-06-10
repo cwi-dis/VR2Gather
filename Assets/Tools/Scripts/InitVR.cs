@@ -35,7 +35,8 @@ public class InitVR : MonoBehaviour {
             if (XRSettings.loadedDeviceName == "Oculus")
                 ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
         } 
-        else  {
+        else {
+            Debug.Log("pushing cameras");
             Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
             for (int i = 0; i < cameras.Length; ++i)
                 cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
