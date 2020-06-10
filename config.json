@@ -2,6 +2,7 @@
     "targetFrameRate": 90,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
+    "nonHMDHeight": 1.5,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@192.168.1.1:5672",
         "exchangeName": "TVMeshData",

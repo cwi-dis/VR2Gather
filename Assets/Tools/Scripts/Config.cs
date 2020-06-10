@@ -13,6 +13,7 @@ public class Config {
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public AudioType    audioType = AudioType.None;
+    public float        nonHMDHeight = 1.8f;
     [Serializable]
     public class _TVMs
     {

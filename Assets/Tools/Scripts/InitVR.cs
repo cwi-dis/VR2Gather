@@ -5,9 +5,6 @@ using UnityEngine;
 using UnityEngine.XR;
 
 public class InitVR : MonoBehaviour {
-    public float nonVRCameraHeight = 1.7f;
-
-
 
     private const string pluginName = "OVRPlugin";
     public enum Bool
@@ -37,8 +34,12 @@ public class InitVR : MonoBehaviour {
         if (XRDevice.isPresent) {
             if (XRSettings.loadedDeviceName == "Oculus")
                 ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
-        } else
-            Camera.main.transform.position = Vector3.up * nonVRCameraHeight;
+        } 
+        else  {
+            Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
+            for (int i = 0; i < cameras.Length; ++i)
+                cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+        }
 
     }
 }
