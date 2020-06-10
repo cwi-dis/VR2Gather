@@ -11,8 +11,12 @@ namespace Workers
         System.IntPtr                       currentBuffer;
         int                                 currentSize;
         float                               currentCellSize = 0.008f;
+        float defaultCellSize;
+        float cellSizeFactor;
         QueueThreadSafe                     InQueue;
-        public BufferPreparer(QueueThreadSafe _InQueue):base(WorkerType.End) {
+        public BufferPreparer(QueueThreadSafe _InQueue, float _defaultCellSize=0, float _cellSizeFactor=0):base(WorkerType.End) {
+            defaultCellSize = _defaultCellSize!=0?_defaultCellSize:0.008f;
+            cellSizeFactor = _cellSizeFactor!=0?_cellSizeFactor:0.71f;
             if (_InQueue == null)
             {
                 throw new System.Exception("BufferPreparer: InQueue is null");
@@ -84,8 +88,8 @@ namespace Workers
         }
 
         public float GetPointSize() {
-            if (currentCellSize > 0.0000f) return currentCellSize*0.71f;
-            else return 0.008f;
+            if (currentCellSize > 0.0000f) return currentCellSize*cellSizeFactor;
+            else return defaultCellSize;
         }
 
     }

@@ -32,12 +32,12 @@ public class EntityPipeline : MonoBehaviour {
         Config._PCs PCs = Config.Instance.PCs;
         if (PCs == null) throw new System.Exception("EntityPipeline: missing PCs config");
         if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
-            preparer = new Workers.MeshPreparer(preparerQueue);
+            preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
             ((Workers.PointMeshRenderer)render).preparer = (Workers.MeshPreparer)preparer;
         }
         else { // Buffer
-            preparer = new Workers.BufferPreparer(preparerQueue);
+            preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
         }
