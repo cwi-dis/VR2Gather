@@ -44,7 +44,7 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log($"{Name()}: Stopped device {device}.");
+            Debug.Log($"{Name()}: Stopped microphone {device}.");
             outQueue.Close();
         }
 
@@ -57,24 +57,28 @@ namespace Workers
         bool        recording = true;
 
         IEnumerator MicroRecorder() {
+            yield return null;
+            yield return null;
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
-                Microphone.GetDeviceCaps(null, out currentMinFreq, out samples);
+                Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
                 samples = 16000;
-                recorder = Microphone.Start(null, true, 1, samples);
+                recorder = Microphone.Start(device, true, 1, samples);
                 samples = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"{Name()}: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(null)}");
+                Debug.Log($"{Name()}: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
                 bufferTime = bufferLength / (float)samples;
                 timer = Time.realtimeSinceStartup;
+
+                recording = Microphone.IsRecording(device);
 
                 int readPosition = 0;
 
                 while ( true ) {
-                    if (Microphone.IsRecording(null)) {
-                        int writePosition = Microphone.GetPosition(null);
+                    if (Microphone.IsRecording(device)) {
+                        int writePosition = Microphone.GetPosition(device);
                         int available;
                         if (writePosition < readPosition) available = (samples - readPosition) + writePosition;
                         else available = writePosition - readPosition;
@@ -83,7 +87,7 @@ namespace Workers
                             float currentRead = Time.realtimeSinceStartup;
                             lastRead = currentRead;
                             if (!recorder.GetData(readBuffer, readPosition)) {
-                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(null)}");
+                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(device)}");
                             }
                             // Write all data from microphone.
                             lock (circularBuffer) {
