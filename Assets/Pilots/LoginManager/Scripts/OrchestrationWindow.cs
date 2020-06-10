@@ -926,7 +926,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2PresenterToggles() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             presenterToggle.gameObject.SetActive(true);
             // Check if presenter is active to show live option
             if (presenterToggle.isOn) liveToggle.gameObject.SetActive(true);
@@ -936,7 +936,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2UserRepresentationToggle() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             tvmToggle.gameObject.SetActive(true);
             pcToggle.gameObject.SetActive(true);
 
@@ -953,7 +953,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2AudioToggle() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             noAudioToggle.gameObject.SetActive(true);
             socketAudioToggle.gameObject.SetActive(true);
             dashAudioToggle.gameObject.SetActive(true);
@@ -1018,7 +1018,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void ReadyButton() {
         if (isMaster) {
-            if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
+            if (activeScenario.scenarioName == "Pilot 0") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio );
+            else if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
             else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" +
                                                                                 kindRepresentation + "_" + kindAudio + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
             //else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
