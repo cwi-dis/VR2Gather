@@ -35,7 +35,10 @@ abstract public class PilotController : MonoBehaviour {
     public virtual void Start() {
         background = GameObject.Find("Background");
         GameObject managerTest = GameObject.Find("ManagerTest");
-        if(managerTest!=null) orchestrator = managerTest.GetComponent<OrchestrationWindow>();
+        if (managerTest != null) {
+            orchestrator = managerTest.GetComponent<OrchestrationWindow>();
+        }
+
         var tmp = Config.Instance;
     }
 
