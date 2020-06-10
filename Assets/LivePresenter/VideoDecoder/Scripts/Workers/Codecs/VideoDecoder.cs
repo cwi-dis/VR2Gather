@@ -52,12 +52,12 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VideoDecoder: Stopped");
+            Debug.Log("{Name()}: Stopped");
         }
 
         protected override void Update() {
             base.Update();
-            if (inVideoQueue.Count >0 && outVideoQueue.Free()) {
+            if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
                 ffmpeg.av_init_packet(videoPacket);
@@ -87,7 +87,7 @@ namespace Workers {
                 mc.free();
             }
 
-            if (inAudioQueue.Count > 0 && outAudioQueue.Free()) {
+            if (inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
                 // Audio-
                 if (codecAudio == null) CreateAudioCodec(mc);
@@ -222,7 +222,7 @@ namespace Workers {
             if(errbuf==null) errbuf = (byte*)Marshal.AllocHGlobal(128);
             ffmpeg.av_strerror(err, errbuf, 128);
             string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
-            Debug.Log($"{message} {err} {err_txt}");
+            Debug.Log($"{Name()}: {message} {err} {err_txt}");
 
         }
     }

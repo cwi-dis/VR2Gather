@@ -17,28 +17,59 @@ public class LoginController : PilotController {
         base.Update();
     }
 
-    IEnumerator RefreshAndLoad() {
+    IEnumerator RefreshAndLoad(string scenary) {
         yield return null;
         orchestrator.GetUsers();
         while (orchestrator.watingForUser) {
             yield return null;
         }
-        if (orchestrator.isMaster && !orchestrator.isDebug) SceneManager.LoadScene("Pilot2_Presenter");
-        else SceneManager.LoadScene("Pilot2_Player");
+        SceneManager.LoadScene(scenary);
     }
 
 public override void MessageActivation(string message) {
         Debug.Log(message);
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
+            if (msg[1] == "Pilot 0") {
+                if (msg[2] == "0") { // TVM
+                    orchestrator.useTVM = true;
+                    orchestrator.usePC = false;
+                } else { // PC
+                    orchestrator.useTVM = false;
+                    orchestrator.usePC = true;
+                }
+                // Check Audio
+                switch (msg[3]) {
+                    case "0": // No Audio
+                        orchestrator.useAudio = false;
+                        orchestrator.useSocketIOAudio = false;
+                        orchestrator.useDashAudio = false;
+                        break;
+                    case "1": // Socket Audio
+                        orchestrator.useAudio = true;
+                        orchestrator.useSocketIOAudio = true;
+                        orchestrator.useDashAudio = false;
+                        break;
+                    case "2": // Dash Audio
+                        orchestrator.useAudio = true;
+                        orchestrator.useSocketIOAudio = false;
+                        orchestrator.useDashAudio = true;
+                        break;
+                    default:
+                        break;
+                }
+                orchestrator.presenterToggle.isOn = false;
+                orchestrator.liveToggle.isOn = false;
+                if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
+            } else
             if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
+            else
             if (msg[1] == "Pilot 2") {
                 // Check Representation
                 if (msg[2] == "0") { // TVM
                     orchestrator.useTVM = true;
                     orchestrator.usePC = false;
-                }
-                else { // PC
+                } else { // PC
                     orchestrator.useTVM = false;
                     orchestrator.usePC = true;
                 }
@@ -69,7 +100,10 @@ public override void MessageActivation(string message) {
                 if (msg[5] == "True") orchestrator.liveToggle.isOn = true;
                 else orchestrator.liveToggle.isOn = false;
 
-                if (loadCoroutine==null)  loadCoroutine = StartCoroutine(RefreshAndLoad());
+                if (loadCoroutine == null) {
+                    if (orchestrator.isMaster && !orchestrator.isDebug) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Presenter"));
+                    else loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
+                }
             }
         }
         else if (msg[0] == MessageType.READY) {

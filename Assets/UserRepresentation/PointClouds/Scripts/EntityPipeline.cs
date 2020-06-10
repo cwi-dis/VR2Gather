@@ -11,7 +11,7 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  preparer;
     MonoBehaviour       render;
 
-    QueueThreadSafe preparerQueue = new QueueThreadSafe();
+    QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
@@ -22,7 +22,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode = false) {
+    public EntityPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
         //
         // Start by creating the preparer, which will prepare pointclouds for display in the scene.
         //
@@ -50,7 +50,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe();
+                encoderQueue = new QueueThreadSafe(2, true);
                 //
                 // Create reader
                 //
@@ -59,7 +59,7 @@ public class EntityPipeline : MonoBehaviour {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
-                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
+                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, preparerQueue, encoderQueue);
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
                 {
@@ -102,8 +102,7 @@ public class EntityPipeline : MonoBehaviour {
                     //
                     try {
                         codec = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
-                    }
-                    catch (System.EntryPointNotFoundException) {
+                    } catch (System.EntryPointNotFoundException) {
                         Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                         throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                     }
@@ -115,8 +114,7 @@ public class EntityPipeline : MonoBehaviour {
                         throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
                         writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
-                    }
-                    catch (System.EntryPointNotFoundException e) {
+                    } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
@@ -124,15 +122,13 @@ public class EntityPipeline : MonoBehaviour {
                     // Create pipeline for audio, if needed.
                     // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                     //
-                    Debug.Log($"Config.Instance.useAudio {Config.Instance.useAudio}");
-                    if (Config.Instance.useAudio) {
+                    Debug.Log($"Config.Instance.audioType {Config.Instance.audioType}");
+                    if (Config.Instance.audioType == Config.AudioType.Dash) {
                         var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                        if (AudioBin2Dash == null)
-                            throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
+                        if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                         try {
                             gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                        }
-                        catch (System.EntryPointNotFoundException e) {
+                        } catch (System.EntryPointNotFoundException e) {
                             Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                             throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         }
@@ -143,7 +139,7 @@ public class EntityPipeline : MonoBehaviour {
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
                 // Allocate queues we need for this pipeline
-                decoderQueue = new QueueThreadSafe();
+                decoderQueue = new QueueThreadSafe(2, true);
                 //
                 // Create sub receiver
                 //
@@ -156,10 +152,15 @@ public class EntityPipeline : MonoBehaviour {
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                 //
-                if (Config.Instance.useAudio) {
+                if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                     gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                } else
+                if (Config.Instance.audioType == Config.AudioType.SocketIO) {
+                    var AudioSUBConfig = cfg.AudioSUBConfig;
+                    if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
+                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 }
                 break;
         }
@@ -194,6 +195,7 @@ public class EntityPipeline : MonoBehaviour {
         codec?.StopAndWait();
         writer?.StopAndWait();
         preparer?.StopAndWait();
+        // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }

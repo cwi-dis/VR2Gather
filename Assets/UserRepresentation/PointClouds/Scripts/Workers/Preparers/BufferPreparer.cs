@@ -29,26 +29,37 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (InQueue.Count>0 && !isReady) {
-                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.Dequeue();
-                unsafe {
+            lock (this)
+            {
+                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
+                // xxxjack Also: the 0 timeout to TryDecode may need thought.
+                if (isReady) return;    // We already have one.
+                if (InQueue.IsClosed()) return; // Weare shutting down
+                cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
+                if (pc == null) return;
+                unsafe
+                {
                     currentSize = pc.get_uncompressed_size();
+                    if (currentSize <= 0)
+                    {
+                        Debug.LogError("BufferPreparer: pc.get_uncompressed_size is 0");
+                        return;
+                    }
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
-                    if (currentSize > 0) {
-                        if (currentSize > byteArray.Length) {
-                            if (byteArray.Length != 0) byteArray.Dispose();
-                            byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
-                            currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
-                        }
-                        int ret = pc.copy_uncompressed(currentBuffer, currentSize);
-                        pc.free();
-                        if (ret * 16 != currentSize) {
-                            Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
-                        }
-                        lock (this) isReady = true;
-                        // Next();
+                    if (currentSize > byteArray.Length)
+                    {
+                        if (byteArray.Length != 0) byteArray.Dispose();
+                        byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
+                        currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                     }
+                    int ret = pc.copy_uncompressed(currentBuffer, currentSize);
+                    pc.free();
+                    if (ret * 16 != currentSize)
+                    {
+                        Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                    }
+                    isReady = true;
                 }
             }
         }

@@ -41,13 +41,13 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
-            Debug.Log("VideoPreparer Stopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
         protected override void Update() {
             base.Update();
-            if (inVideoQueue.Count>0) {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Peek();
+            if (inVideoQueue._CanDequeue()) {
+                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
                 if (videoBufferSize == 0) {
                     videoBufferSize = len * 15;
@@ -70,8 +70,8 @@ namespace Workers {
                 }
             }
 
-            if (inAudioQueue.Count > 0) {
-                FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue.Peek();
+            if (inAudioQueue._CanDequeue()) {
+                FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
                 int len = mc.elements;
                 if (len < freeAudio) {
                     mc = (FloatMemoryChunk)inAudioQueue.Dequeue();
@@ -117,7 +117,7 @@ namespace Workers {
                     lock (this) { availableAudio -= len; }
                     return true;
                 } else
-                    Debug.Log("Buffer audio sin datos.");
+                    Debug.Log($"{Name()}: Buffer audio sin datos.");
             }
             return false;
         }

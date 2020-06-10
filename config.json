@@ -21,13 +21,13 @@
     },
     "PCs": {
         "offsetPosition": {
-            "x": 1.1699992418289185,
-            "y": 0.16999998688697816,
-            "z": -0.43999987840652468
+            "x": 0,
+            "y": 0,
+            "z": 0
         },
         "offsetRotation": {
             "x": 0.0,
-            "y": 341.99993896484377,
+            "y": 0.0,
             "z": 0.0
         },
         "scale": {
@@ -58,6 +58,7 @@
                 "MetaExchangeName": "VolumetricMetaData"
             },
             "voxelSize": 0.009999999776482582,
+            "frameRate" : 15,
             "Encoders": [
 				{
 					"octreeBits": 9

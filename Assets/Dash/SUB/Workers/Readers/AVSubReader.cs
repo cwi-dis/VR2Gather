@@ -9,8 +9,8 @@ namespace Workers {
             H264 = 0x34363268
         };
 
-        public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue, bool _bDropFrames = false)
-         : base(url, streamName, 0, _bDropFrames) {
+        public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+         : base(url, streamName, 0) {
             outQueues = new QueueThreadSafe[2] { _outQueue, _out2Queue };
             int videoStream = -1;
             int audioStream = -1;

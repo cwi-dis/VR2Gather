@@ -27,7 +27,7 @@ namespace Workers {
                     throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
                 else {
                     Start();
-                    Debug.Log($"PCDecoder#{instanceNumber} Inited");
+                    Debug.Log($"{Name()} Inited");
                 }
 
             }
@@ -38,42 +38,41 @@ namespace Workers {
             
         }
 
+        public override string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
         public override void OnStop() {
             base.OnStop();
-            decoder?.free();
-            decoder = null;
-            Debug.Log($"PCDecoder#{instanceNumber} Stopped");
+            lock (this)
+            {
+                decoder?.free();
+                decoder = null;
+                outQueue.Close();
+            }
+            Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update(){
             base.Update();
-            if (inQueue.Count > 0 ) {
-                NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.Dequeue();
-                if (!outQueue.Free())
+            NativeMemoryChunk mc;
+            lock (this)
+            {
+                mc = (NativeMemoryChunk)inQueue.Dequeue();
+                if (mc == null) return;
+                if (decoder == null) return;
+            }
+            decoder.feed(mc.pointer, mc.length);
+            mc.free();
+            while (decoder.available(false)) {
+                cwipc.pointcloud pc = decoder.get();
+                if (pc == null)
                 {
-                    Debug.Log($"PCDecoder#{instanceNumber}: skip decode, no room in outQueue");
-                    mc.free();
-                    return;
+                    throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                decoder.feed(mc.pointer, mc.length);
-                mc.free();
-                if (decoder.available(true)) {
-                    cwipc.pointcloud pc = decoder.get();
-                    if (pc != null) {
-                        if (outQueue.Free())
-                        {
-                            statsUpdate(pc.count(), pc.timestamp());
-                            outQueue.Enqueue(pc);
-                        }
-                        else
-                        {
-                            Debug.LogError($"PCDecoder#{instanceNumber}: after decode, no room in outQueue any more");
-                            pc.free();
-                        }
-                    } else throw new System.Exception($"PCDecoder#{instanceNumber}: cwipc_decoder: available() true, but did not return a pointcloud");
-                }
-                else
-                    Debug.LogError($"PCDecoder#{instanceNumber}: cwipc_decoder: no pointcloud available currentSize {mc.length}");
+                statsUpdate(pc.count(), pc.timestamp());
+                outQueue.Enqueue(pc);
             }
         }
 
@@ -94,7 +93,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PCDecoder#{instanceNumber}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, latency {statsTotalLatency/statsTotalPointclouds}");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;

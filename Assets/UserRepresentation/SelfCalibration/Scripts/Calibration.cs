@@ -21,7 +21,7 @@ public class Calibration : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        p0 = gameObject.AddComponent<EntityPipeline>().Init(Config.Instance.LocalUser, "", "", true);
+        p0 = gameObject.AddComponent<EntityPipeline>().Init("",Config.Instance.LocalUser, "", "", true);
     }
 
     bool rightTrigger = false;
