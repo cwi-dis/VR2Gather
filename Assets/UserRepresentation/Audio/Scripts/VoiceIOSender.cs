@@ -12,12 +12,10 @@ public class VoiceIOSender : MonoBehaviour {
     QueueThreadSafe senderQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string userID, string _url, string _streamName, int _segmentSize, int _segmentLife) {
+    public void Init(string userID) {
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
-        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
         writer = new Workers.SocketIOWriter(userID, senderQueue);
-
     }
 
     void OnDestroy() {

@@ -132,6 +132,9 @@ public class EntityPipeline : MonoBehaviour {
                             Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                             throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         }
+                    } else
+                    if (Config.Instance.audioType == Config.AudioType.SocketIO) {
+                        gameObject.AddComponent<VoiceIOSender>().Init(userID);
                     }
                 }
                 break;
@@ -158,9 +161,7 @@ public class EntityPipeline : MonoBehaviour {
                     gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                    var AudioSUBConfig = cfg.AudioSUBConfig;
-                    if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline
                 }
                 break;
         }
