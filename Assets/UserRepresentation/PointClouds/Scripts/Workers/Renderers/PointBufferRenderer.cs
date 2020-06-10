@@ -31,7 +31,6 @@ namespace Workers
      
         public void OnDestroy() {
             if (pointBuffer != null) { pointBuffer.Release(); pointBuffer = null; }
-            if (material != null) { Destroy(material); material = null; }
         }
 
         static int instanceCounter = 0;
