@@ -542,25 +542,21 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Joined");
-            }
-            */
         }
     }
 
     public void OnUserLeftSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
-            //orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Leaved");
+
+            if (SceneManager.GetActiveScene().name != "LoginManager") {
+                for (int i = 0; i < controller.players.Length; ++i) {
+                    if (controller.players[i].orchestratorId == _userID) {
+                        Destroy(controller.players[i].gameObject);
+                        break;
+                    }
+                }                    
             }
-            */
         }
     }
 
