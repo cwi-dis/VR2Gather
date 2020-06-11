@@ -552,7 +552,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             if (SceneManager.GetActiveScene().name != "LoginManager") {
                 for (int i = 0; i < controller.players.Length; ++i) {
                     if (controller.players[i].orchestratorId == _userID) {
-                        Destroy(controller.players[i]);
+                        Destroy(controller.players[i].gameObject);
                         break;
                     }
                 }                    
