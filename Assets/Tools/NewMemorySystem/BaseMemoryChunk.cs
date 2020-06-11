@@ -39,9 +39,11 @@ public class BaseMemoryChunk {
     }
 
     protected BaseMemoryChunk() {
+        // _pointer will be set later, in the subclass constructor. Not a pattern I'm happy with but difficult to fix.
         refCount = 1;
         BaseMemoryChunkReferences.AddReference(this.GetType());
     }
+
 
     public BaseMemoryChunk AddRef() {
         lock (this)
@@ -50,18 +52,30 @@ public class BaseMemoryChunk {
             return this;
         }
     }
-    public IntPtr pointer { get { return _pointer; } }
+    public IntPtr pointer { 
+        get {
+            lock(this)
+            {
+                if (refCount <= 0)
+                {
+                    throw new System.Exception($"BaseMemoryChunk.pointer: refCount={refCount}");
+                }
+                return _pointer;
+            }
+        }
+    }
 
     public void free() {
         lock (this)
         {
-            if ( --refCount < 1) {
-                if (refCount < 0)
+            if ( refCount <= 1) {
+                if (refCount <= 0)
                 {
                     throw new System.Exception($"BaseMemoryChunk.free: refCount={refCount}");
                 }
                 if (_pointer!=IntPtr.Zero) {
                     onfree();
+                    refCount--;
                     _pointer = IntPtr.Zero;
                     BaseMemoryChunkReferences.DeleteReference(this.GetType());
                 }

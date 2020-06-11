@@ -73,9 +73,9 @@ namespace Workers {
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
             if (voxelSize != 0) {
-                var tmp = pc;
-                pc = cwipc.downsample(tmp, voxelSize);
-                tmp.free();
+                var newPc = cwipc.downsample(pc, voxelSize);
+                pc.free();
+                pc = newPc;
                 if (pc== null)  throw new System.Exception($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
             }
             statsUpdate(pc.count());
