@@ -57,7 +57,7 @@ namespace Workers {
                 decoder = null;
                 if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             }
-            Debug.Log($"{Name()} Stopped");
+            if (debugThreading) Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update(){
