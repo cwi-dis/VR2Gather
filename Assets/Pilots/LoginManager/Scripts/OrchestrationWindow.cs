@@ -37,6 +37,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [SerializeField] private Text idText = null;
     [SerializeField] private Text nameText = null;
     [SerializeField] private Text orchURLText = null;
+    [SerializeField] private Text nativeVerText = null;
     [SerializeField] private Text playerVerText = null;
     [SerializeField] private Text orchVerText = null;
 
@@ -805,6 +806,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         dashAudioToggle.isOn = false;
 
         orchURLText.text = orchestratorUrl;
+        nativeVerText.text = VersionLog.Instance.NativeClient;
         playerVerText.text = "v" + Application.version;
         orchVerText.text = "";
 
