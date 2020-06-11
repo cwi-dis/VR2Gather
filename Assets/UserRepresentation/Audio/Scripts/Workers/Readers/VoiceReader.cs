@@ -57,12 +57,13 @@ namespace Workers
         bool        recording = true;
 
         IEnumerator MicroRecorder() {
+            yield return null;
             var ac = AudioSettings.GetConfiguration();
             ac.sampleRate = 16000 * 3;
             ac.dspBufferSize = 320 * 3;
-
-
             AudioSettings.Reset(ac);
+            yield return null;
+
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
