@@ -336,6 +336,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         orchestratorWrapper.GetSessions();
     }
 
+    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
+
+    }
+
+
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions) {
         // update the list of available sessions
         availableSessions = sessions;
@@ -399,10 +404,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
             activeSession = session;
-
-            if (AudioManager.Instance != null) { // Load Socket.io Audio
-                AudioManager.Instance.StartRecordAudio();
-            }
 
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
@@ -486,9 +487,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             //scenarioIdText.text = session.scenarioId;            
 
             if (!updated) {
-                if (AudioManager.Instance != null) { // Load Socket.io Audio
-                    AudioManager.Instance.StartRecordAudio();
-                }
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
                         OnUserJoinedSession(id);
@@ -547,9 +545,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
-            if (AudioManager.Instance != null) {
-                AudioManager.Instance.StartListeningAudio2(_userID);
-            }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
             /*
