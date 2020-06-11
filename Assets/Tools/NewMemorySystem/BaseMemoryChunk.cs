@@ -65,7 +65,7 @@ public class BaseMemoryChunk {
         }
     }
 
-    public void free() {
+    public int free() {
         lock (this)
         {
             if ( --refCount < 1) {
@@ -81,6 +81,7 @@ public class BaseMemoryChunk {
                     BaseMemoryChunkReferences.DeleteReference(this.GetType());
                 }
             }
+            return refCount;
         }
     }
 
