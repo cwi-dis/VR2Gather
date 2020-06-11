@@ -64,14 +64,14 @@ namespace Workers {
                 {
                     while (true)
                     {
-                        sub.FrameInfo info = new sub.FrameInfo();
+                        if (outQueue.IsClosed()) return;
                         sub.connection subHandle = parent.getSubHandle();
-                        // Shouldn't happen, but's let make sure
                         if (subHandle == null)
                         {
                             Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
                             return;
                         }
+                        sub.FrameInfo info = new sub.FrameInfo();
 
                         // See whether data is available, and how many bytes we need to allocate
                         int bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref info);
