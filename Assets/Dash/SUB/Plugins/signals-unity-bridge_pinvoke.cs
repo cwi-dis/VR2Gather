@@ -159,7 +159,12 @@ public class sub
     {
         System.IntPtr obj;
         SetMSPaths();
-        obj = _API.sub_create(pipeline, (msg)=> { UnityEngine.Debug.LogError($"sub.connection: asynchronous error: {msg}"); });
+        _API.MessageLogCallback errorCallback = (msg) =>
+        {
+            string _pipeline = String.Copy(pipeline);
+            UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}");
+        };
+        obj = _API.sub_create(pipeline, errorCallback);
         if (obj == System.IntPtr.Zero)
             return null;
         return new connection(obj);
