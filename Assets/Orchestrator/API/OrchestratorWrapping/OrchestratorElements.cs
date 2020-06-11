@@ -29,6 +29,7 @@ namespace OrchestratorWrapping
     {
         public string userId = "";
         public string userName = "";
+        public string userPassword = "";
         public bool userAdmin = false;
         public UserData userData;
         public SfuData sfuData;
