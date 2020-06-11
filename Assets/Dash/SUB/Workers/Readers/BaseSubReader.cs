@@ -69,7 +69,7 @@ namespace Workers {
                         // Shouldn't happen, but's let make sure
                         if (subHandle == null)
                         {
-                            Debug.Log($"{Name()}: subHandle was closed");
+                            Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
                             return;
                         }
 
@@ -79,11 +79,11 @@ namespace Workers {
                         // If no data is available we may want to close the subHandle, or sleep a bit
                         if (bytesNeeded == 0)
                         {
+                            subHandle.free();
                             System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
                             if (noReceives > maxNoReceives)
                             {
                                 Debug.LogWarning($"{Name()}: No data received for {noReceives}, closing subHandle");
-                                subHandle.free();
                                 parent.playFailed();
                                 return;
                             }
@@ -248,7 +248,7 @@ namespace Workers {
         {
             lock (this)
             {
-                if (subHandle != null) subHandle.free();
+                subHandle?.free();
                 subHandle = null;
                 isPlaying = false;
             }
