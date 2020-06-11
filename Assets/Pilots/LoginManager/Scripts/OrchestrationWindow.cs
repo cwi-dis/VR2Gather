@@ -36,6 +36,9 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [SerializeField] private Text statusText = null;
     [SerializeField] private Text idText = null;
     [SerializeField] private Text nameText = null;
+    [SerializeField] private Text orchURLText = null;
+    [SerializeField] private Text playerVerText = null;
+    [SerializeField] private Text orchVerText = null;
 
     [Header("Login")]
     public InputField userNameLoginIF;
@@ -194,7 +197,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     // Get connected Orchestrator version
     public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
         if (status.Error == 0) {
-            //orchestratorVersion.text = version;
+            orchVerText.text = version;
+            Debug.Log("UMTS Version: " + version);
         }
     }
 
@@ -799,6 +803,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
+
+        orchURLText.text = orchestratorUrl;
+        playerVerText.text = "v" + Application.version;
+        orchVerText.text = "";
 
         // Set status to offline
         OnDisconnect();
