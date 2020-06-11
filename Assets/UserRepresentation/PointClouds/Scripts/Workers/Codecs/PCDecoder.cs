@@ -43,13 +43,19 @@ namespace Workers {
             return $"{this.GetType().Name}#{instanceNumber}";
         }
 
+        public virtual void Stop()
+        {
+            base.Stop();
+            if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+        }
+
         public override void OnStop() {
             base.OnStop();
             lock (this)
             {
                 decoder?.free();
                 decoder = null;
-                outQueue.Close();
+                if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             }
             Debug.Log($"{Name()} Stopped");
         }
