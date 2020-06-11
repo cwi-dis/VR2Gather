@@ -336,11 +336,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         orchestratorWrapper.GetSessions();
     }
 
-    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
-
-    }
-
-
     public void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions) {
         // update the list of available sessions
         availableSessions = sessions;
