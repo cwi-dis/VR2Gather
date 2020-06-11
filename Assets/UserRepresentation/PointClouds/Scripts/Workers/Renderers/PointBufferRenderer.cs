@@ -14,7 +14,7 @@ namespace Workers
 
         // Start is called before the first frame update
         void Start() {
-            if (material == null)  material = Resources.Load<Material>("PointClouds");
+            if (material == null)  material = Resources.Load<Material>("PointCloudsBuffer");
             block = new MaterialPropertyBlock();
         }
 
@@ -31,6 +31,7 @@ namespace Workers
      
         public void OnDestroy() {
             if (pointBuffer != null) { pointBuffer.Release(); pointBuffer = null; }
+            if (material != null) { material = null; }
         }
 
         static int instanceCounter = 0;
