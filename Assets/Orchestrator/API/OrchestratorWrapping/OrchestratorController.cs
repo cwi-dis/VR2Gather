@@ -61,6 +61,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     // Orchestrator Connection Events
     public Action<bool> OnConnectionEvent;
+    public Action<string> OnGetOrchestratorVersionEvent;
 
     // Orchestrator Messages Events
     public Action<string> OnOrchestratorRequestEvent;
@@ -146,6 +147,17 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         connectedToOrchestrator = true;
         OnConnectionEvent?.Invoke(connectedToOrchestrator);
+
+        orchestratorWrapper.GetOrchestratorVersion();
+    }
+
+    // Get connected Orchestrator version
+    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version)
+    {
+        if (status.Error == 0)
+        {
+            OnGetOrchestratorVersionEvent?.Invoke(version);
+        }
     }
 
     // Disconnect from the orchestrator

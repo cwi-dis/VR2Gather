@@ -188,8 +188,15 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         statusText.color = onlineCol;
         state = State.Login;
         PanelChanger();
+        orchestratorWrapper.GetOrchestratorVersion();
     }
 
+    // Get connected Orchestrator version
+    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
+        if (status.Error == 0) {
+            //orchestratorVersion.text = version;
+        }
+    }
 
     // Disconnect from the orchestrator
     private void socketDisconnect() {
@@ -1183,8 +1190,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
-
-
+    
     public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
 
     }
