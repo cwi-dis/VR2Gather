@@ -176,6 +176,12 @@ namespace Workers {
             return $"{this.GetType().Name}#{instanceNumber}";
         }
 
+        public virtual void Stop()
+        {
+            base.Stop();
+            _closeQueues();
+        }
+
         public override void OnStop() {
             Debug.Log($"{Name()}: Stopping");
             _DeinitDash(true);
@@ -252,19 +258,21 @@ namespace Workers {
                 subHandle = null;
                 isPlaying = false;
             }
-            if (closeQueues)
-            {
-                foreach (var oq in outQueues)
-                {
-                    oq.Close();
-                }
-            }
+            if (closeQueues) _closeQueues();
             if (threads == null) return;
             foreach (var t in threads)
             {
                 t.Join();
             }
             threads = null;
+        }
+
+        private void _closeQueues()
+        {
+            foreach (var oq in outQueues)
+            {
+                if (!oq.IsClosed()) oq.Close();
+            }
         }
 
         protected override void Update() {
