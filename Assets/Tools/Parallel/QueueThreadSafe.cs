@@ -171,7 +171,7 @@ public class QueueThreadSafe {
         }
         catch (System.OperationCanceledException)
         {
-            UnityEngine.Debug.LogError("QueueThreadSafe: Enqueue on closed queue");
+            UnityEngine.Debug.LogWarning("QueueThreadSafe: Enqueue on closed queue");
             item.free();
         }
         return false;
