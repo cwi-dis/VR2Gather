@@ -10,8 +10,9 @@ namespace Workers {
         System.Threading.Thread thread;
         public bool isRunning { get { return bRunning; } }
         WorkerType type;
-        const int loopInterval = 1; // How many milliseconds to sleep in the runloop
-        const int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
+        protected int loopInterval = 1; // How many milliseconds to sleep in the runloop
+        protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
+        protected const bool debugThreading = true;
 
         public BaseWorker(WorkerType _type= WorkerType.Run) {
             type = _type;
@@ -34,20 +35,22 @@ namespace Workers {
         }
 
         public virtual void StopAndWait() {
+            if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             Stop();
+            if (debugThreading) Debug.Log($"{Name()}: joining thread");
             if (!thread.Join(joinTimeout))
             {
-                Debug.LogWarning($"{Name()}: thread did not stop. Aborting.");
+                Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
                 thread.Abort();
             }
             thread.Join();
-            Debug.Log($"{Name()}: thread joined");
+            if (debugThreading) Debug.Log($"{Name()}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            Debug.Log($"{Name()}: thread started");
+            if (debugThreading) Debug.Log($"{Name()}: thread started");
             try
             {
                 while (bRunning)
@@ -58,8 +61,9 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"{Name()}: Exception: {e}\n{e.StackTrace}");
+                Debug.LogError($"{Name()}: Update(): Exception: {e}\n{e.StackTrace}");
             }
+            if (debugThreading) Debug.Log($"{Name()}: thread stopping");
             try
             {
                 OnStop();
@@ -68,7 +72,7 @@ namespace Workers {
             {
                 Debug.LogError($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
             }
-            Debug.Log($"{Name()}: thread stopped");
+            if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }
         protected virtual void Update(){ }
     }

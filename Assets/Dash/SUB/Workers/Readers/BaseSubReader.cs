@@ -150,6 +150,9 @@ namespace Workers {
         SubPullThread[] threads;
 
         protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
+            // closing the SUB may take long. Cater for that.
+            joinTimeout = 20000;
+
             if (_url == "" || _url == null || _streamName == "")
             {
                 Debug.LogError($"{Name()}: configuration error: url or streamName not set");
@@ -183,10 +186,10 @@ namespace Workers {
         }
 
         public override void OnStop() {
-            Debug.Log($"{Name()}: Stopping");
+            if (debugThreading) Debug.Log($"{Name()}: Stopping");
             _DeinitDash(true);
             base.OnStop();
-            Debug.Log($"{Name()}: Stopped");
+            if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 
         protected sub.connection getSubHandle()
