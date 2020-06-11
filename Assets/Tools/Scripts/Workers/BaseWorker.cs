@@ -17,9 +17,15 @@ namespace Workers {
             type = _type;
         }
 
+        public virtual string Name()
+        {
+            return $"{this.GetType().Name}";
+        }
+
         protected virtual void Start() {
             bRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
+            thread.Name = Name();
             thread.Start();
         }
 
@@ -31,27 +37,27 @@ namespace Workers {
             Stop();
             if (!thread.Join(joinTimeout))
             {
-                Debug.LogWarning($"BaseWorker {this.GetType().Name}: thread did not stop. Aborting.");
+                Debug.LogWarning($"{Name()}: thread did not stop. Aborting.");
                 thread.Abort();
             }
             thread.Join();
-            Debug.Log($"BaseWorker {this.GetType().Name}: thread joined");
+            Debug.Log($"{Name()}: thread joined");
         }
 
         public virtual void OnStop() { }
 
         void _Update() {
-            Debug.Log($"BaseWorker {this.GetType().Name}: thread started");
+            Debug.Log($"{Name()}: thread started");
             try {
                 while (bRunning) {
                     Update();
                     System.Threading.Thread.Sleep(loopInterval);
                 }
             }catch(System.Exception e) {
-                Debug.LogError($"BaseWorker {this.GetType().Name}: Exception: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"{Name()}: Exception: {e.Message}\n{e.StackTrace}");
             }
             OnStop();
-            Debug.Log($"BaseWorker {this.GetType().Name}: thread stopped");
+            Debug.Log($"{Name()}: thread stopped");
         }
         protected virtual void Update(){ }
     }

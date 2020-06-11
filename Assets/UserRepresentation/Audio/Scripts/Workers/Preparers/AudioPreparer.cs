@@ -32,29 +32,28 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inQueue.Count >0) {
-                // xxxjack attempting to drop audio if there is too much in the buffer already                
-                int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
-                if (bytesInAudioBuffer > preferredBufferFill) {
-                    Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
-                    inQueue.Dequeue().free();
-                    return;
-                }
-
-                FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.Dequeue();
-
-                int len = mc.elements;
-                if (writePosition + len < bufferSize) {
-                    System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
-                    writePosition += len;
-                } else {
-                    int partLen = bufferSize - writePosition;
-                    System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, partLen);
-                    System.Array.Copy(mc.buffer, partLen, circularBuffer, 0, len - partLen);
-                    writePosition = len - partLen;
-                }
+            if (inQueue.IsClosed()) return;
+            FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
+            if (mc == null) return;
+            // xxxjack attempting to drop audio if there is too much in the buffer already                
+            int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
+            if (bytesInAudioBuffer > preferredBufferFill) {
+                Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
                 mc.free();
+                return;
             }
+
+            int len = mc.elements;
+            if (writePosition + len < bufferSize) {
+                System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
+                writePosition += len;
+            } else {
+                int partLen = bufferSize - writePosition;
+                System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, partLen);
+                System.Array.Copy(mc.buffer, partLen, circularBuffer, 0, len - partLen);
+                writePosition = len - partLen;
+            }
+            mc.free();
         }
 
         public int available {
@@ -91,8 +90,5 @@ namespace Workers {
             }
             return false;
         }
-
-
-
     }
 }

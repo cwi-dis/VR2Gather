@@ -161,7 +161,7 @@ namespace Workers {
                     }
                     else
                     {
-                        if (outQueue.Free())
+                        if (outQueue._CanEnqueue())
                         {
                             outQueue.Enqueue(pc.AddRef());
                         }
@@ -176,7 +176,7 @@ namespace Workers {
                     }
                     else
                     {
-                        if (out2Queue.Free())
+                        if (out2Queue._CanEnqueue())
                         {
                             out2Queue.Enqueue(pc.AddRef());
                         }

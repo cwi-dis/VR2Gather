@@ -36,6 +36,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [SerializeField] private Text statusText = null;
     [SerializeField] private Text idText = null;
     [SerializeField] private Text nameText = null;
+    [SerializeField] private Text orchURLText = null;
+    [SerializeField] private Text nativeVerText = null;
+    [SerializeField] private Text playerVerText = null;
+    [SerializeField] private Text orchVerText = null;
 
     [Header("Login")]
     public InputField userNameLoginIF;
@@ -188,8 +192,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         statusText.color = onlineCol;
         state = State.Login;
         PanelChanger();
+        orchestratorWrapper.GetOrchestratorVersion();
     }
 
+    // Get connected Orchestrator version
+    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
+        if (status.Error == 0) {
+            orchVerText.text = version;
+            Debug.Log("UMTS Version: " + version);
+        }
+    }
 
     // Disconnect from the orchestrator
     private void socketDisconnect() {
@@ -355,8 +367,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
     
     private void AddSession() {
-        orchestratorWrapper.AddSession( availableScenarios[scenarioIdDrop.value].scenarioId,
-                                        sessionNameIF.text, sessionDescriptionIF.text);
+        orchestratorWrapper.AddSession( availableScenarios[scenarioIdDrop.value].scenarioId,sessionNameIF.text, sessionDescriptionIF.text);
+
     }
 
     public void OnAddSessionResponse(ResponseStatus status, Session session) {
@@ -387,10 +399,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
 
             activeSession = session;
-
-            if (AudioManager.Instance != null) { // Load Socket.io Audio
-                AudioManager.Instance.StartRecordAudio();
-            }
 
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
@@ -474,9 +482,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             //scenarioIdText.text = session.scenarioId;            
 
             if (!updated) {
-                if (AudioManager.Instance != null) { // Load Socket.io Audio
-                    AudioManager.Instance.StartRecordAudio();
-                }
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
                         OnUserJoinedSession(id);
@@ -535,30 +540,23 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
-            if (AudioManager.Instance != null) {
-                AudioManager.Instance.StartListeningAudio2(_userID);
-            }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Joined");
-            }
-            */
         }
     }
 
     public void OnUserLeftSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
-            //orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Leaved");
+
+            if (SceneManager.GetActiveScene().name != "LoginManager") {
+                for (int i = 0; i < controller.players.Length; ++i) {
+                    if (controller.players[i].orchestratorId == _userID) {
+                        Destroy(controller.players[i].gameObject);
+                        break;
+                    }
+                }                    
             }
-            */
         }
     }
 
@@ -590,6 +588,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+        dd.value = 999;
 
         if (isAutoRetrievingData) {
             // auto retriving phase: call next
@@ -792,6 +791,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
 
+        orchURLText.text = orchestratorUrl;
+        nativeVerText.text = VersionLog.Instance.NativeClient;
+        playerVerText.text = "v" + Application.version;
+        orchVerText.text = "";
+
         // Set status to offline
         OnDisconnect();
         PanelChanger();
@@ -926,7 +930,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2PresenterToggles() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             presenterToggle.gameObject.SetActive(true);
             // Check if presenter is active to show live option
             if (presenterToggle.isOn) liveToggle.gameObject.SetActive(true);
@@ -936,7 +940,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2UserRepresentationToggle() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             tvmToggle.gameObject.SetActive(true);
             pcToggle.gameObject.SetActive(true);
 
@@ -953,7 +957,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     private void Pilot2AudioToggle() {
-        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (availableScenarios != null && availableScenarios[scenarioIdDrop.value].scenarioName != "Pilot 1") {
             noAudioToggle.gameObject.SetActive(true);
             socketAudioToggle.gameObject.SetActive(true);
             dashAudioToggle.gameObject.SetActive(true);
@@ -962,7 +966,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             useSocketIOAudio = socketAudioToggle.isOn;
             useDashAudio = dashAudioToggle.isOn;
 
-            socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
+          //  socketAudioToggle.interactable = false; //TODO: Until audio over socket will be multi-threaded with new Queue system
 
             if (noAudioToggle.isOn) noAudioToggle.interactable = false;
             else noAudioToggle.interactable = true;
@@ -1018,7 +1022,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void ReadyButton() {
         if (isMaster) {
-            if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
+            if (activeScenario.scenarioName == "Pilot 0") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio );
+            else if (activeScenario.scenarioName == "Pilot 1") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName);
             else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" +
                                                                                 kindRepresentation + "_" + kindAudio + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
             //else if (activeScenario.scenarioName == "Pilot 2") SendMessageToAll(MessageType.START + "_" + activeScenario.scenarioName + "_" + presenterToggle.isOn + "_" + liveToggle.isOn);
@@ -1084,8 +1089,8 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
         else if (user == 6) {
-            userNameLoginIF.text = "Fernando@ENTROPY";
-            userPasswordLoginIF.text = "ENTROPY2020";
+            userNameLoginIF.text = "Fernando@THEMO";
+            userPasswordLoginIF.text = "THEMO2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "fernando";
             pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";
@@ -1181,8 +1186,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
-
-
+    
     public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
 
     }

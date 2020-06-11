@@ -7,6 +7,7 @@ public class VoiceDashReceiver : MonoBehaviour {
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
 
+    // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe decoderQueue = new QueueThreadSafe();
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
@@ -20,8 +21,9 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader      = new Workers.AudioSubReader( _url, _streamName, _streamNumber, _initialDelay, decoderQueue);
-        codec       = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
+        reader = new Workers.AudioSubReader(_url, _streamName, _streamNumber, _initialDelay, decoderQueue);
+//        reader = new Workers.SocketIOReader(userID, decoderQueue);
+        codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
 

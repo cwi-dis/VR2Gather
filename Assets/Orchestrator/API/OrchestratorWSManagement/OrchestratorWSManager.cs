@@ -155,7 +155,14 @@ namespace OrchestratorWSManagement
                 {
                     if (parameter.ParamValue != null)
                     {
-                        parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                        if(parameter.type == typeof(bool))
+                        {
+                            parameters[parameter.ParamName] = (bool)parameter.ParamValue;
+                        }
+                        else
+                        {
+                            parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                        }
                     }
                     else
                     {

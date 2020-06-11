@@ -20,7 +20,7 @@ namespace Workers {
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs ) :base(WorkerType.Run) {
             if (_inQueue == null)
             {
-                throw new System.Exception("PCEncoder: inQueue is null");
+                throw new System.Exception("{Name()}: inQueue is null");
             }
             inQueue = _inQueue;
             outputs = _outputs;
@@ -48,7 +48,7 @@ namespace Workers {
 
                 }
                 Start();
-                Debug.Log("PCEncoder: Inited");
+                Debug.Log("{Name()}: Inited");
             }
             catch (System.Exception e) {
                 Debug.LogError($"Exception during call to PCEncoder constructor: {e.Message}");
@@ -90,8 +90,11 @@ namespace Workers {
             base.OnStop();
             // Clear the encoderGroup including all of its encoders
             tmp?.free();
-            encoderOutputs = null;
-            Debug.Log("PCEncoder: Stopped");
+            foreach(var eo in encoderOutputs)
+            {
+                eo.free();
+            }
+            Debug.Log("{Name()}: Stopped");
             // xxxjack is encoderBuffer still used? Think not...
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
@@ -99,14 +102,13 @@ namespace Workers {
         protected override void Update()
         {
             base.Update();
-            if (inQueue.Count > 0)
-            {
-                cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-                if (encoderGroup == null) return; // Terminating
+            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+            if (pc == null) return; // Terminating
+            if (encoderGroup != null) {
+                // Not terminating yet
                 encoderGroup.feed(pc);
-                pc.free();
-            } 
-            // xxxjack else should we sleep?
+            }
+            pc.free();
         }
 
         protected  void PusherThread(int stream_number)
@@ -125,15 +127,7 @@ namespace Workers {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            if (outQueue.Free())
-                            {
-                                outQueue.Enqueue(mc);
-                            }
-                            else
-                            {
-                                mc.free();
-                                Debug.Log($"PCEncoder#{stream_number}: Dropped frame, outQueue full");
-                            }
+                            outQueue.Enqueue(mc);
                         }
                         else
                         {
@@ -145,7 +139,7 @@ namespace Workers {
                         System.Threading.Thread.Sleep(10);
                     }
                 }
-                outQueue.Closed = true;
+                outQueue.Close();
                 Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
             }
             catch (System.Exception e)

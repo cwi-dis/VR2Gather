@@ -32,6 +32,12 @@ namespace Workers {
                 stream_index = _stream_index;
                 description = _description;
                 myThread = new System.Threading.Thread(run);
+                myThread.Name = Name();
+            }
+
+            public string Name()
+            {
+                return $"{parent.Name()}.{stream_index}";
             }
 
             public void Start()
@@ -48,28 +54,22 @@ namespace Workers {
             {
                 try
                 {
-                    Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread started");
+                    Debug.Log($"{Name()}: PusherThread started");
                     QueueThreadSafe queue = description.inQueue;
-                    while (!queue.Closed)
+                    while (!queue.IsClosed())
                     {
-                        if (queue.Count > 0)
-                        {
-                            NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
-                            statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
-                            if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                                Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}({parent.url}): ERROR sending data");
-                            mc.free();
-                        }
-                        else
-                        {
-                            System.Threading.Thread.Sleep(10);
-                        }
+                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
+                        if (mc == null) continue; // Probably closing...
+                        statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
+                        if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
+                            Debug.Log($"{Name()}({parent.url}): ERROR sending data");
+                        mc.free();
                     }
-                    Debug.Log($"B2DWriter#{parent.instanceNumber}.{stream_index}: PusherThread stopped");
+                    Debug.Log($"{Name()}: PusherThread stopped");
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"B2DWriter#{stream_index}: Exception: {e.Message} Stack: {e.StackTrace}");
+                    Debug.LogError($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
 #if UNITY_EDITOR
                     if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
                         UnityEditor.EditorApplication.isPlaying = false;
@@ -92,7 +92,7 @@ namespace Workers {
                 }
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: B2DWriter#{parent.instanceNumber}.{stream_index}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
@@ -109,11 +109,11 @@ namespace Workers {
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
-                throw new System.Exception("B2DWriter: descriptions is null or empty");
+                throw new System.Exception($"{Name()}: descriptions is null or empty");
             }
             if (fourcc.Length != 4)
             {
-                throw new System.Exception($"B2DWriter: 4CC is \"{fourcc}\" which is not exactly 4 characters");
+                throw new System.Exception($"{Name()}: 4CC is \"{fourcc}\" which is not exactly 4 characters");
             }
             uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             descriptions = _descriptions;
@@ -123,11 +123,11 @@ namespace Workers {
                 url = _url;
                 if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName))
                 {
-                    Debug.LogError($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
-                    throw new System.Exception($"B2DWriter#{instanceNumber}: configuration error: url or streamName not set");
+                    Debug.LogError($"{Name()}: configuration error: url or streamName not set");
+                    throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
                 }
                 // xxxjack Is this the correct way to initialize an array of structs?
-                Debug.Log($"xxxjack B2DWriter: {descriptions.Length} output streams");
+                Debug.Log($"xxxjack {Name()}: {descriptions.Length} output streams");
                 bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
@@ -139,24 +139,30 @@ namespace Workers {
                     };
                     if (descriptions[i].inQueue == null)
                     {
-                        throw new System.Exception($"B2DWriter#{instanceNumber}.{i}: inQueue");
+                        throw new System.Exception($"{Name()}.{i}: inQueue");
                     }
                 }
                 uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
                 if (uploader != null)
                 {
-                    Debug.Log($"B2DWriter({url + _streamName}.mpd: started");
+                    Debug.Log($"{Name()}: started {url + _streamName}.mpd");
                     Start();
                 }
                 else
-                    throw new System.Exception($"B2DWriter#{instanceNumber}: vrt_create: failed to create uploader {url + _streamName}.mpd");
+                    throw new System.Exception($"{Name()}: vrt_create: failed to create uploader {url + _streamName}.mpd");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"B2DWriter#{instanceNumber}({url}:{e.Message}");
+                Debug.LogError($"{Name()}({url}:{e.Message}");
                 throw e;
             }
         }
+
+        public override string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
 
         protected override void Start()
         {
@@ -178,9 +184,13 @@ namespace Workers {
         public override void OnStop()
         {
             // Signal that no more data is forthcoming to every pusher
-            foreach (var d in descriptions)
+            for(int i=0; i<descriptions.Length; i++)
             {
-                d.inQueue.Closed = true;
+                var d = descriptions[i];
+                if (!d.inQueue.IsClosed()) {
+                    Debug.LogWarning($"{Name()}.{i}: input queue not closed. Closing.");
+                    d.inQueue.Close();
+                }
             }
             // Stop our thread
             base.OnStop();
@@ -191,7 +201,7 @@ namespace Workers {
             {
                 t.Join();
             }
-            Debug.Log($"B2DWriter#{instanceNumber} {url} Stopped");
+            Debug.Log($"{Name()} {url} Stopped");
         }
 
         protected override void Update()

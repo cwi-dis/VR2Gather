@@ -9,6 +9,7 @@ public class VideoDashReceiver : MonoBehaviour {
     Workers.VideoDecoder    codec;
     Workers.VideoPreparer   preparer;
 
+    // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
@@ -80,7 +81,7 @@ public class VideoDashReceiver : MonoBehaviour {
         codec?.StopAndWait();
         preparer?.StopAndWait();
 
-        Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue.Count} audioCodecQueue {audioCodecQueue.Count} videoPreparerQueue {videoPreparerQueue.Count} audioPreparerQueue {audioPreparerQueue.Count}");
+        Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} audioCodecQueue {audioCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} audioPreparerQueue {audioPreparerQueue._Count}");
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 
