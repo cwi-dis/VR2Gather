@@ -56,13 +56,20 @@ namespace Workers
         float       bufferTime;
         bool        recording = true;
 
+        static bool DSPIsNotReady = true;
+        public static void PrepareDSP() {
+            if (DSPIsNotReady) {
+                DSPIsNotReady = false;
+                var ac = AudioSettings.GetConfiguration();
+                ac.sampleRate = 16000 * 3;
+                ac.dspBufferSize = 320 * 3;
+                AudioSettings.Reset(ac);
+            }
+
+        }
+
         IEnumerator MicroRecorder() {
-            yield return null;
-            var ac = AudioSettings.GetConfiguration();
-            ac.sampleRate = 16000 * 3;
-            ac.dspBufferSize = 320 * 3;
-            yield return null;
-            AudioSettings.Reset(ac);
+            PrepareDSP();
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
