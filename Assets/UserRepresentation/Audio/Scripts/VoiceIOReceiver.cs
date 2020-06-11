@@ -12,7 +12,7 @@ public class VoiceIOReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string userID, string _url, string _streamName, int _streamNumber, int _initialDelay) {
+    public void Init(string userID) {
         //        const int frequency = 16000;
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);

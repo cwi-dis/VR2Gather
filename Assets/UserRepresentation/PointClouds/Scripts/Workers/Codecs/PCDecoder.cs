@@ -71,8 +71,8 @@ namespace Workers {
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                outQueue.Enqueue(pc);
                 statsUpdate(pc.count(), pc.timestamp());
+                outQueue.Enqueue(pc);
             }
         }
 

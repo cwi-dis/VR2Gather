@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
+    path: Assets/Pilots/Pilot0/Pilot0.unity
+    guid: 01e8d4050e184da48aba95c97a697601
+  - enabled: 1
     path: Assets/Pilots/Pilot1/Scenes/Pilot1.unity
     guid: 729c2f5197e10724996923c482b5f533
   - enabled: 1

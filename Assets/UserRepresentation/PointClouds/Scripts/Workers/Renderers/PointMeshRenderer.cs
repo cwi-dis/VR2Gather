@@ -13,13 +13,7 @@ namespace Workers
 
         // Start is called before the first frame update
         void Start() {
-            if (material == null) {
-                material = new Material(Shader.Find("Entropy/PointCloud40"));
-                //material = new Material(Resources.Load<Shader>("PointCloudMesh"));
-                material.SetFloat("_PointSize", 0.008f );
-                material.SetColor("_Tint", Color.gray);
-                material.hideFlags = HideFlags.DontSave;
-            }
+            if (material == null) material = Resources.Load<Material>("PointCloudsMesh");
             var mf = gameObject.AddComponent<MeshFilter>();
             var mr = gameObject.AddComponent<MeshRenderer>();
             mesh = mf.mesh = new Mesh();
@@ -41,7 +35,7 @@ namespace Workers
 
 
         public void OnDestroy() {
-            if (material != null) { Destroy(material); material = null; }
+            if (material != null) { material = null; }
         }
 
         static int instanceCounter = 0;

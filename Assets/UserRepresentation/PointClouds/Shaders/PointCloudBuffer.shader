@@ -3,12 +3,18 @@ Shader "Entropy/PointCloud"{
 	Properties{
 		_Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
 		_PointSize("Point Size", Float) = 0.05
+		_MainTex("Texture", 2D) = "white" {}
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
 	}
 		SubShader{
-			Tags { "RenderType" = "Opaque" }
+			Lighting Off
 			LOD 100
+			Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}
+	//				Tags { "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
+	//				Blend SrcAlpha OneMinusSrcAlpha
+	//				ZWrite Off
 
-		Pass {
+			Pass {
 				Tags { "LightMode" = "ForwardBase" }
 				CGPROGRAM
 
@@ -31,12 +37,15 @@ Shader "Entropy/PointCloud"{
 				struct Varyings {
 					float4	position : SV_Position;
 					half3	color : COLOR;
+					half2	uv : TEXCOORD0;
 //					UNITY_FOG_COORDS(0)
 				};
 
 				half4		_Tint;
 				float4x4	_Transform;
 				half		_PointSize;
+				sampler2D	_MainTex;
+				fixed		_Cutoff;
 
 				StructuredBuffer<float4> _PointBuffer;
 
@@ -65,31 +74,37 @@ Shader "Entropy/PointCloud"{
 					Varyings o = input[0];
 					o.position.xzw = origin.xzw;
 
-					// Bottom side vertex
-					o.position.x = origin.x;
-					o.position.y = origin.y + extent.y;
-					outStream.Append(o);
-
-					// Left vertex
-					o.position.x = origin.x - extent.x;
-					o.position.y = origin.y;
-					outStream.Append(o);
-
-					// Right side vertex
+					// Bottom-Left side vertex
 					o.position.x = origin.x + extent.x;
-					o.position.y = origin.y;
+					o.position.y = origin.y + extent.y;
+					o.uv = half2(1, 1);
 					outStream.Append(o);
 
-					// Top vertex
-					o.position.x = origin.x;
+					// Up-Left vertex
+					o.position.x = origin.x - extent.x;
+					o.position.y = origin.y + extent.y;
+					o.uv = half2(0, 1);
+					outStream.Append(o);
+
+					// Up-Right side vertex
+					o.position.x = origin.x + extent.x;
 					o.position.y = origin.y - extent.y;
+					o.uv = half2(1, 0);
+					outStream.Append(o);
+
+					// Bottom-Right vertex
+					o.position.x = origin.x - extent.x;
+					o.position.y = origin.y - extent.y;
+					o.uv = half2(0, 0);
 					outStream.Append(o);
 
 					outStream.RestartStrip();
 				}
 
-				half4 Fragment(Varyings input) : SV_Target {
-					half4 c = half4(input.color, _Tint.a);
+				half4 Fragment(Varyings input) : SV_Target{
+					half a = tex2D(_MainTex, input.uv).r;
+					clip(a - _Cutoff);
+					half4 c = half4(input.color, _Tint.a) * a;
 //					UNITY_APPLY_FOG(input.fogCoord, c);
 					return c;
 				}

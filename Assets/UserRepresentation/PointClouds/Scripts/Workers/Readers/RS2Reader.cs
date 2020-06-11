@@ -56,7 +56,6 @@ namespace Workers {
                 System.TimeSpan sleepDuration = earliestNextCapture - System.DateTime.Now;
                 if (sleepDuration > System.TimeSpan.FromSeconds(0))
                 {
-                    Debug.Log($"{Name()}: xxxjack: sleep for {sleepDuration}");
                     System.Threading.Thread.Sleep(sleepDuration);
                 }
             }

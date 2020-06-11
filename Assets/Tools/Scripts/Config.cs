@@ -13,13 +13,12 @@ public class Config {
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public AudioType    audioType = AudioType.None;
+    public float        nonHMDHeight = 1.8f;
     [Serializable]
     public class _TVMs
     {
         public string   connectionURI;
         public string   exchangeName;
-        public Vector3  offsetPosition;
-        public Vector3  offsetRotation;
     };
     public _TVMs TVMs;
 
@@ -32,10 +31,10 @@ public class Config {
 
     [Serializable]
     public class _PCs {
-        public Vector3 offsetPosition;
-        public Vector3 offsetRotation;
         public Vector3 scale;
         public bool forceMesh;
+        public float defaultCellSize;
+        public float cellSizeFactor;
     };
     public _PCs PCs;
 
