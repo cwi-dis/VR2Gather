@@ -37,12 +37,19 @@ namespace Workers {
             }
         }
 
+        public override void Stop()
+        {
+            base.Stop();
+            if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+            if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
+        }
+
         public override void OnStop() {
             base.OnStop();
             reader?.free();
             reader = null;
-            outQueue?.Close();
-            out2Queue?.Close();
+            if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+            if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
             Debug.Log($"{Name()}: Stopped.");
         }
 
