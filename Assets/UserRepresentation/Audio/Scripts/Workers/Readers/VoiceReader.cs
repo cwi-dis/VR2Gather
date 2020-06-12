@@ -59,6 +59,7 @@ namespace Workers
         static bool DSPIsNotReady = true;
         public static void PrepareDSP() {
             if (DSPIsNotReady) {
+                Debug.Log("[FPA] PrepareDSP");
                 DSPIsNotReady = false;
                 var ac = AudioSettings.GetConfiguration();
                 ac.sampleRate = 16000 * 3;
@@ -69,6 +70,7 @@ namespace Workers
         }
 
         IEnumerator MicroRecorder() {
+            Debug.Log("[FPA] MicroRecorder!!!!");
             PrepareDSP();
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
@@ -110,7 +112,9 @@ namespace Workers
                         }
                         timer = Time.realtimeSinceStartup;
                     } else {
-                        if (recording) { recording = false; Debug.LogError($"{Name()}: microphone {device} stops recording."); }
+                        Debug.LogError($"{Name()}: microphone {device} stops recording.");
+                        recorder = Microphone.Start(device, true, 1, samples);
+                        readPosition = 0;
                         if ((Time.realtimeSinceStartup - timer) > bufferTime) {
                             timer += bufferTime;
                             lock (circularBuffer) {
