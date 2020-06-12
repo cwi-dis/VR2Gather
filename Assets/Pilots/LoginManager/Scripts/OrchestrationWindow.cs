@@ -36,6 +36,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [SerializeField] private Text statusText = null;
     [SerializeField] private Text idText = null;
     [SerializeField] private Text nameText = null;
+    [SerializeField] private Text orchURLText = null;
+    [SerializeField] private Text nativeVerText = null;
+    [SerializeField] private Text playerVerText = null;
+    [SerializeField] private Text orchVerText = null;
 
     [Header("Login")]
     public InputField userNameLoginIF;
@@ -188,8 +192,16 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         statusText.color = onlineCol;
         state = State.Login;
         PanelChanger();
+        orchestratorWrapper.GetOrchestratorVersion();
     }
 
+    // Get connected Orchestrator version
+    public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
+        if (status.Error == 0) {
+            orchVerText.text = version;
+            Debug.Log("UMTS Version: " + version);
+        }
+    }
 
     // Disconnect from the orchestrator
     private void socketDisconnect() {
@@ -388,10 +400,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             activeSession = session;
 
-            if (AudioManager.Instance != null) { // Load Socket.io Audio
-                AudioManager.Instance.StartRecordAudio();
-            }
-
             removeComponentsFromList(usersSession.transform);
             for (int i = 0; i < activeSession.sessionUsers.Length; i++) {
                 // Make this to show the real name of the user, not the id
@@ -474,9 +482,6 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             //scenarioIdText.text = session.scenarioId;            
 
             if (!updated) {
-                if (AudioManager.Instance != null) { // Load Socket.io Audio
-                    AudioManager.Instance.StartRecordAudio();
-                }
                 foreach (string id in session.sessionUsers) {
                     if (id != idText.text) {
                         OnUserJoinedSession(id);
@@ -535,30 +540,23 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void OnUserJoinedSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
-            if (AudioManager.Instance != null) {
-                AudioManager.Instance.StartListeningAudio2(_userID);
-            }
             updated = true;  
             if (!imJoining) orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Joined");
-            }
-            */
         }
     }
 
     public void OnUserLeftSession(string _userID) {
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
-            //orchestratorWrapper.GetUserInfo(_userID);
-            /*
-            foreach (User u in availableUsers) {
-                if (u.userId == _userID)
-                    Debug.Log(u.userName + " Leaved");
+
+            if (SceneManager.GetActiveScene().name != "LoginManager") {
+                for (int i = 0; i < controller.players.Length; ++i) {
+                    if (controller.players[i].orchestratorId == _userID) {
+                        Destroy(controller.players[i].gameObject);
+                        break;
+                    }
+                }                    
             }
-            */
         }
     }
 
@@ -792,6 +790,11 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
+
+        orchURLText.text = orchestratorUrl;
+        nativeVerText.text = VersionLog.Instance.NativeClient;
+        playerVerText.text = "v" + Application.version;
+        orchVerText.text = "";
 
         // Set status to offline
         OnDisconnect();
@@ -1183,8 +1186,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     #endregion
-
-
+    
     public void OnGetAvailableDataStreams( ResponseStatus status, List<DataStream> dataStreams ) {
 
     }

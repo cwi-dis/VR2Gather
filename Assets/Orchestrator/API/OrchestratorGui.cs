@@ -95,6 +95,8 @@ public class OrchestratorGui : MonoBehaviour
     [SerializeField]
     private Text orchestratorConnected = null;
     [SerializeField]
+    private Text orchestratorVersion = null;
+    [SerializeField]
     private RectTransform orchestratorUsers = null;
     [SerializeField]
     private RectTransform orchestratorScenarios = null;
@@ -232,7 +234,7 @@ public class OrchestratorGui : MonoBehaviour
             new GuiCommandDescription("GetUsers", null, GetUsers),
             new GuiCommandDescription("GetUserInfo", new List<RectTransform> { userIdPanel }, GetUserInfo),
             new GuiCommandDescription("UpdateUserData", new List<RectTransform> { userDataMQnamePanel, userDataMQurlPanel }, UpdateUserData),
-            new GuiCommandDescription("AddUser", new List<RectTransform> { userNamePanel, userPasswordPanel, sessionDescriptionPanel }, AddUser),
+            new GuiCommandDescription("AddUser", new List<RectTransform> { userNamePanel, userPasswordPanel, userAdminPanel }, AddUser),
             new GuiCommandDescription("DeleteUser", new List<RectTransform> { userIdPanel }, DeleteUser),
 
             //Room
@@ -385,6 +387,7 @@ public class OrchestratorGui : MonoBehaviour
         OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
+        OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
         OrchestratorController.Instance.OnLoginEvent += OnLogin;
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
@@ -436,7 +439,13 @@ public class OrchestratorGui : MonoBehaviour
         userName.text = "";
         userAdmin.text = "";
         orchestratorConnected.text = pConnected.ToString();
+        orchestratorVersion.text = "";
         UpdateEnabledItems();
+    }
+
+    private void OnGetOrchestratorVersionHandler(string pVersion)
+    {
+        orchestratorVersion.text = pVersion;
     }
 
     #endregion

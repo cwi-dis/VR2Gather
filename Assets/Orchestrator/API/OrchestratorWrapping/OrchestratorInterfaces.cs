@@ -26,6 +26,7 @@ namespace OrchestratorWrapping
     public interface IOrchestratorResponsesListener
     {
         void OnConnect();
+        void OnGetOrchestratorVersionResponse(ResponseStatus status, string version);
         void OnDisconnect();
 
         void OnLoginResponse(ResponseStatus status, string userId);
