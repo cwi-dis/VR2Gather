@@ -179,7 +179,7 @@ namespace Workers {
             return $"{this.GetType().Name}#{instanceNumber}";
         }
 
-        public virtual void Stop()
+        public override void Stop()
         {
             base.Stop();
             _closeQueues();
