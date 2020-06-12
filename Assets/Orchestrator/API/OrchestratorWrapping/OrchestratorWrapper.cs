@@ -180,6 +180,18 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnConnect();
         }
 
+        public bool GetOrchestratorVersion()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetOrchestratorVersion");
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        public void OnGetOrchestratorVersionResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            string version = response.body["orchestratorVersion"].ToString();
+            ResponsesListener?.OnGetOrchestratorVersionResponse(new ResponseStatus(response.error, response.message), version);
+        }
+
         public void Disconnect()
         {
             if (OrchestrationSocketIoManager != null)
@@ -187,6 +199,7 @@ namespace OrchestratorWrapping
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
         }
+
         public void OnSocketDisconnect()
         {
             if (ResponsesListener != null) ResponsesListener.OnDisconnect();
@@ -733,6 +746,7 @@ namespace OrchestratorWrapping
                 },
                 OnLoginResponse),
                 new OrchestratorCommand("Logout", null, OnLogoutResponse),
+                new OrchestratorCommand("GetOrchestratorVersion", null, OnGetOrchestratorVersionResponse),
 
                 //NTP
                 new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
