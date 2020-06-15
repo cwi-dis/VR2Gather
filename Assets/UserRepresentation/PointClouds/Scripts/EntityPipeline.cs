@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  reader;
-    Workers.BaseWorker  codec;
+    Workers.BaseWorker encoder;
+    Workers.BaseWorker decoder;
     Workers.BaseWorker  writer;
     Workers.BaseWorker  preparer;
     MonoBehaviour       render;
@@ -45,6 +46,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
             case "pccerth":
+                Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
                 //
@@ -59,13 +61,15 @@ public class EntityPipeline : MonoBehaviour {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
-                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, preparerQueue, encoderQueue);
+                    pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, preparerQueue, encoderQueue);
+                    reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
                 {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    reader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
+                    pcReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
+                    reader = pcReader;
                 }
 
                 if (!calibrationMode) {
@@ -73,13 +77,25 @@ public class EntityPipeline : MonoBehaviour {
                     // allocate and initialize per-stream outgoing stream datastructures
                     //
                     var Encoders = PCSelfConfig.Encoders;
-                    int nTile = 1; // xxxjack For now
+                    int minTileNum = 0;
+                    int maxTileNum = 0;
+                    if (PCSelfConfig.tiled)
+                    {
+                        Workers.TiledWorker.TileInfo[] tiles = pcReader.getTiles();
+                        if (tiles != null && tiles.Length > 1)
+                        {
+                            // xxxjack grossly wrong.
+                            minTileNum = 1;
+                            maxTileNum = tiles.Length;
+                        }
+                    }
+                    Debug.Log($"xxxjack minTile={minTileNum}, maxTile={maxTileNum}");
                     int nQuality = Encoders.Length;
-                    int nStream = nQuality * nTile;
+                    int nStream = nQuality * (1+maxTileNum-minTileNum);
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
-                    for (int it = 0; it < nTile; it++) {
+                    for (int it = minTileNum; it <= maxTileNum; it++) {
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
@@ -101,7 +117,7 @@ public class EntityPipeline : MonoBehaviour {
                     // Create encoders for transmission
                     //
                     try {
-                        codec = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
+                        encoder = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                     } catch (System.EntryPointNotFoundException) {
                         Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                         throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
@@ -150,7 +166,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                codec = new Workers.PCDecoder(decoderQueue, preparerQueue);
+                decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -193,7 +209,8 @@ public class EntityPipeline : MonoBehaviour {
     // Update is called once per frame
     void OnDestroy() {
         reader?.StopAndWait();
-        codec?.StopAndWait();
+        encoder?.StopAndWait();
+        decoder?.StopAndWait();
         writer?.StopAndWait();
         preparer?.StopAndWait();
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...

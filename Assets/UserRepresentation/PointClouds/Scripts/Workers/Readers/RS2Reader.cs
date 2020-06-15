@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Workers {
-    public class RS2Reader : BaseWorker {
+    public class RS2Reader : TiledWorker {
         cwipc.source reader;
         float voxelSize;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -36,6 +36,7 @@ namespace Workers {
                 throw e;
             }
         }
+
 
         public override void Stop()
         {
