@@ -48,7 +48,7 @@ public class cwipc
     public struct tileinfo
     {
         public vector normal;
-        [MarshalAs(UnmanagedType.LPStr)] public string camera;
+        public IntPtr camera;
         public System.Byte ncamera;
     };
 

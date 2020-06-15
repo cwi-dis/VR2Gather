@@ -51,7 +51,7 @@ namespace Workers {
                 rv[i].normal.x = origTileInfo[i].normal.x;
                 rv[i].normal.y = origTileInfo[i].normal.y;
                 rv[i].normal.z = origTileInfo[i].normal.z;
-                rv[i].cameraName = origTileInfo[i].camera;
+                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
                 rv[i].cameraMask = origTileInfo[i].ncamera;
             }
             return rv;
