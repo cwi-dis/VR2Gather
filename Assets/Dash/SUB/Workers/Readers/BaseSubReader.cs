@@ -239,6 +239,14 @@ namespace Workers {
             }
             Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
             //
+            // Get more stream information
+            //
+            sub.TileDesc[] streams = subHandle.get_streams();
+            foreach(var stream in streams)
+            {
+                Debug.Log($"{Name()}: xxxjack streamIndex={stream.streamIndex}, tileNumber={stream.tileNumber}, quality={stream.quality}");
+            }
+            //
             // Start threads
             //
             int threadCount = streamIndexes.Length;

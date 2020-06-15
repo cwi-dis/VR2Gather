@@ -26,6 +26,13 @@ public class sub
         public UInt32 totalHeight;
     }
 
+    public struct TileDesc
+    {
+        public int streamIndex;
+        public int tileNumber;
+        public int quality;
+    }
+
     protected class _API {
 
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
@@ -136,6 +143,43 @@ public class sub
             return streamDesc.MP4_4CC;
         }
 
+        public TileDesc[] get_streams()
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.get_streams: called with pointer==null");
+            }
+            int nStreams = _API.sub_get_stream_count(pointer);
+            TileDesc[] rv = new TileDesc[nStreams];
+            for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
+            {
+                StreamDesc streamDesc = new StreamDesc();
+                _API.sub_get_stream_info(pointer, streamIndex, ref streamDesc);
+                rv[streamIndex].streamIndex = streamIndex;
+                rv[streamIndex].tileNumber = (int)streamDesc.objectX;
+                rv[streamIndex].quality = (int)streamDesc.objectY;
+            }
+            return rv;
+        }
+
+        public bool enable_stream(int tileNumber, int quality)
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.enable_stream: called with pointer==null");
+            }
+            return _API.sub_enable_stream(pointer, tileNumber, quality);
+        }
+
+        public bool disable_stream(int tileNumber)
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.disable_stream: called with pointer==null");
+            }
+            return _API.sub_disable_stream(pointer, tileNumber);
+        }
+
         public bool play(string name)
         {
             if (pointer == System.IntPtr.Zero)
@@ -153,7 +197,6 @@ public class sub
             }
             return _API.sub_grab_frame(pointer, streamIndex, dst, dstLen, ref info);
         }
-        
     }
 
     public static connection create(string pipeline)
