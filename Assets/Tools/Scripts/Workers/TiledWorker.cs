@@ -4,15 +4,19 @@ using UnityEngine;
 
 namespace Workers {
     public class TiledWorker : BaseWorker {
-        public class TileInfo
+        public struct TileInfo
         {
-            int dummy;
+            // xxxjack wrong: should be min and max angle in XZ plane
+            public struct Vector { public double x; public double y; public double z; };
+            public Vector normal;
+            public string cameraName;
+            public int cameraMask;
         }
 
         public TiledWorker(WorkerType _type= WorkerType.Run) : base(_type) {
         }
 
-        public TileInfo[] getTiles()
+        virtual public TileInfo[] getTiles()
         {
             return null;
         }

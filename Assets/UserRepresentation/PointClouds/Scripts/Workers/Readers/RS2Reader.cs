@@ -37,6 +37,25 @@ namespace Workers {
             }
         }
 
+        public override TileInfo[] getTiles()
+        {
+            cwipc.tileinfo[] origTileInfo = reader.get_tileinfo();
+            if (origTileInfo == null || origTileInfo.Length <= 1) return null;
+            int nTile = origTileInfo.Length;
+            Debug.Log($"xxxjack getTiles nTile={nTile}");
+            TileInfo[] rv = new TileInfo[nTile];
+            for (int i=0; i<nTile; i++)
+            {
+                Debug.Log($"xxxjack getTiles i={i} src={origTileInfo[i]} dst={rv[i]}");
+                Debug.Log($"xxxjack getTiles i={i} srcNormal={origTileInfo[i].normal} dstNormal={rv[i].normal}");
+                rv[i].normal.x = origTileInfo[i].normal.x;
+                rv[i].normal.y = origTileInfo[i].normal.y;
+                rv[i].normal.z = origTileInfo[i].normal.z;
+                rv[i].cameraName = origTileInfo[i].camera;
+                rv[i].cameraMask = origTileInfo[i].ncamera;
+            }
+            return rv;
+        }
 
         public override void Stop()
         {

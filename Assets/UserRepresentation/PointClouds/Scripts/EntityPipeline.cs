@@ -78,35 +78,39 @@ public class EntityPipeline : MonoBehaviour {
                     //
                     var Encoders = PCSelfConfig.Encoders;
                     int minTileNum = 0;
-                    int maxTileNum = 0;
+                    int nTile = 1;
                     if (PCSelfConfig.tiled)
                     {
                         Workers.TiledWorker.TileInfo[] tiles = pcReader.getTiles();
                         if (tiles != null && tiles.Length > 1)
                         {
-                            // xxxjack grossly wrong.
+                            for (int i=0; i<tiles.Length; i++)
+                            {
+                                Debug.Log($"xxxjack: tile {i}: normal=({tiles[i].normal.x}, {tiles[i].normal.y}, {tiles[i].normal.z}), camName={tiles[i].cameraName}, mask={tiles[i].cameraMask}");
+
+                            }
                             minTileNum = 1;
-                            maxTileNum = tiles.Length;
+                            nTile = tiles.Length - 1;
                         }
                     }
-                    Debug.Log($"xxxjack minTile={minTileNum}, maxTile={maxTileNum}");
                     int nQuality = Encoders.Length;
-                    int nStream = nQuality * (1+maxTileNum-minTileNum);
+                    int nStream = nQuality * nTile;
+                    Debug.Log($"xxxjack minTile={minTileNum}, nTile={nTile}, nQuality={nQuality}, nStream={nStream}");
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
-                    for (int it = minTileNum; it <= maxTileNum; it++) {
+                    for (int it = 0; it < nTile; it++) {
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
                             int octreeBits = Encoders[iq].octreeBits;
                             encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription {
                                 octreeBits = octreeBits,
-                                tileNumber = it,
+                                tileNumber = it+minTileNum,
                                 outQueue = thisQueue
                             };
                             dashStreamDescriptions[i] = new Workers.B2DWriter.DashStreamDescription {
-                                tileNumber = (uint)it,
+                                tileNumber = (uint)(it+minTileNum),
                                 quality = (uint)(100 * octreeBits + 75),
                                 inQueue = thisQueue
                             };
