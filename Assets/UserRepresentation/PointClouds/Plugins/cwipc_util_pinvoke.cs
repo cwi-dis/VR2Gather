@@ -84,7 +84,7 @@ public class cwipc
         [DllImport(myDllName)]
         internal extern static int cwipc_tiledsource_maxtile(IntPtr src);
         [DllImport(myDllName)]
-        internal extern static bool cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, ref tileinfo _tileinfo);
+        internal extern static bool cwipc_tiledsource_get_tileinfo(IntPtr src, int tileNum, [Out] out tileinfo _tileinfo);
 
         [DllImport(myDllName)]
         internal extern static int cwipc_sink_free(IntPtr sink);
@@ -259,7 +259,7 @@ public class cwipc
             tileinfo[] rv = new tileinfo[maxTile];
             for (int i=0; i<maxTile; i++)
             {
-                bool ok = _API_cwipc_util.cwipc_tiledsource_get_tileinfo(pointer, i, ref rv[i]);
+                bool ok = _API_cwipc_util.cwipc_tiledsource_get_tileinfo(pointer, i, out rv[i]);
             }
             return rv;
         }
