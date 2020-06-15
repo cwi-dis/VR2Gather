@@ -11,7 +11,6 @@ namespace Workers {
 
         public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
          : base(url, streamName, 0) {
-            outQueues = new QueueThreadSafe[2] { _outQueue, _out2Queue };
             int videoStream = -1;
             int audioStream = -1;
             InitDash();
@@ -39,7 +38,22 @@ namespace Workers {
             if (audioStream < 0) {
                 Debug.LogError($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
             }
-            streamIndexes = new int[2] { videoStream, audioStream }; // xxxjack wrong
+            //outQueues = new QueueThreadSafe[2] { _outQueue, _out2Queue };
+            //streamIndexes = new int[2] { videoStream, audioStream }; // xxxjack wrong
+            receivers = new ReceiverInfo[]
+            {
+                new ReceiverInfo()
+                {
+                    outQueue = _outQueue,
+                    streamIndexes = new int[] { videoStream}
+                },
+                new ReceiverInfo()
+                {
+                    outQueue = _out2Queue,
+                    streamIndexes = new int[] { audioStream}
+                },
+            };
+
 
         }
     }

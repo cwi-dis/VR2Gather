@@ -15,8 +15,14 @@ namespace Workers {
         System.DateTime subRetryNotBefore = System.DateTime.Now;
         System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
-        protected QueueThreadSafe[] outQueues;
-        protected int[] streamIndexes;
+        public struct ReceiverInfo
+        {
+            public QueueThreadSafe outQueue;
+            public int[] streamIndexes;
+        }
+        protected ReceiverInfo[] receivers;
+//        protected QueueThreadSafe[] outQueues;
+//        protected int[] streamIndexes;
 
         // Mainly for debug messages:
         static int instanceCounter = 0;
@@ -26,18 +32,20 @@ namespace Workers {
         public class SubPullThread
         {
             BaseSubReader parent;
-            int stream_index;
+            //            int stream_index;
+            //            QueueThreadSafe outQueue;
+            int thread_index;
+            ReceiverInfo receiverInfo;
             System.Threading.Thread myThread;
-            QueueThreadSafe outQueue;
             System.DateTime lastSuccessfulReceive;
             System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(5);
             System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
 
-            public SubPullThread(BaseSubReader _parent, int _stream_index, QueueThreadSafe _outQueue)
+            public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
             {
                 parent = _parent;
-                stream_index = _stream_index;
-                outQueue = _outQueue;
+                thread_index = _thread_index;
+                receiverInfo = _receiverInfo;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 lastSuccessfulReceive = System.DateTime.Now;
@@ -45,7 +53,7 @@ namespace Workers {
 
             public string Name()
             {
-                return $"{parent.Name()}.{stream_index}";
+                return $"{parent.Name()}.{thread_index}";
             }
 
             public void Start()
@@ -64,17 +72,28 @@ namespace Workers {
                 {
                     while (true)
                     {
-                        if (outQueue.IsClosed()) return;
+                        if (receiverInfo.outQueue.IsClosed()) return;
                         sub.connection subHandle = parent.getSubHandle();
                         if (subHandle == null)
                         {
                             Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
                             return;
                         }
-                        sub.FrameInfo info = new sub.FrameInfo();
+                        sub.FrameInfo frameInfo = new sub.FrameInfo();
 
-                        // See whether data is available, and how many bytes we need to allocate
-                        int bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref info);
+                        int stream_index = -1;
+                        int bytesNeeded = 0;
+                        foreach(int si in receiverInfo.streamIndexes)
+                        {
+                            // See whether data is available on this stream, and how many bytes we need to allocate
+                            bytesNeeded = subHandle.grab_frame(si, System.IntPtr.Zero, 0, ref frameInfo);
+                            if (bytesNeeded > 0)
+                            {
+                                stream_index = si;
+                                break;
+                            }
+
+                        }
 
                         // If no data is available we may want to close the subHandle, or sleep a bit
                         if (bytesNeeded == 0)
@@ -95,7 +114,7 @@ namespace Workers {
 
                         // Allocate and read.
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref info);
+                        int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
                         // We no longer need subHandle
                         subHandle.free();
 
@@ -107,8 +126,8 @@ namespace Workers {
                         }
 
                         // Push to queue
-                        mc.info = info;
-                        outQueue.Enqueue(mc);
+                        mc.info = frameInfo;
+                        receiverInfo.outQueue.Enqueue(mc);
 
                         statsUpdate(bytesRead);
                     }
@@ -249,11 +268,11 @@ namespace Workers {
             //
             // Start threads
             //
-            int threadCount = streamIndexes.Length;
+            int threadCount = receivers.Length;
             threads = new SubPullThread[threadCount];
             for (int i=0; i<threadCount; i++)
             {
-                threads[i] = new SubPullThread(this, streamIndexes[i], outQueues[i]);
+                threads[i] = new SubPullThread(this, i, receivers[i]);
             }
             foreach(var t in threads)
             {
@@ -280,8 +299,9 @@ namespace Workers {
 
         private void _closeQueues()
         {
-            foreach (var oq in outQueues)
+            foreach (var r in receivers)
             {
+                var oq = r.outQueue;
                 if (!oq.IsClosed()) oq.Close();
             }
         }
