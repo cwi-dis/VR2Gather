@@ -112,7 +112,7 @@ namespace Workers
                         }
                         timer = Time.realtimeSinceStartup;
                     } else {
-                        Debug.LogError($"{Name()}: microphone {device} stops recording.");
+                        Debug.LogWarning($"{Name()}: microphone {device} stopped recording, starting again.");
                         recorder = Microphone.Start(device, true, 1, samples);
                         readPosition = 0;
                         if ((Time.realtimeSinceStartup - timer) > bufferTime) {

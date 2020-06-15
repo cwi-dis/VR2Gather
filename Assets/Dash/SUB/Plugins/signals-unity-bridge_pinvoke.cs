@@ -93,6 +93,7 @@ public class sub
     public class connection : BaseMemoryChunk
     {
         protected System.IntPtr obj;
+        public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
         internal connection(System.IntPtr _pointer) : base(_pointer)
         {
@@ -162,12 +163,14 @@ public class sub
         _API.MessageLogCallback errorCallback = (msg) =>
         {
             string _pipeline = String.Copy(pipeline);
-            UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}");
+            UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous error: {msg}");
         };
         obj = _API.sub_create(pipeline, errorCallback);
         if (obj == System.IntPtr.Zero)
             return null;
-        return new connection(obj);
+        connection rv = new connection(obj);
+        rv.errorCallback = errorCallback;
+        return rv;
     }
 
     private static string lastMSpathInstalled = "";
