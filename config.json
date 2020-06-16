@@ -44,7 +44,7 @@
     "LocalUser": {
         "sourceType": "pcself",
         "SUBConfig": {
-            "streamNumber": 0,
+            "tileNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {
@@ -103,7 +103,7 @@
     "RemoteUser": {
         "sourceType": "pcsub",
         "SUBConfig": {
-            "streamNumber": 0,
+            "tileNumber": 1,
             "initialDelay": 0
         },
         "AudioSUBConfig": {

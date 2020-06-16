@@ -43,7 +43,7 @@ public class Config {
         public string sourceType;
         [Serializable]
         public class _SUBConfig {
-            public int streamNumber;
+            public int tileNumber;
             public int initialDelay;
         }
         public _SUBConfig SUBConfig;

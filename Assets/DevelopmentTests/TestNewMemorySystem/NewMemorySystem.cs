@@ -68,7 +68,14 @@ public class NewMemorySystem : MonoBehaviour
             b2dStreams[0].quality = 0;
             b2dStreams[0].inQueue = writerQueue;
             dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue);
+            Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1]
+            {
+                    new Workers.PCSubReader.TileDescriptor() {
+                        outQueue = decoderQueue,
+                        tileNumber = 0
+                    }
+            };
+            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 1, tiles);
             decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 

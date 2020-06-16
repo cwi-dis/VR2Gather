@@ -81,16 +81,16 @@ public class EntityPipeline : MonoBehaviour {
                     int nTile = 1;
                     if (PCSelfConfig.tiled)
                     {
-                        Workers.TiledWorker.TileInfo[] tiles = pcReader.getTiles();
-                        if (tiles != null && tiles.Length > 1)
+                        Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
+                        if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                         {
-                            for (int i=0; i<tiles.Length; i++)
+                            for (int i=0; i<tilesToTransmit.Length; i++)
                             {
-                                Debug.Log($"xxxjack: tile {i}: normal=({tiles[i].normal.x}, {tiles[i].normal.y}, {tiles[i].normal.z}), camName={tiles[i].cameraName}, mask={tiles[i].cameraMask}");
+                                Debug.Log($"xxxjack: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
 
                             }
                             minTileNum = 1;
-                            nTile = tiles.Length - 1;
+                            nTile = tilesToTransmit.Length - 1;
                         }
                     }
                     int nQuality = Encoders.Length;
@@ -166,7 +166,14 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create sub receiver
                 //
-                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+                Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[1]
+                {
+                    new Workers.PCSubReader.TileDescriptor() {
+                        outQueue = decoderQueue,
+                        tileNumber = SUBConfig.tileNumber // xxxjack temporarily reusing streamNumber
+                    }
+                };
+                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
@@ -178,7 +185,7 @@ public class EntityPipeline : MonoBehaviour {
                 if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.tileNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline
