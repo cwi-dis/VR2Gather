@@ -5,10 +5,10 @@ namespace Workers {
 
         public delegate bool NeedsSomething();
 
-        string url;
+        protected string url;
         protected int streamCount;
         protected uint[] stream4CCs;
-        sub.connection subHandle;
+        protected sub.connection subHandle;
         protected bool isPlaying;
         int numberOfUnsuccessfulReceives;
 //        object subLock = new object();
@@ -68,17 +68,28 @@ namespace Workers {
 
             protected void run()
             {
+                Debug.Log($"{Name()}: xxxjack thread started, looking at {receiverInfo.streamIndexes.Length} streams");
                 try
                 {
                     while (true)
                     {
+                        System.Threading.Thread.Sleep(1); // xxxjack Yield() may be better?
+                        //
+                        // First check whether we should terminate, and otherwise whether we have nay work to do currently.
+                        //
                         if (receiverInfo.outQueue.IsClosed()) return;
+
                         sub.connection subHandle = parent.getSubHandle();
                         if (subHandle == null)
                         {
                             Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
                             return;
                         }
+
+                        if (receiverInfo.streamIndexes.Length == 0) continue;
+                        //
+                        // We have work to do. Check which of our streamIndexes has data available.
+                        //
                         sub.FrameInfo frameInfo = new sub.FrameInfo();
 
                         int stream_index = -1;
@@ -229,6 +240,20 @@ namespace Workers {
             }
         }
 
+        protected virtual void _streamInfoAvailable()
+        {
+            //
+            // Get stream information
+            //
+            streamCount = subHandle.get_stream_count();
+            stream4CCs = new uint[streamCount];
+            for (int i = 0; i < streamCount; i++)
+            {
+                stream4CCs[i] = subHandle.get_stream_4cc(i);
+            }
+            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
+        }
+
         protected void InitDash() {
             if (System.DateTime.Now < subRetryNotBefore) return;
             subRetryNotBefore = System.DateTime.Now + subRetryInterval;
@@ -248,27 +273,15 @@ namespace Workers {
                 return;
             }
             //
-            // Get stream information
+            // Stream information is available. Allow subclasses to act on it to reconfigure.
             //
-            streamCount = subHandle.get_stream_count();
-            stream4CCs = new uint[streamCount];
-            for (int i = 0; i < streamCount; i++)
-            {
-                stream4CCs[i] = subHandle.get_stream_4cc(i);
-            }
-            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
-            //
-            // Get more stream information
-            //
-            sub.TileDesc[] streams = subHandle.get_streams();
-            foreach(var stream in streams)
-            {
-                Debug.Log($"{Name()}: xxxjack streamIndex={stream.streamIndex}, tileNumber={stream.tileNumber}, quality={stream.quality}");
-            }
+            _streamInfoAvailable();
+
             //
             // Start threads
             //
             int threadCount = receivers.Length;
+            Debug.Log($"{Name()}: xxxjack starting {threadCount} threads");
             threads = new SubPullThread[threadCount];
             for (int i=0; i<threadCount; i++)
             {
