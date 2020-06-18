@@ -539,18 +539,20 @@ public class OrchestratorGui : MonoBehaviour
 
     private void OnGetSessionsHandler(Session[] sessions)
     {
-        if(sessions != null && sessions.Length > 0)
+        // clean current session items
+        RemoveComponentsFromList(orchestratorSessions.transform);
+        Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
+        dd.ClearOptions();
+
+        // update the list of available sessions
+        if (sessions != null && sessions.Length > 0)
         {
-            // update the list of available sessions
-            RemoveComponentsFromList(orchestratorSessions.transform);
             Array.ForEach(sessions, delegate (Session element)
             {
                 AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
             });
 
             // update the dropdown
-            Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
-            dd.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             Array.ForEach(sessions, delegate (Session session)
             {

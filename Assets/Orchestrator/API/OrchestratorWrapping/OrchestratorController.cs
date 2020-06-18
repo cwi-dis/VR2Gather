@@ -129,6 +129,14 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         }
     }
 
+    private void OnDestroy()
+    {
+        if(!(mySession is null))
+        {
+            Collect_SFU_Logs(mySession.sessionId);
+        }
+    }
+
     #endregion
 
     #region Commands
@@ -419,6 +427,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if (status.Error == 0)
         {
+            Collect_SFU_Logs(mySession.sessionId);
+
             // success
             mySession = null;
             myScenario = null;
@@ -752,6 +762,17 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             connectedUsers.Remove(lUserToRemove);
         }
+    }
+
+    #endregion
+
+    #region Logs
+
+    private void Collect_SFU_Logs(string pSessionID)
+    {
+        string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
+        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
+        Application.OpenURL(requestURL);
     }
 
     #endregion
