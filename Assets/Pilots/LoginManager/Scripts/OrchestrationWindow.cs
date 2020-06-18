@@ -199,7 +199,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnGetOrchestratorVersionResponse(ResponseStatus status, string version) {
         if (status.Error == 0) {
             orchVerText.text = version;
-            Debug.Log("UMTS Version: " + version);
+            Debug.Log("Orchestration Service: " + version);
         }
     }
 
