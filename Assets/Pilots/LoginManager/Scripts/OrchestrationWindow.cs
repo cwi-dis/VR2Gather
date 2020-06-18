@@ -280,7 +280,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         }
     }
     
-    private void Logout() {
+    public void Logout() {
         orchestratorWrapper.Logout();
     }
 
