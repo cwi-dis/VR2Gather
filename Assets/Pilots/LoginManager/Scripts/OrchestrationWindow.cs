@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -1202,5 +1202,15 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnUserEventReceived(UserEvent pSceneEventData) {
 
     }
-       
+
+#if UNITY_STANDALONE_WIN
+    void OnGUI() {
+        if (GUI.Button(new Rect(Screen.width/2, 5, 70, 20), "Open Log")) {
+            var log_path = System.IO.Path.Combine(System.IO.Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "Player.log");
+            Debug.Log(log_path);
+            Application.OpenURL(log_path);
+        }
+    }
+#endif
+
 }
