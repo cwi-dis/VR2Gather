@@ -30,6 +30,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     //Rooms
     private List<RoomInstance> availableRoomInstances;
 
+    //LivePresenter
+    private LivePresenterData livePresenterData;
+
     // user Login state
     private bool userIsLogged = false;
 
@@ -119,6 +122,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
     public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
     public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+    public Session MySession { get { return mySession; } }
+    public ScenarioInstance MyScenario { get { return myScenario; } }
+    public LivePresenterData LivePresenterData { get { return livePresenterData; } }
 
     #endregion
 
@@ -130,6 +136,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             instance = this;
         }
+
+        DontDestroyOnLoad(this);
     }
 
     private void OnDestroy()
@@ -495,6 +503,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
     {
         //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
+        livePresenterData = liveData;
 
         OnGetLiveDataEvent?.Invoke(liveData);
         orchestratorWrapper.GetRooms();
