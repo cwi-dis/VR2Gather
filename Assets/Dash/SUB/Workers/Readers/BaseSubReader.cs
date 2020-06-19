@@ -171,7 +171,6 @@ namespace Workers {
                 Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
-            Start();
         }
 
         public override string Name()
@@ -216,18 +215,24 @@ namespace Workers {
             //
             // Create SUB instance
             //
-            subHandle = sub.create(Name());
-            if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+            if (subHandle != null)
+            {
+                Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+            }
+            sub.connection newSubHandle = sub.create(Name());
+            if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
             Debug.Log($"{Name()}: retry sub.create() successful.");
             //
             // Start playing
             //
-            isPlaying = subHandle.play(url);
+            isPlaying = newSubHandle.play(url);
             if (!isPlaying) {
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                 Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
+                newSubHandle.free();
                 return;
             }
+            subHandle = newSubHandle;
             //
             // Get stream information
             //

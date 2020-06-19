@@ -7,6 +7,7 @@ namespace Workers {
         {
             outQueues = new QueueThreadSafe[1] { _outQueue };
             streamIndexes = new int[1] { _streamNumber };
+            Start();
         }
     }
 }

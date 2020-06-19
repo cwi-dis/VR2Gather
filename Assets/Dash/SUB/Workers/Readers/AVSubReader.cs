@@ -40,7 +40,7 @@ namespace Workers {
                 Debug.LogError($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
             }
             streamIndexes = new int[2] { videoStream, audioStream }; // xxxjack wrong
-
+            Start();
         }
     }
 }
