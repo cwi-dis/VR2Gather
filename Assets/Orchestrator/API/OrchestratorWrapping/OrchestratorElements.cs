@@ -114,7 +114,8 @@ namespace OrchestratorWrapping
 
     public class NtpClock: OrchestratorElement
     {
-        public string ntpTime;
+        public string ntpDate;
+        public System.Int64 ntpTimeMs;
 
         public NtpClock() {}
     }

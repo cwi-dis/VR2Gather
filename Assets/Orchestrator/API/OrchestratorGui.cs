@@ -872,8 +872,8 @@ public class OrchestratorGui : MonoBehaviour
 
     private void OnUserMessageReceivedHandler(UserMessage userMessage)
     {
-        //AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion
@@ -902,15 +902,15 @@ public class OrchestratorGui : MonoBehaviour
     private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
     {
         //Add your event handling
-        //AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     private void OnUserEventReceivedHandler (UserEvent pUserEventData)
     {
         //Add your event handling
-        //AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion

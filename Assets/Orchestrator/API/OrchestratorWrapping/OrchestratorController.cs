@@ -71,6 +71,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Action<bool> OnLoginEvent;
     public Action<bool> OnLogoutEvent;
 
+    // Orchestrator NTP clock Events
+    public Action<NtpClock> OnGetNTPTimeEvent;
+
     // Orchestrator Sessions Events
     public Action<Session[]> OnGetSessionsEvent;
     public Action<Session> OnAddSessionEvent;
@@ -296,10 +299,15 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         orchestratorWrapper.GetNTPTime();
     }
 
-    public void OnGetNTPTimeResponse(ResponseStatus status, string time)
+    public void OnGetNTPTimeResponse(ResponseStatus status, NtpClock ntpTime)
     {
-        Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + time);
-        Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        if(status.Error == 0)
+        {
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.ntpDate);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+
+            OnGetNTPTimeEvent?.Invoke(ntpTime);
+        }
     }
 
     #endregion

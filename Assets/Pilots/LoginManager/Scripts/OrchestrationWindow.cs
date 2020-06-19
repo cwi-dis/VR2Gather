@@ -200,6 +200,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (status.Error == 0) {
             orchVerText.text = version;
             Debug.Log("Orchestration Service: " + version);
+            orchestratorWrapper.GetNTPTime();
         }
     }
 
@@ -323,9 +324,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         orchestratorWrapper.GetNTPTime();
     }
 
-    public void OnGetNTPTimeResponse(ResponseStatus status, string time) {
-        Debug.Log("OnGetNTPTimeResponse::NtpTime::" + time);
-        Debug.Log("OnGetNTPTimeResponse::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+    public void OnGetNTPTimeResponse(ResponseStatus status, NtpClock ntpTime) {
+        if (status.Error == 0) {
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.ntpTimeMs);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + ntpTime.ntpDate);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::MyDateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        }
     }
 
     #endregion
