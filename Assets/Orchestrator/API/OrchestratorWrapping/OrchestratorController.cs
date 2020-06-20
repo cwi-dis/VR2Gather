@@ -357,6 +357,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
 
+            AddConnectedUser(me.userId);
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
             OnSessionJoinedEvent?.Invoke();
@@ -425,6 +426,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
                 }
             }
 
+            AddConnectedUser(me.userId);
             OnJoinSessionEvent?.Invoke(mySession);
             OnSessionJoinedEvent?.Invoke();
         }

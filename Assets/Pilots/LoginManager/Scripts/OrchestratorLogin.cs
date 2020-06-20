@@ -150,6 +150,9 @@ public class OrchestratorLogin : MonoBehaviour {
             }
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() + "/" + "4";
         }
+        else {
+            Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
+        }
     }
 
     private void UpdateSessions(Transform container, Dropdown dd) {
@@ -237,6 +240,7 @@ public class OrchestratorLogin : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (state == State.Create) {
+            UserRepresentationToggle();
             AudioToggle();
             PresenterToggles();
         }
@@ -465,35 +469,39 @@ public class OrchestratorLogin : MonoBehaviour {
 
     #region Toggles  
 
-    private void UserRepresentationToggle(int kind) {
+    private void UserRepresentationToggle() {
         if (tvmToggle.isOn)
-            kindRepresentation = 0;
+            tvmToggle.interactable = false;
         else
-            kindRepresentation = 1;
+            tvmToggle.interactable = true;
+        if (pcToggle.isOn)
+            pcToggle.interactable = false;
+        else
+            pcToggle.interactable = true;        
+    }
 
-        kindRepresentation = kind;
+    public void SetRepresentation(int kind) {
         switch (kind) {
             case 0: // TVM
-                // Set AudioType
-                Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
-                // Set Toggles
-                tvmToggle.interactable = false;
-                tvmToggle.isOn = true;
-                pcToggle.interactable = true;
-                pcToggle.isOn = false;
+                if (tvmToggle.isOn) {
+                    // Set AudioType
+                    Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
+                    // Set Toggles
+                    pcToggle.isOn = false;
+                }
                 break;
             case 1: // PC
-                // Set AudioType
-                Config.Instance.userRepresentation = Config.UserRepresentation.PC;
-                // Set Toggles
-                pcToggle.interactable = false;
-                pcToggle.isOn = true;
-                tvmToggle.interactable = true;
-                tvmToggle.isOn = false;
+                if (pcToggle.isOn) {
+                    // Set AudioType
+                    Config.Instance.userRepresentation = Config.UserRepresentation.PC;
+                    // Set Toggles
+                    tvmToggle.isOn = false;
+                }
                 break;
             default:
                 break;
         }
+        kindRepresentation = kind;
     }
 
     private void AudioToggle() {
@@ -511,41 +519,39 @@ public class OrchestratorLogin : MonoBehaviour {
             dashAudioToggle.interactable = true;
     }
 
-    public void SetAudio(int state) {
-        switch (state) {
+    public void SetAudio(int kind) {
+        switch (kind) {
             case 0: // No
                 if (noAudioToggle.isOn) {
+                    // Set AudioType
                     Config.Instance.audioType = Config.AudioType.None;
-
+                    // Set Toggles
                     socketAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
-
-                    kindAudio = 0;
                 }
                 break;
             case 1: // Socket
                 if (socketAudioToggle.isOn) {
+                    // Set AudioType
                     Config.Instance.audioType = Config.AudioType.SocketIO;
-
+                    // Set Toggles
                     noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
-
-                    kindAudio = 1;
                 }
                 break;
             case 2: // Dash
                 if (dashAudioToggle.isOn) {
+                    // Set AudioType
                     Config.Instance.audioType = Config.AudioType.Dash;
-
+                    // Set Toggles
                     noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
-
-                    kindAudio = 2;
                 }
                 break;
             default:
                 break;
         }
+        kindAudio = kind;
     }
 
     private void PresenterToggles() {
@@ -713,7 +719,7 @@ public class OrchestratorLogin : MonoBehaviour {
             state = State.Logged;
         }
         else {
-            userId.text = "";
+            this.userId.text = "";
             userName.text = "";
         }
 
@@ -938,7 +944,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetUserInfoHandler(User user) {
         if (user != null) {
-            if (string.IsNullOrEmpty(userId.text) || user.userId == userId.text) {
+            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId) {
                 OrchestratorController.Instance.SelfUser = user;
 
                 userId.text = user.userId;
