@@ -130,14 +130,15 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     #region Unity
 
-    private void Awake()
-    {
-        if(instance == null)
-        {
+    private void Awake() {
+        DontDestroyOnLoad(this);
+
+        if (instance == null) {
             instance = this;
         }
-
-        DontDestroyOnLoad(this);
+        else {
+            Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
