@@ -448,6 +448,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             Collect_SFU_Logs(mySession.sessionId);
 
+            if (userIsMaster) {
+                orchestratorWrapper.DeleteSession(mySession.sessionId);
+            }
+
             // success
             mySession = null;
             myScenario = null;
