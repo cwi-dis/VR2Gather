@@ -171,7 +171,6 @@ namespace Workers {
                 Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
-            Start();
         }
 
         public override string Name()
@@ -210,24 +209,30 @@ namespace Workers {
             }
         }
 
-        protected void InitDash() {
-            if (System.DateTime.Now < subRetryNotBefore) return;
+        protected bool InitDash() {
+            if (System.DateTime.Now < subRetryNotBefore) return false;
             subRetryNotBefore = System.DateTime.Now + subRetryInterval;
             //
             // Create SUB instance
             //
-            subHandle = sub.create(Name());
-            if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+            if (subHandle != null)
+            {
+                Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+            }
+            sub.connection newSubHandle = sub.create(Name());
+            if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
             Debug.Log($"{Name()}: retry sub.create() successful.");
             //
             // Start playing
             //
-            isPlaying = subHandle.play(url);
+            isPlaying = newSubHandle.play(url);
             if (!isPlaying) {
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                 Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
-                return;
+                newSubHandle.free();
+                return false;
             }
+            subHandle = newSubHandle;
             //
             // Get stream information
             //
@@ -238,9 +243,10 @@ namespace Workers {
                 stream4CCs[i] = subHandle.get_stream_4cc(i);
             }
             Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
-            //
-            // Start threads
-            //
+            return true;
+        }
+
+        protected void InitThreads() { 
             int threadCount = streamIndexes.Length;
             threads = new SubPullThread[threadCount];
             for (int i=0; i<threadCount; i++)
@@ -288,7 +294,7 @@ namespace Workers {
             // If we are not playing we start
             if (subHandle == null)
             {
-                InitDash();
+                if (InitDash()) InitThreads();
             }
         }
     }
