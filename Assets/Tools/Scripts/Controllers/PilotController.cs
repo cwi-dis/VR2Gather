@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Video;
 
 //public enum Actions { VIDEO_1_START, VIDEO_1_PAUSE, VIDEO_2_START, VIDEO_2_PAUSE, WAIT }
@@ -6,11 +6,12 @@ using UnityEngine.Video;
 abstract public class PilotController : MonoBehaviour {
 
     [HideInInspector] public float timer = 0.0f;
-    [HideInInspector] public int my_id = -1;
+    [HideInInspector] public int my_id;
 
     // Start is called before the first frame update
     public virtual void Start() {
         var tmp = Config.Instance;
+        my_id = -1;
     }
 
     public void LoadPlayers(PlayerManager[] players) {
