@@ -5,105 +5,91 @@ using UnityEngine.SceneManagement;
 
 public class LoginController : PilotController {
 
+    private static LoginController instance;
+
+    public static LoginController Instance { get { return instance; } }
+
     //AsyncOperation async;
     Coroutine loadCoroutine = null;
 
     public override void Start() {
         base.Start();
-        orchestrator.controller = this;
-    }
-
-    public override void Update() {
-        base.Update();
+        if (instance == null) {
+            instance = this;
+        }
     }
 
     IEnumerator RefreshAndLoad(string scenary) {
         yield return null;
-        orchestrator.GetUsers();
-        while (orchestrator.watingForUser) {
-            yield return null;
-        }
+        OrchestratorController.Instance.GetUsers();
+        yield return new WaitForSeconds(0.5f);
         SceneManager.LoadScene(scenary);
     }
 
-public override void MessageActivation(string message) {
+    public override void MessageActivation(string message) {
         Debug.Log(message);
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
-            if (msg[1] == "Pilot 0") {
-                if (msg[2] == "0") { // TVM
-                    orchestrator.useTVM = true;
-                    orchestrator.usePC = false;
-                } else { // PC
-                    orchestrator.useTVM = false;
-                    orchestrator.usePC = true;
-                }
-                // Check Audio
-                switch (msg[3]) {
-                    case "0": // No Audio
-                        orchestrator.useAudio = false;
-                        orchestrator.useSocketIOAudio = false;
-                        orchestrator.useDashAudio = false;
-                        break;
-                    case "1": // Socket Audio
-                        orchestrator.useAudio = true;
-                        orchestrator.useSocketIOAudio = true;
-                        orchestrator.useDashAudio = false;
-                        break;
-                    case "2": // Dash Audio
-                        orchestrator.useAudio = true;
-                        orchestrator.useSocketIOAudio = false;
-                        orchestrator.useDashAudio = true;
-                        break;
-                    default:
-                        break;
-                }
-                orchestrator.presenterToggle.isOn = false;
-                orchestrator.liveToggle.isOn = false;
-                if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
-            } else
-            if (msg[1] == "Pilot 1") SceneManager.LoadScene("Pilot1");
-            else
-            if (msg[1] == "Pilot 2") {
-                // Check Representation
-                if (msg[2] == "0") { // TVM
-                    orchestrator.useTVM = true;
-                    orchestrator.usePC = false;
-                } else { // PC
-                    orchestrator.useTVM = false;
-                    orchestrator.usePC = true;
-                }
-                // Check Audio
-                switch (msg[3]) {
-                    case "0": // No Audio
-                        orchestrator.useAudio = false;
-                        orchestrator.useSocketIOAudio = false;
-                        orchestrator.useDashAudio = false;
-                        break;
-                    case "1": // Socket Audio
-                        orchestrator.useAudio = true;
-                        orchestrator.useSocketIOAudio = true;
-                        orchestrator.useDashAudio = false;
-                        break;
-                    case "2": // Dash Audio
-                        orchestrator.useAudio = true;
-                        orchestrator.useSocketIOAudio = false;
-                        orchestrator.useDashAudio = true;
-                        break;
-                    default:
-                        break;
-                }
-                // Check Presenter Toggle
-                if (msg[4] == "True") orchestrator.presenterToggle.isOn = true;
-                else orchestrator.presenterToggle.isOn = false;
-                // Check Live Toggle
-                if (msg[5] == "True") orchestrator.liveToggle.isOn = true;
-                else orchestrator.liveToggle.isOn = false;
-
-                if (loadCoroutine == null) {
-                    if (orchestrator.isMaster && !orchestrator.isDebug) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Presenter"));
-                    else loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
-                }
+            // Check Representation
+            switch (msg[2]) {
+                case "0": // TVM
+                    Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
+                    break;
+                case "1": // PC
+                    Config.Instance.userRepresentation = Config.UserRepresentation.PC;
+                    break;
+                default:
+                    break;
+            }
+            // Check Audio
+            switch (msg[3]) {
+                case "0": // No Audio
+                    Config.Instance.audioType = Config.AudioType.None;
+                    break;
+                case "1": // Socket Audio
+                    Config.Instance.audioType = Config.AudioType.SocketIO;
+                    break;
+                case "2": // Dash Audio
+                    Config.Instance.audioType = Config.AudioType.Dash;
+                    break;
+                default:
+                    break;
+            } 
+            // Check Pilot
+            switch (msg[1]) {
+                case "Pilot 0": // PILOT 0
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
+                    break;
+                case "Pilot 1": // PILOT 1
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot1"));
+                    break;
+                case "Pilot 2": // PILOT 2
+                    // Check Presenter
+                    switch (msg[4]) {
+                        case "0": // NONE
+                            Config.Instance.presenter = Config.Presenter.None;
+                            break;
+                        case "1": // LOCAL
+                            Config.Instance.presenter = Config.Presenter.Local;
+                            break;
+                        case "2": // LIVE
+                            Config.Instance.presenter = Config.Presenter.Live;
+                            break;
+                        default:
+                            break;
+                    }
+                    // Load Pilot
+                    if (loadCoroutine == null) {
+                        if (OrchestratorController.Instance.UserIsMaster && Config.Instance.presenter == Config.Presenter.Live)
+                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Presenter"));
+                        else
+                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         else if (msg[0] == MessageType.READY) {
