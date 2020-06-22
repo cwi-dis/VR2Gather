@@ -219,12 +219,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        // Set status to offline
-        orchestratorConnected = false;
-        statusText.text = "Offline";
-        statusText.color = offlineCol;
-        state = State.Offline;
-
         pcToggle.isOn = true;
         tvmToggle.isOn = false;
         noAudioToggle.isOn = true;
@@ -232,9 +226,28 @@ public class OrchestratorLogin : MonoBehaviour {
         dashAudioToggle.isOn = false;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
+               
+        if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
+            // Set status to offline
+            orchestratorConnected = true;
+            statusText.text = "Online";
+            statusText.color = onlineCol;
+            userId.text = OrchestratorController.Instance.SelfUser.userId;
+            userName.text = OrchestratorController.Instance.SelfUser.userName;
+            exchangeNameLoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
+            connectionURILoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
+            OnLogin(true);
+        }
+        else { // Enter for first time
+            // Set status to offline
+            orchestratorConnected = false;
+            statusText.text = "Offline";
+            statusText.color = offlineCol;
+            state = State.Offline;
 
-        // Try to connect
-        SocketConnect();
+            // Try to connect
+            SocketConnect();
+        }
     }
 
     // Update is called once per frame
@@ -290,6 +303,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 sessionPanel.SetActive(true);
                 usersPanel.SetActive(false);
                 // Buttons
+                connectButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = true;
@@ -309,6 +323,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 sessionPanel.SetActive(true);
                 usersPanel.SetActive(false);
                 // Buttons
+                connectButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = false;
@@ -328,6 +343,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 sessionPanel.SetActive(true);
                 usersPanel.SetActive(false);
                 // Buttons
+                connectButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = true;
@@ -347,6 +363,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 sessionPanel.SetActive(false);
                 usersPanel.SetActive(true);
                 // Buttons
+                connectButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
                 createButton.interactable = false;
