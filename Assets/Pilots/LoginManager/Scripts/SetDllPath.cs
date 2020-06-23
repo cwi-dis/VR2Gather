@@ -7,6 +7,7 @@ public class SetDllPath {
         string dllsPath = $"{Application.dataPath}/../dlls/";
         if (System.IO.Directory.Exists(dllsPath)) { 
             System.Environment.SetEnvironmentVariable("PATH", $"{dllsPath};{pathvar}", System.EnvironmentVariableTarget.Process);
+            System.Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dllsPath);
         }
     }
 }
