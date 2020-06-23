@@ -767,7 +767,8 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
-
+        int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
     #endregion
