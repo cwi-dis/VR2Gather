@@ -130,13 +130,16 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     #region Unity
 
-    private void Awake() {
+    private void Awake() 
+    {
         DontDestroyOnLoad(this);
 
-        if (instance == null) {
+        if (instance == null) 
+        {
             instance = this;
         }
-        else {
+        else 
+        {
             Destroy(gameObject);
         }
     }
@@ -304,7 +307,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void GetNTPTime()
     {
-        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         orchestratorWrapper.GetNTPTime();
     }
 
@@ -312,8 +316,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if(status.Error == 0)
         {
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.ntpDate);
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
 
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
@@ -448,7 +453,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             Collect_SFU_Logs(mySession.sessionId);
 
-            if (userIsMaster) {
+            if (userIsMaster) 
+            {
                 orchestratorWrapper.DeleteSession(mySession.sessionId);
             }
 
