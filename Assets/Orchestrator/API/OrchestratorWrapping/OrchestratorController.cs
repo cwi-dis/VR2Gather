@@ -307,7 +307,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void GetNTPTime()
     {
-        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        //Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
         Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         orchestratorWrapper.GetNTPTime();
     }
@@ -318,7 +318,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+            //Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
 
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
