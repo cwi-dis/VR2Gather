@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using OrchestratorWrapping;
 using UnityEngine.SceneManagement;
 
-public enum State {
+public enum StateTemp {
     Offline, Login, Default, Create, Join, Lobby, InGame
 }
 
@@ -26,7 +26,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
 
-    private State state = State.Offline;
+    private StateTemp state = StateTemp.Offline;
     private bool updated = false;
     private bool imJoining = false;
 
@@ -190,7 +190,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     public void OnConnect() {
         statusText.text = "Online";
         statusText.color = onlineCol;
-        state = State.Login;
+        state = StateTemp.Login;
         PanelChanger();
         orchestratorWrapper.GetOrchestratorVersion();
     }
@@ -260,7 +260,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 orchestratorWrapper.UpdateUserDataJson(exchangeNameLoginIF.text, connectionURILoginIF.text);
                 userID = _userId;
                 idText.text = _userId;
-                state = State.Default;
+                state = StateTemp.Default;
                 PanelChanger();
             }
             else {
@@ -305,7 +305,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 userID = "";
                 idText.text = "";
                 nameText.text = "";
-                state = State.Login;
+                state = StateTemp.Login;
                 PanelChanger();
             }
             else {
@@ -413,7 +413,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 }
             }
 
-            state = State.Lobby;
+            state = StateTemp.Lobby;
             PanelChanger();
         }
         else {
@@ -466,7 +466,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             // now we wwill need the session info with the sceanrio instance used for this session
             orchestratorWrapper.GetSessionInfo();
 
-            state = State.Lobby;
+            state = StateTemp.Lobby;
             PanelChanger();
         }
         else {
@@ -537,7 +537,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
             removeComponentsFromList(usersSession.transform);
 
-            state = State.Default;
+            state = StateTemp.Default;
             PanelChanger();
         }
     }
@@ -553,14 +553,14 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         if (!string.IsNullOrEmpty(_userID)) {
             updated = true;
 
-            if (SceneManager.GetActiveScene().name != "LoginManager") {
-                for (int i = 0; i < controller.players.Length; ++i) {
-                    if (controller.players[i].orchestratorId == _userID) {
-                        Destroy(controller.players[i].gameObject);
-                        break;
-                    }
-                }                    
-            }
+            //if (SceneManager.GetActiveScene().name != "LoginManager") {
+            //    for (int i = 0; i < controller.players.Length; ++i) {
+            //        if (controller.players[i].orchestratorId == _userID) {
+            //            Destroy(controller.players[i].gameObject);
+            //            break;
+            //        }
+            //    }                    
+            //}
         }
     }
 
@@ -784,6 +784,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     void Start() {
         //Hardcoded ClockSync on Windows machines
         //if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)) SyncTool.SyncSystemClock();
+        orchURLText.text = orchestratorUrl;
+        nativeVerText.text = VersionLog.Instance.NativeClient;
+        playerVerText.text = "v" + Application.version;
+        orchVerText.text = "";
 
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
@@ -793,12 +797,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
         pcToggle.isOn = false;
         noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
-        dashAudioToggle.isOn = false;
-
-        orchURLText.text = orchestratorUrl;
-        nativeVerText.text = VersionLog.Instance.NativeClient;
-        playerVerText.text = "v" + Application.version;
-        orchVerText.text = "";
+        dashAudioToggle.isOn = false;       
 
         // Set status to offline
         OnDisconnect();
@@ -820,7 +819,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             gameObject.GetComponent<Canvas>().enabled = false;
         }
 
-        if(state== State.Create){
+        if(state== StateTemp.Create){
             // Check Pilot number to show optional toggles
             Pilot2PresenterToggles();
             Pilot2UserRepresentationToggle();
@@ -830,7 +829,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
 
     public void PanelChanger() {
         switch (state) {
-            case State.Offline:
+            case StateTemp.Offline:
                 loginPanel.SetActive(false);
                 infoPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -843,7 +842,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.gameObject.SetActive(true);
                 TVMCalibButton.gameObject.SetActive(true);
                 break;
-            case State.Login:
+            case StateTemp.Login:
                 loginPanel.SetActive(true);
                 infoPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -856,7 +855,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.gameObject.SetActive(true);
                 TVMCalibButton.gameObject.SetActive(true);
                 break;
-            case State.Default:
+            case StateTemp.Default:
                 loginPanel.SetActive(false);
                 infoPanel.SetActive(true);
                 createPanel.SetActive(false);
@@ -873,7 +872,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.interactable = true;
                 TVMCalibButton.interactable = true;
                 break;
-            case State.Create:
+            case StateTemp.Create:
                 loginPanel.SetActive(false);
                 infoPanel.SetActive(true);
                 createPanel.SetActive(true);
@@ -890,7 +889,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.interactable = true;
                 TVMCalibButton.interactable = true;
                 break;
-            case State.Join:
+            case StateTemp.Join:
                 loginPanel.SetActive(false);
                 infoPanel.SetActive(true);
                 createPanel.SetActive(false);
@@ -907,7 +906,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.interactable = true;
                 TVMCalibButton.interactable = true;
                 break;
-            case State.Lobby:
+            case StateTemp.Lobby:
                 loginPanel.SetActive(false);
                 infoPanel.SetActive(true);
                 createPanel.SetActive(false);
@@ -926,7 +925,7 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                 PCCalibButton.interactable = false;
                 TVMCalibButton.interactable = false;
                 break;
-            case State.InGame:
+            case StateTemp.InGame:
                 break;
             default:
                 break;
@@ -999,17 +998,17 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void CreateButton() {
-        state = State.Create;
+        state = StateTemp.Create;
         PanelChanger();
     }
 
     public void JoinButton() {
-        state = State.Join;
+        state = StateTemp.Join;
         PanelChanger();
     }
 
     public void DoneButton() {
-        if (state == State.Create) {
+        if (state == StateTemp.Create) {
             isMaster = true;
             AddSession();
         }
@@ -1049,88 +1048,66 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
             exchangeNameLoginIF.text = "210TVM";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Marc/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Marc/audio.mpd";
         }
         else if (user == 1) {
             userNameLoginIF.text = "Luca@i2CAT";
             userPasswordLoginIF.text = "i2CAT2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.137:5672";
             exchangeNameLoginIF.text = "110TVM";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Luca/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Luca/audio.mpd";
         }
         else if (user == 2) {
             userNameLoginIF.text = "Spiros@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
             exchangeNameLoginIF.text = "Fake1";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Spiros/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Spiros/audio.mpd";
         }
         else if (user == 3) {
             userNameLoginIF.text = "Argyris@CERTH";
             userPasswordLoginIF.text = "CERTH2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
             exchangeNameLoginIF.text = "Fake1";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Argyris/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Argyris/audio.mpd";
         }
         else if (user == 4) {
             userNameLoginIF.text = "Jack@CWI";
             userPasswordLoginIF.text = "CWI2020";
             connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
             exchangeNameLoginIF.text = "TVMmpeg-pc";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Jack/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Jack/audio.mpd";
         }
         else if (user == 5) {
             userNameLoginIF.text = "Shishir@CWI";
             userPasswordLoginIF.text = "CWI2020";
             connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
             exchangeNameLoginIF.text = "TVMarecibo";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Shishir/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Shishir/audio.mpd";
         }
         else if (user == 6) {
             userNameLoginIF.text = "Fernando@THEMO";
             userPasswordLoginIF.text = "THEMO2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "fernando";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Fernando/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Fernando/audio.mpd";
         }
         else if (user == 7) {
             userNameLoginIF.text = "Vincent@VO";
             userPasswordLoginIF.text = "VO2020";
             connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
             exchangeNameLoginIF.text = "vincent";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-Vincent/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-Vincent/audio.mpd";
         }
         else if (user == 8) {
             userNameLoginIF.text = "cwibig";
             userPasswordLoginIF.text = "CWI2020";
             connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
             exchangeNameLoginIF.text = "TVMarecibo";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwibig/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwibig/audio.mpd";
         }
         else if (user == 9) {
             userNameLoginIF.text = "cwismall";
             userPasswordLoginIF.text = "CWI2020";
             connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
             exchangeNameLoginIF.text = "TVMmpeg-pc";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwismall/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwismall/audio.mpd";
         }
         else if (user == 10) {
             userNameLoginIF.text = "cwitiny";
             userPasswordLoginIF.text = "CWI2020";
             connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.112:5672";
             exchangeNameLoginIF.text = "TVMgargamel";
-            pcDashServerLoginIF.text = "https://vrt-pcl2dash.viaccess-orca.com/pc-cwitiny/testBed.mpd";
-            audioDashServerLoginIF.text = "https://vrt-evanescent.viaccess-orca.com/audio-cwitiny/audio.mpd";
         }
     }
 

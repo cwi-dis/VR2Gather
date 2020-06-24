@@ -30,6 +30,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     //Rooms
     private List<RoomInstance> availableRoomInstances;
 
+    //LivePresenter
+    private LivePresenterData livePresenterData;
+
     // user Login state
     private bool userIsLogged = false;
 
@@ -119,16 +122,25 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
     public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
     public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+    public Session MySession { get { return mySession; } }
+    public ScenarioInstance MyScenario { get { return myScenario; } }
+    public LivePresenterData LivePresenterData { get { return livePresenterData; } }
 
     #endregion
 
     #region Unity
 
-    private void Awake()
+    private void Awake() 
     {
-        if(instance == null)
+        DontDestroyOnLoad(this);
+
+        if (instance == null) 
         {
             instance = this;
+        }
+        else 
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -295,7 +307,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void GetNTPTime()
     {
-        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        //Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         orchestratorWrapper.GetNTPTime();
     }
 
@@ -303,8 +316,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if(status.Error == 0)
         {
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.ntpDate);
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            //Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
 
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
@@ -349,6 +363,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
 
+            AddConnectedUser(me.userId);
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
             OnSessionJoinedEvent?.Invoke();
@@ -417,6 +432,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
                 }
             }
 
+            AddConnectedUser(me.userId);
             OnJoinSessionEvent?.Invoke(mySession);
             OnSessionJoinedEvent?.Invoke();
         }
@@ -436,6 +452,11 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (status.Error == 0)
         {
             Collect_SFU_Logs(mySession.sessionId);
+
+            if (userIsMaster) 
+            {
+                orchestratorWrapper.DeleteSession(mySession.sessionId);
+            }
 
             // success
             mySession = null;
@@ -495,6 +516,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
     {
         //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
+        livePresenterData = liveData;
 
         OnGetLiveDataEvent?.Invoke(liveData);
         orchestratorWrapper.GetRooms();

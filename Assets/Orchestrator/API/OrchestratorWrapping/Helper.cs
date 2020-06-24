@@ -19,5 +19,10 @@ namespace OrchestratorWrapping
             }
             return list;
         }
+
+        public static int GetClockTimestamp(System.DateTime pDate)
+        {
+            return (int)pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+        }
     }
 }

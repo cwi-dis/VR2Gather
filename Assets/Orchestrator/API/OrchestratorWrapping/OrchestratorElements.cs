@@ -118,6 +118,7 @@ namespace OrchestratorWrapping
         public System.Int64 ntpTimeMs;
 
         public NtpClock() {}
+        public int Timestamp { get { return (int)(ntpTimeMs / 1000); } }
     }
 
     public class Scenario : OrchestratorElement
