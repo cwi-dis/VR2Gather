@@ -44,6 +44,7 @@ namespace Workers {
             }
 
             int len = mc.elements;
+            statsUpdate(len);
             if (writePosition + len < bufferSize) {
                 System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
                 writePosition += len;
@@ -89,6 +90,31 @@ namespace Workers {
                 }
             }
             return false;
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalUpdates;
+        double statsTotalSamplesInOutputBuffer;
+
+        public void statsUpdate(int samplesInOutputBuffer)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalUpdates = 0;
+                statsTotalSamplesInOutputBuffer = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
+                double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedInputSampleRate; // xxxjack or is this outputSampleRate???
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / 10} fps, {(int)samplesInBufferAverage} samples output latency, {(int)(timeInBufferAverage * 1000)} ms output latency");
+                statsTotalUpdates = 0;
+                statsTotalSamplesInOutputBuffer = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalUpdates += 1;
+            statsTotalSamplesInOutputBuffer += samplesInOutputBuffer;
         }
     }
 }
