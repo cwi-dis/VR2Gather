@@ -409,11 +409,9 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(string userMQname = "", string userMQurl = "", string userPCurl = "", string userAudioUrl = "")
+        public bool UpdateUserDataJson(UserData userData)
         {
-            UserData userData = new UserData(userMQname, userMQurl, userPCurl, userAudioUrl);
             JsonData json = JsonUtility.ToJson(userData);
-
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
             command.GetParameter("userDataJson").ParamValue = json;
             return OrchestrationSocketIoManager.EmitCommand(command);
@@ -423,6 +421,18 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
+        }
+
+        public bool ClearUserData()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("ClearUserData");
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+        
+        private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener != null) ResponsesListener.OnClearUserDataResponse(status);
         }
 
         public bool DeleteUser(string userId)
@@ -805,6 +815,7 @@ namespace OrchestratorWrapping
                     new Parameter("userDataJson", typeof(string))
                 },
                 OnUpdateUserDataJsonResponse),
+                new OrchestratorCommand("ClearUserData", null, OnClearUserDataResponse),
                 new OrchestratorCommand("DeleteUser", new List<Parameter>
                 {
                     new Parameter("userId", typeof(string))

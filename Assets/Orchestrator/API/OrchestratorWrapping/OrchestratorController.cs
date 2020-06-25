@@ -120,10 +120,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
     public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
     public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
-    public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
-    public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
-    public Session MySession { get { return mySession; } }
     public ScenarioInstance MyScenario { get { return myScenario; } }
+    public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
+    public Session MySession { get { return mySession; } }
+    public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
     public LivePresenterData LivePresenterData { get { return livePresenterData; } }
 
     #endregion
@@ -235,7 +235,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
                 Debug.Log("[OrchestratorController][OnLoginResponse] User logged.");
 
                 userIsLogged = true;
-                //orchestratorWrapper.UpdateUserDataJson("", "");
+                orchestratorWrapper.GetUserInfo();
             }
             else
             {
@@ -307,7 +307,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void GetNTPTime()
     {
-        //Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
         Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         orchestratorWrapper.GetNTPTime();
     }
@@ -318,7 +318,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
-            //Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
 
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
@@ -557,9 +557,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         orchestratorWrapper.GetUsers();
     }
 
-    public void UpdateUserData(string pMQname, string pMQurl)
+    public void UpdateUserData(UserData pUserData)
     {
-        orchestratorWrapper.UpdateUserDataJson(pMQname, pMQurl);
+        orchestratorWrapper.UpdateUserDataJson(pUserData);
     }
 
     public void OnUpdateUserDataJsonResponse(ResponseStatus status)
@@ -567,6 +567,20 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (status.Error == 0)
         {
             Debug.Log("[OrchestratorControler][OnUpdateUserDataJsonResponse] User data successfully updated.");
+            orchestratorWrapper.GetUserInfo();
+        }
+    }
+
+    public void ClearUserData()
+    {
+        orchestratorWrapper.ClearUserData();
+    }
+
+    public void OnClearUserDataResponse(ResponseStatus status)
+    {
+        if (status.Error == 0)
+        {
+            Debug.Log("[OrchestratorControler][OnClearUserDataResponse] User data successfully cleaned-up.");
             orchestratorWrapper.GetUserInfo();
         }
     }
