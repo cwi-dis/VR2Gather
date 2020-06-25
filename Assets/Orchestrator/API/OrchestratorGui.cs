@@ -42,10 +42,12 @@ public class OrchestratorGui : MonoBehaviour
     private InputField userNameIF = null;
     [SerializeField]
     private InputField userPasswordIF = null;
+    /*
     [SerializeField]
     private InputField userMQurlIF = null;
     [SerializeField]
     private InputField userMQnameIF = null;
+    */
     [SerializeField]
     private Button loginButton = null;
     [SerializeField]
@@ -77,6 +79,8 @@ public class OrchestratorGui : MonoBehaviour
     private Text userMQurl = null;
     [SerializeField]
     private Text userMQname = null;
+    [SerializeField]
+    private Text userRepresentation = null;
     [SerializeField]
     private Text userSession = null;
     [SerializeField]
@@ -137,6 +141,10 @@ public class OrchestratorGui : MonoBehaviour
     [SerializeField]
     private RectTransform userDataMQurlPanel = null;
     [SerializeField]
+    private RectTransform userDataRepresentationTypePanel = null;
+    [SerializeField]
+    private Dropdown userDataRepresentationTypeDD = null;
+    [SerializeField]
     private RectTransform sessionIdPanel = null;
     [SerializeField]
     private RectTransform sessionNamePanel = null;
@@ -195,6 +203,10 @@ public class OrchestratorGui : MonoBehaviour
         commandDropdown.onValueChanged.AddListener(delegate { SelectCommand(commandDropdown.value); });
         SelectCommand(commandDropdown.value); //init first command
 
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        userDataRepresentationTypeDD.ClearOptions();
+        userDataRepresentationTypeDD.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+
         // Add listener on the send button (call the function related to the selected command)
         sendCommandButton.onClick.AddListener(delegate { selectedCommand.FunctionToCall(); });
 
@@ -233,7 +245,8 @@ public class OrchestratorGui : MonoBehaviour
             //Users
             new GuiCommandDescription("GetUsers", null, GetUsers),
             new GuiCommandDescription("GetUserInfo", new List<RectTransform> { userIdPanel }, GetUserInfo),
-            new GuiCommandDescription("UpdateUserData", new List<RectTransform> { userDataMQnamePanel, userDataMQurlPanel }, UpdateUserData),
+            new GuiCommandDescription("UpdateUserData", new List<RectTransform> { userDataMQnamePanel, userDataMQurlPanel, userDataRepresentationTypePanel }, UpdateUserData),
+            new GuiCommandDescription("ClearUserData", null, ClearUserData),
             new GuiCommandDescription("AddUser", new List<RectTransform> { userNamePanel, userPasswordPanel, userAdminPanel }, AddUser),
             new GuiCommandDescription("DeleteUser", new List<RectTransform> { userIdPanel }, DeleteUser),
 
@@ -484,9 +497,13 @@ public class OrchestratorGui : MonoBehaviour
     {
         if (userLoggedSucessfully)
         {
-
             OrchestratorController.Instance.IsAutoRetrievingData = autoRetrieveOrchestratorDataOnConnect.isOn;
-            OrchestratorController.Instance.UpdateUserData(userMQnameIF.text, userMQurlIF.text);
+            /*
+            UserData lUserData = new UserData();
+            lUserData.userMQexchangeName = userMQnameIF.text;
+            lUserData.userMQurl = userMQurlIF.text;
+            */
+            //OrchestratorController.Instance.UpdateUserData(lUserData);
         }
         else
         {
@@ -772,7 +789,17 @@ public class OrchestratorGui : MonoBehaviour
 
     private void UpdateUserData()
     {
-        OrchestratorController.Instance.UpdateUserData(userDataMQnamePanel.GetComponentInChildren<InputField>().text, userDataMQurlPanel.GetComponentInChildren<InputField>().text);
+        UserData lUserData = new UserData();
+        lUserData.userMQexchangeName = userDataMQnamePanel.GetComponentInChildren<InputField>().text;
+        lUserData.userMQurl = userDataMQurlPanel.GetComponentInChildren<InputField>().text;
+        lUserData.userRepresentationType = (UserData.eUserRepresentationType)userDataRepresentationTypeDD.value;
+
+        OrchestratorController.Instance.UpdateUserData(lUserData);
+    }
+
+    private void ClearUserData()
+    {
+        OrchestratorController.Instance.ClearUserData();
     }
 
     private void GetUserInfo()
@@ -794,6 +821,7 @@ public class OrchestratorGui : MonoBehaviour
                 userAdmin.text = user.userAdmin.ToString();
                 userMQname.text = user.userData.userMQexchangeName;
                 userMQurl.text = user.userData.userMQurl;
+                userRepresentation.text = user.userData.userRepresentationType.ToString();
             }
         }
     }
