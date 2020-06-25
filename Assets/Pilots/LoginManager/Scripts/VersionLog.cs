@@ -28,7 +28,7 @@ public class VersionLog : MonoBehaviour {
 
     public string NativeClient { get { return nativeClient; } }
 
-    public string versionFilePath = "../VRTsetup.ver";
+    public string versionFilePath = "VRTsetup.ver";
 
 
     void Awake() {

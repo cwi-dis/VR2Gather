@@ -19,14 +19,14 @@ namespace Workers {
         public bin2dash.connection uploader;
         public string url;
         DashStreamDescription[] descriptions;
-        public class PusherThread
+        public class B2DPushThread
         {
             B2DWriter parent;
             int stream_index;
             DashStreamDescription description;
             System.Threading.Thread myThread;
 
-            public PusherThread(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
+            public B2DPushThread(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;
@@ -54,7 +54,7 @@ namespace Workers {
             {
                 try
                 {
-                    Debug.Log($"{Name()}: PusherThread started");
+                    Debug.Log($"{Name()}: thread started");
                     QueueThreadSafe queue = description.inQueue;
                     while (!queue.IsClosed())
                     {
@@ -65,7 +65,7 @@ namespace Workers {
                             Debug.Log($"{Name()}({parent.url}): ERROR sending data");
                         mc.free();
                     }
-                    Debug.Log($"{Name()}: PusherThread stopped");
+                    Debug.Log($"{Name()}: thread stopped");
                 }
                 catch (System.Exception e)
                 {
@@ -102,7 +102,7 @@ namespace Workers {
             }
         }
 
-        PusherThread[] pusherThreads;
+        B2DPushThread[] pusherThreads;
 
 
         public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base(WorkerType.End)
@@ -168,12 +168,12 @@ namespace Workers {
         {
             base.Start();
             int nThreads = descriptions.Length;
-            pusherThreads = new PusherThread[nThreads];
+            pusherThreads = new B2DPushThread[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new PusherThread(this, i, descriptions[i]);
+                pusherThreads[i] = new B2DPushThread(this, i, descriptions[i]);
             }
             foreach (var t in pusherThreads)
             {

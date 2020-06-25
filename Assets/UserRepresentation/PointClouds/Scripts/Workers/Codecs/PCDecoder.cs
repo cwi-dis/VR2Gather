@@ -43,15 +43,21 @@ namespace Workers {
             return $"{this.GetType().Name}#{instanceNumber}";
         }
 
+        public override void Stop()
+        {
+            base.Stop();
+            if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+        }
+
         public override void OnStop() {
             base.OnStop();
             lock (this)
             {
                 decoder?.free();
                 decoder = null;
-                outQueue.Close();
+                if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             }
-            Debug.Log($"{Name()} Stopped");
+            if (debugThreading) Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update(){

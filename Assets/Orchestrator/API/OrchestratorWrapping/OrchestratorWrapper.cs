@@ -241,7 +241,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
-            if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime.ntpTime);
+            if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
         public bool AddSession(string scenarioId, string sessionName, string sessionDescription)

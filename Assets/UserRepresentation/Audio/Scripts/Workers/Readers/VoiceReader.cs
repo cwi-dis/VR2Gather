@@ -56,14 +56,22 @@ namespace Workers
         float       bufferTime;
         bool        recording = true;
 
-        IEnumerator MicroRecorder() {
-            yield return null;
-            var ac = AudioSettings.GetConfiguration();
-            ac.sampleRate = 16000 * 3;
-            ac.dspBufferSize = 320 * 3;
-            AudioSettings.Reset(ac);
-            yield return null;
+        static bool DSPIsNotReady = true;
+        public static void PrepareDSP() {
+            if (DSPIsNotReady) {
+                Debug.Log("[FPA] PrepareDSP");
+                DSPIsNotReady = false;
+                var ac = AudioSettings.GetConfiguration();
+                ac.sampleRate = 16000 * 3;
+                ac.dspBufferSize = 320 * 3;
+                AudioSettings.Reset(ac);
+            }
 
+        }
+
+        IEnumerator MicroRecorder() {
+            Debug.Log("[FPA] MicroRecorder!!!!");
+            PrepareDSP();
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
@@ -104,7 +112,9 @@ namespace Workers
                         }
                         timer = Time.realtimeSinceStartup;
                     } else {
-                        if (recording) { recording = false; Debug.LogError($"{Name()}: microphone {device} stops recording."); }
+                        Debug.LogWarning($"{Name()}: microphone {device} stopped recording, starting again.");
+                        recorder = Microphone.Start(device, true, 1, samples);
+                        readPosition = 0;
                         if ((Time.realtimeSinceStartup - timer) > bufferTime) {
                             timer += bufferTime;
                             lock (circularBuffer) {

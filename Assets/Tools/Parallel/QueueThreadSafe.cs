@@ -45,6 +45,12 @@ public class QueueThreadSafe {
     {
         if (isClosed.Token.IsCancellationRequested) throw new System.Exception("QueueThreadSafe: operation on closed queue");
         isClosed.Cancel();
+        while(true)
+        {
+            BaseMemoryChunk item = TryDequeue(0);
+            if (item == null) break;
+            item.free();
+        }
     }
 
     // Return true if the queue is closed and we are about to stop
@@ -171,7 +177,7 @@ public class QueueThreadSafe {
         }
         catch (System.OperationCanceledException)
         {
-            UnityEngine.Debug.LogError("QueueThreadSafe: Enqueue on closed queue");
+            UnityEngine.Debug.LogWarning("QueueThreadSafe: Enqueue on closed queue");
             item.free();
         }
         return false;

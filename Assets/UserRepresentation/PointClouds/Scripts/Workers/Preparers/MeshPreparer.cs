@@ -28,6 +28,7 @@ namespace Workers {
 
         public override void OnStop() {
             base.OnStop();
+            if (InQueue != null && !InQueue.IsClosed()) InQueue.Close();
             if (vertexArray.Length != 0) vertexArray.Dispose();
         }
 

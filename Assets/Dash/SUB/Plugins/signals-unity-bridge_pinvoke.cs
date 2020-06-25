@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -93,6 +93,7 @@ public class sub
     public class connection : BaseMemoryChunk
     {
         protected System.IntPtr obj;
+        public object errorCallback; // Hack: keep a reference to the error callback routine to work around GC issues.
 
         internal connection(System.IntPtr _pointer) : base(_pointer)
         {
@@ -159,10 +160,17 @@ public class sub
     {
         System.IntPtr obj;
         SetMSPaths();
-        obj = _API.sub_create(pipeline, (msg)=> { UnityEngine.Debug.Log($"SUB: Internal message {msg}"); });
+        _API.MessageLogCallback errorCallback = (msg) =>
+        {
+            string _pipeline = String.Copy(pipeline);
+            UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous error: {msg}");
+        };
+        obj = _API.sub_create(pipeline, errorCallback);
         if (obj == System.IntPtr.Zero)
             return null;
-        return new connection(obj);
+        connection rv = new connection(obj);
+        rv.errorCallback = errorCallback;
+        return rv;
     }
 
     private static string lastMSpathInstalled = "";
@@ -170,6 +178,10 @@ public class sub
     // This could be either here or in bin2dash_pinvoke. 
     public static void SetMSPaths(string module_base = "signals-unity-bridge")
     {
+#if !UNITY_EDITOR
+        return;
+#endif
+
         if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
         {
 

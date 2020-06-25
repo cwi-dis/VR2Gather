@@ -14,7 +14,10 @@ namespace Workers {
             outQueues = new QueueThreadSafe[2] { _outQueue, _out2Queue };
             int videoStream = -1;
             int audioStream = -1;
-            InitDash();
+            if (!InitDash())
+            {
+                throw new System.Exception($"{Name()}: Sub({url}) did not start playing");
+            }
             // Check VideoStream
             for (int i = 0; i < streamCount; ++i) {
                 if (stream4CCs[i] == (uint)CCCC.AVC1 || stream4CCs[i] == (uint)CCCC.H264) {
@@ -23,7 +26,7 @@ namespace Workers {
                 }
             }
             if (videoStream < 0) {
-                Debug.LogError($"AVSubReader: could not find video in {streamCount} streams in {url + streamName}");
+                Debug.LogError($"{Name()}: could not find video in {streamCount} streams in {url + streamName}");
             }
             // Check AudioStream
             for (int i = 0; i < streamCount; ++i) {
@@ -33,10 +36,11 @@ namespace Workers {
                 }
             }
             if (audioStream < 0) {
-                Debug.LogError($"AVSubReader: could not find audio in {streamCount} streams in {url + streamName}");
+                Debug.LogError($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
             }
             streamIndexes = new int[2] { videoStream, audioStream }; // xxxjack wrong
-
+            InitThreads();
+            Start();
         }
     }
 }
