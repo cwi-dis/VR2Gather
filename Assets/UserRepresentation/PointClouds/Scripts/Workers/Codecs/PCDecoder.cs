@@ -99,7 +99,8 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsTotalLatency/statsTotalPointclouds} seconds pipeline latency");
+                int msLatency = (int)(1000* statsTotalLatency / statsTotalPointclouds);
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {msLatency} ms pipeline latency");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;
