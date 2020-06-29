@@ -61,6 +61,7 @@ public class Config {
             public int initialDelay;
         }
         public _PCSUBConfig SUBConfig;
+        [Serializable]
         public class _AudioSUBConfig
         {
             public int streamNumber;
