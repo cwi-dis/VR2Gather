@@ -27,6 +27,7 @@ namespace Workers {
                 ri.streamIndexes = new int[0];
                 receivers[ti] = ri;
             }
+            Start();
         }
 
         protected override void _streamInfoAvailable()
