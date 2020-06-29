@@ -110,7 +110,7 @@ namespace Workers {
                         mc.info = info;
                         outQueue.Enqueue(mc);
 
-                        statsUpdate(bytesRead);
+                        statsUpdate(bytesRead, info.timestamp);
                     }
                 }
                 catch (System.Exception e)
@@ -124,21 +124,39 @@ namespace Workers {
 
             }
 
+            bool statsInitialized = false;
             System.DateTime statsLastTime;
+            System.DateTime statsConnectionStartTime;
             double statsTotalBytes;
             double statsTotalPackets;
+            double statsTotalLatency;
 
-            public void statsUpdate(int nBytes)
+            public void statsUpdate(int nBytes, long timeStamp )
             {
-                if (statsLastTime == null)
+                if (!statsInitialized)
                 {
                     statsLastTime = System.DateTime.Now;
+                    statsConnectionStartTime = System.DateTime.Now;
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
+                    statsTotalLatency = 0;
+                    statsInitialized = true;
                 }
+                System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
+                double latency = (double)(sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
+                // if we appear to be ahead we adjust connection start time.
+                if (latency < 0)
+                {
+                    statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
+                    latency = 0;
+                }
+                statsTotalLatency += latency;
+
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
