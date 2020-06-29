@@ -62,7 +62,7 @@
             },
             "voxelSize": 0.009999999776482582,
             "frameRate" : 15,
-            "tiled": true,
+            "tiled": false,
             "Encoders": [
 				{
 					"octreeBits": 7
@@ -103,7 +103,7 @@
     "RemoteUser": {
         "sourceType": "pcsub",
         "SUBConfig": {
-            "tileNumber": 1,
+            "tileNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {
