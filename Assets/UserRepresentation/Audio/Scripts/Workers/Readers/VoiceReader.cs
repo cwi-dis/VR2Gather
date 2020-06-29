@@ -28,12 +28,19 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            int bytesInAudioBuffer = 0;
+            int samplesInAudioBuffer = 0;
             lock (circularBuffer) {
-                if (circularBufferWritePosition < circularBufferReadPosition) bytesInAudioBuffer = (circularBufferSize - circularBufferReadPosition) + circularBufferWritePosition;
-                else bytesInAudioBuffer = circularBufferWritePosition - circularBufferReadPosition;
+                if (circularBufferWritePosition < circularBufferReadPosition)
+                {
+                    samplesInAudioBuffer = (circularBufferSize - circularBufferReadPosition) + circularBufferWritePosition;
+                }
+                else
+                {
+                    samplesInAudioBuffer = circularBufferWritePosition - circularBufferReadPosition;
+                }
 
-                if (outQueue._CanEnqueue() && bytesInAudioBuffer >= bufferLength) {
+                if (outQueue._CanEnqueue() && samplesInAudioBuffer >= bufferLength) {
+                    statsUpdate(samplesInAudioBuffer);
                     FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
                     System.Array.Copy(circularBuffer, circularBufferReadPosition, mc.buffer, 0, bufferLength);
                     outQueue.Enqueue(mc);
@@ -55,6 +62,9 @@ namespace Workers
         float       timer;
         float       bufferTime;
         bool        recording = true;
+        public const int wantedOutputSampleRate = 16000 * 3;
+        public const int wantedOutputBufferSize = 320 * 3;
+        public const int wantedInputSampleRate = 16000;
 
         static bool DSPIsNotReady = true;
         public static void PrepareDSP() {
@@ -62,9 +72,18 @@ namespace Workers
                 Debug.Log("[FPA] PrepareDSP");
                 DSPIsNotReady = false;
                 var ac = AudioSettings.GetConfiguration();
-                ac.sampleRate = 16000 * 3;
-                ac.dspBufferSize = 320 * 3;
+                ac.sampleRate = wantedOutputSampleRate;
+                ac.dspBufferSize = wantedOutputBufferSize;
                 AudioSettings.Reset(ac);
+                ac = AudioSettings.GetConfiguration();
+                if (ac.sampleRate != wantedOutputSampleRate)
+                {
+                    Debug.LogError($"PrepareDSP: audio output sample rate is {ac.sampleRate} in stead of {wantedOutputSampleRate}");
+                }
+                if (ac.dspBufferSize != wantedOutputBufferSize)
+                {
+                    Debug.LogWarning($"PrepareDSP: audio output sample rate is {ac.dspBufferSize} in stead of {wantedOutputBufferSize}");
+                }
             }
 
         }
@@ -75,13 +94,18 @@ namespace Workers
             if (Microphone.devices.Length > 0) {
                 device = Microphone.devices[0];
                 int currentMinFreq;
-                Microphone.GetDeviceCaps(device, out currentMinFreq, out samples);
-                samples = 16000;
+                int currentMaxFreq;
+                Microphone.GetDeviceCaps(device, out currentMinFreq, out currentMaxFreq);
+                samples = wantedInputSampleRate;
                 recorder = Microphone.Start(device, true, 1, samples);
-                samples = recorder.samples;
+                int samplesPerSecond = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"{Name()}: Using {device}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
+                Debug.Log($"{Name()}: Using {device}  Frequency {samplesPerSecond} (wanted {wantedInputSampleRate} min {currentMinFreq} max {currentMaxFreq}) bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
+                if (samplesPerSecond != wantedInputSampleRate)
+                {
+                    Debug.LogWarning($"{Name()}: audio input sample rate is {samplesPerSecond} in stead of {wantedInputSampleRate}");
+                }
                 bufferTime = bufferLength / (float)samples;
                 timer = Time.realtimeSinceStartup;
 
@@ -129,6 +153,31 @@ namespace Workers
                 }
             } else
                 Debug.LogError("{Name()}: No Microphones detected.");
+        }
+
+        System.DateTime statsLastTime;
+        double statsTotalUpdates;
+        double statsTotalSamplesInInputBuffer;
+
+        public void statsUpdate(int samplesInInputBuffer)
+        {
+            if (statsLastTime == null)
+            {
+                statsLastTime = System.DateTime.Now;
+                statsTotalUpdates = 0;
+                statsTotalSamplesInInputBuffer = 0;
+            }
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            {
+                double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
+                double timeInBufferAverage = samplesInBufferAverage / wantedInputSampleRate;
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / 10} fps, {(int)samplesInBufferAverage} samples input latency, {(int)(timeInBufferAverage*1000)} ms input latency");
+                statsTotalUpdates = 0;
+                statsTotalSamplesInInputBuffer = 0;
+                statsLastTime = System.DateTime.Now;
+            }
+            statsTotalUpdates += 1;
+            statsTotalSamplesInInputBuffer += samplesInInputBuffer;
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Workers {
                         mc.info = frameInfo;
                         receiverInfo.outQueue.Enqueue(mc);
 
-                        statsUpdate(bytesRead);
+                        statsUpdate(bytesRead, info.timestamp);
                     }
                 }
                 catch (System.Exception e)
@@ -154,21 +154,39 @@ namespace Workers {
 
             }
 
+            bool statsInitialized = false;
             System.DateTime statsLastTime;
+            System.DateTime statsConnectionStartTime;
             double statsTotalBytes;
             double statsTotalPackets;
+            double statsTotalLatency;
 
-            public void statsUpdate(int nBytes)
+            public void statsUpdate(int nBytes, long timeStamp )
             {
-                if (statsLastTime == null)
+                if (!statsInitialized)
                 {
                     statsLastTime = System.DateTime.Now;
+                    statsConnectionStartTime = System.DateTime.Now;
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
+                    statsTotalLatency = 0;
+                    statsInitialized = true;
                 }
+                System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
+                double latency = (double)(sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
+                // if we appear to be ahead we adjust connection start time.
+                if (latency < 0)
+                {
+                    statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
+                    latency = 0;
+                }
+                statsTotalLatency += latency;
+
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
@@ -201,7 +219,6 @@ namespace Workers {
                 Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
             }
-            Start();
         }
 
         public override string Name()
@@ -254,34 +271,40 @@ namespace Workers {
             Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
         }
 
-        protected void InitDash() {
+        protected bool InitDash() {
             if (System.DateTime.Now < subRetryNotBefore) return;
             subRetryNotBefore = System.DateTime.Now + subRetryInterval;
             //
             // Create SUB instance
             //
-            subHandle = sub.create(Name());
-            if (subHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+            if (subHandle != null)
+            {
+                Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+            }
+            sub.connection newSubHandle = sub.create(Name());
+            if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
             Debug.Log($"{Name()}: retry sub.create() successful.");
             //
             // Start playing
             //
-            isPlaying = subHandle.play(url);
+            isPlaying = newSubHandle.play(url);
             if (!isPlaying) {
                 subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
                 Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
-                return;
+                newSubHandle.free();
+                return false;
             }
+            subHandle = newSubHandle;
             //
             // Stream information is available. Allow subclasses to act on it to reconfigure.
             //
             _streamInfoAvailable();
+            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
+            return true;
+        }
 
-            //
-            // Start threads
-            //
-            int threadCount = receivers.Length;
-            Debug.Log($"{Name()}: xxxjack starting {threadCount} threads");
+        protected void InitThreads() { 
+            int threadCount = streamIndexes.Length;
             threads = new SubPullThread[threadCount];
             for (int i=0; i<threadCount; i++)
             {
@@ -329,7 +352,7 @@ namespace Workers {
             // If we are not playing we start
             if (subHandle == null)
             {
-                InitDash();
+                if (InitDash()) InitThreads();
             }
         }
     }

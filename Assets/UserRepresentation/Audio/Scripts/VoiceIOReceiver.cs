@@ -13,6 +13,7 @@ public class VoiceIOReceiver : MonoBehaviour {
 
     // Start is called before the first frame update
     public void Init(string userID) {
+        Workers.VoiceReader.PrepareDSP();
         //        const int frequency = 16000;
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);

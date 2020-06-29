@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -221,6 +221,10 @@ public class sub
     // This could be either here or in bin2dash_pinvoke. 
     public static void SetMSPaths(string module_base = "signals-unity-bridge")
     {
+#if !UNITY_EDITOR
+        return;
+#endif
+
         if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
         {
 

@@ -64,9 +64,24 @@ namespace OrchestratorWrapping
         public string userPCurl = "";
         public string userAudioUrl = "";
 
+        public eUserRepresentationType userRepresentationType;
+
+        public enum eUserRepresentationType
+        {
+            __NONE__,
+            __2D__,
+            __AVATAR__,
+            __TVM__,
+            __PCC_CWI_,
+            __PCC_CERTH__,
+            __SPECTATOR__
+        }
+
         // empty constructor callled by the JsonData parser
         public UserData() { }
 
+        // Useless since UserData declaration shouldn't specify the whole data to be declared in a single step
+        /*
         public UserData(string pMQname, string pMQurl, string pPCurl, string pAudioUrl)
         {
             userMQexchangeName = pMQname;
@@ -75,6 +90,7 @@ namespace OrchestratorWrapping
             userPCurl = pPCurl;
             userAudioUrl = pAudioUrl;
         }
+        */
     }
 
     public class SfuData : OrchestratorElement
@@ -114,9 +130,11 @@ namespace OrchestratorWrapping
 
     public class NtpClock: OrchestratorElement
     {
-        public string ntpTime;
+        public string ntpDate;
+        public System.Int64 ntpTimeMs;
 
         public NtpClock() {}
+        public int Timestamp { get { return (int)(ntpTimeMs / 1000); } }
     }
 
     public class Scenario : OrchestratorElement

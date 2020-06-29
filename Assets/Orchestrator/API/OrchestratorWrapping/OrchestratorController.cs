@@ -30,6 +30,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     //Rooms
     private List<RoomInstance> availableRoomInstances;
 
+    //LivePresenter
+    private LivePresenterData livePresenterData;
+
     // user Login state
     private bool userIsLogged = false;
 
@@ -70,6 +73,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     // Orchestrator Login Events
     public Action<bool> OnLoginEvent;
     public Action<bool> OnLogoutEvent;
+
+    // Orchestrator NTP clock Events
+    public Action<NtpClock> OnGetNTPTimeEvent;
 
     // Orchestrator Sessions Events
     public Action<Session[]> OnGetSessionsEvent;
@@ -114,18 +120,35 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
     public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
     public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
+    public ScenarioInstance MyScenario { get { return myScenario; } }
     public Session[] AvailableSessions {  get { return availableSessions?.ToArray(); } }
+    public Session MySession { get { return mySession; } }
     public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+    public LivePresenterData LivePresenterData { get { return livePresenterData; } }
 
     #endregion
 
     #region Unity
 
-    private void Awake()
+    private void Awake() 
     {
-        if(instance == null)
+        DontDestroyOnLoad(this);
+
+        if (instance == null) 
         {
             instance = this;
+        }
+        else 
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if(!(mySession is null))
+        {
+            Collect_SFU_Logs(mySession.sessionId);
         }
     }
 
@@ -212,7 +235,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
                 Debug.Log("[OrchestratorController][OnLoginResponse] User logged.");
 
                 userIsLogged = true;
-                //orchestratorWrapper.UpdateUserDataJson("", "");
+                orchestratorWrapper.GetUserInfo();
             }
             else
             {
@@ -284,14 +307,21 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void GetNTPTime()
     {
-        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         orchestratorWrapper.GetNTPTime();
     }
 
-    public void OnGetNTPTimeResponse(ResponseStatus status, string time)
+    public void OnGetNTPTimeResponse(ResponseStatus status, NtpClock ntpTime)
     {
-        Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + time);
-        Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + DateTime.UtcNow + DateTime.Now.Millisecond.ToString());
+        if(status.Error == 0)
+        {
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+
+            OnGetNTPTimeEvent?.Invoke(ntpTime);
+        }
     }
 
     #endregion
@@ -333,6 +363,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
 
+            AddConnectedUser(me.userId);
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
             OnSessionJoinedEvent?.Invoke();
@@ -401,6 +432,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
                 }
             }
 
+            AddConnectedUser(me.userId);
             OnJoinSessionEvent?.Invoke(mySession);
             OnSessionJoinedEvent?.Invoke();
         }
@@ -419,6 +451,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if (status.Error == 0)
         {
+            Collect_SFU_Logs(mySession.sessionId);
+
+            if (userIsMaster) 
+            {
+                orchestratorWrapper.DeleteSession(mySession.sessionId);
+            }
+
             // success
             mySession = null;
             myScenario = null;
@@ -477,6 +516,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData)
     {
         //Debug.Log("[OrchestratorGui][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
+        livePresenterData = liveData;
 
         OnGetLiveDataEvent?.Invoke(liveData);
         orchestratorWrapper.GetRooms();
@@ -517,9 +557,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         orchestratorWrapper.GetUsers();
     }
 
-    public void UpdateUserData(string pMQname, string pMQurl)
+    public void UpdateUserData(UserData pUserData)
     {
-        orchestratorWrapper.UpdateUserDataJson(pMQname, pMQurl);
+        orchestratorWrapper.UpdateUserDataJson(pUserData);
     }
 
     public void OnUpdateUserDataJsonResponse(ResponseStatus status)
@@ -527,6 +567,20 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         if (status.Error == 0)
         {
             Debug.Log("[OrchestratorControler][OnUpdateUserDataJsonResponse] User data successfully updated.");
+            orchestratorWrapper.GetUserInfo();
+        }
+    }
+
+    public void ClearUserData()
+    {
+        orchestratorWrapper.ClearUserData();
+    }
+
+    public void OnClearUserDataResponse(ResponseStatus status)
+    {
+        if (status.Error == 0)
+        {
+            Debug.Log("[OrchestratorControler][OnClearUserDataResponse] User data successfully cleaned-up.");
             orchestratorWrapper.GetUserInfo();
         }
     }
@@ -752,6 +806,17 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         {
             connectedUsers.Remove(lUserToRemove);
         }
+    }
+
+    #endregion
+
+    #region Logs
+
+    private void Collect_SFU_Logs(string pSessionID)
+    {
+        string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
+        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
+        Application.OpenURL(requestURL);
     }
 
     #endregion

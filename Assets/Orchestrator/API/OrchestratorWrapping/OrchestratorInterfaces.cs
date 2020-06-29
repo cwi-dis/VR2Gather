@@ -32,7 +32,7 @@ namespace OrchestratorWrapping
         void OnLoginResponse(ResponseStatus status, string userId);
         void OnLogoutResponse(ResponseStatus status);
 
-        void OnGetNTPTimeResponse(ResponseStatus status, string time);
+        void OnGetNTPTimeResponse(ResponseStatus status, NtpClock ntpTime);
 
         void OnGetSessionsResponse(ResponseStatus status, List<Session> sessions);
         void OnAddSessionResponse(ResponseStatus status, Session session);
@@ -50,6 +50,7 @@ namespace OrchestratorWrapping
         void OnAddUserResponse(ResponseStatus status, User user);
         void OnGetUserInfoResponse(ResponseStatus status, User user);
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
+        void OnClearUserDataResponse(ResponseStatus status);
         void OnDeleteUserResponse(ResponseStatus status);
 
         void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms);

@@ -13,8 +13,7 @@ namespace Workers {
          : base(url, streamName, 0) {
             int videoStream = -1;
             int audioStream = -1;
-            InitDash();
-            if (!isPlaying)
+            if (!InitDash())
             {
                 throw new System.Exception($"{Name()}: Sub({url}) did not start playing");
             }
@@ -38,8 +37,6 @@ namespace Workers {
             if (audioStream < 0) {
                 Debug.LogError($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
             }
-            //outQueues = new QueueThreadSafe[2] { _outQueue, _out2Queue };
-            //streamIndexes = new int[2] { videoStream, audioStream }; // xxxjack wrong
             receivers = new ReceiverInfo[]
             {
                 new ReceiverInfo()
@@ -55,6 +52,8 @@ namespace Workers {
             };
 
 
+            InitThreads();
+            Start();
         }
     }
 }

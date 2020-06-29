@@ -10,9 +10,22 @@ public class Config {
         SocketIO
     };
 
+    public enum UserRepresentation {
+        TVM,
+        PC
+    };
+
+    public enum Presenter {
+        None,
+        Local,
+        Live
+    }
+
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public AudioType    audioType = AudioType.None;
+    public UserRepresentation userRepresentation = UserRepresentation.PC;
+    public Presenter    presenter = Presenter.None;
     public float        nonHMDHeight = 1.8f;
     [Serializable]
     public class _TVMs
