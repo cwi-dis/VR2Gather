@@ -140,7 +140,7 @@ namespace Workers {
                         mc.info = frameInfo;
                         receiverInfo.outQueue.Enqueue(mc);
 
-                        statsUpdate(bytesRead, info.timestamp);
+                        statsUpdate(bytesRead, frameInfo.timestamp);
                     }
                 }
                 catch (System.Exception e)
@@ -272,7 +272,7 @@ namespace Workers {
         }
 
         protected bool InitDash() {
-            if (System.DateTime.Now < subRetryNotBefore) return;
+            if (System.DateTime.Now < subRetryNotBefore) return false;
             subRetryNotBefore = System.DateTime.Now + subRetryInterval;
             //
             // Create SUB instance
@@ -304,7 +304,7 @@ namespace Workers {
         }
 
         protected void InitThreads() { 
-            int threadCount = streamIndexes.Length;
+            int threadCount = receivers.Length;
             threads = new SubPullThread[threadCount];
             for (int i=0; i<threadCount; i++)
             {

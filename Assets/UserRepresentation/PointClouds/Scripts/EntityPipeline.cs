@@ -185,7 +185,7 @@ public class EntityPipeline : MonoBehaviour {
                 if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.tileNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline

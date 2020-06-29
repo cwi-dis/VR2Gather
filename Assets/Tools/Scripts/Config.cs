@@ -55,12 +55,18 @@ public class Config {
     public class _User {
         public string sourceType;
         [Serializable]
-        public class _SUBConfig {
+        public class _PCSUBConfig
+        {
             public int tileNumber;
             public int initialDelay;
         }
-        public _SUBConfig SUBConfig;
-        public _SUBConfig AudioSUBConfig;
+        public _PCSUBConfig SUBConfig;
+        public class _AudioSUBConfig
+        {
+            public int streamNumber;
+            public int initialDelay;
+        }
+        public _AudioSUBConfig AudioSUBConfig;
 
         [Serializable]
         public class _PCSelfConfig
