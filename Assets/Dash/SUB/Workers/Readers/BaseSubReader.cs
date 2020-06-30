@@ -199,25 +199,28 @@ namespace Workers {
 
         protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
-            joinTimeout = 20000;
+            lock(this)
+            {
+                joinTimeout = 20000;
 
-            if (_url == "" || _url == null || _streamName == "")
-            {
-                Debug.LogError($"{Name()}: configuration error: url or streamName not set");
-                throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
-            }
-            if (_streamName != null)
-            {
-                if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
-                _url += _streamName;
-            }
-            url = _url;
-            if (_initialDelay != 0)
-            {
-                // We do not try to start play straight away, to work around bugs when creating the SUB before
-                // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
-                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
+                if (_url == "" || _url == null || _streamName == "")
+                {
+                    Debug.LogError($"{Name()}: configuration error: url or streamName not set");
+                    throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
+                }
+                if (_streamName != null)
+                {
+                    if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
+                    _url += _streamName;
+                }
+                url = _url;
+                if (_initialDelay != 0)
+                {
+                    // We do not try to start play straight away, to work around bugs when creating the SUB before
+                    // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
+                    Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
+                }
             }
         }
 
@@ -259,60 +262,70 @@ namespace Workers {
 
         protected virtual void _streamInfoAvailable()
         {
-            //
-            // Get stream information
-            //
-            streamCount = subHandle.get_stream_count();
-            stream4CCs = new uint[streamCount];
-            for (int i = 0; i < streamCount; i++)
+            lock(this)
             {
-                stream4CCs[i] = subHandle.get_stream_4cc(i);
+                //
+                // Get stream information
+                //
+                streamCount = subHandle.get_stream_count();
+                stream4CCs = new uint[streamCount];
+                for (int i = 0; i < streamCount; i++)
+                {
+                    stream4CCs[i] = subHandle.get_stream_4cc(i);
+                }
+                Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
             }
-            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
         }
 
         protected bool InitDash() {
-            if (System.DateTime.Now < subRetryNotBefore) return false;
-            subRetryNotBefore = System.DateTime.Now + subRetryInterval;
-            //
-            // Create SUB instance
-            //
-            if (subHandle != null)
+            lock(this)
             {
-                Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+                if (System.DateTime.Now < subRetryNotBefore) return false;
+                subRetryNotBefore = System.DateTime.Now + subRetryInterval;
+                //
+                // Create SUB instance
+                //
+                if (subHandle != null)
+                {
+                    Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+                }
+                sub.connection newSubHandle = sub.create(Name());
+                if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
+                Debug.Log($"{Name()}: retry sub.create() successful.");
+                //
+                // Start playing
+                //
+                isPlaying = newSubHandle.play(url);
+                if (!isPlaying)
+                {
+                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
+                    Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
+                    newSubHandle.free();
+                    return false;
+                }
+                subHandle = newSubHandle;
+                //
+                // Stream information is available. Allow subclasses to act on it to reconfigure.
+                //
+                _streamInfoAvailable();
+                Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
+                return true;
             }
-            sub.connection newSubHandle = sub.create(Name());
-            if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
-            Debug.Log($"{Name()}: retry sub.create() successful.");
-            //
-            // Start playing
-            //
-            isPlaying = newSubHandle.play(url);
-            if (!isPlaying) {
-                subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(5);
-                Debug.Log($"{Name()}: sub.play({url}) failed, will try again later");
-                newSubHandle.free();
-                return false;
-            }
-            subHandle = newSubHandle;
-            //
-            // Stream information is available. Allow subclasses to act on it to reconfigure.
-            //
-            _streamInfoAvailable();
-            Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
-            return true;
         }
 
-        protected void InitThreads() { 
-            int threadCount = receivers.Length;
-            threads = new SubPullThread[threadCount];
-            for (int i=0; i<threadCount; i++)
+        protected void InitThreads() {
+            lock(this)
             {
-                threads[i] = new SubPullThread(this, i, receivers[i]);
-            }
-            foreach(var t in threads)
-            {
-                t.Start();
+                int threadCount = receivers.Length;
+                threads = new SubPullThread[threadCount];
+                for (int i = 0; i < threadCount; i++)
+                {
+                    threads[i] = new SubPullThread(this, i, receivers[i]);
+                }
+                foreach (var t in threads)
+                {
+                    t.Start();
+                }
             }
         }
 
@@ -344,15 +357,18 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            // If we should stop playing we stop
-            if (!isPlaying)
+            lock(this)
             {
-                _DeinitDash(false);
-            }
-            // If we are not playing we start
-            if (subHandle == null)
-            {
-                if (InitDash()) InitThreads();
+                // If we should stop playing we stop
+                if (!isPlaying)
+                {
+                    _DeinitDash(false);
+                }
+                // If we are not playing we start
+                if (subHandle == null)
+                {
+                    if (InitDash()) InitThreads();
+                }
             }
         }
     }

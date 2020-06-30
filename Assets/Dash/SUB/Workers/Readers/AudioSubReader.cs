@@ -5,15 +5,18 @@ namespace Workers {
         public AudioSubReader(string _url, string _streamName, int _streamNumber, int _initialDelay, QueueThreadSafe _outQueue)
         : base(_url, _streamName, _initialDelay)
         {
-            receivers = new ReceiverInfo[]
+            lock(this)
             {
-                new ReceiverInfo()
+                receivers = new ReceiverInfo[]
                 {
-                    outQueue = _outQueue,
-                    streamIndexes = new int[] { _streamNumber}
-                }
-            };
-            Start();
+                    new ReceiverInfo()
+                    {
+                        outQueue = _outQueue,
+                        streamIndexes = new int[] { _streamNumber}
+                    }
+                };
+                Start();
+            }
         }
     }
 }
