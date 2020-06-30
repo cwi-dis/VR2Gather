@@ -15,7 +15,7 @@ namespace Workers {
         System.DateTime subRetryNotBefore = System.DateTime.Now;
         System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
-        public struct ReceiverInfo
+        public class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
             public int[] streamIndexes;
