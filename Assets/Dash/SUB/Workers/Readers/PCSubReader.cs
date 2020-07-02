@@ -9,7 +9,8 @@ namespace Workers {
         {
             public QueueThreadSafe outQueue;
             public int tileNumber;
-            public int currentQuality;
+            public int[] qualities;
+            public int currentQualityIndex;
         }
         protected TileDescriptor[] tileDescriptors;
         protected sub.StreamDescriptor[] streamDescriptors;
@@ -54,26 +55,26 @@ namespace Workers {
             }
         }
 
-        public void setTileQuality(int tileNumber, int quality)
+        public void setTileQualityIndex(int tileIndex, int qualityIndex)
         {
             lock(this)
             {
-                if (quality > 0)
+                if (qualityIndex >= 0)
                 {
-                    Debug.Log($"{Name()}: xxxjack enable_stream({tileNumber}, {quality});");
-                    bool ok = subHandle.enable_stream(tileNumber, quality);
+                    Debug.Log($"{Name()}: xxxjack enable_stream({tileIndex}, {qualityIndex});");
+                    bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
                     {
-                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
+                        Debug.LogError($"{Name()}: Could not enable quality#{qualityIndex} (value {tileDescriptors[tileIndex].qualities[qualityIndex]}) for tile {tileIndex}");
                     }
                 }
                 else
                 {
-                    Debug.Log($"{Name()}: xxxjack disable_stream({tileNumber});");
-                    bool ok = subHandle.disable_stream(tileNumber);
+                    Debug.Log($"{Name()}: xxxjack disable_stream({tileIndex});");
+                    bool ok = subHandle.disable_stream(tileIndex);
                     if (!ok)
                     {
-                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
+                        Debug.LogError($"{Name()}: Could not disable tile {tileIndex}");
                     }
                 }
             }
@@ -93,25 +94,24 @@ namespace Workers {
                     var ri = receivers[i];
 
                     List<int> streamIndexes = new List<int>();
+                    List<int> qualityValues = new List<int>();
                     foreach (var sd in streamDescriptors)
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
-                            // If this stream is for this tile we remember the streamIndex.
+                            // If this stream is for this tile we remember the streamIndex and quality
                             streamIndexes.Add(sd.streamIndex);
-                            // And if this is the first time we see a stream for this tile
-                            // we select this quality
-                            if (td.currentQuality <= 0)
-                            {
-                                td.currentQuality = sd.quality;
-                            }
+                            qualityValues.Add(sd.quality);
                         }
                     }
                     // We know all the streams that may be used for this tile. Remember for the puller thread.
                     ri.streamIndexes = streamIndexes.ToArray();
+                    td.qualities = qualityValues.ToArray();
                     Debug.Log($"{Name()}: xxxjack _recomputeStreams: tile {i}: looking at {ri.streamIndexes.Length} streams");
                     // And we can also tell the SUB which quality we want for this tile.
-                    setTileQuality(td.tileNumber, td.currentQuality);
+                    if (td.qualities.Length == 0) td.currentQualityIndex = -1;
+                    if (td.qualities.Length > 0 && td.currentQualityIndex <= 0) td.currentQualityIndex = 0;
+                    setTileQualityIndex(td.tileNumber, td.currentQualityIndex);
                 }
                 //
                 // Finally, we disable the tiles that exist but that we are not interested in.
@@ -129,7 +129,7 @@ namespace Workers {
                     }
                     if (!tileUsed)
                     {
-                        setTileQuality(sd.tileNumber, -1);
+                        setTileQualityIndex(sd.tileNumber, -1);
                     }
                 }
             }
