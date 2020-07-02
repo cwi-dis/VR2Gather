@@ -22,6 +22,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
+    private int ntpSyncThreshold = 1000; // Magic number to be defined
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -42,6 +43,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text nativeVerText = null;
     [SerializeField] private Text playerVerText = null;
     [SerializeField] private Text orchVerText = null;
+    [SerializeField] private Text ntpText = null;
 
     [Header("Login")]
     [SerializeField] private InputField userNameLoginIF = null;
@@ -78,6 +80,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Buttons")]
     [SerializeField] private Button connectButton = null;
+    [SerializeField] private Button okButton = null;
     [SerializeField] private Button loginButton = null;
     [SerializeField] private Button configButton = null;
     [SerializeField] private Button saveConfigButton = null;
@@ -93,6 +96,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button refreshSessionsButton = null;
 
     [Header("Panels")]
+    [SerializeField] private GameObject ntpPanel = null;
     [SerializeField] private GameObject loginPanel = null;
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject createPanel = null;
@@ -224,6 +228,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
+        okButton.onClick.AddListener(delegate { OKButton(); });
         loginButton.onClick.AddListener(delegate { Login(); });
         configButton.onClick.AddListener(delegate { ConfigButton(); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
@@ -297,6 +302,7 @@ public class OrchestratorLogin : MonoBehaviour {
         switch (state) {
             case State.Offline:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -311,6 +317,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Online:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -330,6 +337,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Logged:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -352,6 +360,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Config:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(true);
                 createPanel.SetActive(false);
@@ -374,6 +383,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Create:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(true);
@@ -396,6 +406,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Join:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -418,6 +429,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Lobby:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -456,6 +468,11 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Buttons
+    
+    public void OKButton() {
+        PanelChanger();
+    }
+
     public void ConfigButton() {
         state = State.Config;
         PanelChanger();
@@ -857,6 +874,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        if (difference >= ntpSyncThreshold) {
+            ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
+            ntpPanel.SetActive(true);
+            loginPanel.SetActive(false);
+        }
         Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
