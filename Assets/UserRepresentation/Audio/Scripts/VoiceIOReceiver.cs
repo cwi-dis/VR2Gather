@@ -20,7 +20,8 @@ public class VoiceIOReceiver : MonoBehaviour {
         AudioSource audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialize = true;
         audioSource.spatialBlend = 1.0f;
-        audioSource.minDistance = 2f;
+        audioSource.minDistance = 4f;
+        audioSource.maxDistance = 100f;
         audioSource.loop = true;
         audioSource.Play();
 
