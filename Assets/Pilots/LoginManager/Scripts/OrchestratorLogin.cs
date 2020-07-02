@@ -32,7 +32,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private bool joining = false;
 
     [SerializeField] private string orchestratorUrl = "";
-    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = false;
+    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
     [SerializeField] private Text statusText = null;
@@ -157,7 +157,7 @@ public class OrchestratorLogin : MonoBehaviour {
             foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
                 AddTextComponentOnContent(container.transform, u.userName);
             }
-            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() + "/" + "4";
+            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
         else {
             Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
@@ -253,8 +253,10 @@ public class OrchestratorLogin : MonoBehaviour {
             orchestratorConnected = true;
             statusText.text = "Online";
             statusText.color = onlineCol;
-            FillSelfUserData();            
-            OnLogin(true);
+            FillSelfUserData();
+            Debug.Log("Come from another Scene");
+            OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
+            //OnLogin(true);
         }
         else { // Enter for first time
             // Set status to offline
@@ -867,7 +869,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetSessionsHandler(Session[] sessions) {
-        if (sessions != null && sessions.Length > 0) {
+        if (sessions != null) {
             // update the list of available sessions
             UpdateSessions(orchestratorSessions, sessionIdDrop);
         }
