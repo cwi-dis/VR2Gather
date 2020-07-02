@@ -19,7 +19,9 @@ public class VoiceDashReceiver : MonoBehaviour {
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
         //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.spatialize = true;
         audioSource.spatialBlend = 1.0f;
+        audioSource.minDistance = 2f;
         audioSource.loop = true;
         audioSource.Play();
 
