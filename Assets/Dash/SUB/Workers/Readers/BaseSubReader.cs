@@ -113,7 +113,7 @@ namespace Workers {
                             System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
                             if (noReceives > maxNoReceives)
                             {
-                                Debug.LogWarning($"{Name()}: No data received for {noReceives}, closing subHandle");
+                                Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
                                 parent.playFailed();
                                 return;
                             }
