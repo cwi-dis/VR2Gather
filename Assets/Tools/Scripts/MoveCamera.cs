@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR;
 
-public class MoveCamera : MonoBehaviour
-{
+public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;
+    public bool spectator = false;
     float xRotation = 0f;
+    float yRotation = 0f;
 
     public Transform playerBody;
 
     void Awake() {
-        if (XRDevice.isPresent) enabled = false;
+        if (XRDevice.isPresent)
+            enabled = false;
     }
 
     void Start() {
@@ -25,9 +25,14 @@ public class MoveCamera : MonoBehaviour
 
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            yRotation += mouseX;
 
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.Rotate(Vector3.up * mouseX);
+            if (spectator)
+                playerBody.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+            else {
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                playerBody.Rotate(Vector3.up, mouseX);
+            }
         }
     }
 }
