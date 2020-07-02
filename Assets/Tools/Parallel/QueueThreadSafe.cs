@@ -2,22 +2,7 @@
 using System.Threading;
 
 public class QueueThreadSafe {
-    /*
-    public QueueThreadSafe(int _size=2) { Size = _size; }
-    public int Size { get; private set; }
-    public int Free { get { lock (queue) { return Size - queue.Count; } } }
-    public int Count { get { lock (queue) { return queue.Count; } } }
-    Queue<BaseMemoryChunk> queue = new Queue<BaseMemoryChunk>();
 
-    public BaseMemoryChunk Peek() { lock (queue) { return queue.Peek(); } }
-    public BaseMemoryChunk Dequeue() { lock (queue) { return queue.Dequeue(); } }
-    public void Enqueue(BaseMemoryChunk item) { lock (queue) { queue.Enqueue(item); } }
-    */
-
-    //BaseMemoryChunk[] window;
-    //int alloc = 0;
-    //int write = 0;
-    //int read = 0;
 
     int size;
     bool dropWhenFull;
@@ -113,7 +98,10 @@ public class QueueThreadSafe {
 
     // Return the item that will probably be returned by the next Dequeue (but unsafe if we have multiple consumers)
     public BaseMemoryChunk _Peek() {
-        return queue.Peek();
+        lock(queue)
+        {
+            return queue.Peek();
+        }
     }
 
     // Get the next item from the queue.
@@ -125,7 +113,11 @@ public class QueueThreadSafe {
         try
         {
             full.Wait(isClosed.Token);
-            BaseMemoryChunk item = queue.Dequeue();
+            BaseMemoryChunk item;
+            lock (queue)
+            {
+                item = queue.Dequeue();
+            }
             empty.Release();
             return item;
         }
@@ -146,7 +138,11 @@ public class QueueThreadSafe {
             bool gotItem = full.Wait(millisecondsTimeout, isClosed.Token);
             if (gotItem)
             {
-                BaseMemoryChunk item = queue.Dequeue();
+                BaseMemoryChunk item;
+                lock (queue)
+                {
+                    item = queue.Dequeue();
+                }
                 empty.Release();
                 return item;
             }
@@ -171,7 +167,10 @@ public class QueueThreadSafe {
         try
         {
             empty.Wait(isClosed.Token);
-            queue.Enqueue(item);
+            lock(queue)
+            {
+                queue.Enqueue(item);
+            }
             full.Release();
             return true;
         }
@@ -195,7 +194,10 @@ public class QueueThreadSafe {
         {
             bool gotSlot = empty.Wait(millisecondsTimeout, isClosed.Token);
             if (gotSlot) {
-                queue.Enqueue(item);
+                lock(queue)
+                {
+                    queue.Enqueue(item);
+                }
                 full.Release();
                 return true;
             }
