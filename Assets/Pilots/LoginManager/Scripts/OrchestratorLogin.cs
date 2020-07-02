@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using OrchestratorWrapping;
 
 public enum State {
-    Offline, Online, Logged, Create, Join, Lobby, InGame
+    Offline, Online, Logged, Config, Create, Join, Lobby, InGame
 }
 
 public class OrchestratorLogin : MonoBehaviour {
@@ -22,6 +22,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
+    private int ntpSyncThreshold = 1000; // Magic number to be defined
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -32,7 +33,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private bool joining = false;
 
     [SerializeField] private string orchestratorUrl = "";
-    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = false;
+    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
     [SerializeField] private Text statusText = null;
@@ -42,12 +43,19 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text nativeVerText = null;
     [SerializeField] private Text playerVerText = null;
     [SerializeField] private Text orchVerText = null;
+    [SerializeField] private Text ntpText = null;
 
     [Header("Login")]
     [SerializeField] private InputField userNameLoginIF = null;
     [SerializeField] private InputField userPasswordLoginIF = null;
     [SerializeField] private InputField connectionURILoginIF = null;
     [SerializeField] private InputField exchangeNameLoginIF = null;
+    [SerializeField] private Dropdown representationTypeLoginDropdown = null;
+
+    [Header("Config")]
+    [SerializeField] private InputField connectionURIConfigIF = null;
+    [SerializeField] private InputField exchangeNameConfigIF = null;
+    [SerializeField] private Dropdown representationTypeConfigDropdown = null;
 
     [Header("Create")]
     [SerializeField] private InputField sessionNameIF = null;
@@ -72,7 +80,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Buttons")]
     [SerializeField] private Button connectButton = null;
+    [SerializeField] private Button okButton = null;
     [SerializeField] private Button loginButton = null;
+    [SerializeField] private Button configButton = null;
+    [SerializeField] private Button saveConfigButton = null;
+    [SerializeField] private Button exitConfigButton = null;
     [SerializeField] private Button createButton = null;
     [SerializeField] private Button joinButton = null;
     [SerializeField] private Button doneCreateButton = null;
@@ -84,8 +96,9 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button refreshSessionsButton = null;
 
     [Header("Panels")]
+    [SerializeField] private GameObject ntpPanel = null;
     [SerializeField] private GameObject loginPanel = null;
-    [SerializeField] private GameObject infoPanel = null;
+    [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject createPanel = null;
     [SerializeField] private GameObject joinPanel = null;
     [SerializeField] private GameObject lobbyPanel = null;
@@ -148,7 +161,7 @@ public class OrchestratorLogin : MonoBehaviour {
             foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
                 AddTextComponentOnContent(container.transform, u.userName);
             }
-            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() + "/" + "4";
+            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
         else {
             Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
@@ -180,6 +193,12 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.AddOptions(options);
     }
 
+    private void UpdateRepresentations(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+    }
+
     private IEnumerator ScrollLogsToBottom() {
         yield return new WaitForSeconds(0.2f);
         logsScrollRect.verticalScrollbar.value = 0;
@@ -204,9 +223,16 @@ public class OrchestratorLogin : MonoBehaviour {
         // Font to build gui components for logs!
         ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        UpdateRepresentations(representationTypeConfigDropdown);
+
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
+        okButton.onClick.AddListener(delegate { OKButton(); });
         loginButton.onClick.AddListener(delegate { Login(); });
+        configButton.onClick.AddListener(delegate { ConfigButton(); });
+        saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
+        exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         PCCalibButton.onClick.AddListener(delegate { ChangeScene("PCCalibration"); });
         TVMCalibButton.onClick.AddListener(delegate { ChangeScene("TVMCalibration"); });
         refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
@@ -226,17 +252,16 @@ public class OrchestratorLogin : MonoBehaviour {
         dashAudioToggle.isOn = false;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
-               
+
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to offline
             orchestratorConnected = true;
             statusText.text = "Online";
             statusText.color = onlineCol;
-            userId.text = OrchestratorController.Instance.SelfUser.userId;
-            userName.text = OrchestratorController.Instance.SelfUser.userName;
-            exchangeNameLoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-            connectionURILoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-            OnLogin(true);
+            FillSelfUserData();
+            Debug.Log("Come from another Scene");
+            OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
+            //OnLogin(true);
         }
         else { // Enter for first time
             // Set status to offline
@@ -259,12 +284,27 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
+    public void FillSelfUserData() {
+        // UserID & Name
+        userId.text = OrchestratorController.Instance.SelfUser.userId;
+        userName.text = OrchestratorController.Instance.SelfUser.userName;
+        // Login Info
+        exchangeNameLoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
+        connectionURILoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
+        representationTypeLoginDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        // Config Info
+        exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
+        connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
+        representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+    }
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -277,8 +317,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Online:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -286,6 +327,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(false);
                 joinButton.gameObject.SetActive(false);
                 PCCalibButton.gameObject.SetActive(true);
@@ -295,8 +337,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Logged:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -304,8 +347,33 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(true);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
+                configButton.interactable = true;
+                createButton.interactable = true;
+                joinButton.interactable = true;
+                PCCalibButton.gameObject.SetActive(true);
+                PCCalibButton.interactable = true;
+                TVMCalibButton.gameObject.SetActive(true);
+                TVMCalibButton.interactable = true;
+                break;
+            case State.Config:
+                // Panels
+                ntpPanel.SetActive(false);
+                loginPanel.SetActive(false);
+                configPanel.SetActive(true);
+                createPanel.SetActive(false);
+                joinPanel.SetActive(false);
+                lobbyPanel.SetActive(false);
+                sessionPanel.SetActive(true);
+                usersPanel.SetActive(false);
+                // Buttons
+                connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(true);
+                createButton.gameObject.SetActive(true);
+                joinButton.gameObject.SetActive(true);
+                configButton.interactable = false;
                 createButton.interactable = true;
                 joinButton.interactable = true;
                 PCCalibButton.gameObject.SetActive(true);
@@ -315,8 +383,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Create:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(true);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -324,8 +393,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(true);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
+                configButton.interactable = true;
                 createButton.interactable = false;
                 joinButton.interactable = true;
                 PCCalibButton.gameObject.SetActive(true);
@@ -335,8 +406,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Join:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(true);
                 lobbyPanel.SetActive(false);
@@ -344,8 +416,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(true);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
+                configButton.interactable = true;
                 createButton.interactable = true;
                 joinButton.interactable = false;
                 PCCalibButton.gameObject.SetActive(true);
@@ -355,8 +429,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Lobby:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                infoPanel.SetActive(false);
+                configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
@@ -364,8 +439,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(true);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                configButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(true);
                 joinButton.gameObject.SetActive(true);
+                configButton.interactable = false;
                 createButton.interactable = false;
                 joinButton.interactable = false;
                 PCCalibButton.gameObject.SetActive(true);
@@ -391,6 +468,27 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Buttons
+    
+    public void OKButton() {
+        PanelChanger();
+    }
+
+    public void ConfigButton() {
+        state = State.Config;
+        PanelChanger();
+    }
+
+    public void SaveConfigButton() {
+        UpdateUserData();
+        state = State.Logged;
+        PanelChanger();
+    }
+
+    public void ExitConfigButton() {
+        GetUserInfo();
+        state = State.Logged;
+        PanelChanger();
+    }
 
     public void CreateButton() {
         state = State.Create;
@@ -732,7 +830,15 @@ public class OrchestratorLogin : MonoBehaviour {
     private void OnLogin(bool userLoggedSucessfully) {
         if (userLoggedSucessfully) {
             OrchestratorController.Instance.IsAutoRetrievingData = autoRetrieveOrchestratorDataOnConnect;
-            OrchestratorController.Instance.UpdateUserData(exchangeNameLoginIF.text, connectionURILoginIF.text);
+
+            // UserData info in Login
+            //UserData lUserData = new UserData {
+            //    userMQexchangeName = exchangeNameLoginIF.text,
+            //    userMQurl = connectionURILoginIF.text,
+            //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
+            //};
+            //OrchestratorController.Instance.UpdateUserData(lUserData);
+
             state = State.Logged;
         }
         else {
@@ -768,6 +874,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        if (difference >= ntpSyncThreshold) {
+            ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
+            ntpPanel.SetActive(true);
+            loginPanel.SetActive(false);
+        }
         Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
@@ -780,7 +891,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetSessionsHandler(Session[] sessions) {
-        if (sessions != null && sessions.Length > 0) {
+        if (sessions != null) {
             // update the list of available sessions
             UpdateSessions(orchestratorSessions, sessionIdDrop);
         }
@@ -953,11 +1064,17 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void UpdateUserData() {
-        Debug.Log("[OrchestratorLogin][UpdateUserData] Not implemented");
+        // UserData info in Config
+        UserData lUserData = new UserData {
+            userMQexchangeName = exchangeNameConfigIF.text,
+            userMQurl = connectionURIConfigIF.text,
+            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value
+        };
+        OrchestratorController.Instance.UpdateUserData(lUserData);
     }
 
     private void GetUserInfo() {
-        Debug.Log("[OrchestratorLogin][GetUserInfo] Not implemented");
+        OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.SelfUser.userId);
     }
 
     private void OnGetUserInfoHandler(User user) {
@@ -967,15 +1084,23 @@ public class OrchestratorLogin : MonoBehaviour {
 
                 userId.text = user.userId;
                 userName.text = user.userName;
+
+                //UserData
+                exchangeNameConfigIF.text = user.userData.userMQexchangeName;
+                connectionURIConfigIF.text = user.userData.userMQurl;
+                representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
             }
 
             UpdateUsersSession(usersSession);
 
-            // Update the sfuData if is in session.
+            // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {
                 for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i) {
                     if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId) {
+                        // sfuData
                         OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
+                        // UserData
+                        OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
                     }
                 }
             }

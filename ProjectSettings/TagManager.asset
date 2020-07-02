@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Battery
   - PlayerLocation
+  - Spectator
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - 
   - PostProcessing
   - Light dynamic
-  - 
-  - 
+  - Spectator
+  - Enviroment
   - 
   - 
   - Dynamic Objects

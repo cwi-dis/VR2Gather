@@ -257,7 +257,13 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
                     isAutoRetrievingData = false;
                 }
 
-                orchestratorWrapper.UpdateUserDataJson(exchangeNameLoginIF.text, connectionURILoginIF.text);
+                UserData lUserData = new UserData {
+                    userMQexchangeName = exchangeNameLoginIF.text,
+                    userMQurl = connectionURILoginIF.text,
+                    userRepresentationType = UserData.eUserRepresentationType.__2D__
+                };
+                orchestratorWrapper.UpdateUserDataJson(lUserData);
+
                 userID = _userId;
                 idText.text = _userId;
                 state = StateTemp.Default;
@@ -656,7 +662,12 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
     
     private void UpdateUserData() {
-        orchestratorWrapper.UpdateUserDataJson(exchangeNameIF.text, connectionURIIF.text);
+        UserData lUserData = new UserData {
+            userMQexchangeName = exchangeNameLoginIF.text,
+            userMQurl = connectionURILoginIF.text,
+            userRepresentationType = UserData.eUserRepresentationType.__2D__
+        };
+        orchestratorWrapper.UpdateUserDataJson(lUserData);
     }
 
     public void OnUpdateUserDataJsonResponse(ResponseStatus status) {
@@ -1181,6 +1192,10 @@ public class OrchestrationWindow : MonoBehaviour, IOrchestratorMessageIOListener
     }
 
     public void OnUserEventReceived(UserEvent pSceneEventData) {
+
+    }
+
+    public void OnClearUserDataResponse(ResponseStatus status) {
 
     }
 

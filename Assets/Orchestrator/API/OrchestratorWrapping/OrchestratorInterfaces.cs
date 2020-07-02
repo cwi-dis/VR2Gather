@@ -50,6 +50,7 @@ namespace OrchestratorWrapping
         void OnAddUserResponse(ResponseStatus status, User user);
         void OnGetUserInfoResponse(ResponseStatus status, User user);
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
+        void OnClearUserDataResponse(ResponseStatus status);
         void OnDeleteUserResponse(ResponseStatus status);
 
         void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms);
