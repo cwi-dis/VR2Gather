@@ -2,8 +2,6 @@
 using System.Threading;
 
 public class QueueThreadSafe {
-
-
     int size;
     bool dropWhenFull;
     CancellationTokenSource isClosed;
@@ -108,7 +106,7 @@ public class QueueThreadSafe {
     // Wait semantics: waits until something is available.
     // The caller gets ownership of the returned object.
     // If the queue was closed null will be returned. 
-    public BaseMemoryChunk Dequeue()
+    public virtual BaseMemoryChunk Dequeue()
     {
         try
         {
@@ -131,7 +129,7 @@ public class QueueThreadSafe {
     // (which can be 0) for an item to become available.
     // Ownership of the item is transferred to the caller.
     // If no item is available in time null is returned.
-    public BaseMemoryChunk TryDequeue(int millisecondsTimeout)
+    public virtual BaseMemoryChunk TryDequeue(int millisecondsTimeout)
     {
         try
         {
@@ -158,7 +156,7 @@ public class QueueThreadSafe {
     // The ownership of the item is transferred to the queue (so it will be freed
     // if there is no space and the caller should not reuse or free this item
     // unless it has done ann AddRef()).
-    public bool Enqueue(BaseMemoryChunk item)
+    public virtual bool Enqueue(BaseMemoryChunk item)
     {
         if (dropWhenFull)
         {
@@ -188,7 +186,7 @@ public class QueueThreadSafe {
     // The ownership of the item is transferred to the queue (so it will be freed
     // if there is no space and the caller should not reuse or free this item
     // unless it has done ann AddRef()).
-    public bool TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
+    public virtual bool TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
     {
         try
         {

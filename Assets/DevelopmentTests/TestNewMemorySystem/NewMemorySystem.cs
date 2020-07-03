@@ -6,9 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewMemorySystem : MonoBehaviour
-{
-
+public class NewMemorySystem : MonoBehaviour {
     public bool         forceMesh = false;
     public bool         localPCs = false;
     public bool         useCompression = true;
@@ -29,7 +27,7 @@ public class NewMemorySystem : MonoBehaviour
     //Workers.BaseWorker  binReader;
 
     Workers.BaseWorker  preparer;
-    QueueThreadSafe     preparerQueue = new QueueThreadSafe();
+    QueueThreadSafe     preparerQueue = new QueueOrderedThreadSafe();
     QueueThreadSafe     encoderQueue = new QueueThreadSafe();
     QueueThreadSafe     writerQueue = new QueueThreadSafe();
     QueueThreadSafe     decoderQueue = new QueueThreadSafe(2, true);
@@ -59,9 +57,9 @@ public class NewMemorySystem : MonoBehaviour
                 encStreams[0].tileNumber = 0;
                 encStreams[0].outQueue = writerQueue;
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                decoder = new Workers.PCDecoder[decoders];
+                decoder = new Workers.PCMultiDecoder[decoders];
                 for (int i = 0; i < decoders; ++i)
-                    decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
+                    decoder[i] = new Workers.PCMultiDecoder(writerQueue, preparerQueue);
             }
         } else {
             if (!useRemoteStream) {
@@ -81,9 +79,9 @@ public class NewMemorySystem : MonoBehaviour
                 dashWriter = new Workers.B2DWriter(remoteURL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
             }
             dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 0, 1, decoderQueue);
-            decoder = new Workers.PCDecoder[decoders];
+            decoder = new Workers.PCMultiDecoder[decoders];
             for ( int i=0;i<decoders;++i)
-                decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
+                decoder[i] = new Workers.PCMultiDecoder(decoderQueue, preparerQueue);
         }
 
         if (useVoice) {
