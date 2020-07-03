@@ -6,11 +6,7 @@ using UnityEngine;
 
 namespace Workers {
     public class PCMultiDecoder: PCDecoder {
-        int[] randoms;
         public PCMultiDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(_inQueue, _outQueue) {
-            randoms = new int[100];
-            for (int i = 0; i < randoms.Length; ++i)
-                randoms[i] = 300;// Random.Range(0, 500);
         }
 
         protected override void Update() {
