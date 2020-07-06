@@ -37,7 +37,7 @@
             "z": 0.0
         },
         "forceMesh": false,
-		"defaultCellSize": 0.01,
+		"defaultCellSize": 0.005,
 		"cellSizeFactor": 0.8
     },
 
@@ -60,7 +60,7 @@
                 "PCLExchangeName": "VolumetricData",
                 "MetaExchangeName": "VolumetricMetaData"
             },
-            "voxelSize": 0.009999999776482582,
+            "voxelSize": 0.005,
             "frameRate" : 15,
             "Encoders": [
 				{
@@ -78,7 +78,7 @@
             }
         },
         "Render": {
-            "pointSize": 0.00800000037997961,
+            "pointSize": 0.008,
             "position": {
                 "x": 0.0,
                 "y": 0.0,

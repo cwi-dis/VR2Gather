@@ -13,9 +13,15 @@ public class NewMemorySystem : MonoBehaviour
     public bool         localPCs = false;
     public bool         useCompression = true;
     public bool         useVoice = false;
+
+    public bool         useRemoteStream = false;
+    public string       remoteURL = "";
+    public string       remoteStream="";
+
     Workers.BaseWorker  reader;
     Workers.BaseWorker  encoder;
-    Workers.BaseWorker  decoder;
+    public int          decoders = 1;
+    Workers.BaseWorker[] decoder;
     Workers.BaseWorker  dashWriter;
     Workers.BaseWorker  dashReader;
 
@@ -53,23 +59,31 @@ public class NewMemorySystem : MonoBehaviour
                 encStreams[0].tileNumber = 0;
                 encStreams[0].outQueue = writerQueue;
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                decoder = new Workers.PCDecoder(writerQueue, preparerQueue);
+                decoder = new Workers.PCDecoder[decoders];
+                for (int i = 0; i < decoders; ++i)
+                    decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
             }
         } else {
-            reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, encoderQueue);
-            Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
-            encStreams[0].octreeBits = 10;
-            encStreams[0].tileNumber = 0;
-            encStreams[0].outQueue = writerQueue;
-            encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-            string uuid = System.Guid.NewGuid().ToString();
-            Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
-            b2dStreams[0].tileNumber = 0;
-            b2dStreams[0].quality = 0;
-            b2dStreams[0].inQueue = writerQueue;
-            dashWriter = new Workers.B2DWriter("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", "cwi1", 2000, 10000, b2dStreams);
-            dashReader = new Workers.PCSubReader("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/", "pointclouds", 0, 1, decoderQueue);
-            decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+            if (!useRemoteStream) {
+                reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, encoderQueue);
+                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                encStreams[0].octreeBits = 10;
+                encStreams[0].tileNumber = 0;
+                encStreams[0].outQueue = writerQueue;
+                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
+                string uuid = System.Guid.NewGuid().ToString();
+                Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
+                b2dStreams[0].tileNumber = 0;
+                b2dStreams[0].quality = 0;
+                b2dStreams[0].inQueue = writerQueue;
+                remoteURL = "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/pcc/";
+                remoteStream = "pointclouds";
+                dashWriter = new Workers.B2DWriter(remoteURL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
+            }
+            dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 0, 1, decoderQueue);
+            decoder = new Workers.PCDecoder[decoders];
+            for ( int i=0;i<decoders;++i)
+                decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
         if (useVoice) {
@@ -88,7 +102,8 @@ public class NewMemorySystem : MonoBehaviour
         dashReader?.StopAndWait();
         //binWriter?.StopAndWait();
         //binReader?.StopAndWait();
-        decoder?.StopAndWait();
+        for (int i = 0; i < decoders; ++i)
+            decoder[i]?.StopAndWait();
         preparer?.StopAndWait();
         Debug.Log($"NewMemorySystem: Queues references counting: preparerQueue {preparerQueue._Count} encoderQueue {encoderQueue._Count} writerQueue {writerQueue._Count} decoderQueue {decoderQueue._Count}");
         BaseMemoryChunkReferences.ShowTotalRefCount();
