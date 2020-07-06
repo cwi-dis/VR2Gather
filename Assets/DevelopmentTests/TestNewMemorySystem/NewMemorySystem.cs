@@ -42,7 +42,7 @@ public class NewMemorySystem : MonoBehaviour
         if (forceMesh) {
             preparer = new Workers.MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            ((Workers.PointMeshRenderer)render).AddPreparer((Workers.MeshPreparer)preparer);
+            ((Workers.PointMeshRenderer)render).SetPreparer((Workers.MeshPreparer)preparer);
         } else {
             preparer = new Workers.BufferPreparer(preparerQueue);
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();

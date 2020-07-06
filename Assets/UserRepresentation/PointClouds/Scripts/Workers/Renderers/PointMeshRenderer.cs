@@ -17,11 +17,11 @@ namespace Workers
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
 
-        public void AddPreparer(Workers.MeshPreparer _preparer)
+        public void SetPreparer(Workers.MeshPreparer _preparer)
         {
             if (preparer != null)
             {
-                Debug.LogWarning("PointMeshRenderer: ignoring second preparer (temporary)");
+                Debug.LogError("PointMeshRenderer: attempt to set second preparer");
             }
             preparer = _preparer;
         }

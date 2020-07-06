@@ -241,17 +241,9 @@ public class EntityPipeline : MonoBehaviour {
             Workers.MeshPreparer preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparers.Add(preparer);
             // For meshes we use a single renderer and multiple preparers (one per tile).
-            Workers.PointMeshRenderer render;
-            if (renderers.Count > 0)
-            {
-                render = (Workers.PointMeshRenderer)renderers[0];
-            }
-            else
-            {
-                render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-                renderers.Add(render);
-            }
-            render.AddPreparer(preparer);
+            Workers.PointMeshRenderer render = gameObject.AddComponent<Workers.PointMeshRenderer>();
+            renderers.Add(render);
+            render.SetPreparer(preparer);
         }
         else
         { // Buffer
