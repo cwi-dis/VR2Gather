@@ -19,7 +19,6 @@ public class OrchestratorLogin : MonoBehaviour {
     #region GUI Components
 
     public bool usePresenter = false;
-    private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
     private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
@@ -64,8 +63,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown scenarioIdDrop = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle tvmToggle = null;
-    [SerializeField] private Toggle pcToggle = null;
     [SerializeField] private Toggle noAudioToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
@@ -247,8 +244,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        pcToggle.isOn = true;
-        tvmToggle.isOn = false;
         noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
@@ -280,7 +275,6 @@ public class OrchestratorLogin : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (state == State.Create) {
-            UserRepresentationToggle();
             AudioToggle();
             PresenterToggles();
         }
@@ -488,9 +482,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void ReadyButton() {
         if (OrchestratorController.Instance.MyScenario.scenarioName == "Pilot 2")
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio + "_" + kindPresenter);
+            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter);
         else 
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio);
+            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio);
     }
 
     public void GoToCalibration() {
@@ -574,42 +568,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     #endregion
 
-    #region Toggles  
-
-    private void UserRepresentationToggle() {
-        if (tvmToggle.isOn)
-            tvmToggle.interactable = false;
-        else
-            tvmToggle.interactable = true;
-        if (pcToggle.isOn)
-            pcToggle.interactable = false;
-        else
-            pcToggle.interactable = true;        
-    }
-
-    public void SetRepresentation(int kind) {
-        switch (kind) {
-            case 0: // TVM
-                if (tvmToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
-                    // Set Toggles
-                    pcToggle.isOn = false;
-                }
-                break;
-            case 1: // PC
-                if (pcToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.userRepresentation = Config.UserRepresentation.PC;
-                    // Set Toggles
-                    tvmToggle.isOn = false;
-                }
-                break;
-            default:
-                break;
-        }
-        kindRepresentation = kind;
-    }
+    #region Toggles 
 
     private void AudioToggle() {
         if (noAudioToggle.isOn)

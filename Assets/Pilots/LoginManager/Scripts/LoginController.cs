@@ -44,19 +44,8 @@ public class LoginController : PilotController {
         Debug.Log(message);
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
-            // Check Representation
-            switch (msg[2]) {
-                case "0": // TVM
-                    Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
-                    break;
-                case "1": // PC
-                    Config.Instance.userRepresentation = Config.UserRepresentation.PC;
-                    break;
-                default:
-                    break;
-            }
             // Check Audio
-            switch (msg[3]) {
+            switch (msg[2]) {
                 case "0": // No Audio
                     Config.Instance.audioType = Config.AudioType.None;
                     break;
@@ -81,7 +70,7 @@ public class LoginController : PilotController {
                     break;
                 case "Pilot 2": // PILOT 2
                     // Check Presenter
-                    switch (msg[4]) {
+                    switch (msg[3]) {
                         case "0": // NONE
                             Config.Instance.presenter = Config.Presenter.None;
                             break;
