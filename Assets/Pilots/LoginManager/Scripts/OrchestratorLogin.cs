@@ -494,8 +494,13 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void GoToCalibration() {
-        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__TVM__) SceneManager.LoadScene("TVMCalibration");
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_) SceneManager.LoadScene("PCCalibration");
+        StartCoroutine(CalibRoutine());
+    }
+
+    IEnumerator CalibRoutine() {
+        UpdateUserData();
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene("SelfCalibration");
     }
 
     public void AutoFillButtons(int user) {

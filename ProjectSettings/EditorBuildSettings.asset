@@ -24,6 +24,6 @@ EditorBuildSettings:
     path: Assets/UserRepresentation/SelfCalibration/Scenes/PCCalibration.unity
     guid: 07862ddece24e19458a9bc680a61f421
   - enabled: 1
-    path: Assets/UserRepresentation/SelfCalibration/Scenes/TVMCalibration.unity
+    path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
   m_configObjects: {}
