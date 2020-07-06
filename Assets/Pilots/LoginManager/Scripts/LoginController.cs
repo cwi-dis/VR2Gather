@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 public class LoginController : PilotController {
 
@@ -11,6 +12,19 @@ public class LoginController : PilotController {
 
     //AsyncOperation async;
     Coroutine loadCoroutine = null;
+
+    void Awake() {
+        if (!XRDevice.isPresent) {
+            Resolution[] resolutions = Screen.resolutions;
+            bool fullRes = false;
+            foreach (var res in resolutions) {
+                if (res.width == 1920 && res.height == 1080) fullRes = true;
+            }
+            if (fullRes) Screen.SetResolution(1920, 1080, false, 30);
+            else Screen.SetResolution(1280, 720, false, 30);
+            Debug.Log("Resolution: " + Screen.width + "x" + Screen.height);
+        }
+    }
 
     public override void Start() {
         base.Start();

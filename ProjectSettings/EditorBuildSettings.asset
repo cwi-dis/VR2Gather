@@ -21,9 +21,6 @@ EditorBuildSettings:
     path: Assets/Pilots/Pilot2/Scenes/Pilot2_Player.unity
     guid: 411fba5423c48c14ab54d9f0a44740dc
   - enabled: 1
-    path: Assets/UserRepresentation/SelfCalibration/Scenes/PCCalibration.unity
-    guid: 07862ddece24e19458a9bc680a61f421
-  - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
   m_configObjects: {}
