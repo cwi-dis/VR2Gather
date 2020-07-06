@@ -66,7 +66,7 @@ namespace Workers {
 //                    {
 //                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
 //                    }
-//                }
+                }
                 else
                 {
                     Debug.Log($"{Name()}: xxxjack SKIP disable_stream({tileNumber});");
@@ -75,7 +75,7 @@ namespace Workers {
 //                    {
 //                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
 //                    }
-//                }
+                }
             }
         }
 
