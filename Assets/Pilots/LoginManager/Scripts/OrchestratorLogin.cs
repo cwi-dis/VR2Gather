@@ -22,6 +22,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
+    private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -32,7 +33,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private bool joining = false;
 
     [SerializeField] private string orchestratorUrl = "";
-    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = false;
+    [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
     [SerializeField] private Text statusText = null;
@@ -42,6 +43,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text nativeVerText = null;
     [SerializeField] private Text playerVerText = null;
     [SerializeField] private Text orchVerText = null;
+    [SerializeField] private Text ntpText = null;
 
     [Header("Login")]
     [SerializeField] private InputField userNameLoginIF = null;
@@ -78,6 +80,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Buttons")]
     [SerializeField] private Button connectButton = null;
+    [SerializeField] private Button okButton = null;
     [SerializeField] private Button loginButton = null;
     [SerializeField] private Button configButton = null;
     [SerializeField] private Button saveConfigButton = null;
@@ -93,6 +96,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button refreshSessionsButton = null;
 
     [Header("Panels")]
+    [SerializeField] private GameObject ntpPanel = null;
     [SerializeField] private GameObject loginPanel = null;
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject createPanel = null;
@@ -157,7 +161,7 @@ public class OrchestratorLogin : MonoBehaviour {
             foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
                 AddTextComponentOnContent(container.transform, u.userName);
             }
-            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() + "/" + "4";
+            sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
         else {
             Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
@@ -224,6 +228,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
+        okButton.onClick.AddListener(delegate { OKButton(); });
         loginButton.onClick.AddListener(delegate { Login(); });
         configButton.onClick.AddListener(delegate { ConfigButton(); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
@@ -253,8 +258,10 @@ public class OrchestratorLogin : MonoBehaviour {
             orchestratorConnected = true;
             statusText.text = "Online";
             statusText.color = onlineCol;
-            FillSelfUserData();            
-            OnLogin(true);
+            FillSelfUserData();
+            Debug.Log("Come from another Scene");
+            OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
+            //OnLogin(true);
         }
         else { // Enter for first time
             // Set status to offline
@@ -295,6 +302,7 @@ public class OrchestratorLogin : MonoBehaviour {
         switch (state) {
             case State.Offline:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -309,6 +317,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Online:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -328,6 +337,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Logged:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -350,6 +360,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Config:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(true);
                 createPanel.SetActive(false);
@@ -372,6 +383,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Create:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(true);
@@ -394,6 +406,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Join:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -416,6 +429,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case State.Lobby:
                 // Panels
+                ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
@@ -454,6 +468,11 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Buttons
+    
+    public void OKButton() {
+        PanelChanger();
+    }
+
     public void ConfigButton() {
         state = State.Config;
         PanelChanger();
@@ -855,6 +874,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
+            ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
+            ntpPanel.SetActive(true);
+            loginPanel.SetActive(false);
+        }
         Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
@@ -867,7 +891,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetSessionsHandler(Session[] sessions) {
-        if (sessions != null && sessions.Length > 0) {
+        if (sessions != null) {
             // update the list of available sessions
             UpdateSessions(orchestratorSessions, sessionIdDrop);
         }

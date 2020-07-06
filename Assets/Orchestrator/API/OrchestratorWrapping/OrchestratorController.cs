@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -245,9 +245,11 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         else
         {
             //user was logged before previously
-            if (!userLoggedSucessfully)
+            if (userLoggedSucessfully)
             {
-                // normal, user previopusly logged, nothing to do
+                Debug.Log("[OrchestratorController][OnLoginResponse] User logged - comes from another scene.");
+
+                orchestratorWrapper.GetUserInfo();
             }
             else
             {

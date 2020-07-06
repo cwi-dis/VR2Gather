@@ -90,9 +90,12 @@
 
       
                 half4 Fragment(v2f input) : SV_Target{
-                    half a = tex2D(_MainTex, input.uv).r;
+                    half a = tex2D(_MainTex, input.uv).a;
                     clip(a - _Cutoff);
                     half4 c = half4(input.color, _Tint.a) * a;
+					// Erase black points
+					if (c.x <= 0.0f && c.y <= 0.0f && c.z <= 0.0f)
+						clip(c.x - _Cutoff);
 
                     return c;
                 }
