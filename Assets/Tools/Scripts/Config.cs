@@ -57,7 +57,7 @@ public class Config {
         [Serializable]
         public class _PCSUBConfig
         {
-            public int tileNumber;
+            public int[] tileNumbers;
             public int initialDelay;
         }
         public _PCSUBConfig SUBConfig;

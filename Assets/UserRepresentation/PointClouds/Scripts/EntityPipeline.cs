@@ -78,7 +78,7 @@ public class EntityPipeline : MonoBehaviour {
                     //
                     var Encoders = PCSelfConfig.Encoders;
                     int minTileNum = 0;
-                    int nTile = 1;
+                    int nTileToTransmit = 1;
                     if (PCSelfConfig.tiled)
                     {
                         Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
@@ -90,16 +90,16 @@ public class EntityPipeline : MonoBehaviour {
 
                             }
                             minTileNum = 1;
-                            nTile = tilesToTransmit.Length - 1;
+                            nTileToTransmit = tilesToTransmit.Length - 1;
                         }
                     }
                     int nQuality = Encoders.Length;
-                    int nStream = nQuality * nTile;
-                    Debug.Log($"xxxjack minTile={minTileNum}, nTile={nTile}, nQuality={nQuality}, nStream={nStream}");
+                    int nStream = nQuality * nTileToTransmit;
+                    Debug.Log($"xxxjack minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
-                    for (int it = 0; it < nTile; it++) {
+                    for (int it = 0; it < nTileToTransmit; it++) {
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
@@ -166,12 +166,21 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create sub receiver
                 //
-                Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[1]
+                int[] tileNumbers = SUBConfig.tileNumbers;
+                int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
+                if (nTileToReceive == 0)
                 {
-                    new Workers.PCSubReader.TileDescriptor() {
+                    tileNumbers = new int[1] { 0 };
+                    nTileToReceive = 1;
+                }
+                Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[nTileToReceive];
+                for (int i=0; i< nTileToReceive; i++) 
+                {
+                    tilesToReceive[i] = new Workers.PCSubReader.TileDescriptor()
+                    {
                         outQueue = decoderQueue,
-                        tileNumber = SUBConfig.tileNumber // xxxjack temporarily reusing streamNumber
-                    }
+                        tileNumber = tileNumbers[i]
+                    };
                 };
                 reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
                 //
