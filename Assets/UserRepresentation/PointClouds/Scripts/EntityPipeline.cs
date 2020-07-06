@@ -210,16 +210,16 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself":
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 break;
             case "pccerth":
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                 break;
             default:
                 //Position in the center
-                transform.localPosition = new Vector3(0, 0, 0);
-                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                transform.localPosition = new Vector3(1, 1, 1); // Change in the future, it works with the camera vertical
+                transform.localRotation = Quaternion.Euler(0, 0, 90); // Change in the future, it works with the camera vertical
                 break;
         }
 

@@ -79,6 +79,8 @@ abstract public class PilotController : MonoBehaviour {
                     if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                         players[playerIdx].cam.gameObject.SetActive(true);
                         my_id = players[playerIdx].id;
+                        players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                        players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                     }
                     players[playerIdx].orchestratorId = u.userId;
 
