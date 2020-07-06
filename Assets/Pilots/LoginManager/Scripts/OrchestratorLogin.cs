@@ -22,7 +22,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 1000; // Magic number to be defined
+    private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -874,7 +874,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
-        if (difference >= ntpSyncThreshold) {
+        if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
             ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);

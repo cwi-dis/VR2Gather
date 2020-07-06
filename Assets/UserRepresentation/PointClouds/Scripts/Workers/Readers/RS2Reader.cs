@@ -74,9 +74,14 @@ namespace Workers {
             if (pc == null) return;
             if (voxelSize != 0) {
                 var newPc = cwipc.downsample(pc, voxelSize);
-                pc.free();
-                pc = newPc;
-                if (pc== null)  throw new System.Exception($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
+                if (newPc == null)
+                {
+                    Debug.LogWarning($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
+                } else
+                {
+                    pc.free();
+                    pc = newPc;
+                }
             }
             statsUpdate(pc.count());
 
