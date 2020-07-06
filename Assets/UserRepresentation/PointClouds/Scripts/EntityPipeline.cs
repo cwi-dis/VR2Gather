@@ -238,19 +238,29 @@ public class EntityPipeline : MonoBehaviour {
         preparerQueues.Add(preparerQueue);
         if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
-            Workers.BaseWorker preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            Workers.MeshPreparer preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparers.Add(preparer);
-            MonoBehaviour render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            renderers.Add(render);
-            ((Workers.PointMeshRenderer)render).preparer = (Workers.MeshPreparer)preparer;
+            // For meshes we use a single renderer and multiple preparers (one per tile).
+            Workers.PointMeshRenderer render;
+            if (renderers.Count > 0)
+            {
+                render = (Workers.PointMeshRenderer)renderers[0];
+            }
+            else
+            {
+                render = gameObject.AddComponent<Workers.PointMeshRenderer>();
+                renderers.Add(render);
+            }
+            render.AddPreparer(preparer);
         }
         else
         { // Buffer
-            Workers.BaseWorker preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            // For buffers we use a renderer/preparer for each tile
+            Workers.BufferPreparer preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparers.Add(preparer);
-            MonoBehaviour render = gameObject.AddComponent<Workers.PointBufferRenderer>();
+            Workers.PointBufferRenderer render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             renderers.Add(render);
-            ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
+            render.SetPreparer(preparer);
         }
         return preparerQueue;
     }

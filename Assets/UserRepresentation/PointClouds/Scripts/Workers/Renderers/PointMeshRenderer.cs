@@ -8,8 +8,7 @@ namespace Workers
     {
         Material        material;
         Mesh            mesh;
-
-        public Workers.MeshPreparer preparer;
+        Workers.MeshPreparer preparer;
 
         // Start is called before the first frame update
         void Start() {
@@ -22,6 +21,15 @@ namespace Workers
             mf.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mr.material = material;
 
+        }
+
+        public void AddPreparer(Workers.MeshPreparer _preparer)
+        {
+            if (preparer != null)
+            {
+                Debug.LogWarning("PointMeshRenderer: ignoring second preparer (temporary)");
+            }
+            preparer = _preparer;
         }
 
         private void Update() {
