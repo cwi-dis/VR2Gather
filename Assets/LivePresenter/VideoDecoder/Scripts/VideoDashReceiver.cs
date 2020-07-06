@@ -6,10 +6,13 @@ public class VideoDashReceiver : MonoBehaviour {
     new public Renderer renderer;
 
     Workers.BaseWorker      reader;
+    Workers.VideoEncoder    encoder;
     Workers.VideoDecoder    codec;
     Workers.VideoPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
+    QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
+    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
     QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
@@ -34,6 +37,7 @@ public class VideoDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init() {
         try {
+            encoder = new Workers.VideoEncoder(videoDataQueue, audioDataQueue, videoCodecQueue, audioCodecQueue);
             codec = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
             reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
@@ -94,3 +98,8 @@ public class VideoDashReceiver : MonoBehaviour {
         preparer?.GetAudioBuffer(data, data.Length);
     }
 }
+
+
+// Encoder y decoder
+// https://ffmpeg.org/doxygen/3.3/group__lavc__encdec.html
+// https://blogs.gentoo.org/lu_zero/2016/03/29/new-avcodec-api/
