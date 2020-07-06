@@ -61,12 +61,9 @@
                 "MetaExchangeName": "VolumetricMetaData"
             },
             "voxelSize": 0.005,
-            "frameRate" : 15,
-            "tiled": true,
+            "frameRate" : 25,
+            "tiled": false,
             "Encoders": [
-				{
-					"octreeBits": 7
-				},
 				{
 					"octreeBits": 9
 				}
@@ -103,7 +100,6 @@
     "RemoteUser": {
         "sourceType": "pcsub",
         "SUBConfig": {
-            "tileNumbers": [1, 2],
             "initialDelay": 0
         },
         "AudioSUBConfig": {
