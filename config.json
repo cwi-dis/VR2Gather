@@ -4,8 +4,8 @@
     "useAudio": true,
     "nonHMDHeight": 1.5,
     "TVMs": {
-        "connectionURI": "amqp://volumetric:capture@192.168.1.1:5672",
-        "exchangeName": "TVMeshData",
+        "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
+        "exchangeName": "prod_test",
         "offsetPosition": {
             "x": -1.9099986553192139,
             "y": 1.174999713897705,
@@ -44,7 +44,7 @@
     "LocalUser": {
         "sourceType": "pcself",
         "SUBConfig": {
-            "streamNumber": 0,
+            "tileNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {
@@ -61,7 +61,8 @@
                 "MetaExchangeName": "VolumetricMetaData"
             },
             "voxelSize": 0.005,
-            "frameRate" : 15,
+            "frameRate" : 25,
+            "tiled": false,
             "Encoders": [
 				{
 					"octreeBits": 9
@@ -99,7 +100,6 @@
     "RemoteUser": {
         "sourceType": "pcsub",
         "SUBConfig": {
-            "streamNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {

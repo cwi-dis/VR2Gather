@@ -19,10 +19,9 @@ public class OrchestratorLogin : MonoBehaviour {
     #region GUI Components
 
     public bool usePresenter = false;
-    private int kindRepresentation = 1;
     private int kindAudio = 0;
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 1000; // Magic number to be defined
+    private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -53,6 +52,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown representationTypeLoginDropdown = null;
 
     [Header("Config")]
+    [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private InputField connectionURIConfigIF = null;
     [SerializeField] private InputField exchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
@@ -63,8 +63,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown scenarioIdDrop = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle tvmToggle = null;
-    [SerializeField] private Toggle pcToggle = null;
     [SerializeField] private Toggle noAudioToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
@@ -91,8 +89,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button doneJoinButton = null;
     [SerializeField] private Button readyButton = null;
     [SerializeField] private Button leaveButton = null;
-    [SerializeField] private Button TVMCalibButton = null;
-    [SerializeField] private Button PCCalibButton = null;
+    [SerializeField] private Button calibButton = null;
     [SerializeField] private Button refreshSessionsButton = null;
 
     [Header("Panels")]
@@ -233,8 +230,7 @@ public class OrchestratorLogin : MonoBehaviour {
         configButton.onClick.AddListener(delegate { ConfigButton(); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
-        PCCalibButton.onClick.AddListener(delegate { ChangeScene("PCCalibration"); });
-        TVMCalibButton.onClick.AddListener(delegate { ChangeScene("TVMCalibration"); });
+        calibButton.onClick.AddListener(delegate { GoToCalibration(); });
         refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
         createButton.onClick.AddListener(delegate { CreateButton(); });
         joinButton.onClick.AddListener(delegate { JoinButton(); });
@@ -243,10 +239,11 @@ public class OrchestratorLogin : MonoBehaviour {
         readyButton.onClick.AddListener(delegate { ReadyButton(); });
         leaveButton.onClick.AddListener(delegate { LeaveSession(); });
 
+        // Dropdown listeners
+        representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+
         InitialiseControllerEvents();
 
-        pcToggle.isOn = true;
-        tvmToggle.isOn = false;
         noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = false;
@@ -278,7 +275,6 @@ public class OrchestratorLogin : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         if (state == State.Create) {
-            UserRepresentationToggle();
             AudioToggle();
             PresenterToggles();
         }
@@ -297,7 +293,7 @@ public class OrchestratorLogin : MonoBehaviour {
         connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
         representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
     }
-
+    
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -312,8 +308,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(true);
-                PCCalibButton.gameObject.SetActive(false);
-                TVMCalibButton.gameObject.SetActive(false);
                 break;
             case State.Online:
                 // Panels
@@ -330,10 +324,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.gameObject.SetActive(false);
                 createButton.gameObject.SetActive(false);
                 joinButton.gameObject.SetActive(false);
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = true;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = true;
                 break;
             case State.Logged:
                 // Panels
@@ -353,10 +343,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.interactable = true;
                 createButton.interactable = true;
                 joinButton.interactable = true;
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = true;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = true;
                 break;
             case State.Config:
                 // Panels
@@ -376,10 +362,16 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.interactable = false;
                 createButton.interactable = true;
                 joinButton.interactable = true;
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = true;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = true;
+                // Dropdown Logic
+                tvmInfoGO.SetActive(false);
+                calibButton.interactable = false;
+                if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
+                    tvmInfoGO.SetActive(true);
+                    calibButton.interactable = true;
+                }
+                else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+                    calibButton.interactable = true;
+                }
                 break;
             case State.Create:
                 // Panels
@@ -399,10 +391,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.interactable = true;
                 createButton.interactable = false;
                 joinButton.interactable = true;
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = true;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = true;
                 break;
             case State.Join:
                 // Panels
@@ -422,10 +410,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.interactable = true;
                 createButton.interactable = true;
                 joinButton.interactable = false;
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = true;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = true;
                 break;
             case State.Lobby:
                 // Panels
@@ -445,10 +429,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 configButton.interactable = false;
                 createButton.interactable = false;
                 joinButton.interactable = false;
-                PCCalibButton.gameObject.SetActive(true);
-                PCCalibButton.interactable = false;
-                TVMCalibButton.gameObject.SetActive(true);
-                TVMCalibButton.interactable = false;
                 if (OrchestratorController.Instance.UserIsMaster)
                     readyButton.gameObject.SetActive(true);
                 else
@@ -502,13 +482,19 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void ReadyButton() {
         if (OrchestratorController.Instance.MyScenario.scenarioName == "Pilot 2")
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio + "_" + kindPresenter);
+            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter);
         else 
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindRepresentation + "_" + kindAudio);
+            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio);
     }
 
-    public void ChangeScene(string sceneName) {
-        SceneManager.LoadScene(sceneName);
+    public void GoToCalibration() {
+        StartCoroutine(CalibRoutine());
+    }
+
+    IEnumerator CalibRoutine() {
+        UpdateUserData();
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene("SelfCalibration");
     }
 
     public void AutoFillButtons(int user) {
@@ -582,42 +568,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     #endregion
 
-    #region Toggles  
-
-    private void UserRepresentationToggle() {
-        if (tvmToggle.isOn)
-            tvmToggle.interactable = false;
-        else
-            tvmToggle.interactable = true;
-        if (pcToggle.isOn)
-            pcToggle.interactable = false;
-        else
-            pcToggle.interactable = true;        
-    }
-
-    public void SetRepresentation(int kind) {
-        switch (kind) {
-            case 0: // TVM
-                if (tvmToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.userRepresentation = Config.UserRepresentation.TVM;
-                    // Set Toggles
-                    pcToggle.isOn = false;
-                }
-                break;
-            case 1: // PC
-                if (pcToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.userRepresentation = Config.UserRepresentation.PC;
-                    // Set Toggles
-                    tvmToggle.isOn = false;
-                }
-                break;
-            default:
-                break;
-        }
-        kindRepresentation = kind;
-    }
+    #region Toggles 
 
     private void AudioToggle() {
         if (noAudioToggle.isOn)
@@ -874,7 +825,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
-        if (difference >= ntpSyncThreshold) {
+        if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
             ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);

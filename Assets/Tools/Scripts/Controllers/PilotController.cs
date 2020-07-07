@@ -49,6 +49,7 @@ abstract public class PilotController : MonoBehaviour {
         int playerIdx = 0;
         int spectatorIdx = 0;
         int id = 0;
+        bool firstTVM = true;
         foreach (OrchestratorWrapping.User u in OrchestratorController.Instance.ConnectedUsers) {
             if (u.userData.userRepresentationType != OrchestratorWrapping.UserData.eUserRepresentationType.__NONE__) {
                 if (u.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__SPECTATOR__) { // Load Spectator
@@ -78,6 +79,8 @@ abstract public class PilotController : MonoBehaviour {
                     if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                         players[playerIdx].cam.gameObject.SetActive(true);
                         my_id = players[playerIdx].id;
+                        players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                        players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                     }
                     players[playerIdx].orchestratorId = u.userId;
 
@@ -91,6 +94,8 @@ abstract public class PilotController : MonoBehaviour {
                             players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
+                            players[playerIdx].tvm.isMaster = firstTVM;
+                            if (firstTVM) firstTVM = false;
                             players[playerIdx].tvm.connectionURI = u.userData.userMQurl;
                             players[playerIdx].tvm.exchangeName = u.userData.userMQexchangeName;
                             players[playerIdx].tvm.gameObject.SetActive(true);
@@ -111,6 +116,7 @@ abstract public class PilotController : MonoBehaviour {
 
     public void LoadPlayersWithoutCam(PlayerManager[] players) {
         int playerIdx = 0;
+        bool firstTVM = true;
         foreach (OrchestratorWrapping.User u in OrchestratorController.Instance.ConnectedUsers) {
             if (u.userData.userRepresentationType != OrchestratorWrapping.UserData.eUserRepresentationType.__NONE__) {
                     // Activate the GO
@@ -135,6 +141,8 @@ abstract public class PilotController : MonoBehaviour {
                         players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                         break;
                     case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
+                        players[playerIdx].tvm.isMaster = firstTVM;
+                        if (firstTVM) firstTVM = false;
                         players[playerIdx].tvm.connectionURI = u.userData.userMQurl;
                         players[playerIdx].tvm.exchangeName = u.userData.userMQexchangeName;
                         players[playerIdx].tvm.gameObject.SetActive(true);
@@ -155,6 +163,7 @@ abstract public class PilotController : MonoBehaviour {
         int playerIdx = 0;
         int spectatorIdx = 0;
         int id = 0;
+        bool firstTVM = true;
         bool firstPresenter = true;
         foreach (OrchestratorWrapping.User u in OrchestratorController.Instance.ConnectedUsers) {
             if (!firstPresenter) {
@@ -199,6 +208,8 @@ abstract public class PilotController : MonoBehaviour {
                                 players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                                 break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
+                                players[playerIdx].tvm.isMaster = firstTVM;
+                                if (firstTVM) firstTVM = false;
                                 players[playerIdx].tvm.connectionURI = u.userData.userMQurl;
                                 players[playerIdx].tvm.exchangeName = u.userData.userMQexchangeName;
                                 players[playerIdx].tvm.gameObject.SetActive(true);
