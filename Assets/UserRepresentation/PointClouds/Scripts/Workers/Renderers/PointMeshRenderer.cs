@@ -8,20 +8,22 @@ namespace Workers
     {
         Material        material;
         Mesh            mesh;
-
-        public Workers.MeshPreparer preparer;
+        Workers.MeshPreparer preparer;
 
         // Start is called before the first frame update
         void Start() {
             if (material == null) material = Resources.Load<Material>("PointCloudsMesh");
-            var mf = gameObject.AddComponent<MeshFilter>();
-            var mr = gameObject.AddComponent<MeshRenderer>();
-            mesh = mf.mesh = new Mesh();
-            mf.mesh.MarkDynamic();
-            
-            mf.mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-            mr.material = material;
+            mesh = new Mesh();
+            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        }
 
+        public void SetPreparer(Workers.MeshPreparer _preparer)
+        {
+            if (preparer != null)
+            {
+                Debug.LogError("PointMeshRenderer: attempt to set second preparer");
+            }
+            preparer = _preparer;
         }
 
         private void Update() {
@@ -29,10 +31,17 @@ namespace Workers
             material.SetFloat("_PointSize", preparer.GetPointSize());
             if (mesh == null) return;
             preparer.GetMesh(ref mesh); // <- Bottleneck
-            Graphics.DrawMesh(mesh, transform.localToWorldMatrix, material, 0);
+
             statsUpdate(mesh.vertexCount);
         }
 
+        public void OnRenderObject()
+        {
+            if (material.SetPass(0))
+            {
+                Graphics.DrawMeshNow(mesh, transform.localToWorldMatrix);
+            }
+        }
 
         public void OnDestroy() {
             if (material != null) { material = null; }
