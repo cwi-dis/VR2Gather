@@ -4,9 +4,7 @@ using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
-
 using System;
-using System.IO;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -16,11 +14,10 @@ public class MeshConstructor : MonoBehaviour
 {
     public int mesh_id;
     private bool received_new_frame = false;
-    private GameObject gameObj;
-    private GameObject mirror;
     private IDataProvider m_DataProvider;
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-    private System.Diagnostics.Stopwatch stopWatch1 = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_d = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_r = new System.Diagnostics.Stopwatch();
     private List<Texture2D> m_Textures = new List<Texture2D>();
     private List<Vector3> m_vertices = new List<Vector3>();
     private List<Vector4> m_participatingCams = new List<Vector4>();
@@ -35,6 +32,9 @@ public class MeshConstructor : MonoBehaviour
     private int m_height;
     private object m_lockobj = new object();
     public int fps = 0;
+    public int all_frames = 0;
+    public int total_buffer_size = 0;
+    public int total_num_vertices = 0;
 
     private double CalculateStdDev(IEnumerable<long> values) {
         double ret = 0;
@@ -51,17 +51,16 @@ public class MeshConstructor : MonoBehaviour
 
     // Updating the mesh every time a new buffer is received from the network
     private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e) {
-        // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
-        //stopWatch = System.Diagnostics.Stopwatch.StartNew();
+        all_frames += 1; // Counting every received frame
 
         lock (e) {
-            if (e.Value != null) {
-                //// Storing the received buffer to a .bin file
-                //File.WriteAllBytes(@"C:\VCL_User_Prod\RealSenzBinsCorto\RealSenzBin_" + ind + ".bin", e.Value);
-                //Debug.Log("file saved");
-                ++fps;
-                //stopWatch = System.Diagnostics.Stopwatch.StartNew();
-                //stopWatch.Start();
+            if (e.Value != null && received_new_frame == false) {
+                // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
+                stopWatch_d = System.Diagnostics.Stopwatch.StartNew();
+
+                // Global time counter
+                if (stopWatch.ElapsedMilliseconds == 0)
+                    stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
                 // Flaging that a new buffer is received
                 int size = Marshal.SizeOf(e.Value[0]) * e.Value.Length; // Buffer 's size
@@ -91,27 +90,28 @@ public class MeshConstructor : MonoBehaviour
                     // Freeing the GCHandler
                     gcRes.Free();
 
+                    if (stopWatch.ElapsedMilliseconds > 0)
+                    {
+                        total_buffer_size += size; // All deserialized buffers' size
+                        total_num_vertices += m_vertices.ToArray().Length; // All deserialized buffers' number of vertices
+                    }
+
                     received_new_frame = true;
                 }
                 catch (UnityException ex) {
                     Debug.Log(ex.Message);
                 }
-                //stopWatch.Stop();
-                //deserializeTime.Add(stopWatch.ElapsedMilliseconds);
-                //if(deserializeTime.Count == 1000)
-                //    Debug.Log("Deserialization time for 1000 frames -> Mean: " + deserializeTime.Average() + ", " + "Std: " + CalculateStdDev(deserializeTime));
+
+                stopWatch_d.Stop();
+                deserializeTime.Add(stopWatch_d.ElapsedMilliseconds);
             }
         }
     }
 
     // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
     private void Awake() {
-        // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
-
-        // Defining the position of the original mesh
-        //this.transform.position = new Vector3(-1.08f, -1.14f, 2.15f);
     }
 
     private void OnDestroy() {
@@ -119,15 +119,15 @@ public class MeshConstructor : MonoBehaviour
         m_DataProvider.OnNewData -= DataProvider_OnNewData;
     }
 
-
     private void Update() {
         // Checking if a new buffer is received
         if (!received_new_frame)
             return;
 
         try {
-            //stopWatch1 = System.Diagnostics.Stopwatch.StartNew();
-            //stopWatch1.Start();
+            // Starting the stopwatch which counts the time needed to render a TVM
+            stopWatch_r = System.Diagnostics.Stopwatch.StartNew();
+            stopWatch_r.Start();
 
             List<Vector3> vert;
             List<Vector4> ids;
@@ -153,8 +153,11 @@ public class MeshConstructor : MonoBehaviour
                     texts[i] = m_textures[i];
             }
 
-            if (vert.ToArray().Length != ids.ToArray().Length)
-               return;
+            // Sanity check: Data corrupted
+            if (vert.ToArray().Length != ids.ToArray().Length) {
+                Debug.Log("Sanity check failed.");
+                return;
+            }
 
             // Defining the vertices, triangles and normals of the mesh
             GetComponent<MeshFilter>().mesh.Clear();
@@ -162,7 +165,6 @@ public class MeshConstructor : MonoBehaviour
             GetComponent<MeshFilter>().mesh.vertices = vert.ToArray();
             GetComponent<MeshFilter>().mesh.SetIndices(face.ToArray(), MeshTopology.Triangles, 0);
             GetComponent<MeshFilter>().mesh.RecalculateNormals();
-
 
             // Passing the camera ids participating in forming a vertex 's texture as well as the weights of each one
             GetComponent<MeshFilter>().mesh.tangents = ids.ToArray();
@@ -205,15 +207,35 @@ public class MeshConstructor : MonoBehaviour
 
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorIntrinsics", c_intrinsics); // Color intrinsics matrix in an array (column major)
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorExtrinsics", c_extrinsics); // Color extrinsics matrix in an array (column major)
-            //stopWatch1.Stop();
-            //renderingTime.Add(stopWatch1.ElapsedMilliseconds);
-            //if(renderingTime.Count == 1000)
-            //    Debug.Log("Rendering time for 1000 frames -> Mean: " + renderingTime.Average() + ", " + "Std: " + CalculateStdDev(renderingTime));
+
+            ++fps;
+
+            stopWatch_r.Stop();
+            renderingTime.Add(stopWatch_r.ElapsedMilliseconds);
         }
         catch (Exception ex) {
             received_new_frame = false;
             Debug.Log(ex);
             return;
+        }
+
+        if (stopWatch.ElapsedMilliseconds >= 10000) {
+            stopWatch.Stop();
+            Debug.Log("~-----~ Metrics for the last " + ((double) stopWatch.ElapsedMilliseconds / 1000).ToString("F5") + " seconds ~-----~");
+            Debug.Log("Frames (TVMs rendered) per second: " + (((double) fps/ stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"));
+            Debug.Log("Number of frames received but not rendered: " + (all_frames - fps));
+            Debug.Log("Average number of vertices per TVM: " + (total_num_vertices / fps));
+            Debug.Log("Average received TVM buffer size: " + (total_buffer_size / fps) + " bytes");
+            Debug.Log("Average deserialization time per TVM: " + (deserializeTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")");
+            Debug.Log("Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
+
+            fps = 0;
+            total_buffer_size = 0;
+            total_num_vertices = 0;
+            all_frames = 0;
+            renderingTime.Clear();
+            deserializeTime.Clear();
+            stopWatch = new System.Diagnostics.Stopwatch();
         }
 
         received_new_frame = false;
