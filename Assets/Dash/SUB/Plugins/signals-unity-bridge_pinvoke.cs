@@ -15,7 +15,7 @@ public class sub
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct StreamDesc
+    public struct DashStreamDescriptor
     {
         public UInt32 MP4_4CC;
         public UInt32 objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
@@ -24,6 +24,13 @@ public class sub
         public UInt32 objectHeight;
         public UInt32 totalWidth;
         public UInt32 totalHeight;
+    }
+
+    public struct StreamDescriptor
+    {
+        public int streamIndex;
+        public int tileNumber;
+        public int quality;
     }
 
     protected class _API {
@@ -62,7 +69,7 @@ public class sub
         // Returns the 4CC of a given stream. Desc is owned by the caller.
         // SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);;
         [DllImport(myDllName)]
-        extern static public bool sub_get_stream_info(IntPtr handle, int streamIndex, ref StreamDesc desc);
+        extern static public bool sub_get_stream_info(IntPtr handle, int streamIndex, ref DashStreamDescriptor desc);
 
         // Enables a quality or disables a tile. There is at most one stream enabled per tile.
         // Associations between streamIndex and tiles are given by sub_get_stream_info().
@@ -131,9 +138,46 @@ public class sub
             {
                 UnityEngine.Debug.LogAssertion("sub.get_stream_4cc: called with pointer==null");
             }
-            StreamDesc streamDesc = new StreamDesc();
+            DashStreamDescriptor streamDesc = new DashStreamDescriptor();
             _API.sub_get_stream_info(pointer, stream, ref streamDesc);
             return streamDesc.MP4_4CC;
+        }
+
+        public StreamDescriptor[] get_streams()
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.get_streams: called with pointer==null");
+            }
+            int nStreams = _API.sub_get_stream_count(pointer);
+            StreamDescriptor[] rv = new StreamDescriptor[nStreams];
+            for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
+            {
+                DashStreamDescriptor streamDesc = new DashStreamDescriptor();
+                _API.sub_get_stream_info(pointer, streamIndex, ref streamDesc);
+                rv[streamIndex].streamIndex = streamIndex;
+                rv[streamIndex].tileNumber = (int)streamDesc.objectX;
+                rv[streamIndex].quality = (int)streamDesc.objectY;
+            }
+            return rv;
+        }
+
+        public bool enable_stream(int tileNumber, int quality)
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.enable_stream: called with pointer==null");
+            }
+            return _API.sub_enable_stream(pointer, tileNumber, quality);
+        }
+
+        public bool disable_stream(int tileNumber)
+        {
+            if (pointer == System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogAssertion("sub.disable_stream: called with pointer==null");
+            }
+            return _API.sub_disable_stream(pointer, tileNumber);
         }
 
         public bool play(string name)
@@ -153,7 +197,6 @@ public class sub
             }
             return _API.sub_grab_frame(pointer, streamIndex, dst, dstLen, ref info);
         }
-        
     }
 
     public static connection create(string pipeline)

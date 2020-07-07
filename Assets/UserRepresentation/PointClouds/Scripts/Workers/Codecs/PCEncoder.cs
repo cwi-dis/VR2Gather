@@ -48,7 +48,7 @@ namespace Workers {
 
                 }
                 Start();
-                Debug.Log("{Name()}: Inited");
+                Debug.Log($"{Name()}: Inited");
             }
             catch (System.Exception e) {
                 Debug.LogError($"Exception during call to PCEncoder constructor: {e.Message}");

@@ -6,16 +6,16 @@ using UnityEngine;
 
 public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  reader;
-    Workers.BaseWorker  codec;
+    Workers.BaseWorker encoder;
+    List<Workers.BaseWorker> decoders = new List<Workers.BaseWorker>();
     Workers.BaseWorker  writer;
-    Workers.BaseWorker  preparer;
-    MonoBehaviour       render;
+    List<Workers.BaseWorker>  preparers = new List<Workers.BaseWorker>();
+    List<MonoBehaviour> renderers = new List<MonoBehaviour>();
 
-    QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
+    List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
-    QueueThreadSafe decoderQueue;
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
@@ -23,30 +23,18 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
     public EntityPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
-        //
-        // Start by creating the preparer, which will prepare pointclouds for display in the scene.
-        //
-        //
-        // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
-        // We 
-        Config._PCs PCs = Config.Instance.PCs;
-        if (PCs == null) throw new System.Exception("EntityPipeline: missing PCs config");
-        if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50) { // Mesh
-            preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
-            render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            ((Workers.PointMeshRenderer)render).preparer = (Workers.MeshPreparer)preparer;
-        }
-        else { // Buffer
-            preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
-            render = gameObject.AddComponent<Workers.PointBufferRenderer>();
-            ((Workers.PointBufferRenderer)render).preparer = (Workers.BufferPreparer)preparer;
-        }
 
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
             case "pccerth":
+                Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
+                //
+                // Create renderer and preparer for self-view.
+                //
+                QueueThreadSafe selfPreparerQueue = _CreateRendererAndPreparer();
+
                 //
                 // Allocate queues we need for this sourceType
                 //
@@ -59,13 +47,15 @@ public class EntityPipeline : MonoBehaviour {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
-                    reader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, preparerQueue, encoderQueue);
+                    pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
                 {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    reader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, preparerQueue, encoderQueue);
+                    pcReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
                 }
 
                 if (!calibrationMode) {
@@ -73,24 +63,40 @@ public class EntityPipeline : MonoBehaviour {
                     // allocate and initialize per-stream outgoing stream datastructures
                     //
                     var Encoders = PCSelfConfig.Encoders;
-                    int nTile = 1; // xxxjack For now
+                    int minTileNum = 0;
+                    int nTileToTransmit = 1;
+                    if (PCSelfConfig.tiled)
+                    {
+                        Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
+                        if (tilesToTransmit != null && tilesToTransmit.Length > 1)
+                        {
+                            for (int i=0; i<tilesToTransmit.Length; i++)
+                            {
+                                Debug.Log($"xxxjack: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
+
+                            }
+                            minTileNum = 1;
+                            nTileToTransmit = tilesToTransmit.Length - 1;
+                        }
+                    }
                     int nQuality = Encoders.Length;
-                    int nStream = nQuality * nTile;
+                    int nStream = nQuality * nTileToTransmit;
+                    Debug.Log($"xxxjack minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
-                    for (int it = 0; it < nTile; it++) {
+                    for (int it = 0; it < nTileToTransmit; it++) {
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
                             int octreeBits = Encoders[iq].octreeBits;
                             encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription {
                                 octreeBits = octreeBits,
-                                tileNumber = it,
+                                tileNumber = it+minTileNum,
                                 outQueue = thisQueue
                             };
                             dashStreamDescriptions[i] = new Workers.B2DWriter.DashStreamDescription {
-                                tileNumber = (uint)it,
+                                tileNumber = (uint)(it+minTileNum),
                                 quality = (uint)(100 * octreeBits + 75),
                                 inQueue = thisQueue
                             };
@@ -101,7 +107,7 @@ public class EntityPipeline : MonoBehaviour {
                     // Create encoders for transmission
                     //
                     try {
-                        codec = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
+                        encoder = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                     } catch (System.EntryPointNotFoundException) {
                         Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                         throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
@@ -141,16 +147,47 @@ public class EntityPipeline : MonoBehaviour {
             case "pcsub":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
-                // Allocate queues we need for this pipeline
-                decoderQueue = new QueueThreadSafe(2, true);
                 //
-                // Create sub receiver
+                // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
-                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.streamNumber, SUBConfig.initialDelay, decoderQueue);
+                int[] tileNumbers = SUBConfig.tileNumbers;
+                int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
+                if (nTileToReceive == 0)
+                {
+                    tileNumbers = new int[1] { 0 };
+                    nTileToReceive = 1;
+                }
                 //
-                // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
+                // Create the right number of rendering pipelines
                 //
-                codec = new Workers.PCDecoder(decoderQueue, preparerQueue);
+
+                Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[nTileToReceive];
+
+                for (int i=0; i< nTileToReceive; i++) 
+                {
+                    //
+                    // Allocate queues we need for this pipeline
+                    //
+                    QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
+                    //
+                    // Create renderer
+                    //
+                    QueueThreadSafe preparerQueue = _CreateRendererAndPreparer();
+                    //
+                    // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
+                    //
+                    Workers.BaseWorker decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                    //
+                    // And collect the relevant information for the Dash receiver
+                    //
+                    tilesToReceive[i] = new Workers.PCSubReader.TileDescriptor()
+                    {
+                        outQueue = decoderQueue,
+                        tileNumber = tileNumbers[i]
+                    };
+                };
+                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -190,12 +227,49 @@ public class EntityPipeline : MonoBehaviour {
         return this;
     }
 
+    public QueueThreadSafe _CreateRendererAndPreparer()
+    {
+        //
+        // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
+        // We 
+        Config._PCs PCs = Config.Instance.PCs;
+        if (PCs == null) throw new System.Exception("EntityPipeline: missing PCs config");
+        QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
+        preparerQueues.Add(preparerQueue);
+        if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
+        { // Mesh
+            Workers.MeshPreparer preparer = new Workers.MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            preparers.Add(preparer);
+            // For meshes we use a single renderer and multiple preparers (one per tile).
+            Workers.PointMeshRenderer render = gameObject.AddComponent<Workers.PointMeshRenderer>();
+            renderers.Add(render);
+            render.SetPreparer(preparer);
+        }
+        else
+        { // Buffer
+            // For buffers we use a renderer/preparer for each tile
+            Workers.BufferPreparer preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            preparers.Add(preparer);
+            Workers.PointBufferRenderer render = gameObject.AddComponent<Workers.PointBufferRenderer>();
+            renderers.Add(render);
+            render.SetPreparer(preparer);
+        }
+        return preparerQueue;
+    }
+
     // Update is called once per frame
     void OnDestroy() {
         reader?.StopAndWait();
-        codec?.StopAndWait();
+        encoder?.StopAndWait();
+        foreach(var decoder in decoders)
+        {
+            decoder?.StopAndWait();
+        }
         writer?.StopAndWait();
-        preparer?.StopAndWait();
+        foreach(var preparer in preparers)
+        {
+            preparer?.StopAndWait();
+        }
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }

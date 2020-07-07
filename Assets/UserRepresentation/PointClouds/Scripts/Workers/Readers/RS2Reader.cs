@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Workers {
-    public class RS2Reader : BaseWorker {
+    public class RS2Reader : TiledWorker {
         cwipc.source reader;
         float voxelSize;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -35,6 +35,23 @@ namespace Workers {
                 Debug.LogError(e.Message);
                 throw e;
             }
+        }
+
+        public override TileInfo[] getTiles()
+        {
+            cwipc.tileinfo[] origTileInfo = reader.get_tileinfo();
+            if (origTileInfo == null || origTileInfo.Length <= 1) return null;
+            int nTile = origTileInfo.Length;
+            TileInfo[] rv = new TileInfo[nTile];
+            for (int i=0; i<nTile; i++)
+            {
+                rv[i].normal.x = origTileInfo[i].normal.x;
+                rv[i].normal.y = origTileInfo[i].normal.y;
+                rv[i].normal.z = origTileInfo[i].normal.z;
+                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
+                rv[i].cameraMask = origTileInfo[i].ncamera;
+            }
+            return rv;
         }
 
         public override void Stop()

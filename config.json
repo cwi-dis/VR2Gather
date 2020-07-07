@@ -44,7 +44,7 @@
     "LocalUser": {
         "sourceType": "pcself",
         "SUBConfig": {
-            "streamNumber": 0,
+            "tileNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {
@@ -61,7 +61,8 @@
                 "MetaExchangeName": "VolumetricMetaData"
             },
             "voxelSize": 0.005,
-            "frameRate" : 15,
+            "frameRate" : 25,
+            "tiled": false,
             "Encoders": [
 				{
 					"octreeBits": 9
@@ -99,7 +100,6 @@
     "RemoteUser": {
         "sourceType": "pcsub",
         "SUBConfig": {
-            "streamNumber": 0,
             "initialDelay": 0
         },
         "AudioSUBConfig": {
