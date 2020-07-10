@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using OrchestratorWrapping;
 
@@ -116,6 +117,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private Color onlineCol = new Color(0.15f, 0.78f, 0.15f); // Green
     private Color offlineCol = new Color(0.78f, 0.15f, 0.15f); // Red
     private Font ArialFont = null;
+    private EventSystem system = null;
     #endregion
 
     #region GUI
@@ -211,6 +213,8 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
+        system = EventSystem.current;
+
         // Update Application version
         orchURLText.text = orchestratorUrl;
         nativeVerText.text = VersionLog.Instance.NativeClient;
@@ -274,6 +278,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        TabShortcut();
         if (state == State.Create) {
             AudioToggle();
             PresenterToggles();
@@ -439,6 +444,7 @@ public class OrchestratorLogin : MonoBehaviour {
             default:
                 break;
         }
+        SelectFirstIF();
     }
 
     private void OnDestroy() {
@@ -447,8 +453,50 @@ public class OrchestratorLogin : MonoBehaviour {
 
     #endregion
 
+    #region Input
+
+    void SelectFirstIF() {
+        try {
+            InputField[] inputFields = FindObjectsOfType<InputField>();
+            if (inputFields != null) {
+                inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                inputFields[inputFields.Length - 1].caretWidth = 2;
+                //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
+            }
+        }
+        catch { }
+    }
+
+    void TabShortcut() {
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            try {
+                Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
+                if (current != null) {
+                    Selectable next = current.FindSelectableOnDown();
+                    if (next != null) {
+                        InputField inputfield = next.GetComponent<InputField>();
+                        if (inputfield != null) {
+                            inputfield.OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                            inputfield.caretWidth = 2;
+                        }
+
+                        system.SetSelectedGameObject(next.gameObject, new BaseEventData(system));
+                    }
+                    else {
+                        // Select the first IF because no more elements exists in the list
+                        SelectFirstIF();
+                    }
+                }
+                //else Debug.Log("no selectable object selected in event system");
+            }
+            catch { }
+        }
+    }
+
+    #endregion
+
     #region Buttons
-    
+
     public void OKButton() {
         PanelChanger();
     }
@@ -826,7 +874,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
         if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
-            ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
+            ntpText.text = "You have a desynchronization of " + difference + " sec with the Orchestrator.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);
         }

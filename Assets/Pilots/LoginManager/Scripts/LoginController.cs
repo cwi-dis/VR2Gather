@@ -62,7 +62,7 @@ public class LoginController : PilotController {
             switch (msg[1]) {
                 case "Pilot 0": // PILOT 0
                     // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloMeet"));
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
                     break;
                 case "Pilot 1": // PILOT 1
                     // Load Pilot

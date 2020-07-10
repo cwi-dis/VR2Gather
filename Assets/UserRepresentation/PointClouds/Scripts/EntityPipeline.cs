@@ -218,8 +218,10 @@ public class EntityPipeline : MonoBehaviour {
                 break;
             default:
                 //Position in the center
-                transform.localPosition = new Vector3(1, 1, 1); // Change in the future, it works with the camera vertical
-                transform.localRotation = Quaternion.Euler(0, 0, 90); // Change in the future, it works with the camera vertical
+                transform.localPosition = new Vector3(0, 0, 0);
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                //transform.localPosition = new Vector3(1, 1, 1); // To use in vertical if cameraconfig is not properly configured
+                //transform.localRotation = Quaternion.Euler(0, 0, 90); // To use in vertical if cameraconfig is not properly configured
                 break;
         }
 
