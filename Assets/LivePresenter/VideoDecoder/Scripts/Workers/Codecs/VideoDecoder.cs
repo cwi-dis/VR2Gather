@@ -27,7 +27,7 @@ namespace Workers {
         SwrContext*             swrCtx;
         byte_ptrArray4          tmpDataArray;
         int_array4              tmpLineSizeArray;
-        byte*                 _pictureFrameData;
+        byte*                   _pictureFrameData;
 
         public int Width { get; private set; }
         public int Height { get; private set; }

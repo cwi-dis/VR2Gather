@@ -6,8 +6,7 @@ public class VideoDashReceiver : MonoBehaviour {
     new public Renderer renderer;
 
     Workers.BaseWorker      reader;
-    Workers.VideoEncoder    encoder;
-    Workers.VideoDecoder    codec;
+    Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
@@ -23,11 +22,13 @@ public class VideoDashReceiver : MonoBehaviour {
     public string streamName = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
     public Texture2D texture;
+    WebCamTexture webcamTexture;
     AudioSource audioSource;
+    Color32[] webcamColors;
 
     private void Start() {
-        var pp = Config.Instance;
         Init();
+
         audioSource = gameObject.GetComponent<AudioSource>();
         if(audioSource==null) audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.loop = true;
@@ -37,8 +38,7 @@ public class VideoDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init() {
         try {
-            encoder = new Workers.VideoEncoder(videoDataQueue, audioDataQueue, videoCodecQueue, audioCodecQueue);
-            codec = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
+            decoder = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
             reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
@@ -58,9 +58,9 @@ public class VideoDashReceiver : MonoBehaviour {
             if (preparer.availableVideo > 0) {
                 if (timeToWait < 0) {
                     if (texture == null) {
-                        texture = new Texture2D(codec.Width, codec.Height, TextureFormat.RGB24, false, true);
+                        texture = new Texture2D(decoder.Width, decoder.Height, TextureFormat.RGB24, false, true);
                         renderer.material.mainTexture = texture;
-                        renderer.transform.localScale = new Vector3(1, -1, codec.Height / (float)codec.Width);
+                        renderer.transform.localScale = new Vector3(1, -1, decoder.Height / (float)decoder.Width);
                     }
 
                     if (firstFrame) {
@@ -70,8 +70,8 @@ public class VideoDashReceiver : MonoBehaviour {
                     }
                     lastFrame = Time.realtimeSinceStartup;
                     timeToWait += 1 / 30f;
-                    currentTime += 1 / 30f;
-                    texture.LoadRawTextureData(preparer.GetVideoPointer(codec.videoDataSize), codec.videoDataSize);
+                    currentTime += 1 / 30f;                    
+                    texture.LoadRawTextureData(preparer.GetVideoPointer(decoder.videoDataSize), decoder.videoDataSize);
                     texture.Apply();
                 }
             }
@@ -82,7 +82,7 @@ public class VideoDashReceiver : MonoBehaviour {
     void OnDestroy() {
         Debug.Log("VideoDashReceiver: OnDestroy");
         reader?.StopAndWait();
-        codec?.StopAndWait();
+        decoder?.StopAndWait();
         preparer?.StopAndWait();
 
         Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} audioCodecQueue {audioCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} audioPreparerQueue {audioPreparerQueue._Count}");
@@ -100,6 +100,3 @@ public class VideoDashReceiver : MonoBehaviour {
 }
 
 
-// Encoder y decoder
-// https://ffmpeg.org/doxygen/3.3/group__lavc__encdec.html
-// https://blogs.gentoo.org/lu_zero/2016/03/29/new-avcodec-api/
