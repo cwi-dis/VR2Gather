@@ -826,7 +826,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
         int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
         if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
-            ntpText.text = "You have a desynchronization of " + difference + "ms with the Orchestrator.\nYou may suffer some problems as a result.";
+            ntpText.text = "You have a desynchronization of " + difference + " sec with the Orchestrator.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);
         }
