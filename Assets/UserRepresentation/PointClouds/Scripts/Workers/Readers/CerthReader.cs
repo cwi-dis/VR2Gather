@@ -14,7 +14,7 @@ namespace Workers {
         }
     }
 
-    public class CerthReader : BaseWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
+    public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
     {
         float voxelSize;
         QueueThreadSafe outQueue;

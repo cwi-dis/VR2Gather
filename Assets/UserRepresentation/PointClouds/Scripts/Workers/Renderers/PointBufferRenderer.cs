@@ -10,12 +10,21 @@ namespace Workers
         int                     pointCount = 0;
         Material                material;
         MaterialPropertyBlock   block;
-        public Workers.BufferPreparer preparer;
+        Workers.BufferPreparer preparer;
 
         // Start is called before the first frame update
         void Start() {
             if (material == null)  material = Resources.Load<Material>("PointCloudsBuffer");
             block = new MaterialPropertyBlock();
+        }
+
+        public void SetPreparer(Workers.BufferPreparer _preparer)
+        {
+            if (preparer != null)
+            {
+                Debug.LogError("PointBufferRenderer: attempt to set second preparer");
+            }
+            preparer = _preparer;
         }
 
         private void Update() {
