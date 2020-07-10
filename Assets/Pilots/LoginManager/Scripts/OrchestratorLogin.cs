@@ -19,6 +19,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     #region GUI Components
 
+    public bool developerOptions = true;
     public bool usePresenter = false;
     private int kindAudio = 0;
     private int kindPresenter = 0;
@@ -95,6 +96,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Panels")]
     [SerializeField] private GameObject ntpPanel = null;
+    [SerializeField] private GameObject usersButtonsPanel = null;
     [SerializeField] private GameObject loginPanel = null;
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject createPanel = null;
@@ -305,6 +307,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -318,6 +322,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(true);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -334,6 +340,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -353,6 +361,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(true);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -382,6 +392,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(true);
                 joinPanel.SetActive(false);
@@ -401,6 +413,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(true);
@@ -420,6 +434,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
+                if (developerOptions)
+                    usersButtonsPanel.SetActive(false);
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -546,71 +562,73 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void AutoFillButtons(int user) {
-        if (user == 0) {
-            userNameLoginIF.text = "Marc@i2CAT";
-            userPasswordLoginIF.text = "i2CAT2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
-            exchangeNameLoginIF.text = "210TVM";
-        }
-        else if (user == 1) {
-            userNameLoginIF.text = "Luca@i2CAT";
-            userPasswordLoginIF.text = "i2CAT2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.137:5672";
-            exchangeNameLoginIF.text = "110TVM";
-        }
-        else if (user == 2) {
-            userNameLoginIF.text = "Spiros@CERTH";
-            userPasswordLoginIF.text = "CERTH2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
-            exchangeNameLoginIF.text = "Fake1";
-        }
-        else if (user == 3) {
-            userNameLoginIF.text = "Argyris@CERTH";
-            userPasswordLoginIF.text = "CERTH2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@91.126.37.138:5672";
-            exchangeNameLoginIF.text = "Fake1";
-        }
-        else if (user == 4) {
-            userNameLoginIF.text = "Jack@CWI";
-            userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
-            exchangeNameLoginIF.text = "TVMmpeg-pc";
-        }
-        else if (user == 5) {
-            userNameLoginIF.text = "Shishir@CWI";
-            userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
-            exchangeNameLoginIF.text = "TVMarecibo";
-        }
-        else if (user == 6) {
-            userNameLoginIF.text = "Fernando@THEMO";
-            userPasswordLoginIF.text = "THEMO2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "fernando";
-        }
-        else if (user == 7) {
-            userNameLoginIF.text = "Vincent@VO";
-            userPasswordLoginIF.text = "VO2020";
-            connectionURILoginIF.text = "amqp://tofis:tofis@192.168.11.122:5672";
-            exchangeNameLoginIF.text = "vincent";
-        }
-        else if (user == 8) {
-            userNameLoginIF.text = "cwibig";
-            userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.127:5672";
-            exchangeNameLoginIF.text = "TVMarecibo";
-        }
-        else if (user == 9) {
-            userNameLoginIF.text = "cwismall";
-            userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.161:5672";
-            exchangeNameLoginIF.text = "TVMmpeg-pc";
-        }
-        else if (user == 10) {
-            userNameLoginIF.text = "cwitiny";
-            userPasswordLoginIF.text = "CWI2020";
-            connectionURILoginIF.text = "amqp://volumetric:capture@192.168.37.112:5672";
-            exchangeNameLoginIF.text = "TVMgargamel";
+        switch (user) {
+            case 0:
+                userNameLoginIF.text = "Marc@i2CAT";
+                userPasswordLoginIF.text = "i2CAT2020";
+                break;
+            case 1:
+                userNameLoginIF.text = "Luca@i2CAT";
+                userPasswordLoginIF.text = "i2CAT2020";
+                break;
+            case 2:
+                userNameLoginIF.text = "Einar@i2CAT";
+                userPasswordLoginIF.text = "i2CAT2020";
+                break;
+            case 3:
+                userNameLoginIF.text = "Isaac@i2CAT";
+                userPasswordLoginIF.text = "i2CAT2020";
+                break;
+            case 4:
+                userNameLoginIF.text = "cwibig";
+                userPasswordLoginIF.text = "CWI2020";
+                break;
+            case 5:
+                userNameLoginIF.text = "cwismall";
+                userPasswordLoginIF.text = "CWI2020";
+                break;
+            case 6:
+                userNameLoginIF.text = "cwitiny";
+                userPasswordLoginIF.text = "CWI2020";
+                break;
+            case 7:
+                userNameLoginIF.text = "Jack@CWI";
+                userPasswordLoginIF.text = "CWI2020";
+                break;
+            case 8:
+                userNameLoginIF.text = "Shishir@CWI";
+                userPasswordLoginIF.text = "CWI2020";
+                break;
+            case 9:
+                userNameLoginIF.text = "Fernando@THEMO";
+                userPasswordLoginIF.text = "THEMO2020";
+                break;
+            case 10:
+                userNameLoginIF.text = "Romain@MS";
+                userPasswordLoginIF.text = "MS2020";
+                break;
+            case 11:
+                userNameLoginIF.text = "Argyris@CERTH";
+                userPasswordLoginIF.text = "CERTH2020";
+                break;
+            case 12:
+                userNameLoginIF.text = "Spiros@CERTH";
+                userPasswordLoginIF.text = "CERTH2020";
+                break;
+            case 13:
+                userNameLoginIF.text = "Vincent@VO";
+                userPasswordLoginIF.text = "VO2020";
+                break;
+            case 14:
+                userNameLoginIF.text = "Patrice@VO";
+                userPasswordLoginIF.text = "VO2020";
+                break;
+            case 15:
+                userNameLoginIF.text = "Name";
+                userPasswordLoginIF.text = "Lastname";
+                break;
+            default:
+                break;
         }
     }
 
