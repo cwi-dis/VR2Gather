@@ -291,10 +291,6 @@ public class OrchestratorLogin : MonoBehaviour {
         // UserID & Name
         userId.text = OrchestratorController.Instance.SelfUser.userId;
         userName.text = OrchestratorController.Instance.SelfUser.userName;
-        // Login Info
-        exchangeNameLoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-        connectionURILoginIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-        representationTypeLoginDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
         // Config Info
         exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
         connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
