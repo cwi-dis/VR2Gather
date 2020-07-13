@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EntityPipeline : MonoBehaviour {
+    bool isSource = false;
     Workers.BaseWorker  reader;
     Workers.BaseWorker encoder;
     List<Workers.BaseWorker> decoders = new List<Workers.BaseWorker>();
@@ -27,6 +28,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
             case "pccerth":
+                isSource = true;
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
@@ -274,5 +276,44 @@ public class EntityPipeline : MonoBehaviour {
         }
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
+    }
+
+    public TilingConfig GetTilingConfig()
+    {
+        if (!isSource)
+        {
+            Debug.LogError("EntityPipeline: GetTilingConfig called for pipeline that is not a source");
+            return new TilingConfig();
+        }
+        return new TilingConfig();
+    }
+
+    public void SetTilingConfig(TilingConfig config)
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: SetTilingConfig called for pipeline that is a source");
+            return;
+        }
+    }
+
+    public SyncConfig GetSyncConfig()
+    {
+        if (!isSource)
+        {
+            Debug.LogError("EntityPipeline: GetSyncConfig called for pipeline that is not a source");
+            return new SyncConfig();
+        }
+        return new SyncConfig();
+    }
+
+    public void SetSyncConfig(SyncConfig config)
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: SetSyncConfig called for pipeline that is a source");
+            return;
+        }
+
     }
 }
