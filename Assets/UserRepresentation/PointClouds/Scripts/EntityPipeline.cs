@@ -291,6 +291,26 @@ public class EntityPipeline : MonoBehaviour {
     }
 
     // Update is called once per frame
+    System.DateTime lastUpdateTime;
+    private void Update()
+    {
+        if (lastUpdateTime == null || (System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10)))
+        {
+            lastUpdateTime = System.DateTime.Now;
+            if (isSource)
+            {
+                ViewerInformation vi = GetViewerInformation();
+                Debug.Log($"xxxjack EntityPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
+            }
+            else
+            {
+                Vector3 position = GetPosition();
+                Vector3 rotation = GetRotation();
+                Debug.Log($"xxxjack EntityPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+            }
+        }
+    }
+
     void OnDestroy() {
         reader?.StopAndWait();
         encoder?.StopAndWait();
@@ -314,6 +334,7 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: GetTilingConfig called for pipeline that is not a source");
             return new TilingConfig();
         }
+        // xxxjack we need to update the orientation vectors, or we need an extra call to get rotation parameters.
         return tilingConfig;
     }
 
@@ -374,5 +395,52 @@ public class EntityPipeline : MonoBehaviour {
         {
             audioReader.SetSyncInfo(config.audio);
         }
+    }
+
+    public Vector3 GetPosition()
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: GetPosition called for pipeline that is a source");
+            return new Vector3();
+        }
+        return transform.position;
+    }
+
+    public Vector3 GetRotation()
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: GetRotation called for pipeline that is a source");
+            return new Vector3();
+        }
+        return transform.rotation * Vector3.forward;
+    }
+
+    public float GetBandwidthBudget()
+    {
+        return 999999.0f;
+    }
+
+    public ViewerInformation GetViewerInformation()
+    {
+        if (!isSource)
+        {
+            Debug.LogError("EntityPipeline: GetViewerInformation called for pipeline that is not a source");
+            return new ViewerInformation();
+        }
+        Camera _camera = gameObject.GetComponentInParent<Camera>();
+        if (_camera == null)
+        {
+            Debug.LogError("EntityPipeline: no Camera object for self user");
+            return new ViewerInformation();
+        }
+        Vector3 position = _camera.transform.position;
+        Vector3 forward = _camera.transform.rotation * Vector3.forward;
+        return new ViewerInformation()
+        {
+            position = position,
+            gazeForwardDirection = forward
+        };
     }
 }
