@@ -18,6 +18,7 @@ public class EntityPipeline : MonoBehaviour {
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+    TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
@@ -68,19 +69,31 @@ public class EntityPipeline : MonoBehaviour {
                     var Encoders = PCSelfConfig.Encoders;
                     int minTileNum = 0;
                     int nTileToTransmit = 1;
+                    Vector3[] tileNormals = null;
                     if (PCSelfConfig.tiled)
                     {
                         Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
                         if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                         {
+                            minTileNum = 1;
+                            nTileToTransmit = tilesToTransmit.Length - 1;
+                            tileNormals = new Vector3[nTileToTransmit];
                             for (int i=0; i<tilesToTransmit.Length; i++)
                             {
                                 Debug.Log($"xxxjack: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
-
+                                if (i >= minTileNum)
+                                {
+                                    tileNormals[i - minTileNum] = tilesToTransmit[i].normal;
+                                }
                             }
-                            minTileNum = 1;
-                            nTileToTransmit = tilesToTransmit.Length - 1;
                         }
+                    }
+                    if (tileNormals == null)
+                    {
+                        tileNormals = new Vector3[1]
+                        {
+                            new Vector3(0, 0, 0)
+                        };
                     }
                     int nQuality = Encoders.Length;
                     int nStream = nQuality * nTileToTransmit;
@@ -88,7 +101,11 @@ public class EntityPipeline : MonoBehaviour {
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
+                    tilingConfig = new TilingConfig();
+                    tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
                     for (int it = 0; it < nTileToTransmit; it++) {
+                        tilingConfig.tiles[it].orientation = tileNormals[it];
+                        tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
@@ -103,6 +120,8 @@ public class EntityPipeline : MonoBehaviour {
                                 quality = (uint)(100 * octreeBits + 75),
                                 inQueue = thisQueue
                             };
+                            tilingConfig.tiles[it].qualities[iq].bandwidthRequirement = octreeBits*octreeBits*octreeBits; // xxxjack
+                            tilingConfig.tiles[it].qualities[iq].representation = ((float)octreeBits / 20); // guessing octreedepth of 20 is completely ridiculously high
                         }
                     }
 
@@ -295,7 +314,7 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: GetTilingConfig called for pipeline that is not a source");
             return new TilingConfig();
         }
-        return new TilingConfig();
+        return tilingConfig;
     }
 
     public void SetTilingConfig(TilingConfig config)
@@ -305,6 +324,7 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: SetTilingConfig called for pipeline that is a source");
             return;
         }
+        tilingConfig = config;
     }
 
     public SyncConfig GetSyncConfig()
@@ -319,6 +339,10 @@ public class EntityPipeline : MonoBehaviour {
         if (pcWriter != null)
         {
             rv.visuals = pcWriter.GetSyncInfo();
+        }
+        else
+        {
+            Debug.LogWarning("EntityPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
         }
         VoiceDashSender audioDashWriter = (VoiceDashSender)audioComponent;
         if (audioDashWriter != null)
@@ -340,6 +364,10 @@ public class EntityPipeline : MonoBehaviour {
         if (pcReader != null)
         {
             pcReader.SetSyncInfo(config.visuals);
+        }
+        else
+        {
+            Debug.LogWarning("EntityPipeline: SetSyncConfig: reader is not a PCSubReader");
         }
         VoiceDashReceiver audioReader = (VoiceDashReceiver)audioComponent;
         if (audioReader != null)

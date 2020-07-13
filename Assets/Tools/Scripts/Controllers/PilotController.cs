@@ -103,6 +103,8 @@ abstract public class PilotController : MonoBehaviour {
                                 {
                                     SyncConfig syncConfig = selfPipeline.GetSyncConfig();
                                     Debug.Log($"xxxjack sync: self EntityPipeline audio: {syncConfig.audio.wallClockTime}={syncConfig.audio.streamClockTime}, visual: {syncConfig.visuals.wallClockTime}={syncConfig.visuals.streamClockTime}");
+                                    var tileInfo = selfPipeline.GetTilingConfig();
+                                    Debug.Log($"xxxjack tiling: self: {JsonUtility.ToJson(tileInfo)}");
                                 }
                             }
                             break;

@@ -45,9 +45,7 @@ namespace Workers {
             TileInfo[] rv = new TileInfo[nTile];
             for (int i=0; i<nTile; i++)
             {
-                rv[i].normal.x = origTileInfo[i].normal.x;
-                rv[i].normal.y = origTileInfo[i].normal.y;
-                rv[i].normal.z = origTileInfo[i].normal.z;
+                rv[i].normal = new Vector3((float)origTileInfo[i].normal.x, (float)origTileInfo[i].normal.y, (float)origTileInfo[i].normal.z);
                 rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
                 rv[i].cameraMask = origTileInfo[i].ncamera;
             }
