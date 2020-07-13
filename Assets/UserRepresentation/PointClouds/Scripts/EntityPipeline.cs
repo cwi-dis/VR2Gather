@@ -5,17 +5,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class EntityPipeline : MonoBehaviour {
+    bool isSource = false;
     Workers.BaseWorker  reader;
     Workers.BaseWorker encoder;
     List<Workers.BaseWorker> decoders = new List<Workers.BaseWorker>();
     Workers.BaseWorker  writer;
     List<Workers.BaseWorker>  preparers = new List<Workers.BaseWorker>();
     List<MonoBehaviour> renderers = new List<MonoBehaviour>();
+    Component audioComponent;
 
     List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+    TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
@@ -27,6 +30,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
             case "pccerth":
+                isSource = true;
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
@@ -65,19 +69,31 @@ public class EntityPipeline : MonoBehaviour {
                     var Encoders = PCSelfConfig.Encoders;
                     int minTileNum = 0;
                     int nTileToTransmit = 1;
+                    Vector3[] tileNormals = null;
                     if (PCSelfConfig.tiled)
                     {
                         Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
                         if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                         {
+                            minTileNum = 1;
+                            nTileToTransmit = tilesToTransmit.Length - 1;
+                            tileNormals = new Vector3[nTileToTransmit];
                             for (int i=0; i<tilesToTransmit.Length; i++)
                             {
                                 Debug.Log($"xxxjack: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
-
+                                if (i >= minTileNum)
+                                {
+                                    tileNormals[i - minTileNum] = tilesToTransmit[i].normal;
+                                }
                             }
-                            minTileNum = 1;
-                            nTileToTransmit = tilesToTransmit.Length - 1;
                         }
+                    }
+                    if (tileNormals == null)
+                    {
+                        tileNormals = new Vector3[1]
+                        {
+                            new Vector3(0, 0, 0)
+                        };
                     }
                     int nQuality = Encoders.Length;
                     int nStream = nQuality * nTileToTransmit;
@@ -85,7 +101,11 @@ public class EntityPipeline : MonoBehaviour {
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
+                    tilingConfig = new TilingConfig();
+                    tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
                     for (int it = 0; it < nTileToTransmit; it++) {
+                        tilingConfig.tiles[it].orientation = tileNormals[it];
+                        tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
                             QueueThreadSafe thisQueue = new QueueThreadSafe();
@@ -100,6 +120,8 @@ public class EntityPipeline : MonoBehaviour {
                                 quality = (uint)(100 * octreeBits + 75),
                                 inQueue = thisQueue
                             };
+                            tilingConfig.tiles[it].qualities[iq].bandwidthRequirement = octreeBits*octreeBits*octreeBits; // xxxjack
+                            tilingConfig.tiles[it].qualities[iq].representation = ((float)octreeBits / 20); // guessing octreedepth of 20 is completely ridiculously high
                         }
                     }
 
@@ -133,14 +155,19 @@ public class EntityPipeline : MonoBehaviour {
                         var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
                         if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                         try {
-                            gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                        } catch (System.EntryPointNotFoundException e) {
+                            VoiceDashSender _audioComponent = gameObject.AddComponent<VoiceDashSender>();
+                            _audioComponent.Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                            audioComponent = _audioComponent; //Audio Pipeline
+                        }
+                        catch (System.EntryPointNotFoundException e) {
                             Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                             throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         }
                     } else
                     if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                        gameObject.AddComponent<VoiceIOSender>().Init(userID);
+                        VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
+                        _audioComponent.Init(userID);
+                        audioComponent = _audioComponent;
                     }
                 }
                 break;
@@ -195,10 +222,14 @@ public class EntityPipeline : MonoBehaviour {
                 if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    VoiceDashReceiver _audioComponent = gameObject.AddComponent<VoiceDashReceiver>();
+                    _audioComponent.Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    audioComponent = _audioComponent;
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline
+                    VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
+                    _audioComponent.Init(userID); //Audio Pipeline
+                    audioComponent = _audioComponent;
                 }
                 break;
         }
@@ -274,5 +305,74 @@ public class EntityPipeline : MonoBehaviour {
         }
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
+    }
+
+    public TilingConfig GetTilingConfig()
+    {
+        if (!isSource)
+        {
+            Debug.LogError("EntityPipeline: GetTilingConfig called for pipeline that is not a source");
+            return new TilingConfig();
+        }
+        return tilingConfig;
+    }
+
+    public void SetTilingConfig(TilingConfig config)
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: SetTilingConfig called for pipeline that is a source");
+            return;
+        }
+        tilingConfig = config;
+    }
+
+    public SyncConfig GetSyncConfig()
+    {
+        if (!isSource)
+        {
+            Debug.LogError("EntityPipeline: GetSyncConfig called for pipeline that is not a source");
+            return new SyncConfig();
+        }
+        SyncConfig rv = new SyncConfig();
+        Workers.B2DWriter pcWriter = (Workers.B2DWriter)writer;
+        if (pcWriter != null)
+        {
+            rv.visuals = pcWriter.GetSyncInfo();
+        }
+        else
+        {
+            Debug.LogWarning("EntityPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+        }
+        VoiceDashSender audioDashWriter = (VoiceDashSender)audioComponent;
+        if (audioDashWriter != null)
+        {
+            rv.audio = audioDashWriter.GetSyncInfo();
+        }
+        // xxxjack also need to do something for VioceIOSender....
+        return rv;
+    }
+
+    public void SetSyncConfig(SyncConfig config)
+    {
+        if (isSource)
+        {
+            Debug.LogError("EntityPipeline: SetSyncConfig called for pipeline that is a source");
+            return;
+        }
+        Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
+        if (pcReader != null)
+        {
+            pcReader.SetSyncInfo(config.visuals);
+        }
+        else
+        {
+            Debug.LogWarning("EntityPipeline: SetSyncConfig: reader is not a PCSubReader");
+        }
+        VoiceDashReceiver audioReader = (VoiceDashReceiver)audioComponent;
+        if (audioReader != null)
+        {
+            audioReader.SetSyncInfo(config.audio);
+        }
     }
 }

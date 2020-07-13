@@ -5,7 +5,7 @@ using UnityEngine;
 public class VoiceDashSender : MonoBehaviour {
     Workers.BaseWorker reader;
     Workers.BaseWorker codec;
-    Workers.BaseWorker writer;
+    Workers.B2DWriter writer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe encoderQueue = new QueueThreadSafe();
@@ -25,5 +25,10 @@ public class VoiceDashSender : MonoBehaviour {
         reader?.Stop();
         codec?.Stop();
         writer?.Stop();
+    }
+
+    public SyncConfig.ClockCorrespondence GetSyncInfo()
+    {
+        return writer.GetSyncInfo();
     }
 }

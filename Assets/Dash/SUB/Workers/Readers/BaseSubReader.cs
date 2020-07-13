@@ -136,6 +136,16 @@ namespace Workers {
                             continue;
                         }
 
+                        // If we have no clock correspondence yet we use the first received frame on any stream to set it
+                        if (parent.clockCorrespondence.wallClockTime == 0)
+                        {
+                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                            parent.clockCorrespondence.wallClockTime = (System.Int64)sinceEpoch.TotalMilliseconds;
+                            parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                        }
+                        // Convert clock values to wallclock
+                        frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
+
                         // Push to queue
                         mc.info = frameInfo;
                         receiverInfo.outQueue.Enqueue(mc);
@@ -196,6 +206,8 @@ namespace Workers {
             }
         }
         SubPullThread[] threads;
+
+        SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
         protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
@@ -370,6 +382,11 @@ namespace Workers {
                     if (InitDash()) InitThreads();
                 }
             }
+        }
+
+        public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
+        {
+            clockCorrespondence = _clockCorrespondence;
         }
     }
 }

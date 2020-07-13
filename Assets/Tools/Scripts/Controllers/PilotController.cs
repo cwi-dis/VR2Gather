@@ -92,6 +92,21 @@ abstract public class PilotController : MonoBehaviour {
                             players[playerIdx].pc.SetActive(true);
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                             players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
+                            // xxxjack debug code
+                            {
+                                EntityPipeline selfPipeline = players[playerIdx].pc.GetComponent<EntityPipeline>();
+                                if (selfPipeline == null)
+                                {
+                                    Debug.Log($"xxxjack sync: self EntityPipeline is null");
+                                }
+                                else
+                                {
+                                    SyncConfig syncConfig = selfPipeline.GetSyncConfig();
+                                    Debug.Log($"xxxjack sync: self EntityPipeline audio: {syncConfig.audio.wallClockTime}={syncConfig.audio.streamClockTime}, visual: {syncConfig.visuals.wallClockTime}={syncConfig.visuals.streamClockTime}");
+                                    var tileInfo = selfPipeline.GetTilingConfig();
+                                    Debug.Log($"xxxjack tiling: self: {JsonUtility.ToJson(tileInfo)}");
+                                }
+                            }
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
                             players[playerIdx].tvm.isMaster = firstTVM;
