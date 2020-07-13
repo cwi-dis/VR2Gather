@@ -12,6 +12,7 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  writer;
     List<Workers.BaseWorker>  preparers = new List<Workers.BaseWorker>();
     List<MonoBehaviour> renderers = new List<MonoBehaviour>();
+    Component audioComponent;
 
     List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
@@ -135,14 +136,19 @@ public class EntityPipeline : MonoBehaviour {
                         var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
                         if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                         try {
-                            gameObject.AddComponent<VoiceDashSender>().Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                        } catch (System.EntryPointNotFoundException e) {
+                            VoiceDashSender _audioComponent = gameObject.AddComponent<VoiceDashSender>();
+                            _audioComponent.Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                            audioComponent = _audioComponent; //Audio Pipeline
+                        }
+                        catch (System.EntryPointNotFoundException e) {
                             Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                             throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         }
                     } else
                     if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                        gameObject.AddComponent<VoiceIOSender>().Init(userID);
+                        VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
+                        _audioComponent.Init(userID);
+                        audioComponent = _audioComponent;
                     }
                 }
                 break;
@@ -197,10 +203,14 @@ public class EntityPipeline : MonoBehaviour {
                 if (Config.Instance.audioType == Config.AudioType.Dash) {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    VoiceDashReceiver _audioComponent = gameObject.AddComponent<VoiceDashReceiver>();
+                    _audioComponent.Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    audioComponent = _audioComponent;
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline
+                    VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
+                    _audioComponent.Init(userID); //Audio Pipeline
+                    audioComponent = _audioComponent;
                 }
                 break;
         }
@@ -304,7 +314,19 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: GetSyncConfig called for pipeline that is not a source");
             return new SyncConfig();
         }
-        return new SyncConfig();
+        SyncConfig rv = new SyncConfig();
+        Workers.B2DWriter pcWriter = (Workers.B2DWriter)writer;
+        if (pcWriter != null)
+        {
+            rv.visuals = pcWriter.GetSyncInfo();
+        }
+        VoiceDashSender audioDashWriter = (VoiceDashSender)audioComponent;
+        if (audioDashWriter != null)
+        {
+            rv.audio = audioDashWriter.GetSyncInfo();
+        }
+        // xxxjack also need to do something for VioceIOSender....
+        return rv;
     }
 
     public void SetSyncConfig(SyncConfig config)
@@ -314,6 +336,15 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: SetSyncConfig called for pipeline that is a source");
             return;
         }
-
+        Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
+        if (pcReader != null)
+        {
+            pcReader.SetSyncInfo(config.visuals);
+        }
+        VoiceDashReceiver audioReader = (VoiceDashReceiver)audioComponent;
+        if (audioReader != null)
+        {
+            audioReader.SetSyncInfo(config.audio);
+        }
     }
 }
