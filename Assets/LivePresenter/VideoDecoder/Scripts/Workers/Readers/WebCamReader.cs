@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using RabbitMQ.Client.Content;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,9 +16,18 @@ namespace Workers {
         SemaphoreSlim       frameReady;
         CancellationTokenSource   isClosed;
 
+        System.IntPtr data;
+
+        public int width;
+        public int height;
+        public int fps;
 
 
-        public WebCamReader(MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+        public WebCamReader(int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+            this.width = width;
+            this.height = height;
+            this.fps = fps;
+
             outQueue = _outQueue;
             this.monoBehaviour = monoBehaviour;
             frameReady = new SemaphoreSlim(0);
@@ -49,6 +60,7 @@ namespace Workers {
         float                   frameTime;
         Color32[]               webcamColors;
         public WebCamTexture    webcamTexture { get; private set; }
+        byte[] infoData;
 
         void Init() {
             WebCamDevice[] devices = WebCamTexture.devices;
@@ -62,16 +74,22 @@ namespace Workers {
                 }
             }
 
-            webcamTexture = new WebCamTexture(1280, 720, 12);
+            webcamTexture = new WebCamTexture(width, height, fps);
             webcamTexture.Play();
+            width = webcamTexture.width;
+            height = webcamTexture.height;
+
             webcamColors = webcamTexture.GetPixels32(webcamColors);
 
-            RGBA2RGBFilter = new VideoFilter(webcamTexture.width, webcamTexture.height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
+            RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
             frameTime = 1f / 12f;
             timeToFrame = Time.realtimeSinceStartup + frameTime;
 
-
+            infoData = new byte[4 * 3];
+            BitConverter.GetBytes(width).CopyTo(infoData, 0);
+            BitConverter.GetBytes(height).CopyTo(infoData, 4);
+            BitConverter.GetBytes(fps).CopyTo(infoData, 8);
         }
 
         IEnumerator WebCamRecorder() {
@@ -93,6 +111,8 @@ namespace Workers {
             try {
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
+                chunk.info.dsi = infoData;
+                chunk.info.dsi_size = 12;
                 lock (outQueue) {
                     outQueue.Enqueue(chunk);
                 }

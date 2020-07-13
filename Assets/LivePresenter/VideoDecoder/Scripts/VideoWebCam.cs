@@ -22,7 +22,10 @@ public class VideoWebCam : MonoBehaviour {
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
 //    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
 
-    Texture2D        texture;
+    Texture2D       texture;
+    public int      width = 1280;
+    public int      height = 720;
+    public int      fps = 12;
 
     private void Start() {
         Init();
@@ -34,9 +37,9 @@ public class VideoWebCam : MonoBehaviour {
     // Start is called before the first frame update
     public void Init() {
         try {
-            reader      = new Workers.WebCamReader(this, videoDataQueue);
+            reader      = new Workers.WebCamReader(width, height, fps, this, videoDataQueue);
             encoder     = new Workers.VideoEncoder(videoDataQueue, null/*audioDataQueue*/, videoCodecQueue, null/*audioCodecQueue*/);
-          //  decoder     = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
+            decoder     = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
             preparer    = new Workers.VideoPreparer(videoPreparerQueue, null/*audioPreparerQueue*/);
         }
         catch (System.Exception e) {
@@ -50,7 +53,7 @@ public class VideoWebCam : MonoBehaviour {
         lock (preparer) {
             if (preparer.availableVideo > 0) {
                 if (texture == null) {
-                    texture = new Texture2D(1280, 720, TextureFormat.RGB24, false, true);
+                    texture = new Texture2D(width, height, TextureFormat.RGB24, false, true);
                     rendererDst.material.mainTexture = texture;
                     rendererDst.transform.localScale = new Vector3(1, 1, texture.height / (float)texture.width);
                 }
@@ -72,8 +75,3 @@ public class VideoWebCam : MonoBehaviour {
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }
-
-
-// Encoder y decoder
-// https://ffmpeg.org/doxygen/3.3/group__lavc__encdec.html
-// https://blogs.gentoo.org/lu_zero/2016/03/29/new-avcodec-api/

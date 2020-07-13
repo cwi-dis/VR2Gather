@@ -87,7 +87,7 @@ namespace Workers {
                 mc.free();
             }
 
-            if (inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
+            if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
                 // Audio-
                 if (codecAudio == null) CreateAudioCodec(mc);
@@ -134,9 +134,11 @@ namespace Workers {
                         //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         //copy decoder specific info
                         var info = mc.info;
-                        codecVideo_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
-                        Marshal.Copy(info.dsi, 0, (System.IntPtr)codecVideo_ctx->extradata, info.dsi_size);
-                        codecVideo_ctx->extradata_size = info.dsi_size;
+                        if (info.dsi_size != 0) {
+                            codecVideo_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
+                            Marshal.Copy(info.dsi, 0, (System.IntPtr)codecVideo_ctx->extradata, info.dsi_size);
+                            codecVideo_ctx->extradata_size = info.dsi_size;
+                        }
                         //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         int ret = ffmpeg.avcodec_open2(codecVideo_ctx, codecVideo, null);
 

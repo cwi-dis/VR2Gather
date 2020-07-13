@@ -39,7 +39,7 @@ namespace Workers {
             base.OnStop();
             Debug.Log("{Name()}: Stopped");
         }
-
+        long frame = 0;
         protected override void Update() {
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
@@ -47,7 +47,7 @@ namespace Workers {
                 if (codecVideo == null) CreateVideoCodec(mc);
                 if (!RGB2YUV420PFilter.Process(new byte*[] { (byte*)mc.pointer}, ref videoFrame->data, ref videoFrame->linesize))
                     Debug.LogError("Error RGB2YUV420PFilter.Process");
-                videoFrame->pts = 0;
+                videoFrame->pts = frame++;
                 int ret = ffmpeg.avcodec_send_frame(codecVideo_ctx, videoFrame);
                 mc.free();
                 if (ret < 0) {
@@ -59,7 +59,6 @@ namespace Workers {
                             NativeMemoryChunk videoData = new NativeMemoryChunk(videoPacket->size);
                             Buffer.MemoryCopy(videoPacket->data, (void*)videoData.pointer, videoPacket->size, videoPacket->size);
                             outVideoQueue.Enqueue(videoData);
-                            Debug.Log($"Added {videoPacket->size} data to queue");
                         } else {
                             if (ret != -11)
                                 ShowError(ret, $"avcodec_receive_packet");
@@ -71,33 +70,40 @@ namespace Workers {
 
         void CreateVideoCodec(NativeMemoryChunk mc) {
             videoPacket = ffmpeg.av_packet_alloc();
+            int width=320, height=240, fps=12;
+            if (mc.info.dsi_size == 12) {
+                width = BitConverter.ToInt32(mc.info.dsi, 0);
+                height = BitConverter.ToInt32(mc.info.dsi, 4);
+                fps = BitConverter.ToInt32(mc.info.dsi, 8);
+            }
 
-            RGB2YUV420PFilter = new VideoFilter(1280, 720, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P);
-
+            RGB2YUV420PFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P);
             codecVideo = ffmpeg.avcodec_find_encoder(AVCodecID.AV_CODEC_ID_H264);
 
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
                 if (codecVideo_ctx != null) {
                     codecVideo_ctx->bit_rate        = 400000;
-                    codecVideo_ctx->width           = 1280;
-                    codecVideo_ctx->height          = 720;
-                    codecVideo_ctx->time_base = new AVRational() { num = 1, den = 12 };
-                    codecVideo_ctx->framerate = new AVRational() { num = 12, den = 1 };
+                    codecVideo_ctx->width           = width;
+                    codecVideo_ctx->height          = height;
+                    codecVideo_ctx->time_base = new AVRational() { num = 1, den = fps };
+                    codecVideo_ctx->framerate = new AVRational() { num = fps, den = 1 };
                     // emit one intra frame every ten frames
-                    codecVideo_ctx->gop_size        = 10;
+                    codecVideo_ctx->gop_size        = fps * 10;
                     codecVideo_ctx->max_b_frames    = 0;
                     codecVideo_ctx->pix_fmt         = FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P;
 
-                    if (codecVideo->id == AVCodecID.AV_CODEC_ID_H264)
-                        ffmpeg.av_opt_set( codecVideo_ctx->priv_data, "preset", "slow", 0);
+                    if (codecVideo->id == AVCodecID.AV_CODEC_ID_H264) {
+                        ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "preset", "ultrafast", 0);
+                        ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "tune", "zerolatency", 0);
+                    }
 
                     int ret = ffmpeg.avcodec_open2(codecVideo_ctx, codecVideo, null);
                     if (ret >= 0) {
                         videoFrame = ffmpeg.av_frame_alloc();
                         videoFrame->format  = (int)FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P;
-                        videoFrame->width   = 1280;
-                        videoFrame->height  = 720;
+                        videoFrame->width   = width;
+                        videoFrame->height  = height;
                         ret = ffmpeg.av_frame_get_buffer(videoFrame, 0);
 
                         if (ret < 0)
