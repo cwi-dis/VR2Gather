@@ -26,4 +26,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
+  - enabled: 1
+    path: Assets/Pilots/Pilot3/Scenes/Pilot3_BedRoom.unity
+    guid: 6c999ad37f4be7c418d45a5a08dc4a19
   m_configObjects: {}
