@@ -20,6 +20,8 @@ public class EntityPipeline : MonoBehaviour {
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
+    const bool debugTiling = false;
+
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
@@ -294,19 +296,23 @@ public class EntityPipeline : MonoBehaviour {
     System.DateTime lastUpdateTime;
     private void Update()
     {
-        if (lastUpdateTime == null || (System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10)))
+        if (debugTiling)
         {
-            lastUpdateTime = System.DateTime.Now;
-            if (isSource)
+            // Debugging: print position/orientation of camera and others every 10 seconds.
+            if (lastUpdateTime == null || (System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10)))
             {
-                ViewerInformation vi = GetViewerInformation();
-                Debug.Log($"xxxjack EntityPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
-            }
-            else
-            {
-                Vector3 position = GetPosition();
-                Vector3 rotation = GetRotation();
-                Debug.Log($"xxxjack EntityPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+                lastUpdateTime = System.DateTime.Now;
+                if (isSource)
+                {
+                    ViewerInformation vi = GetViewerInformation();
+                    Debug.Log($"xxxjack EntityPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
+                }
+                else
+                {
+                    Vector3 position = GetPosition();
+                    Vector3 rotation = GetRotation();
+                    Debug.Log($"xxxjack EntityPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+                }
             }
         }
     }
