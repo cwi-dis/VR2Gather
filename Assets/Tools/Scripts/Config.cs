@@ -19,6 +19,8 @@ public class Config {
     {
         public string   connectionURI;
         public string   exchangeName;
+        public bool printMetrics;
+        public bool saveMetrics;
     };
     public _TVMs TVMs;
 

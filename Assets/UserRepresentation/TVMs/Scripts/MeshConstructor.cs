@@ -17,7 +17,12 @@ public class MeshConstructor : MonoBehaviour
     private IDataProvider m_DataProvider;
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_d = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_d_f = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_d_t = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_d_g = new System.Diagnostics.Stopwatch();
+    private System.Diagnostics.Stopwatch stopWatch_d_p = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_r = new System.Diagnostics.Stopwatch();
+    private PerformanceMetrics performanceMetricsObj = new PerformanceMetrics();
     private List<Texture2D> m_Textures = new List<Texture2D>();
     private List<Vector3> m_vertices = new List<Vector3>();
     private List<Vector4> m_participatingCams = new List<Vector4>();
@@ -25,36 +30,20 @@ public class MeshConstructor : MonoBehaviour
     private byte[][] m_textures;
     private List<float> m_colorExts = new List<float>();
     private List<float> m_colorInts = new List<float>();
-    private List<long> deserializeTime = new List<long>();
-    private List<long> renderingTime = new List<long>();
     private int m_numDevs;
     private int m_width;
     private int m_height;
     private object m_lockobj = new object();
+    private int total_decompressed_buffer_size = 0;
     public int fps = 0;
-    public int all_frames = 0;
-    public int total_buffer_size = 0;
-    public int total_num_vertices = 0;
-
-    private double CalculateStdDev(IEnumerable<long> values) {
-        double ret = 0;
-        if (values.Count() > 0) {
-            //Compute the Average      
-            double avg = values.Average();
-            //Perform the Sum of (value-avg)_2_2      
-            double sum = values.Sum(d => Math.Pow(d - avg, 2));
-            //Put it all together      
-            ret = Math.Sqrt((sum) / (values.Count() - 1));
-        }
-        return ret;
-    }
 
     // Updating the mesh every time a new buffer is received from the network
-    private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e) {
-        all_frames += 1; // Counting every received frame
-
-        lock (e) {
-            if (e.Value != null && received_new_frame == false) {
+    private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e)
+    {
+        lock (e)
+        {
+            if (e.Value != null && received_new_frame == false)
+            {
                 // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
                 stopWatch_d = System.Diagnostics.Stopwatch.StartNew();
 
@@ -67,7 +56,11 @@ public class MeshConstructor : MonoBehaviour
                 var buffer = e.Value; // Buffer 's data
                 var gcRes = GCHandle.Alloc(buffer, GCHandleType.Pinned); // GCHandler for the buffer
                 var pnt = gcRes.AddrOfPinnedObject(); // Buffer 's address
+
+                stopWatch_d_f = System.Diagnostics.Stopwatch.StartNew();
                 IntPtr meshPtr = DllFunctions.callTVMFrameDLL(pnt, buffer.Length, mesh_id); // Pointer of the returned structure
+                stopWatch_d_f.Stop();
+
                 DllFunctions.Mesh currentMesh = (DllFunctions.Mesh)Marshal.PtrToStructure(meshPtr, typeof(DllFunctions.Mesh)); // C# struct equivalent of the one produced by the native C++ DLL
 
                 // Clearing the lists of the deserialiazed buffer 's data
@@ -77,54 +70,66 @@ public class MeshConstructor : MonoBehaviour
                 m_colorExts.Clear();
                 m_colorInts.Clear();
 
-                try {
+                try
+                {
+                    stopWatch_d_t = System.Diagnostics.Stopwatch.StartNew();
                     // Defining the textures from the returned struct
                     DefineTexture(currentMesh);
+                    stopWatch_d_t.Stop();
 
+                    stopWatch_d_g = System.Diagnostics.Stopwatch.StartNew();
                     // Defining the mesh data from the returned struct
                     CreateShape(currentMesh);
+                    stopWatch_d_g.Stop();
 
+                    stopWatch_d_p = System.Diagnostics.Stopwatch.StartNew();
                     // Defining the shader 's parameters from the returned struct
                     DefineShaderParams(currentMesh);
+                    stopWatch_d_p.Stop();
 
                     // Freeing the GCHandler
                     gcRes.Free();
 
-                    if (stopWatch.ElapsedMilliseconds > 0)
-                    {
-                        total_buffer_size += size; // All deserialized buffers' size
-                        total_num_vertices += m_vertices.ToArray().Length; // All deserialized buffers' number of vertices
-                    }
-
+                    performanceMetricsObj.updateReceivingAndDeserializationMetrics(new List<System.Diagnostics.Stopwatch>() { stopWatch_d, stopWatch_d_f, stopWatch_d_t, stopWatch_d_g, stopWatch_d_p}, 
+                                                                                   new List<int>() { size, total_decompressed_buffer_size, m_vertices.ToArray().Length });
+                    ++fps;
+                    total_decompressed_buffer_size = 0;
                     received_new_frame = true;
                 }
-                catch (UnityException ex) {
+                catch (UnityException ex)
+                {
                     Debug.Log(ex.Message);
                 }
 
                 stopWatch_d.Stop();
-                deserializeTime.Add(stopWatch_d.ElapsedMilliseconds);
             }
         }
     }
 
     // Assigning the function DataProvider_OnNewData to NetworkDataProvider in order to update the mesh every time a new buffer is received from the network
-    private void Awake() {
+    private void Awake()
+    {
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
+        performanceMetricsObj.runCommand();
     }
 
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         // Removing the function DataProvider_OnNewData from its assignment to the NetworkDataProvider when the game object gets destroyed
         m_DataProvider.OnNewData -= DataProvider_OnNewData;
+        performanceMetricsObj.clearAll();
+        performanceMetricsObj.saveAndDestroy();
     }
 
-    private void Update() {
+    private void Update()
+    {
         // Checking if a new buffer is received
         if (!received_new_frame)
             return;
 
-        try {
+        try
+        {
             // Starting the stopwatch which counts the time needed to render a TVM
             stopWatch_r = System.Diagnostics.Stopwatch.StartNew();
             stopWatch_r.Start();
@@ -140,7 +145,8 @@ public class MeshConstructor : MonoBehaviour
             int numDevs;
 
             // Locking all the variables that refer to the data that need to be fed to the shader
-            lock (m_lockobj) {
+            lock (m_lockobj)
+            {
                 vert = m_vertices;
                 ids = m_participatingCams;
                 face = m_faces;
@@ -151,12 +157,6 @@ public class MeshConstructor : MonoBehaviour
                 c_intrinsics = m_colorInts;
                 for (int i = 0; i < numDevs; i++)
                     texts[i] = m_textures[i];
-            }
-
-            // Sanity check: Data corrupted
-            if (vert.ToArray().Length != ids.ToArray().Length) {
-                Debug.Log("Sanity check failed.");
-                return;
             }
 
             // Defining the vertices, triangles and normals of the mesh
@@ -175,9 +175,11 @@ public class MeshConstructor : MonoBehaviour
             Texture2D current_tex = null;
 
             // Assigning the textures
-            for (int i = 0; i < numDevs; i++) {
+            for (int i = 0; i < numDevs; i++)
+            {
                 // After the first reconstructed mesh, delete the existing texture of the current id in the list instead of recreating the latter
-                if (i < m_Textures.Count) {
+                if (i < m_Textures.Count)
+                {
                     current_tex = m_Textures[i];
                     Texture2D.Destroy(m_Textures[i]);
                     current_tex = null;
@@ -208,33 +210,22 @@ public class MeshConstructor : MonoBehaviour
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorIntrinsics", c_intrinsics); // Color intrinsics matrix in an array (column major)
             GetComponent<MeshRenderer>().material.SetFloatArray("ColorExtrinsics", c_extrinsics); // Color extrinsics matrix in an array (column major)
 
-            ++fps;
-
             stopWatch_r.Stop();
-            renderingTime.Add(stopWatch_r.ElapsedMilliseconds);
+            performanceMetricsObj.updateRenderingMetrics(stopWatch_r);
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             received_new_frame = false;
             Debug.Log(ex);
             return;
         }
 
-        if (stopWatch.ElapsedMilliseconds >= 10000) {
+        if (stopWatch.ElapsedMilliseconds >= 10000)
+        {
             stopWatch.Stop();
-            Debug.Log("~-----~ Metrics for the last " + ((double) stopWatch.ElapsedMilliseconds / 1000).ToString("F5") + " seconds ~-----~");
-            Debug.Log("Frames (TVMs rendered) per second: " + (((double) fps/ stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"));
-            Debug.Log("Number of frames received but not rendered: " + (all_frames - fps));
-            Debug.Log("Average number of vertices per TVM: " + (total_num_vertices / fps));
-            Debug.Log("Average received TVM buffer size: " + (total_buffer_size / fps) + " bytes");
-            Debug.Log("Average deserialization time per TVM: " + (deserializeTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")");
-            Debug.Log("Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
-
-            fps = 0;
-            total_buffer_size = 0;
-            total_num_vertices = 0;
-            all_frames = 0;
-            renderingTime.Clear();
-            deserializeTime.Clear();
+            performanceMetricsObj.printMetrics(stopWatch);
+            performanceMetricsObj.saveMetrics(stopWatch);
+            performanceMetricsObj.clearAll();
             stopWatch = new System.Diagnostics.Stopwatch();
         }
 
@@ -242,26 +233,32 @@ public class MeshConstructor : MonoBehaviour
     }
 
     // Defining textures of the shader
-    void DefineTexture(DllFunctions.Mesh mesh) {
+    void DefineTexture(DllFunctions.Mesh mesh)
+    {
         //Marshaling for the texture images
         IntPtr[] texturePtr = new IntPtr[mesh.numDevices];
         byte[][] textures = new byte[mesh.numDevices][];
 
         Marshal.Copy(mesh.textures, texturePtr, 0, mesh.numDevices);
 
-        for (int i = 0; i < mesh.numDevices; i++) {
+        for (int i = 0; i < mesh.numDevices; i++)
+        {
             textures[i] = new byte[mesh.width * mesh.height * 3];
             Marshal.Copy(texturePtr[i], textures[i], 0, mesh.width * mesh.height * 3);
+            if (stopWatch.ElapsedMilliseconds > 0)
+                total_decompressed_buffer_size += mesh.width * mesh.height * 3;
         }
 
         // Lock the byte arrays to feed the game object
-        lock (m_lockobj) {
+        lock (m_lockobj)
+        {
             m_textures = textures;
         }
     }
 
     // Defining the rest of the shader 's parameters
-    void DefineShaderParams(DllFunctions.Mesh mesh) {
+    void DefineShaderParams(DllFunctions.Mesh mesh)
+    {
         // Marshaling for the weigths of each of the cameras defining a vertex 's texture
         float[] camWeights = new float[mesh.numVertices];
         Marshal.Copy(mesh.weights, camWeights, 0, mesh.numVertices);
@@ -285,8 +282,12 @@ public class MeshConstructor : MonoBehaviour
         float[] colorIntrinsics = new float[mesh.numDevices * 9];
         Marshal.Copy(mesh.colorInts, colorIntrinsics, 0, mesh.numDevices * 9);
 
+        if (stopWatch.ElapsedMilliseconds > 0)
+            total_decompressed_buffer_size += (sizeof(float) * (mesh.numVertices + mesh.numDevices * 16 + mesh.numDevices * 9) + sizeof(int) * (2 * mesh.numVertices + 5));
+
         // Lock the arrays in order to feed the game object
-        lock (m_lockobj) {
+        lock (m_lockobj)
+        {
             m_numDevs = mesh.numDevices;
             m_width = mesh.width;
             m_height = mesh.height;
@@ -297,7 +298,8 @@ public class MeshConstructor : MonoBehaviour
     }
 
     //Creating the mesh
-    void CreateShape(DllFunctions.Mesh mesh) {
+    void CreateShape(DllFunctions.Mesh mesh)
+    {
         // Marshaling for the faces
         int[] faces = new int[mesh.numFaces * 3];
         Marshal.Copy(mesh.faces, faces, 0, mesh.numFaces * 3);
@@ -310,8 +312,12 @@ public class MeshConstructor : MonoBehaviour
         for (int i = 0; i < mesh.numVertices; i++)
             vertices[i] = (new Vector3(vertexArray[3 * i], vertexArray[3 * i + 1], vertexArray[3 * i + 2]));
 
+        if (stopWatch.ElapsedMilliseconds > 0)
+            total_decompressed_buffer_size += (sizeof(float) * (mesh.numVertices * 3) + sizeof(int) * (mesh.numFaces * 3));
+
         // Lock the arrays in order to feed the game object
-        lock (m_lockobj) {
+        lock (m_lockobj)
+        {
             m_vertices.AddRange(vertices);
             m_faces.AddRange(faces);
         }
