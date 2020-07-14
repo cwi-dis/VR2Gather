@@ -429,7 +429,8 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: GetViewerInformation called for pipeline that is not a source");
             return new ViewerInformation();
         }
-        Camera _camera = gameObject.GetComponentInParent<Camera>();
+        // The camera object is nested in another object on our parent object, so getting at it is difficult:
+        Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
         if (_camera == null)
         {
             Debug.LogError("EntityPipeline: no Camera object for self user");
