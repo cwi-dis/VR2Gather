@@ -12,14 +12,20 @@ public class VideoWebCam : MonoBehaviour {
 
     Workers.WebCamReader    reader;
     Workers.VideoEncoder    encoder;
+    Workers.BaseWorker      dashWriter;
+    Workers.BaseWorker      dashReader;
+
+
+
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
-//    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
+    //    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
+    QueueThreadSafe         writerQueue = new QueueThreadSafe();
     QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
-//    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
+    //    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
+    QueueThreadSafe videoPreparerQueue = new QueueThreadSafe(5);
 //    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
 
     Texture2D       texture;
@@ -36,11 +42,29 @@ public class VideoWebCam : MonoBehaviour {
 
     // Start is called before the first frame update
     public void Init() {
+        string uuid = System.Guid.NewGuid().ToString();
+        string remoteURL = "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/wcss/";
+        string remoteStream = "webcam";
         try {
             reader      = new Workers.WebCamReader(width, height, fps, this, videoDataQueue);
-            encoder     = new Workers.VideoEncoder(videoDataQueue, null/*audioDataQueue*/, videoCodecQueue, null/*audioCodecQueue*/);
-            decoder     = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
-            preparer    = new Workers.VideoPreparer(videoPreparerQueue, null/*audioPreparerQueue*/);
+            encoder     = new Workers.VideoEncoder(videoDataQueue, null/*audioDataQueue*/, writerQueue, null/*audioCodecQueue*/);
+            Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
+                new Workers.B2DWriter.DashStreamDescription() {
+                    tileNumber = 0,
+                    quality = 0,
+                    inQueue = writerQueue
+                }
+            };
+            dashWriter = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
+                new Workers.PCSubReader.TileDescriptor() {
+                        outQueue = videoCodecQueue,
+                        tileNumber = 0
+                    }
+            };
+            dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+            decoder = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
+            preparer = new Workers.VideoPreparer(videoPreparerQueue, null/*audioPreparerQueue*/);
         }
         catch (System.Exception e) {
             Debug.LogError($"VideoDashReceiver.Init: Exception: {e.Message}\n{e.StackTrace}");
