@@ -77,9 +77,9 @@ public class VideoWebCam : MonoBehaviour {
         lock (preparer) {
             if (preparer.availableVideo > 0) {
                 if (texture == null) {
-                    texture = new Texture2D(width, height, TextureFormat.RGB24, false, true);
+                    texture = new Texture2D(reader.width, reader.height, TextureFormat.RGB24, false, true);
                     rendererDst.material.mainTexture = texture;
-                    rendererDst.transform.localScale = new Vector3(1, 1, texture.height / (float)texture.width);
+                    rendererDst.transform.localScale = new Vector3(1, 1, reader.height / (float)reader.width);
                 }
                 texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
                 texture.Apply();
