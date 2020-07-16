@@ -7,8 +7,7 @@ namespace Workers {
         public struct TileInfo
         {
             // xxxjack wrong: should be min and max angle in XZ plane
-            public struct Vector { public double x; public double y; public double z; };
-            public Vector normal;
+            public Vector3 normal;
             public string cameraName;
             public int cameraMask;
         }
