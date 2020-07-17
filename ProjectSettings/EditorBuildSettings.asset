@@ -24,9 +24,12 @@ EditorBuildSettings:
     path: Assets/Pilots/Pilot2/Scenes/Pilot2_Player.unity
     guid: 411fba5423c48c14ab54d9f0a44740dc
   - enabled: 1
-    path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
-    guid: a290470eafc8681428308a5ea76efe5d
+    path: Assets/Pilots/Pilot3/Scenes/Pilot3.unity
+    guid: 952b79172f9066b4595b40860a4957b0
   - enabled: 1
     path: Assets/Pilots/Pilot3/Scenes/Pilot3_BedRoom.unity
     guid: 6c999ad37f4be7c418d45a5a08dc4a19
+  - enabled: 1
+    path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
+    guid: a290470eafc8681428308a5ea76efe5d
   m_configObjects: {}
