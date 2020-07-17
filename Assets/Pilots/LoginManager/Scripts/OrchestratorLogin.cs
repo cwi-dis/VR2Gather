@@ -49,9 +49,11 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("Login")]
     [SerializeField] private InputField userNameLoginIF = null;
     [SerializeField] private InputField userPasswordLoginIF = null;
-    [SerializeField] private InputField connectionURILoginIF = null;
-    [SerializeField] private InputField exchangeNameLoginIF = null;
-    [SerializeField] private Dropdown representationTypeLoginDropdown = null;
+
+    [Header("Signin")]
+    [SerializeField] private InputField userNameRegisterIF = null;
+    [SerializeField] private InputField userPasswordRegisterIF = null;
+    [SerializeField] private InputField confirmPasswordRegisterIF = null;
 
     [Header("Config")]
     [SerializeField] private GameObject tvmInfoGO = null;
@@ -82,6 +84,8 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button connectButton = null;
     [SerializeField] private Button okButton = null;
     [SerializeField] private Button loginButton = null;
+    [SerializeField] private Button signinButton = null;
+    [SerializeField] private Button registerButton = null;
     [SerializeField] private Button configButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
@@ -95,15 +99,18 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button refreshSessionsButton = null;
 
     [Header("Panels")]
+    [SerializeField] private GameObject infoPanel = null;
     [SerializeField] private GameObject ntpPanel = null;
     [SerializeField] private GameObject usersButtonsPanel = null;
     [SerializeField] private GameObject loginPanel = null;
+    [SerializeField] private GameObject signinPanel = null;
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject createPanel = null;
     [SerializeField] private GameObject joinPanel = null;
     [SerializeField] private GameObject lobbyPanel = null;
     [SerializeField] private GameObject sessionPanel = null;
     [SerializeField] private GameObject usersPanel = null;
+    [SerializeField] private GameObject logsPanel = null;
 
     [Header("Content")]
     [SerializeField] private RectTransform orchestratorSessions = null;
@@ -233,6 +240,8 @@ public class OrchestratorLogin : MonoBehaviour {
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
         okButton.onClick.AddListener(delegate { OKButton(); });
         loginButton.onClick.AddListener(delegate { Login(); });
+        signinButton.onClick.AddListener(delegate { SigninButton(); });
+        registerButton.onClick.AddListener(delegate { RegisterButton(true); });
         configButton.onClick.AddListener(delegate { ConfigButton(); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
@@ -303,8 +312,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -318,8 +334,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(true);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -336,8 +359,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -357,8 +387,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(true);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -388,8 +425,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(true);
                 joinPanel.SetActive(false);
@@ -409,8 +453,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(true);
@@ -430,8 +481,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
-                if (developerOptions)
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
                 configPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
@@ -508,6 +566,28 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Buttons
+
+    private void SigninButton() {
+        loginPanel.SetActive(false);
+        signinPanel.SetActive(true);
+    }
+
+    public void RegisterButton(bool register) {
+        if (register) {
+            if (userPasswordRegisterIF.text == confirmPasswordRegisterIF.text) {
+                AddUser();
+                confirmPasswordRegisterIF.textComponent.color = Color.white;
+            }
+            else {
+                confirmPasswordRegisterIF.textComponent.color = Color.red;
+            }
+        }
+        else {
+            loginPanel.SetActive(true);
+            signinPanel.SetActive(false);
+            confirmPasswordRegisterIF.textComponent.color = Color.white;
+        }
+    }
 
     public void OKButton() {
         PanelChanger();
@@ -1069,11 +1149,15 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void AddUser() {
-        Debug.Log("[OrchestratorLogin][AddUser] Not implemented");
+        Debug.Log("[OrchestratorLogin][AddUser] Send AddUser registration for user " + userNameRegisterIF.text);
+        OrchestratorController.Instance.AddUser(userNameRegisterIF.text, userPasswordRegisterIF.text);
     }
 
     private void OnAddUserHandler(User user) {
-        Debug.Log("[OrchestratorLogin][OnAddUserHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnAddUserHandler] User " + user.userName + " registered with exit.");
+        loginPanel.SetActive(true);
+        signinPanel.SetActive(false);
+        userNameLoginIF.text = userNameRegisterIF.text;
     }
 
     private void UpdateUserData() {
