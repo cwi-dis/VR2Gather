@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using OrchestratorWrapping;
 
 public enum State {
-    Offline, Online, Logged, Config, Create, Join, Lobby, InGame
+    Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
 }
 
 public class OrchestratorLogin : MonoBehaviour {
@@ -37,6 +37,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
+    [SerializeField] private GameObject infoPanel = null;
     [SerializeField] private Text statusText = null;
     [SerializeField] private Text userId = null;
     [SerializeField] private Text userName = null;
@@ -46,22 +47,50 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text orchVerText = null;
     [SerializeField] private Text ntpText = null;
 
+    [Header("Connect")]
+    [SerializeField] private GameObject ntpPanel = null;
+    [SerializeField] private Button connectButton = null;
+    [SerializeField] private Button okButton = null;
+
     [Header("Login")]
+    [SerializeField] private GameObject usersButtonsPanel = null;
+    [SerializeField] private GameObject loginPanel = null;
     [SerializeField] private InputField userNameLoginIF = null;
     [SerializeField] private InputField userPasswordLoginIF = null;
+    [SerializeField] private Button loginButton = null;
+    [SerializeField] private Button signinButton = null;
 
     [Header("Signin")]
+    [SerializeField] private GameObject signinPanel = null;
     [SerializeField] private InputField userNameRegisterIF = null;
     [SerializeField] private InputField userPasswordRegisterIF = null;
     [SerializeField] private InputField confirmPasswordRegisterIF = null;
+    [SerializeField] private Button registerButton = null;
+
+    [Header("VRT")]
+    [SerializeField] private GameObject vrtPanel = null;
+    [SerializeField] private Text userNameVRTText = null;
+    [SerializeField] private Button playButton = null;
+    [SerializeField] private Button configButton = null;
 
     [Header("Config")]
+    [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private InputField connectionURIConfigIF = null;
     [SerializeField] private InputField exchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
+    [SerializeField] private Button calibButton = null;
+    [SerializeField] private Button saveConfigButton = null;
+    [SerializeField] private Button exitConfigButton = null;
+
+    [Header("Play")]
+    [SerializeField] private GameObject playPanel = null;
+    [SerializeField] private Button backPlayButton = null;
+    [SerializeField] private Button createButton = null;
+    [SerializeField] private Button joinButton = null;
 
     [Header("Create")]
+    [SerializeField] private GameObject createPanel = null;
     [SerializeField] private InputField sessionNameIF = null;
     [SerializeField] private InputField sessionDescriptionIF = null;
     [SerializeField] private Dropdown scenarioIdDrop = null;
@@ -72,51 +101,31 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Toggle dashAudioToggle = null;
 
     [Header("Join")]
+    [SerializeField] private GameObject joinPanel = null;
+    [SerializeField] private GameObject sessionPanel = null;
     [SerializeField] private Dropdown sessionIdDrop = null;
 
     [Header("Lobby")]
+    [SerializeField] private GameObject lobbyPanel = null;
+    [SerializeField] private GameObject usersPanel = null;
     [SerializeField] private Text sessionNameText = null;
     [SerializeField] private Text sessionDescriptionText = null;
     [SerializeField] private Text scenarioIdText = null;
     [SerializeField] private Text sessionNumUsersText = null;
 
     [Header("Buttons")]
-    [SerializeField] private Button connectButton = null;
-    [SerializeField] private Button okButton = null;
-    [SerializeField] private Button loginButton = null;
-    [SerializeField] private Button signinButton = null;
-    [SerializeField] private Button registerButton = null;
-    [SerializeField] private Button configButton = null;
-    [SerializeField] private Button saveConfigButton = null;
-    [SerializeField] private Button exitConfigButton = null;
-    [SerializeField] private Button createButton = null;
-    [SerializeField] private Button joinButton = null;
     [SerializeField] private Button doneCreateButton = null;
     [SerializeField] private Button doneJoinButton = null;
     [SerializeField] private Button readyButton = null;
     [SerializeField] private Button leaveButton = null;
-    [SerializeField] private Button calibButton = null;
     [SerializeField] private Button refreshSessionsButton = null;
-
-    [Header("Panels")]
-    [SerializeField] private GameObject infoPanel = null;
-    [SerializeField] private GameObject ntpPanel = null;
-    [SerializeField] private GameObject usersButtonsPanel = null;
-    [SerializeField] private GameObject loginPanel = null;
-    [SerializeField] private GameObject signinPanel = null;
-    [SerializeField] private GameObject configPanel = null;
-    [SerializeField] private GameObject createPanel = null;
-    [SerializeField] private GameObject joinPanel = null;
-    [SerializeField] private GameObject lobbyPanel = null;
-    [SerializeField] private GameObject sessionPanel = null;
-    [SerializeField] private GameObject usersPanel = null;
-    [SerializeField] private GameObject logsPanel = null;
-
+    
     [Header("Content")]
     [SerializeField] private RectTransform orchestratorSessions = null;
     [SerializeField] private RectTransform usersSession = null;
 
     [Header("Logs container")]
+    [SerializeField] private GameObject logsPanel = null;
     [SerializeField] private RectTransform logsContainer = null;
     [SerializeField] private ScrollRect logsScrollRect = null;
 
@@ -242,11 +251,13 @@ public class OrchestratorLogin : MonoBehaviour {
         loginButton.onClick.AddListener(delegate { Login(); });
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
+        playButton.onClick.AddListener(delegate { PlayButton(); });
         configButton.onClick.AddListener(delegate { ConfigButton(); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         calibButton.onClick.AddListener(delegate { GoToCalibration(); });
         refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
+        backPlayButton.onClick.AddListener(delegate { BackPlayButton(); });
         createButton.onClick.AddListener(delegate { CreateButton(); });
         joinButton.onClick.AddListener(delegate { JoinButton(); });
         doneCreateButton.onClick.AddListener(delegate { AddSession(); });
@@ -266,7 +277,7 @@ public class OrchestratorLogin : MonoBehaviour {
         liveToggle.isOn = false;
 
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
-            // Set status to offline
+            // Set status to online
             orchestratorConnected = true;
             statusText.text = "Online";
             statusText.color = onlineCol;
@@ -300,6 +311,7 @@ public class OrchestratorLogin : MonoBehaviour {
         // UserID & Name
         userId.text = OrchestratorController.Instance.SelfUser.userId;
         userName.text = OrchestratorController.Instance.SelfUser.userName;
+        userNameVRTText.text = OrchestratorController.Instance.SelfUser.userName;
         // Config Info
         exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
         connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
@@ -321,7 +333,9 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -343,7 +357,9 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -351,9 +367,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(false);
-                createButton.gameObject.SetActive(false);
-                joinButton.gameObject.SetActive(false);
                 break;
             case State.Logged:
                 // Panels
@@ -368,20 +381,16 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(true);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(true);
+                sessionPanel.SetActive(false);
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(true);
-                createButton.gameObject.SetActive(true);
-                joinButton.gameObject.SetActive(true);
-                configButton.interactable = true;
-                createButton.interactable = true;
-                joinButton.interactable = true;
                 break;
             case State.Config:
                 // Panels
@@ -396,30 +405,50 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(true);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(true);
+                sessionPanel.SetActive(false);
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(true);
-                createButton.gameObject.SetActive(true);
-                joinButton.gameObject.SetActive(true);
-                configButton.interactable = false;
-                createButton.interactable = true;
-                joinButton.interactable = true;
                 // Dropdown Logic
                 tvmInfoGO.SetActive(false);
-                calibButton.interactable = false;
+                calibButton.gameObject.SetActive(false);
                 if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
                     tvmInfoGO.SetActive(true);
-                    calibButton.interactable = true;
+                    calibButton.gameObject.SetActive(true);
                 }
                 else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
-                    calibButton.interactable = true;
+                    calibButton.gameObject.SetActive(true);
                 }
+                break;
+            case State.Play:
+                // Panels
+                ntpPanel.SetActive(false);
+                loginPanel.SetActive(false);
+                if (developerOptions) {
+                    infoPanel.SetActive(true);
+                    usersButtonsPanel.SetActive(false);
+                    logsPanel.SetActive(true);
+                }
+                else {
+                    infoPanel.SetActive(false);
+                    logsPanel.SetActive(false);
+                }
+                vrtPanel.SetActive(false);
+                configPanel.SetActive(false);
+                playPanel.SetActive(true);
+                createPanel.SetActive(false);
+                joinPanel.SetActive(false);
+                lobbyPanel.SetActive(false);
+                sessionPanel.SetActive(false);
+                usersPanel.SetActive(false);
+                // Buttons
+                connectButton.gameObject.SetActive(false);
                 break;
             case State.Create:
                 // Panels
@@ -434,7 +463,9 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(true);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
@@ -442,12 +473,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(true);
-                createButton.gameObject.SetActive(true);
-                joinButton.gameObject.SetActive(true);
-                configButton.interactable = true;
-                createButton.interactable = false;
-                joinButton.interactable = true;
                 break;
             case State.Join:
                 // Panels
@@ -462,7 +487,9 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(true);
                 lobbyPanel.SetActive(false);
@@ -470,12 +497,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(true);
-                createButton.gameObject.SetActive(true);
-                joinButton.gameObject.SetActive(true);
-                configButton.interactable = true;
-                createButton.interactable = true;
-                joinButton.interactable = false;
                 break;
             case State.Lobby:
                 // Panels
@@ -490,7 +511,9 @@ public class OrchestratorLogin : MonoBehaviour {
                     infoPanel.SetActive(false);
                     logsPanel.SetActive(false);
                 }
+                vrtPanel.SetActive(false);
                 configPanel.SetActive(false);
+                playPanel.SetActive(false);
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
@@ -498,12 +521,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 usersPanel.SetActive(true);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                configButton.gameObject.SetActive(false);
-                createButton.gameObject.SetActive(true);
-                joinButton.gameObject.SetActive(true);
-                configButton.interactable = false;
-                createButton.interactable = false;
-                joinButton.interactable = false;
                 if (OrchestratorController.Instance.UserIsMaster)
                     readyButton.gameObject.SetActive(true);
                 else
@@ -593,6 +610,11 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
     }
 
+    public void PlayButton() {
+        state = State.Play;
+        PanelChanger();
+    }
+
     public void ConfigButton() {
         state = State.Config;
         PanelChanger();
@@ -606,6 +628,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void ExitConfigButton() {
         GetUserInfo();
+        state = State.Logged;
+        PanelChanger();
+    }
+
+    public void BackPlayButton() {
         state = State.Logged;
         PanelChanger();
     }
@@ -937,6 +964,7 @@ public class OrchestratorLogin : MonoBehaviour {
         else {
             this.userId.text = "";
             userName.text = "";
+            userNameVRTText.text = "";
         }
 
         userLogged = userLoggedSucessfully;
@@ -952,6 +980,7 @@ public class OrchestratorLogin : MonoBehaviour {
             userLogged = false;
             userId.text = "";
             userName.text = "";
+            userNameVRTText.text = "";
             state = State.Online;
         }
         PanelChanger();
@@ -1181,6 +1210,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
                 userId.text = user.userId;
                 userName.text = user.userName;
+                userNameVRTText.text = user.userName;
 
                 //UserData
                 exchangeNameConfigIF.text = user.userData.userMQexchangeName;
