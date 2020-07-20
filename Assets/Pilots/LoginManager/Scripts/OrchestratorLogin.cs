@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using OrchestratorWrapping;
+using UnityEditor;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
@@ -91,6 +92,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Create")]
     [SerializeField] private GameObject createPanel = null;
+    [SerializeField] private Button backCreateButton = null;
     [SerializeField] private InputField sessionNameIF = null;
     [SerializeField] private InputField sessionDescriptionIF = null;
     [SerializeField] private Dropdown scenarioIdDrop = null;
@@ -102,16 +104,17 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Join")]
     [SerializeField] private GameObject joinPanel = null;
-    [SerializeField] private GameObject sessionPanel = null;
+    [SerializeField] private Button backJoinButton = null;
     [SerializeField] private Dropdown sessionIdDrop = null;
 
     [Header("Lobby")]
     [SerializeField] private GameObject lobbyPanel = null;
-    [SerializeField] private GameObject usersPanel = null;
     [SerializeField] private Text sessionNameText = null;
     [SerializeField] private Text sessionDescriptionText = null;
     [SerializeField] private Text scenarioIdText = null;
     [SerializeField] private Text sessionNumUsersText = null;
+    [SerializeField] private Text userRepresentationLobbyText = null;
+    [SerializeField] private Image userRepresentationLobbyImage = null;
 
     [Header("Buttons")]
     [SerializeField] private Button doneCreateButton = null;
@@ -134,7 +137,7 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Utils
     private Color onlineCol = new Color(0.15f, 0.78f, 0.15f); // Green
     private Color offlineCol = new Color(0.78f, 0.15f, 0.15f); // Red
-    private Font ArialFont = null;
+    public Font MenuFont = null;
     private EventSystem system = null;
     #endregion
 
@@ -146,9 +149,9 @@ public class OrchestratorLogin : MonoBehaviour {
         textGO.name = "Text-" + value;
         textGO.transform.SetParent(container);
         Text item = textGO.AddComponent<Text>();
-        item.font = ArialFont;
-        item.fontSize = 18;
-        item.color = Color.black;
+        item.font = MenuFont;
+        item.fontSize = 20;
+        item.color = Color.white;
 
         ContentSizeFitter lCsF = textGO.AddComponent<ContentSizeFitter>();
         lCsF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -221,6 +224,36 @@ public class OrchestratorLogin : MonoBehaviour {
         logsScrollRect.verticalScrollbar.value = 0;
     }
 
+    private void SetUserRepresentationGUI(UserData.eUserRepresentationType _representationType) {
+        userRepresentationLobbyText.text = _representationType.ToString();
+        // left change the icon 'userRepresentationLobbyImage'
+        switch (_representationType) {
+            case UserData.eUserRepresentationType.__NONE__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URNoneIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__2D__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URCamIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__AVATAR__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URAvatarIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__TVM__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URPCIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__PCC_CWI_:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URSingleIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__PCC_CERTH__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URPCIcon.png", typeof(Sprite));
+                break;
+            case UserData.eUserRepresentationType.__SPECTATOR__:
+                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URNoneIcon.png", typeof(Sprite));
+                break;
+            default:
+                break;
+        }
+    }
+
     #endregion
 
     #region Unity
@@ -240,7 +273,7 @@ public class OrchestratorLogin : MonoBehaviour {
         orchVerText.text = "";
 
         // Font to build gui components for logs!
-        ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
+        //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
@@ -251,16 +284,18 @@ public class OrchestratorLogin : MonoBehaviour {
         loginButton.onClick.AddListener(delegate { Login(); });
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
-        playButton.onClick.AddListener(delegate { PlayButton(); });
-        configButton.onClick.AddListener(delegate { ConfigButton(); });
+        playButton.onClick.AddListener(delegate { StateButton(State.Play); });
+        configButton.onClick.AddListener(delegate { StateButton(State.Config); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         calibButton.onClick.AddListener(delegate { GoToCalibration(); });
         refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
-        backPlayButton.onClick.AddListener(delegate { BackPlayButton(); });
-        createButton.onClick.AddListener(delegate { CreateButton(); });
-        joinButton.onClick.AddListener(delegate { JoinButton(); });
+        backPlayButton.onClick.AddListener(delegate { StateButton(State.Logged); });
+        createButton.onClick.AddListener(delegate { StateButton(State.Create); });
+        joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
+        backCreateButton.onClick.AddListener(delegate { StateButton(State.Play); });
         doneCreateButton.onClick.AddListener(delegate { AddSession(); });
+        backJoinButton.onClick.AddListener(delegate { StateButton(State.Play); });
         doneJoinButton.onClick.AddListener(delegate { JoinSession(); });
         readyButton.onClick.AddListener(delegate { ReadyButton(); });
         leaveButton.onClick.AddListener(delegate { LeaveSession(); });
@@ -339,8 +374,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(true);
                 break;
@@ -363,8 +396,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 break;
@@ -387,8 +418,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 break;
@@ -411,8 +440,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 // Dropdown Logic
@@ -445,8 +472,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 break;
@@ -469,8 +494,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(true);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(true);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 break;
@@ -493,8 +516,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(true);
                 lobbyPanel.SetActive(false);
-                sessionPanel.SetActive(true);
-                usersPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 break;
@@ -517,8 +538,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 createPanel.SetActive(false);
                 joinPanel.SetActive(false);
                 lobbyPanel.SetActive(true);
-                sessionPanel.SetActive(false);
-                usersPanel.SetActive(true);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
                 if (OrchestratorController.Instance.UserIsMaster)
@@ -610,16 +629,6 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
     }
 
-    public void PlayButton() {
-        state = State.Play;
-        PanelChanger();
-    }
-
-    public void ConfigButton() {
-        state = State.Config;
-        PanelChanger();
-    }
-
     public void SaveConfigButton() {
         UpdateUserData();
         state = State.Logged;
@@ -632,18 +641,8 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
     }
 
-    public void BackPlayButton() {
-        state = State.Logged;
-        PanelChanger();
-    }
-
-    public void CreateButton() {
-        state = State.Create;
-        PanelChanger();
-    }
-
-    public void JoinButton() {
-        state = State.Join;
+    public void StateButton(State _state) {
+        state = _state;
         PanelChanger();
     }
 
@@ -1110,7 +1109,7 @@ public class OrchestratorLogin : MonoBehaviour {
         sessionNumUsersText.text = "";
         RemoveComponentsFromList(usersSession.transform);
 
-        state = State.Logged;
+        state = State.Play;
         PanelChanger();
     }
 
@@ -1216,6 +1215,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 exchangeNameConfigIF.text = user.userData.userMQexchangeName;
                 connectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
+
+                SetUserRepresentationGUI(user.userData.userRepresentationType);
             }
 
             UpdateUsersSession(usersSession);
