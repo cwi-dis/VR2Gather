@@ -619,7 +619,11 @@ public class OrchestratorLogin : MonoBehaviour {
                 userNameLoginIF.text = "Patrice@VO";
                 userPasswordLoginIF.text = "VO2020";
                 break;
-            case 15:
+			case 15:
+				userNameLoginIF.text = "Bart@ARTANIM";
+				userPasswordLoginIF.text = "ARTANIM2020";
+				break;
+			case 16:
                 userNameLoginIF.text = "Name";
                 userPasswordLoginIF.text = "Lastname";
                 break;
