@@ -50,7 +50,7 @@ public class OrchestratorPilot0 : MonoBehaviour {
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
 
-        //OrchestratorController.Instance.RegisterMessageForwarder();
+        OrchestratorController.Instance.RegisterMessageForwarder();
     }
 
     // Un-Subscribe to Orchestrator Wrapper Events
@@ -61,7 +61,7 @@ public class OrchestratorPilot0 : MonoBehaviour {
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
 
-        //OrchestratorController.Instance.UnregisterMessageForwarder();
+        OrchestratorController.Instance.UnregisterMessageForwarder();
     }
 
     #endregion
