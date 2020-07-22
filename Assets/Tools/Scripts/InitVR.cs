@@ -38,8 +38,10 @@ public class InitVR : MonoBehaviour {
         else {
             Debug.Log("pushing cameras");
             Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
-            for (int i = 0; i < cameras.Length; ++i)
-                cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+            for (int i = 0; i < cameras.Length; ++i) {
+                if (cameras[i].gameObject.layer != 10) // 10: Spectator
+                    cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+            }
         }
 
     }

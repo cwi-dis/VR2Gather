@@ -229,25 +229,25 @@ public class OrchestratorLogin : MonoBehaviour {
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
             case UserData.eUserRepresentationType.__NONE__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URNoneIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 break;
             case UserData.eUserRepresentationType.__2D__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URCamIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URAvatarIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 break;
             case UserData.eUserRepresentationType.__TVM__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URPCIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URSingleIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URPCIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
-                userRepresentationLobbyImage.sprite = (Sprite)AssetDatabase.LoadAssetAtPath("Assets/Tools/UI/Icons/URNoneIcon.png", typeof(Sprite));
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 break;
             default:
                 break;
@@ -565,8 +565,8 @@ public class OrchestratorLogin : MonoBehaviour {
         try {
             InputField[] inputFields = FindObjectsOfType<InputField>();
             if (inputFields != null) {
-                inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
-                inputFields[inputFields.Length - 1].caretWidth = 2;
+                inputFields[0].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                inputFields[0].caretWidth = 2;
                 //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
             }
         }
