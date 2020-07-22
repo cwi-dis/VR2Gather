@@ -565,8 +565,8 @@ public class OrchestratorLogin : MonoBehaviour {
         try {
             InputField[] inputFields = FindObjectsOfType<InputField>();
             if (inputFields != null) {
-                inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
-                inputFields[inputFields.Length - 1].caretWidth = 2;
+                inputFields[0].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                inputFields[0].caretWidth = 2;
                 //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
             }
         }
