@@ -4,7 +4,7 @@ using UnityEngine;
 using Workers;
 
 public class VoiceDashReceiver : MonoBehaviour {
-    Workers.BaseWorker      reader;
+    Workers.AudioSubReader      reader;
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
 
@@ -52,6 +52,11 @@ public class VoiceDashReceiver : MonoBehaviour {
                 data[cnt] += tmpBuffer[cnt];
             } while (++cnt < data.Length);
         }
+    }
+
+    public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
+    {
+        reader.SetSyncInfo(_clockCorrespondence);
     }
 
 
