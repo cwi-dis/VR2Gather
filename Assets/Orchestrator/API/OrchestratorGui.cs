@@ -226,6 +226,7 @@ public class OrchestratorGui : MonoBehaviour
         GuiCommands = new List<GuiCommandDescription>
         {
             //Log
+            new GuiCommandDescription("SignIn", new List<RectTransform> { userNamePanel, userPasswordPanel }, SignIn),
             new GuiCommandDescription("Login", new List<RectTransform> { userNamePanel, userPasswordPanel }, Login),
             new GuiCommandDescription("Logout", null, Logout),
 
@@ -401,6 +402,7 @@ public class OrchestratorGui : MonoBehaviour
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
         OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
+        OrchestratorController.Instance.OnSignInEvent += OnSignIn;
         OrchestratorController.Instance.OnLoginEvent += OnLogin;
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
@@ -482,6 +484,18 @@ public class OrchestratorGui : MonoBehaviour
 
     #region Login/Logout
 
+    private void SignIn()
+    {
+        OrchestratorController.Instance.SignIn(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
+    }
+
+    private void OnSignIn()
+    {
+        userNameIF.text = userNamePanel.GetComponentInChildren<InputField>().text;
+        userPasswordIF.text = userPasswordPanel.GetComponentInChildren<InputField>().text;
+        HeadLogin();
+    }
+
     // Login from the main buttons Login & Logout
     private void HeadLogin()
     {
@@ -498,12 +512,6 @@ public class OrchestratorGui : MonoBehaviour
         if (userLoggedSucessfully)
         {
             OrchestratorController.Instance.IsAutoRetrievingData = autoRetrieveOrchestratorDataOnConnect.isOn;
-            /*
-            UserData lUserData = new UserData();
-            lUserData.userMQexchangeName = userMQnameIF.text;
-            lUserData.userMQurl = userMQurlIF.text;
-            */
-            //OrchestratorController.Instance.UpdateUserData(lUserData);
         }
         else
         {

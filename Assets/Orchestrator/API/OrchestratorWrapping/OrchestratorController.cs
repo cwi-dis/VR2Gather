@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -73,6 +73,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     // Orchestrator Login Events
     public Action<bool> OnLoginEvent;
     public Action<bool> OnLogoutEvent;
+    public Action OnSignInEvent;
 
     // Orchestrator NTP clock Events
     public Action<NtpClock> OnGetNTPTimeEvent;
@@ -245,11 +246,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         else
         {
             //user was logged before previously
-            if (userLoggedSucessfully)
+            if (!userLoggedSucessfully)
             {
-                Debug.Log("[OrchestratorController][OnLoginResponse] User logged - comes from another scene.");
-
-                orchestratorWrapper.GetUserInfo();
+                // normal, user previopusly logged, nothing to do
             }
             else
             {
@@ -301,6 +300,11 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         }
 
         OnLogoutEvent?.Invoke(userLoggedOutSucessfully);
+    }
+
+    public void SignIn(string pName, string pPassword)
+    {
+        orchestratorWrapper.AddUser(pName, pPassword, false);
     }
 
     #endregion
@@ -554,9 +558,21 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     public void OnAddUserResponse(ResponseStatus status, User user)
     {
-        OnAddUserEvent?.Invoke(user);
-        // update the lists of user, anyway the result
-        orchestratorWrapper.GetUsers();
+        if (status.Error == 0)
+        {
+            if (userIsLogged)
+            {
+                Debug.Log("[OrchestratorController][OnAddUserResponse] User successfully added.");
+                OnAddUserEvent?.Invoke(user);
+                // update the lists of user, anyway the result
+                orchestratorWrapper.GetUsers();
+            }
+            else
+            {
+                Debug.Log("[OrchestratorController][OnAddUserResponse] User successfully registered.");
+                OnSignInEvent.Invoke();
+            }
+        }
     }
 
     public void UpdateUserData(UserData pUserData)

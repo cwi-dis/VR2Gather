@@ -115,7 +115,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text sessionNumUsersText = null;
     [SerializeField] private Text userRepresentationLobbyText = null;
     [SerializeField] private Image userRepresentationLobbyImage = null;
-
+    
     [Header("Buttons")]
     [SerializeField] private Button doneCreateButton = null;
     [SerializeField] private Button doneJoinButton = null;
@@ -565,8 +565,8 @@ public class OrchestratorLogin : MonoBehaviour {
         try {
             InputField[] inputFields = FindObjectsOfType<InputField>();
             if (inputFields != null) {
-                inputFields[0].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
-                inputFields[0].caretWidth = 2;
+                inputFields[inputFields.Length - 1].OnPointerClick(new PointerEventData(system));  //if it's an input field, also set the text caret
+                inputFields[inputFields.Length - 1].caretWidth = 2;
                 //system.SetSelectedGameObject(first.gameObject, new BaseEventData(system));
             }
         }
@@ -611,7 +611,7 @@ public class OrchestratorLogin : MonoBehaviour {
     public void RegisterButton(bool register) {
         if (register) {
             if (userPasswordRegisterIF.text == confirmPasswordRegisterIF.text) {
-                AddUser();
+                SignIn();
                 confirmPasswordRegisterIF.textComponent.color = Color.white;
             }
             else {
@@ -832,6 +832,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
         OrchestratorController.Instance.OnLoginEvent += OnLogin;
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
+        OrchestratorController.Instance.OnSignInEvent += OnSignIn;
         OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
@@ -863,6 +864,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= OnGetOrchestratorVersionHandler;
         OrchestratorController.Instance.OnLoginEvent -= OnLogin;
         OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
+        OrchestratorController.Instance.OnSignInEvent -= OnSignIn;
         OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
         OrchestratorController.Instance.OnGetSessionsEvent -= OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
@@ -944,6 +946,19 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Login/Logout
+
+    private void SignIn() {
+        Debug.Log("[OrchestratorLogin][SignIn] Send SignIn registration for user " + userNameRegisterIF.text);
+        OrchestratorController.Instance.SignIn(userNameRegisterIF.text, userPasswordRegisterIF.text);
+    }
+
+    private void OnSignIn() {
+        Debug.Log("[OrchestratorLogin][OnSignIn] User " + userNameLoginIF.text +" successfully registered.");
+        userNameLoginIF.text = userNameRegisterIF.text;
+        userPasswordLoginIF.text = userPasswordRegisterIF.text;
+        loginPanel.SetActive(true);
+        signinPanel.SetActive(false);
+    }
 
     // Login from the main buttons Login & Logout
     private void Login() {
