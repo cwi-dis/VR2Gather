@@ -4567,7 +4567,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &54855093033153161
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10690,7 +10690,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4301073903055795058
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15966,10 +15966,6 @@ MonoBehaviour:
   sessionNumUsersText: {fileID: 6457971033508907615}
   userRepresentationLobbyText: {fileID: 7890038468874615349}
   userRepresentationLobbyImage: {fileID: 6380644936749171119}
-  errorPanel: {fileID: 0}
-  errorTitle: {fileID: 0}
-  errorMessage: {fileID: 0}
-  errorButton: {fileID: 0}
   doneCreateButton: {fileID: 6457971033556758724}
   doneJoinButton: {fileID: 6457971033399391678}
   readyButton: {fileID: 6457971032624323591}
