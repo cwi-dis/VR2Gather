@@ -123,7 +123,7 @@ PlayerSettings:
     16:10: 0
     16:9: 1
     Others: 0
-  bundleVersion: 2.2
+  bundleVersion: 2.2.1
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -344,7 +344,6 @@ PlayerSettings:
     m_Enabled: 1
     m_Devices:
     - Oculus
-    - OpenVR
   - m_BuildTarget: Standalone
     m_Enabled: 1
     m_Devices:
