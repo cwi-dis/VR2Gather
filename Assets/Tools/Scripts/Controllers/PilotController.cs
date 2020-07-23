@@ -77,16 +77,17 @@ abstract public class PilotController : MonoBehaviour {
                     // Fill PlayerManager properties
                     players[playerIdx].id = id;
                     players[playerIdx].orchestratorId = u.userId;
+                    players[playerIdx].userName.text = u.userName;
                     if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                         players[playerIdx].cam.gameObject.SetActive(true);
                         my_id = players[playerIdx].id;
-                        players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-                        players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                     }
 
                     switch (u.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__AVATAR__:
+                            players[playerIdx].avatar.SetActive(true);
+                            break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
@@ -109,6 +110,10 @@ abstract public class PilotController : MonoBehaviour {
                             }
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
+                            if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                                players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+                            }
                             players[playerIdx].tvm.isMaster = firstTVM;
                             if (firstTVM) firstTVM = false;
                             players[playerIdx].tvm.connectionURI = u.userData.userMQurl;

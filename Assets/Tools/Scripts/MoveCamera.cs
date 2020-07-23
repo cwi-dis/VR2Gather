@@ -8,6 +8,7 @@ public class MoveCamera : MonoBehaviour {
     float yRotation = 0f;
 
     public Transform playerBody;
+    public Transform avatarHead;
 
     void Awake() {
         if (XRDevice.isPresent)
@@ -32,6 +33,7 @@ public class MoveCamera : MonoBehaviour {
             else {
                 transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
                 playerBody.Rotate(Vector3.up, mouseX);
+                avatarHead.Rotate(Vector3.right, -mouseY);
             }
         }
     }
