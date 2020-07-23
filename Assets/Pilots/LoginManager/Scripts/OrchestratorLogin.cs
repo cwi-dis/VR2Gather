@@ -115,13 +115,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text sessionNumUsersText = null;
     [SerializeField] private Text userRepresentationLobbyText = null;
     [SerializeField] private Image userRepresentationLobbyImage = null;
-
-    [Header("Error")]
-    [SerializeField] private GameObject errorPanel = null;
-    [SerializeField] private Text errorTitle = null;
-    [SerializeField] private Text errorMessage = null;
-    [SerializeField] private Button errorButton = null;
-
+    
     [Header("Buttons")]
     [SerializeField] private Button doneCreateButton = null;
     [SerializeField] private Button doneJoinButton = null;
@@ -260,11 +254,6 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    private void FillError(string title, string message) {
-        errorTitle.text = title;
-        errorMessage.text = message;
-    }
-
     #endregion
 
     #region Unity
@@ -274,8 +263,6 @@ public class OrchestratorLogin : MonoBehaviour {
         if (instance == null) {
             instance = this;
         }
-
-        Application.RegisterLogCallback(HandleException);
 
         system = EventSystem.current;
 
@@ -312,7 +299,6 @@ public class OrchestratorLogin : MonoBehaviour {
         doneJoinButton.onClick.AddListener(delegate { JoinSession(); });
         readyButton.onClick.AddListener(delegate { ReadyButton(); });
         leaveButton.onClick.AddListener(delegate { LeaveSession(); });
-        errorButton.onClick.AddListener(delegate { ErrorButton(); });
 
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
@@ -571,18 +557,6 @@ public class OrchestratorLogin : MonoBehaviour {
         TerminateControllerEvents();
     }
 
-    void HandleException(string condition, string stackTrace, LogType type) {
-        string msg = condition;
-        if (type == LogType.Exception) {
-            FillError("Exception", msg);
-            errorPanel.SetActive(true);
-        }
-        else if (type == LogType.Error) {
-            FillError("Error", msg);
-            errorPanel.SetActive(true);
-        }
-    }
-
     #endregion
 
     #region Input
@@ -653,10 +627,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void OKButton() {
         PanelChanger();
-    }
-
-    public void ErrorButton() {
-        errorPanel.SetActive(false);
     }
 
     public void SaveConfigButton() {
