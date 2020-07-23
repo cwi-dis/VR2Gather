@@ -816,12 +816,14 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     private void Collect_SFU_Logs(string pSessionID)
     {
+#if !UNITY_EDITOR
         string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
         string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
         Application.OpenURL(requestURL);
+#endif
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 }

@@ -7,6 +7,7 @@ namespace Workers {
 
         public struct TileDescriptor
         {
+            public string name;
             public QueueThreadSafe outQueue;
             public int tileNumber;
             public int currentQuality;

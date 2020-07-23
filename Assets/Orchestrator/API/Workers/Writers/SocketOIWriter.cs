@@ -8,15 +8,15 @@ namespace Workers
 {
     public class SocketIOWriter : BaseWorker
     {
-        QueueThreadSafe inQueue;
+        Workers.B2DWriter.DashStreamDescription[] streams;
 
-
-        public SocketIOWriter(string _userID, QueueThreadSafe _inQueue) : base(WorkerType.End) {
-            OrchestratorWrapper.instance.DeclareDataStream("AUDIO");
-            if (_inQueue == null) {
+        public SocketIOWriter(string remoteURL, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
+            if (streams == null) {
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
-            inQueue = _inQueue;
+            this.streams = streams;
+            streams[0].name = remoteURL + remoteStream + "_0";
+            OrchestratorWrapper.instance.DeclareDataStream(streams[0].name);
             try {
                 Start();
                 Debug.Log($"{Name()}: Started.");
@@ -33,10 +33,10 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            if (!inQueue.IsClosed())
+            if (!streams[0].inQueue.IsClosed())
             {
                 Debug.LogWarning($"{Name()}: inQueue not closed, closing");
-                inQueue.Close();
+                streams[0].inQueue.Close();
             }
             Debug.Log($"{Name()}: Stopped.");
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
@@ -45,13 +45,12 @@ namespace Workers
         protected override void Update() {
             base.Update();
             if (OrchestratorWrapper.instance!=null) {
-                BaseMemoryChunk chk = inQueue.Dequeue();
+                BaseMemoryChunk chk = streams[0].inQueue.Dequeue();
                 if (chk == null) return;
                 var buf = new byte[chk.length];
                 // Debug.Log($"SocketOIWriter {chk.length}");
-
                 System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
-                OrchestratorWrapper.instance.SendData("AUDIO", buf);
+                OrchestratorWrapper.instance.SendData(streams[0].name, buf);
                 chk.free();
             }
         }

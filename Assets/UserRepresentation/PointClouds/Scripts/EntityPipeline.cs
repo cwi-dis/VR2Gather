@@ -140,7 +140,7 @@ public class EntityPipeline : MonoBehaviour {
                         }
                     } else
                     if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                        gameObject.AddComponent<VoiceIOSender>().Init(userID);
+                        gameObject.AddComponent<VoiceIOSender>().Init(url_audio, "audio");
                     }
                 }
                 break;
@@ -198,7 +198,7 @@ public class EntityPipeline : MonoBehaviour {
                     gameObject.AddComponent<VoiceDashReceiver>().Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                    gameObject.AddComponent<VoiceIOReceiver>().Init(userID); //Audio Pipeline
+                    gameObject.AddComponent<VoiceIOReceiver>().Init(url_audio, "audio"); //Audio Pipeline
                 }
                 break;
         }

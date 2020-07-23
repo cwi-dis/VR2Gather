@@ -8,21 +8,20 @@ namespace Workers
 {
     public class SocketIOReader : BaseWorker, ISocketReader
     {
-        QueueThreadSafe outQueue;
-        string userID;
+        Workers.PCSubReader.TileDescriptor[] descriptors;
 
-        public SocketIOReader(string _userID, QueueThreadSafe _outQueue) : base(WorkerType.End) {
-            userID = _userID;
-            if (_outQueue == null) {
-                throw new System.Exception($"{Name()}: outQueue is null");
+        public SocketIOReader(string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
+            if (descriptors == null) {
+                throw new System.Exception($"{Name()}: descriptors is null");
             }
-            outQueue = _outQueue;
-            try {
-                Debug.Log($"{Name()}: Started {userID}.");
+            this.descriptors = descriptors;
+            this.descriptors[0].name = remoteURL + remoteStream + "_0";
 
-                OrchestratorWrapper.instance.RegisterForDataStream(userID, "AUDIO");
+            try {
+                Debug.Log($"{Name()}: Started {this.descriptors[0].name}.");
+
+                OrchestratorWrapper.instance.RegisterForDataStream( OrchestratorController.Instance.SelfUser.userId, this.descriptors[0].name);
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnAudioPacketReceived;
-//                OrchestratorWrapper.instance.OnAudioSent += OnAudioPacketReceived2;
 
                 Start();
                 Debug.Log($"{Name()}: Started.");
@@ -38,15 +37,16 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            outQueue?.Close();
+            this.descriptors[0].outQueue?.Close();
             Debug.Log($"{Name()}: Stopped.");
-            OrchestratorWrapper.instance.UnregisterFromDataStream(userID, "AUDIO");
+            OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, this.descriptors[0].name);
         }
         private void OnAudioPacketReceived(UserDataStreamPacket pPacket) {
-            if (pPacket.dataStreamUserID == userID) {
+            //if (pPacket.dataStreamUserID == userID) 
+            {
                 BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                 System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
-                outQueue.Enqueue(chunk);
+                this.descriptors[0].outQueue.Enqueue(chunk);
                 OnData(pPacket.dataStreamPacket);
             }
         }
