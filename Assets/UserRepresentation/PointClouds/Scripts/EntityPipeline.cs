@@ -60,7 +60,16 @@ public class EntityPipeline : MonoBehaviour {
                 {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    pcReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, selfPreparerQueue, encoderQueue);
+                    pcReader = new Workers.CerthReader(
+                        CerthReaderConfig.ConnectionURI, 
+                        CerthReaderConfig.PCLExchangeName, 
+                        CerthReaderConfig.MetaExchangeName, 
+                        CerthReaderConfig.OriginCorrection, 
+                        CerthReaderConfig.BoundingBotLeft, 
+                        CerthReaderConfig.BoundingBotLeft,
+                        PCSelfConfig.voxelSize, 
+                        selfPreparerQueue, 
+                        encoderQueue);
                     reader = pcReader;
                 }
 

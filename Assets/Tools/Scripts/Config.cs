@@ -84,6 +84,9 @@ public class Config {
                 public string ConnectionURI;
                 public string PCLExchangeName;
                 public string MetaExchangeName;
+                public Vector3 OriginCorrection;
+                public Vector3 BoundingBotLeft;
+                public Vector3 BoundingTopRight;
             }
             public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;

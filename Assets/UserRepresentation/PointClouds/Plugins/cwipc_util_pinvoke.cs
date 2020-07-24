@@ -465,10 +465,11 @@ public class cwipc
         return new pointcloud(rvPtr);
     }
 
-    public static pointcloud from_certh(IntPtr certhPC, float[] bbox, UInt64 timestamp)
+    public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, UInt64 timestamp)
     {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         // xxxjack don't know yet how to pass the optional float[6] array. Passing NULL for now.
+        // xxxjack move hasn't been implemented yet in cwipc_from_certh. TBD.
         System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, System.IntPtr.Zero, timestamp, ref errorPtr);
         if (rvPtr == System.IntPtr.Zero)
         {
