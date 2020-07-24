@@ -6518,8 +6518,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8308911875220280133}
   m_TextComponent: {fileID: 1373879739815595134}
   m_Placeholder: {fileID: 510463516889647795}
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -9226,8 +9226,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8535658865558340365}
   m_TextComponent: {fileID: 2218213694441835747}
   m_Placeholder: {fileID: 8929204581023416636}
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -10685,7 +10685,7 @@ GameObject:
   - component: {fileID: 3054269763092043895}
   - component: {fileID: 8751209084010481899}
   m_Layer: 5
-  m_Name: SinginButton
+  m_Name: SignupButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11610,8 +11610,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 336066774540180390}
   m_TextComponent: {fileID: 8600055927447513507}
   m_Placeholder: {fileID: 9221379737467941197}
-  m_ContentType: 0
-  m_InputType: 0
+  m_ContentType: 7
+  m_InputType: 2
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
@@ -23025,7 +23025,7 @@ GameObject:
   - component: {fileID: 3483523220622141489}
   - component: {fileID: 4781380830138041359}
   m_Layer: 5
-  m_Name: SinginPanel
+  m_Name: RegisterPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25387,7 +25387,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SING-IN
+  m_Text: REGISTER
 --- !u!1 &8830838840296826176
 GameObject:
   m_ObjectHideFlags: 0
