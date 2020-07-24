@@ -167,6 +167,96 @@ public class OrchestratorLogin : MonoBehaviour {
         item.text = value;
     }
 
+    private void AddUserComponentOnContent(Transform container, User user) {        
+        GameObject userGO = new GameObject();
+        userGO.name = "User-" + user.userName;
+        userGO.transform.SetParent(container);
+
+        ContentSizeFitter lCsF = userGO.AddComponent<ContentSizeFitter>();
+        lCsF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        // Placeholder
+        Text placeholderText = userGO.AddComponent<Text>();
+        placeholderText.font = MenuFont;
+        placeholderText.fontSize = 20;
+        placeholderText.color = Color.white;
+
+        RectTransform rectGO;
+        rectGO = placeholderText.GetComponent<RectTransform>();
+        rectGO.localPosition = new Vector3(0, 0, 0);
+        rectGO.sizeDelta = new Vector2(0, 30);
+        rectGO.localScale = Vector3.one;
+        placeholderText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        placeholderText.verticalOverflow = VerticalWrapMode.Overflow;
+
+        placeholderText.text = " ";
+
+        // TEXT
+        Text textItem = new GameObject("Text-" + user.userName).AddComponent<Text>();
+        textItem.transform.SetParent(userGO.transform);
+        textItem.font = MenuFont;
+        textItem.fontSize = 20;
+        textItem.color = Color.white;        
+
+        RectTransform rectText;
+        rectText = textItem.GetComponent<RectTransform>();
+        rectText.anchorMin = new Vector2(0, 0.5f);
+        rectText.anchorMax = new Vector2(1, 0.5f);
+        rectText.localPosition = new Vector3(40, 0, 0);
+        rectText.sizeDelta = new Vector2(0, 30);
+        rectText.localScale = Vector3.one;
+        textItem.horizontalOverflow = HorizontalWrapMode.Wrap;
+        textItem.verticalOverflow = VerticalWrapMode.Overflow;
+
+        textItem.text = user.userName;
+
+        Image imageItem = new GameObject("Image-" + user.userName).AddComponent<Image>();
+        imageItem.transform.SetParent(userGO.transform);
+        imageItem.type = Image.Type.Simple;
+        imageItem.preserveAspect = true;
+
+        RectTransform rectImage;
+        rectImage = imageItem.GetComponent<RectTransform>();
+        rectImage.anchorMin = new Vector2(0, 0.5f); 
+        rectImage.anchorMax = new Vector2(0, 0.5f);
+        rectImage.localPosition = new Vector3(15, 0, 0);
+        rectImage.sizeDelta = new Vector2(30, 30);
+        rectImage.localScale = Vector3.one;
+        // IMAGE
+        switch (user.userData.userRepresentationType) {
+            case UserData.eUserRepresentationType.__NONE__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                textItem.text += " - (Voyeur)";
+                break;
+            case UserData.eUserRepresentationType.__2D__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                textItem.text += " - (WebCam)";
+                break;
+            case UserData.eUserRepresentationType.__AVATAR__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                textItem.text += " - (Avatar)";
+                break;
+            case UserData.eUserRepresentationType.__TVM__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                textItem.text += " - (TVM)";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CWI_:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (SinglePC)";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CERTH__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                textItem.text += " - (MultiPC)";
+                break;
+            case UserData.eUserRepresentationType.__SPECTATOR__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                textItem.text += " - (Ghost)";
+                break;
+            default:
+                break;
+        }
+    }
+
     private void RemoveComponentsFromList(Transform container) {
         for (var i = container.childCount - 1; i >= 0; i--) {
             var obj = container.GetChild(i);
@@ -179,7 +269,8 @@ public class OrchestratorLogin : MonoBehaviour {
         RemoveComponentsFromList(usersSession.transform);
         if (OrchestratorController.Instance.ConnectedUsers != null) {
             foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
-                AddTextComponentOnContent(container.transform, u.userName);
+                //AddTextComponentOnContent(container.transform, u.userName);
+                AddUserComponentOnContent(container.transform, u);
             }
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
@@ -1185,6 +1276,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 foreach (User u in users) {
                     if (OrchestratorController.Instance.ConnectedUsers[i].userId == u.userId) {
                         OrchestratorController.Instance.ConnectedUsers[i].sfuData = u.sfuData;
+                        OrchestratorController.Instance.ConnectedUsers[i].userData = u.userData;
                     }
                 }
             }
@@ -1234,7 +1326,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
             }
 
-            UpdateUsersSession(usersSession);
+            if (!OrchestratorController.Instance.IsAutoRetrievingData)
+                GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {
