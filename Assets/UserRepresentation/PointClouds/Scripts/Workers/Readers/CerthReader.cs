@@ -142,6 +142,19 @@ namespace Workers {
                     float[] bbox = { -1f, 1f, -1f, 0.5f, -3f, 1f };
                     System.UInt64 timestamp = 0;
                     cwipc.pointcloud pc = cwipc.from_certh(pclPtr, bbox, timestamp);
+                    if (voxelSize != 0)
+                    {
+                        var newPc = cwipc.downsample(pc, voxelSize);
+                        if (newPc == null)
+                        {
+                            Debug.LogWarning($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
+                        }
+                        else
+                        {
+                            pc.free();
+                            pc = newPc;
+                        }
+                    }
                     //
                     // We can now safely free the RGBD data
                     //
