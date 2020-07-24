@@ -15,8 +15,10 @@ namespace Workers
                 throw new System.Exception($"{Name()}: outQueue is null");
             }
             this.streams = streams;
-            streams[0].name = remoteURL + remoteStream + "_0";
-            OrchestratorWrapper.instance.DeclareDataStream(streams[0].name);
+            for (int i = 0; i < streams.Length; ++i) {
+                streams[i].name = $"{remoteURL}{remoteStream}#{i}";
+                OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
+            }
             try {
                 Start();
                 Debug.Log($"{Name()}: Started.");
@@ -33,10 +35,11 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            if (!streams[0].inQueue.IsClosed())
-            {
-                Debug.LogWarning($"{Name()}: inQueue not closed, closing");
-                streams[0].inQueue.Close();
+            for (int i = 0; i < streams.Length; ++i) {
+                if (!streams[i].inQueue.IsClosed()) {
+                    Debug.LogWarning($"{Name()}: inQueue not closed, closing");
+                    streams[i].inQueue.Close();
+                }
             }
             Debug.Log($"{Name()}: Stopped.");
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
@@ -45,13 +48,15 @@ namespace Workers
         protected override void Update() {
             base.Update();
             if (OrchestratorWrapper.instance!=null) {
-                BaseMemoryChunk chk = streams[0].inQueue.Dequeue();
-                if (chk == null) return;
-                var buf = new byte[chk.length];
-                // Debug.Log($"SocketOIWriter {chk.length}");
-                System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
-                OrchestratorWrapper.instance.SendData(streams[0].name, buf);
-                chk.free();
+                for (int i = 0; i < streams.Length; ++i) {
+                    BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
+                    if (chk == null) return;
+
+                    var buf = new byte[chk.length];
+                    System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
+                    OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                    chk.free();
+                }
             }
         }
 

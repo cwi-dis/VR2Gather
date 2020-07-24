@@ -15,13 +15,13 @@ namespace Workers
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
             this.descriptors = descriptors;
-            this.descriptors[0].name = remoteURL + remoteStream + "_0";
-
             try {
-                Debug.Log($"{Name()}: Started {this.descriptors[0].name}.");
-
-                OrchestratorWrapper.instance.RegisterForDataStream( OrchestratorController.Instance.SelfUser.userId, this.descriptors[0].name);
-                OrchestratorWrapper.instance.OnDataStreamReceived += OnAudioPacketReceived;
+                for (int i = 0; i < this.descriptors.Length; ++i) {
+                    this.descriptors[i].name = $"{remoteURL}{remoteStream}#{i}";
+                    Debug.Log($"{Name()}: Started {this.descriptors[i].name}.");
+                    OrchestratorWrapper.instance.RegisterForDataStream(OrchestratorController.Instance.SelfUser.userId, this.descriptors[i].name);
+                }
+                OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 
                 Start();
                 Debug.Log($"{Name()}: Started.");
@@ -37,17 +37,21 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            this.descriptors[0].outQueue?.Close();
-            Debug.Log($"{Name()}: Stopped.");
-            OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, this.descriptors[0].name);
+            for (int i = 0; i < descriptors.Length; ++i) {
+                descriptors[i].outQueue?.Close();
+                Debug.Log($"{Name()}: Stopped.");
+                OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+            }
         }
-        private void OnAudioPacketReceived(UserDataStreamPacket pPacket) {
+        private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
             //if (pPacket.dataStreamUserID == userID) 
             {
                 BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                 System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
-                this.descriptors[0].outQueue.Enqueue(chunk);
-                OnData(pPacket.dataStreamPacket);
+                int id = 0;
+                if( int.TryParse( pPacket.dataStreamType.Substring(pPacket.dataStreamType.LastIndexOf('#')+1), out id) )
+                    descriptors[id].outQueue.Enqueue(chunk);
+                // OnData(pPacket.dataStreamPacket);
             }
         }
 
