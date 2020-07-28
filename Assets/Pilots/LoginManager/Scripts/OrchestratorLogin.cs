@@ -1266,9 +1266,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetUsersHandler(User[] users) {
-        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Not implemented");
-
-        UpdateUsersSession(usersSession);
+        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Users Updated");
 
         // Update the sfuData if is in session.
         if (OrchestratorController.Instance.ConnectedUsers != null) {
@@ -1281,6 +1279,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 }
             }
         }
+
+        UpdateUsersSession(usersSession);
     }
 
     private void AddUser() {
@@ -1356,7 +1356,9 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetRoomsHandler(RoomInstance[] rooms) {
-        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Send GetUsers command");
+
+        OrchestratorController.Instance.GetUsers();
     }
 
     private void JoinRoom() {
