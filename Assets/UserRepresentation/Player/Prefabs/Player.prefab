@@ -138,7 +138,7 @@ MonoBehaviour:
   Mode: 1
   SyncAutomatically: 0
   UpdateFrequency: 15
-  InterpolateUpdates: 0
+  InterpolateUpdates: 1
 --- !u!1 &4434842230143733153
 GameObject:
   m_ObjectHideFlags: 0
