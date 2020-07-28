@@ -22,9 +22,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public bool developerOptions = true;
     public bool usePresenter = false;
-    private int kindAudio = 0;
+    private int kindAudio = 2; // Set Dash as default
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
+    private int ntpSyncThreshold = 4; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -396,9 +396,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        noAudioToggle.isOn = true;
+        noAudioToggle.isOn = false;
         socketAudioToggle.isOn = false;
-        dashAudioToggle.isOn = false;
+        dashAudioToggle.isOn = true;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -1270,9 +1270,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetUsersHandler(User[] users) {
-        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Not implemented");
-
-        UpdateUsersSession(usersSession);
+        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Users Updated");
 
         // Update the sfuData if is in session.
         if (OrchestratorController.Instance.ConnectedUsers != null) {
@@ -1285,6 +1283,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 }
             }
         }
+
+        UpdateUsersSession(usersSession);
     }
 
     private void AddUser() {
@@ -1360,7 +1360,9 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetRoomsHandler(RoomInstance[] rooms) {
-        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Send GetUsers command");
+
+        OrchestratorController.Instance.GetUsers();
     }
 
     private void JoinRoom() {
