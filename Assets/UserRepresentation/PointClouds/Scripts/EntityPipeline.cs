@@ -168,7 +168,7 @@ public class EntityPipeline : MonoBehaviour {
                     } else
                     if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                         VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
-                        _audioComponent.Init(userID);
+                        _audioComponent.Init(url_audio, "audio");
                         audioComponent = _audioComponent;
                     }
                 }
@@ -230,7 +230,7 @@ public class EntityPipeline : MonoBehaviour {
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
-                    _audioComponent.Init(userID); //Audio Pipeline
+                    _audioComponent.Init(url_audio, "audio");
                     audioComponent = _audioComponent;
                 }
                 break;
