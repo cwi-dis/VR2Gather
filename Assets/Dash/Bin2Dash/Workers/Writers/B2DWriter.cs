@@ -210,5 +210,16 @@ namespace Workers {
             // xxxjack anything to do?
             System.Threading.Thread.Sleep(10);
         }
+
+        public SyncConfig.ClockCorrespondence GetSyncInfo()
+        {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+
+            return new SyncConfig.ClockCorrespondence
+            {
+                wallClockTime = (System.Int64)sinceEpoch.TotalMilliseconds,
+                streamClockTime = uploader.get_media_time(1000)
+            };
+        }
     }
 }

@@ -2,10 +2,12 @@
     "targetFrameRate": 90,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
-    "nonHMDHeight": 1.5,
+    "nonHMDHeight": 1.7,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
+		"printMetrics": true,
+		"saveMetrics": false,
         "offsetPosition": {
             "x": -1.9099986553192139,
             "y": 1.174999713897705,
