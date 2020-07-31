@@ -29,7 +29,7 @@ abstract public class PilotController : MonoBehaviour {
                 }
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOSender>().Init(u.userId);
+                player.audio.AddComponent<VoiceIOSender>().Init(u.sfuData.url_audio, "audio");
             }
         }
         else { // Receiver
@@ -40,7 +40,7 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceDashReceiver>().Init(u.sfuData.url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOReceiver>().Init(u.userId); //Audio Pipeline
+                player.audio.AddComponent<VoiceIOReceiver>().Init(u.sfuData.url_audio, "audio"); //Audio Pipeline
             }
         }
     }

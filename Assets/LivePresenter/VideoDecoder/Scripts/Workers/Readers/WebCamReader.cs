@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace Workers {
         CancellationTokenSource   isClosed;
 
         System.IntPtr data;
+        Stopwatch stopWatch;
 
         public int width;
         public int height;
@@ -35,15 +37,25 @@ namespace Workers {
 
             Init();
 
+            stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             coroutine = monoBehaviour.StartCoroutine(WebCamRecorder());
             Start();
         }
 
         protected override void Update() {
             base.Update();
-            frameReady.Wait(isClosed.Token);
-            if (!isClosed.IsCancellationRequested) {
-                Color32ArrayToByteArray(webcamColors, outQueue);
+            try {
+                frameReady.Wait(isClosed.Token);
+                if (!isClosed.IsCancellationRequested) {
+                    Color32ArrayToByteArray(webcamColors, outQueue);
+                } else {
+                    UnityEngine.Debug.Log($"Stopped {stopWatch.ElapsedMilliseconds}");
+                }
+            } finally {
+//                frameReady.Release();
+
             }
         }
 
@@ -51,7 +63,7 @@ namespace Workers {
             base.OnStop();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
-            Debug.Log($"{Name()}: Stopped webcam.");
+            UnityEngine.Debug.Log($"{Name()}: Stopped webcam {stopWatch.ElapsedMilliseconds}.");
             outQueue.Close();
         }
 
@@ -66,10 +78,10 @@ namespace Workers {
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
-                Debug.Log($"{i} devices {dev.name} availableResolutions {dev.availableResolutions}");
+                UnityEngine.Debug.Log($"{i} devices {dev.name} availableResolutions {dev.availableResolutions}");
                 if (dev.availableResolutions != null) {
                     for (int j = 0; j < dev.availableResolutions.Length; ++j) {
-                        Debug.Log($"Res {dev.availableResolutions[j].width} {dev.availableResolutions[j].height} refreshRate {dev.availableResolutions[j].refreshRate}");
+                        UnityEngine.Debug.Log($"Res {dev.availableResolutions[j].width} {dev.availableResolutions[j].height} refreshRate {dev.availableResolutions[j].refreshRate}");
                     }
                 }
             }
