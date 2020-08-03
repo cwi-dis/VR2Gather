@@ -16,8 +16,6 @@ public class VideoWebCam : MonoBehaviour {
     Workers.BaseWorker      writer;
     Workers.BaseWorker      reader;
 
-
-
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
@@ -34,6 +32,8 @@ public class VideoWebCam : MonoBehaviour {
     public int      height = 720;
     public int      fps = 12;
     bool            ready = false;
+
+    public bool     useSocketIO = true;
 
     private IEnumerator Start() {
         ready = false;
@@ -60,16 +60,18 @@ public class VideoWebCam : MonoBehaviour {
                     inQueue = writerQueue
                 }
             };
-//            writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            writer = new Workers.SocketIOWriter(remoteURL, remoteStream, b2dStreams);
+            if(useSocketIO) writer = new Workers.SocketIOWriter(remoteURL, remoteStream, b2dStreams);
+            else            writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+
             Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
                 new Workers.PCSubReader.TileDescriptor() {
                         outQueue = videoCodecQueue,
                         tileNumber = 0
                     }
             };
-//            reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
-            reader = new Workers.SocketIOReader(remoteURL, remoteStream, tiles);
+            if (useSocketIO) reader = new Workers.SocketIOReader(remoteURL, remoteStream, tiles);
+            else             reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+
             decoder = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null/*audioPreparerQueue*/);
         }
@@ -85,9 +87,9 @@ public class VideoWebCam : MonoBehaviour {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
-                        texture = new Texture2D(recorder.width, recorder.height, TextureFormat.RGB24, false, true);
+                        texture = new Texture2D(decoder.Width, decoder.Height, TextureFormat.RGB24, false, true);
                         rendererDst.material.mainTexture = texture;
-                        rendererDst.transform.localScale = new Vector3(1, 1, recorder.height / (float)recorder.width);
+                        rendererDst.transform.localScale = new Vector3(1, 1, decoder.Height / (float)decoder.Width);
                     }
                     texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
                     texture.Apply();

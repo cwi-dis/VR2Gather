@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class NetController : MonoBehaviour {
     public static NetController Instance { get; private set; }
-    public string url = "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/";
+    public bool useLocalServer = true;
 
     public string userName = "Fernando@THEMO";
     public string userPassword = "THEMO2020";
@@ -50,8 +50,9 @@ public class NetController : MonoBehaviour {
         OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
 
         OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
-        OrchestratorController.Instance.SocketConnect(url);
-        // connection?.Connect("");
+
+        if (useLocalServer) OrchestratorController.Instance.SocketConnect("http://127.0.0.1:8080/socket.io/");
+        else OrchestratorController.Instance.SocketConnect("https://vrt-orch-sandbox.viaccess-orca.com/socket.io/");
     }
 
     private void OnGetOrchestratorVersionHandler(string pVersion) {
@@ -67,21 +68,21 @@ public class NetController : MonoBehaviour {
 
 
     public void OnOrchestratorRequest(string pRequest) {
-//        Debug.Log($"OnOrchestratorRequest {pRequest}");
+        Debug.Log($"OnOrchestratorRequest {pRequest}");
     }
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse) {
-//        Debug.Log($"OnOrchestratorResponse {pResponse}");
+        Debug.Log($"OnOrchestratorResponse {pResponse}");
     }
 
 
     private void OnConnect(bool pConnected) {
-//        Debug.Log($"OnConnect {pConnected}");
+        Debug.Log($"OnConnect {pConnected}");
     }
 
     private void OnLogin(bool userLoggedSucessfully) {
-//        Debug.Log($"OnLogin {userLoggedSucessfully}");
+        Debug.Log($"OnLogin {userLoggedSucessfully}");
     }
 
     private void OnGetUsersHandler(User[] users) {
