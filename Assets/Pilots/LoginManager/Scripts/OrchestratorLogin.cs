@@ -60,6 +60,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private InputField userPasswordLoginIF = null;
     [SerializeField] private Button loginButton = null;
     [SerializeField] private Button signinButton = null;
+    [SerializeField] private Toggle rememberMeButton = null;
 
     [Header("Signin")]
     [SerializeField] private GameObject signinPanel = null;
@@ -472,6 +473,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
+                CheckRememberMe();
                 if (developerOptions) {
                     infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(true);
@@ -1049,7 +1051,24 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Login from the main buttons Login & Logout
     private void Login() {
+        if (rememberMeButton.isOn) {
+            PlayerPrefs.SetString("userNameLoginIF", userNameLoginIF.text);
+            PlayerPrefs.SetString("userPasswordLoginIF", userPasswordLoginIF.text);
+        } else {
+            PlayerPrefs.DeleteKey("userNameLoginIF");
+            PlayerPrefs.DeleteKey("userPasswordLoginIF");
+        }
         OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
+    }
+
+    // Check saved used credentials.
+    private void CheckRememberMe() {
+        if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF")) {
+            rememberMeButton.isOn = true;
+            userNameLoginIF.text = PlayerPrefs.GetString("userNameLoginIF");
+            userPasswordLoginIF.text = PlayerPrefs.GetString("userPasswordLoginIF");
+        } else
+            rememberMeButton.isOn = false;
     }
 
     private void OnLogin(bool userLoggedSucessfully) {
