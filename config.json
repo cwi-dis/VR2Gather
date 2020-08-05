@@ -44,7 +44,7 @@
     },
 
     "LocalUser": {
-        "sourceType": "pcself",
+        "sourceType": "pcsynth",
         "SUBConfig": {
             "tileNumber": 0,
             "initialDelay": 0

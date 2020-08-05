@@ -32,6 +32,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
             case "pccerth":
+            case "pcsynth":
                 isSource = true;
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
@@ -54,6 +55,13 @@ public class EntityPipeline : MonoBehaviour {
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
+                } else if (cfg.sourceType == "pcsynth")
+                {
+                    Debug.Log("xxxjack synth reader");
+                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    pcReader = new Workers.RS2Reader(PCSelfConfig.frameRate, 0, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -233,6 +241,9 @@ public class EntityPipeline : MonoBehaviour {
                     _audioComponent.Init(userID); //Audio Pipeline
                     audioComponent = _audioComponent;
                 }
+                break;
+            default:
+                Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");
                 break;
         }
         //
