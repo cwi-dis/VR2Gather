@@ -58,7 +58,6 @@ public class EntityPipeline : MonoBehaviour {
                     reader = pcReader;
                 } else if (cfg.sourceType == "pcsynth")
                 {
-                    Debug.Log("xxxjack synth reader");
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                     if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;

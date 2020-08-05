@@ -97,6 +97,7 @@ abstract public class PilotController : MonoBehaviour {
                             LoadAudio(players[playerIdx], u);
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
@@ -193,6 +194,7 @@ abstract public class PilotController : MonoBehaviour {
                                 LoadAudio(players[playerIdx], u);
                                 break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
