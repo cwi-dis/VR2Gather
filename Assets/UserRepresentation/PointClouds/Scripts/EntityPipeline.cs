@@ -59,9 +59,10 @@ public class EntityPipeline : MonoBehaviour {
                 } else if (cfg.sourceType == "pcsynth")
                 {
                     Debug.Log("xxxjack synth reader");
-                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
-                    if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                    pcReader = new Workers.RS2Reader(PCSelfConfig.frameRate, 0, selfPreparerQueue, encoderQueue);
+                    int nPoints = 0;
+                    var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
+                    if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
+                    pcReader = new Workers.RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
