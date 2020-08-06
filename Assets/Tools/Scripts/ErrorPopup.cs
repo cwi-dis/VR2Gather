@@ -9,6 +9,9 @@ public class ErrorPopup : MonoBehaviour {
     [SerializeField] private Text errorMessage = null;
     [SerializeField] private Button errorButton = null;
 
+    private void Awake() {
+        DontDestroyOnLoad(gameObject);
+    }
     // Start is called before the first frame update
     void Start() {
 // Obsolete
