@@ -60,7 +60,7 @@ public class VideoWebCam : MonoBehaviour {
                     inQueue = writerQueue
                 }
             };
-            if(useSocketIO) writer = new Workers.SocketIOWriter(remoteURL, remoteStream, b2dStreams);
+            if(useSocketIO) writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, b2dStreams);
             else            writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
 
             Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
@@ -69,7 +69,7 @@ public class VideoWebCam : MonoBehaviour {
                         tileNumber = 0
                     }
             };
-            if (useSocketIO) reader = new Workers.SocketIOReader(remoteURL, remoteStream, tiles);
+            if (useSocketIO) reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, tiles);
             else             reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
 
             decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);

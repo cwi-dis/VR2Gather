@@ -10,18 +10,19 @@ namespace Workers
     {
         Workers.B2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(string remoteURL, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
+        public SocketIOWriter(User user, string remoteURL, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
             if (streams == null) {
-                throw new System.Exception($"{Name()}: outQueue is null");
+                throw new System.Exception($"[FPA] {Name()}: outQueue is null");
             }
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i) {
                 streams[i].name = $"{remoteURL}{remoteStream}#{i}";
+                Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try {
                 Start();
-                Debug.Log($"{Name()}: Started.");
+                Debug.Log($"[FPA] {Name()}: Started.");
             } catch (System.Exception e) {
                 Debug.LogError(e.Message);
                 throw e;
@@ -37,11 +38,11 @@ namespace Workers
             base.Stop();
             for (int i = 0; i < streams.Length; ++i) {
                 if (!streams[i].inQueue.IsClosed()) {
-                    Debug.LogWarning($"{Name()}: inQueue not closed, closing");
+                    Debug.LogWarning($"[FPA] {Name()}: inQueue not closed, closing");
                     streams[i].inQueue.Close();
                 }
             }
-            Debug.Log($"{Name()}: Stopped.");
+            Debug.Log($"[FPA] {Name()}: Stopped.");
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
         }
 
@@ -55,7 +56,9 @@ namespace Workers
                     var buf = new byte[chk.length];
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                    Debug.Log($"[FPA] Sending data {chk.length} to {streams[i].name}");
                     chk.free();
+
                 }
             }
         }

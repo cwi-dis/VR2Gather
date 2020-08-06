@@ -10,7 +10,8 @@ public class WebCamPipeline : MonoBehaviour {
     public int              fps = 12;
     bool                    ready = false;
 
-    Texture2D               texture;
+    public Texture2D        texture;
+    public WebCamTexture    webCamTexture;
 
 
     bool isSource = false;
@@ -36,8 +37,8 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "") {
-        Debug.Log($"----> WebCamPipeline Init userID {userID} cfg.sourceType {cfg.sourceType} url_pcc {url_pcc} url_audio {url_audio}");
+    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, string url_pcc = "", string url_audio = "") {
+        Debug.Log($"----> WebCamPipeline Init userID {user.userId} cfg.sourceType {cfg.sourceType} url_pcc {url_pcc} url_audio {url_audio}");
         switch (cfg.sourceType) {
             case "pcself": // Local 
                 isSource = true;
@@ -49,6 +50,7 @@ public class WebCamPipeline : MonoBehaviour {
                 // Create reader
                 //
                 webReader = new Workers.WebCamReader(width, height, fps, this, encoderQueue);
+                webCamTexture = webReader.webcamTexture;
                 //
                 // Create encoders for transmission
                 //
@@ -73,7 +75,7 @@ public class WebCamPipeline : MonoBehaviour {
                         }
                     };
                     //writer = new Workers.B2DWriter(url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
-                    writer = new Workers.SocketIOWriter(url_pcc, "webcam", b2dStreams);
+                    writer = new Workers.SocketIOWriter(user, url_pcc, "webcam", b2dStreams);
                 } catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -98,7 +100,7 @@ public class WebCamPipeline : MonoBehaviour {
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
-                    _audioComponent.Init(url_audio, "audio");
+                    _audioComponent.Init(user, url_audio, "audio");
                     audioComponent = _audioComponent;
                 }
                 break;
@@ -109,9 +111,9 @@ public class WebCamPipeline : MonoBehaviour {
                         tileNumber = 0
                     }
                 };
-                //reader = new Workers.PCSubReader(url_pcc,"pointcloud", 1, tiles);
+                //reader = new Workers.PCSubReader(url_pcc,"webcam", 1, tiles);
                 //                Socket.IO
-                reader = new Workers.SocketIOReader(url_pcc, "pointcloud", tiles);
+                reader = new Workers.SocketIOReader(user, url_pcc, "webcam", tiles);
 
                 //
                 // Create video decoder.
@@ -134,7 +136,7 @@ public class WebCamPipeline : MonoBehaviour {
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
-                    _audioComponent.Init(url_audio, "audio");
+                    _audioComponent.Init(user, url_audio, "audio");
                     audioComponent = _audioComponent;
                 }
                 break;
@@ -147,8 +149,7 @@ public class WebCamPipeline : MonoBehaviour {
     // Update is called once per frame
     System.DateTime lastUpdateTime;
     float timeToFrame = 0;
-    private void Update()
-    {
+    private void Update() {
         if (ready) {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {

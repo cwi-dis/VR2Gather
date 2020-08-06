@@ -62,6 +62,7 @@ namespace Workers {
 
         public override void Stop() {
             base.Stop();
+            webcamTexture.Stop();
             outQueue.Close();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
@@ -88,11 +89,17 @@ namespace Workers {
 
             webcamTexture = new WebCamTexture(width, height, fps);
             webcamTexture.Play();
+
+
+
             width = webcamTexture.width;
             height = webcamTexture.height;
 
-            if(webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
-            else webcamColors = new Color32[width*height];
+            if (webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
+            else {
+                webcamColors = new Color32[width * height];
+                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized");
+            }
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 

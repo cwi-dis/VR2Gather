@@ -29,7 +29,7 @@ abstract public class PilotController : MonoBehaviour {
                 }
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOSender>().Init(u.sfuData.url_audio, "audio");
+                player.audio.AddComponent<VoiceIOSender>().Init(u, u.sfuData.url_audio, "audio");
             }
         }
         else { // Receiver
@@ -40,7 +40,7 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceDashReceiver>().Init(u.sfuData.url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOReceiver>().Init(u.sfuData.url_audio, "audio"); //Audio Pipeline
+                player.audio.AddComponent<VoiceIOReceiver>().Init(u, u.sfuData.url_audio, "audio"); //Audio Pipeline
             }
         }
     }
@@ -93,7 +93,7 @@ abstract public class PilotController : MonoBehaviour {
                                 players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                             }
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
+                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(u, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                             // Audio
                             players[playerIdx].audio.SetActive(true);
                             LoadAudio(players[playerIdx], u);
@@ -112,7 +112,7 @@ abstract public class PilotController : MonoBehaviour {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
                             userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
+                            players[playerIdx].pc.AddComponent<EntityPipeline>().Init(u, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                             // xxxjack debug code
                             {
                                 EntityPipeline selfPipeline = players[playerIdx].pc.GetComponent<EntityPipeline>();
@@ -217,7 +217,7 @@ abstract public class PilotController : MonoBehaviour {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                                players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
+                                players[playerIdx].pc.AddComponent<EntityPipeline>().Init(u, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                                 break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
                                 if (u.userName == OrchestratorController.Instance.SelfUser.userName) {

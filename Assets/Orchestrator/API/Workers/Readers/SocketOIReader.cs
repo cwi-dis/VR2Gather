@@ -10,11 +10,7 @@ namespace Workers
     {
         Workers.PCSubReader.TileDescriptor[] descriptors;
 
-        public SocketIOReader(string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
-
-            Debug.Log($"SocketIOReader remoteURL {remoteURL} remoteStream {remoteStream}");
-
-
+        public SocketIOReader(User user, string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
             if (descriptors == null) {
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
@@ -22,8 +18,8 @@ namespace Workers
             try {
                 for (int i = 0; i < this.descriptors.Length; ++i) {
                     this.descriptors[i].name = $"{remoteURL}{remoteStream}#{i}";
-                    Debug.Log($"{Name()}: Started {this.descriptors[i].name}.");
-                    OrchestratorWrapper.instance.RegisterForDataStream(OrchestratorController.Instance.SelfUser.userId, this.descriptors[i].name);
+                    Debug.Log($"[FPA] RegisterForDataStream userId {user.userId} StreamType {this.descriptors[i].name}");
+                    OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 
@@ -39,26 +35,26 @@ namespace Workers
         }
 
 
-        public override void OnStop() {
-            base.OnStop();
+        public override void Stop() {
+            base.Stop();
             for (int i = 0; i < descriptors.Length; ++i) {
                 descriptors[i].outQueue?.Close();
-                Debug.Log($"{Name()}: Stopped.");
+                Debug.Log($"[FPA] {Name()}: Stopped.");
                 OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
             }
         }
         private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
-            //if (pPacket.dataStreamUserID == userID) 
-            {
-                Debug.Log($"Reciving data {pPacket.dataStreamPacket.Length} from {pPacket.dataStreamType}");
-
-                BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
-                System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
-                int id = 0;
-                if( int.TryParse( pPacket.dataStreamType.Substring(pPacket.dataStreamType.LastIndexOf('#')+1), out id) )
-                    descriptors[id].outQueue.Enqueue(chunk);
-                // OnData(pPacket.dataStreamPacket);
+            Debug.Log($"[FPA] Reciving data {pPacket.dataStreamPacket.Length} from {pPacket.dataStreamType}");
+            BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
+            System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
+            int id = 0;
+            string strID = pPacket.dataStreamType.Substring(pPacket.dataStreamType.LastIndexOf('#') + 1);
+            if (int.TryParse(strID, out id)) {
+                descriptors[id].outQueue.Enqueue(chunk);
+            } else {
+                Debug.Log($"[FPA] ERROR parsing {strID}.");
             }
+            // OnData(pPacket.dataStreamPacket);
         }
 
         public void OnData(byte[] data) {

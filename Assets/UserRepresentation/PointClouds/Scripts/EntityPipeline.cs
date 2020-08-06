@@ -27,7 +27,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
+    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
 
         switch (cfg.sourceType) {
             case "pcself": // old "rs2"
@@ -168,7 +168,7 @@ public class EntityPipeline : MonoBehaviour {
                     } else
                     if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                         VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
-                        _audioComponent.Init(url_audio, "audio");
+                        _audioComponent.Init(user, url_audio, "audio");
                         audioComponent = _audioComponent;
                     }
                 }
@@ -230,7 +230,7 @@ public class EntityPipeline : MonoBehaviour {
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                     VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
-                    _audioComponent.Init(url_audio, "audio");
+                    _audioComponent.Init(user, url_audio, "audio");
                     audioComponent = _audioComponent;
                 }
                 break;
