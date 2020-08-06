@@ -37,7 +37,7 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     public WebCamPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "") {
-
+        Debug.Log($"----> WebCamPipeline Init userID {userID} cfg.sourceType {cfg.sourceType} url_pcc {url_pcc} url_audio {url_audio}");
         switch (cfg.sourceType) {
             case "pcself": // Local 
                 isSource = true;
@@ -190,6 +190,7 @@ public class WebCamPipeline : MonoBehaviour {
     }
 
     void OnDestroy() {
+        webReader?.StopAndWait();
         reader?.StopAndWait();
         encoder?.StopAndWait();
         decoder?.StopAndWait();

@@ -33,8 +33,8 @@ namespace Workers
         }
 
 
-        public override void OnStop() {
-            base.OnStop();
+        public override void Stop() {
+            base.Stop();
             for (int i = 0; i < streams.Length; ++i) {
                 if (!streams[i].inQueue.IsClosed()) {
                     Debug.LogWarning($"{Name()}: inQueue not closed, closing");
@@ -47,7 +47,7 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (OrchestratorWrapper.instance!=null) {
+            if (OrchestratorWrapper.instance!=null && OrchestratorWrapper.instance.isConnected()) {
                 for (int i = 0; i < streams.Length; ++i) {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
                     if (chk == null) return;

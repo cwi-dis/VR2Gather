@@ -72,8 +72,8 @@ public class VideoWebCam : MonoBehaviour {
             if (useSocketIO) reader = new Workers.SocketIOReader(remoteURL, remoteStream, tiles);
             else             reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
 
-            decoder = new Workers.VideoDecoder(videoCodecQueue, null/*audioCodecQueue*/, videoPreparerQueue, null/*audioPreparerQueue*/);
-            preparer = new Workers.VideoPreparer(videoPreparerQueue, null/*audioPreparerQueue*/);
+            decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
+            preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
             Debug.LogError($"VideoWebCam.Init: Exception: {e.Message}\n{e.StackTrace}");

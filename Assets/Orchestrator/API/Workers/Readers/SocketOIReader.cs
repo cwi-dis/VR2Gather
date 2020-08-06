@@ -11,6 +11,10 @@ namespace Workers
         Workers.PCSubReader.TileDescriptor[] descriptors;
 
         public SocketIOReader(string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
+
+            Debug.Log($"SocketIOReader remoteURL {remoteURL} remoteStream {remoteStream}");
+
+
             if (descriptors == null) {
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
@@ -46,6 +50,8 @@ namespace Workers
         private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
             //if (pPacket.dataStreamUserID == userID) 
             {
+                Debug.Log($"Reciving data {pPacket.dataStreamPacket.Length} from {pPacket.dataStreamType}");
+
                 BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                 System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
                 int id = 0;

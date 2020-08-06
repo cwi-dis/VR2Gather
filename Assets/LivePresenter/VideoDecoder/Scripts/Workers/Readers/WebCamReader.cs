@@ -46,25 +46,25 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
+            if (outQueue.IsClosed()) return;
             try {
+
                 frameReady.Wait(isClosed.Token);
                 if (!isClosed.IsCancellationRequested) {
                     Color32ArrayToByteArray(webcamColors, outQueue);
                 } else {
                     UnityEngine.Debug.Log($"Stopped {stopWatch.ElapsedMilliseconds}");
                 }
-            } finally {
+            } catch(OperationCanceledException e ){
 //                frameReady.Release();
-
             }
         }
 
-        public override void OnStop() {
-            base.OnStop();
+        public override void Stop() {
+            base.Stop();
+            outQueue.Close();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
-            UnityEngine.Debug.Log($"{Name()}: Stopped webcam {stopWatch.ElapsedMilliseconds}.");
-            outQueue.Close();
         }
 
 
@@ -91,7 +91,8 @@ namespace Workers {
             width = webcamTexture.width;
             height = webcamTexture.height;
 
-            webcamColors = webcamTexture.GetPixels32(webcamColors);
+            if(webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
+            else webcamColors = new Color32[width*height];
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
@@ -108,8 +109,8 @@ namespace Workers {
             while (true) {
                 lock (this) {
                     if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
-                        
-                        webcamColors = webcamTexture.GetPixels32(webcamColors);
+                        if(webcamTexture.isPlaying)
+                            webcamColors = webcamTexture.GetPixels32(webcamColors);
                         timeToFrame += frameTime;
                         frameReady.Release();
                     }
