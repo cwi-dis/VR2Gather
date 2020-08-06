@@ -6,11 +6,13 @@ using UnityEngine;
 
 namespace Workers
 {
-    public class SocketIOReader : BaseWorker, ISocketReader
-    {
+    public class SocketIOReader : BaseWorker, ISocketReader {
         Workers.PCSubReader.TileDescriptor[] descriptors;
 
+        User    user;
+
         public SocketIOReader(User user, string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
+            this.user = user;
             if (descriptors == null) {
                 throw new System.Exception($"{Name()}: descriptors is null");
             }
@@ -40,11 +42,11 @@ namespace Workers
             for (int i = 0; i < descriptors.Length; ++i) {
                 descriptors[i].outQueue?.Close();
                 Debug.Log($"[FPA] {Name()}: Stopped.");
-                OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
+                if(OrchestratorWrapper.instance!=null && OrchestratorController.Instance.SelfUser!=null)
+                    OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
             }
         }
         private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
-            Debug.Log($"[FPA] Reciving data {pPacket.dataStreamPacket.Length} from {pPacket.dataStreamType}");
             BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
             System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
             int id = 0;

@@ -139,6 +139,7 @@ public class WebCamPipeline : MonoBehaviour {
                     _audioComponent.Init(user, url_audio, "audio");
                     audioComponent = _audioComponent;
                 }
+                ready = true;
                 break;
         }
         return this;
@@ -155,10 +156,11 @@ public class WebCamPipeline : MonoBehaviour {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
                         texture = new Texture2D(decoder.Width, decoder.Height, TextureFormat.RGB24, false, true);
-                        var renderer = GetComponent<Renderer>();
+                        Transform screen = transform.Find("Screen");
+                        var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
                             renderer.material.mainTexture = texture;
-                            renderer.transform.localScale = new Vector3(1, 1, decoder.Height / (float)decoder.Width);
+                            renderer.transform.localScale = new Vector3(0.5f, (decoder.Height / (float)decoder.Width) * 0.5f, 1);
                         }
                     }
                     texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);

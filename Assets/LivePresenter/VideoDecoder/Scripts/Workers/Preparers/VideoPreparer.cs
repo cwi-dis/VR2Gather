@@ -74,6 +74,8 @@ namespace Workers {
                     }
                     lock (this) { availableVideo += len; }
                     mc.free();
+                } else {
+                    Debug.LogError($"{Name()}: CircularBuffer is full");
                 }
             }
 
