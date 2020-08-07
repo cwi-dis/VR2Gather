@@ -12,7 +12,7 @@ public class VoiceIOReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string userID) {
+    public void Init(string remoteURL, string remoteStream) {
         Workers.VoiceReader.PrepareDSP();
         //        const int frequency = 16000;
         //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
@@ -25,7 +25,13 @@ public class VoiceIOReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.SocketIOReader(userID, decoderQueue);
+        Workers.PCSubReader.TileDescriptor[] descriptors = new Workers.PCSubReader.TileDescriptor[1] {
+            new Workers.PCSubReader.TileDescriptor() {
+                outQueue = decoderQueue
+            }
+        };
+
+        reader = new Workers.SocketIOReader(remoteURL, remoteStream, descriptors);
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }

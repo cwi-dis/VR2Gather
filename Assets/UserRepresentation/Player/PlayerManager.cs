@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour {
     public Camera   cam;
     public DataProviders.NetworkDataProvider tvm;
     public GameObject avatar;
+    public GameObject webcam;
     public GameObject pc;
     public GameObject audio;
 }
