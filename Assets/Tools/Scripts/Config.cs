@@ -81,6 +81,12 @@ public class Config {
             }
             public _RS2ReaderConfig RS2ReaderConfig;
             [Serializable]
+            public class _SynthReaderConfig
+            {
+                public int nPoints;
+            }
+            public _SynthReaderConfig SynthReaderConfig;
+            [Serializable]
             public class _CerthReaderConfig
             {
                 public string ConnectionURI;

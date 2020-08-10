@@ -38,7 +38,12 @@ public class OrchestratorCalibration : MonoBehaviour {
             player.tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
             player.tvm.gameObject.SetActive(true);
         }
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_) {
+        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_)
+        {
+            player.pc.gameObject.SetActive(true);
+        }
+        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_SYNTH__)
+        {
             player.pc.gameObject.SetActive(true);
         }
     }
