@@ -56,7 +56,6 @@ namespace Workers
                     var buf = new byte[chk.length];
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
-                    Debug.Log($"[FPA] Sending data {chk.length} to {streams[i].name}");
                     chk.free();
 
                 }

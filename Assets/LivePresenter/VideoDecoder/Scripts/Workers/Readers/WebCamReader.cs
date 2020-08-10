@@ -48,7 +48,6 @@ namespace Workers {
             base.Update();
             if (outQueue.IsClosed()) return;
             try {
-
                 frameReady.Wait(isClosed.Token);
                 if (!isClosed.IsCancellationRequested) {
                     Color32ArrayToByteArray(webcamColors, outQueue);
@@ -67,7 +66,6 @@ namespace Workers {
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
         }
-
 
         float                   timeToFrame;
         float                   frameTime;
@@ -89,8 +87,6 @@ namespace Workers {
 
             webcamTexture = new WebCamTexture(width, height, fps);
             webcamTexture.Play();
-
-
 
             width = webcamTexture.width;
             height = webcamTexture.height;
@@ -114,7 +110,8 @@ namespace Workers {
 
         IEnumerator WebCamRecorder() {
             while (true) {
-                lock (this) {
+//                lock (this) 
+                {
                     if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
                         if(webcamTexture.isPlaying)
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
@@ -133,9 +130,7 @@ namespace Workers {
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;
-                lock (outQueue) {
-                    outQueue.Enqueue(chunk);
-                }
+                outQueue.Enqueue(chunk);
             } finally {
                 if (handle != default(GCHandle))
                     handle.Free();
