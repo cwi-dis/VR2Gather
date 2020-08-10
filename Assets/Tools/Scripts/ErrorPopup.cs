@@ -9,13 +9,28 @@ public class ErrorPopup : MonoBehaviour {
     [SerializeField] private Text errorMessage = null;
     [SerializeField] private Button errorButton = null;
 
+    private void Awake() {
+        DontDestroyOnLoad(gameObject);
+    }
     // Start is called before the first frame update
     void Start() {
-        Application.RegisterLogCallback(HandleException);
+// Obsolete
+//        Application.RegisterLogCallback(HandleException);
+        Application.logMessageReceived += Application_logMessageReceived;
 
         errorButton.onClick.AddListener(delegate { ErrorButton(); });        
     }
 
+    private void Application_logMessageReceived(string condition, string stackTrace, LogType type) {
+        string msg = condition;
+        if (type == LogType.Exception) {
+            FillError("Exception", msg);
+        } else if (type == LogType.Error) {
+            FillError("Error", msg);
+        }
+    }
+    /*
+    // Obsolete
     void HandleException(string condition, string stackTrace, LogType type) {
         string msg = condition;
         if (type == LogType.Exception) {
@@ -25,10 +40,10 @@ public class ErrorPopup : MonoBehaviour {
             FillError("Error", msg);
         }
     }
-
+    */
     private void FillError(string title, string message) {
         errorTitle.text = title;
-        errorMessage.text = message;
+        errorMessage.text = message.Length< 4096 ? message: message.Substring( 0, 4096);
         errorPanel.SetActive(true);
     }
 
