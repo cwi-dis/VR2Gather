@@ -21,7 +21,8 @@ public class Calibration : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_)
+        var rep = OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        if (rep == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_ || rep == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
             p0 = gameObject.AddComponent<EntityPipeline>().Init(new OrchestratorWrapping.User(), Config.Instance.LocalUser, "", "", true);
     }
 
