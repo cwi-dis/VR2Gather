@@ -90,7 +90,7 @@ public class WebCamPipeline : MonoBehaviour {
                     if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                     try {
                         VoiceDashSender _audioComponent = gameObject.AddComponent<VoiceDashSender>();
-                        _audioComponent.Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                        _audioComponent.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
                         audioComponent = _audioComponent; //Audio Pipeline
                     }
                     catch (System.EntryPointNotFoundException e) {
@@ -131,7 +131,7 @@ public class WebCamPipeline : MonoBehaviour {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                     VoiceDashReceiver _audioComponent = gameObject.AddComponent<VoiceDashReceiver>();
-                    _audioComponent.Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    _audioComponent.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                     audioComponent = _audioComponent;
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {

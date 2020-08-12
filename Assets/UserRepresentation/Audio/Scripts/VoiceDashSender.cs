@@ -12,7 +12,7 @@ public class VoiceDashSender : MonoBehaviour {
     QueueThreadSafe senderQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string _url, string _streamName, int _segmentSize, int _segmentLife) {
+    public void Init(OrchestratorWrapping.User user, string _url, string _streamName, int _segmentSize, int _segmentLife) {
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
         Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];

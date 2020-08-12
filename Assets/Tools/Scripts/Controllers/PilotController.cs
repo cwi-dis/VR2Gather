@@ -21,7 +21,7 @@ abstract public class PilotController : MonoBehaviour {
                 if (AudioBin2Dash == null)
                     throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                 try {
-                    player.audio.AddComponent<VoiceDashSender>().Init(u.sfuData.url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                    player.audio.AddComponent<VoiceDashSender>().Init(u, u.sfuData.url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
@@ -37,7 +37,7 @@ abstract public class PilotController : MonoBehaviour {
                 var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
                 if (AudioSUBConfig == null)
                     throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                player.audio.AddComponent<VoiceDashReceiver>().Init(u.sfuData.url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                player.audio.AddComponent<VoiceDashReceiver>().Init(u, u.sfuData.url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
                 player.audio.AddComponent<VoiceIOReceiver>().Init(u, u.sfuData.url_audio, "audio"); //Audio Pipeline

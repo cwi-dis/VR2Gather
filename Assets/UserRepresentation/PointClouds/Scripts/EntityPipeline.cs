@@ -151,7 +151,8 @@ public class EntityPipeline : MonoBehaviour {
                     if (Bin2Dash == null)
                         throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
-                        writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+//                        writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                        writer = new Workers.SocketIOWriter(user, url_pcc, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -166,7 +167,7 @@ public class EntityPipeline : MonoBehaviour {
                         if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                         try {
                             VoiceDashSender _audioComponent = gameObject.AddComponent<VoiceDashSender>();
-                            _audioComponent.Init(url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
+                            _audioComponent.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
                             audioComponent = _audioComponent; //Audio Pipeline
                         }
                         catch (System.EntryPointNotFoundException e) {
@@ -224,7 +225,8 @@ public class EntityPipeline : MonoBehaviour {
                         tileNumber = tileNumbers[i]
                     };
                 };
-                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
+//                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
+                reader = new Workers.SocketIOReader(user, url_pcc, "pointcloud", tilesToReceive);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -233,7 +235,7 @@ public class EntityPipeline : MonoBehaviour {
                     var AudioSUBConfig = cfg.AudioSUBConfig;
                     if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                     VoiceDashReceiver _audioComponent = gameObject.AddComponent<VoiceDashReceiver>();
-                    _audioComponent.Init(url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
+                    _audioComponent.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
                     audioComponent = _audioComponent;
                 } else
                 if (Config.Instance.audioType == Config.AudioType.SocketIO) {
