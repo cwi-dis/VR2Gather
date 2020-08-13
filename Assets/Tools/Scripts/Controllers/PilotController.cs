@@ -29,7 +29,7 @@ abstract public class PilotController : MonoBehaviour {
                 }
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOSender>().Init(u.userId);
+                player.audio.AddComponent<VoiceIOSender>().Init(u.sfuData.url_audio, "audio");
             }
         }
         else { // Receiver
@@ -40,7 +40,7 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceDashReceiver>().Init(u.sfuData.url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
             }
             else if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                player.audio.AddComponent<VoiceIOReceiver>().Init(u.userId); //Audio Pipeline
+                player.audio.AddComponent<VoiceIOReceiver>().Init(u.sfuData.url_audio, "audio"); //Audio Pipeline
             }
         }
     }
@@ -61,6 +61,7 @@ abstract public class PilotController : MonoBehaviour {
                     if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                         spectators[spectatorIdx].cam.gameObject.SetActive(true);
                         my_id = spectators[spectatorIdx].id;
+                        spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
                     spectators[spectatorIdx].orchestratorId = u.userId;
 
@@ -71,7 +72,7 @@ abstract public class PilotController : MonoBehaviour {
                     spectatorIdx++;
                 }
                 else { // Load Players
-                       // Activate the GO
+                    // Activate the GO
                     players[playerIdx].gameObject.SetActive(true);
 
                     // Fill PlayerManager properties
@@ -81,17 +82,37 @@ abstract public class PilotController : MonoBehaviour {
                     if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                         players[playerIdx].cam.gameObject.SetActive(true);
                         my_id = players[playerIdx].id;
+                        players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
 
                     switch (u.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
+                            // FER: Implementacion representacion de webcam.
+                            players[playerIdx].webcam.SetActive(true);
+                            if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                            }
+                            Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
+                            // Audio
+                            players[playerIdx].audio.SetActive(true);
+                            LoadAudio(players[playerIdx], u);
+                            break;
+
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__AVATAR__:
                             players[playerIdx].avatar.SetActive(true);
+                            if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                            }
+                            // Audio
+                            players[playerIdx].audio.SetActive(true);
+                            LoadAudio(players[playerIdx], u);
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
-                            Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                            userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                             players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                             // xxxjack debug code
                             {
@@ -144,16 +165,16 @@ abstract public class PilotController : MonoBehaviour {
             if (!firstPresenter) {
                 if (u.userData.userRepresentationType != OrchestratorWrapping.UserData.eUserRepresentationType.__NONE__) {
                     if (u.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__SPECTATOR__) { // Load Spectator
-                                                                                                                                    // Activate the GO
                         spectators[spectatorIdx].gameObject.SetActive(true);
 
                         // Fill PlayerManager properties
                         spectators[spectatorIdx].id = id;
+                        spectators[spectatorIdx].orchestratorId = u.userId;
                         if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                             spectators[spectatorIdx].cam.gameObject.SetActive(true);
                             my_id = spectators[spectatorIdx].id;
+                            spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
-                        spectators[spectatorIdx].orchestratorId = u.userId;
 
                         // Load Audio
                         spectators[spectatorIdx].audio.SetActive(true);
@@ -162,7 +183,6 @@ abstract public class PilotController : MonoBehaviour {
                         spectatorIdx++;
                     }
                     else { // Load Players
-                           // Activate the GO
                         players[playerIdx].gameObject.SetActive(true);
 
                         // Fill PlayerManager properties
@@ -171,20 +191,41 @@ abstract public class PilotController : MonoBehaviour {
                         if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
                             players[playerIdx].cam.gameObject.SetActive(true);
                             my_id = players[playerIdx].id;
-                            players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-                            players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+                            players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
 
                         switch (u.userData.userRepresentationType) {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
+                                // FER: Implementacion representacion de webcam.
+                                players[playerIdx].webcam.SetActive(true);
+                                if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                                }
+                                // Audio
+                                players[playerIdx].audio.SetActive(true);
+                                LoadAudio(players[playerIdx], u);
+                                break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__AVATAR__:
+                                players[playerIdx].avatar.SetActive(true);
+                                if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                                }
+                                // Audio
+                                players[playerIdx].audio.SetActive(true);
+                                LoadAudio(players[playerIdx], u);
+                                break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                                 players[playerIdx].pc.AddComponent<EntityPipeline>().Init(players[playerIdx].orchestratorId, userCfg, u.sfuData.url_pcc, u.sfuData.url_audio);
                                 break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
+                                if (u.userName == OrchestratorController.Instance.SelfUser.userName) {
+                                    players[playerIdx].tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+                                    players[playerIdx].tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+                                }
                                 players[playerIdx].tvm.isMaster = firstTVM;
                                 if (firstTVM) firstTVM = false;
                                 players[playerIdx].tvm.connectionURI = u.userData.userMQurl;

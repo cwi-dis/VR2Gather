@@ -111,8 +111,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   orchestratorId: 
+  userName: {fileID: 0}
   cam: {fileID: 9036242586911476572}
   tvm: {fileID: 0}
+  avatar: {fileID: 0}
   pc: {fileID: 0}
   audio: {fileID: 7957063256587861150}
 --- !u!114 &2739098133578576074
@@ -163,7 +165,7 @@ MonoBehaviour:
   Mode: 1
   SyncAutomatically: 0
   UpdateFrequency: 15
-  InterpolateUpdates: 0
+  InterpolateUpdates: 1
 --- !u!1 &9036242586911476547
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,6 +267,7 @@ MonoBehaviour:
   mouseSensitivity: 100
   spectator: 1
   playerBody: {fileID: 9036242585977264199}
+  avatarHead: {fileID: 0}
 --- !u!114 &1196880443516602876
 MonoBehaviour:
   m_ObjectHideFlags: 0

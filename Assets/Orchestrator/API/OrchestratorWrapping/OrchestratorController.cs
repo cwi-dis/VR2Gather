@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -113,7 +113,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public Action<UserEvent> OnUserEventReceivedEvent;
 
     // Orchestrator Accessors
-    public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
+    public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } get { return isAutoRetrievingData; } }
     public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
     public bool UserIsLogged { get { return userIsLogged; } }
     public bool UserIsMaster { get { return userIsMaster; } }
@@ -832,12 +832,14 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     private void Collect_SFU_Logs(string pSessionID)
     {
+#if !UNITY_EDITOR
         string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
         string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
         Application.OpenURL(requestURL);
+#endif
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 }

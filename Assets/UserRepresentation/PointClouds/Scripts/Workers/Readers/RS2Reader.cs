@@ -11,27 +11,60 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public RS2Reader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null) : base(WorkerType.Init) {
+        RS2Reader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        {
             if (_outQueue == null)
             {
                 throw new System.Exception("{Name()}: outQueue is null");
             }
             outQueue = _outQueue;
             out2Queue = _out2Queue;
+        }
+
+        public RS2Reader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
+        {
             voxelSize = _voxelSize;
             if (_frameRate > 0)
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
             }
-            try {
-                reader = cwipc.realsense2(_configFilename);  
-                if (reader != null) {
+            try
+            {
+                reader = cwipc.realsense2(_configFilename);
+                if (reader != null)
+                {
                     Start();
                     Debug.Log("{Name()}: Started.");
-                } else
+                }
+                else
                     throw new System.Exception($"{Name()}: cwipc_realsense2 could not be created"); // Should not happen, should throw exception
             }
-            catch (System.Exception e) {
+            catch (System.Exception e)
+            {
+                Debug.LogError(e.Message);
+                throw e;
+            }
+        }
+        public RS2Reader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
+        {
+            voxelSize = 0;
+            if (_frameRate > 0)
+            {
+                frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
+            }
+            try
+            {
+                reader = cwipc.synthetic((int)_frameRate, nPoints);
+                if (reader != null)
+                {
+                    Start();
+                    Debug.Log("{Name()}: Started.");
+                }
+                else
+                    throw new System.Exception($"{Name()}: cwipc_synthetic could not be created"); // Should not happen, should throw exception
+            }
+            catch (System.Exception e)
+            {
                 Debug.LogError(e.Message);
                 throw e;
             }

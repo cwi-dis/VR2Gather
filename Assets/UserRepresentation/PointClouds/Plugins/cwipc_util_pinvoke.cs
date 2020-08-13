@@ -55,7 +55,7 @@ public class cwipc
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
-        public const System.UInt64 CWIPC_API_VERSION = 0x20200512;
+        public const System.UInt64 CWIPC_API_VERSION = 0x20200703;
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -96,10 +96,15 @@ public class cwipc
         internal extern static int cwipc_sink_interact(IntPtr sink, [MarshalAs(UnmanagedType.LPStr)]string prompt, [MarshalAs(UnmanagedType.LPStr)]string responses, System.Int32 millis);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_synthetic(ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_synthetic(int fps, int npoints, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, IntPtr bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, IntPtr origin, IntPtr bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_tilefilter(IntPtr pc, int tilenum);
 
     }
     private class _API_cwipc_realsense2
@@ -164,12 +169,6 @@ public class cwipc
 
         [DllImport(myDllName)]
         internal extern static void cwipc_encodergroup_feed(IntPtr enc, IntPtr pc);
-
-        [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
-
-        [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_tilefilter(IntPtr pc, int tilenum);
 
     }
 
@@ -382,9 +381,9 @@ public class cwipc
         }
     }
 
-    public static source synthetic() {
+    public static source synthetic(int fps=0, int npoints=0) {
         System.IntPtr errorPtr = System.IntPtr.Zero;
-        System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(ref errorPtr);
+        System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(fps, npoints, ref errorPtr);
         if (rdr == System.IntPtr.Zero) {
             if (errorPtr == System.IntPtr.Zero) {
                 throw new System.Exception("cwipc.synthetic: returned null without setting error message");
@@ -453,14 +452,14 @@ public class cwipc
 
     public static pointcloud downsample(pointcloud pc, float voxelSize) {
         System.IntPtr pcPtr = pc._intptr();
-        System.IntPtr rvPtr = _API_cwipc_codec.cwipc_downsample(pcPtr, voxelSize);
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_downsample(pcPtr, voxelSize);
         if (rvPtr == System.IntPtr.Zero) return null;
         return new pointcloud(rvPtr);
     }
 
     public static pointcloud tilefilter(pointcloud pc, int tileNum) {
         System.IntPtr pcPtr = pc._intptr();
-        System.IntPtr rvPtr = _API_cwipc_codec.cwipc_tilefilter(pcPtr, tileNum);
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_tilefilter(pcPtr, tileNum);
         if (rvPtr == System.IntPtr.Zero) return null;
         return new pointcloud(rvPtr);
     }
@@ -469,8 +468,7 @@ public class cwipc
     {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         // xxxjack don't know yet how to pass the optional float[6] array. Passing NULL for now.
-        // xxxjack move hasn't been implemented yet in cwipc_from_certh. TBD.
-        System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, System.IntPtr.Zero, timestamp, ref errorPtr);
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, System.IntPtr.Zero, System.IntPtr.Zero, timestamp, ref errorPtr);
         if (rvPtr == System.IntPtr.Zero)
         {
             if (errorPtr == System.IntPtr.Zero)

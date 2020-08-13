@@ -8,6 +8,7 @@ namespace Workers {
     {
         public struct DashStreamDescription
         {
+            public string name;
             public uint tileNumber;
             public uint quality;
             public QueueThreadSafe inQueue;

@@ -6,9 +6,8 @@ namespace Workers {
     public class BaseWorker {
         public enum WorkerType { Init, Run, End };
 
-        protected bool          bRunning = false;
+        public bool isRunning { get; private set; }
         System.Threading.Thread thread;
-        public bool isRunning { get { return bRunning; } }
         WorkerType type;
         protected int loopInterval = 1; // How many milliseconds to sleep in the runloop
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
@@ -24,14 +23,14 @@ namespace Workers {
         }
 
         protected virtual void Start() {
-            bRunning = true;
+            isRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
             thread.Name = Name();
             thread.Start();
         }
 
         public virtual void Stop() {
-            bRunning = false;
+            isRunning = false;
         }
 
         public virtual void StopAndWait() {
@@ -53,7 +52,7 @@ namespace Workers {
             if (debugThreading) Debug.Log($"{Name()}: thread started");
             try
             {
-                while (bRunning)
+                while (isRunning)
                 {
                     Update();
                     System.Threading.Thread.Sleep(loopInterval);

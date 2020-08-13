@@ -32,6 +32,8 @@ public class Config {
     {
         public string   connectionURI;
         public string   exchangeName;
+        public bool printMetrics;
+        public bool saveMetrics;
     };
     public _TVMs TVMs;
 
@@ -78,6 +80,12 @@ public class Config {
                 public string configFilename;
             }
             public _RS2ReaderConfig RS2ReaderConfig;
+            [Serializable]
+            public class _SynthReaderConfig
+            {
+                public int nPoints;
+            }
+            public _SynthReaderConfig SynthReaderConfig;
             [Serializable]
             public class _CerthReaderConfig
             {

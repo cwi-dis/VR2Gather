@@ -6,6 +6,8 @@
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
+		"printMetrics": true,
+		"saveMetrics": false,
         "offsetPosition": {
             "x": -1.9099986553192139,
             "y": 1.174999713897705,
@@ -42,7 +44,7 @@
     },
 
     "LocalUser": {
-        "sourceType": "pcself",
+        "sourceType": "pcsynth",
         "SUBConfig": {
             "tileNumber": 0,
             "initialDelay": 0
@@ -55,6 +57,9 @@
             "RS2ReaderConfig": {
                 "configFilename": "../cameraconfig.xml"
             },
+			"SynthReaderConfig" : {
+				"nPoints" : 8000
+			},
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
                 "PCLExchangeName": "VolumetricData",
