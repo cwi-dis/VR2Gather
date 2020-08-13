@@ -44,7 +44,7 @@
     },
 
     "LocalUser": {
-        "sourceType": "pcsynth",
+        "sourceType": "pccerth",
         "SUBConfig": {
             "tileNumber": 0,
             "initialDelay": 0
@@ -63,7 +63,10 @@
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
                 "PCLExchangeName": "VolumetricData",
-                "MetaExchangeName": "VolumetricMetaData"
+                "MetaExchangeName": "VolumetricMetaData",
+				"OriginCorrection": [0, 0, 0],
+				"BoundingBotLeft": [0, 0, 0],
+				"BoundingTopRight": [0, 0, 0]
             },
             "voxelSize": 0.005,
             "frameRate" : 25,
