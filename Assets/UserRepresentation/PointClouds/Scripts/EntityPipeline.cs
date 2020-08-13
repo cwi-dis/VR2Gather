@@ -74,7 +74,7 @@ public class EntityPipeline : MonoBehaviour {
                         CerthReaderConfig.MetaExchangeName, 
                         CerthReaderConfig.OriginCorrection, 
                         CerthReaderConfig.BoundingBotLeft, 
-                        CerthReaderConfig.BoundingBotLeft,
+                        CerthReaderConfig.BoundingTopRight,
                         PCSelfConfig.voxelSize, 
                         selfPreparerQueue, 
                         encoderQueue);
