@@ -93,7 +93,7 @@ public class RabbitMQReceiver
             Disconnect();
             m_Connected = false;
             m_Subscription = null;
-            UnityEngine.Debug.LogWarning($"RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI} caught exception {e.Message}");
+            UnityEngine.Debug.LogError($"RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI} caught exception {e.Message}");
         }
         return m_Subscription;
     }
