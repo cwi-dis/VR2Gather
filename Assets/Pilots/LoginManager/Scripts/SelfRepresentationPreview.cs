@@ -20,11 +20,13 @@ public class SelfRepresentationPreview : MonoBehaviour
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
         player.avatar.SetActive(false);
-        if (TryGetComponent(out WebCamPipeline web))
+        if (player.webcam.TryGetComponent(out WebCamPipeline web))
             Destroy(web);
         player.webcam.SetActive(false);
-        if (TryGetComponent(out EntityPipeline pc))
-            Destroy(pc);
+        if (player.pc.TryGetComponent(out EntityPipeline pointcloud))
+            Destroy(pointcloud);
+        if (player.pc.TryGetComponent(out Workers.PointBufferRenderer renderer))
+            Destroy(renderer);
         player.pc.SetActive(false);
         player.tvm.gameObject.SetActive(false);
         switch (representation) {
@@ -44,15 +46,15 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser);
+                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCSelf);
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser);
+                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCSynth);
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser);
+                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCCerth);
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);

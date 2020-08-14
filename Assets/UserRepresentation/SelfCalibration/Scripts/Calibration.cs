@@ -22,8 +22,19 @@ public class Calibration : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         var rep = OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
-        if (rep == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_ || rep == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
-            p0 = gameObject.AddComponent<EntityPipeline>().Init("",Config.Instance.LocalUser, "", "", true);
+        switch (rep) {
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
+                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCSelf, "", "", true);
+                break;
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
+                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCSynth, "", "", true);
+                break;
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
+                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCCerth, "", "", true);
+                break;
+            default:
+                break;
+        }
     }
 
     bool rightTrigger = false;
