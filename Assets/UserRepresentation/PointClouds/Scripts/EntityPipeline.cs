@@ -242,6 +242,45 @@ public class EntityPipeline : MonoBehaviour {
                     audioComponent = _audioComponent;
                 }
                 break;
+            case "preview":
+                isSource = true;
+                Workers.TiledWorker previewReader;
+                var previewConfig = cfg.PCSelfConfig;
+                if (previewConfig == null)
+                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
+                //
+                // Create renderer and preparer for self-view.
+                //
+                QueueThreadSafe previewPreparerQueue = _CreateRendererAndPreparer();
+                
+                //
+                // Create reader
+                //
+                if (cfg.sourceType == "pcself") {
+                    var RS2ReaderConfig = previewConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
+
+                    previewReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                else if (cfg.sourceType == "pcsynth") {
+                    int nPoints = 0;
+                    var SynthReaderConfig = previewConfig.SynthReaderConfig;
+                    if (SynthReaderConfig != null)
+                        nPoints = SynthReaderConfig.nPoints;
+                    previewReader = new Workers.RS2Reader(previewConfig.frameRate, nPoints, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                else // sourcetype == pccerth: same as pcself but using Certh capturer
+                {
+                    var CerthReaderConfig = previewConfig.CerthReaderConfig;
+                    if (CerthReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
+                    previewReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, previewConfig.voxelSize, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                break;
             default:
                 Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");
                 break;
