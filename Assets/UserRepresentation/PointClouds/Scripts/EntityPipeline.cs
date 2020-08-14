@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PCSourceType { PCSelf, PCCerth, PCSynth}
+
 public class EntityPipeline : MonoBehaviour {
     bool isSource = false;
     Workers.BaseWorker  reader;
@@ -27,12 +29,10 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(string userID, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
+    public EntityPipeline Init(string userID, Config._User cfg, PCSourceType pcSourceType = PCSourceType.PCSynth, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
 
         switch (cfg.sourceType) {
-            case "pcself": // old "rs2"
-            case "pccerth":
-            case "pcsynth":
+            case "self":
                 isSource = true;
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
@@ -49,14 +49,14 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                if (cfg.sourceType == "pcself")
+                if (pcSourceType == PCSourceType.PCSelf)
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
-                } else if (cfg.sourceType == "pcsynth")
+                } else if (pcSourceType == PCSourceType.PCSynth)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
@@ -64,7 +64,7 @@ public class EntityPipeline : MonoBehaviour {
                     pcReader = new Workers.RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else // sourcetype == pccerth: same as pcself but using Certh capturer
+                else  // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
                 {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
@@ -181,7 +181,7 @@ public class EntityPipeline : MonoBehaviour {
                     }
                 }
                 break;
-            case "pcsub":
+            case "remote":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
                 //
@@ -242,6 +242,45 @@ public class EntityPipeline : MonoBehaviour {
                     audioComponent = _audioComponent;
                 }
                 break;
+            case "preview":
+                isSource = true;
+                Workers.TiledWorker previewReader;
+                var previewConfig = cfg.PCSelfConfig;
+                if (previewConfig == null)
+                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
+                //
+                // Create renderer and preparer for self-view.
+                //
+                QueueThreadSafe previewPreparerQueue = _CreateRendererAndPreparer();
+                
+                //
+                // Create reader
+                //
+                if (pcSourceType == PCSourceType.PCSelf) {
+                    var RS2ReaderConfig = previewConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
+
+                    previewReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                else if (pcSourceType == PCSourceType.PCSynth) {
+                    int nPoints = 0;
+                    var SynthReaderConfig = previewConfig.SynthReaderConfig;
+                    if (SynthReaderConfig != null)
+                        nPoints = SynthReaderConfig.nPoints;
+                    previewReader = new Workers.RS2Reader(previewConfig.frameRate, nPoints, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
+                {
+                    var CerthReaderConfig = previewConfig.CerthReaderConfig;
+                    if (CerthReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
+                    previewReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, previewConfig.voxelSize, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                break;
             default:
                 Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");
                 break;
@@ -251,12 +290,12 @@ public class EntityPipeline : MonoBehaviour {
         // in the scene.
         //
         //Position depending on config calibration done by PCCalibration Scene
-        switch (cfg.sourceType) {
-            case "pcself":
+        switch (pcSourceType) {
+            case PCSourceType.PCSelf:
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
                 transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 break;
-            case "pccerth":
+            case PCSourceType.PCCerth:
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
                 transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                 break;

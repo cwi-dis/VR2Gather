@@ -34,14 +34,18 @@ namespace Workers {
             this.monoBehaviour = monoBehaviour;
             frameReady = new SemaphoreSlim(0);
             isClosed = new CancellationTokenSource();
+            try {
+                Init();
 
-            Init();
+                stopWatch = new Stopwatch();
+                stopWatch.Start();
 
-            stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            coroutine = monoBehaviour.StartCoroutine(WebCamRecorder());
-            Start();
+                coroutine = monoBehaviour.StartCoroutine(WebCamRecorder());
+                Start();
+            }
+            catch (System.EntryPointNotFoundException e) {
+                UnityEngine.Debug.LogError("WebCamReader: " + e);
+            }
         }
 
         protected override void Update() {
@@ -75,33 +79,38 @@ namespace Workers {
         byte[] infoData;
 
         void Init() {
-            WebCamDevice[] devices = WebCamTexture.devices;
-            for (int i = 0; i < devices.Length; ++i) {
-                var dev = devices[i];
-                UnityEngine.Debug.Log($"{i} devices {dev.name} availableResolutions {dev.availableResolutions}");
-                if (dev.availableResolutions != null) {
-                    for (int j = 0; j < dev.availableResolutions.Length; ++j) {
-                        UnityEngine.Debug.Log($"Res {dev.availableResolutions[j].width} {dev.availableResolutions[j].height} refreshRate {dev.availableResolutions[j].refreshRate}");
+            try {
+                WebCamDevice[] devices = WebCamTexture.devices;
+                for (int i = 0; i < devices.Length; ++i) {
+                    var dev = devices[i];
+                    UnityEngine.Debug.Log($"{i} devices {dev.name} availableResolutions {dev.availableResolutions}");
+                    if (dev.availableResolutions != null) {
+                        for (int j = 0; j < dev.availableResolutions.Length; ++j) {
+                            UnityEngine.Debug.Log($"Res {dev.availableResolutions[j].width} {dev.availableResolutions[j].height} refreshRate {dev.availableResolutions[j].refreshRate}");
+                        }
                     }
                 }
+
+                webcamTexture = new WebCamTexture(width, height, fps);
+                webcamTexture.Play();
+                width = webcamTexture.width;
+                height = webcamTexture.height;
+
+                webcamColors = webcamTexture.GetPixels32(webcamColors);
+
+                RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
+
+                frameTime = 1f / 12f;
+                timeToFrame = Time.realtimeSinceStartup + frameTime;
+
+                infoData = new byte[4 * 3];
+                BitConverter.GetBytes(width).CopyTo(infoData, 0);
+                BitConverter.GetBytes(height).CopyTo(infoData, 4);
+                BitConverter.GetBytes(fps).CopyTo(infoData, 8);
             }
-
-            webcamTexture = new WebCamTexture(width, height, fps);
-            webcamTexture.Play();
-            width = webcamTexture.width;
-            height = webcamTexture.height;
-
-            webcamColors = webcamTexture.GetPixels32(webcamColors);
-
-            RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
-
-            frameTime = 1f / 12f;
-            timeToFrame = Time.realtimeSinceStartup + frameTime;
-
-            infoData = new byte[4 * 3];
-            BitConverter.GetBytes(width).CopyTo(infoData, 0);
-            BitConverter.GetBytes(height).CopyTo(infoData, 4);
-            BitConverter.GetBytes(fps).CopyTo(infoData, 8);
+            catch (System.EntryPointNotFoundException e) {
+                UnityEngine.Debug.LogError("WebCamReader.Init: " + e);
+            }
         }
 
         IEnumerator WebCamRecorder() {

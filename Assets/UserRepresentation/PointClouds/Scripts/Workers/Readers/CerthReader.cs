@@ -30,8 +30,8 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-        {
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+            {
             if (_outQueue == null)
             {
                 throw new System.Exception("CerthReader: outQueue is null");

@@ -138,6 +138,17 @@ public class WebCamPipeline : MonoBehaviour {
                     audioComponent = _audioComponent;
                 }
                 break;
+            case "preview": // Preview 
+                isSource = true;
+                //
+                // Create reader
+                //
+                webReader = new Workers.WebCamReader(width, height, fps, this, videoPreparerQueue);
+                //
+                // Create video preparer
+                //
+                preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+                break;
         }
         return this;
     }

@@ -17,7 +17,7 @@ public class TestWorkers : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         var tmp = Config.Instance;
-        p0 = new GameObject("SelfRepresentation&B2DSender").AddComponent<EntityPipeline>().Init("",Config.Instance.LocalUser); 
+        p0 = new GameObject("SelfRepresentation&B2DSender").AddComponent<EntityPipeline>().Init("",Config.Instance.LocalUser, PCSourceType.PCSelf); 
         p1 = new GameObject("SUBReceiver&Representation-1").AddComponent<EntityPipeline>().Init("", Config.Instance.RemoteUser);
     }
 
