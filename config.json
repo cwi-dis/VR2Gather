@@ -44,7 +44,7 @@
     },
 
     "LocalUser": {
-        "sourceType": "pcsynth",
+        "sourceType": "self",
         "SUBConfig": {
             "tileNumber": 0,
             "initialDelay": 0
@@ -103,7 +103,7 @@
         }
     },
     "RemoteUser": {
-        "sourceType": "pcsub",
+        "sourceType": "remote",
         "SUBConfig": {
             "initialDelay": 0
         },
