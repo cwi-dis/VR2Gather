@@ -84,6 +84,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
+    [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
 
     [Header("Play")]
     [SerializeField] private GameObject playPanel = null;
@@ -535,16 +536,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                // Dropdown Logic
-                tvmInfoGO.SetActive(false);
-                calibButton.gameObject.SetActive(false);
-                if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
-                    tvmInfoGO.SetActive(true);
-                    calibButton.gameObject.SetActive(true);
-                }
-                else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
-                    calibButton.gameObject.SetActive(true);
-                }
+
+                SelfRepresentationChanger();
                 break;
             case State.Play:
                 // Panels
@@ -644,6 +637,21 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
         }
         SelectFirstIF();
+    }
+
+    public void SelfRepresentationChanger() {
+        // Dropdown Logic
+        tvmInfoGO.SetActive(false);
+        calibButton.gameObject.SetActive(false);
+        if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
+            tvmInfoGO.SetActive(true);
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+            calibButton.gameObject.SetActive(true);
+        }
+        // Preview
+        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
     }
 
     private void OnDestroy() {

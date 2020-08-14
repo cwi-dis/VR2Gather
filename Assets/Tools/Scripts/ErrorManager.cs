@@ -18,8 +18,16 @@ public class ErrorManager : MonoBehaviour {
         lock (thisLock) {
             if (queue.Count > 0) {
                 foreach (string[] error in queue) {
-                    GameObject popup = Instantiate(myPrefab, gameObject.transform);
-                    popup.GetComponent<ErrorPopup>().FillError(error[0], error[1]);
+                    bool instantiate = true;
+                    ErrorPopup[] prevErrors = gameObject.GetComponentsInChildren<ErrorPopup>();
+                    foreach (ErrorPopup item in prevErrors) {
+                        if (item.ErrorMessage == error[1])
+                            instantiate = false;
+                    }
+                    if (instantiate) {
+                        GameObject popup = Instantiate(myPrefab, gameObject.transform);
+                        popup.GetComponent<ErrorPopup>().FillError(error[0], error[1]);
+                    }
                 }
                 queue.Clear();
             }
