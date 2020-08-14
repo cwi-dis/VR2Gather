@@ -33,7 +33,7 @@ public class VideoWebCam : MonoBehaviour {
     public int      fps = 12;
     bool            ready = false;
 
-    public bool     useSocketIO = true;
+    public bool     useDash = false;
 
     private IEnumerator Start() {
         ready = false;
@@ -60,8 +60,8 @@ public class VideoWebCam : MonoBehaviour {
                     inQueue = writerQueue
                 }
             };
-            if(useSocketIO) writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, b2dStreams);
-            else            writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            if(useDash) writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, b2dStreams);
 
             Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
                 new Workers.PCSubReader.TileDescriptor() {
@@ -69,8 +69,8 @@ public class VideoWebCam : MonoBehaviour {
                         tileNumber = 0
                     }
             };
-            if (useSocketIO) reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, tiles);
-            else             reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+            if (useDash) reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, tiles);
 
             decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null);

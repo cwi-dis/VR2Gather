@@ -851,7 +851,7 @@ public class OrchestratorLogin : MonoBehaviour {
             case 0: // No
                 if (noAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.None;
+                    Config.Instance.protocolType = Config.ProtocolType.None;
                     // Set Toggles
                     socketAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
@@ -860,7 +860,7 @@ public class OrchestratorLogin : MonoBehaviour {
             case 1: // Socket
                 if (socketAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.SocketIO;
+                    Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
                     noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
@@ -869,7 +869,7 @@ public class OrchestratorLogin : MonoBehaviour {
             case 2: // Dash
                 if (dashAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.Dash;
+                    Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
                     noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;

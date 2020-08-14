@@ -12,7 +12,8 @@ public class EntityPipeline : MonoBehaviour {
     Workers.BaseWorker  writer;
     List<Workers.BaseWorker>  preparers = new List<Workers.BaseWorker>();
     List<MonoBehaviour> renderers = new List<MonoBehaviour>();
-    Component audioComponent;
+    VoiceSender audioSender;
+    VoiceReceiver audioReceiver;
 
     List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
@@ -151,8 +152,10 @@ public class EntityPipeline : MonoBehaviour {
                     if (Bin2Dash == null)
                         throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
-//                        writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
-                        writer = new Workers.SocketIOWriter(user, url_pcc, "pointcloud", dashStreamDescriptions);
+                        if( Config.Instance.protocolType == Config.ProtocolType.Dash )
+                            writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                        else
+                            writer = new Workers.SocketIOWriter(user, url_pcc, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -161,24 +164,15 @@ public class EntityPipeline : MonoBehaviour {
                     // Create pipeline for audio, if needed.
                     // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                     //
-                    Debug.Log($"Config.Instance.audioType {Config.Instance.audioType}");
-                    if (Config.Instance.audioType == Config.AudioType.Dash) {
-                        var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                        if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
-                        try {
-                            VoiceDashSender _audioComponent = gameObject.AddComponent<VoiceDashSender>();
-                            _audioComponent.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
-                            audioComponent = _audioComponent; //Audio Pipeline
-                        }
-                        catch (System.EntryPointNotFoundException e) {
-                            Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                            throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                        }
-                    } else
-                    if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                        VoiceIOSender _audioComponent = gameObject.AddComponent<VoiceIOSender>();
-                        _audioComponent.Init(user, url_audio, "audio");
-                        audioComponent = _audioComponent;
+                    var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                    if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
+                    try {
+                        audioSender = gameObject.AddComponent<VoiceSender>();
+                        audioSender.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                        throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
                 }
                 break;
@@ -225,24 +219,18 @@ public class EntityPipeline : MonoBehaviour {
                         tileNumber = tileNumbers[i]
                     };
                 };
-//                reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
-                reader = new Workers.SocketIOReader(user, url_pcc, "pointcloud", tilesToReceive);
+                if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                    reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
+                else
+                    reader = new Workers.SocketIOReader(user, url_pcc, "pointcloud", tilesToReceive);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
                 //
-                if (Config.Instance.audioType == Config.AudioType.Dash) {
-                    var AudioSUBConfig = cfg.AudioSUBConfig;
-                    if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                    VoiceDashReceiver _audioComponent = gameObject.AddComponent<VoiceDashReceiver>();
-                    _audioComponent.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay); //Audio Pipeline
-                    audioComponent = _audioComponent;
-                } else
-                if (Config.Instance.audioType == Config.AudioType.SocketIO) {
-                    VoiceIOReceiver _audioComponent = gameObject.AddComponent<VoiceIOReceiver>();
-                    _audioComponent.Init(user, url_audio, "audio");
-                    audioComponent = _audioComponent;
-                }
+                var AudioSUBConfig = cfg.AudioSUBConfig;
+                if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
+                audioReceiver = gameObject.AddComponent<VoiceReceiver>();
+                audioReceiver.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
             default:
                 Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");
@@ -266,8 +254,6 @@ public class EntityPipeline : MonoBehaviour {
                 //Position in the center
                 transform.localPosition = new Vector3(0, 0, 0);
                 transform.localRotation = Quaternion.Euler(0, 0, 0);
-                //transform.localPosition = new Vector3(1, 1, 1); // To use in vertical if cameraconfig is not properly configured
-                //transform.localRotation = Quaternion.Euler(0, 0, 90); // To use in vertical if cameraconfig is not properly configured
                 break;
         }
 
@@ -384,10 +370,10 @@ public class EntityPipeline : MonoBehaviour {
         {
             Debug.LogWarning("EntityPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
         }
-        VoiceDashSender audioDashWriter = (VoiceDashSender)audioComponent;
-        if (audioDashWriter != null)
+
+        if (audioSender != null)
         {
-            rv.audio = audioDashWriter.GetSyncInfo();
+            rv.audio = audioSender.GetSyncInfo();
         }
         // xxxjack also need to do something for VioceIOSender....
         return rv;
@@ -409,11 +395,7 @@ public class EntityPipeline : MonoBehaviour {
         {
             Debug.LogWarning("EntityPipeline: SetSyncConfig: reader is not a PCSubReader");
         }
-        VoiceDashReceiver audioReader = (VoiceDashReceiver)audioComponent;
-        if (audioReader != null)
-        {
-            audioReader.SetSyncInfo(config.audio);
-        }
+        audioReceiver?.SetSyncInfo(config.audio);
     }
 
     public Vector3 GetPosition()

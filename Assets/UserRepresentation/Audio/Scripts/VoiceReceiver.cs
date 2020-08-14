@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Workers;
 
-public class VoiceDashReceiver : MonoBehaviour {
-    Workers.AudioSubReader      reader;
+public class VoiceReceiver : MonoBehaviour {
+    Workers.BaseReader      reader;
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
 
@@ -13,11 +13,8 @@ public class VoiceDashReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(OrchestratorWrapping.User user, string _url, string _streamName, int _streamNumber, int _initialDelay) {
+    public void Init(OrchestratorWrapping.User user, string _url, string _streamName, int _streamNumber, int _initialDelay, bool UseDash) {
         VoiceReader.PrepareDSP();
-        //        const int frequency = 16000;
-        //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
-        //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
         AudioSource audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialize = true;
         audioSource.spatialBlend = 1.0f;
@@ -26,10 +23,18 @@ public class VoiceDashReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.AudioSubReader(_url, _streamName, _streamNumber, _initialDelay, decoderQueue);
-//        reader = new Workers.SocketIOReader(userID, decoderQueue);
+        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
+            new Workers.PCSubReader.TileDescriptor() {
+                outQueue = decoderQueue,
+                tileNumber = 0
+            }
+        };
+
+        if (UseDash)    reader = new Workers.PCSubReader(_url, _streamName, _initialDelay, tiles);
+        else            reader = new Workers.SocketIOReader(user, _url, _streamName, tiles); 
+
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
-        preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+        preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
 
     void OnDestroy() {
@@ -54,8 +59,7 @@ public class VoiceDashReceiver : MonoBehaviour {
         }
     }
 
-    public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
-    {
+    public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence) {
         reader.SetSyncInfo(_clockCorrespondence);
     }
 

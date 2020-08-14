@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Workers
 {
-    public class SocketIOReader : BaseWorker, ISocketReader {
+    public class SocketIOReader : BaseReader, ISocketReader {
         Workers.PCSubReader.TileDescriptor[] descriptors;
 
         User    user;

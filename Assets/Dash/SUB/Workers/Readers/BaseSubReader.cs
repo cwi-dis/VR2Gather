@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
 
 namespace Workers {
-    public class BaseSubReader : BaseWorker {
+    public class BaseReader : BaseWorker {
+        public BaseReader(WorkerType _type = WorkerType.Run): base(_type) { }
+        public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence) {
+        }
+    }
+
+    public class BaseSubReader : BaseReader {
 
         public delegate bool NeedsSomething();
 
@@ -384,7 +390,7 @@ namespace Workers {
             }
         }
 
-        public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
+        public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
             clockCorrespondence = _clockCorrespondence;
         }

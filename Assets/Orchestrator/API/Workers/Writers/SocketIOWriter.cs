@@ -6,8 +6,7 @@ using UnityEngine;
 
 namespace Workers
 {
-    public class SocketIOWriter : BaseWorker
-    {
+    public class SocketIOWriter : BaseWriter {
         Workers.B2DWriter.DashStreamDescription[] streams;
 
         public SocketIOWriter(User user, string remoteURL, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
@@ -61,6 +60,11 @@ namespace Workers
                 }
             }
         }
+        // FPA: Ask Jack about GetSyncInfo().
 
+        public override SyncConfig.ClockCorrespondence GetSyncInfo() {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            return new SyncConfig.ClockCorrespondence();
+        }
     }
 }
