@@ -78,9 +78,12 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("Config")]
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
+    [SerializeField] private GameObject webcamInfoGO = null;
     [SerializeField] private InputField connectionURIConfigIF = null;
     [SerializeField] private InputField exchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
+    [SerializeField] private Dropdown webcamNameConfigDropdown = null;
+    [SerializeField] private Dropdown microphonesDropdown = null;
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
@@ -311,6 +314,21 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
     }
 
+    private void UpdateWebCams(Dropdown dd) {
+        // Fill Webcam selector dropdown
+        dd.ClearOptions();
+        List<string> webcams = new List<string>();
+        WebCamDevice[] devices = WebCamTexture.devices;
+        for (int i = 0; i < devices.Length; i++)
+            webcams.Add(devices[i].name);
+        dd.AddOptions(webcams);
+    }
+
+    private void UpdateMicrophones(Dropdown dd) {
+        // Fill mirophone selector dropdown
+        dd.AddOptions(new List<string>(Microphone.devices) );
+    }
+
     private IEnumerator ScrollLogsToBottom() {
         yield return new WaitForSeconds(0.2f);
         logsScrollRect.verticalScrollbar.value = 0;
@@ -369,6 +387,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
+        UpdateWebCams(webcamNameConfigDropdown);
+        UpdateMicrophones(microphonesDropdown);
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
@@ -443,8 +463,23 @@ public class OrchestratorLogin : MonoBehaviour {
         exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
         connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
         representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        webcamNameConfigDropdown.value = 0;
+        for (int i = 0; i < webcamNameConfigDropdown.options.Count; ++i) {
+            if (webcamNameConfigDropdown.options[i].text == OrchestratorController.Instance.SelfUser.userData.webcamName) {
+                webcamNameConfigDropdown.value = i;
+                break;
+            }
+        }
+
+        microphonesDropdown.value = 0;
+        for (int i = 0; i < microphonesDropdown.options.Count; ++i) {
+            if (microphonesDropdown.options[i].text == OrchestratorController.Instance.SelfUser.userData.microphoneName) {
+                microphonesDropdown.value = i;
+                break;
+            }
+        }
     }
-    
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -537,13 +572,15 @@ public class OrchestratorLogin : MonoBehaviour {
                 connectButton.gameObject.SetActive(false);
                 // Dropdown Logic
                 tvmInfoGO.SetActive(false);
+                webcamInfoGO.SetActive(false);
                 calibButton.gameObject.SetActive(false);
                 if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
                     tvmInfoGO.SetActive(true);
                     calibButton.gameObject.SetActive(true);
-                }
-                else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+                } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
                     calibButton.gameObject.SetActive(true);
+                } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+                    webcamInfoGO.SetActive(true);
                 }
                 break;
             case State.Play:
@@ -1319,7 +1356,9 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = exchangeNameConfigIF.text,
             userMQurl = connectionURIConfigIF.text,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value
+            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamName = webcamNameConfigDropdown.options[webcamNameConfigDropdown.value].text,
+            microphoneName = microphonesDropdown.options[microphonesDropdown.value].text
         };
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }

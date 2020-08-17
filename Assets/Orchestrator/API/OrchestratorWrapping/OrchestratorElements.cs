@@ -65,6 +65,8 @@ namespace OrchestratorWrapping
         public string userAudioUrl = "";
 
         public eUserRepresentationType userRepresentationType;
+        public string webcamName = "";
+        public string microphoneName = "";
 
         public enum eUserRepresentationType
         {
