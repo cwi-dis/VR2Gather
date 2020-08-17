@@ -317,6 +317,23 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
     }
 
+    private void UpdateWebcams(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        WebCamDevice[] devices = WebCamTexture.devices;
+        List<string> webcams = new List<string>();
+        foreach (WebCamDevice device in devices)
+            webcams.Add(device.name);
+        dd.AddOptions(webcams);
+    }
+
+    private void Updatemicrophones(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        dd.AddOptions( new List<string>( Microphone.devices ) );
+    }
+
+
     private IEnumerator ScrollLogsToBottom() {
         yield return new WaitForSeconds(0.2f);
         logsScrollRect.verticalScrollbar.value = 0;
@@ -375,6 +392,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
+        UpdateWebcams(webcamDropdown);
+        Updatemicrophones(microphoneDropdown);
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
@@ -415,7 +434,6 @@ public class OrchestratorLogin : MonoBehaviour {
             statusText.text = "Online";
             statusText.color = onlineCol;
             FillSelfUserData();
-            Debug.Log("Come from another Scene");
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             //OnLogin(true);
         }
@@ -441,16 +459,35 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void FillSelfUserData() {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+        User user = OrchestratorController.Instance.SelfUser;
+
         // UserID & Name
-        userId.text = OrchestratorController.Instance.SelfUser.userId;
-        userName.text = OrchestratorController.Instance.SelfUser.userName;
-        userNameVRTText.text = OrchestratorController.Instance.SelfUser.userName;
+        userId.text = user.userId;
+        userName.text = user.userName;
+        userNameVRTText.text = user.userName;
         // Config Info
-        exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-        connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-        representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        UserData userData = user.userData;
+        exchangeNameConfigIF.text = userData.userMQexchangeName;
+        connectionURIConfigIF.text = userData.userMQurl;
+        representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
+        webcamDropdown.value = 0;
+
+        for (int i = 0; i < webcamDropdown.options.Count; ++i) {
+            if (webcamDropdown.options[i].text == userData.webcamName) {
+                webcamDropdown.value = i;
+                break;
+            }
+        }
+        microphoneDropdown.value = 0;
+        for (int i = 0; i < microphoneDropdown.options.Count; ++i) {
+            if (microphoneDropdown.options[i].text == userData.microphoneName) {
+                microphoneDropdown.value = i;
+                break;
+            }
+        }
     }
-    
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -521,6 +558,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 connectButton.gameObject.SetActive(false);
                 break;
             case State.Config:
+                FillSelfUserData();
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
@@ -1097,7 +1135,6 @@ public class OrchestratorLogin : MonoBehaviour {
             //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
             //};
             //OrchestratorController.Instance.UpdateUserData(lUserData);
-
             state = State.Logged;
         }
         else {
@@ -1334,7 +1371,9 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = exchangeNameConfigIF.text,
             userMQurl = connectionURIConfigIF.text,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value
+            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamName = webcamDropdown.options[webcamDropdown.value].text,
+            microphoneName = microphoneDropdown.options[microphoneDropdown.value].text
         };
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }

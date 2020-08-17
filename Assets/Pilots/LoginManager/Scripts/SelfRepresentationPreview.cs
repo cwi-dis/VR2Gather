@@ -17,6 +17,8 @@ public class SelfRepresentationPreview : MonoBehaviour
     }
 
     public void ChangeRepresentation(UserData.eUserRepresentationType representation) {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
         player.avatar.SetActive(false);
@@ -35,7 +37,7 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
-                player.webcam.AddComponent<WebCamPipeline>().Init(new User(), Config.Instance.PreviewUser);
+               //player.webcam.AddComponent<WebCamPipeline>().Init(new User(), Config.Instance.PreviewUser);
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);
