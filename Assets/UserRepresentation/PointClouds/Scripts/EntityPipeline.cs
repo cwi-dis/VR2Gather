@@ -31,9 +31,7 @@ public class EntityPipeline : MonoBehaviour {
     public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
 
         switch (cfg.sourceType) {
-            case "pcself": // old "rs2"
-            case "pccerth":
-            case "pcsynth":
+            case "self": // old "rs2"
                 isSource = true;
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
@@ -50,14 +48,13 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                if (cfg.sourceType == "pcself")
+                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_) // PCSELF
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
-
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
-                } else if (cfg.sourceType == "pcsynth")
+                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
@@ -176,7 +173,7 @@ public class EntityPipeline : MonoBehaviour {
                     }
                 }
                 break;
-            case "pcsub":
+            case "remote":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user SUBConfig config");
                 //
@@ -232,6 +229,43 @@ public class EntityPipeline : MonoBehaviour {
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 audioReceiver.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
+            case "preview":
+                isSource = true;
+                Workers.TiledWorker previewReader;
+                var previewConfig = cfg.PCSelfConfig;
+                if (previewConfig == null)
+                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
+                //
+                // Create renderer and preparer for self-view.
+                //
+                QueueThreadSafe previewPreparerQueue = _CreateRendererAndPreparer();
+
+                //
+                // Create reader
+                //
+                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_) {
+                    var RS2ReaderConfig = previewConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
+
+                    previewReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    reader = previewReader;
+                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__) {
+                    int nPoints = 0;
+                    var SynthReaderConfig = previewConfig.SynthReaderConfig;
+                    if (SynthReaderConfig != null)
+                        nPoints = SynthReaderConfig.nPoints;
+                    previewReader = new Workers.RS2Reader(previewConfig.frameRate, nPoints, previewPreparerQueue);
+                    reader = previewReader;
+                } else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
+                  {
+                    var CerthReaderConfig = previewConfig.CerthReaderConfig;
+                    if (CerthReaderConfig == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
+                    previewReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, previewConfig.voxelSize, previewPreparerQueue);
+                    reader = previewReader;
+                }
+                break;
             default:
                 Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");
                 break;
@@ -241,12 +275,12 @@ public class EntityPipeline : MonoBehaviour {
         // in the scene.
         //
         //Position depending on config calibration done by PCCalibration Scene
-        switch (cfg.sourceType) {
-            case "pcself":
+        switch (user.userData.userRepresentationType) {
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
                 transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 break;
-            case "pccerth":
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
                 transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
                 break;

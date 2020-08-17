@@ -125,6 +125,17 @@ public class WebCamPipeline : MonoBehaviour {
                 audioReceiver.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
                 ready = true;
                 break;
+            case "preview": // Preview 
+                isSource = true;
+                //
+                // Create reader
+                //
+                webReader = new Workers.WebCamReader(width, height, fps, this, videoPreparerQueue);
+                //
+                // Create video preparer
+                //
+                preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+                break;
         }
         return this;
     }

@@ -44,7 +44,7 @@
     },
 
     "LocalUser": {
-        "sourceType": "pcsynth",
+        "sourceType": "self",
         "SUBConfig": {
             "tileNumber": 0,
             "initialDelay": 0
@@ -103,7 +103,7 @@
         }
     },
     "RemoteUser": {
-        "sourceType": "pcsub",
+        "sourceType": "remote",
         "SUBConfig": {
             "initialDelay": 0
         },
@@ -133,6 +133,65 @@
         },
         "Render": {
             "pointSize": 0.07999999821186066,
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": -1.0
+            }
+        }
+    },
+    "PreviewUser": {
+        "sourceType": "preview",
+        "SUBConfig": {
+            "tileNumber": 0,
+            "initialDelay": 0
+        },
+        "AudioSUBConfig": {
+            "streamNumber": 0,
+            "initialDelay": 0
+        },
+        "PCSelfConfig": {
+            "RS2ReaderConfig": {
+                "configFilename": "../cameraconfig.xml"
+            },
+			"SynthReaderConfig" : {
+				"nPoints" : 8000
+			},
+            "CerthReaderConfig": {
+                "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+                "PCLExchangeName": "VolumetricData",
+                "MetaExchangeName": "VolumetricMetaData"
+            },
+            "voxelSize": 0.005,
+            "frameRate" : 25,
+            "tiled": false,
+            "Encoders": [
+				{
+					"octreeBits": 9
+				}
+				
+            ],
+            "Bin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
+            },
+            "AudioBin2Dash": {
+                "segmentSize": 2000,
+                "segmentLife": 10000
+            }
+        },
+        "Render": {
+            "pointSize": 0.008,
             "position": {
                 "x": 0.0,
                 "y": 0.0,

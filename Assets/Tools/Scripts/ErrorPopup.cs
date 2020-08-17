@@ -6,7 +6,9 @@ public class ErrorPopup : MonoBehaviour {
     [Header("ErrorHandling")]
     [SerializeField] private Text errorTitle = null;
     [SerializeField] private Text errorMessage = null;
-    [SerializeField] private Button errorButton = null;
+    [SerializeField] private Button errorButton = null; 
+    
+    public string ErrorMessage { get { return errorMessage.text; } }
 
     // Start is called before the first frame update
     void Start() {
