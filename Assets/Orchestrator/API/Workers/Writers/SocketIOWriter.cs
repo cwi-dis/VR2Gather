@@ -9,13 +9,13 @@ namespace Workers
     public class SocketIOWriter : BaseWriter {
         Workers.B2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(User user, string remoteURL, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
+        public SocketIOWriter(User user, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
             if (streams == null) {
                 throw new System.Exception($"[FPA] {Name()}: outQueue is null");
             }
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i) {
-                streams[i].name = $"{remoteURL}{remoteStream}#{i}";
+                streams[i].name = $"{user.userId}{remoteStream}#{i}";
                 Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }

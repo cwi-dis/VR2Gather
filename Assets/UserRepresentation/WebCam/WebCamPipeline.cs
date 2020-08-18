@@ -38,10 +38,10 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, string url_pcc = "", string url_audio = "") {
-        Debug.Log($"----> WebCamPipeline Init userID {user.userId} cfg.sourceType {cfg.sourceType} url_pcc {url_pcc} url_audio {url_audio}");
+    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash) {        
+        Debug.Log($"----> WebCamPipeline Init userID {user.userId} cfg.sourceType {cfg.sourceType}");
         switch (cfg.sourceType) {
-            case "pcself": // Local 
+            case "self": // Local 
                 isSource = true;
                 //
                 // Allocate queues we need for this sourceType
@@ -50,7 +50,7 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                webReader = new Workers.WebCamReader(width, height, fps, this, encoderQueue);
+                webReader = new Workers.WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
                 //
                 // Create encoders for transmission
@@ -75,8 +75,8 @@ public class WebCamPipeline : MonoBehaviour {
                         inQueue = writerQueue
                         }
                     };
-                    //writer = new Workers.B2DWriter(url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
-                    writer = new Workers.SocketIOWriter(user, url_pcc, "webcam", b2dStreams);
+                    if (useDash)    writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
+                    else            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
                 } catch (System.EntryPointNotFoundException e) {
                     Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -89,23 +89,22 @@ public class WebCamPipeline : MonoBehaviour {
                 if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                 try {
                     audioSender = gameObject.AddComponent<VoiceSender>();
-                    audioSender.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 }
                 catch (System.EntryPointNotFoundException e) {
                     Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                 }
                 break;
-            case "pcsub": // Remoto
+            case "remote": // Remoto
                 Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
                     new Workers.PCSubReader.TileDescriptor() {
                         outQueue = videoCodecQueue,
                         tileNumber = 0
                     }
                 };
-                //reader = new Workers.PCSubReader(url_pcc,"webcam", 1, tiles);
-                //                Socket.IO
-                reader = new Workers.SocketIOReader(user, url_pcc, "webcam", tiles);
+                if (useDash)    reader = new Workers.PCSubReader(user.sfuData.url_pcc, "webcam", 1, tiles);
+                else            reader = new Workers.SocketIOReader(user, "webcam", tiles);
 
                 //
                 // Create video decoder.
@@ -122,7 +121,7 @@ public class WebCamPipeline : MonoBehaviour {
                 var AudioSUBConfig = cfg.AudioSUBConfig;
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                audioReceiver.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
+                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
                 ready = true;
                 break;
             case "preview": // Preview 
@@ -130,11 +129,12 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                webReader = new Workers.WebCamReader(width, height, fps, this, videoPreparerQueue);
+                webReader = new Workers.WebCamReader(user.userData!=null?user.userData.webcamName:null, width, height, fps, this, videoPreparerQueue);
                 //
                 // Create video preparer
                 //
                 preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+                ready = true;
                 break;
         }
         return this;
@@ -150,12 +150,12 @@ public class WebCamPipeline : MonoBehaviour {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
-                        texture = new Texture2D(decoder.Width, decoder.Height, TextureFormat.RGB24, false, true);
+                        texture = new Texture2D(decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
                         Transform screen = transform.Find("Screen");
                         var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
                             renderer.material.mainTexture = texture;
-                            renderer.transform.localScale = new Vector3(0.5f, (decoder.Height / (float)decoder.Width) * 0.5f, 1);
+                            renderer.transform.localScale = new Vector3(0.5f, (texture.height / (float)texture.width) * 0.5f, 1);
                         }
                     }
                     texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
@@ -188,6 +188,7 @@ public class WebCamPipeline : MonoBehaviour {
     }
 
     void OnDestroy() {
+        ready = false;
         webReader?.StopAndWait();
         reader?.StopAndWait();
         encoder?.StopAndWait();

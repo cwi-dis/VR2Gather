@@ -25,7 +25,7 @@ namespace Workers {
         public int fps;
 
 
-        public WebCamReader(int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
             this.width = width;
             this.height = height;
             this.fps = fps;
@@ -35,12 +35,12 @@ namespace Workers {
             frameReady = new SemaphoreSlim(0);
             isClosed = new CancellationTokenSource();
 
-            Init();
+            Init(deviceName);
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            coroutine = monoBehaviour.StartCoroutine(WebCamRecorder());
+            coroutine = monoBehaviour.StartCoroutine(WebCamRecorder(deviceName));
             Start();
         }
 
@@ -73,7 +73,7 @@ namespace Workers {
         public WebCamTexture    webcamTexture { get; private set; }
         byte[] infoData;
 
-        void Init() {
+        void Init(string deviceName) {
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
@@ -85,7 +85,7 @@ namespace Workers {
                 }
             }
 
-            webcamTexture = new WebCamTexture(width, height, fps);
+            webcamTexture = new WebCamTexture(deviceName, width, height, fps);
             webcamTexture.Play();
 
             width = webcamTexture.width;
@@ -108,7 +108,7 @@ namespace Workers {
             BitConverter.GetBytes(fps).CopyTo(infoData, 8);
         }
 
-        IEnumerator WebCamRecorder() {
+        IEnumerator WebCamRecorder(string deviceName) {
             while (true) {
 //                lock (this) 
                 {

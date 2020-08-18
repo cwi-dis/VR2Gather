@@ -20,12 +20,9 @@ public class VideoWebCam : MonoBehaviour {
     Workers.VideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
-    //    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
     QueueThreadSafe         writerQueue = new QueueThreadSafe();
     QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
-    //    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
     QueueThreadSafe videoPreparerQueue = new QueueThreadSafe(5);
-//    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
 
     Texture2D       texture;
     public int      width = 1280;
@@ -39,20 +36,20 @@ public class VideoWebCam : MonoBehaviour {
         ready = false;
         while (OrchestratorController.Instance==null || OrchestratorController.Instance.MySession==null) yield return null;
 
-        Init();
+        Init(null);
 
         rendererOrg.material.mainTexture = recorder.webcamTexture;
         rendererOrg.transform.localScale = new Vector3(1, 1, recorder.webcamTexture.height / (float)recorder.webcamTexture.width);
     }
 
     // Start is called before the first frame update
-    public void Init() {
+    public void Init(string deviceName) {
         string uuid = System.Guid.NewGuid().ToString();
         string remoteURL = "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/wcss/";
         string remoteStream = "webcam";
         try {
-            recorder = new Workers.WebCamReader(width, height, fps, this, videoDataQueue);
-            encoder  = new Workers.VideoEncoder(videoDataQueue, null/*audioDataQueue*/, writerQueue, null/*audioCodecQueue*/);
+            recorder = new Workers.WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
+            encoder  = new Workers.VideoEncoder(videoDataQueue, null, writerQueue, null);
             Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
                 new Workers.B2DWriter.DashStreamDescription() {
                     tileNumber = 0,
@@ -61,7 +58,7 @@ public class VideoWebCam : MonoBehaviour {
                 }
             };
             if(useDash) writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, b2dStreams);
+            else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
 
             Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
                 new Workers.PCSubReader.TileDescriptor() {
@@ -70,7 +67,7 @@ public class VideoWebCam : MonoBehaviour {
                     }
             };
             if (useDash) reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
-            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteURL, remoteStream, tiles);
+            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, tiles);
 
             decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
@@ -105,7 +102,6 @@ public class VideoWebCam : MonoBehaviour {
         decoder?.StopAndWait();
         preparer?.StopAndWait();
 
-//        Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} audioCodecQueue {audioCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} audioPreparerQueue {audioPreparerQueue._Count}");
         Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} ");
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }

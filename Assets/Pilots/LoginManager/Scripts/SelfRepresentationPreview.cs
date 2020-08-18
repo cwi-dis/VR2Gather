@@ -37,7 +37,7 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
-               //player.webcam.AddComponent<WebCamPipeline>().Init(new User(), Config.Instance.PreviewUser);
+                player.webcam.AddComponent<WebCamPipeline>().Init(new User(), Config.Instance.PreviewUser, false);
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);

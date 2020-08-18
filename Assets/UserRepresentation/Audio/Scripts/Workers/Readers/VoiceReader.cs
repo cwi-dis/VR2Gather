@@ -15,13 +15,13 @@ namespace Workers
         int circularBufferSize;
         QueueThreadSafe outQueue;
 
-        public VoiceReader(MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
             outQueue = _outQueue;
             this.bufferLength = bufferLength;
             circularBufferSize = 320 * 100;
             this.circularBuffer = new float[circularBufferSize];
             this.monoBehaviour = monoBehaviour;
-            coroutine = monoBehaviour.StartCoroutine(MicroRecorder());
+            coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
             Start();
         }
@@ -88,20 +88,19 @@ namespace Workers
 
         }
 
-        IEnumerator MicroRecorder() {
+        IEnumerator MicroRecorder(string deviceName) {
             Debug.Log("[FPA] MicroRecorder!!!!");
             PrepareDSP();
             if (Microphone.devices.Length > 0) {
-                device = Microphone.devices[0];
                 int currentMinFreq;
                 int currentMaxFreq;
-                Microphone.GetDeviceCaps(device, out currentMinFreq, out currentMaxFreq);
+                Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
                 samples = wantedInputSampleRate;
-                recorder = Microphone.Start(device, true, 1, samples);
+                recorder = Microphone.Start(deviceName, true, 1, samples);
                 int samplesPerSecond = recorder.samples;
                 float[] readBuffer = new float[bufferLength];
                 writeBuffer = new float[bufferLength];
-                Debug.Log($"{Name()}: Using {device}  Frequency {samplesPerSecond} (wanted {wantedInputSampleRate} min {currentMinFreq} max {currentMaxFreq}) bufferLength {bufferLength} IsRecording {Microphone.IsRecording(device)}");
+                Debug.Log($"{Name()}: Using {deviceName}  Frequency {samplesPerSecond} (wanted {wantedInputSampleRate} min {currentMinFreq} max {currentMaxFreq}) bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)}");
                 if (samplesPerSecond != wantedInputSampleRate)
                 {
                     Debug.LogWarning($"{Name()}: audio input sample rate is {samplesPerSecond} in stead of {wantedInputSampleRate}");
@@ -109,13 +108,13 @@ namespace Workers
                 bufferTime = bufferLength / (float)samples;
                 timer = Time.realtimeSinceStartup;
 
-                recording = Microphone.IsRecording(device);
+                recording = Microphone.IsRecording(deviceName);
 
                 int readPosition = 0;
 
                 while ( true ) {
-                    if (Microphone.IsRecording(device)) {
-                        int writePosition = Microphone.GetPosition(device);
+                    if (Microphone.IsRecording(deviceName)) {
+                        int writePosition = Microphone.GetPosition(deviceName);
                         int available;
                         if (writePosition < readPosition) available = (samples - readPosition) + writePosition;
                         else available = writePosition - readPosition;
@@ -124,7 +123,7 @@ namespace Workers
                             float currentRead = Time.realtimeSinceStartup;
                             lastRead = currentRead;
                             if (!recorder.GetData(readBuffer, readPosition)) {
-                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(device)}");
+                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(deviceName)}");
                             }
                             // Write all data from microphone.
                             lock (circularBuffer) {
@@ -136,8 +135,8 @@ namespace Workers
                         }
                         timer = Time.realtimeSinceStartup;
                     } else {
-                        Debug.LogWarning($"{Name()}: microphone {device} stopped recording, starting again.");
-                        recorder = Microphone.Start(device, true, 1, samples);
+                        Debug.LogWarning($"{Name()}: microphone {deviceName} stopped recording, starting again.");
+                        recorder = Microphone.Start(deviceName, true, 1, samples);
                         readPosition = 0;
                         if ((Time.realtimeSinceStartup - timer) > bufferTime) {
                             timer += bufferTime;

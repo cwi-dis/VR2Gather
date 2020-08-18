@@ -11,7 +11,7 @@ namespace Workers
 
         User    user;
 
-        public SocketIOReader(User user, string remoteURL, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
+        public SocketIOReader(User user, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
             this.user = user;
             if (descriptors == null) {
                 throw new System.Exception($"{Name()}: descriptors is null");
@@ -19,7 +19,7 @@ namespace Workers
             this.descriptors = descriptors;
             try {
                 for (int i = 0; i < this.descriptors.Length; ++i) {
-                    this.descriptors[i].name = $"{remoteURL}{remoteStream}#{i}";
+                    this.descriptors[i].name = $"{user.userId}{remoteStream}#{i}";
                     Debug.Log($"[FPA] RegisterForDataStream userId {user.userId} StreamType {this.descriptors[i].name}");
                     OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
                 }

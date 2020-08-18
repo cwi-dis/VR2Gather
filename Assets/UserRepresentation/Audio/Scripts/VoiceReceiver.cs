@@ -13,7 +13,7 @@ public class VoiceReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(OrchestratorWrapping.User user, string _url, string _streamName, int _streamNumber, int _initialDelay, bool UseDash) {
+    public void Init(OrchestratorWrapping.User user, string _streamName, int _streamNumber, int _initialDelay, bool UseDash) {
         VoiceReader.PrepareDSP();
         AudioSource audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialize = true;
@@ -30,8 +30,8 @@ public class VoiceReceiver : MonoBehaviour {
             }
         };
 
-        if (UseDash)    reader = new Workers.PCSubReader(_url, _streamName, _initialDelay, tiles);
-        else            reader = new Workers.SocketIOReader(user, _url, _streamName, tiles); 
+        if (UseDash)    reader = new Workers.PCSubReader(user.sfuData.url_audio, _streamName, _initialDelay, tiles);
+        else            reader = new Workers.SocketIOReader(user, _streamName, tiles); 
 
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);

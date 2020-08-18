@@ -105,7 +105,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown scenarioIdDrop = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle noAudioToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
 
@@ -402,7 +401,10 @@ public class OrchestratorLogin : MonoBehaviour {
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
         playButton.onClick.AddListener(delegate { StateButton(State.Play); });
-        configButton.onClick.AddListener(delegate { StateButton(State.Config); });
+        configButton.onClick.AddListener(delegate {
+            FillSelfUserData();
+            StateButton(State.Config);
+        });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         calibButton.onClick.AddListener(delegate { GoToCalibration(); });
@@ -422,7 +424,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        noAudioToggle.isOn = false;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = true;
         presenterToggle.isOn = false;
@@ -558,7 +559,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 connectButton.gameObject.SetActive(false);
                 break;
             case State.Config:
-                FillSelfUserData();
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(false);
@@ -684,6 +684,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SelfRepresentationChanger() {
         // Dropdown Logic
+
+        Debug.Log($"[FPA] ----> representationTypeConfigDropdown {representationTypeConfigDropdown.value}");
+
         tvmInfoGO.SetActive(false);
         webcamInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
@@ -885,37 +888,17 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Toggles 
 
     private void AudioToggle() {
-        if (noAudioToggle.isOn)
-            noAudioToggle.interactable = false;
-        else
-            noAudioToggle.interactable = true;
-        if (socketAudioToggle.isOn) 
-            socketAudioToggle.interactable = false;
-        else 
-            socketAudioToggle.interactable = true;
-        if (dashAudioToggle.isOn)
-            dashAudioToggle.interactable = false;
-        else
-            dashAudioToggle.interactable = true;
+        socketAudioToggle.interactable = !socketAudioToggle.isOn;
+        dashAudioToggle.interactable = !dashAudioToggle.isOn;
     }
 
     public void SetAudio(int kind) {
         switch (kind) {
-            case 0: // No
-                if (noAudioToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.protocolType = Config.ProtocolType.None;
-                    // Set Toggles
-                    socketAudioToggle.isOn = false;
-                    dashAudioToggle.isOn = false;
-                }
-                break;
             case 1: // Socket
                 if (socketAudioToggle.isOn) {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
                 }
                 break;
@@ -924,7 +907,6 @@ public class OrchestratorLogin : MonoBehaviour {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
                 }
                 break;

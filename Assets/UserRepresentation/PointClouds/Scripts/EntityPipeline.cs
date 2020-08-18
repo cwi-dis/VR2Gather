@@ -28,7 +28,8 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, string url_pcc = "", string url_audio = "", bool calibrationMode=false) {
+    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool calibrationMode=false) {
+
 
         switch (cfg.sourceType) {
             case "self": // old "rs2"
@@ -150,9 +151,9 @@ public class EntityPipeline : MonoBehaviour {
                         throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
                         if( Config.Instance.protocolType == Config.ProtocolType.Dash )
-                            writer = new Workers.B2DWriter(url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new Workers.B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         else
-                            writer = new Workers.SocketIOWriter(user, url_pcc, "pointcloud", dashStreamDescriptions);
+                            writer = new Workers.SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -165,7 +166,7 @@ public class EntityPipeline : MonoBehaviour {
                     if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                     try {
                         audioSender = gameObject.AddComponent<VoiceSender>();
-                        audioSender.Init(user, url_audio, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                        audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
                     }
                     catch (System.EntryPointNotFoundException e) {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
@@ -217,9 +218,9 @@ public class EntityPipeline : MonoBehaviour {
                     };
                 };
                 if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-                    reader = new Workers.PCSubReader(url_pcc,"pointcloud", SUBConfig.initialDelay, tilesToReceive);
+                    reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", SUBConfig.initialDelay, tilesToReceive);
                 else
-                    reader = new Workers.SocketIOReader(user, url_pcc, "pointcloud", tilesToReceive);
+                    reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -227,7 +228,7 @@ public class EntityPipeline : MonoBehaviour {
                 var AudioSUBConfig = cfg.AudioSUBConfig;
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                audioReceiver.Init(user, url_audio, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
             case "preview":
                 isSource = true;

@@ -17,11 +17,11 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
-    EntityPipeline p0;
+    EntityPipeline player;
 
     // Start is called before the first frame update
     void Start() {
-        p0 = gameObject.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, "", "", true);
+        player = gameObject.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
     }
 
     bool rightTrigger = false;
