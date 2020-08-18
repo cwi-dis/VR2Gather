@@ -410,6 +410,8 @@ public class OrchestratorLogin : MonoBehaviour {
             statusText.text = "Online";
             statusText.color = onlineCol;
             FillSelfUserData();
+            UpdateSessions(orchestratorSessions, sessionIdDrop);
+            UpdateScenarios(scenarioIdDrop);
             Debug.Log("Come from another Scene");
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             //OnLogin(true);
