@@ -72,6 +72,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("VRT")]
     [SerializeField] private GameObject vrtPanel = null;
     [SerializeField] private Text userNameVRTText = null;
+    [SerializeField] private Button logoutButton = null;
     [SerializeField] private Button playButton = null;
     [SerializeField] private Button configButton = null;
 
@@ -377,6 +378,7 @@ public class OrchestratorLogin : MonoBehaviour {
         loginButton.onClick.AddListener(delegate { Login(); });
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
+        logoutButton.onClick.AddListener(delegate { Logout(); });
         playButton.onClick.AddListener(delegate { StateButton(State.Play); });
         configButton.onClick.AddListener(delegate { StateButton(State.Config); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
@@ -1099,6 +1101,8 @@ public class OrchestratorLogin : MonoBehaviour {
             this.userId.text = "";
             userName.text = "";
             userNameVRTText.text = "";
+
+            state = State.Online;
         }
 
         userLogged = userLoggedSucessfully;
