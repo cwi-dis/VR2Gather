@@ -540,7 +540,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-
+                // Behaviour
                 SelfRepresentationChanger();
                 break;
             case State.Play:
@@ -608,6 +608,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                // Behaviour
+                GetSessions();
                 break;
             case State.Lobby:
                 // Panels
