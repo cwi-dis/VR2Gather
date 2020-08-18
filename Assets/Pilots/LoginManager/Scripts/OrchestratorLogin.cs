@@ -72,6 +72,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("VRT")]
     [SerializeField] private GameObject vrtPanel = null;
     [SerializeField] private Text userNameVRTText = null;
+    [SerializeField] private Button logoutButton = null;
     [SerializeField] private Button playButton = null;
     [SerializeField] private Button configButton = null;
 
@@ -377,6 +378,7 @@ public class OrchestratorLogin : MonoBehaviour {
         loginButton.onClick.AddListener(delegate { Login(); });
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
+        logoutButton.onClick.AddListener(delegate { Logout(); });
         playButton.onClick.AddListener(delegate { StateButton(State.Play); });
         configButton.onClick.AddListener(delegate { StateButton(State.Config); });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
@@ -410,6 +412,8 @@ public class OrchestratorLogin : MonoBehaviour {
             statusText.text = "Online";
             statusText.color = onlineCol;
             FillSelfUserData();
+            UpdateSessions(orchestratorSessions, sessionIdDrop);
+            UpdateScenarios(scenarioIdDrop);
             Debug.Log("Come from another Scene");
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             //OnLogin(true);
@@ -536,7 +540,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-
+                // Behaviour
                 SelfRepresentationChanger();
                 break;
             case State.Play:
@@ -604,6 +608,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                // Behaviour
+                GetSessions();
                 break;
             case State.Lobby:
                 // Panels
@@ -1101,6 +1107,8 @@ public class OrchestratorLogin : MonoBehaviour {
             this.userId.text = "";
             userName.text = "";
             userNameVRTText.text = "";
+
+            state = State.Online;
         }
 
         userLogged = userLoggedSucessfully;
