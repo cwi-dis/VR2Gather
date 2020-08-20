@@ -47,13 +47,13 @@ public class LoginController : PilotController {
             // Check Audio
             switch (msg[2]) {
                 case "0": // No Audio
-                    Config.Instance.audioType = Config.AudioType.None;
+                    Config.Instance.protocolType = Config.ProtocolType.None;
                     break;
                 case "1": // Socket Audio
-                    Config.Instance.audioType = Config.AudioType.SocketIO;
+                    Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     break;
                 case "2": // Dash Audio
-                    Config.Instance.audioType = Config.AudioType.Dash;
+                    Config.Instance.protocolType = Config.ProtocolType.Dash;
                     break;
                 default:
                     break;

@@ -25,7 +25,7 @@ namespace Workers {
         public int fps;
 
 
-        public WebCamReader(int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
             this.width = width;
             this.height = height;
             this.fps = fps;
@@ -35,17 +35,18 @@ namespace Workers {
             frameReady = new SemaphoreSlim(0);
             isClosed = new CancellationTokenSource();
 
-            Init();
+            Init(deviceName);
 
             stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            coroutine = monoBehaviour.StartCoroutine(WebCamRecorder());
+            coroutine = monoBehaviour.StartCoroutine(WebCamRecorder(deviceName));
             Start();
         }
 
         protected override void Update() {
             base.Update();
+            if (outQueue.IsClosed()) return;
             try {
                 frameReady.Wait(isClosed.Token);
                 if (!isClosed.IsCancellationRequested) {
@@ -53,20 +54,18 @@ namespace Workers {
                 } else {
                     UnityEngine.Debug.Log($"Stopped {stopWatch.ElapsedMilliseconds}");
                 }
-            } finally {
+            } catch(OperationCanceledException e ){
 //                frameReady.Release();
-
             }
         }
 
-        public override void OnStop() {
-            base.OnStop();
+        public override void Stop() {
+            base.Stop();
+            webcamTexture.Stop();
+            outQueue.Close();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
-            UnityEngine.Debug.Log($"{Name()}: Stopped webcam {stopWatch.ElapsedMilliseconds}.");
-            outQueue.Close();
         }
-
 
         float                   timeToFrame;
         float                   frameTime;
@@ -74,7 +73,7 @@ namespace Workers {
         public WebCamTexture    webcamTexture { get; private set; }
         byte[] infoData;
 
-        void Init() {
+        void Init(string deviceName) {
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
@@ -86,12 +85,17 @@ namespace Workers {
                 }
             }
 
-            webcamTexture = new WebCamTexture(width, height, fps);
+            webcamTexture = new WebCamTexture(deviceName, width, height, fps);
             webcamTexture.Play();
+
             width = webcamTexture.width;
             height = webcamTexture.height;
 
-            webcamColors = webcamTexture.GetPixels32(webcamColors);
+            if (webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
+            else {
+                webcamColors = new Color32[width * height];
+                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized");
+            }
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
@@ -104,12 +108,13 @@ namespace Workers {
             BitConverter.GetBytes(fps).CopyTo(infoData, 8);
         }
 
-        IEnumerator WebCamRecorder() {
+        IEnumerator WebCamRecorder(string deviceName) {
             while (true) {
-                lock (this) {
+//                lock (this) 
+                {
                     if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
-                        
-                        webcamColors = webcamTexture.GetPixels32(webcamColors);
+                        if(webcamTexture.isPlaying)
+                            webcamColors = webcamTexture.GetPixels32(webcamColors);
                         timeToFrame += frameTime;
                         frameReady.Release();
                     }
@@ -125,9 +130,7 @@ namespace Workers {
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;
-                lock (outQueue) {
-                    outQueue.Enqueue(chunk);
-                }
+                outQueue.Enqueue(chunk);
             } finally {
                 if (handle != default(GCHandle))
                     handle.Free();

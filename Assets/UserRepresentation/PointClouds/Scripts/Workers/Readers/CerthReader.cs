@@ -62,6 +62,7 @@ namespace Workers {
             MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
+
                 throw new System.Exception("CerthReader: MetaRabbitMQReceiver is null");
             }
 
