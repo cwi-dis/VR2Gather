@@ -33,7 +33,7 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, Vector3 _originCorrection, Vector3 _boundingBotLeft, Vector3 _boundingTopRight, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, Vector3 _originCorrection, Vector3 _boundingBotLeft, Vector3 _boundingTopRight, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null)
         {
             if (_outQueue == null)
             {
