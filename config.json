@@ -61,7 +61,7 @@
 				"nPoints" : 8000
 			},
             "CerthReaderConfig": {
-                "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+                "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",
                 "MetaExchangeName": "VolumetricMetaData",
 				"OriginCorrection": [0, 0, 0],
@@ -171,7 +171,7 @@
 				"nPoints" : 8000
 			},
             "CerthReaderConfig": {
-                "ConnectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
+                "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",
                 "MetaExchangeName": "VolumetricMetaData"
             },
