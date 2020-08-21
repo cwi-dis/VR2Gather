@@ -1364,8 +1364,8 @@ public class OrchestratorLogin : MonoBehaviour {
             userMQexchangeName = exchangeNameConfigIF.text,
             userMQurl = connectionURIConfigIF.text,
             userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
-            webcamName = webcamDropdown.options[webcamDropdown.value].text,
-            microphoneName = microphoneDropdown.options[microphoneDropdown.value].text
+            webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
+            microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }
