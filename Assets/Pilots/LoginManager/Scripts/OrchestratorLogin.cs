@@ -35,6 +35,8 @@ public class OrchestratorLogin : MonoBehaviour {
     private bool joining = false;
 
     [SerializeField] private string orchestratorUrl = "";
+    // http://127.0.0.1:8080/socket.io/
+    // https://vrt-orch-sandbox.viaccess-orca.com/socket.io/
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
@@ -79,9 +81,12 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("Config")]
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
+    [SerializeField] private GameObject webcamInfoGO = null;
     [SerializeField] private InputField connectionURIConfigIF = null;
     [SerializeField] private InputField exchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
+    [SerializeField] private Dropdown webcamDropdown = null;
+    [SerializeField] private Dropdown microphoneDropdown = null;
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
@@ -101,7 +106,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown scenarioIdDrop = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle noAudioToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
 
@@ -313,6 +317,23 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
     }
 
+    private void UpdateWebcams(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        WebCamDevice[] devices = WebCamTexture.devices;
+        List<string> webcams = new List<string>();
+        foreach (WebCamDevice device in devices)
+            webcams.Add(device.name);
+        dd.AddOptions(webcams);
+    }
+
+    private void Updatemicrophones(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        dd.AddOptions( new List<string>( Microphone.devices ) );
+    }
+
+
     private IEnumerator ScrollLogsToBottom() {
         yield return new WaitForSeconds(0.2f);
         logsScrollRect.verticalScrollbar.value = 0;
@@ -371,6 +392,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
+        UpdateWebcams(webcamDropdown);
+        Updatemicrophones(microphoneDropdown);
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
@@ -380,7 +403,10 @@ public class OrchestratorLogin : MonoBehaviour {
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
         logoutButton.onClick.AddListener(delegate { Logout(); });
         playButton.onClick.AddListener(delegate { StateButton(State.Play); });
-        configButton.onClick.AddListener(delegate { StateButton(State.Config); });
+        configButton.onClick.AddListener(delegate {
+            FillSelfUserData();
+            StateButton(State.Config);
+        });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         calibButton.onClick.AddListener(delegate { GoToCalibration(); });
@@ -400,7 +426,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        noAudioToggle.isOn = false;
         socketAudioToggle.isOn = false;
         dashAudioToggle.isOn = true;
         presenterToggle.isOn = false;
@@ -415,6 +440,7 @@ public class OrchestratorLogin : MonoBehaviour {
             UpdateSessions(orchestratorSessions, sessionIdDrop);
             UpdateScenarios(scenarioIdDrop);
             Debug.Log("Come from another Scene");
+
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             //OnLogin(true);
         }
@@ -440,16 +466,35 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void FillSelfUserData() {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+        User user = OrchestratorController.Instance.SelfUser;
+
         // UserID & Name
-        userId.text = OrchestratorController.Instance.SelfUser.userId;
-        userName.text = OrchestratorController.Instance.SelfUser.userName;
-        userNameVRTText.text = OrchestratorController.Instance.SelfUser.userName;
+        userId.text = user.userId;
+        userName.text = user.userName;
+        userNameVRTText.text = user.userName;
         // Config Info
-        exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-        connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-        representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        UserData userData = user.userData;
+        exchangeNameConfigIF.text = userData.userMQexchangeName;
+        connectionURIConfigIF.text = userData.userMQurl;
+        representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
+        webcamDropdown.value = 0;
+
+        for (int i = 0; i < webcamDropdown.options.Count; ++i) {
+            if (webcamDropdown.options[i].text == userData.webcamName) {
+                webcamDropdown.value = i;
+                break;
+            }
+        }
+        microphoneDropdown.value = 0;
+        for (int i = 0; i < microphoneDropdown.options.Count; ++i) {
+            if (microphoneDropdown.options[i].text == userData.microphoneName) {
+                microphoneDropdown.value = i;
+                break;
+            }
+        }
     }
-    
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -647,14 +692,19 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SelfRepresentationChanger() {
         // Dropdown Logic
+
+        Debug.Log($"[FPA] ----> representationTypeConfigDropdown {representationTypeConfigDropdown.value}");
+
         tvmInfoGO.SetActive(false);
+        webcamInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
         if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
-        }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
             calibButton.gameObject.SetActive(true);
+        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+            webcamInfoGO.SetActive(true);
         }
         // Preview
         selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
@@ -850,46 +900,25 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Toggles 
 
     private void AudioToggle() {
-        if (noAudioToggle.isOn)
-            noAudioToggle.interactable = false;
-        else
-            noAudioToggle.interactable = true;
-        if (socketAudioToggle.isOn) 
-            socketAudioToggle.interactable = false;
-        else 
-            socketAudioToggle.interactable = true;
-        if (dashAudioToggle.isOn)
-            dashAudioToggle.interactable = false;
-        else
-            dashAudioToggle.interactable = true;
+        socketAudioToggle.interactable = !socketAudioToggle.isOn;
+        dashAudioToggle.interactable = !dashAudioToggle.isOn;
     }
 
     public void SetAudio(int kind) {
         switch (kind) {
-            case 0: // No
-                if (noAudioToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.None;
-                    // Set Toggles
-                    socketAudioToggle.isOn = false;
-                    dashAudioToggle.isOn = false;
-                }
-                break;
             case 1: // Socket
                 if (socketAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.SocketIO;
+                    Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
                 }
                 break;
             case 2: // Dash
                 if (dashAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.Dash;
+                    Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
                 }
                 break;
@@ -1100,7 +1129,6 @@ public class OrchestratorLogin : MonoBehaviour {
             //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
             //};
             //OrchestratorController.Instance.UpdateUserData(lUserData);
-
             state = State.Logged;
         }
         else {
@@ -1339,7 +1367,9 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = exchangeNameConfigIF.text,
             userMQurl = connectionURIConfigIF.text,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value
+            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamName = webcamDropdown.options[webcamDropdown.value].text,
+            microphoneName = microphoneDropdown.options[microphoneDropdown.value].text
         };
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }

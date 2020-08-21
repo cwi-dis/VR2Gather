@@ -4,7 +4,7 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
-    public enum AudioType {
+    public enum ProtocolType {
         None,
         Dash,
         SocketIO
@@ -23,7 +23,7 @@ public class Config {
 
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
-    public AudioType    audioType = AudioType.None;
+    public ProtocolType protocolType = ProtocolType.SocketIO;
     public UserRepresentation userRepresentation = UserRepresentation.PC;
     public Presenter    presenter = Presenter.None;
     public float        nonHMDHeight = 1.8f;

@@ -17,24 +17,11 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
-    EntityPipeline p0;
+    EntityPipeline player;
 
     // Start is called before the first frame update
     void Start() {
-        var rep = OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
-        switch (rep) {
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
-                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCSelf, "", "", true);
-                break;
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
-                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCSynth, "", "", true);
-                break;
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
-                p0 = gameObject.AddComponent<EntityPipeline>().Init("", Config.Instance.LocalUser, PCSourceType.PCCerth, "", "", true);
-                break;
-            default:
-                break;
-        }
+        player = gameObject.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
     }
 
     bool rightTrigger = false;

@@ -175,6 +175,8 @@ namespace OrchestratorWrapping
             OrchestrationSocketIoManager.SocketConnect(orchestratorMessages);
         }
 
+        public bool isConnected() { return (OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected);  }
+
         public void OnSocketConnect()
         {
             if (ResponsesListener != null) ResponsesListener.OnConnect();

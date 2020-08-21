@@ -17,6 +17,8 @@ public class SelfRepresentationPreview : MonoBehaviour
     }
 
     public void ChangeRepresentation(UserData.eUserRepresentationType representation) {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
         player.avatar.SetActive(false);
@@ -35,7 +37,7 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
-                player.webcam.AddComponent<WebCamPipeline>().Init("", Config.Instance.PreviewUser);
+                player.webcam.AddComponent<WebCamPipeline>().Init(new User(), Config.Instance.PreviewUser, false);
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);
@@ -46,15 +48,15 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCSelf);
+                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CWI_ } }, Config.Instance.PreviewUser);
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCSynth);
+                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_SYNTH__ } }, Config.Instance.PreviewUser);
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init("", Config.Instance.PreviewUser, PCSourceType.PCCerth);
+                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CERTH__ } }, Config.Instance.PreviewUser);
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);
