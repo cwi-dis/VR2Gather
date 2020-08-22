@@ -64,9 +64,9 @@
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",
                 "MetaExchangeName": "VolumetricMetaData",
-				"OriginCorrection": [0, 0, 0],
-				"BoundingBotLeft": [0, 0, 0],
-				"BoundingTopRight": [0, 0, 0]
+				"OriginCorrection": {"x":0, "y":-0.82, "z":0},
+				"BoundingBotLeft": {"x":-1, "y":0.1, "z":-1},
+				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
             },
             "voxelSize": 0.005,
             "frameRate" : 25,
@@ -121,7 +121,11 @@
             "CerthReaderConfig": {
                 "ConnectionURI": "",
                 "PCLExchangeName": "",
-                "MetaExchangeName": ""
+                "MetaExchangeName": "",
+				"OriginCorrection": {"x":0, "y":-0.82, "z":0},
+				"BoundingBotLeft": {"x":-1, "y":0.1, "z":-1},
+				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
+
             },
             "voxelSize": 0.0,
             "Encoders": [],
@@ -173,7 +177,10 @@
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",
-                "MetaExchangeName": "VolumetricMetaData"
+                "MetaExchangeName": "VolumetricMetaData",
+				"OriginCorrection": {"x":0, "y":-0.82, "z":0},
+				"BoundingBotLeft": {"x":-1, "y":0.1, "z":-1},
+				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
             },
             "voxelSize": 0.005,
             "frameRate" : 25,
