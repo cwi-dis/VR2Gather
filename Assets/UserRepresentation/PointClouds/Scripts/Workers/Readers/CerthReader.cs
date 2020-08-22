@@ -45,7 +45,7 @@ namespace Workers {
             voxelSize = _voxelSize;
             originCorrection = _originCorrection;
             boundingBotLeft = _boundingBotLeft;
-            boundingTopRight = _boundingBotLeft;
+            boundingTopRight = _boundingTopRight;
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
