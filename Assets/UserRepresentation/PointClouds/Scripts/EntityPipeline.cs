@@ -67,7 +67,16 @@ public class EntityPipeline : MonoBehaviour {
                 {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    pcReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, PCSelfConfig.voxelSize, selfPreparerQueue, encoderQueue);
+                    pcReader = new Workers.CerthReader(
+                        CerthReaderConfig.ConnectionURI, 
+                        CerthReaderConfig.PCLExchangeName, 
+                        CerthReaderConfig.MetaExchangeName, 
+                        CerthReaderConfig.OriginCorrection, 
+                        CerthReaderConfig.BoundingBotLeft, 
+                        CerthReaderConfig.BoundingTopRight,
+                        PCSelfConfig.voxelSize, 
+                        selfPreparerQueue, 
+                        encoderQueue);
                     reader = pcReader;
                 }
 
@@ -263,7 +272,15 @@ public class EntityPipeline : MonoBehaviour {
                     var CerthReaderConfig = previewConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null)
                         throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    previewReader = new Workers.CerthReader(CerthReaderConfig.ConnectionURI, CerthReaderConfig.PCLExchangeName, CerthReaderConfig.MetaExchangeName, previewConfig.voxelSize, previewPreparerQueue);
+                    previewReader = new Workers.CerthReader(
+                        CerthReaderConfig.ConnectionURI, 
+                        CerthReaderConfig.PCLExchangeName, 
+                        CerthReaderConfig.MetaExchangeName, 
+                        CerthReaderConfig.OriginCorrection,
+                        CerthReaderConfig.BoundingBotLeft,
+                        CerthReaderConfig.BoundingTopRight,
+                        previewConfig.voxelSize, 
+                        previewPreparerQueue);
                     reader = previewReader;
                 }
                 break;

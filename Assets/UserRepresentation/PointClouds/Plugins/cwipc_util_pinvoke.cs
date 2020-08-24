@@ -99,7 +99,7 @@ public class cwipc
         internal extern static IntPtr cwipc_synthetic(int fps, int npoints, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
 
         [DllImport(myDllName)]
-        internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, IntPtr origin, IntPtr bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
 
@@ -464,11 +464,11 @@ public class cwipc
         return new pointcloud(rvPtr);
     }
 
-    public static pointcloud from_certh(IntPtr certhPC, float[] bbox, UInt64 timestamp)
+    public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, UInt64 timestamp)
     {
         System.IntPtr errorPtr = System.IntPtr.Zero;
-        // xxxjack don't know yet how to pass the optional float[6] array. Passing NULL for now.
-        System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, System.IntPtr.Zero, System.IntPtr.Zero, timestamp, ref errorPtr);
+        // Need to pass origin and bbox as array pointers.
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_certh(certhPC, move, bbox, timestamp, ref errorPtr);
         if (rvPtr == System.IntPtr.Zero)
         {
             if (errorPtr == System.IntPtr.Zero)
