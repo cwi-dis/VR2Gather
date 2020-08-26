@@ -70,7 +70,7 @@
             },
             "voxelSize": 0.005,
             "frameRate" : 25,
-            "tiled": true,
+            "tiled": false,
             "Encoders": [
 				{
 					"octreeBits": 9
