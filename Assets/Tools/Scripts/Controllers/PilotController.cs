@@ -102,9 +102,11 @@ abstract public class PilotController : MonoBehaviour {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
-                            userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                            bool isSelf = my_id == players[playerIdx].id;
+                            userCfg = isSelf ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                             players[playerIdx].pc.AddComponent<EntityPipeline>().Init(user, userCfg);
                             // xxxjack debug code
+                            if (isSelf)
                             {
                                 EntityPipeline selfPipeline = players[playerIdx].pc.GetComponent<EntityPipeline>();
                                 if (selfPipeline == null)
