@@ -176,6 +176,7 @@ namespace Workers {
             double statsTotalBytes;
             double statsTotalPackets;
             double statsTotalLatency;
+            const int statsInterval = 10;
 
             public void statsUpdate(int nBytes, long timeStamp )
             {
@@ -199,10 +200,10 @@ namespace Workers {
                 }
                 statsTotalLatency += latency;
 
-                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / statsInterval} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;

@@ -90,6 +90,7 @@ namespace Workers {
             System.DateTime statsLastTime;
             double statsTotalBytes;
             double statsTotalPackets;
+            const int statsInterval = 10;
 
             public void statsUpdate(int nBytes)
             {
@@ -99,9 +100,9 @@ namespace Workers {
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                 }
-                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / statsInterval} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
