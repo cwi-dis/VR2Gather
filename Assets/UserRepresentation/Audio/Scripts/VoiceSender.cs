@@ -13,6 +13,8 @@ public class VoiceSender : MonoBehaviour {
 
     // Start is called before the first frame update
     public void Init(OrchestratorWrapping.User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {
+        if (user.userData.microphoneName == "None") return;
+
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(user.userData.microphoneName, this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
         Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];

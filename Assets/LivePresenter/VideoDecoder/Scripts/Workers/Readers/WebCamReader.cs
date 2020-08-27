@@ -18,7 +18,6 @@ namespace Workers {
         CancellationTokenSource   isClosed;
 
         System.IntPtr data;
-        Stopwatch stopWatch;
 
         public int width;
         public int height;
@@ -37,9 +36,6 @@ namespace Workers {
 
             Init(deviceName);
 
-            stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             coroutine = monoBehaviour.StartCoroutine(WebCamRecorder(deviceName));
             Start();
         }
@@ -49,11 +45,8 @@ namespace Workers {
             if (outQueue.IsClosed()) return;
             try {
                 frameReady.Wait(isClosed.Token);
-                if (!isClosed.IsCancellationRequested) {
+                if (!isClosed.IsCancellationRequested)
                     Color32ArrayToByteArray(webcamColors, outQueue);
-                } else {
-                    UnityEngine.Debug.Log($"Stopped {stopWatch.ElapsedMilliseconds}");
-                }
             } catch(OperationCanceledException e ){
 //                frameReady.Release();
             }
@@ -61,6 +54,7 @@ namespace Workers {
 
         public override void Stop() {
             base.Stop();
+            UnityEngine.Debug.Log($"[FPA] -----> WebCamReader.Stop");
             webcamTexture.Stop();
             outQueue.Close();
             isClosed.Cancel();
@@ -74,17 +68,18 @@ namespace Workers {
         byte[] infoData;
 
         void Init(string deviceName) {
+            /*
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
-                UnityEngine.Debug.Log($"{i} devices {dev.name} availableResolutions {dev.availableResolutions}");
+                UnityEngine.Debug.Log($"[FPA] {i} devices {dev.name} availableResolutions {dev.availableResolutions}");
                 if (dev.availableResolutions != null) {
                     for (int j = 0; j < dev.availableResolutions.Length; ++j) {
                         UnityEngine.Debug.Log($"Res {dev.availableResolutions[j].width} {dev.availableResolutions[j].height} refreshRate {dev.availableResolutions[j].refreshRate}");
                     }
                 }
             }
-
+            */
             webcamTexture = new WebCamTexture(deviceName, width, height, fps);
             webcamTexture.Play();
 

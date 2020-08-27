@@ -322,6 +322,7 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.ClearOptions();
         WebCamDevice[] devices = WebCamTexture.devices;
         List<string> webcams = new List<string>();
+        webcams.Add("None");
         foreach (WebCamDevice device in devices)
             webcams.Add(device.name);
         dd.AddOptions(webcams);
@@ -330,7 +331,12 @@ public class OrchestratorLogin : MonoBehaviour {
     private void Updatemicrophones(Dropdown dd) {
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         dd.ClearOptions();
-        dd.AddOptions( new List<string>( Microphone.devices ) );
+        string[] devices = Microphone.devices;
+        List<string> microphones = new List<string>();
+        microphones.Add("None");
+        foreach (string device in devices)
+            microphones.Add(device);
+        dd.AddOptions(microphones );
     }
 
 
@@ -423,6 +429,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+        webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
 
         InitialiseControllerEvents();
 
@@ -692,9 +699,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SelfRepresentationChanger() {
         // Dropdown Logic
-
-        Debug.Log($"[FPA] ----> representationTypeConfigDropdown {representationTypeConfigDropdown.value}");
-
         tvmInfoGO.SetActive(false);
         webcamInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
@@ -707,7 +711,9 @@ public class OrchestratorLogin : MonoBehaviour {
             webcamInfoGO.SetActive(true);
         }
         // Preview
-        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
+        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamDropdown.options[webcamDropdown.value].text,
+            microphoneDropdown.options[microphoneDropdown.value].text);
     }
 
     private void OnDestroy() {
@@ -793,6 +799,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void ExitConfigButton() {
+        selfRepresentationPreview.Stop();
         GetUserInfo();
         state = State.Logged;
         PanelChanger();
