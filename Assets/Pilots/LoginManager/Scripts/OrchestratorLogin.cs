@@ -22,9 +22,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public bool developerOptions = true;
     public bool usePresenter = false;
-    private int kindAudio = 0;
+    private int kindAudio = 2; // Set Dash as default
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 2; // Magic number to be defined (in seconds)
+    private int ntpSyncThreshold = 4; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -35,6 +35,8 @@ public class OrchestratorLogin : MonoBehaviour {
     private bool joining = false;
 
     [SerializeField] private string orchestratorUrl = "";
+    // http://127.0.0.1:8080/socket.io/
+    // https://vrt-orch-sandbox.viaccess-orca.com/socket.io/
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
@@ -60,6 +62,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private InputField userPasswordLoginIF = null;
     [SerializeField] private Button loginButton = null;
     [SerializeField] private Button signinButton = null;
+    [SerializeField] private Toggle rememberMeButton = null;
 
     [Header("Signin")]
     [SerializeField] private GameObject signinPanel = null;
@@ -71,18 +74,23 @@ public class OrchestratorLogin : MonoBehaviour {
     [Header("VRT")]
     [SerializeField] private GameObject vrtPanel = null;
     [SerializeField] private Text userNameVRTText = null;
+    [SerializeField] private Button logoutButton = null;
     [SerializeField] private Button playButton = null;
     [SerializeField] private Button configButton = null;
 
     [Header("Config")]
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
+    [SerializeField] private GameObject webcamInfoGO = null;
     [SerializeField] private InputField connectionURIConfigIF = null;
     [SerializeField] private InputField exchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
+    [SerializeField] private Dropdown webcamDropdown = null;
+    [SerializeField] private Dropdown microphoneDropdown = null;
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
+    [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
 
     [Header("Play")]
     [SerializeField] private GameObject playPanel = null;
@@ -98,7 +106,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown scenarioIdDrop = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle noAudioToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
 
@@ -167,6 +174,96 @@ public class OrchestratorLogin : MonoBehaviour {
         item.text = value;
     }
 
+    private void AddUserComponentOnContent(Transform container, User user) {        
+        GameObject userGO = new GameObject();
+        userGO.name = "User-" + user.userName;
+        userGO.transform.SetParent(container);
+
+        ContentSizeFitter lCsF = userGO.AddComponent<ContentSizeFitter>();
+        lCsF.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        // Placeholder
+        Text placeholderText = userGO.AddComponent<Text>();
+        placeholderText.font = MenuFont;
+        placeholderText.fontSize = 20;
+        placeholderText.color = Color.white;
+
+        RectTransform rectGO;
+        rectGO = placeholderText.GetComponent<RectTransform>();
+        rectGO.localPosition = new Vector3(0, 0, 0);
+        rectGO.sizeDelta = new Vector2(0, 30);
+        rectGO.localScale = Vector3.one;
+        placeholderText.horizontalOverflow = HorizontalWrapMode.Wrap;
+        placeholderText.verticalOverflow = VerticalWrapMode.Overflow;
+
+        placeholderText.text = " ";
+
+        // TEXT
+        Text textItem = new GameObject("Text-" + user.userName).AddComponent<Text>();
+        textItem.transform.SetParent(userGO.transform);
+        textItem.font = MenuFont;
+        textItem.fontSize = 20;
+        textItem.color = Color.white;        
+
+        RectTransform rectText;
+        rectText = textItem.GetComponent<RectTransform>();
+        rectText.anchorMin = new Vector2(0, 0.5f);
+        rectText.anchorMax = new Vector2(1, 0.5f);
+        rectText.localPosition = new Vector3(40, 0, 0);
+        rectText.sizeDelta = new Vector2(0, 30);
+        rectText.localScale = Vector3.one;
+        textItem.horizontalOverflow = HorizontalWrapMode.Wrap;
+        textItem.verticalOverflow = VerticalWrapMode.Overflow;
+
+        textItem.text = user.userName;
+
+        Image imageItem = new GameObject("Image-" + user.userName).AddComponent<Image>();
+        imageItem.transform.SetParent(userGO.transform);
+        imageItem.type = Image.Type.Simple;
+        imageItem.preserveAspect = true;
+
+        RectTransform rectImage;
+        rectImage = imageItem.GetComponent<RectTransform>();
+        rectImage.anchorMin = new Vector2(0, 0.5f); 
+        rectImage.anchorMax = new Vector2(0, 0.5f);
+        rectImage.localPosition = new Vector3(15, 0, 0);
+        rectImage.sizeDelta = new Vector2(30, 30);
+        rectImage.localScale = Vector3.one;
+        // IMAGE
+        switch (user.userData.userRepresentationType) {
+            case UserData.eUserRepresentationType.__NONE__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                textItem.text += " - (Voyeur)";
+                break;
+            case UserData.eUserRepresentationType.__2D__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                textItem.text += " - (WebCam)";
+                break;
+            case UserData.eUserRepresentationType.__AVATAR__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                textItem.text += " - (Avatar)";
+                break;
+            case UserData.eUserRepresentationType.__TVM__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                textItem.text += " - (TVM)";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CWI_:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (SinglePC)";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CERTH__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                textItem.text += " - (MultiPC)";
+                break;
+            case UserData.eUserRepresentationType.__SPECTATOR__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                textItem.text += " - (Ghost)";
+                break;
+            default:
+                break;
+        }
+    }
+
     private void RemoveComponentsFromList(Transform container) {
         for (var i = container.childCount - 1; i >= 0; i--) {
             var obj = container.GetChild(i);
@@ -179,7 +276,8 @@ public class OrchestratorLogin : MonoBehaviour {
         RemoveComponentsFromList(usersSession.transform);
         if (OrchestratorController.Instance.ConnectedUsers != null) {
             foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
-                AddTextComponentOnContent(container.transform, u.userName);
+                //AddTextComponentOnContent(container.transform, u.userName);
+                AddUserComponentOnContent(container.transform, u);
             }
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
@@ -218,6 +316,29 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.ClearOptions();
         dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
     }
+
+    private void UpdateWebcams(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        WebCamDevice[] devices = WebCamTexture.devices;
+        List<string> webcams = new List<string>();
+        webcams.Add("None");
+        foreach (WebCamDevice device in devices)
+            webcams.Add(device.name);
+        dd.AddOptions(webcams);
+    }
+
+    private void Updatemicrophones(Dropdown dd) {
+        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        dd.ClearOptions();
+        string[] devices = Microphone.devices;
+        List<string> microphones = new List<string>();
+        microphones.Add("None");
+        foreach (string device in devices)
+            microphones.Add(device);
+        dd.AddOptions(microphones );
+    }
+
 
     private IEnumerator ScrollLogsToBottom() {
         yield return new WaitForSeconds(0.2f);
@@ -277,6 +398,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
+        UpdateWebcams(webcamDropdown);
+        Updatemicrophones(microphoneDropdown);
 
         // Buttons listeners
         connectButton.onClick.AddListener(delegate { SocketConnect(); });
@@ -284,8 +407,12 @@ public class OrchestratorLogin : MonoBehaviour {
         loginButton.onClick.AddListener(delegate { Login(); });
         signinButton.onClick.AddListener(delegate { SigninButton(); });
         registerButton.onClick.AddListener(delegate { RegisterButton(true); });
+        logoutButton.onClick.AddListener(delegate { Logout(); });
         playButton.onClick.AddListener(delegate { StateButton(State.Play); });
-        configButton.onClick.AddListener(delegate { StateButton(State.Config); });
+        configButton.onClick.AddListener(delegate {
+            FillSelfUserData();
+            StateButton(State.Config);
+        });
         saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
         exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
         calibButton.onClick.AddListener(delegate { GoToCalibration(); });
@@ -302,12 +429,12 @@ public class OrchestratorLogin : MonoBehaviour {
 
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+        webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
 
         InitialiseControllerEvents();
 
-        noAudioToggle.isOn = true;
         socketAudioToggle.isOn = false;
-        dashAudioToggle.isOn = false;
+        dashAudioToggle.isOn = true;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -317,7 +444,10 @@ public class OrchestratorLogin : MonoBehaviour {
             statusText.text = "Online";
             statusText.color = onlineCol;
             FillSelfUserData();
+            UpdateSessions(orchestratorSessions, sessionIdDrop);
+            UpdateScenarios(scenarioIdDrop);
             Debug.Log("Come from another Scene");
+
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             //OnLogin(true);
         }
@@ -343,16 +473,35 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void FillSelfUserData() {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+        User user = OrchestratorController.Instance.SelfUser;
+
         // UserID & Name
-        userId.text = OrchestratorController.Instance.SelfUser.userId;
-        userName.text = OrchestratorController.Instance.SelfUser.userName;
-        userNameVRTText.text = OrchestratorController.Instance.SelfUser.userName;
+        userId.text = user.userId;
+        userName.text = user.userName;
+        userNameVRTText.text = user.userName;
         // Config Info
-        exchangeNameConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-        connectionURIConfigIF.text = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-        representationTypeConfigDropdown.value = (int)OrchestratorController.Instance.SelfUser.userData.userRepresentationType;
+        UserData userData = user.userData;
+        exchangeNameConfigIF.text = userData.userMQexchangeName;
+        connectionURIConfigIF.text = userData.userMQurl;
+        representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
+        webcamDropdown.value = 0;
+
+        for (int i = 0; i < webcamDropdown.options.Count; ++i) {
+            if (webcamDropdown.options[i].text == userData.webcamName) {
+                webcamDropdown.value = i;
+                break;
+            }
+        }
+        microphoneDropdown.value = 0;
+        for (int i = 0; i < microphoneDropdown.options.Count; ++i) {
+            if (microphoneDropdown.options[i].text == userData.microphoneName) {
+                microphoneDropdown.value = i;
+                break;
+            }
+        }
     }
-    
+
     public void PanelChanger() {
         switch (state) {
             case State.Offline:
@@ -381,6 +530,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 // Panels
                 ntpPanel.SetActive(false);
                 loginPanel.SetActive(true);
+                CheckRememberMe();
                 if (developerOptions) {
                     infoPanel.SetActive(true);
                     usersButtonsPanel.SetActive(true);
@@ -442,16 +592,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
-                // Dropdown Logic
-                tvmInfoGO.SetActive(false);
-                calibButton.gameObject.SetActive(false);
-                if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
-                    tvmInfoGO.SetActive(true);
-                    calibButton.gameObject.SetActive(true);
-                }
-                else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
-                    calibButton.gameObject.SetActive(true);
-                }
+                // Behaviour
+                SelfRepresentationChanger();
                 break;
             case State.Play:
                 // Panels
@@ -518,6 +660,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 lobbyPanel.SetActive(false);
                 // Buttons
                 connectButton.gameObject.SetActive(false);
+                // Behaviour
+                GetSessions();
                 break;
             case State.Lobby:
                 // Panels
@@ -551,6 +695,25 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
         }
         SelectFirstIF();
+    }
+
+    public void SelfRepresentationChanger() {
+        // Dropdown Logic
+        tvmInfoGO.SetActive(false);
+        webcamInfoGO.SetActive(false);
+        calibButton.gameObject.SetActive(false);
+        if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
+            tvmInfoGO.SetActive(true);
+            calibButton.gameObject.SetActive(true);
+        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+            calibButton.gameObject.SetActive(true);
+        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+            webcamInfoGO.SetActive(true);
+        }
+        // Preview
+        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamDropdown.options[webcamDropdown.value].text,
+            microphoneDropdown.options[microphoneDropdown.value].text);
     }
 
     private void OnDestroy() {
@@ -636,6 +799,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void ExitConfigButton() {
+        selfRepresentationPreview.Stop();
         GetUserInfo();
         state = State.Logged;
         PanelChanger();
@@ -739,46 +903,25 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Toggles 
 
     private void AudioToggle() {
-        if (noAudioToggle.isOn)
-            noAudioToggle.interactable = false;
-        else
-            noAudioToggle.interactable = true;
-        if (socketAudioToggle.isOn) 
-            socketAudioToggle.interactable = false;
-        else 
-            socketAudioToggle.interactable = true;
-        if (dashAudioToggle.isOn)
-            dashAudioToggle.interactable = false;
-        else
-            dashAudioToggle.interactable = true;
+        socketAudioToggle.interactable = !socketAudioToggle.isOn;
+        dashAudioToggle.interactable = !dashAudioToggle.isOn;
     }
 
     public void SetAudio(int kind) {
         switch (kind) {
-            case 0: // No
-                if (noAudioToggle.isOn) {
-                    // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.None;
-                    // Set Toggles
-                    socketAudioToggle.isOn = false;
-                    dashAudioToggle.isOn = false;
-                }
-                break;
             case 1: // Socket
                 if (socketAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.SocketIO;
+                    Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     dashAudioToggle.isOn = false;
                 }
                 break;
             case 2: // Dash
                 if (dashAudioToggle.isOn) {
                     // Set AudioType
-                    Config.Instance.audioType = Config.AudioType.Dash;
+                    Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
-                    noAudioToggle.isOn = false;
                     socketAudioToggle.isOn = false;
                 }
                 break;
@@ -958,7 +1101,24 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Login from the main buttons Login & Logout
     private void Login() {
+        if (rememberMeButton.isOn) {
+            PlayerPrefs.SetString("userNameLoginIF", userNameLoginIF.text);
+            PlayerPrefs.SetString("userPasswordLoginIF", userPasswordLoginIF.text);
+        } else {
+            PlayerPrefs.DeleteKey("userNameLoginIF");
+            PlayerPrefs.DeleteKey("userPasswordLoginIF");
+        }
         OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
+    }
+
+    // Check saved used credentials.
+    private void CheckRememberMe() {
+        if (PlayerPrefs.HasKey("userNameLoginIF") && PlayerPrefs.HasKey("userPasswordLoginIF")) {
+            rememberMeButton.isOn = true;
+            userNameLoginIF.text = PlayerPrefs.GetString("userNameLoginIF");
+            userPasswordLoginIF.text = PlayerPrefs.GetString("userPasswordLoginIF");
+        } else
+            rememberMeButton.isOn = false;
     }
 
     private void OnLogin(bool userLoggedSucessfully) {
@@ -972,13 +1132,14 @@ public class OrchestratorLogin : MonoBehaviour {
             //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
             //};
             //OrchestratorController.Instance.UpdateUserData(lUserData);
-
             state = State.Logged;
         }
         else {
             this.userId.text = "";
             userName.text = "";
             userNameVRTText.text = "";
+
+            state = State.Online;
         }
 
         userLogged = userLoggedSucessfully;
@@ -1175,9 +1336,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetUsersHandler(User[] users) {
-        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Not implemented");
-
-        UpdateUsersSession(usersSession);
+        Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Users Updated");
 
         // Update the sfuData if is in session.
         if (OrchestratorController.Instance.ConnectedUsers != null) {
@@ -1185,10 +1344,13 @@ public class OrchestratorLogin : MonoBehaviour {
                 foreach (User u in users) {
                     if (OrchestratorController.Instance.ConnectedUsers[i].userId == u.userId) {
                         OrchestratorController.Instance.ConnectedUsers[i].sfuData = u.sfuData;
+                        OrchestratorController.Instance.ConnectedUsers[i].userData = u.userData;
                     }
                 }
             }
         }
+
+        UpdateUsersSession(usersSession);
     }
 
     private void AddUser() {
@@ -1208,7 +1370,9 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = exchangeNameConfigIF.text,
             userMQurl = connectionURIConfigIF.text,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value
+            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
+            microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }
@@ -1234,7 +1398,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
             }
 
-            UpdateUsersSession(usersSession);
+            if (!OrchestratorController.Instance.IsAutoRetrievingData)
+                GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {
@@ -1263,7 +1428,9 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetRoomsHandler(RoomInstance[] rooms) {
-        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Send GetUsers command");
+
+        OrchestratorController.Instance.GetUsers();
     }
 
     private void JoinRoom() {

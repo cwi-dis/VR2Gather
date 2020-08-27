@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Workers {
     public class PCDecoder : BaseWorker {
-        cwipc.decoder decoder;
-        QueueThreadSafe inQueue;
-        QueueThreadSafe outQueue;
+        protected cwipc.decoder decoder;
+        protected QueueThreadSafe inQueue;
+        protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) :base(WorkerType.Run) {

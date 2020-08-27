@@ -4,7 +4,7 @@ using UnityEngine;
 
 [Serializable]
 public class Config {
-    public enum AudioType {
+    public enum ProtocolType {
         None,
         Dash,
         SocketIO
@@ -23,7 +23,7 @@ public class Config {
 
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
-    public AudioType    audioType = AudioType.None;
+    public ProtocolType protocolType = ProtocolType.SocketIO;
     public UserRepresentation userRepresentation = UserRepresentation.PC;
     public Presenter    presenter = Presenter.None;
     public float        nonHMDHeight = 1.8f;
@@ -32,6 +32,8 @@ public class Config {
     {
         public string   connectionURI;
         public string   exchangeName;
+        public bool printMetrics;
+        public bool saveMetrics;
     };
     public _TVMs TVMs;
 
@@ -79,11 +81,20 @@ public class Config {
             }
             public _RS2ReaderConfig RS2ReaderConfig;
             [Serializable]
+            public class _SynthReaderConfig
+            {
+                public int nPoints;
+            }
+            public _SynthReaderConfig SynthReaderConfig;
+            [Serializable]
             public class _CerthReaderConfig
             {
                 public string ConnectionURI;
                 public string PCLExchangeName;
                 public string MetaExchangeName;
+                public Vector3 OriginCorrection;
+                public Vector3 BoundingBotLeft;
+                public Vector3 BoundingTopRight;
             }
             public _CerthReaderConfig CerthReaderConfig;
             public float voxelSize;
@@ -116,6 +127,7 @@ public class Config {
     };
     public _User LocalUser;
     public _User RemoteUser;
+    public _User PreviewUser;
 
     static Config _Instance;
     public static Config Instance {

@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Workers;
 
-public class VoiceIOReceiver : MonoBehaviour {
-    Workers.BaseWorker      reader;
+public class VoiceReceiver : MonoBehaviour {
+    Workers.BaseReader      reader;
     Workers.BaseWorker      codec;
     Workers.AudioPreparer   preparer;
 
@@ -12,11 +13,8 @@ public class VoiceIOReceiver : MonoBehaviour {
     QueueThreadSafe preparerQueue = new QueueThreadSafe();
 
     // Start is called before the first frame update
-    public void Init(string userID) {
-        Workers.VoiceReader.PrepareDSP();
-        //        const int frequency = 16000;
-        //        const double optimalAudioBufferDuration = 1.2;   // How long we want to buffer audio (in seconds)
-        //        const int optimalAudioBufferSize = (int)(frequency * optimalAudioBufferDuration);
+    public void Init(OrchestratorWrapping.User user, string _streamName, int _streamNumber, int _initialDelay, bool UseDash) {
+        VoiceReader.PrepareDSP();
         AudioSource audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.spatialize = true;
         audioSource.spatialBlend = 1.0f;
@@ -25,9 +23,18 @@ public class VoiceIOReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        reader = new Workers.SocketIOReader(userID, decoderQueue);
+        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
+            new Workers.PCSubReader.TileDescriptor() {
+                outQueue = decoderQueue,
+                tileNumber = 0
+            }
+        };
+
+        if (UseDash)    reader = new Workers.PCSubReader(user.sfuData.url_audio, _streamName, _initialDelay, tiles);
+        else            reader = new Workers.SocketIOReader(user, _streamName, tiles); 
+
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
-        preparer    = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+        preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
     }
 
     void OnDestroy() {
@@ -50,6 +57,10 @@ public class VoiceIOReceiver : MonoBehaviour {
                 data[cnt] += tmpBuffer[cnt];
             } while (++cnt < data.Length);
         }
+    }
+
+    public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence) {
+        reader.SetSyncInfo(_clockCorrespondence);
     }
 
 

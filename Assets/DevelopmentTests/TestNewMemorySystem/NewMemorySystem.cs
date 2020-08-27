@@ -50,7 +50,7 @@ public class NewMemorySystem : MonoBehaviour
         }
 
         if (localPCs) {
-            if(!useCompression)
+            if (!useCompression)
                 reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, preparerQueue);
             else {
                 reader = new Workers.RS2Reader("../cameraconfig.xml", 0.01f, 0, encoderQueue);
@@ -89,14 +89,16 @@ public class NewMemorySystem : MonoBehaviour
             };
             dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
             decoder = new Workers.PCDecoder[decoders];
-            for ( int i=0;i<decoders;++i)
+            for (int i = 0; i < decoders; ++i)
                 decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
 
         if (useVoice) {
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceDashSender>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio/", "audio", 2000, 10000); //Audio Pipeline
-            gameObject.AddComponent<VoiceDashReceiver>().Init("https://vrt-evanescent.viaccess-orca.com/" + uuid + "/audio/", "audio", 0, 1); //Audio Pipeline
+            //, user.sfuData.url_pcc, user.sfuData.url_audio
+
+            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User(), "audio", 2000, 10000, false); //Audio Pipeline
+            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User(), "audio", 0, 1,false); //Audio Pipeline
 
         }
     }

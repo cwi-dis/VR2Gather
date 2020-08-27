@@ -17,6 +17,9 @@ namespace Workers {
     public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
     {
         float voxelSize;
+        Vector3 originCorrection;
+        Vector3 boundingBotLeft;
+        Vector3 boundingTopRight;
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
@@ -30,7 +33,7 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, Vector3 _originCorrection, Vector3 _boundingBotLeft, Vector3 _boundingTopRight, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null)
         {
             if (_outQueue == null)
             {
@@ -40,6 +43,9 @@ namespace Workers {
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             voxelSize = _voxelSize;
+            originCorrection = _originCorrection;
+            boundingBotLeft = _boundingBotLeft;
+            boundingTopRight = _boundingTopRight;
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
@@ -56,6 +62,7 @@ namespace Workers {
             MetaRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _MetaExchangeName);
             if (MetaRabbitMQReceiver == null)
             {
+
                 throw new System.Exception("CerthReader: MetaRabbitMQReceiver is null");
             }
 
@@ -139,9 +146,36 @@ namespace Workers {
                     //
                     // Convert the Certh pointcloud to a cwipc pointcloud
                     //
-                    float[] bbox = { -1f, 1f, -1f, 0.5f, -3f, 1f };
+                    float[] bbox = null;
+                    float[] move = null;
+                    if (boundingBotLeft.x != boundingTopRight.x || boundingBotLeft.y != boundingTopRight.y || boundingBotLeft.z != boundingTopRight.z)
+                    {
+                        bbox = new float[6]
+                        {
+                            boundingBotLeft.x, boundingTopRight.x,
+                            boundingBotLeft.y, boundingTopRight.y,
+                            boundingBotLeft.z, boundingTopRight.z
+                        };
+                    }
+                    if (originCorrection.x != 0 || originCorrection.y != 0 || originCorrection.z != 0)
+                    {
+                        move = new float[3] { originCorrection.x, originCorrection.y, originCorrection.z };
+                    }
                     System.UInt64 timestamp = 0;
-                    cwipc.pointcloud pc = cwipc.from_certh(pclPtr, bbox, timestamp);
+                    cwipc.pointcloud pc = cwipc.from_certh(pclPtr, move, bbox, timestamp);
+                    if (voxelSize != 0)
+                    {
+                        var newPc = cwipc.downsample(pc, voxelSize);
+                        if (newPc == null)
+                        {
+                            Debug.LogWarning($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
+                        }
+                        else
+                        {
+                            pc.free();
+                            pc = newPc;
+                        }
+                    }
                     //
                     // We can now safely free the RGBD data
                     //

@@ -4,10 +4,19 @@ using System.IO;
 using UnityEngine;
 
 namespace Workers {
-    public class B2DWriter : BaseWorker
-    {
+    public class BaseWriter : BaseWorker {
+        public BaseWriter(WorkerType _type = WorkerType.Run): base(_type) {
+        }
+
+        public virtual SyncConfig.ClockCorrespondence GetSyncInfo() {
+            return new SyncConfig.ClockCorrespondence();
+        }
+    }
+
+    public class B2DWriter : BaseWriter {
         public struct DashStreamDescription
         {
+            public string name;
             public uint tileNumber;
             public uint quality;
             public QueueThreadSafe inQueue;
@@ -211,7 +220,7 @@ namespace Workers {
             System.Threading.Thread.Sleep(10);
         }
 
-        public SyncConfig.ClockCorrespondence GetSyncInfo()
+        public override SyncConfig.ClockCorrespondence GetSyncInfo()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
 

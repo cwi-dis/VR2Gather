@@ -65,6 +65,8 @@ namespace OrchestratorWrapping
         public string userAudioUrl = "";
 
         public eUserRepresentationType userRepresentationType;
+        public string webcamName = "";
+        public string microphoneName = "";
 
         public enum eUserRepresentationType
         {
@@ -73,6 +75,7 @@ namespace OrchestratorWrapping
             __AVATAR__,
             __TVM__,
             __PCC_CWI_,
+            __PCC_SYNTH__,
             __PCC_CERTH__,
             __SPECTATOR__
         }

@@ -15,9 +15,13 @@ namespace Workers {
 
         int writeVideoPosition;
         int readVideoPosition;
+        VideoFilter RGBA2RGBFilter;
+
 
         QueueThreadSafe inVideoQueue;
         QueueThreadSafe inAudioQueue;
+
+        public int videFrameSize;
 
         public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(WorkerType.End) {
             inVideoQueue = _inVideoQueue;
@@ -36,6 +40,8 @@ namespace Workers {
             writeVideoPosition = 0;
             readVideoPosition = 0;
 
+            videFrameSize = 0;
+
             Start();
         }
 
@@ -46,9 +52,10 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            if (inVideoQueue._CanDequeue()) {
+            if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
+                videFrameSize = len;
                 if (videoBufferSize == 0) {
                     videoBufferSize = len * 15;
                     circularVideoBuffer = new byte[videoBufferSize];
@@ -67,10 +74,12 @@ namespace Workers {
                     }
                     lock (this) { availableVideo += len; }
                     mc.free();
+                } else {
+                    Debug.LogError($"{Name()}: CircularBuffer is full");
                 }
             }
 
-            if (inAudioQueue._CanDequeue()) {
+            if (inAudioQueue!=null && inAudioQueue._CanDequeue()) {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
                 int len = mc.elements;
                 if (len < freeAudio) {
