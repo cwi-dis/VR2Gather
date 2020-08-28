@@ -41,7 +41,7 @@ abstract public class PilotController : MonoBehaviour {
         int id = 0;
         bool firstTVM = true;
         // First tell the tilingConfigDistributor what our user ID is.
-        var tilingConfigDistributor = GetComponentInParent<TilingConfigDistributor>();
+        var tilingConfigDistributor = FindObjectOfType<TilingConfigDistributor>();
         if (tilingConfigDistributor == null)
         {
             Debug.LogWarning("No TilingConfigDistributor found");
@@ -112,7 +112,8 @@ abstract public class PilotController : MonoBehaviour {
                             players[playerIdx].pc.SetActive(true);
                             bool isSelf = my_id == players[playerIdx].id;
                             userCfg = isSelf ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            var pipeline = players[playerIdx].pc.AddComponent<EntityPipeline>().Init(user, userCfg);
+                            var pipeline = players[playerIdx].pc.AddComponent<EntityPipeline>();
+                            pipeline.Init(user, userCfg);
                             // xxxjack debug code
                             if (isSelf)
                             {
