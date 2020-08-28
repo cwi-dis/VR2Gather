@@ -22,7 +22,6 @@ public class TilingConfigDistributor : MonoBehaviour
 
     public void RegisterPipeline(string userId, EntityPipeline pipeline)
     {
-        Debug.Log($"xxxjack userId {userId}");
         if (pipelines.ContainsKey(userId))
         {
             Debug.LogError($"TilingConfigDistributor: registering duplicate userId {userId}");
@@ -49,7 +48,6 @@ public class TilingConfigDistributor : MonoBehaviour
         // Quick return if interval hasn't expired since last transmission.
         if (earliestNextTransmission != null && System.DateTime.Now < earliestNextTransmission)
         {
-            Debug.Log($"xxxjack no transmission for {earliestNextTransmission - System.DateTime.Now}");
             return;
         }
         earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
