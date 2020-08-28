@@ -28,9 +28,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool calibrationMode=false) {
-
-
+    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool preview = false) {
         switch (cfg.sourceType) {
             case "self": // old "rs2"
                 isSource = true;
@@ -80,7 +78,7 @@ public class EntityPipeline : MonoBehaviour {
                     reader = pcReader;
                 }
 
-                if (!calibrationMode) {
+                if (!preview) {
                     //
                     // allocate and initialize per-stream outgoing stream datastructures
                     //
@@ -238,51 +236,6 @@ public class EntityPipeline : MonoBehaviour {
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
-                break;
-            case "preview":
-                isSource = true;
-                Workers.TiledWorker previewReader;
-                var previewConfig = cfg.PCSelfConfig;
-                if (previewConfig == null)
-                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig config");
-                //
-                // Create renderer and preparer for self-view.
-                //
-                QueueThreadSafe previewPreparerQueue = _CreateRendererAndPreparer();
-
-                //
-                // Create reader
-                //
-                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_) {
-                    var RS2ReaderConfig = previewConfig.RS2ReaderConfig;
-                    if (RS2ReaderConfig == null)
-                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.RS2ReaderConfig config");
-
-                    previewReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
-                    reader = previewReader;
-                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__) {
-                    int nPoints = 0;
-                    var SynthReaderConfig = previewConfig.SynthReaderConfig;
-                    if (SynthReaderConfig != null)
-                        nPoints = SynthReaderConfig.nPoints;
-                    previewReader = new Workers.RS2Reader(previewConfig.frameRate, nPoints, previewPreparerQueue);
-                    reader = previewReader;
-                } else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
-                  {
-                    var CerthReaderConfig = previewConfig.CerthReaderConfig;
-                    if (CerthReaderConfig == null)
-                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.CerthReaderConfig config");
-                    previewReader = new Workers.CerthReader(
-                        CerthReaderConfig.ConnectionURI, 
-                        CerthReaderConfig.PCLExchangeName, 
-                        CerthReaderConfig.MetaExchangeName, 
-                        CerthReaderConfig.OriginCorrection,
-                        CerthReaderConfig.BoundingBotLeft,
-                        CerthReaderConfig.BoundingTopRight,
-                        previewConfig.voxelSize, 
-                        previewPreparerQueue);
-                    reader = previewReader;
-                }
                 break;
             default:
                 Debug.LogError($"EntityPipeline: unknown sourceType {cfg.sourceType}");

@@ -82,8 +82,12 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private GameObject webcamInfoGO = null;
-    [SerializeField] private InputField connectionURIConfigIF = null;
-    [SerializeField] private InputField exchangeNameConfigIF = null;
+    [SerializeField] private GameObject pccerthInfoGO = null;
+    [SerializeField] private InputField tvmConnectionURIConfigIF = null;
+    [SerializeField] private InputField tvmExchangeNameConfigIF = null;
+    [SerializeField] private InputField pccerthConnectionURIConfigIF = null;
+    [SerializeField] private InputField pccerthPCLExchangeNameConfigIF = null;
+    [SerializeField] private InputField pccerthMetaExchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
     [SerializeField] private Dropdown webcamDropdown = null;
     [SerializeField] private Dropdown microphoneDropdown = null;
@@ -492,8 +496,11 @@ public class OrchestratorLogin : MonoBehaviour {
         userNameVRTText.text = user.userName;
         // Config Info
         UserData userData = user.userData;
-        exchangeNameConfigIF.text = userData.userMQexchangeName;
-        connectionURIConfigIF.text = userData.userMQurl;
+        tvmExchangeNameConfigIF.text = userData.userMQexchangeName;
+        tvmConnectionURIConfigIF.text = userData.userMQurl;
+        pccerthConnectionURIConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.ConnectionURI;
+        pccerthPCLExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.PCLExchangeName;
+        pccerthMetaExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.MetaExchangeName;
         representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
         webcamDropdown.value = 0;
 
@@ -711,13 +718,20 @@ public class OrchestratorLogin : MonoBehaviour {
         // Dropdown Logic
         tvmInfoGO.SetActive(false);
         webcamInfoGO.SetActive(false);
+        pccerthInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
         if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
-        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
             calibButton.gameObject.SetActive(true);
-        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
+            pccerthInfoGO.SetActive(true);
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
             webcamInfoGO.SetActive(true);
         }
         // Preview
@@ -1403,8 +1417,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 userNameVRTText.text = user.userName;
 
                 //UserData
-                exchangeNameConfigIF.text = user.userData.userMQexchangeName;
-                connectionURIConfigIF.text = user.userData.userMQurl;
+                tvmExchangeNameConfigIF.text = user.userData.userMQexchangeName;
+                tvmConnectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
 
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
