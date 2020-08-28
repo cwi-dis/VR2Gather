@@ -30,6 +30,7 @@ public class VoiceSender : MonoBehaviour {
 
     public SyncConfig.ClockCorrespondence GetSyncInfo()
     {
+        if (writer == null) return new SyncConfig.ClockCorrespondence();
         return writer.GetSyncInfo();
     }
 }
