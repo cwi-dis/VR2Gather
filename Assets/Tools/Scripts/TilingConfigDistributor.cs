@@ -12,7 +12,7 @@ public class TilingConfigDistributor : MonoBehaviour
     private int interval = 1;    // How many seconds between transmissions of the data
     private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
     private string selfUserId;
-    private Dictionary<string, EntityPipeline> pipelines;
+    private Dictionary<string, EntityPipeline> pipelines = new Dictionary<string, EntityPipeline>();
 
     public TilingConfigDistributor Init(string _selfUserId)
     {
@@ -22,6 +22,7 @@ public class TilingConfigDistributor : MonoBehaviour
 
     public void RegisterPipeline(string userId, EntityPipeline pipeline)
     {
+        Debug.Log($"xxxjack userId {userId}");
         if (pipelines.ContainsKey(userId))
         {
             Debug.LogError($"TilingConfigDistributor: registering duplicate userId {userId}");
@@ -46,10 +47,14 @@ public class TilingConfigDistributor : MonoBehaviour
         // If we haven't been inited yet return.
         if (selfUserId == null || !pipelines.ContainsKey(selfUserId)) return;
         // Quick return if interval hasn't expired since last transmission.
-        if (earliestNextTransmission != null && System.DateTime.Now < earliestNextTransmission) return;
+        if (earliestNextTransmission != null && System.DateTime.Now < earliestNextTransmission)
+        {
+            Debug.Log($"xxxjack no transmission for {earliestNextTransmission - System.DateTime.Now}");
+            return;
+        }
         earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
         if (interval < 10) interval = interval * 2;
-        Debug.Log("xxxjack TilingConfigDistributor: sending message");
+        Debug.Log($"TilingConfigDistributor: sending tiling information for {selfUserId} to receivers");
         // Find EntityPipeline belonging to self user.
         var pipeline = pipelines[selfUserId];
         // Get data from self EntityPipeline.
