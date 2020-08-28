@@ -818,6 +818,8 @@ public class OrchestratorLogin : MonoBehaviour {
     public void StateButton(State _state) {
         state = _state;
         PanelChanger();
+        if (state == State.Config)
+            UpdateUserData();
     }
 
     public void ReadyButton() {
@@ -1378,8 +1380,8 @@ public class OrchestratorLogin : MonoBehaviour {
     private void UpdateUserData() {
         // UserData info in Config
         UserData lUserData = new UserData {
-            userMQexchangeName = exchangeNameConfigIF.text,
-            userMQurl = connectionURIConfigIF.text,
+            userMQexchangeName = Config.Instance.TVMs.exchangeName,
+            userMQurl = Config.Instance.TVMs.connectionURI,
             userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
