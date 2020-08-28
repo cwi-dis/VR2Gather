@@ -19645,6 +19645,7 @@ MonoBehaviour:
   joinPanel: {fileID: 6457971032356984462}
   backJoinButton: {fileID: 2235418248480033197}
   sessionIdDrop: {fileID: 6457971032597693187}
+  refreshTimer: 5
   lobbyPanel: {fileID: 6457971032172637052}
   sessionNameText: {fileID: 1374518616137530355}
   sessionDescriptionText: {fileID: 6457971031711936648}
@@ -20757,7 +20758,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6457971033373840463
 RectTransform:
   m_ObjectHideFlags: 0
