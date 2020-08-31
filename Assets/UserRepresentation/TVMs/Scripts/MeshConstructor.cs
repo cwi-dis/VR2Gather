@@ -22,7 +22,7 @@ public class MeshConstructor : MonoBehaviour
     private System.Diagnostics.Stopwatch stopWatch_d_g = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_d_p = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_r = new System.Diagnostics.Stopwatch();
-    private PerformanceMetrics performanceMetricsObj = new PerformanceMetrics();
+    private PerformanceMetrics performanceMetricsObj;
     private List<Texture2D> m_Textures = new List<Texture2D>();
     private List<Vector3> m_vertices = new List<Vector3>();
     private List<Vector4> m_participatingCams = new List<Vector4>();
@@ -111,6 +111,7 @@ public class MeshConstructor : MonoBehaviour
     {
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
+        performanceMetricsObj = this.gameObject.AddComponent<PerformanceMetrics>();
         performanceMetricsObj.runCommand();
     }
 
