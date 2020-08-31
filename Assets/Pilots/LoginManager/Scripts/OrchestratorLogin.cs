@@ -113,6 +113,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject joinPanel = null;
     [SerializeField] private Button backJoinButton = null;
     [SerializeField] private Dropdown sessionIdDrop = null;
+    [SerializeField] private int refreshTimer = 5;
 
     [Header("Lobby")]
     [SerializeField] private GameObject lobbyPanel = null;
@@ -146,6 +147,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private Color offlineCol = new Color(0.78f, 0.15f, 0.15f); // Red
     public Font MenuFont = null;
     private EventSystem system = null;
+    private float timer = 0.0f;
     #endregion
 
     #region GUI
@@ -469,6 +471,14 @@ public class OrchestratorLogin : MonoBehaviour {
         if (state == State.Create) {
             AudioToggle();
             PresenterToggles();
+        }
+        // Refresh Sessions
+        if (state == State.Join) {
+            timer += Time.deltaTime;
+            if (timer >= refreshTimer) {
+                GetSessions();
+                timer = 0.0f;
+            }
         }
     }
 
