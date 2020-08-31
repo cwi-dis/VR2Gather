@@ -38,8 +38,8 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash) {        
-        Debug.Log($"----> WebCamPipeline Init userID {user.userId} cfg.sourceType {cfg.sourceType}");
+    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash) {
+        if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
             case "self": // Local 
                 isSource = true;
@@ -150,7 +150,7 @@ public class WebCamPipeline : MonoBehaviour {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
-                        texture = new Texture2D(decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
+                        texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
                         Transform screen = transform.Find("Screen");
                         var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
@@ -158,8 +158,12 @@ public class WebCamPipeline : MonoBehaviour {
                             renderer.transform.localScale = new Vector3(0.5f, (texture.height / (float)texture.width) * 0.5f, 1);
                         }
                     }
-                    texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
-                    texture.Apply();
+                    try {
+                        texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
+                        texture.Apply();
+                    } catch {
+                        Debug.Log("[FPA] ERROR on LoadRawTextureData.");
+                    }
                 }
             }
         }
@@ -189,6 +193,10 @@ public class WebCamPipeline : MonoBehaviour {
 
     void OnDestroy() {
         ready = false;
+        if (texture != null) {
+            DestroyImmediate(texture);
+            texture = null;
+        }
         webReader?.StopAndWait();
         reader?.StopAndWait();
         encoder?.StopAndWait();
