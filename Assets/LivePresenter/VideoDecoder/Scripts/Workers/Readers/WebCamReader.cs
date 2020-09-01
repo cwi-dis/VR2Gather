@@ -25,6 +25,9 @@ namespace Workers {
 
 
         public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+
+            if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;
+
             this.width = width;
             this.height = height;
             this.fps = fps;
