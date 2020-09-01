@@ -52,12 +52,12 @@ public class TilingConfigDistributor : MonoBehaviour
         }
         earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
         if (interval < 10) interval = interval * 2;
-        Debug.Log($"TilingConfigDistributor: sending tiling information for {selfUserId} to receivers");
         // Find EntityPipeline belonging to self user.
         var pipeline = pipelines[selfUserId];
         // Get data from self EntityPipeline.
         TilingConfig tilingConfig = pipeline.GetTilingConfig();
-		var data = new TilingConfigMessage { data = tilingConfig };
+        Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
+        var data = new TilingConfigMessage { data = tilingConfig };
 
 		if (OrchestratorController.Instance.UserIsMaster)
 		{
@@ -75,7 +75,6 @@ public class TilingConfigDistributor : MonoBehaviour
 
 	private void OnTilingConfig(TilingConfigMessage receivedData)
 	{
-        Debug.Log($"xxxjack TilingConfigDistributor: received message from {receivedData.SenderId}");
 
         if (OrchestratorController.Instance.UserIsMaster)
 		{
@@ -94,6 +93,8 @@ public class TilingConfigDistributor : MonoBehaviour
         }
         var pipeline = pipelines[receivedData.SenderId];
         // Give reveicedData.data to that EntityPipeline.
-        pipeline.SetTilingConfig(receivedData.data);
+        TilingConfig tilingConfig = receivedData.data;
+        Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
+        pipeline.SetTilingConfig(tilingConfig);
     }
 }

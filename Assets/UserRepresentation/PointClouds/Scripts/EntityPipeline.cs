@@ -98,7 +98,7 @@ public class EntityPipeline : MonoBehaviour {
                             tileNormals = new Vector3[nTileToTransmit];
                             for (int i=0; i<tilesToTransmit.Length; i++)
                             {
-                                Debug.Log($"xxxjack: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
+                                Debug.Log($"EntityPipeline: tiling sender: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
                                 if (i >= minTileNum)
                                 {
                                     tileNormals[i - minTileNum] = tilesToTransmit[i].normal;
@@ -115,7 +115,7 @@ public class EntityPipeline : MonoBehaviour {
                     }
                     int nQuality = Encoders.Length;
                     int nStream = nQuality * nTileToTransmit;
-                    Debug.Log($"xxxjack minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
+                    Debug.Log($"EntityPipeline: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
                     dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
@@ -402,7 +402,21 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError("EntityPipeline: SetTilingConfig called for pipeline that is a source");
             return;
         }
+        if (tilingConfig.tiles != null && tilingConfig.tiles.Length > 0)
+        {
+            //Debug.Log("EntityPipeline: xxxjack ignoring second tilingConfig");
+            return;
+        }
         tilingConfig = config;
+        Debug.Log($"EntityPipeline: received tilingConfig with {tilingConfig.tiles.Length} tiles");
+        foreach (var tile in tilingConfig.tiles)
+        {
+            Debug.Log($"EntityPipeline: xxxjack tile: #qualities: {tile.qualities.Length}");
+            foreach(var quality in tile.qualities)
+            {
+                Debug.Log($"EntityPipeline: xxxjack quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+            }
+        }
     }
 
     public SyncConfig GetSyncConfig()
