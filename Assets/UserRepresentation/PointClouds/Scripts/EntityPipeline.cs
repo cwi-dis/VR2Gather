@@ -20,7 +20,7 @@ public class EntityPipeline : MonoBehaviour {
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
-
+    OrchestratorWrapping.User user;
     const bool debugTiling = false;
 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
@@ -28,8 +28,8 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool calibrationMode=false) {
-
+    public EntityPipeline Init(OrchestratorWrapping.User _user, Config._User cfg, bool calibrationMode=false) {
+        user = _user;
 
         switch (cfg.sourceType) {
             case "self": // old "rs2"
@@ -190,46 +190,7 @@ public class EntityPipeline : MonoBehaviour {
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
                 int[] tileNumbers = SUBConfig.tileNumbers;
-                int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
-                if (nTileToReceive == 0)
-                {
-                    tileNumbers = new int[1] { 0 };
-                    nTileToReceive = 1;
-                }
-                //
-                // Create the right number of rendering pipelines
-                //
-
-                Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[nTileToReceive];
-
-                for (int i=0; i< nTileToReceive; i++) 
-                {
-                    //
-                    // Allocate queues we need for this pipeline
-                    //
-                    QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
-                    //
-                    // Create renderer
-                    //
-                    QueueThreadSafe preparerQueue = _CreateRendererAndPreparer();
-                    //
-                    // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
-                    //
-                    Workers.BaseWorker decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
-                    decoders.Add(decoder);
-                    //
-                    // And collect the relevant information for the Dash receiver
-                    //
-                    tilesToReceive[i] = new Workers.PCSubReader.TileDescriptor()
-                    {
-                        outQueue = decoderQueue,
-                        tileNumber = tileNumbers[i]
-                    };
-                };
-                if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-                    reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", SUBConfig.initialDelay, tilesToReceive);
-                else
-                    reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
+                Debug.Log("xxxjack not creating pointcloud reader yet"); // _CreatePointcloudReader(tileNumbers, SUBConfig.initialDelay);
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -311,6 +272,51 @@ public class EntityPipeline : MonoBehaviour {
 
         transform.localScale = cfg.Render.scale;
         return this;
+    }
+
+    private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
+    {
+
+        int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
+        if (nTileToReceive == 0)
+        {
+            tileNumbers = new int[1] { 0 };
+            nTileToReceive = 1;
+        }
+        //
+        // Create the right number of rendering pipelines
+        //
+
+        Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[nTileToReceive];
+
+        for (int i = 0; i < nTileToReceive; i++)
+        {
+            //
+            // Allocate queues we need for this pipeline
+            //
+            QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
+            //
+            // Create renderer
+            //
+            QueueThreadSafe preparerQueue = _CreateRendererAndPreparer();
+            //
+            // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
+            //
+            Workers.BaseWorker decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+            decoders.Add(decoder);
+            //
+            // And collect the relevant information for the Dash receiver
+            //
+            tilesToReceive[i] = new Workers.PCSubReader.TileDescriptor()
+            {
+                outQueue = decoderQueue,
+                tileNumber = tileNumbers[i]
+            };
+        };
+        if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+            reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+        else
+            reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
     }
 
     public QueueThreadSafe _CreateRendererAndPreparer()
@@ -409,14 +415,18 @@ public class EntityPipeline : MonoBehaviour {
         }
         tilingConfig = config;
         Debug.Log($"EntityPipeline: received tilingConfig with {tilingConfig.tiles.Length} tiles");
+        int[] tileNumbers = new int[tilingConfig.tiles.Length];
+        int curTileNumber = 0;
         foreach (var tile in tilingConfig.tiles)
         {
+            tileNumbers[curTileNumber] = curTileNumber;
             Debug.Log($"EntityPipeline: xxxjack tile: #qualities: {tile.qualities.Length}");
             foreach(var quality in tile.qualities)
             {
                 Debug.Log($"EntityPipeline: xxxjack quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
             }
         }
+        _CreatePointcloudReader(tileNumbers, 0);
     }
 
     public SyncConfig GetSyncConfig()
