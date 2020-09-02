@@ -197,8 +197,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
-                int[] tileNumbers = SUBConfig.tileNumbers;
-                Debug.Log("xxxjack not creating pointcloud reader yet"); // _CreatePointcloudReader(tileNumbers, SUBConfig.initialDelay);
+                Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -424,15 +423,23 @@ public class EntityPipeline : MonoBehaviour {
         tilingConfig = config;
         Debug.Log($"{Name()}: received tilingConfig with {tilingConfig.tiles.Length} tiles");
         int[] tileNumbers = new int[tilingConfig.tiles.Length];
-        int curTileNumber = 0;
+        //
+        // At some stage we made the decision that tilenumer 0 represents the whole untiled pointcloud.
+        // So if we receive an untiled stream we want tile 0 only, and if we receive a tiled stream we
+        // never want tile 0.
+        //
+        int curTileNumber = tilingConfig.tiles.Length == 1 ? 0 : 1;
+        int curTileIndex = 0;
         foreach (var tile in tilingConfig.tiles)
         {
-            tileNumbers[curTileNumber] = curTileNumber;
+            tileNumbers[curTileIndex] = curTileNumber;
             Debug.Log($"{Name()}: xxxjack tile: #qualities: {tile.qualities.Length}");
             foreach(var quality in tile.qualities)
             {
                 Debug.Log($"{Name()}: xxxjack quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
             }
+            curTileNumber++;
+            curTileIndex++;
         }
         _CreatePointcloudReader(tileNumbers, 0);
     }
