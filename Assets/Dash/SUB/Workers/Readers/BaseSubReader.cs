@@ -242,6 +242,20 @@ namespace Workers {
             }
         }
 
+        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue) : this(_url, _streamName, _initialDelay)
+        {
+            receivers = new ReceiverInfo[]
+            {
+                new ReceiverInfo()
+                {
+                    outQueue = outQueue,
+                    streamIndexes = new int[] { streamIndex}
+                },
+            };
+            InitThreads();
+            Start();
+        }
+
         public override string Name()
         {
             return $"{this.GetType().Name}#{instanceNumber}";
