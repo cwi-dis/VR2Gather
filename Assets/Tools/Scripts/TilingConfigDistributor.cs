@@ -13,6 +13,7 @@ public class TilingConfigDistributor : MonoBehaviour
     private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
     private string selfUserId;
     private Dictionary<string, EntityPipeline> pipelines = new Dictionary<string, EntityPipeline>();
+    const bool debug = false;
 
     public TilingConfigDistributor Init(string _selfUserId)
     {
@@ -56,7 +57,7 @@ public class TilingConfigDistributor : MonoBehaviour
         var pipeline = pipelines[selfUserId];
         // Get data from self EntityPipeline.
         TilingConfig tilingConfig = pipeline.GetTilingConfig();
-        Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
+        if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
         var data = new TilingConfigMessage { data = tilingConfig };
 
 		if (OrchestratorController.Instance.UserIsMaster)
@@ -94,7 +95,7 @@ public class TilingConfigDistributor : MonoBehaviour
         var pipeline = pipelines[receivedData.SenderId];
         // Give reveicedData.data to that EntityPipeline.
         TilingConfig tilingConfig = receivedData.data;
-        Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
+        if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
         pipeline.SetTilingConfig(tilingConfig);
     }
 }
