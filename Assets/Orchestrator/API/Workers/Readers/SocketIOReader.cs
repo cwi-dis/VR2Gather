@@ -32,6 +32,21 @@ namespace Workers
                 throw e;
             }
         }
+
+        public SocketIOReader(User user, string remoteStream, QueueThreadSafe outQueue) 
+        : this(user, 
+            remoteStream, 
+              new PCSubReader.TileDescriptor[]
+              {
+                  new PCSubReader.TileDescriptor()
+                  {
+                      outQueue = outQueue
+                  }
+              }
+            )
+        {
+        }
+
         public override string Name() {
             return $"{this.GetType().Name}";
         }

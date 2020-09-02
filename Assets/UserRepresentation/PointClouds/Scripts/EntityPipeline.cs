@@ -437,8 +437,7 @@ public class EntityPipeline : MonoBehaviour {
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
-        Workers.B2DWriter pcWriter = (Workers.B2DWriter)writer;
-        if (pcWriter != null)
+        if (writer is Workers.B2DWriter pcWriter)
         {
             rv.visuals = pcWriter.GetSyncInfo();
         }
