@@ -97,14 +97,8 @@ public class WebCamPipeline : MonoBehaviour {
                 }
                 break;
             case "remote": // Remoto
-                Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-                    new Workers.PCSubReader.TileDescriptor() {
-                        outQueue = videoCodecQueue,
-                        tileNumber = 0
-                    }
-                };
-                if (useDash)    reader = new Workers.PCSubReader(user.sfuData.url_pcc, "webcam", 1, tiles);
-                else            reader = new Workers.SocketIOReader(user, "webcam", tiles);
+                if (useDash)    reader = new Workers.BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
+                else            reader = new Workers.SocketIOReader(user, "webcam", videoCodecQueue);
 
                 //
                 // Create video decoder.
