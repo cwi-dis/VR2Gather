@@ -1,5 +1,5 @@
 {
-    "targetFrameRate": 90,
+    "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
     "nonHMDHeight": 1.7,
@@ -40,7 +40,7 @@
         },
         "forceMesh": false,
 		"defaultCellSize": 0.005,
-		"cellSizeFactor": 0.8
+		"cellSizeFactor": 1
     },
 
     "LocalUser": {
@@ -69,7 +69,7 @@
 				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
             },
             "voxelSize": 0.005,
-            "frameRate" : 25,
+            "frameRate" : 15,
             "tiled": false,
             "Encoders": [
 				{
@@ -87,7 +87,7 @@
             }
         },
         "Render": {
-            "pointSize": 0.008,
+            "pointSize": 0,
             "position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -139,7 +139,7 @@
             }
         },
         "Render": {
-            "pointSize": 0.07999999821186066,
+            "pointSize": 0,
             "position": {
                 "x": 0.0,
                 "y": 0.0,
@@ -201,7 +201,7 @@
             }
         },
         "Render": {
-            "pointSize": 0.008,
+            "pointSize": 0,
             "position": {
                 "x": 0.0,
                 "y": 0.0,

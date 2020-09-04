@@ -46,7 +46,8 @@ namespace Workers
                     currentSize = pc.get_uncompressed_size();
                     if (currentSize <= 0)
                     {
-                        Debug.LogError("BufferPreparer: pc.get_uncompressed_size is 0");
+                        // This happens very often with tiled pointclouds.
+                        //Debug.Log("BufferPreparer: pc.get_uncompressed_size is 0");
                         return;
                     }
                     currentCellSize = pc.cellsize();

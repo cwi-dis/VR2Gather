@@ -37,17 +37,19 @@ namespace Workers {
             {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
                 if (mc == null) return;
-                // xxxjack attempting to drop audio if there is too much in the buffer already                
+                // Drop audio if there is too much in the buffer already
+                bool didDrop = false;            
                 int bytesInAudioBuffer = (writePosition - readPosition) % bufferSize;
                 if (bytesInAudioBuffer > preferredBufferFill)
                 {
                     Debug.Log($"AudioPreparer: audioBuffer has {bytesInAudioBuffer} already, dropping audio");
+                    didDrop = true;
                     mc.free();
                     return;
                 }
 
                 int len = mc.elements;
-                statsUpdate(len);
+                statsUpdate(len, didDrop);
                 if (writePosition + len < bufferSize)
                 {
                     System.Array.Copy(mc.buffer, 0, circularBuffer, writePosition, len);
@@ -115,26 +117,31 @@ namespace Workers {
         System.DateTime statsLastTime;
         double statsTotalUpdates;
         double statsTotalSamplesInOutputBuffer;
+        double statsDrops;
+        const int statsInterval = 10;
 
-        public void statsUpdate(int samplesInOutputBuffer)
+        public void statsUpdate(int samplesInOutputBuffer, bool dropped=false)
         {
             if (statsLastTime == null)
             {
                 statsLastTime = System.DateTime.Now;
                 statsTotalUpdates = 0;
                 statsTotalSamplesInOutputBuffer = 0;
+                statsDrops = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
             {
                 double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedInputSampleRate; // xxxjack or is this outputSampleRate???
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / 10} fps, {(int)samplesInBufferAverage} samples output latency, {(int)(timeInBufferAverage * 1000)} ms output latency");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / 10} fps, {(int)samplesInBufferAverage} samples output latency, {(int)(timeInBufferAverage * 1000)} ms output latency, {statsDrops/10} drops per second");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInOutputBuffer = 0;
+                statsDrops = 0;
                 statsLastTime = System.DateTime.Now;
             }
             statsTotalUpdates += 1;
             statsTotalSamplesInOutputBuffer += samplesInOutputBuffer;
+            if (dropped) statsDrops++;
         }
     }
 }

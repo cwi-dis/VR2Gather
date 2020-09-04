@@ -157,6 +157,7 @@ namespace Workers
         System.DateTime statsLastTime;
         double statsTotalUpdates;
         double statsTotalSamplesInInputBuffer;
+        const int statsInterval = 10;
 
         public void statsUpdate(int samplesInInputBuffer)
         {
@@ -166,11 +167,11 @@ namespace Workers
                 statsTotalUpdates = 0;
                 statsTotalSamplesInInputBuffer = 0;
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
                 double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / wantedInputSampleRate;
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / 10} fps, {(int)samplesInBufferAverage} samples input latency, {(int)(timeInBufferAverage*1000)} ms input latency");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / statsInterval} fps, {(int)samplesInBufferAverage} samples input latency, {(int)(timeInBufferAverage*1000)} ms input latency");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInInputBuffer = 0;
                 statsLastTime = System.DateTime.Now;
