@@ -13549,7 +13549,7 @@ GameObject:
   - component: {fileID: 1881502634639913433}
   - component: {fileID: 6285180247079457319}
   m_Layer: 5
-  m_Name: SessionAudioSocket
+  m_Name: SessionProtocolSocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18127,7 +18127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8509173368149001407}
   m_Layer: 0
-  m_Name: -------AudioToggles--------
+  m_Name: -------ProtocolToggles--------
   m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24852,7 +24852,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: AUDIO
+  m_Text: PROTOCOL
 --- !u!1 &7244751578769640136
 GameObject:
   m_ObjectHideFlags: 0
@@ -27041,7 +27041,7 @@ GameObject:
   - component: {fileID: 1689752215807520243}
   - component: {fileID: 2156636736458350639}
   m_Layer: 5
-  m_Name: SessionAudioDash
+  m_Name: SessionProtocolDash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28562,7 +28562,7 @@ GameObject:
   - component: {fileID: 2269440385295607241}
   - component: {fileID: 1685289123967343050}
   m_Layer: 5
-  m_Name: SessionAudio
+  m_Name: SessionProtocol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
