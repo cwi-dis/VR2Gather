@@ -13,10 +13,14 @@ public class VoiceSender : MonoBehaviour {
 
     // Start is called before the first frame update
     public void Init(OrchestratorWrapping.User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {
-        if (user.userData.microphoneName == "None") return;
+        string micro = null;
+        if (user != null && user.userData != null)
+            micro = user.userData.microphoneName;
+        if(micro == "None" ) return;
+        
 
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
-        reader = new Workers.VoiceReader(user.userData.microphoneName, this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
+        reader = new Workers.VoiceReader(micro, this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
         Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
         b2dStreams[0].inQueue = senderQueue;
         // xxxjack invented VR2a 4CC here. Is there a correct one?

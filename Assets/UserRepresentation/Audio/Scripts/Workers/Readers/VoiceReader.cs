@@ -69,7 +69,6 @@ namespace Workers
         static bool DSPIsNotReady = true;
         public static void PrepareDSP() {
             if (DSPIsNotReady) {
-                Debug.Log("[FPA] PrepareDSP");
                 DSPIsNotReady = false;
                 var ac = AudioSettings.GetConfiguration();
                 ac.sampleRate = wantedOutputSampleRate;
@@ -89,9 +88,9 @@ namespace Workers
         }
 
         IEnumerator MicroRecorder(string deviceName) {
-            Debug.Log("[FPA] MicroRecorder!!!!");
             PrepareDSP();
             if (Microphone.devices.Length > 0) {
+                if (deviceName == null) deviceName = Microphone.devices[0];
                 int currentMinFreq;
                 int currentMaxFreq;
                 Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
