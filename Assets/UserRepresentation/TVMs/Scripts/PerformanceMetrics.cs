@@ -16,6 +16,7 @@ public class PerformanceMetrics : MonoBehaviour
     private List<long> deserializeGeometryTime = new List<long>();
     private List<long> deserializeParamsTime = new List<long>();
     private List<string> metric_units = new List<string>() { "KBs", "MBs", "GBs" };
+    private long totalTime = 0;
     private int fps = 0;
     private int all_frames = 0;
     private int total_compressed_buffer_size = 0;
@@ -79,28 +80,38 @@ public class PerformanceMetrics : MonoBehaviour
         return metric_double;
     }
 
-    public void printMetrics(System.Diagnostics.Stopwatch stopWatch)
+    public void printMetrics(System.Diagnostics.Stopwatch stopWatch, int mesh_id)
     {
         if (!Config.Instance.TVMs.printMetrics)
             return;
         try
         {
-            Debug.Log("~-----~ Metrics for the last " + ((double)stopWatch.ElapsedMilliseconds / 1000).ToString("F5") + " seconds ~-----~");
-            Debug.Log("Frames (TVMs rendered) per second: " + (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"));
-            Debug.Log("Number of frames received but not rendered: " + (all_frames - fps));
-            Debug.Log("Average number of vertices per TVM: " + (total_num_vertices / fps));
-            Debug.Log("Average compressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString() + metric_units[0]);
-            Debug.Log("Average decompressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString() + metric_units[1]);
-            Debug.Log("Average total deserialization time per TVM: " + (deserializeTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")");
-            Debug.Log("Average time of deserialization function call per TVM: " + (deserializeFunctionTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeFunctionTime).ToString("F5") + ")");
-            Debug.Log("Average deserialization time of texture data per TVM: " + (deserializeTexturesTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeTexturesTime).ToString("F5") + ")");
-            Debug.Log("Average deserialization time of geometry (faces, vertices) data per TVM: " + (deserializeGeometryTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeGeometryTime).ToString("F5") + ")");
-            Debug.Log("Average deserialization time of parameters per TVM: " + (deserializeParamsTime.Average()).ToString("F5") + " milliseconds (Standard deviation: " + CalculateStdDev(deserializeParamsTime).ToString("F5") + ")");
-            Debug.Log("Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
-            Debug.Log("Average CPU% usage: " + (usageSamplesCPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
-            Debug.Log("Average GPU% usage: " + (usageSamplesGPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesGPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
-            Debug.Log("Average RAM usage (MBs): " + (usageSamplesRAM.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesRAM.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
-            Debug.Log("Average BW usage (MBps): " + (usageSamplesBW.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesBW.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
+            if (!usageSamplesBW.Any() || !usageSamplesGPU.Any() || !usageSamplesCPU.Any() || !usageSamplesRAM.Any())
+                return;
+
+            totalTime += stopWatch.ElapsedMilliseconds;
+
+            Debug.Log("sw (ms) = " + totalTime + ": Compression Module (TVM #" + mesh_id + "): Average compressed TVM buffer size: " + 
+                                                    changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString() + metric_units[0] +
+                                                    ", Average decompressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString() + metric_units[1]);
+
+            Debug.Log("sw (ms) = " + totalTime + ": Deserialization Module (TVM #" + mesh_id + "): Average total deserialization time per TVM: " + 
+                                    (deserializeTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")" +
+            ", Average time of deserialization function call per TVM: " + (deserializeFunctionTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeFunctionTime).ToString("F5") + ")" + 
+            ", Average deserialization time of geometry (faces, vertices) data per TVM: " + (deserializeGeometryTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeGeometryTime).ToString("F5") + ")" +
+            ", Average deserialization time of parameters per TVM: " + (deserializeParamsTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeParamsTime).ToString("F5") + ")");
+
+            Debug.Log("sw (ms) = " + totalTime + ": Rendering Module (TVM #" + mesh_id + "): Frames (TVMs rendered) per second: " +
+                                                                    (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5") +
+                                                                    ", Number of TVMs received but not rendered: " + ((all_frames - fps) < 0 ? 0 : (all_frames - fps)) +
+                                                                    ", Average number of vertices per TVM: " + (total_num_vertices / fps) +
+            ", Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
+
+            Debug.Log("sw (ms) = " + totalTime + ": PC Consumptions (TVM #" + mesh_id + "): Average CPU% usage: " + 
+                    (usageSamplesCPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
+            ", Average GPU% usage: " + (usageSamplesGPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesGPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
+            ", Average RAM usage (MBs): " + (usageSamplesRAM.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesRAM.ConvertAll(Convert.ToInt64)).ToString("F5") + ")"+
+            ", Average BW usage (MBps): " + (usageSamplesBW.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesBW.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
         }
         catch(Exception e)
         {
@@ -110,7 +121,7 @@ public class PerformanceMetrics : MonoBehaviour
         }
     }
 
-    public void saveMetrics(System.Diagnostics.Stopwatch stopWatch)
+    public void saveMetrics(System.Diagnostics.Stopwatch stopWatch, int mesh_id)
     {
         if (!Config.Instance.TVMs.saveMetrics)
             return;
@@ -118,7 +129,7 @@ public class PerformanceMetrics : MonoBehaviour
         try
         {
             string metricsLastTen = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25}",
-                                                    DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss")/*((double)stopWatch.ElapsedMilliseconds / 1000).ToString("F5")*/, (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"), (all_frames - fps).ToString(),
+                                                    DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"), (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"), ((all_frames - fps) < 0 ? 0 : (all_frames - fps)).ToString(),
                                                     (total_num_vertices / fps).ToString(), changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString(), changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString(),
                                                     (deserializeTime.Average()).ToString("F5"), CalculateStdDev(deserializeTime).ToString("F5"),
                                                     (deserializeFunctionTime.Average()).ToString("F5"), CalculateStdDev(deserializeFunctionTime).ToString("F5"),
@@ -136,12 +147,12 @@ public class PerformanceMetrics : MonoBehaviour
                 string metricsNames = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25}",
                                                     "Timestamp", "Frames per second", "Missed/Skipped Frames",
                                                     "Average number of vertices per TVM", "Average size of received compressed TVM (" + metric_units[0] + ")", "Average size of decompressed TVM (" + metric_units[1] + ")",
-                                                    "Average total deserialization time per TVM (seconds)", "Standard deviation of deserialization time per TVM (seconds)",
-                                                    "Average deserialization function execution time per TVM (seconds)", "Standard deviation of deserialization function execution time  per TVM (seconds)",
-                                                    "Average marshalling time for the texture data per TVM (seconds)", "Standard deviation of marshalling time for the texture data per TVM (seconds)",
-                                                    "Average marshalling time for the geometry data per TVM (seconds)", "Standard deviation of marshalling time for the geometry data per TVM (seconds)",
-                                                    "Average marshalling time for the extra parameters per TVM (seconds)", "Standard deviation of marshalling time for the extra parameters per TVM (seconds)",
-                                                    "Average rendering time per TVM (seconds)", "Standard deviation of rendering time per TVM (seconds)",
+                                                    "Average total deserialization time per TVM (milliseconds)", "Standard deviation of deserialization time per TVM (milliseconds)",
+                                                    "Average deserialization function execution time per TVM (milliseconds)", "Standard deviation of deserialization function execution time  per TVM (milliseconds)",
+                                                    "Average marshalling time for the texture data per TVM (milliseconds)", "Standard deviation of marshalling time for the texture data per TVM (milliseconds)",
+                                                    "Average marshalling time for the geometry data per TVM (milliseconds)", "Standard deviation of marshalling time for the geometry data per TVM (milliseconds)",
+                                                    "Average marshalling time for the extra parameters per TVM (milliseconds)", "Standard deviation of marshalling time for the extra parameters per TVM (milliseconds)",
+                                                    "Average rendering time per TVM (milliseconds)", "Standard deviation of rendering time per TVM (milliseconds)",
                                                     "Average CPU % consuption", "Standard deviation of CPU % consuption",
                                                     "Average GPU % consuption", "Standard deviation of GPU % consuption",
                                                     "Average RAM consuption (MBs)", "Standard deviation of RAM consuption (MBs)",
@@ -213,7 +224,8 @@ public class PerformanceMetrics : MonoBehaviour
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
             }
         };
         //* Set your output and error (asynchronous) handlers
