@@ -54,7 +54,8 @@ Shader "Entropy/PointCloud"{
 					float4 pos = mul(_Transform, float4(pt.xyz, 1));
 					half3  col = PcxDecodeColor(asuint(pt.w));
 
-					col *= _Tint.rgb * 2;
+					// xxxjack removed: col *= _Tint.rgb * 2;
+					col *= 2;
 
 					Varyings o;
 					o.position = UnityObjectToClipPos(pos);
