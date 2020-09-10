@@ -77,6 +77,7 @@ namespace OrchestratorWrapping
             __PCC_CWI_,
             __PCC_SYNTH__,
             __PCC_CERTH__,
+            __PCC_PRERECORDED__,
             __SPECTATOR__
         }
 

@@ -63,12 +63,21 @@ public class EntityPipeline : MonoBehaviour {
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
-                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
+                }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                     if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
                     pcReader = new Workers.RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
+                } 
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PRERECORDED__)
+                {
+                    var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
+                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
+                        throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
+                    pcReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -221,21 +230,34 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_) {
+                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_)
+                {
                     var RS2ReaderConfig = previewConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null)
                         throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
 
                     previewReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
                     reader = previewReader;
-                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__) {
+                }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
+                {
                     int nPoints = 0;
                     var SynthReaderConfig = previewConfig.SynthReaderConfig;
                     if (SynthReaderConfig != null)
                         nPoints = SynthReaderConfig.nPoints;
                     previewReader = new Workers.RS2Reader(previewConfig.frameRate, nPoints, previewPreparerQueue);
                     reader = previewReader;
-                } else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
+                }
+
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PRERECORDED__)
+                {
+                    var PrerecordedReaderConfig = previewConfig.PrerecordedReaderConfig;
+                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
+                        throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
+                    pcReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    reader = pcReader;
+                }
+                else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
                   {
                     var CerthReaderConfig = previewConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null)

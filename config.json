@@ -60,6 +60,10 @@
 			"SynthReaderConfig" : {
 				"nPoints" : 8000
 			},
+			"PrerecordedReaderConfig" : {
+				"folder" : "../lootDump",
+				"ply" : false
+			},
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",
@@ -173,6 +177,10 @@
             },
 			"SynthReaderConfig" : {
 				"nPoints" : 8000
+			},
+			"PrerecordedReaderConfig" : {
+				"folder" : "../lootDump",
+				"ply" : false
 			},
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
