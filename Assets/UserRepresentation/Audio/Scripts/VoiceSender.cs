@@ -16,8 +16,10 @@ public class VoiceSender : MonoBehaviour {
         string micro = null;
         if (user != null && user.userData != null)
             micro = user.userData.microphoneName;
-        if(micro == "None" ) return;
-        
+        if (micro == "None") {
+            Debug.LogError("VoiceSender: no microphone, not opening audio output stream");
+            return;
+        }
 
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(micro, this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
