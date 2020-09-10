@@ -254,8 +254,8 @@ public class EntityPipeline : MonoBehaviour {
                     var PrerecordedReaderConfig = previewConfig.PrerecordedReaderConfig;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
-                    pcReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
-                    reader = pcReader;
+                    previewReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    reader = previewReader;
                 }
                 else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
                   {

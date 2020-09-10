@@ -28,6 +28,7 @@ namespace Workers {
         {
             ply = _ply;
             var _filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
+            Debug.Log($"{Name()}: xxxjack reading {_filenames.Length} files");
             filenames = new List<string>(_filenames);
             filenames.Sort();
             loop = _loop;
@@ -54,6 +55,8 @@ namespace Workers {
         }
 
         protected override void Update() {
+            Debug.Log($"{Name()}: xxxjack Update");
+
             base.Update();
             //
             // Limit framerate, if required
@@ -63,6 +66,7 @@ namespace Workers {
                 System.TimeSpan sleepDuration = earliestNextCapture - System.DateTime.Now;
                 if (sleepDuration > System.TimeSpan.FromSeconds(0))
                 {
+                    Debug.Log($"{Name()}: xxxjack sleep for {sleepDuration}");
                     System.Threading.Thread.Sleep(sleepDuration);
                 }
             }
@@ -77,11 +81,13 @@ namespace Workers {
             cwipc.pointcloud pc;
             if (ply)
             {
+                Debug.Log($"{Name()}: xxxjack read ply from {nextFilename}");
                 System.UInt64 timestamp = 0;
                 pc = cwipc.read(nextFilename, timestamp);
             }
             else
             {
+                Debug.Log($"{Name()}: xxxjack read cwipcdump from {nextFilename}");
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
