@@ -60,6 +60,8 @@ public class cwipc
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
         [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_read_debugdump([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+        [DllImport(myDllName)]
         internal extern static void cwipc_free(IntPtr pc);
         [DllImport(myDllName)]
         internal extern static UInt64 cwipc_timestamp(IntPtr pc);
@@ -476,6 +478,36 @@ public class cwipc
                 throw new System.Exception("cwipc.from_certh: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        return new pointcloud(rvPtr);
+    }
+
+    public static pointcloud read(string filename, UInt64 timestamp)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_read(filename, timestamp, ref errorPtr);
+        if (rvPtr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.read: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        return new pointcloud(rvPtr);
+    }
+
+    public static pointcloud readdump(string filename)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rvPtr = _API_cwipc_util.cwipc_read_debugdump(filename, ref errorPtr);
+        if (rvPtr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.read: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
         return new pointcloud(rvPtr);
     }
