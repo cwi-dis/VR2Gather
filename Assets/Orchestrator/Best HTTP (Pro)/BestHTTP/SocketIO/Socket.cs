@@ -140,124 +140,126 @@ namespace BestHTTP.SocketIO
 
         public Socket Emit(string eventName, SocketIOAckCallback callback, params object[] args)
         {
-            bool blackListed = EventNames.IsBlacklisted(eventName);
-            if (blackListed)
-                throw new ArgumentException("Blacklisted event: " + eventName);
+            lock(arguments) { 
+                bool blackListed = EventNames.IsBlacklisted(eventName);
+                if (blackListed)
+                    throw new ArgumentException("Blacklisted event: " + eventName);
 
-            arguments.Clear();
-            arguments.Add(eventName);
+                arguments.Clear();
+                arguments.Add(eventName);
 
-            // Find and swap any binary data(byte[]) to a placeholder string.
-            // Server side these will be swapped back.
-            List<byte[]> attachments = null;
-            if (args != null && args.Length > 0)
-            {
-                int idx = 0;
-                for (int i = 0; i < args.Length; ++i)
+                // Find and swap any binary data(byte[]) to a placeholder string.
+                // Server side these will be swapped back.
+                List<byte[]> attachments = null;
+                if (args != null && args.Length > 0)
                 {
-                    byte[] binData = args[i] as byte[];
-                    if (binData != null)
+                    int idx = 0;
+                    for (int i = 0; i < args.Length; ++i)
                     {
-                        if (attachments == null)
-                            attachments = new List<byte[]>();
+                        byte[] binData = args[i] as byte[];
+                        if (binData != null)
+                        {
+                            if (attachments == null)
+                                attachments = new List<byte[]>();
 
-                        Dictionary<string, object> placeholderObj = new Dictionary<string, object>(2);
-                        placeholderObj.Add(Packet.Placeholder, true);
-                        placeholderObj.Add("num", idx++);
+                            Dictionary<string, object> placeholderObj = new Dictionary<string, object>(2);
+                            placeholderObj.Add(Packet.Placeholder, true);
+                            placeholderObj.Add("num", idx++);
 
-                        arguments.Add(placeholderObj);
+                            arguments.Add(placeholderObj);
 
-                        attachments.Add(binData);
+                            attachments.Add(binData);
+                        }
+                        else
+                            arguments.Add(args[i]);
                     }
-                    else
-                        arguments.Add(args[i]);
                 }
-            }
 
-            string payload = null;
+                string payload = null;
 
-            try
-            {
-                payload = Manager.Encoder.Encode(arguments);
-            }
-            catch(Exception ex)
-            {
-                (this as ISocket).EmitError(SocketIOErrors.Internal, "Error while encoding payload: " + ex.Message + " " + ex.StackTrace);
+                try
+                {
+                    payload = Manager.Encoder.Encode(arguments);
+                }
+                catch(Exception ex)
+                {
+                    (this as ISocket).EmitError(SocketIOErrors.Internal, "Error while encoding payload: " + ex.Message + " " + ex.StackTrace);
+
+                    return this;
+                }
+
+                // We don't use it further in this function, so we can clear it to not hold any unwanted reference.
+                arguments.Clear();
+
+                if (payload == null)
+                    throw new ArgumentException("Encoding the arguments to JSON failed!");
+
+                int id = 0;
+
+                if (callback != null)
+                {
+                    id = Manager.NextAckId;
+
+                    if (AckCallbacks == null)
+                        AckCallbacks = new Dictionary<int, SocketIOAckCallback>();
+
+                    AckCallbacks[id] = callback;
+                }
+
+                Packet packet = new Packet(TransportEventTypes.Message,
+                                           attachments == null ? SocketIOEventTypes.Event : SocketIOEventTypes.BinaryEvent,
+                                           this.Namespace,
+                                           payload,
+                                           0,
+                                           id);
+
+                if (attachments != null)
+                    packet.Attachments = attachments; // This will set the AttachmentCount property too.
+
+                (Manager as IManager).SendPacket(packet);
 
                 return this;
             }
-
-            // We don't use it further in this function, so we can clear it to not hold any unwanted reference.
-            arguments.Clear();
-
-            if (payload == null)
-                throw new ArgumentException("Encoding the arguments to JSON failed!");
-
-            int id = 0;
-
-            if (callback != null)
-            {
-                id = Manager.NextAckId;
-
-                if (AckCallbacks == null)
-                    AckCallbacks = new Dictionary<int, SocketIOAckCallback>();
-
-                AckCallbacks[id] = callback;
-            }
-
-            Packet packet = new Packet(TransportEventTypes.Message,
-                                       attachments == null ? SocketIOEventTypes.Event : SocketIOEventTypes.BinaryEvent,
-                                       this.Namespace,
-                                       payload,
-                                       0,
-                                       id);
-
-            if (attachments != null)
-                packet.Attachments = attachments; // This will set the AttachmentCount property too.
-
-            (Manager as IManager).SendPacket(packet);
-
-            return this;
         }
 
         public Socket EmitAck(Packet originalPacket, params object[] args)
         {
-            if (originalPacket == null)
-                throw new ArgumentNullException("originalPacket == null!");
+            lock (arguments) {
 
-            if (/*originalPacket.Id == 0 ||*/
-                (originalPacket.SocketIOEvent != SocketIOEventTypes.Event && originalPacket.SocketIOEvent != SocketIOEventTypes.BinaryEvent))
-                throw new ArgumentException("Wrong packet - you can't send an Ack for a packet with id == 0 and SocketIOEvent != Event or SocketIOEvent != BinaryEvent!");
+                if (originalPacket == null)
+                    throw new ArgumentNullException("originalPacket == null!");
 
-            arguments.Clear();
-            if (args != null && args.Length > 0)
-                arguments.AddRange(args);
+                if (/*originalPacket.Id == 0 ||*/
+                    (originalPacket.SocketIOEvent != SocketIOEventTypes.Event && originalPacket.SocketIOEvent != SocketIOEventTypes.BinaryEvent))
+                    throw new ArgumentException("Wrong packet - you can't send an Ack for a packet with id == 0 and SocketIOEvent != Event or SocketIOEvent != BinaryEvent!");
 
-            string payload = null;
-            try
-            {
-                payload = Manager.Encoder.Encode(arguments);
-            }
-            catch (Exception ex)
-            {
-                (this as ISocket).EmitError(SocketIOErrors.Internal, "Error while encoding payload: " + ex.Message + " " + ex.StackTrace);
+                arguments.Clear();
+                if (args != null && args.Length > 0)
+                    arguments.AddRange(args);
+
+                string payload = null;
+                try {
+                    payload = Manager.Encoder.Encode(arguments);
+                } catch (Exception ex) {
+                    (this as ISocket).EmitError(SocketIOErrors.Internal, "Error while encoding payload: " + ex.Message + " " + ex.StackTrace);
+
+                    return this;
+                }
+
+                if (payload == null)
+                    throw new ArgumentException("Encoding the arguments to JSON failed!");
+
+                Packet packet = new Packet(TransportEventTypes.Message,
+                                           originalPacket.SocketIOEvent == SocketIOEventTypes.Event ? SocketIOEventTypes.Ack : SocketIOEventTypes.BinaryAck,
+                                           this.Namespace,
+                                           payload,
+                                           0,
+                                           originalPacket.Id);
+
+                (Manager as IManager).SendPacket(packet);
 
                 return this;
             }
-
-            if (payload == null)
-                throw new ArgumentException("Encoding the arguments to JSON failed!");
-
-            Packet packet = new Packet(TransportEventTypes.Message,
-                                       originalPacket.SocketIOEvent == SocketIOEventTypes.Event ? SocketIOEventTypes.Ack : SocketIOEventTypes.BinaryAck,
-                                       this.Namespace,
-                                       payload,
-                                       0,
-                                       originalPacket.Id);
-
-            (Manager as IManager).SendPacket(packet);
-
-            return this;
         }
 
         #endregion
