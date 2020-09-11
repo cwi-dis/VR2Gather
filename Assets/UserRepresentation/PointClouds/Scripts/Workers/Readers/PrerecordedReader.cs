@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Workers {
     public class PrerecordedReader : TiledWorker {
-        float voxelSize;
         List<string> filenames;
         bool ply;
         bool loop;
@@ -24,7 +23,7 @@ namespace Workers {
             out2Queue = _out2Queue;
         }
 
-        public PrerecordedReader(string dirname, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
+        public PrerecordedReader(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
         {
             ply = _ply;
             var _filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
@@ -32,7 +31,6 @@ namespace Workers {
             filenames = new List<string>(_filenames);
             filenames.Sort();
             loop = _loop;
-            voxelSize = _voxelSize;
             if (_frameRate > 0)
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
@@ -88,18 +86,6 @@ namespace Workers {
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
-            if (voxelSize != 0) {
-                var newPc = cwipc.downsample(pc, voxelSize);
-                if (newPc == null)
-                {
-                    Debug.LogWarning($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
-                } else
-                {
-                    pc.free();
-                    pc = newPc;
-                }
-            }
-
             bool didDrop = false;
             if (outQueue == null)
             {

@@ -61,7 +61,7 @@
 				"nPoints" : 8000
 			},
 			"PrerecordedReaderConfig" : {
-				"folder" : "../lootDump",
+				"folder" : "../lootDump70K",
 				"ply" : false
 			},
             "CerthReaderConfig": {
@@ -179,7 +179,7 @@
 				"nPoints" : 8000
 			},
 			"PrerecordedReaderConfig" : {
-				"folder" : "../lootDump",
+				"folder" : "../lootDump70K",
 				"ply" : false
 			},
             "CerthReaderConfig": {

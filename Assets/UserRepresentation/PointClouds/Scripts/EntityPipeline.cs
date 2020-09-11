@@ -77,7 +77,7 @@ public class EntityPipeline : MonoBehaviour {
                     var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
-                    pcReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    pcReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
                 else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -254,7 +254,7 @@ public class EntityPipeline : MonoBehaviour {
                     var PrerecordedReaderConfig = previewConfig.PrerecordedReaderConfig;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
-                    previewReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, previewConfig.voxelSize, previewConfig.frameRate, previewPreparerQueue);
+                    previewReader = new Workers.PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, previewConfig.frameRate, previewPreparerQueue);
                     reader = previewReader;
                 }
                 else // pcSourceType == PCSourceType.PCCerth: same as pcself but using Certh capturer
