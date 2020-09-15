@@ -127,7 +127,6 @@ public class Config {
     };
     public _User LocalUser;
     public _User RemoteUser;
-    public _User PreviewUser;
 
     static Config _Instance;
     public static Config Instance {
