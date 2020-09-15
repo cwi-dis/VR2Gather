@@ -427,4 +427,4 @@ MonoBehaviour:
   Mode: 1
   SyncAutomatically: 0
   UpdateFrequency: 15
-  InterpolateUpdates: 1
+  InterpolateUpdates: 0
