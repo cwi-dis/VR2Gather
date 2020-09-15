@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8295787894186859639}
   - component: {fileID: 7771337848445047047}
   m_Layer: 0
-  m_Name: Screen
+  m_Name: PlayerHeadScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 0.5, y: 0.28125, z: 1}
   m_Children: []
   m_Father: {fileID: 1200148030473240153}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!33 &368550471494486878
 MeshFilter:
@@ -313,7 +313,7 @@ MonoBehaviour:
   Mode: 1
   SyncAutomatically: 0
   UpdateFrequency: 15
-  InterpolateUpdates: 1
+  InterpolateUpdates: 0
 --- !u!1 &4434842230143733153
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,8 +522,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4756368158750733404}
   - {fileID: 2555208149750207556}
+  - {fileID: 4756368158750733404}
   m_Father: {fileID: 4434842229477826213}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -802,7 +802,7 @@ Transform:
   m_LocalScale: {x: 0.25, y: 0.3, z: 0.25}
   m_Children: []
   m_Father: {fileID: 1200148030473240153}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4190949790456951268
 MeshFilter:

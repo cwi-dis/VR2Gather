@@ -61,6 +61,9 @@ abstract public class PilotController : MonoBehaviour {
                         my_id = spectators[spectatorIdx].id;
                         spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
+                    else {
+                        spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                    }
                     spectators[spectatorIdx].orchestratorId = user.userId;
 
                     // Load Audio
@@ -82,14 +85,14 @@ abstract public class PilotController : MonoBehaviour {
                         my_id = players[playerIdx].id;
                         players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
+                    else {
+                        players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                    }
 
                     switch (user.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                             // FER: Implementacion representacion de webcam.
                             players[playerIdx].webcam.SetActive(true);
-                            if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                            }
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                             players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
                             // Audio
@@ -101,6 +104,9 @@ abstract public class PilotController : MonoBehaviour {
                             players[playerIdx].avatar.SetActive(true);
                             if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                 players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                            }
+                            else {
+                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
                             }
                             // Audio
                             players[playerIdx].audio.SetActive(true);
@@ -170,6 +176,9 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = spectators[spectatorIdx].id;
                             spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         // Load Audio
                         spectators[spectatorIdx].audio.SetActive(true);
@@ -188,14 +197,14 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = players[playerIdx].id;
                             players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         switch (user.userData.userRepresentationType) {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                                 // FER: Implementacion representacion de webcam.
                                 players[playerIdx].webcam.SetActive(true);
-                                if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                                }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
                                 LoadAudio(players[playerIdx], user);
@@ -204,6 +213,9 @@ abstract public class PilotController : MonoBehaviour {
                                 players[playerIdx].avatar.SetActive(true);
                                 if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                     players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                                }
+                                else {
+                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
                                 }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
