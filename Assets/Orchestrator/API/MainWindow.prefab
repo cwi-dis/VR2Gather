@@ -2415,7 +2415,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/
+  m_Text: https://vrt-orch-sandbox.viaccess-orca.com/socket.io/
 --- !u!1 &1765158733375362
 GameObject:
   m_ObjectHideFlags: 0
@@ -3152,8 +3152,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 300208368094546630}
   m_HandleRect: {fileID: 2080343064261903219}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7026,8 +7026,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2728222485890232363}
   m_HandleRect: {fileID: 4947502246220212668}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.7274225
+  m_Value: 0.99999976
+  m_Size: 0.7272888
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -12597,7 +12597,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000024795532, y: -0.000051498413}
+  m_AnchoredPosition: {x: -0.000024795532, y: -0.00002861023}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7076957239779048224
@@ -16780,7 +16780,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000024795532, y: 0.000022888184}
+  m_AnchoredPosition: {x: -0.000024795532, y: -0.00006866455}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7076891585813716074
@@ -16935,8 +16935,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7077682728512803978}
   m_HandleRect: {fileID: 6971107077332317766}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.9999999
+  m_Value: 1
+  m_Size: 0.99999976
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17853,7 +17853,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00018310547, y: -0.00003528595}
+  m_AnchoredPosition: {x: 0, y: -0.00003528595}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &7077482925213159754
@@ -18030,7 +18030,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/
+  m_Text: https://vrt-orch-sandbox.viaccess-orca.com/socket.io/
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -18226,7 +18226,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000024795532, y: -0.000034332275}
+  m_AnchoredPosition: {x: -0.000024795532, y: -0.000061035156}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &7077480188814777028
@@ -19081,7 +19081,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6971128268340504258}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19204,7 +19204,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6970607542449631914}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -22024,7 +22024,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6970815326251645772}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -22770,7 +22770,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 6971009927777245170}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

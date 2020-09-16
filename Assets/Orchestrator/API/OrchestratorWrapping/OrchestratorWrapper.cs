@@ -151,7 +151,7 @@ namespace OrchestratorWrapping
         public Action<UserAudioPacket> OnAudioSent;
         public Action<UserDataStreamPacket> OnDataStreamReceived;
 
-        string myUserID = "";
+        private string myUserID = "";
 
         #region messages listening interface implementation
         public void OnOrchestratorResponse(int status, string response)
@@ -175,23 +175,14 @@ namespace OrchestratorWrapping
             OrchestrationSocketIoManager.SocketConnect(orchestratorMessages);
         }
 
-        public bool isConnected() { return (OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected);  }
-
         public void OnSocketConnect()
         {
             if (ResponsesListener != null) ResponsesListener.OnConnect();
         }
 
-        public bool GetOrchestratorVersion()
+        public void OnSocketConnecting()
         {
-            OrchestratorCommand command = GetOrchestratorCommand("GetOrchestratorVersion");
-            return OrchestrationSocketIoManager.EmitCommand(command);
-        }
-
-        public void OnGetOrchestratorVersionResponse(OrchestratorCommand command, OrchestratorResponse response)
-        {
-            string version = response.body["orchestratorVersion"].ToString();
-            ResponsesListener?.OnGetOrchestratorVersionResponse(new ResponseStatus(response.error, response.message), version);
+            if (ResponsesListener != null) ResponsesListener.OnConnecting();
         }
 
         public void Disconnect()
@@ -207,6 +198,23 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnDisconnect();
         }
 
+        public void OnSocketError(ResponseStatus status)
+        {
+            if (ResponsesListener != null) ResponsesListener.OnError(status);
+        }
+
+        public bool GetOrchestratorVersion()
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("GetOrchestratorVersion");
+            return OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        public void OnGetOrchestratorVersionResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            string version = response.body["orchestratorVersion"].ToString();
+            ResponsesListener?.OnGetOrchestratorVersionResponse(new ResponseStatus(response.error, response.message), version);
+        }
+
         public bool Login(string userName, string userPassword)
         {
             OrchestratorCommand command = GetOrchestratorCommand("Login");
@@ -217,7 +225,8 @@ namespace OrchestratorWrapping
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
-            myUserID = response.body["userId"].ToString();
+            try { myUserID = response.body["userId"].ToString(); }
+            catch { myUserID = "";  }
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 

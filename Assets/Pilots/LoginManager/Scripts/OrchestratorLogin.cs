@@ -82,8 +82,12 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject configPanel = null;
     [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private GameObject webcamInfoGO = null;
-    [SerializeField] private InputField connectionURIConfigIF = null;
-    [SerializeField] private InputField exchangeNameConfigIF = null;
+    [SerializeField] private GameObject pccerthInfoGO = null;
+    [SerializeField] private InputField tvmConnectionURIConfigIF = null;
+    [SerializeField] private InputField tvmExchangeNameConfigIF = null;
+    [SerializeField] private InputField pccerthConnectionURIConfigIF = null;
+    [SerializeField] private InputField pccerthPCLExchangeNameConfigIF = null;
+    [SerializeField] private InputField pccerthMetaExchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
     [SerializeField] private Dropdown webcamDropdown = null;
     [SerializeField] private Dropdown microphoneDropdown = null;
@@ -143,8 +147,9 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Utils
-    private Color onlineCol = new Color(0.15f, 0.78f, 0.15f); // Green
-    private Color offlineCol = new Color(0.78f, 0.15f, 0.15f); // Red
+    private Color connectedCol = new Color(0.15f, 0.78f, 0.15f); // Green
+    private Color connectingCol = new Color(0.85f, 0.5f, 0.2f); // Orange
+    private Color disconnectedCol = new Color(0.78f, 0.15f, 0.15f); // Red
     public Font MenuFont = null;
     private EventSystem system = null;
     private float timer = 0.0f;
@@ -443,8 +448,9 @@ public class OrchestratorLogin : MonoBehaviour {
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to online
             orchestratorConnected = true;
-            statusText.text = "Online";
-            statusText.color = onlineCol;
+            //statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTED.ToString();
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = connectedCol;
             FillSelfUserData();
             UpdateSessions(orchestratorSessions, sessionIdDrop);
             UpdateScenarios(scenarioIdDrop);
@@ -456,8 +462,9 @@ public class OrchestratorLogin : MonoBehaviour {
         else { // Enter for first time
             // Set status to offline
             orchestratorConnected = false;
-            statusText.text = "Offline";
-            statusText.color = offlineCol;
+            //statusText.text = OrchestratorController.orchestratorConnectionStatus.DISCONNECTED.ToString();
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = disconnectedCol;
             state = State.Offline;
 
             // Try to connect
@@ -492,8 +499,11 @@ public class OrchestratorLogin : MonoBehaviour {
         userNameVRTText.text = user.userName;
         // Config Info
         UserData userData = user.userData;
-        exchangeNameConfigIF.text = userData.userMQexchangeName;
-        connectionURIConfigIF.text = userData.userMQurl;
+        tvmExchangeNameConfigIF.text = userData.userMQexchangeName;
+        tvmConnectionURIConfigIF.text = userData.userMQurl;
+        pccerthConnectionURIConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.ConnectionURI;
+        pccerthPCLExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.PCLExchangeName;
+        pccerthMetaExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.MetaExchangeName;
         representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
         webcamDropdown.value = 0;
 
@@ -711,13 +721,20 @@ public class OrchestratorLogin : MonoBehaviour {
         // Dropdown Logic
         tvmInfoGO.SetActive(false);
         webcamInfoGO.SetActive(false);
+        pccerthInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
         if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
-        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
             calibButton.gameObject.SetActive(true);
-        } else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
+            pccerthInfoGO.SetActive(true);
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
             webcamInfoGO.SetActive(true);
         }
         // Preview
@@ -818,6 +835,8 @@ public class OrchestratorLogin : MonoBehaviour {
     public void StateButton(State _state) {
         state = _state;
         PanelChanger();
+        if (state == State.Config)
+            UpdateUserData();
     }
 
     public void ReadyButton() {
@@ -979,6 +998,7 @@ public class OrchestratorLogin : MonoBehaviour {
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
         OrchestratorController.Instance.OnConnectionEvent += OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
@@ -1006,11 +1026,13 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
         OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
     }
 
     // Un-Subscribe to Orchestrator Wrapper Events
     private void TerminateControllerEvents() {
         OrchestratorController.Instance.OnConnectionEvent -= OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent -= OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent -= OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent -= OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent -= OnOrchestratorResponse;
@@ -1038,6 +1060,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
         OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
     }
 
     #endregion
@@ -1047,17 +1070,29 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Socket.io connect
 
     public void SocketConnect() {
-        OrchestratorController.Instance.SocketConnect(orchestratorUrl);
+        switch (OrchestratorController.Instance.ConnectionStatus) {
+            case OrchestratorController.orchestratorConnectionStatus.DISCONNECTED:
+                OrchestratorController.Instance.SocketConnect(orchestratorUrl);
+                break;
+            case OrchestratorController.orchestratorConnectionStatus.CONNECTING:
+                OrchestratorController.Instance.Abort();
+                break;
+        }
     }
 
     private void OnConnect(bool pConnected) {
         if (pConnected) {
             orchestratorConnected = true;
-            statusText.text = "Online";
-            statusText.color = onlineCol;
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = connectedCol;
             state = State.Online;
         }
         PanelChanger();
+    }
+
+    private void OnConnecting() {
+        statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTING.ToString();
+        statusText.color = connectingCol;
     }
 
     private void socketDisconnect() {
@@ -1068,8 +1103,8 @@ public class OrchestratorLogin : MonoBehaviour {
         if (!pConnected) {
             OnLogout(true);
             orchestratorConnected = false;
-            statusText.text = "Offline";
-            statusText.color = offlineCol;
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = disconnectedCol;
             state = State.Offline;
         }
         PanelChanger();
@@ -1092,7 +1127,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse) {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + pResponse);
+        string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
         StartCoroutine(ScrollLogsToBottom());
     }
 
@@ -1382,8 +1418,8 @@ public class OrchestratorLogin : MonoBehaviour {
     private void UpdateUserData() {
         // UserData info in Config
         UserData lUserData = new UserData {
-            userMQexchangeName = exchangeNameConfigIF.text,
-            userMQurl = connectionURIConfigIF.text,
+            userMQexchangeName = Config.Instance.TVMs.exchangeName,
+            userMQurl = Config.Instance.TVMs.connectionURI,
             userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
@@ -1405,8 +1441,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 userNameVRTText.text = user.userName;
 
                 //UserData
-                exchangeNameConfigIF.text = user.userData.userMQexchangeName;
-                connectionURIConfigIF.text = user.userData.userMQurl;
+                tvmExchangeNameConfigIF.text = user.userData.userMQexchangeName;
+                tvmConnectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
 
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
@@ -1499,11 +1535,11 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnMasterEventReceivedHandler(UserEvent pMasterEventData) {
-        Debug.Log("[OrchestratorLogin][OnMasterEventReceivedHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnMasterEventReceivedHandler] MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
     }
 
     private void OnUserEventReceivedHandler(UserEvent pUserEventData) {
-        Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
     }
 
     #endregion
@@ -1516,6 +1552,15 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void GetRegisteredDataStreams() {
         OrchestratorController.Instance.GetRegisteredDataStreams();
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status) {
+        Debug.Log("[OrchestratorLogin][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+        ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
     #endregion

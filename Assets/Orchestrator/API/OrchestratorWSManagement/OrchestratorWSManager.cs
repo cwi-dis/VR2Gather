@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using BestHTTP.SocketIO;
+﻿using BestHTTP.SocketIO;
 using LitJson;
+using System;
+using System.Collections.Generic;
+using OrchestratorWrapping;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -19,7 +20,9 @@ namespace OrchestratorWSManagement
     public interface IOrchestratorConnectionListener
     {
         void OnSocketConnect();
+        void OnSocketConnecting();
         void OnSocketDisconnect();
+        void OnSocketError(ResponseStatus message);
     }
 
     // interface to implement to be updated from messages exchanged on the socketio
@@ -78,7 +81,7 @@ namespace OrchestratorWSManagement
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
             options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
-
+            
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
             
@@ -86,6 +89,8 @@ namespace OrchestratorWSManagement
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
             Manager.Socket.On(SocketIOEventTypes.Disconnect, OnServerDisconnect);
+            Manager.Socket.On("connecting", OnServerConnecting);
+            Manager.Socket.On(SocketIOEventTypes.Error, OnServerError);
 
             // Listen to the messages received
             messagesToManage.ForEach(delegate (OrchestratorMessageReceiver messageReceiver)
@@ -114,14 +119,43 @@ namespace OrchestratorWSManagement
             }
         }
 
+        // Called when socket is connecting to the orchestrator
+        void OnServerConnecting(Socket socket, Packet packet, params object[] args)
+        {
+            isSocketConnected = false;
+
+            if (connectionListener != null)
+            {
+                connectionListener.OnSocketConnecting();
+            }
+        }
+
         // Called when socket is disconnected from the orchestrator
         void OnServerDisconnect(Socket socket, Packet packet, params object[] args)
         {
+            isSocketConnected = false;
+
             if (connectionListener != null)
             {
                 connectionListener.OnSocketDisconnect();
             }
         }
+
+        // Called when socket connection error occurs
+        void OnServerError(Socket socket, Packet packet, params object[] args)
+        {
+            if(args != null)
+            {
+                Error error = args[0] as Error;
+                ResponseStatus status = new ResponseStatus((int)error.Code, error.Message);
+
+                if (connectionListener != null)
+                {
+                    connectionListener.OnSocketError(status);
+                }
+            }
+        }
+
         #endregion
 
         #region messages socket.io managing

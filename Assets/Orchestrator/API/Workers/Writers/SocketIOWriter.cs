@@ -47,7 +47,7 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (OrchestratorWrapper.instance!=null && OrchestratorWrapper.instance.isConnected()) {
+            if (OrchestratorWrapper.instance!=null && OrchestratorController.Instance.ConnectedToOrchestrator) {
                 for (int i = 0; i < streams.Length; ++i) {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
                     if (chk == null) return;
