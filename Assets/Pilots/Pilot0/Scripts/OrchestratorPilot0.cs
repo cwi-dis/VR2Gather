@@ -49,6 +49,7 @@ public class OrchestratorPilot0 : MonoBehaviour {
         OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
 
         OrchestratorController.Instance.RegisterMessageForwarder();
     }
@@ -60,6 +61,7 @@ public class OrchestratorPilot0 : MonoBehaviour {
         OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+        OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
 
         OrchestratorController.Instance.UnregisterMessageForwarder();
     }
@@ -111,6 +113,15 @@ public class OrchestratorPilot0 : MonoBehaviour {
                 }
             }
         }
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status) {
+        Debug.Log("[OrchestratorPilot0][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+        ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
     #endregion

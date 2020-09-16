@@ -4,10 +4,20 @@ using UnityEngine.UI;
 
 public class ErrorManager : MonoBehaviour {
 
+    private static ErrorManager instance;
+
+    public static ErrorManager Instance { get { return instance; } }
+
     public GameObject myPrefab;
 
     List<string[]> queue = new List<string[]>();
     private object thisLock = new object();
+
+    private void Awake() {
+        if (instance == null) {
+            instance = this;
+        }
+    }
 
     // Start is called before the first frame update
     void Start() {
@@ -53,5 +63,10 @@ public class ErrorManager : MonoBehaviour {
                 queue.Add(error);
             }
         }
+    }
+
+    public void EnqueueOrchestratorError(int code, string message) {
+        string[] error = { "Orchestrator Error", code.ToString() + ": " + message };
+        queue.Add(error);
     }
 }

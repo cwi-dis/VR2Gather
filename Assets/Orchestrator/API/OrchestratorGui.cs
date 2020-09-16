@@ -42,12 +42,6 @@ public class OrchestratorGui : MonoBehaviour
     private InputField userNameIF = null;
     [SerializeField]
     private InputField userPasswordIF = null;
-    /*
-    [SerializeField]
-    private InputField userMQurlIF = null;
-    [SerializeField]
-    private InputField userMQnameIF = null;
-    */
     [SerializeField]
     private Button loginButton = null;
     [SerializeField]
@@ -273,12 +267,14 @@ public class OrchestratorGui : MonoBehaviour
     // update connect and login buttons according to the states
     private void UpdateEnabledItems()
     {
-        connectButton.interactable = !OrchestratorController.Instance.ConnectedToOrchestrator;
-        disconnectButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
-        loginButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
-        logoutButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
-        commandDropdown.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
-        sendCommandButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
+        bool lConnectedToOrchestrator = OrchestratorController.Instance.ConnectionStatus == OrchestratorController.orchestratorConnectionStatus.CONNECTED;
+
+        connectButton.interactable = !lConnectedToOrchestrator;
+        disconnectButton.interactable = lConnectedToOrchestrator;
+        loginButton.interactable = lConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
+        logoutButton.interactable = lConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
+        commandDropdown.interactable = lConnectedToOrchestrator;
+        sendCommandButton.interactable = lConnectedToOrchestrator;
     }
 
     // Select a command
@@ -398,6 +394,7 @@ public class OrchestratorGui : MonoBehaviour
     private void InitialiseControllerEvents()
     {
         OrchestratorController.Instance.OnConnectionEvent += OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
@@ -423,7 +420,8 @@ public class OrchestratorGui : MonoBehaviour
         OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
         OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
-        OrchestratorController.Instance.OnUserEventReceivedEvent+= OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
     }
 
     #endregion
@@ -434,13 +432,28 @@ public class OrchestratorGui : MonoBehaviour
 
     public void SocketConnect()
     {
-        OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
+        switch(OrchestratorController.Instance.ConnectionStatus)
+        {
+            case OrchestratorController.orchestratorConnectionStatus.DISCONNECTED:
+                OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
+                break;
+            case OrchestratorController.orchestratorConnectionStatus.CONNECTING:
+                OrchestratorController.Instance.Abort();
+                break;
+        }
     }
 
     private void OnConnect(bool pConnected)
     {
         orchestratorConnected.text = pConnected.ToString();
+        connectButton.GetComponentInChildren<Text>().text = "socket connection";
         UpdateEnabledItems();
+    }
+
+    private void OnConnecting()
+    {
+        orchestratorConnected.text = "Connecting...";
+        connectButton.GetComponentInChildren<Text>().text = "abort";
     }
 
     private void socketDisconnect()
@@ -454,6 +467,7 @@ public class OrchestratorGui : MonoBehaviour
         userName.text = "";
         userAdmin.text = "";
         orchestratorConnected.text = pConnected.ToString();
+        connectButton.GetComponentInChildren<Text>().text = "socket connection";
         orchestratorVersion.text = "";
         UpdateEnabledItems();
     }
@@ -476,7 +490,9 @@ public class OrchestratorGui : MonoBehaviour
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse)
     {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + pResponse);
+        //Debug.Log("[OrchestratorGui][OnOrchestratorResponse]::Response lenght::" + pResponse.Length);
+        string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
         StartCoroutine(ScrollLogsToBottom());
     }
 
@@ -908,8 +924,8 @@ public class OrchestratorGui : MonoBehaviour
 
     private void OnUserMessageReceivedHandler(UserMessage userMessage)
     {
-        //AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion
@@ -938,15 +954,15 @@ public class OrchestratorGui : MonoBehaviour
     private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
     {
         //Add your event handling
-        //AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     private void OnUserEventReceivedHandler (UserEvent pUserEventData)
     {
         //Add your event handling
-        //AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
-        //StartCoroutine(ScrollLogsToBottom());
+        AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
+        StartCoroutine(ScrollLogsToBottom());
     }
 
     #endregion
@@ -962,6 +978,15 @@ public class OrchestratorGui : MonoBehaviour
     private void GetRegisteredDataStreams()
     {
         OrchestratorController.Instance.GetRegisteredDataStreams();
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status)
+    {
+        Debug.Log("[OrchestratorGui][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
     }
 
     #endregion
