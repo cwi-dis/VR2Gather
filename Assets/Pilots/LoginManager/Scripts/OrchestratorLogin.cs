@@ -147,8 +147,9 @@ public class OrchestratorLogin : MonoBehaviour {
     #endregion
 
     #region Utils
-    private Color onlineCol = new Color(0.15f, 0.78f, 0.15f); // Green
-    private Color offlineCol = new Color(0.78f, 0.15f, 0.15f); // Red
+    private Color connectedCol = new Color(0.15f, 0.78f, 0.15f); // Green
+    private Color connectingCol = new Color(0.85f, 0.5f, 0.2f); // Orange
+    private Color disconnectedCol = new Color(0.78f, 0.15f, 0.15f); // Red
     public Font MenuFont = null;
     private EventSystem system = null;
     private float timer = 0.0f;
@@ -447,8 +448,9 @@ public class OrchestratorLogin : MonoBehaviour {
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to online
             orchestratorConnected = true;
-            statusText.text = "Online";
-            statusText.color = onlineCol;
+            //statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTED.ToString();
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = connectedCol;
             FillSelfUserData();
             UpdateSessions(orchestratorSessions, sessionIdDrop);
             UpdateScenarios(scenarioIdDrop);
@@ -460,8 +462,9 @@ public class OrchestratorLogin : MonoBehaviour {
         else { // Enter for first time
             // Set status to offline
             orchestratorConnected = false;
-            statusText.text = "Offline";
-            statusText.color = offlineCol;
+            //statusText.text = OrchestratorController.orchestratorConnectionStatus.DISCONNECTED.ToString();
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = disconnectedCol;
             state = State.Offline;
 
             // Try to connect
@@ -995,6 +998,7 @@ public class OrchestratorLogin : MonoBehaviour {
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
         OrchestratorController.Instance.OnConnectionEvent += OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
@@ -1022,11 +1026,13 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
         OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
     }
 
     // Un-Subscribe to Orchestrator Wrapper Events
     private void TerminateControllerEvents() {
         OrchestratorController.Instance.OnConnectionEvent -= OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent -= OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent -= OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent -= OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent -= OnOrchestratorResponse;
@@ -1054,6 +1060,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
         OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
     }
 
     #endregion
@@ -1063,17 +1070,29 @@ public class OrchestratorLogin : MonoBehaviour {
     #region Socket.io connect
 
     public void SocketConnect() {
-        OrchestratorController.Instance.SocketConnect(orchestratorUrl);
+        switch (OrchestratorController.Instance.ConnectionStatus) {
+            case OrchestratorController.orchestratorConnectionStatus.DISCONNECTED:
+                OrchestratorController.Instance.SocketConnect(orchestratorUrl);
+                break;
+            case OrchestratorController.orchestratorConnectionStatus.CONNECTING:
+                OrchestratorController.Instance.Abort();
+                break;
+        }
     }
 
     private void OnConnect(bool pConnected) {
         if (pConnected) {
             orchestratorConnected = true;
-            statusText.text = "Online";
-            statusText.color = onlineCol;
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = connectedCol;
             state = State.Online;
         }
         PanelChanger();
+    }
+
+    private void OnConnecting() {
+        statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTING.ToString();
+        statusText.color = connectingCol;
     }
 
     private void socketDisconnect() {
@@ -1084,8 +1103,8 @@ public class OrchestratorLogin : MonoBehaviour {
         if (!pConnected) {
             OnLogout(true);
             orchestratorConnected = false;
-            statusText.text = "Offline";
-            statusText.color = offlineCol;
+            statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
+            statusText.color = disconnectedCol;
             state = State.Offline;
         }
         PanelChanger();
@@ -1108,7 +1127,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse) {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + pResponse);
+        string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
         StartCoroutine(ScrollLogsToBottom());
     }
 
@@ -1515,11 +1535,11 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnMasterEventReceivedHandler(UserEvent pMasterEventData) {
-        Debug.Log("[OrchestratorLogin][OnMasterEventReceivedHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnMasterEventReceivedHandler] MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
     }
 
     private void OnUserEventReceivedHandler(UserEvent pUserEventData) {
-        Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] Not implemented");
+        Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
     }
 
     #endregion
@@ -1532,6 +1552,15 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void GetRegisteredDataStreams() {
         OrchestratorController.Instance.GetRegisteredDataStreams();
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status) {
+        Debug.Log("[OrchestratorLogin][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+        ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
     #endregion
