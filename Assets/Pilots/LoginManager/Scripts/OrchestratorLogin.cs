@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -95,6 +95,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
     [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
+    [SerializeField] private Text selfRepresentationDescription = null;
 
     [Header("Play")]
     [SerializeField] private GameObject playPanel = null;
@@ -108,6 +109,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private InputField sessionNameIF = null;
     [SerializeField] private InputField sessionDescriptionIF = null;
     [SerializeField] private Dropdown scenarioIdDrop = null;
+    [SerializeField] private GameObject presenterPanel = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
@@ -321,7 +323,42 @@ public class OrchestratorLogin : MonoBehaviour {
     private void UpdateRepresentations(Dropdown dd) {
         // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
         dd.ClearOptions();
-        dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+        //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+        List<string> finalNames = new List<string>();
+        foreach (string type in Enum.GetNames(typeof(UserData.eUserRepresentationType))) {
+            string enumName;
+            switch (type) {
+                case "__NONE__":
+                    enumName = "No Representation";
+                    break;
+                case "__2D__":
+                    enumName = "2D Video";
+                    break;
+                case "__AVATAR__":
+                    enumName = "3D Avatar";
+                    break;
+                case "__TVM__":
+                    enumName = "Volumetric 3D Mesh";
+                    break;
+                case "__PCC_CWI_":
+                    enumName = "Simple PointCloud";
+                    break;
+                case "__PCC_SYNTH__":
+                    enumName = "Synthetic PointCloud";
+                    break;
+                case "__PCC_CERTH__":
+                    enumName = "Volumetric PointCloud";
+                    break;
+                case "__SPECTATOR__":
+                    enumName = "Spectator";
+                    break;
+                default:
+                    enumName = type + " Not Defined";
+                    break;
+            }
+            finalNames.Add(enumName);
+        }
+        dd.AddOptions(finalNames);
     }
 
     private void UpdateWebcams(Dropdown dd) {
@@ -371,11 +408,46 @@ public class OrchestratorLogin : MonoBehaviour {
             case UserData.eUserRepresentationType.__PCC_CWI_:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 break;
+            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void SetUserRepresentationDescription(UserData.eUserRepresentationType _representationType) {
+        // left change the icon 'userRepresentationLobbyImage'
+        switch (_representationType) {
+            case UserData.eUserRepresentationType.__NONE__:
+                selfRepresentationDescription.text = "No visual representation, and no audio communication. The user can only listen.";
+                break;
+            case UserData.eUserRepresentationType.__2D__:
+                selfRepresentationDescription.text = "2D video window from your camera, as in typical conferencing services.";
+                break;
+            case UserData.eUserRepresentationType.__AVATAR__:
+                selfRepresentationDescription.text = "3D Synthetic Avatar.";
+                break;
+            case UserData.eUserRepresentationType.__TVM__:
+                selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a Time Varying Meshes (TVM).";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CWI_:
+                selfRepresentationDescription.text = "Realistic user representation, using a single RGB-D capturing camera, as a PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+                selfRepresentationDescription.text = "3D Synthetic PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CERTH__:
+                selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__SPECTATOR__:
+                selfRepresentationDescription.text = "No visual representation, but audio communication.";
                 break;
             default:
                 break;
@@ -738,6 +810,7 @@ public class OrchestratorLogin : MonoBehaviour {
             webcamInfoGO.SetActive(true);
         }
         // Preview
+        SetUserRepresentationDescription((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
         selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
             webcamDropdown.options[webcamDropdown.value].text,
             microphoneDropdown.options[microphoneDropdown.value].text);
@@ -966,7 +1039,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void PresenterToggles() {
         if (OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            presenterToggle.gameObject.SetActive(true);
+            presenterPanel.SetActive(true);
             // Check if presenter is active to show live option
             if (presenterToggle.isOn) {
                 liveToggle.gameObject.SetActive(true);
@@ -986,8 +1059,7 @@ public class OrchestratorLogin : MonoBehaviour {
             }  
         }
         else {
-            presenterToggle.gameObject.SetActive(false);
-            liveToggle.gameObject.SetActive(false);
+            presenterPanel.SetActive(false);
         }
     }      
 
