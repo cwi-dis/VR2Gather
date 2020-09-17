@@ -208,7 +208,7 @@ namespace OrchestratorWSManagement
             // send the command
             if (! SendCommand(command.SocketEventName, parameters))
             {
-                UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
+                UnityEngine.Debug.LogError("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
                 // problem while sending the command
                 sentCommand = null;
                 return false;
