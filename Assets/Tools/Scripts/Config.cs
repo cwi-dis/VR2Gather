@@ -21,6 +21,7 @@ public class Config {
         Live
     }
 
+    public string       orchestratorURL = "";
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public ProtocolType protocolType = ProtocolType.SocketIO;

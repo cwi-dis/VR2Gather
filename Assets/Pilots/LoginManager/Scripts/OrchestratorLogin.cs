@@ -30,13 +30,8 @@ public class OrchestratorLogin : MonoBehaviour {
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
-    private bool orchestratorConnected = false;
-    private bool userLogged = false;
     private bool joining = false;
 
-    [SerializeField] private string orchestratorUrl = "";
-    // http://127.0.0.1:8080/socket.io/
-    // https://vrt-orch-sandbox.viaccess-orca.com/socket.io/
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
@@ -467,7 +462,7 @@ public class OrchestratorLogin : MonoBehaviour {
         system = EventSystem.current;
 
         // Update Application version
-        orchURLText.text = orchestratorUrl;
+        orchURLText.text = Config.Instance.orchestratorURL;
         nativeVerText.text = VersionLog.Instance.NativeClient;
         playerVerText.text = "v" + Application.version;
         orchVerText.text = "";
@@ -519,8 +514,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to online
-            orchestratorConnected = true;
-            //statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTED.ToString();
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
             statusText.color = connectedCol;
             FillSelfUserData();
@@ -529,12 +522,9 @@ public class OrchestratorLogin : MonoBehaviour {
             Debug.Log("Come from another Scene");
 
             OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
-            //OnLogin(true);
         }
         else { // Enter for first time
             // Set status to offline
-            orchestratorConnected = false;
-            //statusText.text = OrchestratorController.orchestratorConnectionStatus.DISCONNECTED.ToString();
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
             statusText.color = disconnectedCol;
             state = State.Offline;
@@ -1144,7 +1134,7 @@ public class OrchestratorLogin : MonoBehaviour {
     public void SocketConnect() {
         switch (OrchestratorController.Instance.ConnectionStatus) {
             case OrchestratorController.orchestratorConnectionStatus.DISCONNECTED:
-                OrchestratorController.Instance.SocketConnect(orchestratorUrl);
+                OrchestratorController.Instance.SocketConnect(Config.Instance.orchestratorURL);
                 break;
             case OrchestratorController.orchestratorConnectionStatus.CONNECTING:
                 OrchestratorController.Instance.Abort();
@@ -1154,7 +1144,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnConnect(bool pConnected) {
         if (pConnected) {
-            orchestratorConnected = true;
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
             statusText.color = connectedCol;
             state = State.Online;
@@ -1174,7 +1163,6 @@ public class OrchestratorLogin : MonoBehaviour {
     private void OnDisconnect(bool pConnected) {
         if (!pConnected) {
             OnLogout(true);
-            orchestratorConnected = false;
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
             statusText.color = disconnectedCol;
             state = State.Offline;
@@ -1264,7 +1252,6 @@ public class OrchestratorLogin : MonoBehaviour {
             state = State.Online;
         }
 
-        userLogged = userLoggedSucessfully;
         PanelChanger();
     }
     
@@ -1274,7 +1261,6 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnLogout(bool userLogoutSucessfully) {
         if (userLogoutSucessfully) {
-            userLogged = false;
             userId.text = "";
             userName.text = "";
             userNameVRTText.text = "";
