@@ -60,14 +60,8 @@ public class VideoWebCam : MonoBehaviour {
             if(useDash) writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
             else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
 
-            Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-                new Workers.PCSubReader.TileDescriptor() {
-                        outQueue = videoCodecQueue,
-                        tileNumber = 0
-                    }
-            };
-            if (useDash) reader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
-            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, tiles);
+            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
+            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
             decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null);

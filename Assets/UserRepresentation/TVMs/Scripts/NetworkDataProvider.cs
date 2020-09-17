@@ -38,9 +38,9 @@ namespace DataProviders {
             m_RabbitMQReceiver.Enabled = true;
         }
 
-        private void OnEnable() {
-            m_RabbitMQReceiver.Enabled = true;
-        }
+        //private void OnEnable() {
+        //    m_RabbitMQReceiver.Enabled = true;
+        //}
 
 		private void Update() {
 			if (this.isReceiverConnected != this.m_RabbitMQReceiver.IsConnected) {

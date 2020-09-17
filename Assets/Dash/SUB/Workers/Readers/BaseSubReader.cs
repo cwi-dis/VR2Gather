@@ -79,11 +79,15 @@ namespace Workers {
                 {
                     while (true)
                     {
+
                         System.Threading.Thread.Sleep(1); // xxxjack Yield() may be better?
                         //
                         // First check whether we should terminate, and otherwise whether we have nay work to do currently.
                         //
-                        if (receiverInfo.outQueue.IsClosed()) return;
+                        if (receiverInfo.outQueue.IsClosed())
+                        {
+                            return;
+                        }
 
                         sub.connection subHandle = parent.getSubHandle();
                         if (subHandle == null)
@@ -92,7 +96,10 @@ namespace Workers {
                             return;
                         }
 
-                        if (receiverInfo.streamIndexes.Length == 0) continue;
+                        if (receiverInfo.streamIndexes.Length == 0)
+                        {
+                            continue;
+                        }
                         //
                         // We have work to do. Check which of our streamIndexes has data available.
                         //
@@ -176,6 +183,7 @@ namespace Workers {
             double statsTotalBytes;
             double statsTotalPackets;
             double statsTotalLatency;
+            const int statsInterval = 10;
 
             public void statsUpdate(int nBytes, long timeStamp )
             {
@@ -199,10 +207,10 @@ namespace Workers {
                 }
                 statsTotalLatency += latency;
 
-                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / 10} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / statsInterval} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet, more than {msLatency} ms protocol latency");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
@@ -239,6 +247,23 @@ namespace Workers {
                     Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
                 }
+            }
+        }
+
+        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue) : this(_url, _streamName, _initialDelay)
+        {
+            lock(this)
+            {
+                receivers = new ReceiverInfo[]
+                {
+                    new ReceiverInfo()
+                    {
+                        outQueue = outQueue,
+                        streamIndexes = new int[] { streamIndex}
+                    },
+                };
+                Start();
+
             }
         }
 
@@ -298,7 +323,10 @@ namespace Workers {
         protected bool InitDash() {
             lock(this)
             {
-                if (System.DateTime.Now < subRetryNotBefore) return false;
+                if (System.DateTime.Now < subRetryNotBefore)
+                {
+                    return false;
+                }
                 subRetryNotBefore = System.DateTime.Now + subRetryInterval;
                 //
                 // Create SUB instance
@@ -378,6 +406,7 @@ namespace Workers {
             lock(this)
             {
                 // If we should stop playing we stop
+
                 if (!isPlaying)
                 {
                     _DeinitDash(false);
@@ -385,7 +414,10 @@ namespace Workers {
                 // If we are not playing we start
                 if (subHandle == null)
                 {
-                    if (InitDash()) InitThreads();
+                    if (InitDash())
+                    {
+                        InitThreads();
+                    }
                 }
             }
         }

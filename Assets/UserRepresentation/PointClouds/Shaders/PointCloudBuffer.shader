@@ -2,9 +2,10 @@
 Shader "Entropy/PointCloud"{
 	Properties{
 		_Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
+		_Exposure("Exposure", Range(0.1,2)) = 1.0
 		_PointSize("Point Size", Float) = 0.05
 		_MainTex("Texture", 2D) = "white" {}
-		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.7
 	}
 		SubShader{
 			Lighting Off
@@ -42,6 +43,7 @@ Shader "Entropy/PointCloud"{
 				};
 
 				half4		_Tint;
+				half		_Exposure;
 				float4x4	_Transform;
 				half		_PointSize;
 				sampler2D	_MainTex;
@@ -54,7 +56,8 @@ Shader "Entropy/PointCloud"{
 					float4 pos = mul(_Transform, float4(pt.xyz, 1));
 					half3  col = PcxDecodeColor(asuint(pt.w));
 
-					col *= _Tint.rgb * 2;
+					// xxxjack removed: col *= _Tint.rgb * 2;
+					col *= _Exposure;
 
 					Varyings o;
 					o.position = UnityObjectToClipPos(pos);

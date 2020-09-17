@@ -21,6 +21,7 @@ public class Config {
         Live
     }
 
+    public string       orchestratorURL = "";
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public ProtocolType protocolType = ProtocolType.SocketIO;
@@ -127,7 +128,6 @@ public class Config {
     };
     public _User LocalUser;
     public _User RemoteUser;
-    public _User PreviewUser;
 
     static Config _Instance;
     public static Config Instance {

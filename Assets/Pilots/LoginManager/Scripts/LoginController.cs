@@ -91,6 +91,9 @@ public class LoginController : PilotController {
                             loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
                     }
                     break;
+				case "Pilot 3":
+					if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot3"));
+					break;
                 default:
                     break;
             }

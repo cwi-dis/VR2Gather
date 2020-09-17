@@ -25,7 +25,9 @@ namespace OrchestratorWrapping
     // functions are called by the wrapper upon the response of the orchestrator
     public interface IOrchestratorResponsesListener
     {
+        void OnError(ResponseStatus status);
         void OnConnect();
+        void OnConnecting();
         void OnGetOrchestratorVersionResponse(ResponseStatus status, string version);
         void OnDisconnect();
 

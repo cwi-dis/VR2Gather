@@ -32,6 +32,21 @@ namespace Workers
                 throw e;
             }
         }
+
+        public SocketIOReader(User user, string remoteStream, QueueThreadSafe outQueue) 
+        : this(user, 
+            remoteStream, 
+              new PCSubReader.TileDescriptor[]
+              {
+                  new PCSubReader.TileDescriptor()
+                  {
+                      outQueue = outQueue
+                  }
+              }
+            )
+        {
+        }
+
         public override string Name() {
             return $"{this.GetType().Name}";
         }
@@ -47,12 +62,14 @@ namespace Workers
             }
         }
         private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
-            BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
-            System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
             int id = 0;
             string strID = pPacket.dataStreamType.Substring(pPacket.dataStreamType.LastIndexOf('#') + 1);
             if (int.TryParse(strID, out id)) {
-                descriptors[id].outQueue.Enqueue(chunk);
+                if (pPacket.dataStreamType == descriptors[id].name) {
+                    BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
+                    System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
+                    descriptors[id].outQueue.Enqueue(chunk);
+                }
             } else {
                 Debug.Log($"[FPA] ERROR parsing {strID}.");
             }

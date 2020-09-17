@@ -23,15 +23,9 @@ public class VoiceReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-            new Workers.PCSubReader.TileDescriptor() {
-                outQueue = decoderQueue,
-                tileNumber = 0
-            }
-        };
 
-        if (UseDash)    reader = new Workers.PCSubReader(user.sfuData.url_audio, _streamName, _initialDelay, tiles);
-        else            reader = new Workers.SocketIOReader(user, _streamName, tiles); 
+        if (UseDash)    reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+        else            reader = new Workers.SocketIOReader(user, _streamName, decoderQueue); 
 
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);

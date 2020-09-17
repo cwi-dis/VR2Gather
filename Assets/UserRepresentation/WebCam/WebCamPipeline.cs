@@ -38,10 +38,10 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash) {
+    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash, bool preview = false) {
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
-            case "self": // Local 
+            case "self": // Local
                 isSource = true;
                 //
                 // Allocate queues we need for this sourceType
@@ -52,59 +52,60 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 webReader = new Workers.WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
-                //
-                // Create encoders for transmission
-                //
-                try {
-                    encoder = new Workers.VideoEncoder(encoderQueue, null, writerQueue, null);
-                } catch (System.EntryPointNotFoundException) {
-                    Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                    throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                }
-                //
-                // Create bin2dash writer for PC transmission
-                //
-                var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                if (Bin2Dash == null)
-                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
-                try {
-                    Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
+                if (!preview) {
+                    //
+                    // Create encoders for transmission
+                    //
+                    try {
+                        encoder = new Workers.VideoEncoder(encoderQueue, null, writerQueue, null);
+                    }
+                    catch (System.EntryPointNotFoundException) {
+                        Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                        throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                    }
+                    //
+                    // Create bin2dash writer for PC transmission
+                    //
+                    var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
+                    if (Bin2Dash == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
+                    try {
+                        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
                         new Workers.B2DWriter.DashStreamDescription() {
                         tileNumber = 0,
                         quality = 0,
                         inQueue = writerQueue
                         }
                     };
-                    if (useDash)    writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
-                    else            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
-                } catch (System.EntryPointNotFoundException e) {
-                    Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
-                    throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
-                }
-                //
-                // Create pipeline for audio, if needed.
-                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                //
-                var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
-                try {
-                    audioSender = gameObject.AddComponent<VoiceSender>();
-                    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
-                }
-                catch (System.EntryPointNotFoundException e) {
-                    Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                        if (useDash)
+                            writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
+                        else
+                            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                        throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                    }
+                    //
+                    // Create pipeline for audio, if needed.
+                    // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                    //
+                    var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                    if (AudioBin2Dash == null)
+                        throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
+                    try {
+                        audioSender = gameObject.AddComponent<VoiceSender>();
+                        audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                        throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    }
                 }
                 break;
             case "remote": // Remoto
-                Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-                    new Workers.PCSubReader.TileDescriptor() {
-                        outQueue = videoCodecQueue,
-                        tileNumber = 0
-                    }
-                };
-                if (useDash)    reader = new Workers.PCSubReader(user.sfuData.url_pcc, "webcam", 1, tiles);
-                else            reader = new Workers.SocketIOReader(user, "webcam", tiles);
+                if (useDash)    reader = new Workers.BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
+                else            reader = new Workers.SocketIOReader(user, "webcam", videoCodecQueue);
 
                 //
                 // Create video decoder.
@@ -122,18 +123,6 @@ public class WebCamPipeline : MonoBehaviour {
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
-                ready = true;
-                break;
-            case "preview": // Preview 
-                isSource = true;
-                //
-                // Create reader
-                //
-                webReader = new Workers.WebCamReader(user.userData!=null?user.userData.webcamName:null, width, height, fps, this, videoPreparerQueue);
-                //
-                // Create video preparer
-                //
-                preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
                 ready = true;
                 break;
         }

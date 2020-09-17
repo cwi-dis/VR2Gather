@@ -86,6 +86,7 @@ namespace Workers {
         double statsTotalPoints;
         double statsTotalPointclouds;
         double statsTotalLatency;
+        const int statsInterval = 10;
 
         public void statsUpdate(int pointCount, ulong timeStamp) {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
@@ -97,10 +98,10 @@ namespace Workers {
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
+            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
                 int msLatency = (int)(1000* statsTotalLatency / statsTotalPointclouds);
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / 10} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {msLatency} ms pipeline latency");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {msLatency} ms pipeline latency");
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
                 statsTotalLatency = 0;

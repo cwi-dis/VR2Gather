@@ -12,7 +12,7 @@ using System;
 
 public class MeshConstructor : MonoBehaviour
 {
-    public int mesh_id;
+    private int mesh_id;
     private bool received_new_frame = false;
     private IDataProvider m_DataProvider;
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
@@ -22,7 +22,7 @@ public class MeshConstructor : MonoBehaviour
     private System.Diagnostics.Stopwatch stopWatch_d_g = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_d_p = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_r = new System.Diagnostics.Stopwatch();
-    private PerformanceMetrics performanceMetricsObj = new PerformanceMetrics();
+    private PerformanceMetrics performanceMetricsObj;
     private List<Texture2D> m_Textures = new List<Texture2D>();
     private List<Vector3> m_vertices = new List<Vector3>();
     private List<Vector4> m_participatingCams = new List<Vector4>();
@@ -47,10 +47,10 @@ public class MeshConstructor : MonoBehaviour
                 // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
                 stopWatch_d = System.Diagnostics.Stopwatch.StartNew();
 
-                // Global time counter
+                // Global time counter (started only the first time)
                 if (stopWatch.ElapsedMilliseconds == 0)
                     stopWatch = System.Diagnostics.Stopwatch.StartNew();
-
+                
                 // Flaging that a new buffer is received
                 int size = Marshal.SizeOf(e.Value[0]) * e.Value.Length; // Buffer 's size
                 var buffer = e.Value; // Buffer 's data
@@ -111,7 +111,9 @@ public class MeshConstructor : MonoBehaviour
     {
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
+        performanceMetricsObj = this.gameObject.AddComponent<PerformanceMetrics>();
         performanceMetricsObj.runCommand();
+        InvokeRepeating("printAndSaveMetricsEveryTenSec", 10.0f, 10.0f);
     }
 
     private void OnDestroy()
@@ -220,16 +222,17 @@ public class MeshConstructor : MonoBehaviour
             return;
         }
 
-        if (stopWatch.ElapsedMilliseconds >= 10000)
-        {
-            stopWatch.Stop();
-            performanceMetricsObj.printMetrics(stopWatch);
-            performanceMetricsObj.saveMetrics(stopWatch);
-            performanceMetricsObj.clearAll();
-            stopWatch = new System.Diagnostics.Stopwatch();
-        }
-
         received_new_frame = false;
+    }
+
+    void printAndSaveMetricsEveryTenSec()
+    {
+        stopWatch.Stop();
+        performanceMetricsObj.printMetrics(stopWatch, mesh_id);
+        performanceMetricsObj.saveMetrics(stopWatch, mesh_id);
+        performanceMetricsObj.clearAll();
+        stopWatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Start();
     }
 
     // Defining textures of the shader

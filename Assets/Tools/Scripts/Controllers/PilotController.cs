@@ -40,6 +40,14 @@ abstract public class PilotController : MonoBehaviour {
         int spectatorIdx = 0;
         int id = 0;
         bool firstTVM = true;
+        // First tell the tilingConfigDistributor what our user ID is.
+        var tilingConfigDistributor = FindObjectOfType<TilingConfigDistributor>();
+        if (tilingConfigDistributor == null)
+        {
+            Debug.LogWarning("No TilingConfigDistributor found");
+        }
+        tilingConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
+
         foreach (OrchestratorWrapping.User user in OrchestratorController.Instance.ConnectedUsers) {
             if (user.userData.userRepresentationType != OrchestratorWrapping.UserData.eUserRepresentationType.__NONE__) {
                 if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__SPECTATOR__) { // Load Spectator
@@ -52,6 +60,9 @@ abstract public class PilotController : MonoBehaviour {
                         spectators[spectatorIdx].cam.gameObject.SetActive(true);
                         my_id = spectators[spectatorIdx].id;
                         spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                    }
+                    else {
+                        spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
                     }
                     spectators[spectatorIdx].orchestratorId = user.userId;
 
@@ -74,14 +85,14 @@ abstract public class PilotController : MonoBehaviour {
                         my_id = players[playerIdx].id;
                         players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
+                    else {
+                        players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                    }
 
                     switch (user.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                             // FER: Implementacion representacion de webcam.
                             players[playerIdx].webcam.SetActive(true);
-                            if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                            }
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                             players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
                             // Audio
@@ -94,6 +105,9 @@ abstract public class PilotController : MonoBehaviour {
                             if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                 players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                             }
+                            else {
+                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                            }
                             // Audio
                             players[playerIdx].audio.SetActive(true);
                             LoadAudio(players[playerIdx], user);
@@ -104,23 +118,18 @@ abstract public class PilotController : MonoBehaviour {
                             players[playerIdx].pc.SetActive(true);
                             bool isSelf = my_id == players[playerIdx].id;
                             userCfg = isSelf ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            players[playerIdx].pc.AddComponent<EntityPipeline>().Init(user, userCfg);
+                            var pipeline = players[playerIdx].pc.AddComponent<EntityPipeline>();
+                            pipeline.Init(user, userCfg);
                             // xxxjack debug code
                             if (isSelf)
                             {
-                                EntityPipeline selfPipeline = players[playerIdx].pc.GetComponent<EntityPipeline>();
-                                if (selfPipeline == null)
-                                {
-                                    Debug.Log($"xxxjack sync: self EntityPipeline is null");
-                                }
-                                else
-                                {
-                                    SyncConfig syncConfig = selfPipeline.GetSyncConfig();
-                                    Debug.Log($"xxxjack sync: self EntityPipeline audio: {syncConfig.audio.wallClockTime}={syncConfig.audio.streamClockTime}, visual: {syncConfig.visuals.wallClockTime}={syncConfig.visuals.streamClockTime}");
-                                    var tileInfo = selfPipeline.GetTilingConfig();
-                                    Debug.Log($"xxxjack tiling: self: {JsonUtility.ToJson(tileInfo)}");
-                                }
+                                SyncConfig syncConfig = pipeline.GetSyncConfig();
+                                Debug.Log($"xxxjack sync: self EntityPipeline audio: {syncConfig.audio.wallClockTime}={syncConfig.audio.streamClockTime}, visual: {syncConfig.visuals.wallClockTime}={syncConfig.visuals.streamClockTime}");
+                                var tileInfo = pipeline.GetTilingConfig();
+                                Debug.Log($"xxxjack tiling: self: {JsonUtility.ToJson(tileInfo)}");
                             }
+                            // Register for distribution of tiling configurations
+                            tilingConfigDistributor?.RegisterPipeline(user.userId, pipeline);
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__TVM__: // TVM & AUDIO
                             if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
@@ -167,6 +176,9 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = spectators[spectatorIdx].id;
                             spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         // Load Audio
                         spectators[spectatorIdx].audio.SetActive(true);
@@ -185,14 +197,14 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = players[playerIdx].id;
                             players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         switch (user.userData.userRepresentationType) {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                                 // FER: Implementacion representacion de webcam.
                                 players[playerIdx].webcam.SetActive(true);
-                                if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                                }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
                                 LoadAudio(players[playerIdx], user);
@@ -201,6 +213,9 @@ abstract public class PilotController : MonoBehaviour {
                                 players[playerIdx].avatar.SetActive(true);
                                 if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                     players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
+                                }
+                                else {
+                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
                                 }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
