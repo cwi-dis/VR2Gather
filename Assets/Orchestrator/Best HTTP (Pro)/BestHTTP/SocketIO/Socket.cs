@@ -57,7 +57,7 @@ namespace BestHTTP.SocketIO
         /// <summary>
         /// Cached list to spare some GC alloc.
         /// </summary>
-        private List<object> arguments = new List<object>();
+        //private List<object> arguments = new List<object>();
 
         #endregion
 
@@ -144,7 +144,8 @@ namespace BestHTTP.SocketIO
             if (blackListed)
                 throw new ArgumentException("Blacklisted event: " + eventName);
 
-            arguments.Clear();
+            //arguments.Clear();
+            List<object> arguments = new List<object>();
             arguments.Add(eventName);
 
             // Find and swap any binary data(byte[]) to a placeholder string.
@@ -188,7 +189,7 @@ namespace BestHTTP.SocketIO
             }
 
             // We don't use it further in this function, so we can clear it to not hold any unwanted reference.
-            arguments.Clear();
+            //arguments.Clear();
 
             if (payload == null)
                 throw new ArgumentException("Encoding the arguments to JSON failed!");
@@ -229,7 +230,8 @@ namespace BestHTTP.SocketIO
                 (originalPacket.SocketIOEvent != SocketIOEventTypes.Event && originalPacket.SocketIOEvent != SocketIOEventTypes.BinaryEvent))
                 throw new ArgumentException("Wrong packet - you can't send an Ack for a packet with id == 0 and SocketIOEvent != Event or SocketIOEvent != BinaryEvent!");
 
-            arguments.Clear();
+            List<object> arguments = new List<object>();
+            //arguments.Clear();
             if (args != null && args.Length > 0)
                 arguments.AddRange(args);
 
