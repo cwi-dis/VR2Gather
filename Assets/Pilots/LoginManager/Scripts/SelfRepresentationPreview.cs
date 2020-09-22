@@ -42,7 +42,17 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
-                player.webcam.AddComponent<WebCamPipeline>().Init(new User() { userData = new UserData() { webcamName= webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                if (webcamName != "None") {
+                    WebCamPipeline wcPipeline = player.webcam.AddComponent<WebCamPipeline>();
+                    wcPipeline.Init(new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                    Transform screen = wcPipeline.transform.Find("PlayerHeadScreen");
+                    var tmpRenderer = screen.GetComponent<Renderer>();
+                    if (tmpRenderer != null) {
+                        tmpRenderer.material.mainTexture = wcPipeline.webCamTexture;
+                        screen.localScale = new Vector3(0.5f, (wcPipeline.webCamTexture.height / (float)wcPipeline.webCamTexture.width) * 0.5f, 1);
+                    }
+                }
+
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);

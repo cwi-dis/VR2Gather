@@ -140,7 +140,7 @@ public class WebCamPipeline : MonoBehaviour {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
                         texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
-                        Transform screen = transform.Find("Screen");
+                        Transform screen = transform.Find("PlayerHeadScreen");
                         var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
                             renderer.material.mainTexture = texture;
