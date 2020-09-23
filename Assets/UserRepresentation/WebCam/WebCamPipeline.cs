@@ -101,6 +101,13 @@ public class WebCamPipeline : MonoBehaviour {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
+                } else {
+                    Transform screen = transform.Find("PlayerHeadScreen");
+                    var renderer = screen.GetComponent<Renderer>();
+                    if (renderer != null) {
+                        renderer.material.mainTexture = webCamTexture;
+                        renderer.transform.localScale = new Vector3(0.5f, (webCamTexture.height / (float)webCamTexture.width) * 0.5f, 1);
+                    }
                 }
                 break;
             case "remote": // Remoto
