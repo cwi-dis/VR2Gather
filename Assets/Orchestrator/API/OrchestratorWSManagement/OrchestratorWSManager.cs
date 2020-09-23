@@ -162,59 +162,52 @@ namespace OrchestratorWSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            if (command.Parameters != null)
-            {
-                object[] parameters = new object[command.Parameters.Count];
+            lock (this) {
+                if (command.Parameters != null) {
+                    object[] parameters = new object[command.Parameters.Count];
 
-                for(int i=0; i<parameters.Length; i++)
-                {
-                    parameters[i] = command.Parameters[i].ParamValue;
+                    for (int i = 0; i < parameters.Length; i++) {
+                        parameters[i] = command.Parameters[i].ParamValue;
+                    }
+
+                    // emit the packet on socket.io
+                    Manager.Socket.Emit(command.SocketEventName, null, parameters);
                 }
-
-                // emit the packet on socket.io
-                Manager.Socket.Emit(command.SocketEventName, null, parameters);
             }
         }
 
         // Emit a command
         public bool EmitCommand(OrchestratorCommand command)
         {
-            // the JsonData that will own the parameters and their values
-            JsonData parameters = new JsonData();
+            lock (this) {
+                // the JsonData that will own the parameters and their values
+                JsonData parameters = new JsonData();
 
-            if (command.Parameters != null)
-            {
-                // for each parameter defined in the command, fill the parameter with its value
-                command.Parameters.ForEach(delegate (Parameter parameter)
-                {
-                    if (parameter.ParamValue != null)
-                    {
-                        if(parameter.type == typeof(bool))
-                        {
-                            parameters[parameter.ParamName] = (bool)parameter.ParamValue;
+                if (command.Parameters != null) {
+                    // for each parameter defined in the command, fill the parameter with its value
+                    command.Parameters.ForEach(delegate (Parameter parameter) {
+                        if (parameter.ParamValue != null) {
+                            if (parameter.type == typeof(bool)) {
+                                parameters[parameter.ParamName] = (bool)parameter.ParamValue;
+                            } else {
+                                parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                            }
+                        } else {
+                            parameters[parameter.ParamName] = "";
                         }
-                        else
-                        {
-                            parameters[parameter.ParamName] = parameter.ParamValue.ToString();
-                        }
-                    }
-                    else
-                    {
-                        parameters[parameter.ParamName] = "";
-                    }
-                });
+                    });
+                }
+
+                // send the command
+                if (!SendCommand(command.SocketEventName, parameters)) {
+                    UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
+                    // problem while sending the command
+                    sentCommand = null;
+                    return false;
+                }
+                // command succesfully sent
+                sentCommand = command;
             }
-            
-            // send the command
-            if (! SendCommand(command.SocketEventName, parameters))
-            {
-                UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
-                // problem while sending the command
-                sentCommand = null;
-                return false;
-            }
-            // command succesfully sent
-            sentCommand = command;
             return true;
         }
 
