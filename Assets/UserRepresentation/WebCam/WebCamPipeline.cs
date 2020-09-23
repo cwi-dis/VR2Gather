@@ -86,6 +86,7 @@ public class WebCamPipeline : MonoBehaviour {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
+/*
                     //
                     // Create pipeline for audio, if needed.
                     // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -101,6 +102,7 @@ public class WebCamPipeline : MonoBehaviour {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
+*/
                 } else {
                     Transform screen = transform.Find("PlayerHeadScreen");
                     var renderer = screen.GetComponent<Renderer>();
@@ -122,6 +124,7 @@ public class WebCamPipeline : MonoBehaviour {
                 // Create video preparer.
                 //
                 preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+/*
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -130,13 +133,12 @@ public class WebCamPipeline : MonoBehaviour {
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
+*/
                 ready = true;
                 break;
         }
         return this;
     }
-
-
 
     // Update is called once per frame
     System.DateTime lastUpdateTime;
