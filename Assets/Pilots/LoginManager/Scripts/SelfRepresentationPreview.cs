@@ -42,7 +42,11 @@ public class SelfRepresentationPreview : MonoBehaviour
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
-                player.webcam.AddComponent<WebCamPipeline>().Init(new User() { userData = new UserData() { webcamName= webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                if (webcamName != "None") {
+                    WebCamPipeline wcPipeline = player.webcam.AddComponent<WebCamPipeline>();
+                    wcPipeline.Init(new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                }
+
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);
