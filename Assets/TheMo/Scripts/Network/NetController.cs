@@ -125,33 +125,37 @@ public class NetController : MonoBehaviour {
 //                Debug.Log($"OnGetSessionsHandler {sessions.Length}");
                 if (sessions[i].sessionId.StartsWith("NetController_")) {
                     OrchestratorController.Instance.JoinSession(sessions[i].sessionId);
-                    break;
+                    return;
                 }
             }
-        } else {
-            OrchestratorController.Instance.AddSession( scenarioToConnect.scenarioId, $"NetController_{Random.Range(0,1000)}", "Session test.");
-        }
+        } 
+        OrchestratorController.Instance.AddSession( scenarioToConnect.scenarioId, $"NetController_{Random.Range(0,1000)}", "Session test.");
     }
     Session mySession;
     private void OnAddSessionHandler(Session session) {
         mySession = session;
         // Here you should store the retrieved session.
+        /*
         if (session != null) {
-//            SubscribeToBinaryChannel();
-//            SendBinaryData();
+            SubscribeToBinaryChannel();
+            SendBinaryData();
         } 
+        */
     }
 
     private void OnJoinSessionHandler(Session session) {
-//        Debug.Log($"OnJoinSessionHandler [{session}]");
+        Debug.Log($"OnJoinSessionHandler [{session}]");
+        /*
         if (session != null) {
-//            SubscribeToBinaryChannel();
-//            SendBinaryData();
+            SubscribeToBinaryChannel();
+            SendBinaryData();
         } 
+        */
     }
 
-    string binaryDataChannelName;
+    string binaryDataChannelName = "BINARY_CHANNEL";
     private void SubscribeToBinaryChannel() {
+        Debug.Log($"SubscribeToBinaryChannel {binaryDataChannelName} user {UserID}");
         OrchestratorWrapper.instance.DeclareDataStream(binaryDataChannelName);
         OrchestratorWrapper.instance.RegisterForDataStream(UserID, binaryDataChannelName);
         OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
@@ -160,11 +164,12 @@ public class NetController : MonoBehaviour {
     private void SendBinaryData() {
         byte[] data = new byte[] { 1, 2, 3, 4, 5 };
         OrchestratorWrapper.instance.SendData(binaryDataChannelName, data);
+        Debug.Log($"SendBinaryData {data.Length} ");
     }
 
     private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
         if (pPacket.dataStreamUserID == UserID) {
-            Debug.Log($"!!! DATA {pPacket.dataStreamPacket.Length}");
+            Debug.Log($"!!! DATA {pPacket.dataStreamPacket.Length} dataStreamUserID {pPacket.dataStreamUserID}");
         }
     }
 
