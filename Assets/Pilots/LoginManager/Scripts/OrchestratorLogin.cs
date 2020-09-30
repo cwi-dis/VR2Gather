@@ -1449,6 +1449,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetLivePresenterDataHandler(LivePresenterData liveData) {
         //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
+        joining = false;
     }
 
     #endregion
