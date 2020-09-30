@@ -17,15 +17,6 @@ public class SelfRepresentationPreview : MonoBehaviour
     }
 
     public void Stop() {
-        if (player.webcam.TryGetComponent(out WebCamPipeline web))
-            Destroy(web);
-    }
-
-    public void ChangeRepresentation(UserData.eUserRepresentationType representation, string webcamName, string microphoneName) {
-        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
-
-        player.userName.text = OrchestratorController.Instance.SelfUser.userName;
-        player.gameObject.SetActive(true);
         player.avatar.SetActive(false);
         if (player.webcam.TryGetComponent(out WebCamPipeline web))
             Destroy(web);
@@ -36,6 +27,14 @@ public class SelfRepresentationPreview : MonoBehaviour
             Destroy(renderer);
         player.pc.SetActive(false);
         player.tvm.gameObject.SetActive(false);
+    }
+
+    public void ChangeRepresentation(UserData.eUserRepresentationType representation, string webcamName, string microphoneName) {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+
+        player.userName.text = OrchestratorController.Instance.SelfUser.userName;
+        player.gameObject.SetActive(true);
+        Stop();
         switch (representation) {
             case UserData.eUserRepresentationType.__NONE__:
                 player.gameObject.SetActive(false);
