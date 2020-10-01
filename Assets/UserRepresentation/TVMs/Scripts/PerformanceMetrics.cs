@@ -175,6 +175,9 @@ public class PerformanceMetrics : MonoBehaviour
 
     public void saveAndDestroy()
     {
+        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+            return;
+
         process.Kill();
 
         if (Config.Instance.TVMs.saveMetrics)
