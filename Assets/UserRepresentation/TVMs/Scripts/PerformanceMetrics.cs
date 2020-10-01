@@ -91,24 +91,26 @@ public class PerformanceMetrics : MonoBehaviour
 
             totalTime += stopWatch.ElapsedMilliseconds;
 
-            Debug.Log("sw (ms) = " + totalTime + ": Compression Module (TVM #" + mesh_id + "): Average compressed TVM buffer size: " + 
-                                                    changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString() + metric_units[0] +
-                                                    ", Average decompressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString() + metric_units[1]);
+            Debug.Log("sw (ms) = " + totalTime + ": Unity player Rate (TVM #" + mesh_id +
+                                                    "): Frames (TVMs rendered) per second: " + (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5") +
+                                                    ", Number of TVMs received but not rendered: " + ((all_frames - fps) < 0 ? 0 : (all_frames - fps)));
 
-            Debug.Log("sw (ms) = " + totalTime + ": Deserialization Module (TVM #" + mesh_id + "): Average total deserialization time per TVM: " + 
-                                    (deserializeTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")" +
-            ", Average time of deserialization function call per TVM: " + (deserializeFunctionTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeFunctionTime).ToString("F5") + ")" + 
+            Debug.Log("sw (ms) = " + totalTime + ": Compression Module (TVM #" + mesh_id +
+                                                    "): Average compressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString() + " " + metric_units[0] +
+                                                    ", Average decompressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString() + " " + metric_units[1]);
+
+            Debug.Log("sw (ms) = " + totalTime + ": Deserialization Module (TVM #" + mesh_id +
+            "): Average total deserialization time per TVM: " + (deserializeTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")" +
+            ", Average time of deserialization function call per TVM: " + (deserializeFunctionTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeFunctionTime).ToString("F5") + ")" +
+            ", Average deserialization time of color data per TVM: " + (deserializeTexturesTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTexturesTime).ToString("F5") + ")" +
             ", Average deserialization time of geometry (faces, vertices) data per TVM: " + (deserializeGeometryTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeGeometryTime).ToString("F5") + ")" +
             ", Average deserialization time of parameters per TVM: " + (deserializeParamsTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeParamsTime).ToString("F5") + ")");
 
-            Debug.Log("sw (ms) = " + totalTime + ": Rendering Module (TVM #" + mesh_id + "): Frames (TVMs rendered) per second: " +
-                                                                    (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5") +
-                                                                    ", Number of TVMs received but not rendered: " + ((all_frames - fps) < 0 ? 0 : (all_frames - fps)) +
-                                                                    ", Average number of vertices per TVM: " + (total_num_vertices / fps) +
+            Debug.Log("sw (ms) = " + totalTime + ": Rendering Module (TVM #" + mesh_id + ", Average number of vertices per TVM: " + (total_num_vertices / fps) +
             ", Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
 
-            Debug.Log("sw (ms) = " + totalTime + ": PC Consumptions (TVM #" + mesh_id + "): Average CPU% usage: " + 
-                    (usageSamplesCPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
+            Debug.Log("sw (ms) = " + totalTime + ": PC Consumptions (TVM #" + mesh_id +
+            "): Average CPU% usage: " + (usageSamplesCPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
             ", Average GPU% usage: " + (usageSamplesGPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesGPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
             ", Average RAM usage (MBs): " + (usageSamplesRAM.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesRAM.ConvertAll(Convert.ToInt64)).ToString("F5") + ")"+
             ", Average BW usage (MBps): " + (usageSamplesBW.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesBW.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
@@ -173,6 +175,9 @@ public class PerformanceMetrics : MonoBehaviour
 
     public void saveAndDestroy()
     {
+        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+            return;
+
         process.Kill();
 
         if (Config.Instance.TVMs.saveMetrics)
@@ -214,7 +219,7 @@ public class PerformanceMetrics : MonoBehaviour
         if ((!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics) || !string.IsNullOrEmpty(fullPathToExe))
             return;
 
-        fullPathToExe = Directory.GetParent(Application.dataPath) + "\\PerformanceCounting\\PerfomanceData";
+        fullPathToExe = Application.streamingAssetsPath + "\\PerformanceCounting\\PerfomanceData";
 
         process = new System.Diagnostics.Process
         {

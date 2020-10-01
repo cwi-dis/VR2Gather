@@ -296,6 +296,10 @@ public class OrchestratorLogin : MonoBehaviour {
             AddTextComponentOnContent(container.transform, element.GetGuiRepresentation());
         });
 
+        string selectedOption = "";
+        // store selected option in dropdown
+        if (dd.options.Count > 0)
+            selectedOption = dd.options[dd.value].text;
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
@@ -303,6 +307,13 @@ public class OrchestratorLogin : MonoBehaviour {
             options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
         });
         dd.AddOptions(options);
+        // re-assign selected option in dropdown
+        if (dd.options.Count > 0) { 
+            for (int i = 0; i < dd.options.Count; ++i) {
+                if (dd.options[i].text == selectedOption)
+                    dd.value = i;
+            }
+        }
     }
 
     private void UpdateScenarios(Dropdown dd) {
@@ -883,6 +894,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void SaveConfigButton() {
+        selfRepresentationPreview.Stop();
         UpdateUserData();
         state = State.Logged;
         PanelChanger();
@@ -1352,9 +1364,13 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void JoinSession() {
-        string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
-        OrchestratorController.Instance.JoinSession(sessionIdToJoin);
-        joining = true;
+        if (sessionIdDrop.options.Count <= 0)
+            Debug.LogError($"[JoinSession] There are no sessions to join.");
+        else {
+            string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
+            OrchestratorController.Instance.JoinSession(sessionIdToJoin);
+            joining = true;
+        }
     }
 
     private void OnJoinSessionHandler(Session session) {
@@ -1433,6 +1449,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnGetLivePresenterDataHandler(LivePresenterData liveData) {
         //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
+        joining = false;
     }
 
     #endregion

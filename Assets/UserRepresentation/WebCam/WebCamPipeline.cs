@@ -86,6 +86,7 @@ public class WebCamPipeline : MonoBehaviour {
                         Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
+/*
                     //
                     // Create pipeline for audio, if needed.
                     // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -101,6 +102,14 @@ public class WebCamPipeline : MonoBehaviour {
                         Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
+*/
+                } else {
+                    Transform screen = transform.Find("PlayerHeadScreen");
+                    var renderer = screen.GetComponent<Renderer>();
+                    if (renderer != null) {
+                        renderer.material.mainTexture = webCamTexture;
+                        renderer.transform.localScale = new Vector3(0.5f, (webCamTexture.height / (float)webCamTexture.width) * 0.5f, 1);
+                    }
                 }
                 break;
             case "remote": // Remoto
@@ -115,6 +124,7 @@ public class WebCamPipeline : MonoBehaviour {
                 // Create video preparer.
                 //
                 preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+/*
                 //
                 // Create pipeline for audio, if needed.
                 // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
@@ -123,13 +133,12 @@ public class WebCamPipeline : MonoBehaviour {
                 if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
                 audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
+*/
                 ready = true;
                 break;
         }
         return this;
     }
-
-
 
     // Update is called once per frame
     System.DateTime lastUpdateTime;
@@ -140,7 +149,7 @@ public class WebCamPipeline : MonoBehaviour {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
                         texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
-                        Transform screen = transform.Find("Screen");
+                        Transform screen = transform.Find("PlayerHeadScreen");
                         var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
                             renderer.material.mainTexture = texture;
