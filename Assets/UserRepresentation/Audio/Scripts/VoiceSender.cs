@@ -32,12 +32,14 @@ public class VoiceSender : MonoBehaviour {
 
     void OnDestroy() {
         reader?.Stop();
+        reader = null;
         codec?.Stop();
+        codec = null;
         writer?.Stop();
+        writer = null;
     }
 
-    public SyncConfig.ClockCorrespondence GetSyncInfo()
-    {
+    public SyncConfig.ClockCorrespondence GetSyncInfo() {
         if(writer==null) return new SyncConfig.ClockCorrespondence();
         return writer.GetSyncInfo();
     }
