@@ -83,7 +83,7 @@ namespace Workers {
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
                 if (codecVideo_ctx != null) {
-                    codecVideo_ctx->bit_rate        = 800000; // 400000
+                    codecVideo_ctx->bit_rate        = 200000; // 400000
                     codecVideo_ctx->width           = width;
                     codecVideo_ctx->height          = height;
                     codecVideo_ctx->time_base = new AVRational() { num = 1, den = fps };
