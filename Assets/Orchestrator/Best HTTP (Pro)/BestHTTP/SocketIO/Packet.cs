@@ -338,6 +338,8 @@ namespace BestHTTP.SocketIO
         {
             StringBuilder builder = new StringBuilder();
 
+            UnityEngine.Debug.Log($"[FPA] Temporal Debug -> Package Textual ID: {Id} Namespace {Namespace} EventName {EventName} HasAllAttachment {HasAllAttachment}");
+
             // Set to Message if not set, and we are sending attachments
             if (this.TransportEvent == TransportEventTypes.Unknown && this.AttachmentCount > 0)
                 this.TransportEvent = TransportEventTypes.Message;
@@ -399,6 +401,7 @@ namespace BestHTTP.SocketIO
         /// </summary>
         internal byte[] EncodeBinary()
         {
+            UnityEngine.Debug.Log($"[FPA] Temporal Debug -> Package Binary ID: {Id} Namespace {Namespace} EventName {EventName} HasAllAttachment {HasAllAttachment}");
             if (AttachmentCount != 0 || (Attachments != null && Attachments.Count != 0))
             {
                 if (Attachments == null)
