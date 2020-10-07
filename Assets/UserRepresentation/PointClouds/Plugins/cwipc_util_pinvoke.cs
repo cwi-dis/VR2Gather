@@ -114,6 +114,13 @@ public class cwipc
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
     }
+    private class _API_cwipc_kinect
+    {
+        const string myDllName = "cwipc_kinect";
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_kinect([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
+    }
     private class _API_cwipc_codec
     {
         const string myDllName = "cwipc_codec";
@@ -393,12 +400,29 @@ public class cwipc
         return new source(rdr);
     }
 
-    public static source realsense2(string filename) {
+    public static source realsense2(string filename)
+    {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_realsense2.cwipc_realsense2(filename, ref errorPtr);
-        if (rdr == System.IntPtr.Zero) {
-            if (errorPtr == System.IntPtr.Zero) {
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
                 throw new System.Exception("cwipc.realsense2: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        return new source(rdr);
+    }
+    public static source kinect(string filename)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rdr = _API_cwipc_kinect.cwipc_kinect(filename, ref errorPtr);
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.kinect: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
