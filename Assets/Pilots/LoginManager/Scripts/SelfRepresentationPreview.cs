@@ -55,16 +55,11 @@ public class SelfRepresentationPreview : MonoBehaviour
                 Debug.Log("TVM PREVIEW");
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
-                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CWI_ } }, Config.Instance.LocalUser, true);
-                break;
+            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_SYNTH__ } }, Config.Instance.LocalUser, true);
-                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CERTH__ } }, Config.Instance.LocalUser, true);
+                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);
