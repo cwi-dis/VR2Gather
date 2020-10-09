@@ -94,7 +94,14 @@ public class LoginController : PilotController {
 				case "Pilot 3":
 					if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot3"));
 					break;
+                case "Museum":
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Museum"));
+                    break;
+                case "HoloConference":
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloConference"));
+                    break;
                 default:
+                    Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
                     break;
             }
         }
