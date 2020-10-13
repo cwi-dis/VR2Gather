@@ -383,6 +383,10 @@ public class cwipc
                 }
                 throw new System.Exception($"cwipc_encoder_addencoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
+            if (errorPtr != System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogError($"cwipc_encoder_addencoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+            }
             return new encoder(enc);
 
         }
@@ -396,6 +400,10 @@ public class cwipc
                 throw new System.Exception("cwipc.synthetic: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new source(rdr);
     }
@@ -412,6 +420,10 @@ public class cwipc
             }
             throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
         return new source(rdr);
     }
     public static source kinect(string filename)
@@ -424,7 +436,11 @@ public class cwipc
             {
                 throw new System.Exception("cwipc.kinect: returned null without setting error message");
             }
-            throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            throw new System.Exception($"cwipc.kinect: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.kinect: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new source(rdr);
     }
@@ -437,6 +453,10 @@ public class cwipc
                 throw new System.Exception("cwipc.new_decoder: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new decoder(dec);
 
@@ -454,6 +474,10 @@ public class cwipc
             }
             throw new System.Exception($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
         return new encoder(enc);
 
     }
@@ -469,6 +493,10 @@ public class cwipc
                 throw new System.Exception("cwipc.new_encodergroup: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_encodergroup: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_encodergroup: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new encodergroup(enc);
 
@@ -500,6 +528,10 @@ public class cwipc
                 throw new System.Exception("cwipc.from_certh: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new pointcloud(rvPtr);
     }

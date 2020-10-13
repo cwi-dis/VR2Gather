@@ -206,7 +206,7 @@ public class sub
         _API.MessageLogCallback errorCallback = (msg) =>
         {
             string _pipeline = String.Copy(pipeline);
-            UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous error: {msg}");
+            UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
         };
         obj = _API.sub_create(pipeline, errorCallback);
         if (obj == System.IntPtr.Zero)
