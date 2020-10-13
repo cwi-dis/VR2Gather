@@ -44,7 +44,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
-        OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
         OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
@@ -56,7 +55,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     // Un-Subscribe to Orchestrator Wrapper Events
     private void TerminateControllerEvents() {
-        OrchestratorController.Instance.OnGetSessionsEvent -= OnGetSessionsHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
         OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
@@ -72,22 +70,13 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     #region Sessions
 
-    private void OnGetSessionsHandler(Session[] sessions) {
-        if (sessions != null) {
-            // Go To Login Scene
-            Debug.Log("[OrchestratorPilot0][OnGetSessionsHandler] Session Leaved");
-            SceneManager.LoadScene("LoginManager");
-        }
-    }
-
     private void LeaveSession() {
         OrchestratorController.Instance.LeaveSession();
+        SceneManager.LoadScene("LoginManager");
     }
 
     private void OnLeaveSessionHandler() {
         Debug.Log("[OrchestratorPilot0][OnLeaveSessionHandler] Session Leaved");
-        if (!OrchestratorController.Instance.UserIsMaster)
-            SceneManager.LoadScene("LoginManager");
     }
 
     private void OnDeleteSessionHandler() {
