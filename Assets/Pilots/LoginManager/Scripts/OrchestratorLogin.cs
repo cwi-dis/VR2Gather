@@ -524,7 +524,7 @@ public class OrchestratorLogin : MonoBehaviour {
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
         webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
-        microphoneDropdown.onValueChanged.AddListener(delegate {ruu
+        microphoneDropdown.onValueChanged.AddListener(delegate {
             selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
         });
 
