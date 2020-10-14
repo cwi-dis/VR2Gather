@@ -92,14 +92,9 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
             Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] User left: " + userID);
-            for (int i = 0; i < Pilot0Controller.Instance.players.Length; ++i) {
-                if (Pilot0Controller.Instance.players[i].orchestratorId == userID) {
-                    Destroy(Pilot0Controller.Instance.players[i].gameObject);
-                    if (userID == OrchestratorController.Instance.MySession.sessionMaster) {
-                        Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] Master user left! Going back to Login");
-                        SceneManager.LoadScene("LoginManager");
-                    }
-                }
+            if (userID == OrchestratorController.Instance.MySession.sessionMaster) {
+                Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] Master user left! Going back to Login");
+                SceneManager.LoadScene("LoginManager");
             }
         }
     }
