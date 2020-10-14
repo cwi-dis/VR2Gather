@@ -86,6 +86,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
     [SerializeField] private Dropdown webcamDropdown = null;
     [SerializeField] private Dropdown microphoneDropdown = null;
+    [SerializeField] private RectTransform VUMeter = null;
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
@@ -523,6 +524,9 @@ public class OrchestratorLogin : MonoBehaviour {
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
         webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+        microphoneDropdown.onValueChanged.AddListener(delegate {
+            selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
+        });
 
         InitialiseControllerEvents();
 
@@ -555,6 +559,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        VUMeter.sizeDelta = new Vector2(450 * selfRepresentationPreview.MicrophoneLevel, 20);
+
         TabShortcut();
         if (state == State.Create) {
             AudioToggle();
@@ -826,8 +832,8 @@ public class OrchestratorLogin : MonoBehaviour {
         // Preview
         SetUserRepresentationDescription((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
         selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
-            webcamDropdown.options[webcamDropdown.value].text,
-            microphoneDropdown.options[microphoneDropdown.value].text);
+            webcamDropdown.options[webcamDropdown.value].text);
+        selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
     }
 
     private void OnDestroy() {
@@ -908,6 +914,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SaveConfigButton() {
         selfRepresentationPreview.Stop();
+        selfRepresentationPreview.StopMicrophone();
         UpdateUserData();
         state = State.Logged;
         PanelChanger();
@@ -915,6 +922,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void ExitConfigButton() {
         selfRepresentationPreview.Stop();
+        selfRepresentationPreview.StopMicrophone();
         GetUserInfo();
         state = State.Logged;
         PanelChanger();
