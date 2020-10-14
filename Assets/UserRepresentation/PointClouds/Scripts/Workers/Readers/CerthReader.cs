@@ -50,7 +50,21 @@ namespace Workers {
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
             lock (constructorLock) {
-                native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
+                try
+                {
+                    native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
+
+                }
+                catch (System.DllNotFoundException exc)
+                {
+                    throw new System.Exception($"PCCerthReader: support for volumetric pointcloud grabber not installed on this computer. Missing DLL {exc.Message}.");
+                }
+                catch (System.Exception exc)
+                {
+                    Debug.Log($"PCCerthReader: set_number_wrappers: caught exception: {exc.Message}");
+                    throw exc;
+                }
+
             }
 
             PCLRabbitMQReceiver = new MyRabbitMQReceiver(_ConnectionURI, _PCLExchangeName);
@@ -107,9 +121,14 @@ namespace Workers {
                         }
                     }
                 }
-            } catch (System.Exception exc)
+            }
+            catch (System.DllNotFoundException exc)
             {
-                Debug.LogError($"PCCerthReader: OnNewMetaData: caught exception: {exc.Message}");
+                throw new System.Exception($"PCCerthReader: support for volumetric pointcloud grabber not installed on this computer. Missing DLL {exc.Message}.");
+            }
+            catch (System.Exception exc)
+            {
+                Debug.Log($"PCCerthReader: OnNewMetaData: caught exception: {exc.Message}");
                 throw exc;
             }
         }
@@ -224,9 +243,13 @@ namespace Workers {
 
                 }
             }
+            catch (System.DllNotFoundException exc)
+            {
+                throw new System.Exception($"PCCerthReader: support for volumetric pointcloud grabber not installed on this computer. Missing DLL {exc.Message}.");
+            }
             catch (System.Exception exc)
             {
-                Debug.LogError($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
+                Debug.Log($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
                 throw exc;
             }
 
