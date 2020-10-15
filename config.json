@@ -3,7 +3,7 @@
     "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
-    "nonHMDHeight": 1.7,
+    "nonHMDHeight": 1.3,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
