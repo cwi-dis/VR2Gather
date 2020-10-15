@@ -226,6 +226,10 @@ public class EntityPipeline : MonoBehaviour {
         switch (user.userData.userRepresentationType) {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                //Position in the center
+                transform.localPosition = new Vector3(0, 0, 0.8f);
+                transform.localRotation = Quaternion.Euler(0, 0, 0);
+                break;
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                 transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
                 transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
