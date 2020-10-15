@@ -2,17 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWrapping;
+using System;
 
-public class SelfRepresentationPreview : MonoBehaviour
-{
+public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }
+    public float MicrophoneLevel { get; private set; }
 
     public PlayerManager player;
+    string currentMicrophoneName = "None";
+    AudioClip recorder;
+    float[] buffer = new float[320 * 3];
+    int readPosition = 0;
+    int samples = 16000;
 
     // Start is called before the first frame update
     void Start() {
         if (Instance == null) {
             Instance = this;
+        }
+    }
+
+    void Update() {
+        if (currentMicrophoneName != "None") {
+            int writePosition = Microphone.GetPosition(currentMicrophoneName);
+            int available;
+            if (writePosition < readPosition) available = (samples - readPosition) + writePosition;
+            else available = writePosition - readPosition;
+
+            if (available >= buffer.Length) {
+                float total = 0;
+                if (recorder.GetData(buffer, readPosition)) {
+                    readPosition = (readPosition + buffer.Length) % samples;
+                    for (int i = 0; i < buffer.Length; ++i)
+                        total += Mathf.Abs(buffer[i]*4);
+                }
+                MicrophoneLevel = total / (float)buffer.Length;
+            }
         }
     }
 
@@ -29,12 +54,30 @@ public class SelfRepresentationPreview : MonoBehaviour
         player.tvm.gameObject.SetActive(false);
     }
 
-    public void ChangeRepresentation(UserData.eUserRepresentationType representation, string webcamName, string microphoneName) {
-        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
+    public void ChangeMicrophone(string microphoneName) {
+        StopMicrophone();
+        currentMicrophoneName = microphoneName;
+        if (currentMicrophoneName != "None") {
+            Workers.VoiceReader.PrepareDSP();
+            recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
+            readPosition = 0;
+        }
+    }
 
+    public void StopMicrophone() {
+        if (currentMicrophoneName != "None") {
+            Microphone.End(currentMicrophoneName);
+            currentMicrophoneName = "None";
+        }
+    }
+
+
+    public void ChangeRepresentation(UserData.eUserRepresentationType representation, string webcamName) {
+        if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
         Stop();
+
         switch (representation) {
             case UserData.eUserRepresentationType.__NONE__:
                 player.gameObject.SetActive(false);
@@ -55,16 +98,11 @@ public class SelfRepresentationPreview : MonoBehaviour
                 Debug.Log("TVM PREVIEW");
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
-                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CWI_ } }, Config.Instance.LocalUser, true);
-                break;
+            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_SYNTH__ } }, Config.Instance.LocalUser, true);
-                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_CERTH__ } }, Config.Instance.LocalUser, true);
+                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);

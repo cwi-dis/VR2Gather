@@ -8,9 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
-  - enabled: 0
+  - enabled: 1
     path: Assets/Pilots/HoloMeet/Scenes/HoloMeet.unity
     guid: 5c134d40d6bda4d419638dc9cbe450a9
+  - enabled: 1
+    path: Assets/Pilots/Museum/Scenes/Museum.unity
+    guid: 7ebd5a05dde9ab54991d713a402a02d6
   - enabled: 1
     path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
     guid: 01e8d4050e184da48aba95c97a697601
@@ -32,4 +35,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
-  m_configObjects: {}
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 091dc9377a15e884f9f534c76318b77c,
+      type: 2}

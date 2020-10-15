@@ -114,6 +114,7 @@ abstract public class PilotController : MonoBehaviour {
                             break;
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
                             bool isSelf = my_id == players[playerIdx].id;
@@ -223,6 +224,7 @@ abstract public class PilotController : MonoBehaviour {
                                 break;
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;

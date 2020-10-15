@@ -86,6 +86,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
     [SerializeField] private Dropdown webcamDropdown = null;
     [SerializeField] private Dropdown microphoneDropdown = null;
+    [SerializeField] private RectTransform VUMeter = null;
     [SerializeField] private Button calibButton = null;
     [SerializeField] private Button saveConfigButton = null;
     [SerializeField] private Button exitConfigButton = null;
@@ -252,6 +253,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 textItem.text += " - (TVM)";
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
+            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (SinglePC)";
                 break;
@@ -347,7 +349,10 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "Volumetric 3D Mesh";
                     break;
                 case "__PCC_CWI_":
-                    enumName = "Simple PointCloud";
+                    enumName = "Simple PointCloud (RealSense)";
+                    break;
+                case "__PCC_CWIK4A_":
+                    enumName = "Simple PointCloud (Kinect)";
                     break;
                 case "__PCC_SYNTH__":
                     enumName = "Synthetic PointCloud";
@@ -412,6 +417,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
+            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
@@ -444,7 +450,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a Time Varying Meshes (TVM).";
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
-                selfRepresentationDescription.text = "Realistic user representation, using a single RGB-D capturing camera, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
@@ -515,6 +524,9 @@ public class OrchestratorLogin : MonoBehaviour {
         // Dropdown listeners
         representationTypeConfigDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
         webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
+        microphoneDropdown.onValueChanged.AddListener(delegate {
+            selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
+        });
 
         InitialiseControllerEvents();
 
@@ -547,6 +559,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        VUMeter.sizeDelta = new Vector2(450 * selfRepresentationPreview.MicrophoneLevel, 20);
+
         TabShortcut();
         if (state == State.Create) {
             AudioToggle();
@@ -800,7 +814,12 @@ public class OrchestratorLogin : MonoBehaviour {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_) {
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWIK4A_)
+        {
             calibButton.gameObject.SetActive(true);
         }
         else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
@@ -813,8 +832,8 @@ public class OrchestratorLogin : MonoBehaviour {
         // Preview
         SetUserRepresentationDescription((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
         selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
-            webcamDropdown.options[webcamDropdown.value].text,
-            microphoneDropdown.options[microphoneDropdown.value].text);
+            webcamDropdown.options[webcamDropdown.value].text);
+        selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
     }
 
     private void OnDestroy() {
@@ -895,6 +914,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SaveConfigButton() {
         selfRepresentationPreview.Stop();
+        selfRepresentationPreview.StopMicrophone();
         UpdateUserData();
         state = State.Logged;
         PanelChanger();
@@ -902,6 +922,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void ExitConfigButton() {
         selfRepresentationPreview.Stop();
+        selfRepresentationPreview.StopMicrophone();
         GetUserInfo();
         state = State.Logged;
         PanelChanger();

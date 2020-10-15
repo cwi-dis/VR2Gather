@@ -27,7 +27,8 @@ namespace Workers
 
         public override void OnStop() {
             base.OnStop();
-            outQueue.Close();
+            outQueue?.Close();
+            outQueue = null;
             Debug.Log($"{Name()}: Stopped.");
         }
 

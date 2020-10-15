@@ -62,7 +62,15 @@ public class EntityPipeline : MonoBehaviour {
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
-                } else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
+                }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_)
+                {
+                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    pcReader = new Workers.K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
+                }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
@@ -75,14 +83,14 @@ public class EntityPipeline : MonoBehaviour {
                     var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
                     if (CerthReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CerthReaderConfig config");
                     pcReader = new Workers.CerthReader(
-                        CerthReaderConfig.ConnectionURI, 
-                        CerthReaderConfig.PCLExchangeName, 
-                        CerthReaderConfig.MetaExchangeName, 
-                        CerthReaderConfig.OriginCorrection, 
-                        CerthReaderConfig.BoundingBotLeft, 
+                        CerthReaderConfig.ConnectionURI,
+                        CerthReaderConfig.PCLExchangeName,
+                        CerthReaderConfig.MetaExchangeName,
+                        CerthReaderConfig.OriginCorrection,
+                        CerthReaderConfig.BoundingBotLeft,
                         CerthReaderConfig.BoundingTopRight,
-                        PCSelfConfig.voxelSize, 
-                        selfPreparerQueue, 
+                        PCSelfConfig.voxelSize,
+                        selfPreparerQueue,
                         encoderQueue);
                     reader = pcReader;
                 }
@@ -217,12 +225,20 @@ public class EntityPipeline : MonoBehaviour {
         //Position depending on config calibration done by PCCalibration Scene
         switch (user.userData.userRepresentationType) {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
-                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                //Position in the center
+                if(cfg.sourceType == "self") {
+                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0.15f), PlayerPrefs.GetFloat("pcs_pos_z", 0.8f));
+                    transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+                }
+                else {
+                    transform.localPosition = new Vector3(0, 0.15f, 0.8f);
+                    transform.localRotation = Quaternion.Euler(0, 0, 0);
+                }
                 break;
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
-                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 break;
             default:
                 //Position in the center

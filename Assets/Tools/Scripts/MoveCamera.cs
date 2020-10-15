@@ -11,8 +11,12 @@ public class MoveCamera : MonoBehaviour {
     public Transform avatarHead;
 
     void Awake() {
-        if (XRDevice.isPresent)
+        if (XRDevice.isPresent) {
             enabled = false;
+        }
+        else {
+            transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+        }
     }
 
     void Start() {

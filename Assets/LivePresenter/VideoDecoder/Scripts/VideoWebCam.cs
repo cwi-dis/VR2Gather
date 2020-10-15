@@ -44,8 +44,7 @@ public class VideoWebCam : MonoBehaviour {
 
     // Start is called before the first frame update
     public void Init(string deviceName) {
-        string uuid = System.Guid.NewGuid().ToString();
-        string remoteURL = "https://vrt-evanescent.viaccess-orca.com/" + uuid + "/wcss/";
+        string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
         string remoteStream = "webcam";
         try {
             recorder = new Workers.WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
