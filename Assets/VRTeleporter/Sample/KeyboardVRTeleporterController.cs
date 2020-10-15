@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 
 
@@ -18,6 +19,11 @@ public class KeyboardVRTeleporterController : MonoBehaviour
     float leftTrigger = 0.0f;
     float rightHorizontal = 0.0f;
     float rightVertical = 0.0f;
+
+    private void Awake()
+    {
+        if (SceneManager.GetActiveScene().name != "Museum") gameObject.SetActive(false);
+    }
 
     void Update() {
 
