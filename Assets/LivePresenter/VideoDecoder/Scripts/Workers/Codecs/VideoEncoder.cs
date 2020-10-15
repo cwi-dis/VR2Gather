@@ -46,7 +46,7 @@ namespace Workers {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
                 if (!RGB2YUV420PFilter.Process(new byte*[] { (byte*)mc.pointer}, ref videoFrame->data, ref videoFrame->linesize))
-                    Debug.LogError("Error RGB2YUV420PFilter.Process");
+                    Debug.LogError("Error while encoding video (RGB2YUV420PFilter.Process)");
                 videoFrame->pts = frame++;
                 int ret = ffmpeg.avcodec_send_frame(codecVideo_ctx, videoFrame);
                 mc.free();
@@ -120,7 +120,8 @@ namespace Workers {
             ffmpeg.av_strerror(err, errbuf, 128);
             string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
             string name = Name();
-            Debug.LogError($"{name}: {message} {err} {err_txt}");
+            Debug.Log($"{name}: {message} {err} {err_txt}");
+            Debug.LogError("Error while encoding video");
 
         }
     }

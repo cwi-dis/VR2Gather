@@ -17,7 +17,7 @@ public class VoiceSender : MonoBehaviour {
         if (user != null && user.userData != null)
             micro = user.userData.microphoneName;
         if (micro == "None") {
-            Debug.LogError("VoiceSender: no microphone, not opening audio output stream");
+            Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
             return;
         }
 

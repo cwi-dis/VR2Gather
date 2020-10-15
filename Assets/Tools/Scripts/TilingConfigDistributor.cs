@@ -25,7 +25,7 @@ public class TilingConfigDistributor : MonoBehaviour
     {
         if (pipelines.ContainsKey(userId))
         {
-            Debug.LogError($"TilingConfigDistributor: registering duplicate userId {userId}");
+            Debug.LogError($"Programmer error: TilingConfigDistributor: registering duplicate userId {userId}");
         }
         pipelines[userId] = pipeline;
     }

@@ -60,7 +60,8 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"{Name()}: Update(): Exception: {e}\n{e.StackTrace}");
+                Debug.Log($"{Name()}: Update(): Exception: {e}\n{e.StackTrace}");
+                Debug.LogError("Error encountered for representation of some participant. This participant will probably seem frozen from now on.");
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopping");
             try
@@ -69,7 +70,8 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
+                Debug.Log($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
+                Debug.LogError("Error encountered while cleaning up");
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }

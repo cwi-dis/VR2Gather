@@ -115,7 +115,7 @@ namespace Workers {
             bool didDrop = false;
             if (outQueue == null)
             {
-                Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
+                Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
                 didDrop = true;
             }
             else

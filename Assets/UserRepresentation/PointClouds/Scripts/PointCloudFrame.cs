@@ -49,7 +49,7 @@ public class PointCloudFrame
 //                Debug.Log("Alloc PointCloud ByteArray!!!");
             }
             else
-                Debug.LogError("cwipc.cwipc_get_uncompressed_size == 0");
+                Debug.LogError("Programmer error: cwipc.cwipc_get_uncompressed_size == 0");
 
         }
     }

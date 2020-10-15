@@ -246,14 +246,16 @@ public class sub
         IntPtr hMod = API_kernel.GetModuleHandle(module_base);
         if (hMod == IntPtr.Zero)
         {
-            UnityEngine.Debug.LogError($"sub.SetMSPaths: Cannot get handle on {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
+            UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get handle on {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
+            UnityEngine.Debug.LogError("Internal error while creating receiver for other participant. Try re-installing the application");
             return;
         }
         StringBuilder modPath = new StringBuilder(255);
         int rv = API_kernel.GetModuleFileName(hMod, modPath, 255);
         if (rv < 0)
         {
-            UnityEngine.Debug.LogError($"sub.SetMSPaths: Cannot get filename for {module_base}, handle={hMod}, GetModuleFileName returned " + rv);
+            UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get filename for {module_base}, handle={hMod}, GetModuleFileName returned " + rv);
+            UnityEngine.Debug.LogError("Internal error while creating receiver for other participant. Try re-installing the application");
             //return false;
         }
         string dirName = Path.GetDirectoryName(modPath.ToString());

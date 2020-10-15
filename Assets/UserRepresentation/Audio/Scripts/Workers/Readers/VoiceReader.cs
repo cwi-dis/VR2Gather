@@ -77,7 +77,7 @@ namespace Workers
                 ac = AudioSettings.GetConfiguration();
                 if (ac.sampleRate != wantedOutputSampleRate)
                 {
-                    Debug.LogError($"PrepareDSP: audio output sample rate is {ac.sampleRate} in stead of {wantedOutputSampleRate}. Other participants may sound funny.");
+                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {wantedOutputSampleRate}. Other participants may sound funny.");
                 }
                 if (ac.dspBufferSize != wantedOutputBufferSize)
                 {
@@ -122,7 +122,8 @@ namespace Workers
                             float currentRead = Time.realtimeSinceStartup;
                             lastRead = currentRead;
                             if (!recorder.GetData(readBuffer, readPosition)) {
-                                Debug.LogError($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(deviceName)}");
+                                Debug.Log($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(deviceName)}");
+                                Debug.LogError("Error while getting audio from microphone");
                             }
                             // Write all data from microphone.
                             lock (circularBuffer) {
