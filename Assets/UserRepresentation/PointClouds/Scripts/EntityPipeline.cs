@@ -228,11 +228,11 @@ public class EntityPipeline : MonoBehaviour {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
                 //Position in the center
                 if(cfg.sourceType == "self") {
-                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0.3f), PlayerPrefs.GetFloat("pcs_pos_z", 0.8f));
                     transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 }
                 else {
-                    transform.localPosition = new Vector3(0, 0, 0.8f);
+                    transform.localPosition = new Vector3(0, 0.2f, 0.8f);
                     transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
                 break;
