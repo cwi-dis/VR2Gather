@@ -559,7 +559,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        VUMeter.sizeDelta = new Vector2(355 * selfRepresentationPreview.MicrophoneLevel, 20);
+        if(VUMeter && selfRepresentationPreview)
+            VUMeter.sizeDelta = new Vector2(355 * Mathf.Min( 1, selfRepresentationPreview.MicrophoneLevel), 20);
 
         TabShortcut();
         if (state == State.Create) {
