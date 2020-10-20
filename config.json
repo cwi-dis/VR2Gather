@@ -7,7 +7,7 @@
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
-		"printMetrics": true,
+		"printMetrics": false,
 		"saveMetrics": false,
         "offsetPosition": {
             "x": -1.9099986553192139,
