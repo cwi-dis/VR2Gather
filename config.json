@@ -1,5 +1,5 @@
 {
-	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorURL": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
     "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
