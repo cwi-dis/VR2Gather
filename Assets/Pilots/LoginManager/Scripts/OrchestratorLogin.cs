@@ -479,6 +479,8 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
+        Workers.VoiceReader.PrepareDSP();
+
         system = EventSystem.current;
 
         // Update Application version
@@ -530,8 +532,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        socketAudioToggle.isOn = false;
-        dashAudioToggle.isOn = true;
+        socketAudioToggle.isOn = true;
+        dashAudioToggle.isOn = false;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -841,9 +843,9 @@ public class OrchestratorLogin : MonoBehaviour {
         TerminateControllerEvents();
     }
 
-    #endregion
+#endregion
 
-    #region Input
+#region Input
 
     void SelectFirstIF() {
         try {
@@ -883,9 +885,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Buttons
+#region Buttons
 
     private void SigninButton() {
         loginPanel.SetActive(false);
@@ -1028,9 +1030,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Toggles 
+#region Toggles 
 
     private void AudioToggle() {
         socketAudioToggle.interactable = !socketAudioToggle.isOn;
@@ -1087,9 +1089,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }      
 
-    #endregion
+#endregion
 
-    #region Events listeners
+#region Events listeners
 
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
@@ -1159,11 +1161,11 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
     }
 
-    #endregion
+#endregion
 
-    #region Commands
+#region Commands
 
-    #region Socket.io connect
+#region Socket.io connect
 
     public void SocketConnect() {
         switch (OrchestratorController.Instance.ConnectionStatus) {
@@ -1210,9 +1212,9 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.GetNTPTime();
     }
 
-    #endregion
+#endregion
 
-    #region Orchestrator Logs
+#region Orchestrator Logs
 
     // Display the sent message in the logs
     public void OnOrchestratorRequest(string pRequest) {
@@ -1226,9 +1228,9 @@ public class OrchestratorLogin : MonoBehaviour {
         StartCoroutine(ScrollLogsToBottom());
     }
 
-    #endregion
+#endregion
 
-    #region Login/Logout
+#region Login/Logout
 
     private void SignIn() {
         Debug.Log("[OrchestratorLogin][SignIn] Send SignIn registration for user " + userNameRegisterIF.text);
@@ -1303,9 +1305,9 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
     }
 
-    #endregion
+#endregion
 
-    #region NTP clock
+#region NTP clock
 
     private void GetNTPTime() {
         OrchestratorController.Instance.GetNTPTime();
@@ -1321,9 +1323,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
-    #endregion
+#endregion
 
-    #region Sessions
+#region Sessions
 
     private void GetSessions() {
         OrchestratorController.Instance.GetSessions();
@@ -1338,8 +1340,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void AddSession() {
         OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioId,
-                                                    sessionNameIF.GetComponentInChildren<InputField>().text,
-                                                    sessionDescriptionIF.GetComponentInChildren<InputField>().text);
+                                                    sessionNameIF.text,
+                                                    sessionDescriptionIF.text);
     }
 
     private void OnAddSessionHandler(Session session) {
@@ -1450,9 +1452,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Scenarios
+#region Scenarios
 
     private void GetScenarios() {
         OrchestratorController.Instance.GetScenarios();
@@ -1465,18 +1467,18 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Live
+#region Live
 
     private void OnGetLivePresenterDataHandler(LivePresenterData liveData) {
         //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
         joining = false;
     }
 
-    #endregion
+#endregion
 
-    #region Users
+#region Users
 
     private void GetUsers() {
         OrchestratorController.Instance.GetUsers();
@@ -1543,6 +1545,13 @@ public class OrchestratorLogin : MonoBehaviour {
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
 
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
+                // Session name
+
+#if UNITY_STANDALONE_WIN
+                string time = DateTime.Now.ToString("hhmmss");
+                sessionNameIF.text = $"{user.userName}_{time}";
+#endif
+
             }
 
             if (!OrchestratorController.Instance.IsAutoRetrievingData)
@@ -1566,9 +1575,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][DeleteUser] Not implemented");
     }
 
-    #endregion
+#endregion
 
-    #region Rooms
+#region Rooms
 
     private void GetRooms() {
         OrchestratorController.Instance.GetRooms();
@@ -1596,9 +1605,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnLeaveRoomHandler] Not implemented");
     }
 
-    #endregion
+#endregion
 
-    #region Messages
+#region Messages
 
     private void SendMessage() {
         Debug.Log("[OrchestratorLogin][SendMessage] Not implemented");
@@ -1615,9 +1624,9 @@ public class OrchestratorLogin : MonoBehaviour {
         LoginController.Instance.MessageActivation(userMessage.message);
     }
 
-    #endregion
+#endregion
 
-    #region Events
+#region Events
 
     private void SendEventToMaster() {
         Debug.Log("[OrchestratorLogin][SendEventToMaster] Not implemented");
@@ -1639,9 +1648,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
     }
 
-    #endregion
+#endregion
 
-    #region Data Stream
+#region Data Stream
 
     private void GetAvailableDataStreams() {
         Debug.Log("[OrchestratorLogin][GetAvailableDataStreams] Not implemented");
@@ -1651,18 +1660,18 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.GetRegisteredDataStreams();
     }
 
-    #endregion
+#endregion
 
-    #region Errors
+#region Errors
 
     private void OnErrorHandler(ResponseStatus status) {
         Debug.Log("[OrchestratorLogin][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
         ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
 #if UNITY_STANDALONE_WIN
     void OnGUI() {

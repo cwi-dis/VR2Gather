@@ -41,7 +41,7 @@ public class LoginController : PilotController {
     }
 
     public override void MessageActivation(string message) {
-        Debug.Log(message);
+        Debug.Log($"[FPA] MessageActivation {message}");
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
             // Check Audio
