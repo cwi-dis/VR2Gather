@@ -275,6 +275,7 @@ namespace Workers {
 
         public override void Stop()
         {
+            if (debugThreading) Debug.Log($"{Name()}: Stop");
             base.Stop();
             _closeQueues();
         }
