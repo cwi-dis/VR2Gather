@@ -36,7 +36,12 @@ namespace Workers {
             byte[] buffer = new byte[mcIn.length];
             if (temporalBuffer == null) temporalBuffer = new float[mcIn.length * 10]; // mcIn.length*10
             System.Runtime.InteropServices.Marshal.Copy(mcIn.pointer, buffer, 0, mcIn.length);
-            int len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
+            int len = 0;
+            try {
+                len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
+            }catch(System.Exception e) {
+                Debug.Log($"[FPA] Error on decompressing {mcIn.length}");
+            }
 #else
             int len = mcIn.length / 4;
             if (temporalBuffer == null) temporalBuffer = new float[len];

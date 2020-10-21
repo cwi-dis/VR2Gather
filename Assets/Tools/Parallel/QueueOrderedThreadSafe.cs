@@ -6,7 +6,7 @@ using Workers;
 public class QueueOrderedThreadSafe : QueueThreadSafe {
     public int order=0;
     int turn = 0;
-    public QueueOrderedThreadSafe(int _size = 2, bool _dropWhenFull = false) : base(_size, _dropWhenFull) {
+    public QueueOrderedThreadSafe(string name, int _size = 2, bool _dropWhenFull = false) : base(name, _size, _dropWhenFull) {
     }
 
     public override BaseMemoryChunk Dequeue() {

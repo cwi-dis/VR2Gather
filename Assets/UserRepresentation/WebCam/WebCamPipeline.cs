@@ -26,9 +26,9 @@ public class WebCamPipeline : MonoBehaviour {
     VoiceReceiver audioReceiver;
 
     QueueThreadSafe encoderQueue;
-    QueueThreadSafe writerQueue         = new QueueThreadSafe();
-    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe();
-    QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe();
+    QueueThreadSafe writerQueue         = new QueueThreadSafe("WebCamPipelineWriter");
+    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec");
+    QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
@@ -46,7 +46,7 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe(2, true);
+                encoderQueue = new QueueThreadSafe("WebCamPipelineEncoder", 2, true);
                 //
                 // Create reader
                 //

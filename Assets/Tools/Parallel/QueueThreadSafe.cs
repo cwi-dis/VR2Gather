@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 public class QueueThreadSafe {
+
+    string name;
     int size;
     bool dropWhenFull;
     CancellationTokenSource isClosed;
@@ -13,8 +16,9 @@ public class QueueThreadSafe {
     // Enqueue semantics depend on _dropWhenFull: for _dropWhenFull=true the item
     // will be discarded, for _dropWhenFull the call will wait until space is available.
     // Dequeue always waits for an item to become available.
-    public QueueThreadSafe(int _size = 2, bool _dropWhenFull=false)
+    public QueueThreadSafe( string name, int _size = 2, bool _dropWhenFull=false)
     {
+        this.name = name;
         size = _size;
         dropWhenFull = _dropWhenFull;
         queue = new Queue<BaseMemoryChunk>(size);
@@ -26,7 +30,8 @@ public class QueueThreadSafe {
     // Close the queue for further pushes, signals to consumers that we are about to stop
     public void Close()
     {
-        if (isClosed.Token.IsCancellationRequested) throw new System.Exception("QueueThreadSafe: operation on closed queue");
+        if (isClosed.Token.IsCancellationRequested) throw new System.Exception($"QueueThreadSafe: operation on closed queue {name}");
+        UnityEngine.Debug.Log($"[FPA] Closing {name} queue.");
         isClosed.Cancel();
         while(true)
         {
@@ -174,7 +179,7 @@ public class QueueThreadSafe {
         }
         catch (System.OperationCanceledException)
         {
-            UnityEngine.Debug.LogWarning("QueueThreadSafe: Enqueue on closed queue");
+            UnityEngine.Debug.LogWarning($"QueueThreadSafe: Enqueue on closed queue {name}");
             item.free();
         }
         return false;

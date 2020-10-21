@@ -28,10 +28,10 @@ public class NewMemorySystem : MonoBehaviour
     Workers.BaseWorker  dashReader;
 
     Workers.BaseWorker  preparer;
-    QueueThreadSafe     preparerQueue = new QueueThreadSafe();
-    QueueThreadSafe     encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe     writerQueue = new QueueThreadSafe();
-    QueueThreadSafe     decoderQueue = new QueueThreadSafe(2, true);
+    QueueThreadSafe     preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
+    QueueThreadSafe     encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
+    QueueThreadSafe     writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
+    QueueThreadSafe     decoderQueue = new QueueThreadSafe("NewMemorySystemDecoder", 2, true);
     MonoBehaviour       render;
 
     // rtmp://127.0.0.1:1935/live/signals

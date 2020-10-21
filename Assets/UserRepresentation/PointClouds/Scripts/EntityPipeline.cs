@@ -52,7 +52,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe(2, true);
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
                 //
                 // Create reader
                 //
@@ -141,7 +141,7 @@ public class EntityPipeline : MonoBehaviour {
                         tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
-                            QueueThreadSafe thisQueue = new QueueThreadSafe();
+                            QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}" );
                             int octreeBits = Encoders[iq].octreeBits;
                             encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription {
                                 octreeBits = octreeBits,
@@ -271,7 +271,7 @@ public class EntityPipeline : MonoBehaviour {
             //
             // Allocate queues we need for this pipeline
             //
-            QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
+            QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue",2, true);
             //
             // Create renderer
             //
@@ -303,7 +303,7 @@ public class EntityPipeline : MonoBehaviour {
         // We 
         Config._PCs PCs = Config.Instance.PCs;
         if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-        QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
+        QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", 2, false);
         preparerQueues.Add(preparerQueue);
         if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
