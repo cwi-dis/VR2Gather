@@ -19,10 +19,10 @@ public class VideoWebCam : MonoBehaviour {
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
-    QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
-    QueueThreadSafe         writerQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe videoPreparerQueue = new QueueThreadSafe(5);
+    QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
+    QueueThreadSafe         writerQueue = new QueueThreadSafe("VideoWebCamWriter");
+    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe("VideoWebCamCodec");
+    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoWebCamPreparer",5);
 
     Texture2D       texture;
     public int      width = 1280;

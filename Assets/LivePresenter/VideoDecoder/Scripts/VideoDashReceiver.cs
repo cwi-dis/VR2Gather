@@ -10,12 +10,12 @@ public class VideoDashReceiver : MonoBehaviour {
     Workers.VideoPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
-    QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
-    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
-    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
+    QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoDashReceiver");
+    QueueThreadSafe         audioDataQueue = new QueueThreadSafe("AudioDashReceiver");
+    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe("VideoDashDecompressor");
+    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe("AudioDashDecompressor");
+    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoDashPreparer",5);
+    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe("AudioDashPreparer", 10);
 
     Workers.Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";

@@ -8,8 +8,8 @@ public class VoiceSender : MonoBehaviour {
     Workers.BaseWriter writer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
-    QueueThreadSafe encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe senderQueue = new QueueThreadSafe();
+    QueueThreadSafe encoderQueue = new QueueThreadSafe("VoiceSenderEncoder");
+    QueueThreadSafe senderQueue = new QueueThreadSafe("VoiceSenderSender");
 
     // Start is called before the first frame update
     public void Init(OrchestratorWrapping.User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {

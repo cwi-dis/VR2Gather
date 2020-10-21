@@ -9,8 +9,8 @@ public class VoiceReceiver : MonoBehaviour {
     Workers.AudioPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
-    QueueThreadSafe decoderQueue = new QueueThreadSafe();
-    QueueThreadSafe preparerQueue = new QueueThreadSafe();
+    QueueThreadSafe decoderQueue;
+    QueueThreadSafe preparerQueue;
 
     // Start is called before the first frame update
     public void Init(OrchestratorWrapping.User user, string _streamName, int _streamNumber, int _initialDelay, bool UseDash) {
@@ -23,6 +23,8 @@ public class VoiceReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
+        decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder");
+        preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer");
 
         if (UseDash)    reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
         else            reader = new Workers.SocketIOReader(user, _streamName, decoderQueue); 

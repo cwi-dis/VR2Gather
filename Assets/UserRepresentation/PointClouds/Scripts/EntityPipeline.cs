@@ -52,7 +52,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe(2, true);
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
                 //
                 // Create reader
                 //
@@ -141,7 +141,7 @@ public class EntityPipeline : MonoBehaviour {
                         tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
-                            QueueThreadSafe thisQueue = new QueueThreadSafe();
+                            QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}" );
                             int octreeBits = Encoders[iq].octreeBits;
                             encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription {
                                 octreeBits = octreeBits,
@@ -182,20 +182,20 @@ public class EntityPipeline : MonoBehaviour {
                         Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
-                    //
-                    // Create pipeline for audio, if needed.
-                    // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                    //
-                    var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                    if (AudioBin2Dash == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
-                    try {
-                        audioSender = gameObject.AddComponent<VoiceSender>();
-                        audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
-                    }
-                    catch (System.EntryPointNotFoundException e) {
-                        Debug.Log($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                        throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    }
+                    ////
+                    //// Create pipeline for audio, if needed.
+                    //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                    ////
+                    //var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                    //if (AudioBin2Dash == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
+                    //try {
+                    //    audioSender = gameObject.AddComponent<VoiceSender>();
+                    //    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                    //}
+                    //catch (System.EntryPointNotFoundException e) {
+                    //    Debug.Log($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    //    throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    //}
                 }
                 break;
             case "remote":
@@ -205,14 +205,14 @@ public class EntityPipeline : MonoBehaviour {
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
                 Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
-                //
-                // Create pipeline for audio, if needed.
-                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                //
-                var AudioSUBConfig = cfg.AudioSUBConfig;
-                if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
-                audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                ////
+                //// Create pipeline for audio, if needed.
+                //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                ////
+                //var AudioSUBConfig = cfg.AudioSUBConfig;
+                //if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
+                //audioReceiver = gameObject.AddComponent<VoiceReceiver>();
+                //audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
             default:
                 Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
@@ -271,7 +271,7 @@ public class EntityPipeline : MonoBehaviour {
             //
             // Allocate queues we need for this pipeline
             //
-            QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
+            QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue",2, true);
             //
             // Create renderer
             //
@@ -303,7 +303,7 @@ public class EntityPipeline : MonoBehaviour {
         // We 
         Config._PCs PCs = Config.Instance.PCs;
         if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-        QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
+        QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", 2, false);
         preparerQueues.Add(preparerQueue);
         if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
