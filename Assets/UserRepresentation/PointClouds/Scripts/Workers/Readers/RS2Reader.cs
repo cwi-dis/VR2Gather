@@ -69,7 +69,7 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
         }
@@ -139,7 +139,7 @@ namespace Workers {
             bool didDrop = false;
             if (outQueue == null)
             {
-                Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
+                Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
                 didDrop = true;
             }
             else

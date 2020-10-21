@@ -23,7 +23,7 @@ namespace Workers
                 Start();
                 Debug.Log($"[FPA] {Name()}: Started.");
             } catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
         }

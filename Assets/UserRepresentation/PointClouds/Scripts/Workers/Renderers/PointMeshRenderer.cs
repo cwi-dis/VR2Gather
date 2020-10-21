@@ -21,7 +21,7 @@ namespace Workers
         {
             if (preparer != null)
             {
-                Debug.LogError("PointMeshRenderer: attempt to set second preparer");
+                Debug.LogError("Programmer error: PointMeshRenderer: attempt to set second preparer");
             }
             preparer = _preparer;
         }

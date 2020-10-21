@@ -66,7 +66,7 @@ public class VideoWebCam : MonoBehaviour {
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
-            Debug.LogError($"VideoWebCam.Init: Exception: {e.Message}\n{e.StackTrace}");
+            Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");
             throw e;
         }
         ready = true;

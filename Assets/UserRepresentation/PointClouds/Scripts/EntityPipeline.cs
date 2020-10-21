@@ -164,7 +164,7 @@ public class EntityPipeline : MonoBehaviour {
                     try {
                         encoder = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                     } catch (System.EntryPointNotFoundException) {
-                        Debug.LogError($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                        Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                         throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                     }
                     //
@@ -179,7 +179,7 @@ public class EntityPipeline : MonoBehaviour {
                         else
                             writer = new Workers.SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
-                        Debug.LogError($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                        Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
                     //
@@ -193,7 +193,7 @@ public class EntityPipeline : MonoBehaviour {
                         audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
                     }
                     catch (System.EntryPointNotFoundException e) {
-                        Debug.LogError($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                        Debug.Log($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                         throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
                     }
                 }
@@ -215,7 +215,7 @@ public class EntityPipeline : MonoBehaviour {
                 audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
             default:
-                Debug.LogError($"{Name()}: unknown sourceType {cfg.sourceType}");
+                Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
                 break;
         }
         //
@@ -371,7 +371,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetTilingConfig called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetTilingConfig called for pipeline that is not a source");
             return new TilingConfig();
         }
         // xxxjack we need to update the orientation vectors, or we need an extra call to get rotation parameters.
@@ -382,7 +382,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: SetTilingConfig called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
             return;
         }
         if (tilingConfig.tiles != null && tilingConfig.tiles.Length > 0)
@@ -418,7 +418,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetSyncConfig called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetSyncConfig called for pipeline that is not a source");
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
@@ -443,7 +443,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: SetSyncConfig called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
             return;
         }
         Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
@@ -462,7 +462,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: GetPosition called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: GetPosition called for pipeline that is a source");
             return new Vector3();
         }
         return transform.position;
@@ -472,7 +472,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: GetRotation called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: GetRotation called for pipeline that is a source");
             return new Vector3();
         }
         return transform.rotation * Vector3.forward;
@@ -487,14 +487,14 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetViewerInformation called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
             return new ViewerInformation();
         }
         // The camera object is nested in another object on our parent object, so getting at it is difficult:
         Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
         if (_camera == null)
         {
-            Debug.LogError($"{Name()}: no Camera object for self user");
+            Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
             return new ViewerInformation();
         }
         Vector3 position = _camera.transform.position;

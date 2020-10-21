@@ -62,7 +62,8 @@ namespace Workers
                     pc.free();
                     if (ret * 16 != currentSize)
                     {
-                        Debug.LogError($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                        Debug.Log($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                        Debug.LogError("Programmer error while rendering a participant.");
                     }
                     isReady = true;
                 }

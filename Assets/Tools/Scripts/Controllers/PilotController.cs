@@ -23,7 +23,8 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
             }
             catch (System.EntryPointNotFoundException e) {
-                Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                Debug.Log($"PilotController.LoadAudio: EntrypointNotFoundException: {e}");
+                Debug.LogError("Cannot send your audio to other participants");
                 throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
             }
         }

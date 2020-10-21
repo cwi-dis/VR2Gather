@@ -144,7 +144,7 @@ namespace Workers {
 
                         if (bytesRead != bytesNeeded)
                         {
-                            Debug.LogError($"{Name()}: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                            Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
                             mc.free();
                             continue;
                         }
@@ -168,7 +168,8 @@ namespace Workers {
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+                    Debug.LogError("Error while receiving visual representation or audio from another participant");
 #if UNITY_EDITOR
                     if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in SubPullThread", "Stop", "Continue"))
                         UnityEditor.EditorApplication.isPlaying = false;
@@ -333,7 +334,7 @@ namespace Workers {
                 //
                 if (subHandle != null)
                 {
-                    Debug.LogError($"{Name()}: InitDash() called but subHandle != null");
+                    Debug.LogError($"{Name()}: Programmer error: InitDash() called but subHandle != null");
                 }
                 sub.connection newSubHandle = sub.create(Name());
                 if (newSubHandle == null) throw new System.Exception($"{Name()}: sub_create() failed");
