@@ -288,7 +288,7 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
         else {
-            Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
+            Debug.Log("[OrchestratorLogin][UpdateUsersSession] ConnectedUsers was null");
         }
     }
 
