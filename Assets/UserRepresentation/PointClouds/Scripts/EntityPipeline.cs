@@ -70,6 +70,13 @@ public class EntityPipeline : MonoBehaviour {
                     pcReader = new Workers.K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__)
+                {
+                    var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
+                    if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
+                    pcReader = new Workers.ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
+                }
                 else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
@@ -226,8 +233,9 @@ public class EntityPipeline : MonoBehaviour {
         switch (user.userData.userRepresentationType) {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                 //Position in the center
-                if(cfg.sourceType == "self") {
+                if (cfg.sourceType == "self") {
                     transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
                     transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 }

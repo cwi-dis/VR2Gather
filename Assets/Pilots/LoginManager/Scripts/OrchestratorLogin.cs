@@ -254,6 +254,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (SinglePC)";
                 break;
@@ -354,6 +355,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 case "__PCC_CWIK4A_":
                     enumName = "Simple PointCloud (Kinect)";
                     break;
+                case "__PCC_PROXY__":
+                    enumName = "Simple PointCloud (5G phone proxy)";
+                    break;
                 case "__PCC_SYNTH__":
                     enumName = "Synthetic PointCloud";
                     break;
@@ -418,6 +422,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
@@ -454,6 +459,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
+                selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
@@ -822,6 +830,10 @@ public class OrchestratorLogin : MonoBehaviour {
             calibButton.gameObject.SetActive(true);
         }
         else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWIK4A_)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_PROXY__)
         {
             calibButton.gameObject.SetActive(true);
         }

@@ -46,6 +46,10 @@ public class OrchestratorCalibration : MonoBehaviour {
         {
             player.pc.gameObject.SetActive(true);
         }
+        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_PROXY__)
+        {
+            player.pc.gameObject.SetActive(true);
+        }
         else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_SYNTH__)
         {
             player.pc.gameObject.SetActive(true);

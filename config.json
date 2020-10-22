@@ -61,6 +61,10 @@
 			"SynthReaderConfig" : {
 				"nPoints" : 8000
 			},
+			"ProxyReaderConfig" : {
+				"localIP" : "",
+				"port" : 9335
+			},
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
                 "PCLExchangeName": "VolumetricData",

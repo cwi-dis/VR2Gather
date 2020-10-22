@@ -82,6 +82,13 @@ public class Config {
             }
             public _RS2ReaderConfig RS2ReaderConfig;
             [Serializable]
+            public class _ProxyReaderConfig
+            {
+                public string localIP;
+                public int port;
+            }
+            public _ProxyReaderConfig ProxyReaderConfig;
+            [Serializable]
             public class _SynthReaderConfig
             {
                 public int nPoints;
