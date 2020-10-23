@@ -98,6 +98,7 @@ namespace Workers {
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
+            if (!reader.available(false)) return;
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
             if (voxelSize != 0) {
