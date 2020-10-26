@@ -100,6 +100,10 @@ public class LoginController : PilotController {
                 case "HoloConference":
                     if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloMeet"));
                     break;
+                case "MedicalExamination": // PILOT 0
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
+                    break;
                 default:
                     Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
                     break;
