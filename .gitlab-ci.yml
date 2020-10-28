@@ -10,9 +10,8 @@ build_win:
   tags:
   - win10unity
   script:
-    - ./build-VRTogether.sh
-    - export ziplocation=vrtogether_win1064_$CI_COMMIT_TAG.zip
-    - zip -r $ziplocation ./built-VRTogether
+    - bash build-VRTogether.sh
+    - zip -r vrtogether_win1064_$CI_COMMIT_TAG.zip ./built-VRTogether
   artifacts:
     paths:
       - vrtogether_win1064_$CI_COMMIT_TAG.zip
