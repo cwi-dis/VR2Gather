@@ -1479,11 +1479,13 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnUserJoinedSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
+            OrchestratorController.Instance.GetUsers();
         }
     }
 
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
+            OrchestratorController.Instance.GetUsers();
         }
     }
 

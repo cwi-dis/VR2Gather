@@ -46,7 +46,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void InitialiseControllerEvents() {
         OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
         OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
@@ -58,7 +57,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void TerminateControllerEvents() {
         OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
         OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
@@ -87,10 +85,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void OnLeaveSessionHandler() {
         Debug.Log("[OrchestratorPilot0][OnLeaveSessionHandler] Session Leaved");
         SceneManager.LoadScene("LoginManager");
-    }
-
-    private void OnDeleteSessionHandler() {
-        Debug.Log("[OrchestratorPilot0][OnDeleteSessionHandler] Session Deleted");
     }
 
     private void OnUserJoinedSessionHandler(string userID) {
