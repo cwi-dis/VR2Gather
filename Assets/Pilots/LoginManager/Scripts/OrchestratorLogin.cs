@@ -414,29 +414,37 @@ public class OrchestratorLogin : MonoBehaviour {
         switch (_representationType) {
             case UserData.eUserRepresentationType.__NONE__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                userRepresentationLobbyText.text = "NO REPRESENTATION";
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                userRepresentationLobbyText.text = "2D VIDEO";
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                userRepresentationLobbyText.text = "3D AVATAR";
                 break;
             case UserData.eUserRepresentationType.__TVM__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                userRepresentationLobbyText.text = "VOLUMETRIC 3D MESH";
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
             case UserData.eUserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "SIMPLE PC";
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                userRepresentationLobbyText.text = "VOLUMETRIC PC";
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                userRepresentationLobbyText.text = "SPECTATOR";
                 break;
             default:
                 break;
