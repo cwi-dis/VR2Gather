@@ -1,19 +1,20 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using OrchestratorWrapping;
+using System.Linq;
 
-public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListener, IOrchestratorResponsesListener, IMessagesFromOrchestratorListener, IUserSessionEventsListener
+public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
 {
     #region enum
 
     public enum orchestratorConnectionStatus
     {
-        DISCONNECTED,
-        CONNECTING,
-        CONNECTED
+        __DISCONNECTED__,
+        __CONNECTING__,
+        __CONNECTED
     }
 
     #endregion
@@ -97,6 +98,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     // Orchestrator Sessions Events
     public Action<Session[]> OnGetSessionsEvent;
+    public Action<Session> OnGetSessionInfoEvent;
     public Action<Session> OnAddSessionEvent;
     public Action<Session> OnJoinSessionEvent;
     public Action OnSessionJoinedEvent;
@@ -188,7 +190,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     public void OnConnect()
     {
         connectedToOrchestrator = true;
-        connectionStatus = orchestratorConnectionStatus.CONNECTED;
+        connectionStatus = orchestratorConnectionStatus.__CONNECTED;
         OnConnectionEvent?.Invoke(true);
 
         orchestratorWrapper.GetOrchestratorVersion();
@@ -197,7 +199,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     // SockerConnecting response callback
     public void OnConnecting()
     {
-        connectionStatus = orchestratorConnectionStatus.CONNECTING;
+        connectionStatus = orchestratorConnectionStatus.__CONNECTING__;
         OnConnectingEvent?.Invoke();
     }
 
@@ -230,7 +232,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         me = null;
         connectedToOrchestrator = false;
-        connectionStatus = orchestratorConnectionStatus.DISCONNECTED;
+        connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
         userIsLogged = false;
         OnConnectionEvent?.Invoke(false);
     }
@@ -246,7 +248,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     }
 
     // Display the received message in the logs
-    public void OnOrchestratorResponse(int status, string response)
+    public void OnOrchestratorResponse(int commandID, int status, string response)
     {
         OnOrchestratorResponseEvent?.Invoke(response);
     }
@@ -429,12 +431,35 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         // success
         mySession = session;
         userIsMaster = session.sessionMaster == me.userId;
+        connectedUsers = ExtractConnectedUsers(session.sessionUsers);
 
-        AddConnectedUser(me.userId);
         availableSessions.Add(session);
         OnAddSessionEvent?.Invoke(session);
-        OnSessionJoinedEvent?.Invoke();
+
+        // now retrieve the secnario instance infos
         orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
+    }
+
+    public void GetSessionInfo()
+    {
+        orchestratorWrapper.GetSessionInfo();
+    }
+
+    public void OnGetSessionInfoResponse(ResponseStatus status, Session session)
+    {
+        if (status.Error != 0)
+        {
+            mySession = null;
+            OnErrorEvent?.Invoke(status);
+            return;
+        }
+
+        // success
+        mySession = session;
+        userIsMaster = session.sessionMaster == me.userId;
+        connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+
+        OnGetSessionInfoEvent?.Invoke(session);
     }
 
     public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario)
@@ -475,22 +500,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         orchestratorWrapper.JoinSession(pSessionID);
     }
 
-    public void OnJoinSessionResponse(ResponseStatus status)
+    public void OnJoinSessionResponse(ResponseStatus status, Session session)
     {
         if (status.Error != 0)
         {
-            OnErrorEvent?.Invoke(status);
-            return;
-        }
-        // now we will need the session info with the sceanrio instance used for this session
-        orchestratorWrapper.GetSessionInfo();
-    }
-
-    public void OnGetSessionInfoResponse(ResponseStatus status, Session session)
-    {
-        if (status.Error != 0)
-        {
-            mySession = null;
             OnErrorEvent?.Invoke(status);
             return;
         }
@@ -498,21 +511,21 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
         // success
         mySession = session;
         userIsMaster = session.sessionMaster == me.userId;
+        connectedUsers = ExtractConnectedUsers(session.sessionUsers);
 
-        // now retrieve the secnario instance infos
-        orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
-
-        foreach(string id in session.sessionUsers)
+        foreach (string id in session.sessionUsers)
         {
-            if(id != me.userId)
+            if (id != me.userId)
             {
                 OnUserJoinedSession(id);
             }
         }
 
-        AddConnectedUser(me.userId);
         OnJoinSessionEvent?.Invoke(mySession);
         OnSessionJoinedEvent?.Invoke();
+
+        // now retrieve the secnario instance infos
+        orchestratorWrapper.GetScenarioInstanceInfo(session.scenarioId);
     }
 
     public void LeaveSession()
@@ -547,7 +560,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            AddConnectedUser(userID);
+            orchestratorWrapper.GetSessionInfo();
             OnUserJoinSessionEvent?.Invoke(userID);
         }
     }
@@ -556,7 +569,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            DeletedConnectedUser(userID);
+            orchestratorWrapper.GetSessionInfo();
             OnUserLeaveSessionEvent?.Invoke(userID);
         }
     }
@@ -926,44 +939,32 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessageIOListe
 
     #region Logics
 
-    private void AddConnectedUser(string pUserID)
+    private List<User> ExtractConnectedUsers(string[] UserUUIDs)
     {
-        if(connectedUsers == null)
-        {
-            connectedUsers = new List<User>();
-        }
+        List<User> users = new List<User>();
 
-        foreach(User u in availableUserAccounts)
+        for (int i = 0; i < UserUUIDs.Length; i++)
         {
-            if(u.userId == pUserID)
+            foreach (User u in availableUserAccounts)
             {
-                connectedUsers.Add(u);
+                if (UserUUIDs[i] == u.userId)
+                {
+                    users.Add(u);
+                }
             }
         }
+
+        return users;
     }
 
-    private void DeletedConnectedUser(string pUserID)
+    public User GetMasterUser(string masterUuid)
     {
-        if (connectedUsers == null || connectedUsers.Count == 0)
+        for(int i=0; i<availableUserAccounts.Count; i++)
         {
-            return;
+            if (availableUserAccounts[i].userId == masterUuid)
+                return availableUserAccounts[i];
         }
-
-        User lUserToRemove = null;
-
-        foreach (User u in connectedUsers)
-        {
-            if (u.userId == pUserID)
-            {
-                lUserToRemove = u;
-                break;
-            }
-        }
-
-        if(lUserToRemove != null)
-        {
-            connectedUsers.Remove(lUserToRemove);
-        }
+        return null;
     }
 
     #endregion
