@@ -456,7 +456,6 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
         // success
         mySession = session;
-        Debug.Log("Current Session Master " + session.sessionMaster);
         userIsMaster = session.sessionMaster == me.userId;
         connectedUsers = ExtractConnectedUsers(session.sessionUsers);
 
@@ -544,7 +543,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
         Collect_SFU_Logs(mySession.sessionId);
 
-        if (userIsMaster && mySession.sessionUsers.Length <= 0) 
+        if (userIsMaster && mySession.sessionUsers.Length <= 1) 
         {
             orchestratorWrapper.DeleteSession(mySession.sessionId);
         }
