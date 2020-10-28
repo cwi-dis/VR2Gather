@@ -337,6 +337,7 @@ namespace BestHTTP.SocketIO
         internal string Encode()
         {
             StringBuilder builder = new StringBuilder();
+
             // Set to Message if not set, and we are sending attachments
             if (this.TransportEvent == TransportEventTypes.Unknown && this.AttachmentCount > 0)
                 this.TransportEvent = TransportEventTypes.Message;

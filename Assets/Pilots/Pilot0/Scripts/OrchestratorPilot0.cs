@@ -44,8 +44,8 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
+        OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
         OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
@@ -55,8 +55,8 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     // Un-Subscribe to Orchestrator Wrapper Events
     private void TerminateControllerEvents() {
+        OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
         OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
@@ -69,18 +69,22 @@ public class OrchestratorPilot0 : MonoBehaviour {
     #region Commands
 
     #region Sessions
+    
+    private void OnGetSessionInfoHandler(Session session) {
+        if (session != null) {
+            Debug.Log(  "Now the master is " + OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName + 
+                        " and the session has " + session.sessionUsers.Length  +" players.");
+        } else {
+        }
+    }
 
     private void LeaveSession() {
         OrchestratorController.Instance.LeaveSession();
-        SceneManager.LoadScene("LoginManager");
     }
 
     private void OnLeaveSessionHandler() {
         Debug.Log("[OrchestratorPilot0][OnLeaveSessionHandler] Session Leaved");
-    }
-
-    private void OnDeleteSessionHandler() {
-        Debug.Log("[OrchestratorPilot0][OnDeleteSessionHandler] Session Deleted");
+        SceneManager.LoadScene("LoginManager");
     }
 
     private void OnUserJoinedSessionHandler(string userID) {
@@ -92,10 +96,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
             Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] User left: " + userID);
-            if (userID == OrchestratorController.Instance.MySession.sessionMaster) {
-                Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] Master user left! Going back to Login");
-                SceneManager.LoadScene("LoginManager");
-            }
         }
     }
 

@@ -108,11 +108,11 @@ namespace OrchestratorWrapping
         // Listener for the responses of the orchestrator
         private IOrchestratorResponsesListener ResponsesListener;
 
-        // Listener for the responses of the orchestrator
-        private IOrchestratorMessageIOListener MessagesListener;
+        // Listener for the messages of the orchestrator
+        private IOrchestratorMessagesListener MessagesListener;
 
         // Listener for the messages emitted spontaneously by the orchestrator
-        private IMessagesFromOrchestratorListener MessagesFromOrchestratorListener;
+        private IUserMessagesListener UserMessagesListener;
 
         // Listeners for the user events emitted when a session is updated by the orchestrator
         private List<IUserSessionEventsListener> UserSessionEventslisteners = new List<IUserSessionEventsListener>();
@@ -123,7 +123,7 @@ namespace OrchestratorWrapping
         // List of messages that can be received from the orchestrator
         public List<OrchestratorMessageReceiver> orchestratorMessages { get; private set; }
 
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessageIOListener messagesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener, IUserSessionEventsListener userSessionEventslistener)
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
             if(instance is null)
             {
@@ -131,16 +131,17 @@ namespace OrchestratorWrapping
             }
 
             OrchestrationSocketIoManager = new OrchestratorWSManager(orchestratorSocketUrl, this, this);
+
             ResponsesListener = responsesListener;
             MessagesListener = messagesListener;
-            MessagesFromOrchestratorListener = messagesFromOrchestratorListener;
+            UserMessagesListener = userMessagesListener;
 
             UserSessionEventslisteners = new List<IUserSessionEventsListener>();
-            UserSessionEventslisteners.Add(userSessionEventslistener);
+            UserSessionEventslisteners.Add(userSessionEventsListener);
 
             InitGrammar();
         }
-        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IMessagesFromOrchestratorListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
+        public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
 
         public void AddUserSessionEventLister(IUserSessionEventsListener e)
@@ -154,9 +155,9 @@ namespace OrchestratorWrapping
         private string myUserID = "";
 
         #region messages listening interface implementation
-        public void OnOrchestratorResponse(int status, string response)
+        public void OnOrchestratorResponse(int commandID, int status, string response)
         {
-            if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(status, response);
+            if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(commandID, status, response);
         }
 
         public void OnOrchestratorRequest(string request)
@@ -203,10 +204,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnError(status);
         }
 
-        public bool GetOrchestratorVersion()
+        public void GetOrchestratorVersion()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetOrchestratorVersion");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         public void OnGetOrchestratorVersionResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -215,12 +216,12 @@ namespace OrchestratorWrapping
             ResponsesListener?.OnGetOrchestratorVersionResponse(new ResponseStatus(response.error, response.message), version);
         }
 
-        public bool Login(string userName, string userPassword)
+        public void Login(string userName, string userPassword)
         {
             OrchestratorCommand command = GetOrchestratorCommand("Login");
             command.GetParameter("userName").ParamValue = userName;
             command.GetParameter("userPassword").ParamValue = userPassword;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -230,10 +231,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
-        public bool Logout()
+        public void Logout()
         {
             OrchestratorCommand command = GetOrchestratorCommand("Logout");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnLogoutResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -242,10 +243,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
-        public bool GetNTPTime()
+        public void GetNTPTime()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetNTPTime");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetNTPTimeResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -255,13 +256,13 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
-        public bool AddSession(string scenarioId, string sessionName, string sessionDescription)
+        public void AddSession(string scenarioId, string sessionName, string sessionDescription)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
             command.GetParameter("sessionName").ParamValue = sessionName;
             command.GetParameter("sessionDescription").ParamValue = sessionDescription;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnAddSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -271,10 +272,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
 
-        public bool GetSessions()
+        public void GetSessions()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetSessions");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetSessionsResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -284,10 +285,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetSessionsResponse(status, list);
         }
 
-        public bool GetSessionInfo()
+        public void GetSessionInfo()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetSessionInfo");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetSessionInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -297,11 +298,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
-        public bool DeleteSession(string sessionId)
+        public void DeleteSession(string sessionId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("DeleteSession");
             command.GetParameter("sessionId").ParamValue = sessionId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnDeleteSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -310,25 +311,26 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnDeleteSessionResponse(status);
         }
 
-        public bool JoinSession(string sessionId)
+        public void JoinSession(string sessionId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("JoinSession");
             command.GetParameter("sessionId").ParamValue = sessionId;
             // By default canBeMaster is set to false, it needs to be overrided to be sure that a master is affected.
             command.GetParameter("canBeMaster").ParamValue = true;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnJoinSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            if (ResponsesListener != null) ResponsesListener.OnJoinSessionResponse(status);
+            Session session = Session.ParseJsonData<Session>(response.body);
+            if (ResponsesListener != null) ResponsesListener.OnJoinSessionResponse(status, session);
         }
 
-        public bool LeaveSession()
+        public void LeaveSession()
         {
             OrchestratorCommand command = GetOrchestratorCommand("LeaveSession");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnLeaveSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -337,10 +339,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
-        public bool GetLivePresenterData()
+        public void GetLivePresenterData()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetLivePresenterData");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void GetLivePresenterDataResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -350,10 +352,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
 
-        public bool GetScenarios()
+        public void GetScenarios()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetScenarios");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetScenariosResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -363,11 +365,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetScenariosResponse(status, list);
         }
 
-        public bool GetScenarioInstanceInfo(string scenarioId)
+        public void GetScenarioInstanceInfo(string scenarioId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetScenarioInstanceInfo");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetScenarioInstanceInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -377,10 +379,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
         }
 
-        public bool GetUsers()
+        public void GetUsers()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetUsers");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetUsersResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -390,13 +392,13 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUsersResponse(status, list);
         }
 
-        public bool AddUser(string userName, string userPassword, bool isAdmin)
+        public void AddUser(string userName, string userPassword, bool isAdmin)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddUser");
             command.GetParameter("userName").ParamValue = userName;
             command.GetParameter("userPassword").ParamValue = userPassword;
             command.GetParameter("userAdmin").ParamValue = isAdmin;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnAddUserResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -406,11 +408,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
-        public bool GetUserInfo(string userId = "")
+        public void GetUserInfo(string userId = "")
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetUserInfo");
             command.GetParameter("userId").ParamValue = userId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -420,12 +422,12 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
-        public bool UpdateUserDataJson(UserData userData)
+        public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserDataJson");
             command.GetParameter("userDataJson").ParamValue = json;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnUpdateUserDataJsonResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -434,10 +436,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
 
-        public bool ClearUserData()
+        public void ClearUserData()
         {
             OrchestratorCommand command = GetOrchestratorCommand("ClearUserData");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
         
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -446,11 +448,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnClearUserDataResponse(status);
         }
 
-        public bool DeleteUser(string userId)
+        public void DeleteUser(string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("DeleteUser");
             command.GetParameter("userId").ParamValue = userId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnDeleteUserResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -459,10 +461,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
         }
 
-        public bool GetRooms()
+        public void GetRooms()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetRooms");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnGetRoomsResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -472,11 +474,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetRoomsResponse(status, rooms);
         }
 
-        public bool JoinRoom(string roomId)
+        public void JoinRoom(string roomId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("JoinRoom");
             command.GetParameter("roomId").ParamValue = roomId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnJoinRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -485,10 +487,10 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnJoinRoomResponse(status);
         }
 
-        public bool LeaveRoom()
+        public void LeaveRoom()
         {
             OrchestratorCommand command = GetOrchestratorCommand("LeaveRoom");
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnLeaveRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -497,12 +499,12 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnLeaveRoomResponse(status);
         }
 
-        public bool SendMessage(string message, string userId)
+        public void SendMessage(string message, string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendMessage");
             command.GetParameter("message").ParamValue = message;
             command.GetParameter("userId").ParamValue = userId;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnSendMessageResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -511,11 +513,11 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnSendMessageResponse(status);
         }
 
-        public bool SendMessageToAll(string message)
+        public void SendMessageToAll(string message)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendMessageToAll");
             command.GetParameter("message").ParamValue = message;
-            return OrchestrationSocketIoManager.EmitCommand(command);
+            OrchestrationSocketIoManager.EmitCommand(command);
         }
 
         private void OnSendMessageToAllResponse(OrchestratorCommand command, OrchestratorResponse response)
@@ -642,18 +644,12 @@ namespace OrchestratorWrapping
         // messages from the orchestrator
         private void OnMessageSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
         {
-            if (MessagesListener != null)
-            {
-                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
-            }
-            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+            if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(-1, 0, packet.Payload);
 
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
             UserMessage messageReceived = new UserMessage(jsonResponse[1]["messageFrom"].ToString(), jsonResponse[1]["messageFromName"].ToString(), jsonResponse[1]["message"].ToString());
-            
-            if (MessagesFromOrchestratorListener != null)
-            {
-                MessagesFromOrchestratorListener.OnUserMessageReceived(messageReceived);
-            }
+
+            if (UserMessagesListener != null) UserMessagesListener.OnUserMessageReceived(messageReceived);
         }
 
         // audio packets from the orchestrator
@@ -684,12 +680,9 @@ namespace OrchestratorWrapping
         // sessions update events from the orchestrator
         private void OnSessionUpdated(Socket socket, Packet packet, params object[] args)
         {
-            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
+            if (MessagesListener != null) MessagesListener.OnOrchestratorResponse(-1, 0, packet.Payload);
 
-            if (MessagesListener != null)
-            {
-                MessagesListener.OnOrchestratorResponse(0, packet.Payload);
-            }
+            JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
 
             string lEventID = jsonResponse[1]["eventId"].ToString();
             string lUserID = jsonResponse[1]["eventData"][0].ToString();
@@ -726,28 +719,28 @@ namespace OrchestratorWrapping
         // events packets from master user through the orchestrator
         private void OnMasterEventReceived(Socket socket, Packet packet, params object[] args)
         {
-            if (MessagesFromOrchestratorListener != null)
+            if (UserMessagesListener != null)
             {
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
                 string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
-                MessagesFromOrchestratorListener.OnMasterEventReceived(lUserEvent);
+                UserMessagesListener.OnMasterEventReceived(lUserEvent);
             }
         }
 
         // events packets from users through the orchestrator
         private void OnUserEventReceived(Socket socket, Packet packet, params object[] args)
         {
-            if (MessagesFromOrchestratorListener != null)
+            if (UserMessagesListener != null)
             {
                 JsonData jsonResponse = JsonMapper.ToObject(packet.Payload);
                 string lUserID = jsonResponse[1]["sceneEventFrom"].ToString();
                 string lData = Encoding.ASCII.GetString(packet.Attachments[0]);
                 UserEvent lUserEvent = new UserEvent(lUserID, lData);
 
-                MessagesFromOrchestratorListener.OnUserEventReceived(lUserEvent);
+                UserMessagesListener.OnUserEventReceived(lUserEvent);
             }
         }
 
