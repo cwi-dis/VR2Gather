@@ -38,8 +38,13 @@ esac
 done
 set -x
 cd $dirname
-rm -rf built-VRTogether
-Unity -batchmode -projectPath . -buildWindows64Player built-VRTogether/VRTogether.exe -quit
+rm -rf built-VRTogether buildlog.txt
+if ! Unity -batchmode -projectPath . -buildWindows64Player built-VRTogether/VRTogether.exe -quit -logfile buildlog.txt; then
+	echo ============= Unity build failed. Logfile contents below ==========
+	cat buildlog.txt
+	echo ============= Unity build failed. Logfile contents above ==========
+	exit 1
+fi
 if $INSTALL_PCL; then
 	mkdir built-VRTogether/bin
 	cp ../installed/bin/*.{exe,bat,sh} built-VRTogether/bin
