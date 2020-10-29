@@ -156,6 +156,19 @@ namespace Workers {
                 _pictureFrameData = (byte*)ffmpeg.av_malloc((ulong)num_bytes);
                 ffmpeg.av_image_fill_arrays(ref tmpDataArray, ref tmpLineSizeArray, (byte*)_pictureFrameData, AVPixelFormat.AV_PIX_FMT_RGB24, videoFrame->width, videoFrame->height, 1);
                 swsYUV2RGBCtx = ffmpeg.sws_getContext(videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_YUV420P, videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_RGB24, 0, null, null, null);
+
+                int brightness = 0;
+                int contrast = 65536;
+                int saturation = 65536;
+                int srcRange = 0;
+                int dstRange = 0;
+
+                int_array4 srcTable, dstTable;
+                srcTable[0] = 104597; srcTable[1] = 132201; srcTable[2] = 25675; srcTable[3] = 53279;  // { 104597, 132201, 25675, 53279 }, /* ITU-R Rec. 624-4 System B, G
+                dstTable[0] = 117489; dstTable[1] = 138438; dstTable[2] = 13975; dstTable[3] = 34925; // { 117489, 138438, 13975, 34925 }, /* ITU-R Rec. 709 (1990)
+
+                int ret = ffmpeg.sws_setColorspaceDetails(swsYUV2RGBCtx, srcTable, srcRange, dstTable, dstRange, brightness, contrast, saturation);
+
                 Width = videoFrame->width;
                 Height = videoFrame->height;
             }

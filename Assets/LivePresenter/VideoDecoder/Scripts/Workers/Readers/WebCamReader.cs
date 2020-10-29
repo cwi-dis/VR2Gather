@@ -58,7 +58,7 @@ namespace Workers {
         public override void Stop() {
             base.Stop();
             UnityEngine.Debug.Log($"[FPA] -----> WebCamReader.Stop");
-            webcamTexture.Stop();
+            webcamTexture?.Stop();
             outQueue.Close();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
@@ -97,7 +97,7 @@ namespace Workers {
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
-            frameTime = 1f / 12f;
+            frameTime = 1f / fps;
             timeToFrame = Time.realtimeSinceStartup + frameTime;
 
             infoData = new byte[4 * 3];
@@ -113,8 +113,9 @@ namespace Workers {
                     if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
                         if(webcamTexture.isPlaying)
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
-                        timeToFrame += frameTime;
                         frameReady.Release();
+//                        timeToFrame += frameTime;
+                        timeToFrame = frameTime + Time.realtimeSinceStartup;
                     }
                 }
                 yield return null;

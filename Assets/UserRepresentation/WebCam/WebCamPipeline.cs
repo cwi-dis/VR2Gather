@@ -8,6 +8,7 @@ public class WebCamPipeline : MonoBehaviour {
     public int              width = 1280;
     public int              height = 720;
     public int              fps = 12;
+    public int              bitrate = 200000;
     bool                    ready = false;
 
     public Texture2D        texture;
@@ -57,7 +58,7 @@ public class WebCamPipeline : MonoBehaviour {
                     // Create encoders for transmission
                     //
                     try {
-                        encoder = new Workers.VideoEncoder(encoderQueue, null, writerQueue, null);
+                        encoder = new Workers.VideoEncoder( new Workers.VideoEncoder.Setup() { width= width, height= height, fps= fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
                     }
                     catch (System.EntryPointNotFoundException e) {
                         Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
