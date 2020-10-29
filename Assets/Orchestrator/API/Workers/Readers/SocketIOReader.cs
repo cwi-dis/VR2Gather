@@ -26,9 +26,9 @@ namespace Workers
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
 
                 Start();
-                Debug.Log($"{Name()}: Started.");
+                Debug.Log($"{Name()}: Started {remoteStream}.");
             } catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
         }

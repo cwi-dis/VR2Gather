@@ -55,7 +55,7 @@ public class cwipc
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
-        public const System.UInt64 CWIPC_API_VERSION = 0x20200703;
+        public const System.UInt64 CWIPC_API_VERSION = 0x20201022;
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -100,6 +100,10 @@ public class cwipc
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_proxy([MarshalAs(UnmanagedType.LPStr)]string ip, int port, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
 
@@ -392,11 +396,14 @@ public class cwipc
         }
     }
 
-    public static source synthetic(int fps=0, int npoints=0) {
+    public static source synthetic(int fps = 0, int npoints = 0)
+    {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(fps, npoints, ref errorPtr);
-        if (rdr == System.IntPtr.Zero) {
-            if (errorPtr == System.IntPtr.Zero) {
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
                 throw new System.Exception("cwipc.synthetic: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
@@ -404,6 +411,25 @@ public class cwipc
         if (errorPtr != System.IntPtr.Zero)
         {
             UnityEngine.Debug.LogError($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
+        return new source(rdr);
+    }
+
+    public static source proxy(string ip, int port)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rdr = _API_cwipc_util.cwipc_proxy(ip, port, ref errorPtr);
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.proxy: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc.proxy: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.proxy: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new source(rdr);
     }

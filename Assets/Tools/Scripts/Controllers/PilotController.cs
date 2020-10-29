@@ -23,7 +23,8 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
             }
             catch (System.EntryPointNotFoundException e) {
-                Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                Debug.Log($"PilotController.LoadAudio: EntrypointNotFoundException: {e}");
+                Debug.LogError("Cannot send your audio to other participants");
                 throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
             }
         }
@@ -115,6 +116,7 @@ abstract public class PilotController : MonoBehaviour {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
                             bool isSelf = my_id == players[playerIdx].id;
@@ -225,6 +227,7 @@ abstract public class PilotController : MonoBehaviour {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;

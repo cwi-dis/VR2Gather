@@ -52,7 +52,7 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe(2, true);
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
                 //
                 // Create reader
                 //
@@ -68,6 +68,13 @@ public class EntityPipeline : MonoBehaviour {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    reader = pcReader;
+                }
+                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__)
+                {
+                    var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
+                    if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
+                    pcReader = new Workers.ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
                 else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
@@ -141,7 +148,7 @@ public class EntityPipeline : MonoBehaviour {
                         tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
                         for (int iq = 0; iq < nQuality; iq++) {
                             int i = it * nQuality + iq;
-                            QueueThreadSafe thisQueue = new QueueThreadSafe();
+                            QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}" );
                             int octreeBits = Encoders[iq].octreeBits;
                             encoderStreamDescriptions[i] = new Workers.PCEncoder.EncoderStreamDescription {
                                 octreeBits = octreeBits,
@@ -164,7 +171,7 @@ public class EntityPipeline : MonoBehaviour {
                     try {
                         encoder = new Workers.PCEncoder(encoderQueue, encoderStreamDescriptions);
                     } catch (System.EntryPointNotFoundException) {
-                        Debug.LogError($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                        Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                         throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                     }
                     //
@@ -179,23 +186,23 @@ public class EntityPipeline : MonoBehaviour {
                         else
                             writer = new Workers.SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
-                        Debug.LogError($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                        Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
-                    //
-                    // Create pipeline for audio, if needed.
-                    // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                    //
-                    var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                    if (AudioBin2Dash == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
-                    try {
-                        audioSender = gameObject.AddComponent<VoiceSender>();
-                        audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
-                    }
-                    catch (System.EntryPointNotFoundException e) {
-                        Debug.LogError($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                        throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    }
+                    ////
+                    //// Create pipeline for audio, if needed.
+                    //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                    ////
+                    //var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                    //if (AudioBin2Dash == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
+                    //try {
+                    //    audioSender = gameObject.AddComponent<VoiceSender>();
+                    //    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                    //}
+                    //catch (System.EntryPointNotFoundException e) {
+                    //    Debug.Log($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    //    throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                    //}
                 }
                 break;
             case "remote":
@@ -205,17 +212,17 @@ public class EntityPipeline : MonoBehaviour {
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
                 Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
-                //
-                // Create pipeline for audio, if needed.
-                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                //
-                var AudioSUBConfig = cfg.AudioSUBConfig;
-                if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
-                audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                ////
+                //// Create pipeline for audio, if needed.
+                //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                ////
+                //var AudioSUBConfig = cfg.AudioSUBConfig;
+                //if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
+                //audioReceiver = gameObject.AddComponent<VoiceReceiver>();
+                //audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
                 break;
             default:
-                Debug.LogError($"{Name()}: unknown sourceType {cfg.sourceType}");
+                Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
                 break;
         }
         //
@@ -226,13 +233,14 @@ public class EntityPipeline : MonoBehaviour {
         switch (user.userData.userRepresentationType) {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                 //Position in the center
-                if(cfg.sourceType == "self") {
-                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0.15f), PlayerPrefs.GetFloat("pcs_pos_z", 0.8f));
+                if (cfg.sourceType == "self") {
+                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
                     transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
                 }
                 else {
-                    transform.localPosition = new Vector3(0, 0.15f, 0.8f);
+                    transform.localPosition = new Vector3(0, 0, 0);
                     transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
                 break;
@@ -271,7 +279,7 @@ public class EntityPipeline : MonoBehaviour {
             //
             // Allocate queues we need for this pipeline
             //
-            QueueThreadSafe decoderQueue = new QueueThreadSafe(2, true);
+            QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue",2, true);
             //
             // Create renderer
             //
@@ -303,7 +311,7 @@ public class EntityPipeline : MonoBehaviour {
         // We 
         Config._PCs PCs = Config.Instance.PCs;
         if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-        QueueThreadSafe preparerQueue = new QueueThreadSafe(2, false);
+        QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", 2, false);
         preparerQueues.Add(preparerQueue);
         if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
         { // Mesh
@@ -371,7 +379,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetTilingConfig called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetTilingConfig called for pipeline that is not a source");
             return new TilingConfig();
         }
         // xxxjack we need to update the orientation vectors, or we need an extra call to get rotation parameters.
@@ -382,7 +390,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: SetTilingConfig called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
             return;
         }
         if (tilingConfig.tiles != null && tilingConfig.tiles.Length > 0)
@@ -418,7 +426,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetSyncConfig called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetSyncConfig called for pipeline that is not a source");
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
@@ -443,7 +451,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: SetSyncConfig called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
             return;
         }
         Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
@@ -462,7 +470,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: GetPosition called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: GetPosition called for pipeline that is a source");
             return new Vector3();
         }
         return transform.position;
@@ -472,7 +480,7 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError($"{Name()}: GetRotation called for pipeline that is a source");
+            Debug.LogError($"Programmer error: {Name()}: GetRotation called for pipeline that is a source");
             return new Vector3();
         }
         return transform.rotation * Vector3.forward;
@@ -487,14 +495,14 @@ public class EntityPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError($"{Name()}: GetViewerInformation called for pipeline that is not a source");
+            Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
             return new ViewerInformation();
         }
         // The camera object is nested in another object on our parent object, so getting at it is difficult:
         Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
         if (_camera == null)
         {
-            Debug.LogError($"{Name()}: no Camera object for self user");
+            Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
             return new ViewerInformation();
         }
         Vector3 position = _camera.transform.position;

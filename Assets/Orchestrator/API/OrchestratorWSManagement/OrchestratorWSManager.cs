@@ -3,6 +3,7 @@ using LitJson;
 using System;
 using System.Collections.Generic;
 using OrchestratorWrapping;
+using System.Diagnostics;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -28,7 +29,7 @@ namespace OrchestratorWSManagement
     // interface to implement to be updated from messages exchanged on the socketio
     public interface IMessagesListener
     {
-        void OnOrchestratorResponse(int status, string response);
+        void OnOrchestratorResponse(int commandID, int status, string response);
         void OnOrchestratorRequest(string request);
     }
 
@@ -53,11 +54,13 @@ namespace OrchestratorWSManagement
         // listener for the connection state with the orchestrator upon socketio
         private IOrchestratorConnectionListener connectionListener;
 
-        // Listeenr for the messages excahnged with the Orchetsrator
+        // Listener for the messages exchanged with the Orchetsrator
         public IMessagesListener messagesListener;
 
         // Last command sent
         public OrchestratorCommand sentCommand;
+
+        private List<OrchestratorCommand> commandQueue = new List<OrchestratorCommand>();
 
         #endregion
 
@@ -162,56 +165,81 @@ namespace OrchestratorWSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            lock (this) {
-                if (command.Parameters != null) {
-                    object[] parameters = new object[command.Parameters.Count];
+            if (command.Parameters != null)
+            {
+                object[] parameters = new object[command.Parameters.Count];
 
-                    for (int i = 0; i < parameters.Length; i++) {
-                        parameters[i] = command.Parameters[i].ParamValue;
-                    }
-
-                    // emit the packet on socket.io
-                    Manager.Socket.Emit(command.SocketEventName, null, parameters);
+                for(int i=0; i<parameters.Length; i++)
+                {
+                    parameters[i] = command.Parameters[i].ParamValue;
                 }
+
+                // emit the packet on socket.io
+                Manager.Socket.Emit(command.SocketEventName, null, parameters);
             }
         }
 
         // Emit a command
-        public bool EmitCommand(OrchestratorCommand command)
+        public void EmitCommand(OrchestratorCommand command)
         {
-            lock (this) {
-                // the JsonData that will own the parameters and their values
-                JsonData parameters = new JsonData();
+            // the JsonData that will own the parameters and their values
+            JsonData parameters = new JsonData();
 
-                if (command.Parameters != null) {
-                    // for each parameter defined in the command, fill the parameter with its value
-                    command.Parameters.ForEach(delegate (Parameter parameter) {
-                        if (parameter.ParamValue != null) {
-                            if (parameter.type == typeof(bool)) {
-                                parameters[parameter.ParamName] = (bool)parameter.ParamValue;
-                            } else {
-                                parameters[parameter.ParamName] = parameter.ParamValue.ToString();
-                            }
-                        } else {
-                            parameters[parameter.ParamName] = "";
+            if (command.Parameters != null)
+            {
+                // for each parameter defined in the command, fill the parameter with its value
+                command.Parameters.ForEach(delegate (Parameter parameter)
+                {
+                    if (parameter.ParamValue != null)
+                    {
+                        if(parameter.type == typeof(bool))
+                        {
+                            parameters[parameter.ParamName] = (bool)parameter.ParamValue;
                         }
-                    });
-                }
-
-                // send the command
-                if (!SendCommand(command.SocketEventName, parameters)) {
-                    UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
-                    // problem while sending the command
-                    sentCommand = null;
-                    return false;
-                }
-                // command succesfully sent
-                sentCommand = command;
+                        else
+                        {
+                            parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                        }
+                    }
+                    else
+                    {
+                        parameters[parameter.ParamName] = "";
+                    }
+                });
             }
+
+            // increment the commandId and add it to the command parameters (see NOTE on top of file)
+            commandId++;
+            parameters["commandId"] = commandId;
+            command.commandID = commandId;
+
+            commandQueue.Add(command);
+
+            // warn the messages Listener that new message is emitted
+            if (messagesListener != null)
+            {
+                messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
+            }
+
+            // emit the command on socket.io
+            Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
+            
+            /*
+            // send the command
+            if (!SendCommand(command.SocketEventName, parameters))
+            {
+                UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
+                // problem while sending the command
+                sentCommand = null;
+                return false;
+            }
+            // command succesfully sent
+            sentCommand = command;
             return true;
+            */
         }
 
-        // send the command (command name, parameters)
+        // [deprecated] send the command (command name, parameters)
         private Boolean SendCommand(string command, JsonData parameters)
         {
             // increment the commandId and add it to the command parameters (see NOTE on top of file)
@@ -241,25 +269,45 @@ namespace OrchestratorWSManagement
         // Callback that is called on a command response
         private void OnAckCallback(Socket socket, Packet originalPacket, params object[] args)
         {
-            IsWaitingResponse = false;
+            int ackedCmd = 0;
             OrchestratorResponse response = JsonToOrchestratorResponse(originalPacket.Payload);
 
             //warn the messages Listener that a response is received from the orchestrator
             if (messagesListener != null)
             {
-                messagesListener.OnOrchestratorResponse(response.error, originalPacket.Payload);
+                messagesListener.OnOrchestratorResponse(response.commandId, response.error, originalPacket.Payload);
             }
 
+            for (int i = 0; i < commandQueue.Count; i++)
+            {
+                if (response.commandId == commandQueue[i].commandID)
+                {
+                    commandQueue[i]?.ResponseCallback.Invoke(commandQueue[i], response);
+                    ackedCmd = i;
+                }
+            }
+
+            commandQueue.RemoveAt(ackedCmd);
+
+            /*
+            for (int i = 0; i < commandQueue.Count; i++)
+            {
+                UnityEngine.Debug.Log(commandQueue[i].commandID);
+            }
+            */
+
+            //IsWaitingResponse = false;
             // If a function is declared in the grammar to treat the response 
             // for this command, then call this function
-            sentCommand.ResponseCallback.Invoke(sentCommand, response);
+            //sentCommand?.ResponseCallback.Invoke(sentCommand, response);
         }
 
-        // Parse the firs level of this JSON string response
+        // Parse the first level of this JSON string response
         public OrchestratorResponse JsonToOrchestratorResponse(string jsonMessage)
         {
             JsonData jsonResponse = JsonMapper.ToObject(jsonMessage);
             OrchestratorResponse response = new OrchestratorResponse();
+            response.commandId = (int)jsonResponse[0]["commandId"];
             response.error = (int)jsonResponse[0]["error"];
             response.message = jsonResponse[0]["message"].ToString();
             response.body = jsonResponse[0]["body"];

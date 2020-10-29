@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Workers {
-    public class K4AReader : TiledWorker {
+    public class ProxyReader : TiledWorker {
         cwipc.source reader;
         float voxelSize;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -11,7 +11,7 @@ namespace Workers {
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        K4AReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        ProxyReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             if (_outQueue == null)
             {
@@ -21,7 +21,7 @@ namespace Workers {
             out2Queue = _out2Queue;
         }
 
-        public K4AReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
+        public ProxyReader(string ip, int port, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
         {
             voxelSize = _voxelSize;
             if (_frameRate > 0)
@@ -30,18 +30,18 @@ namespace Workers {
             }
             try
             {
-                reader = cwipc.kinect(_configFilename);
+                reader = cwipc.proxy(ip, port);
                 if (reader != null)
                 {
                     Start();
                     Debug.Log("{Name()}: Started.");
                 }
                 else
-                    throw new System.Exception($"{Name()}: cwipc_kinect could not be created"); // Should not happen, should throw exception
+                    throw new System.Exception($"{Name()}: cwipc_proxy could not be created"); // Should not happen, should throw exception
             }
             catch (System.DllNotFoundException e)
             {
-                throw new System.Exception($"{Name()}: support for Kinect grabber not installed on this computer. Missing DLL {e.Message}.");
+                throw new System.Exception($"{Name()}: support for proxy grabber not installed on this computer. Missing DLL {e.Message}.");
             }
             catch (System.Exception e)
             {
@@ -98,6 +98,7 @@ namespace Workers {
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
+            if (!reader.available(false)) return;
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
             if (voxelSize != 0) {

@@ -1,4 +1,5 @@
 {
+
 	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
     "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
@@ -7,7 +8,7 @@
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
-		"printMetrics": true,
+		"printMetrics": false,
 		"saveMetrics": false,
         "offsetPosition": {
             "x": -1.9099986553192139,
@@ -60,6 +61,10 @@
             },
 			"SynthReaderConfig" : {
 				"nPoints" : 8000
+			},
+			"ProxyReaderConfig" : {
+				"localIP" : "",
+				"port" : 9335
 			},
             "CerthReaderConfig": {
                 "ConnectionURI": "amqp://volumetric:capture@localhost:5672",

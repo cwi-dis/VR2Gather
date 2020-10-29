@@ -30,7 +30,8 @@ namespace Workers {
                 }
                 if (videoStream < 0)
                 {
-                    Debug.LogError($"{Name()}: could not find video in {streamCount} streams in {url + streamName}");
+                    Debug.Log($"{Name()}: could not find video in {streamCount} streams in {url + streamName}");
+                    Debug.LogError($"No video stream in {streamName}");
                 }
                 // Check AudioStream
                 for (int i = 0; i < streamCount; ++i)
@@ -43,7 +44,8 @@ namespace Workers {
                 }
                 if (audioStream < 0)
                 {
-                    Debug.LogError($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
+                    Debug.Log($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
+                    Debug.LogError($"No audio stream in {streamName}");
                 }
                 receivers = new ReceiverInfo[]
                 {

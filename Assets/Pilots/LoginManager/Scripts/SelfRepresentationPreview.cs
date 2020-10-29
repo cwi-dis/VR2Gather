@@ -99,6 +99,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);

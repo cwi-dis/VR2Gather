@@ -210,7 +210,7 @@ namespace Workers {
                     }
                     if (outQueue == null)
                     {
-                        Debug.LogError($"CerthReader: no outQueue, dropping pointcloud");
+                        Debug.LogError($"Programmer error: CerthReader: no outQueue, dropping pointcloud");
                     }
                     else
                     {
