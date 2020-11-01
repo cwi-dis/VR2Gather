@@ -39,6 +39,9 @@ namespace OrchestratorWSManagement
         // the name of the event sent on the socket (= the name of the command)
         public string SocketEventName;
 
+        // the id of the command sent to link with Ack callback
+        public int commandID;
+
         // list of parameters for this command
         public List<Parameter> Parameters;
 
@@ -96,6 +99,7 @@ namespace OrchestratorWSManagement
     // class that stores the response to a command before the parsing of the jsondata
     public class OrchestratorResponse
     {
+        public int commandId;
         public int error;
         public string message;
         public JsonData body;
