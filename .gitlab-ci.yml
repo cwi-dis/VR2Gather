@@ -5,7 +5,8 @@ stages:
       
 build_win:
   stage: build
-  only: tags
+  only: 
+  - tags
   tags:
   - win10unity
   script:
