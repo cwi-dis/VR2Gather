@@ -234,6 +234,7 @@ public class EntityPipeline : MonoBehaviour {
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
+            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                 //Position in the center
                 if (cfg.sourceType == "self") {
                     transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));

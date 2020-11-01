@@ -49,13 +49,13 @@ public class Calibration : MonoBehaviour {
                 #endregion
                 #region INPUT
                 // I'm Comfortabler
-                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger) {
+                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || Input.GetKeyDown(KeyCode.Y)) {
                     Debug.Log("Comfortable!");
                     //Application.Quit();
                     SceneManager.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
-                if (Input.GetKeyDown(KeyCode.Keypad0) || IsDownLeftTrigger ) {
+                if (Input.GetKeyDown(KeyCode.Keypad0) || IsDownLeftTrigger || Input.GetKeyDown(KeyCode.N)) {
                     Debug.Log("Calibration ON!");
                     state = State.Mode;
                 }
@@ -71,12 +71,12 @@ public class Calibration : MonoBehaviour {
                 #endregion
                 #region INPUT
                 //Activate Translation
-                if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.JoystickButton0)) {
+                if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKeyDown(KeyCode.T)) {
                     Debug.Log("Translation Mode");
                     state = State.Translation;
                 }
                 //Activate Rotation (UpAxis)
-                if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.JoystickButton2)) {
+                if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.JoystickButton2) || Input.GetKeyDown(KeyCode.R)) {
                     Debug.Log("Rotation Mode");
                     state = State.Rotation;
                 }
@@ -96,14 +96,14 @@ public class Calibration : MonoBehaviour {
                 #region INPUT
                 // Movement
                 float zAxis = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
-                if (Input.GetKeyDown(KeyCode.Keypad8)) zAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad2)) zAxis = -1;
+                if (Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.F)) zAxis = 1;
+                if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.B)) zAxis = -1;
                 float xAxis = -Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
-                if (Input.GetKeyDown(KeyCode.Keypad4)) xAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad6)) xAxis = -1;
+                if (Input.GetKeyDown(KeyCode.Keypad4) || Input.GetKeyDown(KeyCode.R)) xAxis = 1;
+                if (Input.GetKeyDown(KeyCode.Keypad6) || Input.GetKeyDown(KeyCode.L)) xAxis = -1;
                 float yAxis = -Input.GetAxis("Oculus_CrossPlatform_PrimaryThumbstickVertical");
-                if (Input.GetKeyDown(KeyCode.Keypad9)) yAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad7)) yAxis = -1;
+                if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.U)) yAxis = 1;
+                if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.D)) yAxis = -1;
                 this.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
@@ -136,8 +136,8 @@ public class Calibration : MonoBehaviour {
                 #region INPUT
                 // Rotation
                 float yAxisR = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
-                if (Input.GetKeyDown(KeyCode.Keypad7)) yAxisR = -1;
-                if (Input.GetKeyDown(KeyCode.Keypad9)) yAxisR =  1;
+                if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.L)) yAxisR = -1;
+                if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.R)) yAxisR =  1;
                 transform.localRotation = Quaternion.Euler( transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger ) {
