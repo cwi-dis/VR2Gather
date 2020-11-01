@@ -248,6 +248,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 textItem.text += " - (Avatar)";
                 break;
+            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                textItem.text += " - (SynthAvatar)";
+                break;
             case UserData.eUserRepresentationType.__TVM__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (TVM)";
@@ -426,7 +430,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
@@ -834,6 +839,10 @@ public class OrchestratorLogin : MonoBehaviour {
             calibButton.gameObject.SetActive(true);
         }
         else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_PROXY__)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_SYNTH__)
         {
             calibButton.gameObject.SetActive(true);
         }
