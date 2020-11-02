@@ -14,6 +14,7 @@ build_win:
    - cd deployment-helpers
    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@baltig.viaccess-orca.com:8443/VRT/deployment-group/Deployment
    - python -m pip install -r Deployment/scripts/requirements.txt
+   - cd ..
   script:
     - bash build-VRTogether.sh
     - mkdir deliverables
