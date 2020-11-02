@@ -50,13 +50,13 @@ public class Calibration : MonoBehaviour {
                 #region INPUT
                 // I'm Comfortabler
                 if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || Input.GetKeyDown(KeyCode.Y)) {
-                    Debug.Log("Comfortable!");
+                    Debug.Log("Calibration: User is happy, return to LoginManager");
                     //Application.Quit();
                     SceneManager.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
                 if (Input.GetKeyDown(KeyCode.Keypad0) || IsDownLeftTrigger || Input.GetKeyDown(KeyCode.N)) {
-                    Debug.Log("Calibration ON!");
+                    Debug.Log("Calibration: Starting calibration process");
                     state = State.Mode;
                 }
                 // ResetAxisTrigger
@@ -72,16 +72,16 @@ public class Calibration : MonoBehaviour {
                 #region INPUT
                 //Activate Translation
                 if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKeyDown(KeyCode.T)) {
-                    Debug.Log("Translation Mode");
+                    Debug.Log("Calibration: Translation Mode");
                     state = State.Translation;
                 }
                 //Activate Rotation (UpAxis)
                 if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.JoystickButton2) || Input.GetKeyDown(KeyCode.R)) {
-                    Debug.Log("Rotation Mode");
+                    Debug.Log("Calibration: Rotation Mode");
                     state = State.Rotation;
                 }
                 if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || IsDownLeftTrigger) {
-                    Debug.Log("Calibration OFF!");
+                    Debug.Log("Calibration: User is done");
                     state = State.Comfort;
                 }
                 #endregion
@@ -104,6 +104,12 @@ public class Calibration : MonoBehaviour {
                 float yAxis = -Input.GetAxis("Oculus_CrossPlatform_PrimaryThumbstickVertical");
                 if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.U)) yAxis = 1;
                 if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.D)) yAxis = -1;
+                // Code added by Jack to allow resetting of position (mainly for non-HMD users)
+                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+                {
+                    this.transform.localPosition = new Vector3(0, 0, 0);
+                    Debug.Log("Calibration: Try translation 0,0,0");
+                }
                 this.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
@@ -111,7 +117,7 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
-                    Debug.Log("Translation Saved!");
+                    Debug.Log($"Calibration: Translation Saved: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
                 // Back
@@ -121,7 +127,8 @@ public class Calibration : MonoBehaviour {
                         PlayerPrefs.GetFloat(prefix+"_pos_y", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
-                    Debug.Log("Translation Reset!");
+                    var pos = transform.localPosition;
+                    Debug.Log($"Calibration: Translation Reset to: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
                 #endregion
@@ -138,6 +145,12 @@ public class Calibration : MonoBehaviour {
                 float yAxisR = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
                 if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.L)) yAxisR = -1;
                 if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.R)) yAxisR =  1;
+                // Code added by Jack to allow resetting of rotation (mainly for non-HMD users)
+                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+                {
+                    Debug.Log("Calibration: Try rotation 0,0,0");
+                    transform.localEulerAngles = new Vector3(0, 0, 0);
+                }
                 transform.localRotation = Quaternion.Euler( transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger ) {
@@ -146,7 +159,7 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
 
-                    Debug.Log("Rotation Saved!");
+                    Debug.Log($"Calibration: Rotation Saved: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
                 // Back
@@ -156,7 +169,8 @@ public class Calibration : MonoBehaviour {
                         PlayerPrefs.GetFloat(prefix + "_rot_y", 0),
                         PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
                     );
-                    Debug.Log("Rotation Reset!");
+                    var rot = transform.localRotation;
+                    Debug.Log($"Calibration: Rotation Reset to: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
                 #endregion
