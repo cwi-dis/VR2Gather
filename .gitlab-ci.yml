@@ -9,12 +9,19 @@ build_win:
   - tags
   tags:
   - win10unity
+  before-script:
+   - mkdir deployment-helpers
+   - cd deployment-helpers
+   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@baltig.viaccess-orca.com:8443/VRT/deployment-group/Deployment
+   - python -m pip install -r Deployment/scripts/requirements.txt
   script:
     - bash build-VRTogether.sh
-    - Compress-Archive built-VRTogether  vrtogether_win1064_$CI_COMMIT_TAG.zip
-  artifacts:
-    paths:
-      - vrtogether_win1064_$CI_COMMIT_TAG.zip
+    - mkdir deliverables
+    - Compress-Archive built-VRTogether  deliverables/vrtogether_win1064_$CI_COMMIT_TAG.zip
+    - python deployment-helpers/Deployment/scripts/addReleaseToGitLab --cicd --notag deliverables/vrtogether_win1064_$CI_COMMIT_TAG.zip
+#  artifacts:
+#    paths:
+#      - vrtogether_win1064_$CI_COMMIT_TAG.zip
       
 #deploy_all:
 #  stage: deploy
