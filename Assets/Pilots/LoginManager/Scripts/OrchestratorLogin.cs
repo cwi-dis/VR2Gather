@@ -248,10 +248,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 textItem.text += " - (Avatar)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                textItem.text += " - (SynthAvatar)";
-                break;
             case UserData.eUserRepresentationType.__TVM__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (TVM)";
