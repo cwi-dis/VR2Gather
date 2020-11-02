@@ -9,7 +9,7 @@ build_win:
   - tags
   tags:
   - win10unity
-  before-script:
+  before_script:
    - mkdir deployment-helpers
    - cd deployment-helpers
    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@baltig.viaccess-orca.com:8443/VRT/deployment-group/Deployment
