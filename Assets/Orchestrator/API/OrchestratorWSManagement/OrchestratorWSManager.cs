@@ -165,105 +165,98 @@ namespace OrchestratorWSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            if (command.Parameters != null)
-            {
-                object[] parameters = new object[command.Parameters.Count];
+            lock (this) {
+                if (command.Parameters != null) {
+                    object[] parameters = new object[command.Parameters.Count];
 
-                for(int i=0; i<parameters.Length; i++)
-                {
-                    parameters[i] = command.Parameters[i].ParamValue;
+                    for (int i = 0; i < parameters.Length; i++) {
+                        parameters[i] = command.Parameters[i].ParamValue;
+                    }
+
+                    // emit the packet on socket.io
+                    Manager.Socket.Emit(command.SocketEventName, null, parameters);
                 }
-
-                // emit the packet on socket.io
-                Manager.Socket.Emit(command.SocketEventName, null, parameters);
             }
         }
 
         // Emit a command
         public void EmitCommand(OrchestratorCommand command)
         {
-            // the JsonData that will own the parameters and their values
-            JsonData parameters = new JsonData();
+            lock (this) {
+                // the JsonData that will own the parameters and their values
+                JsonData parameters = new JsonData();
 
-            if (command.Parameters != null)
-            {
-                // for each parameter defined in the command, fill the parameter with its value
-                command.Parameters.ForEach(delegate (Parameter parameter)
+                if (command.Parameters != null) {
+                    // for each parameter defined in the command, fill the parameter with its value
+                    command.Parameters.ForEach(delegate (Parameter parameter) {
+                        if (parameter.ParamValue != null) {
+                            if (parameter.type == typeof(bool)) {
+                                parameters[parameter.ParamName] = (bool)parameter.ParamValue;
+                            } else {
+                                parameters[parameter.ParamName] = parameter.ParamValue.ToString();
+                            }
+                        } else {
+                            parameters[parameter.ParamName] = "";
+                        }
+                    });
+                }
+
+                // increment the commandId and add it to the command parameters (see NOTE on top of file)
+                commandId++;
+                parameters["commandId"] = commandId;
+                command.commandID = commandId;
+
+                commandQueue.Add(command);
+
+                // warn the messages Listener that new message is emitted
+                if (messagesListener != null) {
+                    messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
+                }
+
+                // emit the command on socket.io
+                Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
+
+                /*
+                // send the command
+                if (!SendCommand(command.SocketEventName, parameters))
                 {
-                    if (parameter.ParamValue != null)
-                    {
-                        if(parameter.type == typeof(bool))
-                        {
-                            parameters[parameter.ParamName] = (bool)parameter.ParamValue;
-                        }
-                        else
-                        {
-                            parameters[parameter.ParamName] = parameter.ParamValue.ToString();
-                        }
-                    }
-                    else
-                    {
-                        parameters[parameter.ParamName] = "";
-                    }
-                });
+                    UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
+                    // problem while sending the command
+                    sentCommand = null;
+                    return false;
+                }
+                // command succesfully sent
+                sentCommand = command;
+                return true;
+                */
             }
-
-            // increment the commandId and add it to the command parameters (see NOTE on top of file)
-            commandId++;
-            parameters["commandId"] = commandId;
-            command.commandID = commandId;
-
-            commandQueue.Add(command);
-
-            // warn the messages Listener that new message is emitted
-            if (messagesListener != null)
-            {
-                messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
-            }
-
-            // emit the command on socket.io
-            Manager.Socket.Emit(command.SocketEventName, OnAckCallback, parameters);
-            
-            /*
-            // send the command
-            if (!SendCommand(command.SocketEventName, parameters))
-            {
-                UnityEngine.Debug.Log("[OrchestratorWSManager][EmitCommand] Fail to send command: " + command.SocketEventName);
-                // problem while sending the command
-                sentCommand = null;
-                return false;
-            }
-            // command succesfully sent
-            sentCommand = command;
-            return true;
-            */
         }
 
         // [deprecated] send the command (command name, parameters)
         private Boolean SendCommand(string command, JsonData parameters)
         {
-            // increment the commandId and add it to the command parameters (see NOTE on top of file)
-            commandId++;
-            parameters["commandId"] = commandId;
+            lock (this) {
+                // increment the commandId and add it to the command parameters (see NOTE on top of file)
+                commandId++;
+                parameters["commandId"] = commandId;
 
-            // We don't send a command if one has already been sent without response
-            // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
-            //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
-            //        could be done if the orchestrator integrates the commandId with the response
-            if (!IsWaitingResponse)
-            {
-                // warn the messages Listener that new message is emitted
-                if (messagesListener != null)
-                {
-                    messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
+                // We don't send a command if one has already been sent without response
+                // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
+                //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
+                //        could be done if the orchestrator integrates the commandId with the response
+                if (!IsWaitingResponse) {
+                    // warn the messages Listener that new message is emitted
+                    if (messagesListener != null) {
+                        messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
+                    }
+
+                    // emit the command on socket.io
+                    Manager.Socket.Emit(command, OnAckCallback, parameters);
+                    IsWaitingResponse = true;
+                    return true;
                 }
-
-                // emit the command on socket.io
-                Manager.Socket.Emit(command, OnAckCallback, parameters);
-                IsWaitingResponse = true;
-                return true;
+                return false;
             }
-            return false;
         }
 
         // Callback that is called on a command response
