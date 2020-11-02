@@ -50,7 +50,8 @@ public class MoveCamera : MonoBehaviour {
             float deltaHeight = Input.GetAxis("Mouse ScrollWheel");
             if (deltaHeight != 0)
             {
-                playerBody.Translate(0, deltaHeight, 0);
+                //Debug.Log($"MoveCamera: xxxjack deltaHeight={deltaHeight}");
+                gameObject.transform.Translate(0, deltaHeight, 0);
             }
         }
     }
