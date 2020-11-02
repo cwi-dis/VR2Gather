@@ -4,8 +4,6 @@ using UnityEngine.XR;
 public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;
     public float wheelSlope = 0.05f; // 5 Centimeters
-    public float bottomLimit = 1.0f; // 1.0 Meters
-    public float topLimit = 1.8f;    // 1.8 Meters
     public bool spectator = false;
     float xRotation = 0f;
 
@@ -38,11 +36,6 @@ public class MoveCamera : MonoBehaviour {
             //Debug.Log($"MoveCamera: xxxjack deltaHeight={deltaHeight}");
             // Do Camera movement
             transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + deltaHeight * wheelSlope, transform.localPosition.z);
-            // Check the limits
-            if (transform.localPosition.y <= bottomLimit)
-                transform.localPosition = new Vector3(transform.localPosition.x, bottomLimit, transform.localPosition.z);
-            if (transform.localPosition.y >= topLimit)
-                transform.localPosition = new Vector3(transform.localPosition.x, topLimit, transform.localPosition.z);
         }
 
 
