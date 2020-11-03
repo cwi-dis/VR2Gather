@@ -62,6 +62,7 @@ namespace Workers
             }
         }
         private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] SocketIOReader.OnDataPacketReceived");
             int id = 0;
             string strID = pPacket.dataStreamType.Substring(pPacket.dataStreamType.LastIndexOf('#') + 1);
             if (int.TryParse(strID, out id)) {
@@ -73,6 +74,7 @@ namespace Workers
             } else {
                 Debug.Log($"[FPA] ERROR parsing {strID}.");
             }
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] SocketIOReader.OnDataPacketReceived OK");
             // OnData(pPacket.dataStreamPacket);
         }
 

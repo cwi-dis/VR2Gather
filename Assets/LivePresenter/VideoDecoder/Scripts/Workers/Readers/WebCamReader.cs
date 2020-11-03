@@ -15,6 +15,7 @@ namespace Workers {
         VideoFilter     RGBA2RGBFilter;
 
         SemaphoreSlim       frameReady;
+        bool                isFrameReady=false;
         CancellationTokenSource   isClosed;
 
         System.IntPtr data;
@@ -47,9 +48,12 @@ namespace Workers {
             base.Update();
             if (outQueue.IsClosed()) return;
             try {
-                frameReady.Wait(isClosed.Token);
-                if (!isClosed.IsCancellationRequested)
-                    Color32ArrayToByteArray(webcamColors, outQueue);
+                lock (this) {
+                    //frameReady.Wait(isClosed.Token);
+                    //if (!isClosed.IsCancellationRequested)
+                    if(isFrameReady)
+                        Color32ArrayToByteArray(webcamColors, outQueue);
+                }
             } catch(OperationCanceledException e ){
 //                frameReady.Release();
             }
@@ -64,7 +68,25 @@ namespace Workers {
             monoBehaviour.StopCoroutine(coroutine);
         }
 
-        float                   timeToFrame;
+        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] Color32ArrayToByteArray");
+            GCHandle handle = default;
+            try {
+                handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
+                NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
+                chunk.info.dsi = infoData;
+                chunk.info.dsi_size = 12;
+                outQueue.Enqueue(chunk);
+                isFrameReady = false;
+            } finally {
+                if (handle != default(GCHandle))
+                    handle.Free();
+            }
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] Color32ArrayToByteArray OK");
+        }
+
+
+        float timeToFrame;
         float                   frameTime;
         Color32[]               webcamColors;
         public WebCamTexture    webcamTexture { get; private set; }
@@ -108,34 +130,20 @@ namespace Workers {
 
         IEnumerator WebCamRecorder(string deviceName) {
             while (true) {
-//                lock (this) 
-                {
-                    if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
-                        if(webcamTexture.isPlaying)
+                lock (this) {
+                    if (!isFrameReady && timeToFrame < Time.realtimeSinceStartup) {//&& frameReady.CurrentCount == 0) {
+                    UnityEngine.Debug.Log("Get Pixels");
+                        if (webcamTexture.isPlaying) {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
-                        frameReady.Release();
-//                        timeToFrame += frameTime;
+                            isFrameReady = true;
+                        }
+                        //                        frameReady.Release();
                         timeToFrame = frameTime + Time.realtimeSinceStartup;
                     }
+                    UnityEngine.Debug.Log("Get Pixels OK");
                 }
                 yield return null;
             }
         }
-
-        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
-            GCHandle handle = default;
-            try {
-                handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
-                NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
-                chunk.info.dsi = infoData;
-                chunk.info.dsi_size = 12;
-                outQueue.Enqueue(chunk);
-            } finally {
-                if (handle != default(GCHandle))
-                    handle.Free();
-            }
-        }
-
-
     }
 }

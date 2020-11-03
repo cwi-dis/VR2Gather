@@ -86,7 +86,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
                 player.webcam.SetActive(true);
                 if (webcamName != "None") {
                     WebCamPipeline wcPipeline = player.webcam.AddComponent<WebCamPipeline>();
-                    wcPipeline.Init(new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                    wcPipeline.Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
                 }
 
                 break;

@@ -46,6 +46,9 @@ namespace Workers
         }
 
         protected override void Update() {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] SocketIOWriter.Update ");
+
+
             base.Update();
             if (OrchestratorWrapper.instance!=null && OrchestratorController.Instance.ConnectedToOrchestrator) {
                 for (int i = 0; i < streams.Length; ++i) {
@@ -59,6 +62,7 @@ namespace Workers
 
                 }
             }
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] SocketIOWriter.Update OK");
         }
         // FPA: Ask Jack about GetSyncInfo().
 
