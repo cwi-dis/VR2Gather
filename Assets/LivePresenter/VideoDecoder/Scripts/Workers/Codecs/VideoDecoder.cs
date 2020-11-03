@@ -29,6 +29,8 @@ namespace Workers {
         int_array4              tmpLineSizeArray;
         byte*                   _pictureFrameData;
 
+        AVCodecID               codec;
+
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -39,7 +41,8 @@ namespace Workers {
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+            this.codec = codec;
             inVideoQueue = _inVideoQueue;
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
@@ -56,6 +59,7 @@ namespace Workers {
         }
 
         protected override void Update() {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update");
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
@@ -85,6 +89,7 @@ namespace Workers {
                     }
                 }
                 mc.free();
+                UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update OK");
             }
 
             if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
@@ -125,7 +130,7 @@ namespace Workers {
         }
 
         void CreateVideoCodec(NativeMemoryChunk mc) {
-            codecVideo = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
+            codecVideo = ffmpeg.avcodec_find_decoder(codec);
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
                 if (codecVideo_ctx != null) {
@@ -146,7 +151,7 @@ namespace Workers {
                         videoFrame = ffmpeg.av_frame_alloc();
                     } else Debug.Log("av_parser_init ERROR");
                 } else Debug.Log("avcodec_alloc_context3 ERROR");
-            } else Debug.Log("avcodec_find_decoder ERROR");
+            } else Debug.LogError("[FPA] avcodec_find_decoder ERROR");
 
         }
 

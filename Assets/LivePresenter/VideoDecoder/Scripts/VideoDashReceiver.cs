@@ -36,9 +36,9 @@ public class VideoDashReceiver : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public void Init() {
+    public void Init(FFmpeg.AutoGen.AVCodecID codec= FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264) {
         try {
-            decoder = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
+            decoder = new Workers.VideoDecoder( codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
             reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }

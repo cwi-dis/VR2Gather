@@ -95,7 +95,7 @@ abstract public class PilotController : MonoBehaviour {
                             // FER: Implementacion representacion de webcam.
                             players[playerIdx].webcam.SetActive(true);
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
                             // Audio
                             players[playerIdx].audio.SetActive(true);
                             LoadAudio(players[playerIdx], user);
