@@ -51,7 +51,6 @@ namespace Workers {
         }
 
         protected override void Update() {
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoPreparer.Update");
             base.Update();
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
@@ -98,7 +97,6 @@ namespace Workers {
                     mc.free();
                 }
             }
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoPreparer.Update OK");
         }
 
         public int availableAudio { get; private set; }
