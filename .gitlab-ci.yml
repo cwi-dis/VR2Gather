@@ -1,14 +1,5 @@
-#
-# CI/CD system must be Win10 with the following programs installed:
-# - Unity Editor (must be on PATH, license accepted, must include XR stuff)
-# - git (including bash, added to PATH)
-# - python 3.7 (on PATH, installation must be user-writeable)
-# - 7zip
-#
 stages:
   - build
-#  - test
-#  - deploy
       
 build_win:
   stage: build
@@ -27,8 +18,3 @@ build_win:
   - mkdir deliverables
   - "C:/Program Files/7-Zip/7z.exe" a -tzip -r VRTogether deliverables/Unity_Player_$CI_COMMIT_TAG.zip
   - python deployment-helpers/Deployment/scripts/addReleaseToGitLab --cicd --notag Unity_Player_$CI_COMMIT_TAG.zip
-# xxxjack: not uploading artifacts because VO gitlab has a size limit that is too low
-#  artifacts:
-#    paths:
-#      - Unity_Player_$CI_COMMIT_TAG.zip
-# xxxjack: deployment is done in build stage, because artifacts cannot be uploaded.    
