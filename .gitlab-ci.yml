@@ -14,7 +14,7 @@ build_win:
    - python -m pip install -r Deployment/scripts/requirements.txt
    - cd ..
   script:
-    - bash build-VRTogether.sh
+    - bash build-VRTogether.sh --dest VRTogether
     - mkdir deliverables
     - "& \"C:/Program Files/7-Zip/7z.exe\" a -tzip -r VRTogether deliverables/Unity_Player_$CI_COMMIT_TAG.zip"
     - python deployment-helpers/Deployment/scripts/addReleaseToGitLab --cicd --notag Unity_Player_$CI_COMMIT_TAG.zip
