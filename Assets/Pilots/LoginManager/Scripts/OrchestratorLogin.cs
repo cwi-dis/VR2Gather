@@ -262,6 +262,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Synthetic PC)";
                 break;
+            case UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (Prerecorded PC)";
+                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric PC)";
@@ -438,6 +442,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
+            case UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "PRERECORDED PC";
+                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC PC";
@@ -477,6 +485,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
+                break;
+            case UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+                selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";
