@@ -59,7 +59,6 @@ namespace Workers {
         }
 
         protected override void Update() {
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update");
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
@@ -89,7 +88,6 @@ namespace Workers {
                     }
                 }
                 mc.free();
-                UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update OK");
             }
 
             if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
