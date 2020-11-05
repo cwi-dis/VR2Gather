@@ -51,6 +51,8 @@ if ! Unity -batchmode -projectPath . -buildWindows64Player $DEST/VRTogether.exe 
 	echo ============= Unity build failed. Logfile contents above ==========
 	exit 1
 fi
+cp config.json $DEST
+cp device_repository.json $DEST
 if $INSTALL_PCL; then
 	mkdir $DEST/bin
 	cp ../installed/bin/*.{exe,bat,sh} $DEST/bin
