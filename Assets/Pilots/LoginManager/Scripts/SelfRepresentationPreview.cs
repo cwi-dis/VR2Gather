@@ -101,13 +101,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
             case UserData.eUserRepresentationType.__PCC_PROXY__:
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
-\                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_SYNTH__ } }, Config.Instance.PreviewUser);
-                break;
             case UserData.eUserRepresentationType.__PCC_PRERECORDED__:
-                player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = UserData.eUserRepresentationType.__PCC_PRERECORDED__ } }, Config.Instance.PreviewUser);
-                break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
                 player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
