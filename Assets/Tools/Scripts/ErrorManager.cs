@@ -59,6 +59,7 @@ public class ErrorManager : MonoBehaviour {
         }
         else if (type == LogType.Error) {
             error[0] = "Error";
+            if (stackTrace.Contains("BestHTTP")) return;
             lock (thisLock) {
                 queue.Add(error);
             }

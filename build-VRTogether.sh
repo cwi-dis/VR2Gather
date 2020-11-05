@@ -6,6 +6,7 @@ dirname=`dirname $0`
 dirname=`cd $dirname ; pwd`
 INSTALL_PCL=false
 INSTALL_TVM=false
+DEST=built-VRTogether
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -23,9 +24,14 @@ case $key in
     INSTALL_TVM=true
     shift # past argument
     ;;
+    --dest)
+    DEST="$2"
+    shift
+    shift
+    ;;
 	--help)
 	echo "Usage: $0 [--pcl] [--tvm]"
-	echo "Creates VRTogether app in $dirname/built-VRTogether"
+	echo "Creates VRTogether app in $dirname/$DEST"
 	echo "--pcl Includes pointcloud DLLs and support programs (must be in expected location)"
 	echo "--tvm Includes TVM DLLs and support programs (unimplemented)"
 	exit 0
@@ -38,19 +44,21 @@ esac
 done
 set -x
 cd $dirname
-rm -rf built-VRTogether buildlog.txt
-if ! Unity -batchmode -projectPath . -buildWindows64Player built-VRTogether/VRTogether.exe -quit -logfile buildlog.txt; then
+rm -rf $DEST buildlog.txt
+if ! Unity -batchmode -projectPath . -buildWindows64Player $DEST/VRTogether.exe -quit -logfile buildlog.txt; then
 	echo ============= Unity build failed. Logfile contents below ==========
 	cat buildlog.txt
 	echo ============= Unity build failed. Logfile contents above ==========
 	exit 1
 fi
+cp config.json $DEST
+cp device_repository.json $DEST
 if $INSTALL_PCL; then
-	mkdir built-VRTogether/bin
-	cp ../installed/bin/*.{exe,bat,sh} built-VRTogether/bin
-	mkdir built-VRTogether/dll
-	cp ../installed/bin/*.{dll,smd,so} built-VRTogether/dll
-	cp -r ../installed/share built-VRTogether/share
+	mkdir $DEST/bin
+	cp ../installed/bin/*.{exe,bat,sh} $DEST/bin
+	mkdir $DEST/dll
+	cp ../installed/bin/*.{dll,smd,so} $DEST/dll
+	cp -r ../installed/share $DEST/share
 fi
 if $INSTALL_TVM; then
 	# xxxjack should also copy tvm_dll, tvm_release, 3rdparty?

@@ -29,6 +29,8 @@ namespace Workers {
         int_array4              tmpLineSizeArray;
         byte*                   _pictureFrameData;
 
+        AVCodecID               codec;
+
         public int Width { get; private set; }
         public int Height { get; private set; }
 
@@ -39,7 +41,8 @@ namespace Workers {
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+            this.codec = codec;
             inVideoQueue = _inVideoQueue;
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
@@ -56,6 +59,7 @@ namespace Workers {
         }
 
         protected override void Update() {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update");
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
@@ -85,6 +89,7 @@ namespace Workers {
                     }
                 }
                 mc.free();
+                UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoDecoder.Update OK");
             }
 
             if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
@@ -125,7 +130,7 @@ namespace Workers {
         }
 
         void CreateVideoCodec(NativeMemoryChunk mc) {
-            codecVideo = ffmpeg.avcodec_find_decoder(AVCodecID.AV_CODEC_ID_H264);
+            codecVideo = ffmpeg.avcodec_find_decoder(codec);
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
                 if (codecVideo_ctx != null) {
@@ -146,7 +151,7 @@ namespace Workers {
                         videoFrame = ffmpeg.av_frame_alloc();
                     } else Debug.Log("av_parser_init ERROR");
                 } else Debug.Log("avcodec_alloc_context3 ERROR");
-            } else Debug.Log("avcodec_find_decoder ERROR");
+            } else Debug.LogError("[FPA] avcodec_find_decoder ERROR");
 
         }
 
@@ -156,6 +161,19 @@ namespace Workers {
                 _pictureFrameData = (byte*)ffmpeg.av_malloc((ulong)num_bytes);
                 ffmpeg.av_image_fill_arrays(ref tmpDataArray, ref tmpLineSizeArray, (byte*)_pictureFrameData, AVPixelFormat.AV_PIX_FMT_RGB24, videoFrame->width, videoFrame->height, 1);
                 swsYUV2RGBCtx = ffmpeg.sws_getContext(videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_YUV420P, videoFrame->width, videoFrame->height, AVPixelFormat.AV_PIX_FMT_RGB24, 0, null, null, null);
+
+                int brightness = 0;
+                int contrast = 65536;
+                int saturation = 65536;
+                int srcRange = 0;
+                int dstRange = 0;
+
+                int_array4 srcTable, dstTable;
+                srcTable[0] = 104597; srcTable[1] = 132201; srcTable[2] = 25675; srcTable[3] = 53279;  // { 104597, 132201, 25675, 53279 }, /* ITU-R Rec. 624-4 System B, G
+                dstTable[0] = 117489; dstTable[1] = 138438; dstTable[2] = 13975; dstTable[3] = 34925; // { 117489, 138438, 13975, 34925 }, /* ITU-R Rec. 709 (1990)
+
+                int ret = ffmpeg.sws_setColorspaceDetails(swsYUV2RGBCtx, srcTable, srcRange, dstTable, dstRange, brightness, contrast, saturation);
+
                 Width = videoFrame->width;
                 Height = videoFrame->height;
             }

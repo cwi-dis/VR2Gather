@@ -51,6 +51,7 @@ namespace Workers {
         }
 
         protected override void Update() {
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoPreparer.Update");
             base.Update();
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
@@ -97,6 +98,7 @@ namespace Workers {
                     mc.free();
                 }
             }
+            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoPreparer.Update OK");
         }
 
         public int availableAudio { get; private set; }
@@ -132,10 +134,12 @@ namespace Workers {
         }
 
         public System.IntPtr GetVideoPointer(int len) {
+            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer");
             var ret = circularVideoBufferPtr + readVideoPosition;
             readVideoPosition += len;
             if (readVideoPosition >= videoBufferSize) readVideoPosition -= videoBufferSize;
             lock (this) { availableVideo -= len; }
+            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer OK");
             return ret;
         }
     }

@@ -145,7 +145,6 @@ namespace BestHTTP.SocketIO
                 throw new ArgumentException("Blacklisted event: " + eventName);
 
             arguments.Clear();
-            //List<object> arguments = new List<object>();
             arguments.Add(eventName);
 
             // Find and swap any binary data(byte[]) to a placeholder string.
@@ -230,7 +229,6 @@ namespace BestHTTP.SocketIO
                 (originalPacket.SocketIOEvent != SocketIOEventTypes.Event && originalPacket.SocketIOEvent != SocketIOEventTypes.BinaryEvent))
                 throw new ArgumentException("Wrong packet - you can't send an Ack for a packet with id == 0 and SocketIOEvent != Event or SocketIOEvent != BinaryEvent!");
 
-            //List<object> arguments = new List<object>();
             arguments.Clear();
             if (args != null && args.Length > 0)
                 arguments.AddRange(args);

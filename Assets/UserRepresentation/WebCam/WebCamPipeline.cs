@@ -8,6 +8,7 @@ public class WebCamPipeline : MonoBehaviour {
     public int              width = 1280;
     public int              height = 720;
     public int              fps = 12;
+    public int              bitrate = 200000;
     bool                    ready = false;
 
     public Texture2D        texture;
@@ -38,7 +39,7 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash, bool preview = false) {
+    public WebCamPipeline Init(FFmpeg.AutoGen.AVCodecID codec, OrchestratorWrapping.User user, Config._User cfg, bool useDash, bool preview = false) {
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
             case "self": // Local
@@ -57,7 +58,7 @@ public class WebCamPipeline : MonoBehaviour {
                     // Create encoders for transmission
                     //
                     try {
-                        encoder = new Workers.VideoEncoder(encoderQueue, null, writerQueue, null);
+                        encoder = new Workers.VideoEncoder( new Workers.VideoEncoder.Setup() { codec = codec, width = width, height= height, fps= fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
                     }
                     catch (System.EntryPointNotFoundException e) {
                         Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
@@ -120,7 +121,7 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 // Create video decoder.
                 //
-                decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
+                decoder = new Workers.VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
                 //
                 // Create video preparer.
                 //
