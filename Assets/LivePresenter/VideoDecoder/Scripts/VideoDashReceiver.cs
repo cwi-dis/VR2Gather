@@ -10,12 +10,12 @@ public class VideoDashReceiver : MonoBehaviour {
     Workers.VideoPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
-    QueueThreadSafe         videoDataQueue = new QueueThreadSafe();
-    QueueThreadSafe         audioDataQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe();
-    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe(5);
-    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe(10);
+    QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoDashReceiver");
+    QueueThreadSafe         audioDataQueue = new QueueThreadSafe("AudioDashReceiver");
+    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe("VideoDashDecompressor");
+    QueueThreadSafe         audioCodecQueue = new QueueThreadSafe("AudioDashDecompressor");
+    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoDashPreparer",5);
+    QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe("AudioDashPreparer", 10);
 
     Workers.Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
@@ -36,14 +36,14 @@ public class VideoDashReceiver : MonoBehaviour {
     }
 
     // Start is called before the first frame update
-    public void Init() {
+    public void Init(FFmpeg.AutoGen.AVCodecID codec= FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264) {
         try {
-            decoder = new Workers.VideoDecoder(videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
+            decoder = new Workers.VideoDecoder( codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
             reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
-            Debug.LogError($"VideoDashReceiver.Init: Exception: {e.Message}\n{e.StackTrace}");
+            Debug.Log($"VideoDashReceiver.Init: Exception: {e.Message}");
             throw e;
         }
     }

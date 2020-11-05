@@ -8,6 +8,7 @@ public class WebCamPipeline : MonoBehaviour {
     public int              width = 1280;
     public int              height = 720;
     public int              fps = 12;
+    public int              bitrate = 200000;
     bool                    ready = false;
 
     public Texture2D        texture;
@@ -26,9 +27,9 @@ public class WebCamPipeline : MonoBehaviour {
     VoiceReceiver audioReceiver;
 
     QueueThreadSafe encoderQueue;
-    QueueThreadSafe writerQueue         = new QueueThreadSafe();
-    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe();
-    QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe();
+    QueueThreadSafe writerQueue         = new QueueThreadSafe("WebCamPipelineWriter");
+    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec");
+    QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
@@ -38,62 +39,79 @@ public class WebCamPipeline : MonoBehaviour {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(OrchestratorWrapping.User user, Config._User cfg, bool useDash) {
+    public WebCamPipeline Init(FFmpeg.AutoGen.AVCodecID codec, OrchestratorWrapping.User user, Config._User cfg, bool useDash, bool preview = false) {
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
-            case "self": // Local 
+            case "self": // Local
                 isSource = true;
                 //
                 // Allocate queues we need for this sourceType
                 //
-                encoderQueue = new QueueThreadSafe(2, true);
+                encoderQueue = new QueueThreadSafe("WebCamPipelineEncoder", 2, true);
                 //
                 // Create reader
                 //
                 webReader = new Workers.WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
-                //
-                // Create encoders for transmission
-                //
-                try {
-                    encoder = new Workers.VideoEncoder(encoderQueue, null, writerQueue, null);
-                } catch (System.EntryPointNotFoundException) {
-                    Debug.LogError("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                    throw new System.Exception("EntityPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                }
-                //
-                // Create bin2dash writer for PC transmission
-                //
-                var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                if (Bin2Dash == null)
-                    throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.Bin2Dash config");
-                try {
-                    Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
+                if (!preview) {
+                    //
+                    // Create encoders for transmission
+                    //
+                    try {
+                        encoder = new Workers.VideoEncoder( new Workers.VideoEncoder.Setup() { codec = codec, width = width, height= height, fps= fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
+                        throw new System.Exception("WebCamPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                    }
+                    //
+                    // Create bin2dash writer for PC transmission
+                    //
+                    var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
+                    if (Bin2Dash == null)
+                        throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
+                    try {
+                        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
                         new Workers.B2DWriter.DashStreamDescription() {
                         tileNumber = 0,
                         quality = 0,
                         inQueue = writerQueue
                         }
                     };
-                    if (useDash)    writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
-                    else            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
-                } catch (System.EntryPointNotFoundException e) {
-                    Debug.LogError($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
-                    throw new System.Exception($"EntityPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                        if (useDash)
+                            writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
+                        else
+                            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
+                    }
+                    catch (System.EntryPointNotFoundException e) {
+                        Debug.Log($"WebCamPipeline: SocketIOWriter(): EntryPointNotFound({e.Message})");
+                        throw new System.Exception($"WebCamPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                    }
+                    /*
+                                        //
+                                        // Create pipeline for audio, if needed.
+                                        // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                                        //
+                                        var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
+                                        if (AudioBin2Dash == null)
+                                            throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
+                                        try {
+                                            audioSender = gameObject.AddComponent<VoiceSender>();
+                                            audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+                                        }
+                                        catch (System.EntryPointNotFoundException e) {
+                                            Debug.LogError("WebCamPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                                            throw new System.Exception("WebCamPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                                        }
+                    */
                 }
-                //
-                // Create pipeline for audio, if needed.
-                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                //
-                var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                if (AudioBin2Dash == null) throw new System.Exception("EntityPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
-                try {
-                    audioSender = gameObject.AddComponent<VoiceSender>();
-                    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
-                }
-                catch (System.EntryPointNotFoundException e) {
-                    Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                else {
+                    Transform screen = transform.Find("PlayerHeadScreen");
+                    var renderer = screen.GetComponent<Renderer>();
+                    if (renderer != null) {
+                        renderer.material.mainTexture = webCamTexture;
+                        renderer.transform.localScale = new Vector3(0.5f, (webCamTexture.height / (float)webCamTexture.width) * 0.5f, 1);
+                    }
                 }
                 break;
             case "remote": // Remoto
@@ -103,38 +121,26 @@ public class WebCamPipeline : MonoBehaviour {
                 //
                 // Create video decoder.
                 //
-                decoder = new Workers.VideoDecoder(videoCodecQueue, null, videoPreparerQueue, null);
+                decoder = new Workers.VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
                 //
                 // Create video preparer.
                 //
                 preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
-                //
-                // Create pipeline for audio, if needed.
-                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                //
-                var AudioSUBConfig = cfg.AudioSUBConfig;
-                if (AudioSUBConfig == null) throw new System.Exception("EntityPipeline: missing other-user AudioSUBConfig config");
-                audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
-                ready = true;
-                break;
-            case "preview": // Preview 
-                isSource = true;
-                //
-                // Create reader
-                //
-                webReader = new Workers.WebCamReader(user.userData!=null?user.userData.webcamName:null, width, height, fps, this, videoPreparerQueue);
-                //
-                // Create video preparer
-                //
-                preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+                /*
+                                //
+                                // Create pipeline for audio, if needed.
+                                // Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
+                                //
+                                var AudioSUBConfig = cfg.AudioSUBConfig;
+                                if (AudioSUBConfig == null) throw new System.Exception("WebCamPipeline: missing other-user AudioSUBConfig config");
+                                audioReceiver = gameObject.AddComponent<VoiceReceiver>();
+                                audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline                
+                */
                 ready = true;
                 break;
         }
         return this;
     }
-
-
 
     // Update is called once per frame
     System.DateTime lastUpdateTime;
@@ -145,7 +151,7 @@ public class WebCamPipeline : MonoBehaviour {
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
                         texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
-                        Transform screen = transform.Find("Screen");
+                        Transform screen = transform.Find("PlayerHeadScreen");
                         var renderer = screen.GetComponent<Renderer>();
                         if (renderer != null) {
                             renderer.material.mainTexture = texture;
@@ -173,13 +179,13 @@ public class WebCamPipeline : MonoBehaviour {
                 if (isSource)
                 {
                     ViewerInformation vi = GetViewerInformation();
-                    Debug.Log($"xxxjack EntityPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
+                    Debug.Log($"xxxjack WebCamPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
                 }
                 else
                 {
                     Vector3 position = GetPosition();
                     Vector3 rotation = GetRotation();
-                    Debug.Log($"xxxjack EntityPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+                    Debug.Log($"xxxjack WebCamPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
                 }
             }
         }
@@ -206,7 +212,7 @@ public class WebCamPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError("EntityPipeline: GetSyncConfig called for pipeline that is not a source");
+            Debug.LogError("Programmer error: WebCamPipeline: GetSyncConfig called for pipeline that is not a source");
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
@@ -217,7 +223,7 @@ public class WebCamPipeline : MonoBehaviour {
         }
         else
         {
-            Debug.LogWarning("EntityPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+            Debug.LogWarning("WebCamPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
         }
         if (audioSender != null)
         {
@@ -231,7 +237,7 @@ public class WebCamPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError("EntityPipeline: SetSyncConfig called for pipeline that is a source");
+            Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
             return;
         }
         Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
@@ -241,7 +247,7 @@ public class WebCamPipeline : MonoBehaviour {
         }
         else
         {
-            Debug.LogWarning("EntityPipeline: SetSyncConfig: reader is not a PCSubReader");
+            Debug.LogWarning("WebCamPipeline: SetSyncConfig: reader is not a PCSubReader");
         }
 
         audioReceiver?.SetSyncInfo(config.audio);
@@ -251,7 +257,7 @@ public class WebCamPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError("EntityPipeline: GetPosition called for pipeline that is a source");
+            Debug.LogError("Programmer error: WebCamPipeline: GetPosition called for pipeline that is a source");
             return new Vector3();
         }
         return transform.position;
@@ -261,7 +267,7 @@ public class WebCamPipeline : MonoBehaviour {
     {
         if (isSource)
         {
-            Debug.LogError("EntityPipeline: GetRotation called for pipeline that is a source");
+            Debug.LogError("Programmer error: WebCamPipeline: GetRotation called for pipeline that is a source");
             return new Vector3();
         }
         return transform.rotation * Vector3.forward;
@@ -276,14 +282,14 @@ public class WebCamPipeline : MonoBehaviour {
     {
         if (!isSource)
         {
-            Debug.LogError("EntityPipeline: GetViewerInformation called for pipeline that is not a source");
+            Debug.LogError("Programmer error: WebCamPipeline: GetViewerInformation called for pipeline that is not a source");
             return new ViewerInformation();
         }
         // The camera object is nested in another object on our parent object, so getting at it is difficult:
         Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
         if (_camera == null)
         {
-            Debug.LogError("EntityPipeline: no Camera object for self user");
+            Debug.LogError("Programmer error: WebCamPipeline: no Camera object for self user");
             return new ViewerInformation();
         }
         Vector3 position = _camera.transform.position;

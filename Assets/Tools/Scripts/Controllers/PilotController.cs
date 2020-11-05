@@ -23,7 +23,8 @@ abstract public class PilotController : MonoBehaviour {
                 player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
             }
             catch (System.EntryPointNotFoundException e) {
-                Debug.LogError("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
+                Debug.Log($"PilotController.LoadAudio: EntrypointNotFoundException: {e}");
+                Debug.LogError("Cannot send your audio to other participants");
                 throw new System.Exception("EntityPipeline: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
             }
         }
@@ -61,6 +62,9 @@ abstract public class PilotController : MonoBehaviour {
                         my_id = spectators[spectatorIdx].id;
                         spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
+                    else {
+                        spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                    }
                     spectators[spectatorIdx].orchestratorId = user.userId;
 
                     // Load Audio
@@ -82,16 +86,16 @@ abstract public class PilotController : MonoBehaviour {
                         my_id = players[playerIdx].id;
                         players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                     }
+                    else {
+                        players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                    }
 
                     switch (user.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                             // FER: Implementacion representacion de webcam.
                             players[playerIdx].webcam.SetActive(true);
-                            if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                            }
                             Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
+                            players[playerIdx].webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
                             // Audio
                             players[playerIdx].audio.SetActive(true);
                             LoadAudio(players[playerIdx], user);
@@ -102,6 +106,9 @@ abstract public class PilotController : MonoBehaviour {
                             if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                 players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                             }
+                            else {
+                                players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                            }
                             // Audio
                             players[playerIdx].audio.SetActive(true);
                             LoadAudio(players[playerIdx], user);
@@ -109,6 +116,8 @@ abstract public class PilotController : MonoBehaviour {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                        case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                             players[playerIdx].pc.SetActive(true);
                             bool isSelf = my_id == players[playerIdx].id;
@@ -171,6 +180,9 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = spectators[spectatorIdx].id;
                             spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            spectators[spectatorIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         // Load Audio
                         spectators[spectatorIdx].audio.SetActive(true);
@@ -189,14 +201,14 @@ abstract public class PilotController : MonoBehaviour {
                             my_id = players[playerIdx].id;
                             players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                         }
+                        else {
+                            players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                        }
 
                         switch (user.userData.userRepresentationType) {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:
                                 // FER: Implementacion representacion de webcam.
                                 players[playerIdx].webcam.SetActive(true);
-                                if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
-                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
-                                }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
                                 LoadAudio(players[playerIdx], user);
@@ -206,6 +218,9 @@ abstract public class PilotController : MonoBehaviour {
                                 if (user.userName == OrchestratorController.Instance.SelfUser.userName) {
                                     players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().SyncAutomatically = true;
                                 }
+                                else {
+                                    players[playerIdx].avatar.GetComponentInChildren<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
+                                }
                                 // Audio
                                 players[playerIdx].audio.SetActive(true);
                                 LoadAudio(players[playerIdx], user);
@@ -213,6 +228,8 @@ abstract public class PilotController : MonoBehaviour {
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
+                            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
                             case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_: // PC & AUDIO
                                 players[playerIdx].pc.SetActive(true);
                                 Config._User userCfg = my_id == players[playerIdx].id ? Config.Instance.LocalUser : Config.Instance.RemoteUser;

@@ -8,8 +8,8 @@ public class VoiceSender : MonoBehaviour {
     Workers.BaseWriter writer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
-    QueueThreadSafe encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe senderQueue = new QueueThreadSafe();
+    QueueThreadSafe encoderQueue = new QueueThreadSafe("VoiceSenderEncoder");
+    QueueThreadSafe senderQueue = new QueueThreadSafe("VoiceSenderSender");
 
     // Start is called before the first frame update
     public void Init(OrchestratorWrapping.User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {
@@ -17,7 +17,7 @@ public class VoiceSender : MonoBehaviour {
         if (user != null && user.userData != null)
             micro = user.userData.microphoneName;
         if (micro == "None") {
-            Debug.LogError("VoiceSender: no microphone, not opening audio output stream");
+            Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
             return;
         }
 
@@ -32,12 +32,14 @@ public class VoiceSender : MonoBehaviour {
 
     void OnDestroy() {
         reader?.Stop();
+        reader = null;
         codec?.Stop();
+        codec = null;
         writer?.Stop();
+        writer = null;
     }
 
-    public SyncConfig.ClockCorrespondence GetSyncInfo()
-    {
+    public SyncConfig.ClockCorrespondence GetSyncInfo() {
         if(writer==null) return new SyncConfig.ClockCorrespondence();
         return writer.GetSyncInfo();
     }

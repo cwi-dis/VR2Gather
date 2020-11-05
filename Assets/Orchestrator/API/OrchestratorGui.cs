@@ -42,12 +42,6 @@ public class OrchestratorGui : MonoBehaviour
     private InputField userNameIF = null;
     [SerializeField]
     private InputField userPasswordIF = null;
-    /*
-    [SerializeField]
-    private InputField userMQurlIF = null;
-    [SerializeField]
-    private InputField userMQnameIF = null;
-    */
     [SerializeField]
     private Button loginButton = null;
     [SerializeField]
@@ -85,6 +79,8 @@ public class OrchestratorGui : MonoBehaviour
     private Text userSession = null;
     [SerializeField]
     private Text userSessionUsers = null;
+    [SerializeField]
+    private Text userSessionMaster = null;
     [SerializeField]
     private Text userScenario = null;
     [SerializeField]
@@ -236,6 +232,7 @@ public class OrchestratorGui : MonoBehaviour
             //Sessions
             new GuiCommandDescription("AddSession", new List<RectTransform> { scenarioIdPanel, sessionNamePanel, sessionDescriptionPanel }, AddSession),
             new GuiCommandDescription("GetSessions", null, GetSessions),
+            new GuiCommandDescription("GetSessionInfo", null, GetSessionInfo),
             new GuiCommandDescription("DeleteSession", new List<RectTransform> { sessionIdPanel }, DeleteSession),
             new GuiCommandDescription("JoinSession", new List<RectTransform> {  sessionIdPanel }, JoinSession),
             new GuiCommandDescription("LeaveSession", null, LeaveSession),
@@ -273,12 +270,14 @@ public class OrchestratorGui : MonoBehaviour
     // update connect and login buttons according to the states
     private void UpdateEnabledItems()
     {
-        connectButton.interactable = !OrchestratorController.Instance.ConnectedToOrchestrator;
-        disconnectButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
-        loginButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
-        logoutButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
-        commandDropdown.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
-        sendCommandButton.interactable = OrchestratorController.Instance.ConnectedToOrchestrator;
+        bool lConnectedToOrchestrator = OrchestratorController.Instance.ConnectionStatus == OrchestratorController.orchestratorConnectionStatus.__CONNECTED;
+
+        connectButton.interactable = !lConnectedToOrchestrator;
+        disconnectButton.interactable = lConnectedToOrchestrator;
+        loginButton.interactable = lConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
+        logoutButton.interactable = lConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
+        commandDropdown.interactable = lConnectedToOrchestrator;
+        sendCommandButton.interactable = lConnectedToOrchestrator;
     }
 
     // Select a command
@@ -314,29 +313,12 @@ public class OrchestratorGui : MonoBehaviour
     // update the list of connected users in a session to display
     private void UpdateConnectedUsersGUI()
     {
-        if (OrchestratorController.Instance.ConnectedUsers == null)
-        {
-            userSessionUsers.text = "None";
-            return;
-        }
-
+        // clean the text field before setting new values
         userSessionUsers.text = "";
 
-        switch(OrchestratorController.Instance.ConnectedUsers.Length)
+        foreach (User u in OrchestratorController.Instance.ConnectedUsers)
         {
-            case 0:
-                userSessionUsers.text = "None";
-                break;
-            case 1:
-                userSessionUsers.text = "Me; " + OrchestratorController.Instance.ConnectedUsers[0].userName;
-                break;
-            default:
-                userSessionUsers.text = "Me; ";
-                foreach (User u in OrchestratorController.Instance.ConnectedUsers)
-                {
-                    userSessionUsers.text += u.userName + "; ";
-                }
-                break;
+            userSessionUsers.text += u.userName + "; ";
         }
     }
 
@@ -398,6 +380,7 @@ public class OrchestratorGui : MonoBehaviour
     private void InitialiseControllerEvents()
     {
         OrchestratorController.Instance.OnConnectionEvent += OnConnect;
+        OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
         OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
         OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
         OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
@@ -406,6 +389,7 @@ public class OrchestratorGui : MonoBehaviour
         OrchestratorController.Instance.OnLoginEvent += OnLogin;
         OrchestratorController.Instance.OnLogoutEvent += OnLogout;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
+        OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
         OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
@@ -423,7 +407,8 @@ public class OrchestratorGui : MonoBehaviour
         OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
         OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
         OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
-        OrchestratorController.Instance.OnUserEventReceivedEvent+= OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
     }
 
     #endregion
@@ -434,13 +419,28 @@ public class OrchestratorGui : MonoBehaviour
 
     public void SocketConnect()
     {
-        OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
+        switch(OrchestratorController.Instance.ConnectionStatus)
+        {
+            case OrchestratorController.orchestratorConnectionStatus.__DISCONNECTED__:
+                OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
+                break;
+            case OrchestratorController.orchestratorConnectionStatus.__CONNECTING__:
+                OrchestratorController.Instance.Abort();
+                break;
+        }
     }
 
     private void OnConnect(bool pConnected)
     {
         orchestratorConnected.text = pConnected.ToString();
+        connectButton.GetComponentInChildren<Text>().text = "socket connection";
         UpdateEnabledItems();
+    }
+
+    private void OnConnecting()
+    {
+        orchestratorConnected.text = "Connecting...";
+        connectButton.GetComponentInChildren<Text>().text = "abort";
     }
 
     private void socketDisconnect()
@@ -454,6 +454,7 @@ public class OrchestratorGui : MonoBehaviour
         userName.text = "";
         userAdmin.text = "";
         orchestratorConnected.text = pConnected.ToString();
+        connectButton.GetComponentInChildren<Text>().text = "socket connection";
         orchestratorVersion.text = "";
         UpdateEnabledItems();
     }
@@ -476,7 +477,9 @@ public class OrchestratorGui : MonoBehaviour
     // Display the received message in the logs
     public void OnOrchestratorResponse(string pResponse)
     {
-        AddTextComponentOnContent(logsContainer.transform, "<<< " + pResponse);
+        //Debug.Log("[OrchestratorGui][OnOrchestratorResponse]::Response lenght::" + pResponse.Length);
+        string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
+        AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
         StartCoroutine(ScrollLogsToBottom());
     }
 
@@ -540,6 +543,13 @@ public class OrchestratorGui : MonoBehaviour
             userAdmin.text = "";
             userMQname.text = "";
             userMQurl.text = "";
+            userMaster.text = "";
+            userSession.text = "";
+            userSessionUsers.text = "";
+            userSessionMaster.text = "";
+            userScenario.text = "";
+            userLiveURL.text = "";
+            userVODLiveURL.text = "";
         }
         UpdateEnabledItems();
     }
@@ -587,6 +597,31 @@ public class OrchestratorGui : MonoBehaviour
         }
     }
 
+    private void GetSessionInfo()
+    {
+        OrchestratorController.Instance.GetSessionInfo();
+    }
+
+    private void OnGetSessionInfoHandler(Session session)
+    {
+        if(session != null)
+        {
+            userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
+            userSession.text = session.GetGuiRepresentation();
+            userSessionMaster.text = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            userScenario.text = session.scenarioId;
+            UpdateConnectedUsersGUI();
+        }
+        else
+        {
+            userMaster.text = "";
+            userSession.text = "";
+            userSessionUsers.text = "";
+            userSessionMaster.text = "";
+            userScenario.text = "";
+        }
+    }
+
     private void AddSession()
     {
         Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
@@ -617,13 +652,18 @@ public class OrchestratorGui : MonoBehaviour
             });
             dd.AddOptions(options);
 
-            userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString(); ;
+            userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
             userSession.text = session.GetGuiRepresentation();
+            userSessionMaster.text = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
             userScenario.text = session.scenarioId;
+            UpdateConnectedUsersGUI();
         }
         else
         {
+            userMaster.text = "";
             userSession.text = "";
+            userSessionUsers.text = "";
+            userSessionMaster.text = "";
             userScenario.text = "";
         }
     }
@@ -659,15 +699,19 @@ public class OrchestratorGui : MonoBehaviour
     {
         if(session != null)
         {
-            userSession.text = session.GetGuiRepresentation();
-            userScenario.text = session.scenarioId;
             userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
+            userSession.text = session.GetGuiRepresentation();
+            userSessionMaster.text = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            userScenario.text = session.scenarioId;
+            UpdateConnectedUsersGUI();
         }
         else
         {
-            userSession.text = "";
-            userScenario.text = "";
             userMaster.text = "";
+            userSession.text = "";
+            userSessionUsers.text = "";
+            userSessionMaster.text = "";
+            userScenario.text = "";
         }
     }
 
@@ -678,18 +722,17 @@ public class OrchestratorGui : MonoBehaviour
 
     private void OnLeaveSessionHandler()
     {
-        userSession.text = "";
-        userScenario.text = "";
         userMaster.text = "";
-
-        UpdateConnectedUsersGUI();
+        userSession.text = "";
+        userSessionUsers.text = "";
+        userSessionMaster.text = "";
+        userScenario.text = "";
     }
 
     private void OnUserJoinedSessionHandler(string userID)
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            UpdateConnectedUsersGUI();
         }
     }
 
@@ -697,7 +740,6 @@ public class OrchestratorGui : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            UpdateConnectedUsersGUI();
         }
     }
 
@@ -829,7 +871,7 @@ public class OrchestratorGui : MonoBehaviour
                 userAdmin.text = user.userAdmin.ToString();
                 userMQname.text = user.userData.userMQexchangeName;
                 userMQurl.text = user.userData.userMQurl;
-                userRepresentation.text = user.userData.userRepresentationType.ToString();
+                userRepresentation.text = Enum.GetName(typeof(UserData.eUserRepresentationType), (int)user.userData.userRepresentationType);
             }
         }
     }
@@ -962,6 +1004,15 @@ public class OrchestratorGui : MonoBehaviour
     private void GetRegisteredDataStreams()
     {
         OrchestratorController.Instance.GetRegisteredDataStreams();
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status)
+    {
+        Debug.Log("[OrchestratorGui][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
     }
 
     #endregion

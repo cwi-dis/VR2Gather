@@ -7,6 +7,8 @@ TagManager:
   - Battery
   - PlayerLocation
   - Spectator
+  - Plants
+  - Teleportable
   layers:
   - Default
   - TransparentFX
@@ -35,12 +37,11 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - PlayerLocation
+  - TouchableObject
+  - GrabbableObject
+  - TouchCollider
+  - GrabCollider
   m_SortingLayers:
   - name: Default
     uniqueID: 0

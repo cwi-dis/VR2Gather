@@ -51,7 +51,7 @@ namespace Workers {
                 Debug.Log($"{Name()}: Inited");
             }
             catch (System.Exception e) {
-                Debug.LogError($"Exception during call to PCEncoder constructor: {e.Message}");
+                Debug.Log($"{Name()}: Exception during constructor: {e.Message}");
                 throw e;
             }
         }
@@ -131,7 +131,7 @@ namespace Workers {
                         }
                         else
                         {
-                            Debug.LogError($"PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
+                            Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
                         }
                     }
                     else
@@ -144,7 +144,8 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
+                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
+                Debug.LogError("Error while sending your representation to other participants.");
 #if UNITY_EDITOR
                 if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
                     UnityEditor.EditorApplication.isPlaying = false;

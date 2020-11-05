@@ -22,7 +22,7 @@ namespace Workers
         {
             if (preparer != null)
             {
-                Debug.LogError("PointBufferRenderer: attempt to set second preparer");
+                Debug.LogError("Programmer error: PointBufferRenderer: attempt to set second preparer");
             }
             preparer = _preparer;
         }

@@ -63,7 +63,8 @@ namespace Workers {
                     pc.free();
                     // Check that sizes make sense. Note that copy_uncompressed returns the number of points
                     if (ret != size) {
-                        Debug.LogError($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
+                        Debug.Log($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
+                        Debug.LogError("Programmer error while rendering a participant.");
                     }
 
                     points = new Vector3[size];

@@ -79,7 +79,7 @@ public class MeshConstructor : MonoBehaviour
 
                     stopWatch_d_g = System.Diagnostics.Stopwatch.StartNew();
                     // Defining the mesh data from the returned struct
-                    CreateShape(currentMesh);
+                    DefineShape(currentMesh);
                     stopWatch_d_g.Stop();
 
                     stopWatch_d_p = System.Diagnostics.Stopwatch.StartNew();
@@ -301,7 +301,7 @@ public class MeshConstructor : MonoBehaviour
     }
 
     //Creating the mesh
-    void CreateShape(DllFunctions.Mesh mesh)
+    void DefineShape(DllFunctions.Mesh mesh)
     {
         // Marshaling for the faces
         int[] faces = new int[mesh.numFaces * 3];

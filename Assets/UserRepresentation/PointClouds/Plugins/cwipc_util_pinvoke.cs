@@ -55,7 +55,7 @@ public class cwipc
     private class _API_cwipc_util
     {
         const string myDllName = "cwipc_util";
-        public const System.UInt64 CWIPC_API_VERSION = 0x20200703;
+        public const System.UInt64 CWIPC_API_VERSION = 0x20201022;
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, System.UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
@@ -102,6 +102,10 @@ public class cwipc
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, UInt64 timestamp, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_proxy([MarshalAs(UnmanagedType.LPStr)]string ip, int port, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_downsample(IntPtr pc, float voxelSize);
 
@@ -115,6 +119,13 @@ public class cwipc
 
         [DllImport(myDllName)]
         internal extern static IntPtr cwipc_realsense2([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
+    }
+    private class _API_cwipc_kinect
+    {
+        const string myDllName = "cwipc_kinect";
+
+        [DllImport(myDllName)]
+        internal extern static IntPtr cwipc_kinect([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
     }
     private class _API_cwipc_codec
     {
@@ -378,31 +389,86 @@ public class cwipc
                 }
                 throw new System.Exception($"cwipc_encoder_addencoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
+            if (errorPtr != System.IntPtr.Zero)
+            {
+                UnityEngine.Debug.LogError($"cwipc_encoder_addencoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+            }
             return new encoder(enc);
 
         }
     }
 
-    public static source synthetic(int fps=0, int npoints=0) {
+    public static source synthetic(int fps = 0, int npoints = 0)
+    {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_util.cwipc_synthetic(fps, npoints, ref errorPtr);
-        if (rdr == System.IntPtr.Zero) {
-            if (errorPtr == System.IntPtr.Zero) {
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
                 throw new System.Exception("cwipc.synthetic: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.synthetic: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
         return new source(rdr);
     }
 
-    public static source realsense2(string filename) {
+    public static source proxy(string ip, int port)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rdr = _API_cwipc_util.cwipc_proxy(ip, port, ref errorPtr);
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.proxy: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc.proxy: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.proxy: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
+        return new source(rdr);
+    }
+
+    public static source realsense2(string filename)
+    {
         System.IntPtr errorPtr = System.IntPtr.Zero;
         System.IntPtr rdr = _API_cwipc_realsense2.cwipc_realsense2(filename, ref errorPtr);
-        if (rdr == System.IntPtr.Zero) {
-            if (errorPtr == System.IntPtr.Zero) {
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
                 throw new System.Exception("cwipc.realsense2: returned null without setting error message");
             }
             throw new System.Exception($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.realsense2: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
+        return new source(rdr);
+    }
+    public static source kinect(string filename)
+    {
+        System.IntPtr errorPtr = System.IntPtr.Zero;
+        System.IntPtr rdr = _API_cwipc_kinect.cwipc_kinect(filename, ref errorPtr);
+        if (rdr == System.IntPtr.Zero)
+        {
+            if (errorPtr == System.IntPtr.Zero)
+            {
+                throw new System.Exception("cwipc.kinect: returned null without setting error message");
+            }
+            throw new System.Exception($"cwipc.kinect: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc.kinect: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new source(rdr);
     }
@@ -415,6 +481,10 @@ public class cwipc
                 throw new System.Exception("cwipc.new_decoder: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_decoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new decoder(dec);
 
@@ -432,6 +502,10 @@ public class cwipc
             }
             throw new System.Exception($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
         }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_encoder: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
+        }
         return new encoder(enc);
 
     }
@@ -447,6 +521,10 @@ public class cwipc
                 throw new System.Exception("cwipc.new_encodergroup: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_new_encodergroup: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_new_encodergroup: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new encodergroup(enc);
 
@@ -478,6 +556,10 @@ public class cwipc
                 throw new System.Exception("cwipc.from_certh: returned null without setting error message");
             }
             throw new System.Exception($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+        }
+        if (errorPtr != System.IntPtr.Zero)
+        {
+            UnityEngine.Debug.LogError($"cwipc_from_certh: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
         }
         return new pointcloud(rvPtr);
     }

@@ -21,6 +21,7 @@ public class Config {
         Live
     }
 
+    public string       orchestratorURL = "";
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public ProtocolType protocolType = ProtocolType.SocketIO;
@@ -81,6 +82,13 @@ public class Config {
             }
             public _RS2ReaderConfig RS2ReaderConfig;
             [Serializable]
+            public class _ProxyReaderConfig
+            {
+                public string localIP;
+                public int port;
+            }
+            public _ProxyReaderConfig ProxyReaderConfig;
+            [Serializable]
             public class _SynthReaderConfig
             {
                 public int nPoints;
@@ -134,7 +142,6 @@ public class Config {
     };
     public _User LocalUser;
     public _User RemoteUser;
-    public _User PreviewUser;
 
     static Config _Instance;
     public static Config Instance {

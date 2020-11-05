@@ -8,6 +8,16 @@ using System;
 
 namespace Workers {
     public unsafe class VideoEncoder : BaseWorker {
+        
+        public struct Setup
+        {
+            public AVCodecID codec;
+            public int width;
+            public int height;
+            public int fps;
+            public int bitrate;
+        };
+
         public string url;
         AVCodec*                codecVideo;
         AVCodecContext*         codecVideo_ctx;
@@ -26,8 +36,10 @@ namespace Workers {
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
         VideoFilter     RGB2YUV420PFilter;
+        Setup           setup;
 
-        public VideoEncoder(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+        public VideoEncoder(Setup setup, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run) {
+            this.setup = setup;
             inVideoQueue  = _inVideoQueue;
             inAudioQueue  = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
@@ -44,9 +56,9 @@ namespace Workers {
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
-                if (codecVideo == null) CreateVideoCodec(mc);
+                if (codecVideo == null) CreateVideoCodec(mc, setup.width, setup.height, setup.fps, setup.bitrate);
                 if (!RGB2YUV420PFilter.Process(new byte*[] { (byte*)mc.pointer}, ref videoFrame->data, ref videoFrame->linesize))
-                    Debug.LogError("Error RGB2YUV420PFilter.Process");
+                    Debug.LogError("Error while encoding video (RGB2YUV420PFilter.Process)");
                 videoFrame->pts = frame++;
                 int ret = ffmpeg.avcodec_send_frame(codecVideo_ctx, videoFrame);
                 mc.free();
@@ -68,9 +80,8 @@ namespace Workers {
             }
         }
 
-        void CreateVideoCodec(NativeMemoryChunk mc) {
+        void CreateVideoCodec(NativeMemoryChunk mc, int width, int height, int fps, int bitRate ) {
             videoPacket = ffmpeg.av_packet_alloc();
-            int width=320, height=240, fps=12;
             if (mc.info.dsi_size == 12) {
                 width = BitConverter.ToInt32(mc.info.dsi, 0);
                 height = BitConverter.ToInt32(mc.info.dsi, 4);
@@ -78,24 +89,24 @@ namespace Workers {
             }
 
             RGB2YUV420PFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P);
-            codecVideo = ffmpeg.avcodec_find_encoder(AVCodecID.AV_CODEC_ID_H264);
+            codecVideo = ffmpeg.avcodec_find_encoder(setup.codec);
 
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
                 if (codecVideo_ctx != null) {
-                    codecVideo_ctx->bit_rate        = 400000;
+                    codecVideo_ctx->bit_rate        = bitRate; // 400000
                     codecVideo_ctx->width           = width;
                     codecVideo_ctx->height          = height;
                     codecVideo_ctx->time_base = new AVRational() { num = 1, den = fps };
                     codecVideo_ctx->framerate = new AVRational() { num = fps, den = 1 };
                     // emit one intra frame every ten frames
-                    codecVideo_ctx->gop_size        = fps * 10;
+                    codecVideo_ctx->gop_size        = fps * 4;
                     codecVideo_ctx->max_b_frames    = 0;
                     codecVideo_ctx->pix_fmt         = FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P;
 
-                    if (codecVideo->id == AVCodecID.AV_CODEC_ID_H264) {
+                    if (codecVideo->id == setup.codec) {//AVCodecID.AV_CODEC_ID_H264) {
                         ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "preset", "ultrafast", 0);
-                        ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "tune", "zerolatency", 0);
+                        ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "tune", "zerolatency", 0); //"film"
                     }
 
                     int ret = ffmpeg.avcodec_open2(codecVideo_ctx, codecVideo, null);
@@ -109,8 +120,8 @@ namespace Workers {
                         if (ret < 0)
                             ShowError(ret, "av_frame_get_buffer");
                     } else ShowError(ret, "avcodec_open2");
-                } else Debug.Log("avcodec_alloc_context3 ERROR");
-            } else Debug.Log("avcodec_find_decoder ERROR");
+                } else Debug.LogError("avcodec_alloc_context3 ERROR");
+            } else Debug.LogError("avcodec_find_decoder ERROR");
         }
 
 
@@ -120,7 +131,8 @@ namespace Workers {
             ffmpeg.av_strerror(err, errbuf, 128);
             string err_txt = Marshal.PtrToStringAnsi((System.IntPtr)errbuf);
             string name = Name();
-            Debug.LogError($"{name}: {message} {err} {err_txt}");
+            Debug.Log($"{name}: {message} {err} {err_txt}");
+            Debug.LogError("Error while encoding video");
 
         }
     }

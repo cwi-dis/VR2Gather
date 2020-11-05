@@ -44,22 +44,22 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
-        OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
+        OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
+        OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
 
         OrchestratorController.Instance.RegisterMessageForwarder();
     }
 
     // Un-Subscribe to Orchestrator Wrapper Events
     private void TerminateControllerEvents() {
-        OrchestratorController.Instance.OnGetSessionsEvent -= OnGetSessionsHandler;
+        OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
-        OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
         OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
         OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
+        OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
 
         OrchestratorController.Instance.UnregisterMessageForwarder();
     }
@@ -69,12 +69,12 @@ public class OrchestratorPilot0 : MonoBehaviour {
     #region Commands
 
     #region Sessions
-
-    private void OnGetSessionsHandler(Session[] sessions) {
-        if (sessions != null) {
-            // Go To Login Scene
-            Debug.Log("[OrchestratorPilot0][OnGetSessionsHandler] Session Leaved");
-            SceneManager.LoadScene("LoginManager");
+    
+    private void OnGetSessionInfoHandler(Session session) {
+        if (session != null) {
+            Debug.Log(  "Now the master is " + OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName + 
+                        " and the session has " + session.sessionUsers.Length  +" players.");
+        } else {
         }
     }
 
@@ -84,12 +84,7 @@ public class OrchestratorPilot0 : MonoBehaviour {
 
     private void OnLeaveSessionHandler() {
         Debug.Log("[OrchestratorPilot0][OnLeaveSessionHandler] Session Leaved");
-        if (!OrchestratorController.Instance.UserIsMaster)
-            SceneManager.LoadScene("LoginManager");
-    }
-
-    private void OnDeleteSessionHandler() {
-        Debug.Log("[OrchestratorPilot0][OnDeleteSessionHandler] Session Deleted");
+        SceneManager.LoadScene("LoginManager");
     }
 
     private void OnUserJoinedSessionHandler(string userID) {
@@ -101,16 +96,16 @@ public class OrchestratorPilot0 : MonoBehaviour {
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
             Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] User left: " + userID);
-            for (int i = 0; i < Pilot0Controller.Instance.players.Length; ++i) {
-                if (Pilot0Controller.Instance.players[i].orchestratorId == userID) {
-                    Destroy(Pilot0Controller.Instance.players[i].gameObject);
-                    if (userID == OrchestratorController.Instance.MySession.sessionMaster) {
-                        Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] Master user left! Going back to Login");
-                        SceneManager.LoadScene("LoginManager");
-                    }
-                }
-            }
         }
+    }
+
+    #endregion
+
+    #region Errors
+
+    private void OnErrorHandler(ResponseStatus status) {
+        Debug.Log("[OrchestratorPilot0][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+        ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
     #endregion

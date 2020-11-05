@@ -13,7 +13,8 @@ public class NewMemorySystem : MonoBehaviour
     public bool         forceMesh = false;
     public bool         localPCs = false;
     public bool         useCompression = true;
-    public bool         useVoice = false;
+    public bool         useDashVoice = false;
+    public bool         useSocketIO = true;
 
     public bool         useRemoteStream = false;
     public string       remoteURL = "";
@@ -27,10 +28,10 @@ public class NewMemorySystem : MonoBehaviour
     Workers.BaseWorker  dashReader;
 
     Workers.BaseWorker  preparer;
-    QueueThreadSafe     preparerQueue = new QueueThreadSafe();
-    QueueThreadSafe     encoderQueue = new QueueThreadSafe();
-    QueueThreadSafe     writerQueue = new QueueThreadSafe();
-    QueueThreadSafe     decoderQueue = new QueueThreadSafe(2, true);
+    QueueThreadSafe     preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
+    QueueThreadSafe     encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
+    QueueThreadSafe     writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
+    QueueThreadSafe     decoderQueue = new QueueThreadSafe("NewMemorySystemDecoder", 2, true);
     MonoBehaviour       render;
 
     // rtmp://127.0.0.1:1935/live/signals
@@ -93,8 +94,8 @@ public class NewMemorySystem : MonoBehaviour
         */
 
         // using Audio over dash
-        if (useVoice) {
-            useVoice = false;
+        if (useDashVoice) {
+            useDashVoice = false;
             string uuid = System.Guid.NewGuid().ToString();
             gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 2000, 10000, true); //Audio Pipeline
             gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 0, 1, true); //Audio Pipeline
@@ -103,15 +104,16 @@ public class NewMemorySystem : MonoBehaviour
     }
 
     private void Update() {
-/*
-        if(useVoice && Input.GetKeyDown(KeyCode.Space)){//&& OrchestratorController.Instance.UserIsLogged) {
-            useVoice = false;
+
+        if(useSocketIO && Input.GetKeyDown(KeyCode.Space)) {//&& ) {
+            useSocketIO = false;
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio= $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 2000, 10000, true); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 0, 1, true); //Audio Pipeline
+            User user = OrchestratorController.Instance.SelfUser;
+            gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
+            gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
 
         }
-*/
+
     }
 
     void OnDestroy() {

@@ -41,7 +41,7 @@ public class LoginController : PilotController {
     }
 
     public override void MessageActivation(string message) {
-        Debug.Log(message);
+        Debug.Log($"[FPA] MessageActivation {message}");
         string[] msg = message.Split(new char[] { '_' });
         if (msg[0] == MessageType.START) {
             // Check Audio
@@ -91,7 +91,21 @@ public class LoginController : PilotController {
                             loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
                     }
                     break;
+				case "Pilot 3":
+					if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot3"));
+					break;
+                case "Museum":
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Museum"));
+                    break;
+                case "HoloConference":
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloMeet"));
+                    break;
+                case "MedicalExamination": // PILOT 0
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
+                    break;
                 default:
+                    Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
                     break;
             }
         }

@@ -23,7 +23,7 @@ namespace Workers
                 Start();
                 Debug.Log($"[FPA] {Name()}: Started.");
             } catch (System.Exception e) {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
         }
@@ -47,7 +47,7 @@ namespace Workers
 
         protected override void Update() {
             base.Update();
-            if (OrchestratorWrapper.instance!=null && OrchestratorWrapper.instance.isConnected()) {
+            if (OrchestratorWrapper.instance!=null && OrchestratorController.Instance.ConnectedToOrchestrator) {
                 for (int i = 0; i < streams.Length; ++i) {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
                     if (chk == null) return;

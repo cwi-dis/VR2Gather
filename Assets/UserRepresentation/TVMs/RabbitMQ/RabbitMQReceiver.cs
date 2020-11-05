@@ -93,7 +93,8 @@ public class RabbitMQReceiver
             Disconnect();
             m_Connected = false;
             m_Subscription = null;
-            UnityEngine.Debug.LogError($"RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI} caught exception {e.Message}");
+            UnityEngine.Debug.Log($"RabbitMQReceiver.Connect: uri={m_ConnectionProperties.ConnectionURI} caught exception {e.Message}");
+            UnityEngine.Debug.LogError($"Cannot start receiving visual representation for a participant: {e.Message}");
         }
         return m_Subscription;
     }

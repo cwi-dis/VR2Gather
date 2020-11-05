@@ -39,9 +39,13 @@ namespace Workers {
                 else
                     throw new System.Exception($"{Name()}: cwipc_realsense2 could not be created"); // Should not happen, should throw exception
             }
+            catch (System.DllNotFoundException e)
+            {
+                throw new System.Exception($"{Name()}: support for Realsense2 grabber not installed on this computer. Missing DLL {e.Message}.");
+            }
             catch (System.Exception e)
             {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: caught System.exception {e.Message}");
                 throw e;
             }
         }
@@ -65,7 +69,7 @@ namespace Workers {
             }
             catch (System.Exception e)
             {
-                Debug.LogError(e.Message);
+                Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
         }
@@ -135,7 +139,7 @@ namespace Workers {
             bool didDrop = false;
             if (outQueue == null)
             {
-                Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
+                Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
                 didDrop = true;
             }
             else
