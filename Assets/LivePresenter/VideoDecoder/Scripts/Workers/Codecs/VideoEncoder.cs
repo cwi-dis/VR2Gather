@@ -53,8 +53,6 @@ namespace Workers {
         }
         long frame = 0;
         protected override void Update() {
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoEncoder.Update ");
-
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
@@ -80,8 +78,6 @@ namespace Workers {
                     }
                 }
             }
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] VideoEncoder.Update OK");
-
         }
 
         void CreateVideoCodec(NativeMemoryChunk mc, int width, int height, int fps, int bitRate ) {

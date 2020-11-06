@@ -69,7 +69,6 @@ namespace Workers {
         }
 
         void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] Color32ArrayToByteArray");
             GCHandle handle = default;
             try {
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
@@ -82,9 +81,7 @@ namespace Workers {
                 if (handle != default(GCHandle))
                     handle.Free();
             }
-            UnityEngine.Debug.Log("[TEMPORAL-FPA] Color32ArrayToByteArray OK");
         }
-
 
         float timeToFrame;
         float                   frameTime;
