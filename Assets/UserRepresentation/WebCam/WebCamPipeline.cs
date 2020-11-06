@@ -110,6 +110,8 @@ public class WebCamPipeline : MonoBehaviour {
                     var renderer = screen.GetComponent<Renderer>();
                     if (renderer != null) {
                         renderer.material.mainTexture = webCamTexture;
+                        renderer.material.SetFloat("_convertGamma", preview ? 0 : 1);
+
                         renderer.transform.localScale = new Vector3(0.5f, (webCamTexture.height / (float)webCamTexture.width) * 0.5f, 1);
                     }
                 }
