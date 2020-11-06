@@ -1384,7 +1384,7 @@ public class OrchestratorLogin : MonoBehaviour {
             isMaster = OrchestratorController.Instance.UserIsMaster;
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
@@ -1409,7 +1409,8 @@ public class OrchestratorLogin : MonoBehaviour {
             isMaster = OrchestratorController.Instance.UserIsMaster;
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            if (session.sessionMaster != "")
+                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
             // Update the list of session users
             UpdateUsersSession(usersSession);
         } else {
@@ -1454,7 +1455,7 @@ public class OrchestratorLogin : MonoBehaviour {
             // Update the info in LobbyPanel
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
@@ -1602,8 +1603,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
             }
 
-            if (!OrchestratorController.Instance.IsAutoRetrievingData)
-                GetUsers(); // To update the user representation
+            GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {
