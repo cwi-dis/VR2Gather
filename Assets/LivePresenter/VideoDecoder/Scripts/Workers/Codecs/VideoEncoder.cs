@@ -8,8 +8,10 @@ using System;
 
 namespace Workers {
     public unsafe class VideoEncoder : BaseWorker {
+        
         public struct Setup
         {
+            public AVCodecID codec;
             public int width;
             public int height;
             public int fps;
@@ -87,7 +89,7 @@ namespace Workers {
             }
 
             RGB2YUV420PFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P);
-            codecVideo = ffmpeg.avcodec_find_encoder(AVCodecID.AV_CODEC_ID_H264);
+            codecVideo = ffmpeg.avcodec_find_encoder(setup.codec);
 
             if (codecVideo != null) {
                 codecVideo_ctx = ffmpeg.avcodec_alloc_context3(codecVideo);
@@ -102,7 +104,7 @@ namespace Workers {
                     codecVideo_ctx->max_b_frames    = 0;
                     codecVideo_ctx->pix_fmt         = FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_YUV420P;
 
-                    if (codecVideo->id == AVCodecID.AV_CODEC_ID_H264) {
+                    if (codecVideo->id == setup.codec) {//AVCodecID.AV_CODEC_ID_H264) {
                         ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "preset", "ultrafast", 0);
                         ffmpeg.av_opt_set(codecVideo_ctx->priv_data, "tune", "zerolatency", 0); //"film"
                     }
@@ -118,8 +120,8 @@ namespace Workers {
                         if (ret < 0)
                             ShowError(ret, "av_frame_get_buffer");
                     } else ShowError(ret, "avcodec_open2");
-                } else Debug.Log("avcodec_alloc_context3 ERROR");
-            } else Debug.Log("avcodec_find_decoder ERROR");
+                } else Debug.LogError("avcodec_alloc_context3 ERROR");
+            } else Debug.LogError("avcodec_find_decoder ERROR");
         }
 
 
