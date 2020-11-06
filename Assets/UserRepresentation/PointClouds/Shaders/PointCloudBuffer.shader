@@ -56,6 +56,9 @@ Shader "Entropy/PointCloud"{
 					float4 pos = mul(_Transform, float4(pt.xyz, 1));
 					half3  col = PcxDecodeColor(asuint(pt.w));
 
+#if !UNITY_COLORSPACE_GAMMA
+					col = GammaToLinearSpace(col);
+#endif
 					// xxxjack removed: col *= _Tint.rgb * 2;
 					col *= _Exposure;
 
