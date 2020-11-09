@@ -3,6 +3,7 @@ using UnityEngine.XR;
 
 public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;
+    public float joystickSensitivity = 1000.0f;
     public float wheelSlope = 0.05f; // 5 Centimeters
     public bool spectator = false;
     float xRotation = 0f;
@@ -54,5 +55,23 @@ public class MoveCamera : MonoBehaviour {
                 avatarHead.Rotate(Vector3.right, -mouseY);
             }
         }
+        // Joystick Camera Rotation
+        if(Mathf.Abs(Input.GetAxisRaw("JoystickRightThumbstickLeftRight")) >= 0.01 || Mathf.Abs(Input.GetAxisRaw("JoystickRightThumbstickUpDown")) >=0.01)
+        {
+            float mouseX = Input.GetAxis("JoystickRightThumbstickLeftRight") * joystickSensitivity * Time.deltaTime;
+            float mouseY = Input.GetAxis("JoystickRightThumbstickUpDown") * joystickSensitivity * Time.deltaTime;
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+            if (!spectator)
+            {
+                playerBody.Rotate(Vector3.up, mouseX);
+                avatarHead.Rotate(Vector3.right, -mouseY);
+            }
+            
+        }
+        
     }
 }
