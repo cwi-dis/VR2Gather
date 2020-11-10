@@ -1,20 +1,27 @@
 {
-
-  "orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
-  "targetFrameRate": 30,
-  "memoryDamping": 1.2999999523162842,
-  "useAudio": true,
-  "nonHMDHeight": 1.5,
-  "pilot3ManualProgression": true,
-  "TVMs": {
-    "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
-    "exchangeName": "prod_test",
-    "printMetrics": false,
-    "saveMetrics": false,
-    "offsetPosition": {
-      "x": -1.9099986553192139,
-      "y": 1.174999713897705,
-      "z": 0.7399995923042297
+	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
+	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
+    "targetFrameRate": 30,
+    "memoryDamping": 1.2999999523162842,
+    "useAudio": true,
+    "nonHMDHeight": 1.5,
+	"pilot3ManualProgression": true,
+    "TVMs": {
+        "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
+        "exchangeName": "prod_test",
+		"printMetrics": false,
+		"saveMetrics": false,
+        "offsetPosition": {
+            "x": -1.9099986553192139,
+            "y": 1.174999713897705,
+            "z": 0.7399995923042297
+        },
+        "offsetRotation": {
+            "x": 0.0,
+            "y": 87.00109100341797,
+            "z": 0.0
+        }
     },
     "offsetRotation": {
       "x": 0.0,

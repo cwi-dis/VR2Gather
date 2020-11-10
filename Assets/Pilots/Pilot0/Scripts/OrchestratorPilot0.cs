@@ -72,8 +72,6 @@ public class OrchestratorPilot0 : MonoBehaviour {
     
     private void OnGetSessionInfoHandler(Session session) {
         if (session != null) {
-            Debug.Log(  "Now the master is " + OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName + 
-                        " and the session has " + session.sessionUsers.Length  +" players.");
         } else {
         }
     }

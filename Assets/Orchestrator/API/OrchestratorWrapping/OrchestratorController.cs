@@ -1,10 +1,9 @@
+﻿using OrchestratorWrapping;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using OrchestratorWrapping;
-using System.Linq;
 
 public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
 {
@@ -14,7 +13,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
     {
         __DISCONNECTED__,
         __CONNECTING__,
-        __CONNECTED
+        __CONNECTED__
     }
 
     #endregion
@@ -132,7 +131,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
     public Action<UserEvent> OnUserEventReceivedEvent;
 
     // Orchestrator Accessors
-    public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } get { return isAutoRetrievingData; } }
+    public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
     public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
     public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
     public bool UserIsLogged { get { return userIsLogged; } }
@@ -190,7 +189,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
     public void OnConnect()
     {
         connectedToOrchestrator = true;
-        connectionStatus = orchestratorConnectionStatus.__CONNECTED;
+        connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
         OnConnectionEvent?.Invoke(true);
 
         orchestratorWrapper.GetOrchestratorVersion();
@@ -427,7 +426,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             OnErrorEvent?.Invoke(status);
             return;
         }
-            
+
+        Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
+
         // success
         mySession = session;
         userIsMaster = session.sessionMaster == me.userId;
@@ -447,12 +448,20 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     public void OnGetSessionInfoResponse(ResponseStatus status, Session session)
     {
+        if(mySession == null || string.IsNullOrEmpty(session.sessionId))
+        {
+            Debug.Log("[OrchestratorController][OnGetSessionInfoResponse] Aborted, current session is null.");
+            return;
+        }
+
         if (status.Error != 0)
         {
             mySession = null;
             OnErrorEvent?.Invoke(status);
             return;
         }
+
+        Debug.Log("[OrchestratorController][OnGetSessionInfoResponse] Get session info of " + session.sessionName + ".");
 
         // success
         mySession = session;
@@ -469,6 +478,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             OnErrorEvent?.Invoke(status);
             return;
         }
+
+        Debug.Log("[OrchestratorController][OnGetScenarioInstanceInfoResponse] Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
 
         // now retrieve the url of the Live presenter stream
         orchestratorWrapper.GetLivePresenterData();
@@ -489,7 +500,10 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             return;
         }
 
+        Debug.Log("[OrchestratorController][OnDeleteSessionResponse] Session succesfully deleted.");
+
         OnDeleteSessionEvent?.Invoke();
+        mySession = null;
 
         // update the lists of session, anyway the result
         orchestratorWrapper.GetSessions();
@@ -508,11 +522,14 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             return;
         }
 
+        Debug.Log("[OrchestratorController][OnJoinSessionResponse] Session " + session.sessionName + " succesfully joined.");
+
         // success
         mySession = session;
         userIsMaster = session.sessionMaster == me.userId;
         connectedUsers = ExtractConnectedUsers(session.sessionUsers);
 
+        // Simulate user join a session for each connected users
         foreach (string id in session.sessionUsers)
         {
             if (id != me.userId)
@@ -541,25 +558,37 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             return;
         }
 
-        Collect_SFU_Logs(mySession.sessionId);
-
-        if (userIsMaster && mySession.sessionUsers.Length <= 1) 
-        {
-            orchestratorWrapper.DeleteSession(mySession.sessionId);
-        }
+        Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully leaved.");
 
         // success
-        mySession = null;
         myScenario = null;
         connectedUsers?.Clear();
         connectedUsers = null;
         OnLeaveSessionEvent?.Invoke();
+
+        if (mySession != null && me != null)
+        {
+            Collect_SFU_Logs(mySession.sessionId);
+
+            // As the session creator, the session should be deleted when leaving.
+            if (mySession.sessionAdministrator == me.userId)
+            {
+                Debug.Log("[OrchestratorController][OnLeaveSessionResponse] As session creator, delete the current session when its empty.");
+                StartCoroutine(WaitForEmptySessionToDelete());
+                return;
+            }
+        }
+
+        // Set this at the end and for the session creator, when the session has been deleted.
+        mySession = null;
     }
 
     public void OnUserJoinedSession(string userID)
     {
+        // Someone as joined the session
         if (!string.IsNullOrEmpty(userID))
         {
+            Debug.Log("[OrchestratorController][OnUserJoinedSession] User " + GetUser(userID).userName + " joined the session.");
             orchestratorWrapper.GetSessionInfo();
             OnUserJoinSessionEvent?.Invoke(userID);
         }
@@ -569,8 +598,20 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
     {
         if (!string.IsNullOrEmpty(userID))
         {
-            orchestratorWrapper.GetSessionInfo();
-            OnUserLeaveSessionEvent?.Invoke(userID);
+            // If the session creator left, I need to leave also.
+            if (mySession.sessionAdministrator == userID)
+            {
+                Debug.Log("[OrchestratorController][OnUserLeftSession] Session creator " + GetUser(userID).userName + " leaved the session.");
+                LeaveSession();
+            }
+            // Otherwise, just proceed to the common user left event.
+            else
+            {
+                Debug.Log("[OrchestratorController][OnUserLeftSession] User " + GetUser(userID).userName + " leaved the session.");
+                // Required to update the list of connect users.
+                orchestratorWrapper.GetSessionInfo();
+                OnUserLeaveSessionEvent?.Invoke(userID);
+            }
         }
     }
 
@@ -726,7 +767,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             return;
         }
 
-        Debug.Log("[OrchestratorController][OnGetUserInfoResponse] Info of user ID: " + user.userId);
+        Debug.Log("[OrchestratorController][OnGetUserInfoResponse] Get info of user ID: " + user.userId);
 
         OnGetUserInfoEvent?.Invoke(user);
 
@@ -792,6 +833,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             OnErrorEvent?.Invoke(status);
         }
 
+        Debug.Log("[OrchestratorController][OnJoinRoomResponse] Room joined.");
+
         OnJoinRoomEvent?.Invoke(status.Error == 0);
     }
 
@@ -807,7 +850,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
             OnErrorEvent?.Invoke(status);
             return;
         }
-        
+
+        Debug.Log("[OrchestratorController][OnLeaveRoomResponse] Room leaved.");
+
         OnLeaveRoomEvent?.Invoke();
     }
 
@@ -939,6 +984,19 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     #region Logics
 
+    public User GetUser(string masterUuid)
+    {
+        if (availableUserAccounts != null)
+        {
+            for (int i = 0; i < availableUserAccounts.Count; i++)
+            {
+                if (availableUserAccounts[i].userId == masterUuid)
+                    return availableUserAccounts[i];
+            }
+        }
+        return null;
+    }
+
     private List<User> ExtractConnectedUsers(string[] UserUUIDs)
     {
         List<User> users = new List<User>();
@@ -957,14 +1015,25 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         return users;
     }
 
-    public User GetMasterUser(string masterUuid)
+    private IEnumerator WaitForEmptySessionToDelete()
     {
-        for(int i=0; i<availableUserAccounts.Count; i++)
+        if (mySession == null)
         {
-            if (availableUserAccounts[i].userId == masterUuid)
-                return availableUserAccounts[i];
+            yield break;
         }
-        return null;
+
+        // Check frequently if there is users connected and ensure a null session (from the delete command) is escaped.
+        while (mySession.sessionUsers.Length > 0)
+        {
+            GetSessionInfo();
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        // When the session is free of users, delete it.
+        if (mySession.sessionUsers.Length == 0)
+        {
+            DeleteSession(mySession.sessionId);
+        }
     }
 
     #endregion
@@ -973,11 +1042,9 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     private void Collect_SFU_Logs(string pSessionID)
     {
-#if !UNITY_EDITOR
         string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
         string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
         Application.OpenURL(requestURL);
-#endif
     }
 
     #endregion
@@ -986,6 +1053,8 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     public void OnError(ResponseStatus status)
     {
+        Debug.Log("[OrchestratorController][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+
         OnErrorEvent?.Invoke(status);
     }
 
