@@ -9,6 +9,7 @@ public class Calibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }
     private State       state = State.Comfort;
 
+    public GameObject   cameraReference;
     public float        _rotationSlightStep = 1f;
     public float        _translationSlightStep = 0.01f;
     public string        prefix = "pcs";
@@ -17,13 +18,6 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
-    EntityPipeline player;
-
-    // Start is called before the first frame update
-    void Start() {
-        player = gameObject.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
-    }
-
     bool rightTrigger = false;
     bool oldRightTrigger = false;
     bool leftTrigger = false;
@@ -31,6 +25,11 @@ public class Calibration : MonoBehaviour {
 
     bool IsDownRightTrigger { get { return rightTrigger && !oldRightTrigger; } }
     bool IsDownLeftTrigger { get { return leftTrigger && !oldLeftTrigger; } }
+
+    private void Start() {
+        cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
+        cameraReference.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
+    }
 
     // Update is called once per frame
     void Update() {
@@ -107,13 +106,13 @@ public class Calibration : MonoBehaviour {
                 // Code added by Jack to allow resetting of position (mainly for non-HMD users)
                 if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
                 {
-                    this.transform.localPosition = new Vector3(0, 0, 0);
+                    cameraReference.transform.localPosition = new Vector3(0, 0, 0);
                     Debug.Log("Calibration: Try translation 0,0,0");
                 }
-                this.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
+                cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
-                    var pos = transform.localPosition;
+                    var pos = cameraReference.transform.localPosition;
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
@@ -122,12 +121,12 @@ public class Calibration : MonoBehaviour {
                 }
                 // Back
                 if (Input.GetKeyDown(KeyCode.Backspace) || IsDownLeftTrigger) {
-                    transform.localPosition = new Vector3 ( 
+                    cameraReference.transform.localPosition = new Vector3 ( 
                         PlayerPrefs.GetFloat(prefix+"_pos_x", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_y", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
-                    var pos = transform.localPosition;
+                    var pos = cameraReference.transform.localPosition;
                     Debug.Log($"Calibration: Translation Reset to: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
@@ -149,12 +148,12 @@ public class Calibration : MonoBehaviour {
                 if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
                 {
                     Debug.Log("Calibration: Try rotation 0,0,0");
-                    transform.localEulerAngles = new Vector3(0, 0, 0);
+                    cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);
                 }
-                transform.localRotation = Quaternion.Euler( transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
+                cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
                 // Save Translation
                 if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger ) {
-                    var rot = transform.localRotation.eulerAngles;
+                    var rot = cameraReference.transform.localRotation.eulerAngles;
                     PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
@@ -164,12 +163,12 @@ public class Calibration : MonoBehaviour {
                 }
                 // Back
                 if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("PrimaryTriggerLeft") >= 0.9) {
-                    transform.localRotation = Quaternion.Euler( 
+                    cameraReference.transform.localRotation = Quaternion.Euler( 
                         PlayerPrefs.GetFloat(prefix + "_rot_x", 0),
                         PlayerPrefs.GetFloat(prefix + "_rot_y", 0),
                         PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
                     );
-                    var rot = transform.localRotation;
+                    var rot = cameraReference.transform.localRotation;
                     Debug.Log($"Calibration: Rotation Reset to: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
