@@ -7,8 +7,7 @@ public class ProfilerManager : MonoBehaviour {
     public string fileName = "Profiler";
     public float SamplingRate = 1.0f;
     public bool FPSActive = false;
-    //public bool HMDActive = Config.Instance.pilot3NavigationLogs;
-    public bool HMDActive = true;
+    public bool HMDActive = Config.Instance.pilot3NavigationLogs;
     public bool TVMActive = false;
     public GameObject[] TVMs;
 
@@ -20,7 +19,9 @@ public class ProfilerManager : MonoBehaviour {
 
     private void Awake() {
         Instance = this;
-        HMD = FindObjectOfType<Camera>().gameObject.transform;
+        //Moved to update for pilot 3
+        //HMD = FindObjectOfType<Camera>().gameObject.transform;
+        
     }       
 
     List<BaseProfiler> profiles = new List<BaseProfiler>();
@@ -36,12 +37,25 @@ public class ProfilerManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         if (FPSActive) AddProfiler(new FPSProfiler());
-        if (HMDActive) AddProfiler(new HMDProfiler(HMD));
+        //Moved to update for pilot 3
+        //if (HMDActive) AddProfiler(new HMDProfiler(HMD));
         if (TVMActive) AddProfiler(new TVMProfiler(TVMs));
     }
 
     // Update is called once per frame
     void Update () {
+        if (HMDActive == true)
+        {
+            var cam = FindObjectOfType<Camera>().gameObject;
+            if (cam!=null)
+            {
+                HMD = cam.transform;
+                AddProfiler(new HMDProfiler(HMD));
+                HMDActive = false;
+            }
+            //XXXShishir Debug - 
+            //UnityEngine.Debug.Log("<color=red> Camera found </color> " + cam.name);
+        }
         if (Time.time > 0) {
             timeToNext -= Time.deltaTime;
             if (timeToNext < 0.0f) {
