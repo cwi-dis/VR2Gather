@@ -4,10 +4,11 @@ using UnityEngine;
 using System.Text;
 
 public class ProfilerManager : MonoBehaviour {
-    public string fileName = "profiler";
+    public string fileName = "Profiler";
     public float SamplingRate = 1.0f;
     public bool FPSActive = false;
-    public bool HMDActive = false;
+    //public bool HMDActive = Config.Instance.pilot3NavigationLogs;
+    public bool HMDActive = true;
     public bool TVMActive = false;
     public GameObject[] TVMs;
 
@@ -53,8 +54,8 @@ public class ProfilerManager : MonoBehaviour {
     }
     
     private void OnApplicationQuit() {
+        UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
         StringBuilder sb = new StringBuilder();
-
         if (profiles.Count > 0) {
             foreach (var profile in profiles)
                 profile.GetHeaders(sb);
@@ -67,7 +68,7 @@ public class ProfilerManager : MonoBehaviour {
                 sb.AppendLine();
             }
             string time = System.DateTime.Now.ToString("yyyyMMddHmm");
-            System.IO.File.WriteAllText(string.Format("{0}/../{1}/{2}-{3}.csv", Application.dataPath, "Profiles", fileName, time), sb.ToString());
+            System.IO.File.WriteAllText(string.Format("{0}/../{1}-{2}.csv", Application.persistentDataPath, fileName, time), sb.ToString());
         }
     }
 }
