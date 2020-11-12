@@ -54,7 +54,8 @@ namespace Workers {
             base.Update();
             UnityEngine.Debug.Log($"VideoPreparer.Update ");
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
-                
+
+                UnityEngine.Debug.Log($"VideoPreparer.Update 1");
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
@@ -63,18 +64,24 @@ namespace Workers {
                     circularVideoBuffer = new byte[videoBufferSize];
                     circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
                 }
+                
                 if (len < freeVideo) {
+                    UnityEngine.Debug.Log($"VideoPreparer.Update 2");
                     mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                     if (writeVideoPosition + len < videoBufferSize) {
+                        UnityEngine.Debug.Log($"VideoPreparer.Update 3");
                         Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
                         writeVideoPosition += len;
                     } else {
+                        UnityEngine.Debug.Log($"VideoPreparer.Update 3.a");
                         int partLen = videoBufferSize - writeVideoPosition;
                         Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, partLen);
                         Marshal.Copy(mc.pointer + partLen, circularVideoBuffer, 0, len - partLen);
                         writeVideoPosition = len - partLen;
                     }
+                    UnityEngine.Debug.Log($"VideoPreparer.Update 4");
                     lock (this) { availableVideo += len; }
+                    UnityEngine.Debug.Log($"VideoPreparer.Update 5");
                     mc.free();
                 } else {
                     // Debug.LogError($"{Name()}: CircularBuffer is full");
