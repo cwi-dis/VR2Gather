@@ -61,6 +61,7 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
+                UnityEngine.Debug.Log($"VideoDecoder.Update ");
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
                 ffmpeg.av_init_packet(videoPacket);
@@ -88,6 +89,7 @@ namespace Workers {
                     }
                 }
                 mc.free();
+                UnityEngine.Debug.Log($"VideoDecoder.Update OK");
             }
 
             if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {

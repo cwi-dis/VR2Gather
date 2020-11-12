@@ -52,7 +52,9 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
+            UnityEngine.Debug.Log($"VideoPreparer.Update ");
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
+                
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
@@ -77,7 +79,9 @@ namespace Workers {
                 } else {
                     // Debug.LogError($"{Name()}: CircularBuffer is full");
                 }
+                
             }
+            UnityEngine.Debug.Log($"VideoPreparer.Update OK");
 
             if (inAudioQueue!=null && inAudioQueue._CanDequeue()) {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
@@ -93,9 +97,10 @@ namespace Workers {
                         Marshal.Copy(mc.pointer + partLen, circularAudioBuffer, 0, len - partLen);
                         writeAudioPosition = len - partLen;
                     }
-                    lock (this) { availableAudio += len; }
                     mc.free();
+                    lock (this) { availableAudio += len; }
                 }
+                
             }
         }
 
@@ -132,12 +137,12 @@ namespace Workers {
         }
 
         public System.IntPtr GetVideoPointer(int len) {
-            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer");
+            UnityEngine.Debug.Log($"VideoPreparer.GetVideoPointer ");
             var ret = circularVideoBufferPtr + readVideoPosition;
             readVideoPosition += len;
             if (readVideoPosition >= videoBufferSize) readVideoPosition -= videoBufferSize;
             lock (this) { availableVideo -= len; }
-            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer OK");
+            UnityEngine.Debug.Log($"VideoPreparer.GetVideoPointer OK readVideoPosition {readVideoPosition} writeVideoPosition {writeVideoPosition}");
             return ret;
         }
     }
