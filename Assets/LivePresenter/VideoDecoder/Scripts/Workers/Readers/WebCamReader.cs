@@ -15,6 +15,7 @@ namespace Workers {
         VideoFilter     RGBA2RGBFilter;
 
         SemaphoreSlim       frameReady;
+        bool                isFrameReady=false;
         CancellationTokenSource   isClosed;
 
         System.IntPtr data;
@@ -47,9 +48,12 @@ namespace Workers {
             base.Update();
             if (outQueue.IsClosed()) return;
             try {
-                frameReady.Wait(isClosed.Token);
-                if (!isClosed.IsCancellationRequested)
-                    Color32ArrayToByteArray(webcamColors, outQueue);
+                lock (this) {
+                    //frameReady.Wait(isClosed.Token);
+                    //if (!isClosed.IsCancellationRequested)
+                    if(isFrameReady)
+                        Color32ArrayToByteArray(webcamColors, outQueue);
+                }
             } catch(OperationCanceledException e ){
 //                frameReady.Release();
             }
@@ -58,13 +62,28 @@ namespace Workers {
         public override void Stop() {
             base.Stop();
             UnityEngine.Debug.Log($"[FPA] -----> WebCamReader.Stop");
-            webcamTexture.Stop();
+            webcamTexture?.Stop();
             outQueue.Close();
             isClosed.Cancel();
             monoBehaviour.StopCoroutine(coroutine);
         }
 
-        float                   timeToFrame;
+        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
+            GCHandle handle = default;
+            try {
+                handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
+                NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
+                chunk.info.dsi = infoData;
+                chunk.info.dsi_size = 12;
+                outQueue.Enqueue(chunk);
+                isFrameReady = false;
+            } finally {
+                if (handle != default(GCHandle))
+                    handle.Free();
+            }
+        }
+
+        float timeToFrame;
         float                   frameTime;
         Color32[]               webcamColors;
         public WebCamTexture    webcamTexture { get; private set; }
@@ -97,7 +116,7 @@ namespace Workers {
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
-            frameTime = 1f / 12f;
+            frameTime = 1f / fps;
             timeToFrame = Time.realtimeSinceStartup + frameTime;
 
             infoData = new byte[4 * 3];
@@ -108,33 +127,18 @@ namespace Workers {
 
         IEnumerator WebCamRecorder(string deviceName) {
             while (true) {
-//                lock (this) 
-                {
-                    if (timeToFrame < Time.realtimeSinceStartup && frameReady.CurrentCount == 0) {
-                        if(webcamTexture.isPlaying)
+                lock (this) {
+                    if (!isFrameReady && timeToFrame < Time.realtimeSinceStartup) {//&& frameReady.CurrentCount == 0) {
+                        if (webcamTexture.isPlaying) {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
-                        timeToFrame += frameTime;
-                        frameReady.Release();
+                            isFrameReady = true;
+                        }
+                        //                        frameReady.Release();
+                        timeToFrame = frameTime + Time.realtimeSinceStartup;
                     }
                 }
                 yield return null;
             }
         }
-
-        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
-            GCHandle handle = default;
-            try {
-                handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
-                NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
-                chunk.info.dsi = infoData;
-                chunk.info.dsi_size = 12;
-                outQueue.Enqueue(chunk);
-            } finally {
-                if (handle != default(GCHandle))
-                    handle.Free();
-            }
-        }
-
-
     }
 }

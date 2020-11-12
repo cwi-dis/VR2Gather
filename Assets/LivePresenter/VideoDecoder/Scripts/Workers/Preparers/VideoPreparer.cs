@@ -132,10 +132,12 @@ namespace Workers {
         }
 
         public System.IntPtr GetVideoPointer(int len) {
+            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer");
             var ret = circularVideoBufferPtr + readVideoPosition;
             readVideoPosition += len;
             if (readVideoPosition >= videoBufferSize) readVideoPosition -= videoBufferSize;
             lock (this) { availableVideo -= len; }
+            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer OK");
             return ret;
         }
     }
