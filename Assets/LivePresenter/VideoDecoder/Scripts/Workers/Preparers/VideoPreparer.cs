@@ -52,7 +52,7 @@ namespace Workers {
 
         protected override void Update() {
             base.Update();
-            UnityEngine.Debug.Log($"VideoPreparer.Update ");
+            if (inVideoQueue != null ) UnityEngine.Debug.Log($"VideoPreparer.Update ");
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
 
                 UnityEngine.Debug.Log($"VideoPreparer.Update 1");
@@ -88,7 +88,7 @@ namespace Workers {
                 }
                 
             }
-            UnityEngine.Debug.Log($"VideoPreparer.Update OK");
+            if (inVideoQueue != null) UnityEngine.Debug.Log($"VideoPreparer.Update OK");
 
             if (inAudioQueue!=null && inAudioQueue._CanDequeue()) {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();

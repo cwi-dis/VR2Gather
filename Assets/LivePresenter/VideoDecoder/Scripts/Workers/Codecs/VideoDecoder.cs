@@ -81,6 +81,7 @@ namespace Workers {
                                 videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                 NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
                                 System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
+                                UnityEngine.Debug.Log($"VideoDecoder.Update Added to queue ");
                                 outVideoQueue.Enqueue(videoData);
                             } else
                                 if (ret2 != -11)
