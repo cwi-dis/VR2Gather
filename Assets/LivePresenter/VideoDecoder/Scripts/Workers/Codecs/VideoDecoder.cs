@@ -61,7 +61,6 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue()) {
-                UnityEngine.Debug.Log($"VideoDecoder.Update ");
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
                 ffmpeg.av_init_packet(videoPacket);
@@ -81,7 +80,6 @@ namespace Workers {
                                 videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                 NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
                                 System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
-                                UnityEngine.Debug.Log($"VideoDecoder.Update Added to queue ");
                                 outVideoQueue.Enqueue(videoData);
                             } else
                                 if (ret2 != -11)
@@ -90,7 +88,6 @@ namespace Workers {
                     }
                 }
                 mc.free();
-                UnityEngine.Debug.Log($"VideoDecoder.Update OK");
             }
 
             if (inAudioQueue!=null && outAudioQueue != null && inAudioQueue._CanDequeue() && outAudioQueue._CanEnqueue()) {
