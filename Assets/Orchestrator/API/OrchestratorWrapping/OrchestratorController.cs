@@ -1042,9 +1042,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     private void Collect_SFU_Logs(string pSessionID)
     {
-        string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
-        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
-        Application.OpenURL(requestURL);
+        string dnsURL = Config.Instance.orchestratorLogURL;
+        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1";
+        Debug.Log($"stats: ts=0: OrchestratorController: sfu_log={requestURL}");
+        if (Config.Instance.openLogOnExit)
+        {
+            Application.OpenURL(requestURL);
+        }
     }
 
     #endregion
