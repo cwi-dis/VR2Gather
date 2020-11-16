@@ -46,8 +46,8 @@ namespace Workers
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime statsLastTime;
-        double statsTotalPointcloudCount;
-        double statsTotalPointCount;
+        double statsTotalPointcloudCount = 0;
+        double statsTotalPointCount = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int pointCount)
@@ -61,7 +61,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointBufferRenderer#{instanceNumber}, fps={statsTotalPointcloudCount / statsInterval}, points_per_cloud={(int)(statsTotalPointCount / statsTotalPointcloudCount)}");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointBufferRenderer#{instanceNumber}, fps={statsTotalPointcloudCount / statsInterval}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount==0?1: statsTotalPointcloudCount))}");
                 statsTotalPointcloudCount = 0;
                 statsTotalPointCount = 0;
                 statsLastTime = System.DateTime.Now;

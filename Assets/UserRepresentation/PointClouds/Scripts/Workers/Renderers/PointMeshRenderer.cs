@@ -50,8 +50,8 @@ namespace Workers
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime statsLastTime;
-        double statsTotalMeshCount;
-        double statsTotalVertexCount;
+        double statsTotalMeshCount = 0;
+        double statsTotalVertexCount = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int vertexCount)
@@ -65,7 +65,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointMeshRenderer#{instanceNumber}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / statsTotalMeshCount)}");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointMeshRenderer#{instanceNumber}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;

@@ -111,8 +111,8 @@ namespace Workers
         }
 
         System.DateTime statsLastTime;
-        double statsTotalUpdates;
-        double statsTotalSamplesInInputBuffer;
+        double statsTotalUpdates = 0;
+        double statsTotalSamplesInInputBuffer = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int samplesInInputBuffer)
