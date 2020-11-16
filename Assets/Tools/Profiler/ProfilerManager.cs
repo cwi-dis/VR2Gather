@@ -5,8 +5,8 @@ using System.Text;
 
 public class ProfilerManager : MonoBehaviour {
     public string fileName = "Profiler";
-    public float SamplingRate = 1.0f;
-    public bool FPSActive = false;
+    public float SamplingRate = 1/30f;
+    public bool FPSActive = true;
     public bool HMDActive = Config.Instance.pilot3NavigationLogs;
     public bool TVMActive = false;
     public GameObject[] TVMs;
@@ -36,7 +36,7 @@ public class ProfilerManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        if (FPSActive) AddProfiler(new FPSProfiler());
+        //if (FPSActive) AddProfiler(new FPSProfiler());
         //Moved to update for pilot 3
         //if (HMDActive) AddProfiler(new HMDProfiler(HMD));
         if (TVMActive) AddProfiler(new TVMProfiler(TVMs));
@@ -50,17 +50,16 @@ public class ProfilerManager : MonoBehaviour {
             if (cam!=null)
             {
                 HMD = cam.transform;
+                AddProfiler(new FPSProfiler());
                 AddProfiler(new HMDProfiler(HMD));
                 HMDActive = false;
             }
-            //XXXShishir Debug - 
-            //UnityEngine.Debug.Log("<color=red> Camera found </color> " + cam.name);
         }
         if (Time.time > 0) {
             timeToNext -= Time.deltaTime;
             if (timeToNext < 0.0f) {
                 timeToNext += SamplingRate;
-                foreach (var profile in profiles)
+                foreach (var profile in profiles)                
                     profile.AddFrameValues();
                 lineCount++;
             }
@@ -68,7 +67,7 @@ public class ProfilerManager : MonoBehaviour {
     }
     
     private void OnApplicationQuit() {
-        UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
+        //UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
         StringBuilder sb = new StringBuilder();
         if (profiles.Count > 0) {
             foreach (var profile in profiles)
@@ -81,8 +80,8 @@ public class ProfilerManager : MonoBehaviour {
                 sb.Length--;
                 sb.AppendLine();
             }
-            string time = System.DateTime.Now.ToString("yyyyMMddHmm");
-            System.IO.File.WriteAllText(string.Format("{0}/../{1}-{2}.csv", Application.persistentDataPath, fileName, time), sb.ToString());
+            //string time = System.DateTime.Now.ToString("yyyyMMddHmm");
+            System.IO.File.WriteAllText(string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName), sb.ToString());
         }
     }
 }
