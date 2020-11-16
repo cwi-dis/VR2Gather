@@ -111,8 +111,8 @@ namespace Workers
         }
 
         System.DateTime statsLastTime;
-        double statsTotalUpdates;
-        double statsTotalSamplesInInputBuffer;
+        double statsTotalUpdates = 0;
+        double statsTotalSamplesInInputBuffer = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int samplesInInputBuffer)
@@ -127,7 +127,7 @@ namespace Workers
             {
                 double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / samples;
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalUpdates / statsInterval} fps, {(int)samplesInBufferAverage} samples input latency, {(int)(timeInBufferAverage*1000)} ms input latency");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalUpdates / statsInterval}, input_latency_samples={(int)samplesInBufferAverage}, input_latency_ms={(int)(timeInBufferAverage*1000)}");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInInputBuffer = 0;
                 statsLastTime = System.DateTime.Now;

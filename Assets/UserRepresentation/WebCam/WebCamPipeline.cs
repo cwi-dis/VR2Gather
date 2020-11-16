@@ -151,6 +151,7 @@ public class WebCamPipeline : MonoBehaviour {
         if (ready) {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {
+                    UnityEngine.Debug.Log($"WebCamPipeline.Update ");
                     if (texture == null) {
                         texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
                         Transform screen = transform.Find("PlayerHeadScreen");
@@ -164,8 +165,10 @@ public class WebCamPipeline : MonoBehaviour {
                         texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
                         texture.Apply();
                     } catch {
+                        UnityEngine.Debug.Log($"WebCamPipeline.Update ERR");
                         Debug.Log("[FPA] ERROR on LoadRawTextureData.");
                     }
+                    UnityEngine.Debug.Log($"WebCamPipeline.Update OK");
                 }
             }
         }

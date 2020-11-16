@@ -17,11 +17,16 @@ namespace Workers
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         }
 
+        public string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
         public void SetPreparer(Workers.MeshPreparer _preparer)
         {
             if (preparer != null)
             {
-                Debug.LogError("Programmer error: PointMeshRenderer: attempt to set second preparer");
+                Debug.LogError($"Programmer error: {Name()}: attempt to set second preparer");
             }
             preparer = _preparer;
         }
@@ -50,8 +55,8 @@ namespace Workers
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime statsLastTime;
-        double statsTotalMeshCount;
-        double statsTotalVertexCount;
+        double statsTotalMeshCount = 0;
+        double statsTotalVertexCount = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int vertexCount)
@@ -65,7 +70,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PointMeshRenderer#{instanceNumber}: {statsTotalMeshCount / statsInterval} fps, {(int)(statsTotalVertexCount / statsTotalMeshCount)} vertices per mesh");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;
