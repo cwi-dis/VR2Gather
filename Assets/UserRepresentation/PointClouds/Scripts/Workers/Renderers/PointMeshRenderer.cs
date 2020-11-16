@@ -65,7 +65,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PointMeshRenderer#{instanceNumber}: {statsTotalMeshCount / statsInterval} fps, {(int)(statsTotalVertexCount / statsTotalMeshCount)} vertices per mesh");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointMeshRenderer#{instanceNumber}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / statsTotalMeshCount)}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;

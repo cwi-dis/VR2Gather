@@ -61,7 +61,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PointBufferRenderer#{instanceNumber}: {statsTotalPointcloudCount / statsInterval} fps, {(int)(statsTotalPointCount / statsTotalPointcloudCount)} points per cloud");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PointBufferRenderer#{instanceNumber}, fps={statsTotalPointcloudCount / statsInterval}, points_per_cloud={(int)(statsTotalPointCount / statsTotalPointcloudCount)}");
                 statsTotalPointcloudCount = 0;
                 statsTotalPointCount = 0;
                 statsLastTime = System.DateTime.Now;

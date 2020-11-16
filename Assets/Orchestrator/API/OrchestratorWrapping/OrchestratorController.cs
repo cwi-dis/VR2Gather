@@ -1044,7 +1044,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
     {
         string dnsURL = Config.Instance.orchestratorLogURL;
         string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1";
-        Debug.Log($"stats: ts=0: OrchestratorController: sfu_log={requestURL}");
+        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, sfu_log={requestURL}");
         if (Config.Instance.openLogOnExit)
         {
             Application.OpenURL(requestURL);

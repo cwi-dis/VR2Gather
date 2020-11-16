@@ -103,7 +103,7 @@ namespace Workers {
                 }
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / statsInterval} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
