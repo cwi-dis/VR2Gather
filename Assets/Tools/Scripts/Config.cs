@@ -22,6 +22,8 @@ public class Config {
     }
 
     public string       orchestratorURL = "";
+    public string       orchestratorLogURL = "";
+    public bool         openLogOnExit = true;
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public ProtocolType protocolType = ProtocolType.SocketIO;

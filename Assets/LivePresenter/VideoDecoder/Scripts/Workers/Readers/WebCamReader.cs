@@ -129,7 +129,6 @@ namespace Workers {
             while (true) {
                 lock (this) {
                     if (!isFrameReady && timeToFrame < Time.realtimeSinceStartup) {//&& frameReady.CurrentCount == 0) {
-                    UnityEngine.Debug.Log("Get Pixels");
                         if (webcamTexture.isPlaying) {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
                             isFrameReady = true;
@@ -137,7 +136,6 @@ namespace Workers {
                         //                        frameReady.Release();
                         timeToFrame = frameTime + Time.realtimeSinceStartup;
                     }
-                    UnityEngine.Debug.Log("Get Pixels OK");
                 }
                 yield return null;
             }

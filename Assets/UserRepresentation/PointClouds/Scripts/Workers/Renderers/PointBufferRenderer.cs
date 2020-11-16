@@ -12,6 +12,12 @@ namespace Workers
         MaterialPropertyBlock   block;
         Workers.BufferPreparer preparer;
 
+        public string Name()
+        {
+            return $"{this.GetType().Name}#{instanceNumber}";
+        }
+
+
         // Start is called before the first frame update
         void Start() {
             if (material == null)  material = Resources.Load<Material>("PointCloudsBuffer");
@@ -22,7 +28,7 @@ namespace Workers
         {
             if (preparer != null)
             {
-                Debug.LogError("Programmer error: PointBufferRenderer: attempt to set second preparer");
+                Debug.LogError($"Programmer error: {Name()}: attempt to set second preparer");
             }
             preparer = _preparer;
         }
@@ -46,8 +52,8 @@ namespace Workers
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime statsLastTime;
-        double statsTotalPointcloudCount;
-        double statsTotalPointCount;
+        double statsTotalPointcloudCount = 0;
+        double statsTotalPointCount = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int pointCount)
@@ -61,7 +67,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: PointBufferRenderer#{instanceNumber}: {statsTotalPointcloudCount / statsInterval} fps, {(int)(statsTotalPointCount / statsTotalPointcloudCount)} points per cloud");
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalPointcloudCount / statsInterval}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount==0?1: statsTotalPointcloudCount))}");
                 statsTotalPointcloudCount = 0;
                 statsTotalPointCount = 0;
                 statsLastTime = System.DateTime.Now;

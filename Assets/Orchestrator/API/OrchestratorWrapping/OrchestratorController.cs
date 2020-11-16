@@ -162,6 +162,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         {
             Destroy(gameObject);
         }
+
     }
 
     private void OnDestroy()
@@ -169,6 +170,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         if(!(mySession is null))
         {
             Collect_SFU_Logs(mySession.sessionId);
+            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
         }
     }
 
@@ -378,6 +380,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
 
         OnGetNTPTimeEvent?.Invoke(ntpTime);
     }
@@ -523,6 +526,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         }
 
         Debug.Log("[OrchestratorController][OnJoinSessionResponse] Session " + session.sessionName + " succesfully joined.");
+        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
 
         // success
         mySession = session;
@@ -569,6 +573,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         if (mySession != null && me != null)
         {
             Collect_SFU_Logs(mySession.sessionId);
+            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
 
             // As the session creator, the session should be deleted when leaving.
             if (mySession.sessionAdministrator == me.userId)
@@ -1042,9 +1047,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     private void Collect_SFU_Logs(string pSessionID)
     {
-        string dnsURL = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
-        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1"; 
-        Application.OpenURL(requestURL);
+        string dnsURL = Config.Instance.orchestratorLogURL;
+        string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1";
+        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, sfu_log={requestURL}");
+        if (Config.Instance.openLogOnExit)
+        {
+            Application.OpenURL(requestURL);
+        }
     }
 
     #endregion

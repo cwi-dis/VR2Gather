@@ -53,6 +53,7 @@ namespace Workers {
         protected override void Update() {
             base.Update();
             if (inVideoQueue != null && inVideoQueue._CanDequeue()) {
+
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
@@ -61,22 +62,26 @@ namespace Workers {
                     circularVideoBuffer = new byte[videoBufferSize];
                     circularVideoBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(circularVideoBuffer, 0);
                 }
+                
                 if (len < freeVideo) {
-                    mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
-                    if (writeVideoPosition + len < videoBufferSize) {
-                        Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
-                        writeVideoPosition += len;
-                    } else {
-                        int partLen = videoBufferSize - writeVideoPosition;
-                        Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, partLen);
-                        Marshal.Copy(mc.pointer + partLen, circularVideoBuffer, 0, len - partLen);
-                        writeVideoPosition = len - partLen;
+                    lock (this) {
+                        mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                        if (writeVideoPosition + len < videoBufferSize) {
+                            Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
+                            writeVideoPosition += len;
+                        } else {
+                            int partLen = videoBufferSize - writeVideoPosition;
+                            Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, partLen);
+                            Marshal.Copy(mc.pointer + partLen, circularVideoBuffer, 0, len - partLen);
+                            writeVideoPosition = len - partLen;
+                        }
+                        availableVideo += len; 
                     }
-                    lock (this) { availableVideo += len; }
                     mc.free();
                 } else {
                     // Debug.LogError($"{Name()}: CircularBuffer is full");
                 }
+                
             }
 
             if (inAudioQueue!=null && inAudioQueue._CanDequeue()) {
@@ -93,9 +98,10 @@ namespace Workers {
                         Marshal.Copy(mc.pointer + partLen, circularAudioBuffer, 0, len - partLen);
                         writeAudioPosition = len - partLen;
                     }
-                    lock (this) { availableAudio += len; }
                     mc.free();
+                    lock (this) { availableAudio += len; }
                 }
+                
             }
         }
 
@@ -132,12 +138,10 @@ namespace Workers {
         }
 
         public System.IntPtr GetVideoPointer(int len) {
-            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer");
             var ret = circularVideoBufferPtr + readVideoPosition;
             readVideoPosition += len;
             if (readVideoPosition >= videoBufferSize) readVideoPosition -= videoBufferSize;
-            lock (this) { availableVideo -= len; }
-            UnityEngine.Debug.Log("VideoPreparer.GetVideoPointer OK");
+            availableVideo -= len;
             return ret;
         }
     }
