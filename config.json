@@ -11,6 +11,7 @@
     "useAudio": true,
     "nonHMDHeight": 1.5,
 	"pilot3ManualProgression": true,
+	"pilot3NavigationLogs": true,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
