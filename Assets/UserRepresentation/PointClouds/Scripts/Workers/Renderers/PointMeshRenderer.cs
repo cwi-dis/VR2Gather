@@ -70,7 +70,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;

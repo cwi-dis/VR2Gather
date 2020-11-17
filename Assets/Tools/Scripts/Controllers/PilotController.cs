@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Video;
 
 //public enum Actions { VIDEO_1_START, VIDEO_1_PAUSE, VIDEO_2_START, VIDEO_2_PAUSE, WAIT }
@@ -89,7 +89,7 @@ abstract public class PilotController : MonoBehaviour {
                     else {
                         players[playerIdx].gameObject.GetComponent<NetworkTransformSyncBehaviour>().InterpolateUpdates = true;
                     }
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=PilotController, self={my_id == players[playerIdx].id}, userId={user.userId}, userRepresentation={(int)user.userData.userRepresentationType}");
+                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=PilotController, self={my_id == players[playerIdx].id}, userId={user.userId}, userRepresentation={(int)user.userData.userRepresentationType}");
 
                     switch (user.userData.userRepresentationType) {
                         case OrchestratorWrapping.UserData.eUserRepresentationType.__2D__:

@@ -67,7 +67,7 @@ namespace Workers {
             {
                 double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalUpdates / 10}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops/10}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / 10}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops/10}");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInOutputBuffer = 0;
                 statsDrops = 0;

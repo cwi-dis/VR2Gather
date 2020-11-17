@@ -47,7 +47,7 @@ public class ProfilerManager : MonoBehaviour {
         // xxxjack should bail out quickly if no profilers active
         if (!printedStatMessage)
         {
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=ProfilerManager, started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, FPSActive={FPSActive}, HMDActive={HMDActive}, TVMActive={TVMActive}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, FPSActive={FPSActive}, HMDActive={HMDActive}, TVMActive={TVMActive}");
             printedStatMessage = true;
         }
         if (HMDActive == true)
@@ -76,7 +76,7 @@ public class ProfilerManager : MonoBehaviour {
         {
             lastLogWriteTime = Time.time;
             StringBuilder sb = new StringBuilder();
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
             if (!headerWritten)
             {
                 foreach (var profile in profiles)
@@ -105,7 +105,7 @@ public class ProfilerManager : MonoBehaviour {
         // xxxjack seems pretty scary to not write before OnApplicationQuit....
         //UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
         StringBuilder sb = new StringBuilder();
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
         if (profiles.Count > 0) {
             if (!headerWritten)
             {
