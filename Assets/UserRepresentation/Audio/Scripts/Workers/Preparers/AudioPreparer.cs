@@ -25,25 +25,12 @@ namespace Workers {
             base.Update();
         }
 
-        public int available {
-            get {
-                lock (inQueue) {
-                    if (!inQueue.IsClosed())
-                        return inQueue._Count * VoiceReader.wantedOutputBufferSize * 2;
-                    else
-                        return 0;
-                }
-            }
-        }
-
         bool firstTime = true;
         public bool GetAudioBuffer(float[] dst, int len) {
-            lock (inQueue) {
-                if (!inQueue.IsClosed()) {
-                    FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
-                    if (mc == null) return false;
-                    System.Array.Copy(mc.buffer, 0, dst, 0, len);
-                }
+            if (!inQueue.IsClosed()) {
+                FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
+                if (mc == null) return false;
+                System.Array.Copy(mc.buffer, 0, dst, 0, len);
             }
             return true;
         }
