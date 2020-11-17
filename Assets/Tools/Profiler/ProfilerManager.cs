@@ -100,7 +100,7 @@ public class ProfilerManager : MonoBehaviour {
         }
     }
     
-    private void OnApplicationQuit() {
+    private void OnDestroy() {
         // xxxjack should bail out quickly if no profilers active
         // xxxjack seems pretty scary to not write before OnApplicationQuit....
         //UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
