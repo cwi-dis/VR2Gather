@@ -14,7 +14,7 @@ public class FPSProfiler : BaseProfiler {
 
     public override void AddFrameValues() {
         data.Add(new Vector3(Time.frameCount, Time.frameCount / Time.time,Time.time));
-        UTCTime.Add(DateTime.UtcNow.Millisecond.ToString());
+        UTCTime.Add(DateTime.UtcNow.ToString("HH:mm:ss.fff"));
     }
 
     public override void GetHeaders(StringBuilder sb) { 
@@ -22,6 +22,6 @@ public class FPSProfiler : BaseProfiler {
     }
 
     public override void GetFramesValues(StringBuilder sb, int frame) {
-        sb.AppendFormat("{0};{1:0.00};{2};{3}", (int)data[frame].x, data[frame].y,data[frame].z,UTCTime[frame]);
+        sb.AppendFormat("{0};{1:0.00};{2};{3};", (int)data[frame].x, data[frame].y,data[frame].z,UTCTime[frame]);
     }
 }
