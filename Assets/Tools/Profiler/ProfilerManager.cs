@@ -16,16 +16,14 @@ public class ProfilerManager : MonoBehaviour {
     private float timeToNext = 0.0f;
     private uint lineCount = 0;
     private Transform HMD;
-
+    private bool headerWritten = false;
+    private float logInterval = 10;
+    private float lastLogWriteTime;
     public static ProfilerManager Instance { get; private set; }
 
     private void Awake() {
         Instance = this;
         csvOutputPathname = string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName);
-
-        //Moved to update for pilot 3
-        //HMD = FindObjectOfType<Camera>().gameObject.transform;
-
     }
 
     List<BaseProfiler> profiles = new List<BaseProfiler>();
@@ -41,9 +39,6 @@ public class ProfilerManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         // xxxjack I don't like all this comment-edout code.... Why? Why not set the corresponding boolean to false?
-        //if (FPSActive) AddProfiler(new FPSProfiler());
-        //Moved to update for pilot 3
-        //if (HMDActive) AddProfiler(new HMDProfiler(HMD));
         if (TVMActive) AddProfiler(new TVMProfiler(TVMs));
     }
 
@@ -64,6 +59,7 @@ public class ProfilerManager : MonoBehaviour {
                 AddProfiler(new FPSProfiler());
                 AddProfiler(new HMDProfiler(HMD));
                 HMDActive = false;
+                lastLogWriteTime = Time.time;
             }
         }
         if (Time.time > 0) {
@@ -75,6 +71,33 @@ public class ProfilerManager : MonoBehaviour {
                 lineCount++;
             }
         }
+        //XXXShishir modified to write logs at a specified interval if profilers are active
+        if((Time.time-lastLogWriteTime)>=logInterval && profiles.Count > 0)
+        {
+            lastLogWriteTime = Time.time;
+            StringBuilder sb = new StringBuilder();
+            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            if (!headerWritten)
+            {
+                foreach (var profile in profiles)
+                    profile.GetHeaders(sb);
+                sb.Length--;
+                sb.AppendLine();
+                headerWritten = true;
+            }
+            for (int i = 0; i < lineCount; i++)
+            {
+                foreach (var profile in profiles)
+                    profile.GetFramesValues(sb, i);
+                sb.Length--;
+                sb.AppendLine();
+            }
+            System.IO.File.AppendAllText(csvOutputPathname, sb.ToString());    
+            foreach (var profile in profiles)
+                profile.Flush();
+            sb.Clear();
+            lineCount = 0;
+        }
     }
     
     private void OnApplicationQuit() {
@@ -84,18 +107,20 @@ public class ProfilerManager : MonoBehaviour {
         StringBuilder sb = new StringBuilder();
         Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
         if (profiles.Count > 0) {
-            foreach (var profile in profiles)
-                profile.GetHeaders(sb);
-            sb.Length--;
-            sb.AppendLine();
+            if (!headerWritten)
+            {
+                foreach (var profile in profiles)
+                    profile.GetHeaders(sb);
+                sb.Length--;
+                sb.AppendLine();
+            }
             for (int i = 0; i < lineCount; i++) {
                 foreach (var profile in profiles)
                     profile.GetFramesValues(sb, i);
                 sb.Length--;
                 sb.AppendLine();
-            }
-            //string time = System.DateTime.Now.ToString("yyyyMMddHmm");
-            System.IO.File.WriteAllText(csvOutputPathname, sb.ToString());
+            }        
+            System.IO.File.AppendAllText(csvOutputPathname, sb.ToString());
         }
     }
 }
