@@ -37,7 +37,7 @@ namespace Workers
             if (mesh == null) return;
             preparer.GetMesh(ref mesh); // <- Bottleneck
 
-            statsUpdate(mesh.vertexCount);
+            statsUpdate(mesh.vertexCount, preparer.currentTimestamp);
         }
 
         public void OnRenderObject()
@@ -57,9 +57,9 @@ namespace Workers
         System.DateTime statsLastTime;
         double statsTotalMeshCount = 0;
         double statsTotalVertexCount = 0;
-        const int statsInterval = 10;
+        const int statsInterval = 1;
 
-        public void statsUpdate(int vertexCount)
+        public void statsUpdate(int vertexCount, ulong timestamp)
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             if (statsLastTime == null)
@@ -70,7 +70,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;
