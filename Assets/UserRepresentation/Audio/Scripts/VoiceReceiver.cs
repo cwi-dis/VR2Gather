@@ -23,8 +23,8 @@ public class VoiceReceiver : MonoBehaviour {
         audioSource.loop = true;
         audioSource.Play();
 
-        decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder");
-        preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer");
+        decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+        preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
         if (UseDash)    reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
         else            reader = new Workers.SocketIOReader(user, _streamName, decoderQueue); 
@@ -38,11 +38,12 @@ public class VoiceReceiver : MonoBehaviour {
         codec?.StopAndWait();
         preparer?.StopAndWait();
     }
-
+    /*
     void OnAudioRead(float[] data) {
         if (preparer == null || !preparer.GetAudioBuffer(data, data.Length))
             System.Array.Clear(data, 0, data.Length);
     }
+*/
 
     float[] tmpBuffer;
     void OnAudioFilterRead(float[] data, int channels) {
