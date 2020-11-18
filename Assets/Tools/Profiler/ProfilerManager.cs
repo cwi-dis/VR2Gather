@@ -4,18 +4,20 @@ using UnityEngine;
 using System.Text;
 
 public class ProfilerManager : MonoBehaviour {
-    public string fileName = "Profiler";
-    public string csvOutputPathname;
-    public float SamplingRate = 1/30f;
-    public bool FPSActive = true;
-    public bool HMDActive = Config.Instance.pilot3NavigationLogs;
     public bool TVMActive = false;
     public GameObject[] TVMs;
-    private bool printedStatMessage = false;
 
+    private string fileName = "Profiler";
+    private string csvOutputPathname;
+    private float SamplingRate = 1 / 30f;
+    private bool FPSActive = true;
+    private bool HMDActive = Config.Instance.pilot3NavigationLogs;
+    private bool printedStatMessage = false;
     private float timeToNext = 0.0f;
     private uint lineCount = 0;
     private Transform HMD;
+    private Transform LH;
+    private Transform RH;
     private bool headerWritten = false;
     private float logInterval = 10;
     private float lastLogWriteTime;
@@ -60,6 +62,18 @@ public class ProfilerManager : MonoBehaviour {
                 AddProfiler(new HMDProfiler(HMD));
                 HMDActive = false;
                 lastLogWriteTime = Time.time;
+            }
+            var h1 = GameObject.Find("PFB_LeftHand");
+            if(h1!=null)
+            {
+                LH = h1.transform;
+                AddProfiler(new GameObjectProfiler(LH, "LeftHandController"));
+            }
+            var h2 = GameObject.Find("PFB_RightHand");
+            if (h2!=null)
+            {
+                RH = h2.transform;
+                AddProfiler(new GameObjectProfiler(RH, "RightHandController"));
             }
         }
         if (Time.time > 0) {
