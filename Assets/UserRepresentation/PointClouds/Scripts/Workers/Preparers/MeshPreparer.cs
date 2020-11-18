@@ -6,6 +6,7 @@ namespace Workers {
         Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
         System.IntPtr currentBuffer;
         int PointCouldVertexSize;
+        public ulong currentTimestamp;
         Vector3[] points;
         int[] indices;
         Color32[] colors;
@@ -50,6 +51,7 @@ namespace Workers {
                 if (pc == null) return;
                 unsafe {
                     int bufferSize = pc.get_uncompressed_size();
+                    currentTimestamp = pc.timestamp();
                     currentCellSize = pc.cellsize();
 
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed

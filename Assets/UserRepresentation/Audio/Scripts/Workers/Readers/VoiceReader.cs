@@ -127,7 +127,7 @@ namespace Workers
             {
                 double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / samples;
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalUpdates / statsInterval}, input_latency_samples={(int)samplesInBufferAverage}, input_latency_ms={(int)(timeInBufferAverage*1000)}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / statsInterval}, input_latency_samples={(int)samplesInBufferAverage}, input_latency_ms={(int)(timeInBufferAverage*1000)}");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInInputBuffer = 0;
                 statsLastTime = System.DateTime.Now;

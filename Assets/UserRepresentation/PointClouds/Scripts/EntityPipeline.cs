@@ -44,7 +44,7 @@ public class EntityPipeline : MonoBehaviour {
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, self=1, userid={_user.userId}, representation={(int)user.userData.userRepresentationType}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={_user.userId}, representation={(int)user.userData.userRepresentationType}");
                 //
                 // Create renderer and preparer for self-view.
                 //
@@ -199,7 +199,7 @@ public class EntityPipeline : MonoBehaviour {
             case "remote":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, self=0, userid={_user.userId}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=0, userid={_user.userId}");
                 //
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
@@ -263,7 +263,7 @@ public class EntityPipeline : MonoBehaviour {
             reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
         else
             reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, reader={reader.Name()}");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, reader={reader.Name()}");
     }
 
     public QueueThreadSafe _CreateRendererAndPreparer()
@@ -281,7 +281,7 @@ public class EntityPipeline : MonoBehaviour {
             preparers.Add(preparer);
             // For meshes we use a single renderer and multiple preparers (one per tile).
             Workers.PointMeshRenderer render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
             renderers.Add(render);
             render.SetPreparer(preparer);
         }
@@ -291,7 +291,7 @@ public class EntityPipeline : MonoBehaviour {
             Workers.BufferPreparer preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparers.Add(preparer);
             Workers.PointBufferRenderer render = gameObject.AddComponent<Workers.PointBufferRenderer>();
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
             renderers.Add(render);
             render.SetPreparer(preparer);
         }
@@ -335,7 +335,7 @@ public class EntityPipeline : MonoBehaviour {
         {
             preparer?.StopAndWait();
         }
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, finished=1");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, finished=1");
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }

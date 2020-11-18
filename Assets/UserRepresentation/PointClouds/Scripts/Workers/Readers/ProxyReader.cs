@@ -160,7 +160,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds==0?1: statsTotalPointclouds))}, drops_per_second={statsDrops / statsInterval}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds==0?1: statsTotalPointclouds))}, drops_per_second={statsDrops / statsInterval}");
                 if (statsDrops > 3*statsInterval)
                 {
                     Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
