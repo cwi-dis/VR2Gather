@@ -4,15 +4,15 @@ using UnityEngine;
 using System.Text;
 
 public class ProfilerManager : MonoBehaviour {
-    public string fileName = "Profiler";
-    public string csvOutputPathname;
-    public float SamplingRate = 1/30f;
-    public bool FPSActive = true;
-    public bool HMDActive = Config.Instance.pilot3NavigationLogs;
     public bool TVMActive = false;
     public GameObject[] TVMs;
-    private bool printedStatMessage = false;
 
+    private string fileName = "Profiler";
+    private string csvOutputPathname;
+    private float SamplingRate = 1 / 30f;
+    private bool FPSActive = true;
+    private bool HMDActive = Config.Instance.pilot3NavigationLogs;
+    private bool printedStatMessage = false;
     private float timeToNext = 0.0f;
     private uint lineCount = 0;
     private Transform HMD;
