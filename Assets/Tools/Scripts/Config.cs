@@ -30,7 +30,6 @@ public class Config {
     public UserRepresentation userRepresentation = UserRepresentation.PC;
     public Presenter    presenter = Presenter.None;
     public float        nonHMDHeight = 1.8f;
-    public bool pilot3ManualProgression = false;
     public bool pilot3NavigationLogs = true;
     [Serializable]
     public class _TVMs
