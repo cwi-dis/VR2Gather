@@ -57,7 +57,7 @@ namespace Workers
         System.DateTime statsLastTime;
         double statsTotalMeshCount = 0;
         double statsTotalVertexCount = 0;
-        const int statsInterval = 1;
+        const int statsInterval = 10;
 
         public void statsUpdate(int vertexCount, ulong timestamp)
         {

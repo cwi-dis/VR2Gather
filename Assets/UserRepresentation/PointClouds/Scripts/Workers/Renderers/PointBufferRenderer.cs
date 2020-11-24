@@ -54,7 +54,7 @@ namespace Workers
         System.DateTime statsLastTime;
         double statsTotalPointcloudCount = 0;
         double statsTotalPointCount = 0;
-        const int statsInterval = 1;
+        const int statsInterval = 10;
 
         public void statsUpdate(int pointCount, ulong timestamp)
         {
