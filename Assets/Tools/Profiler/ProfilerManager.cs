@@ -88,53 +88,42 @@ public class ProfilerManager : MonoBehaviour {
         //XXXShishir modified to write logs at a specified interval if profilers are active
         if((Time.time-lastLogWriteTime)>=logInterval && profiles.Count > 0)
         {
-            lastLogWriteTime = Time.time;
-            StringBuilder sb = new StringBuilder();
-            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
-            if (!headerWritten)
-            {
-                foreach (var profile in profiles)
-                    profile.GetHeaders(sb);
-                sb.Length--;
-                sb.AppendLine();
-                headerWritten = true;
-            }
-            for (int i = 0; i < lineCount; i++)
-            {
-                foreach (var profile in profiles)
-                    profile.GetFramesValues(sb, i);
-                sb.Length--;
-                sb.AppendLine();
-            }
-            System.IO.File.AppendAllText(csvOutputPathname, sb.ToString());    
-            foreach (var profile in profiles)
-                profile.Flush();
-            sb.Clear();
-            lineCount = 0;
+            savelog();
         }
     }
     
+    private void savelog()
+    {
+        lastLogWriteTime = Time.time;
+        StringBuilder sb = new StringBuilder();
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=0, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+        if (!headerWritten)
+        {
+            foreach (var profile in profiles)
+                profile.GetHeaders(sb);
+            sb.Length--;
+            sb.AppendLine();
+            headerWritten = true;
+        }
+        for (int i = 0; i < lineCount; i++)
+        {
+            foreach (var profile in profiles)
+                profile.GetFramesValues(sb, i);
+            sb.Length--;
+            sb.AppendLine();
+        }
+        System.IO.File.AppendAllText(csvOutputPathname, sb.ToString());
+        foreach (var profile in profiles)
+            profile.Flush();
+        sb.Clear();
+        lineCount = 0;
+    }
     private void OnDestroy() {
-        // xxxjack should bail out quickly if no profilers active
-        // xxxjack seems pretty scary to not write before OnApplicationQuit....
-        //UnityEngine.Debug.Log("<color=red>XXXShishir: </color> Writing nav logs to " + string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName));
         StringBuilder sb = new StringBuilder();
         Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
-        if (profiles.Count > 0) {
-            if (!headerWritten)
-            {
-                foreach (var profile in profiles)
-                    profile.GetHeaders(sb);
-                sb.Length--;
-                sb.AppendLine();
-            }
-            for (int i = 0; i < lineCount; i++) {
-                foreach (var profile in profiles)
-                    profile.GetFramesValues(sb, i);
-                sb.Length--;
-                sb.AppendLine();
-            }        
-            System.IO.File.AppendAllText(csvOutputPathname, sb.ToString());
+        if (profiles.Count > 0)
+        {
+            savelog();
         }
     }
 }
