@@ -37,7 +37,7 @@ public class NewMemorySystem : MonoBehaviour
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
-        /*
+
         Config config = Config.Instance;
         if (forceMesh) {
             preparer = new Workers.MeshPreparer(preparerQueue);
@@ -91,7 +91,7 @@ public class NewMemorySystem : MonoBehaviour
             for (int i = 0; i < decoders; ++i)
                 decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
-        */
+
 
         // using Audio over dash
         if (useDashVoice) {
