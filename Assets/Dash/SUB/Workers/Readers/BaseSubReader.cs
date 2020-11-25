@@ -103,7 +103,7 @@ namespace Workers {
                         //
                         // We have work to do. Check which of our streamIndexes has data available.
                         //
-                        sub.FrameInfo frameInfo = new sub.FrameInfo();
+                        FrameInfo frameInfo = new FrameInfo();
 
                         int stream_index = -1;
                         int bytesNeeded = 0;

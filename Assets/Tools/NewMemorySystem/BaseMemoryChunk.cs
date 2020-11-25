@@ -1,6 +1,19 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using UnityEngine;
+
+// This structure should really be declared in the sub package, but that creates a circular reference.
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct FrameInfo
+{
+    // presentation timestamp, in milliseconds units.
+    public Int64 timestamp;
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+    public byte[] dsi;
+    public int dsi_size;
+}
 
 public class BaseMemoryChunkReferences {
     static List<Type> types = new List<Type>();
@@ -26,9 +39,10 @@ public class BaseMemoryChunkReferences {
 }
 
 public class BaseMemoryChunk {
+
     protected IntPtr        _pointer;
     int                     refCount;
-    public sub.FrameInfo    info;
+    public FrameInfo        info;
     public int              length { get; protected set; }
 
     protected BaseMemoryChunk(IntPtr _pointer) {

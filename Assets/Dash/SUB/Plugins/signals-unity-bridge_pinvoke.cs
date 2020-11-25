@@ -5,14 +5,6 @@ using System.Text;
 
 public class sub
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct FrameInfo {
-        // presentation timestamp, in milliseconds units.
-        public Int64 timestamp;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-        public byte[] dsi;
-        public int dsi_size;
-    }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct DashStreamDescriptor
