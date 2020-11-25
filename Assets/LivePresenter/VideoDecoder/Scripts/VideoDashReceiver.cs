@@ -18,7 +18,6 @@ public class VideoDashReceiver : MonoBehaviour {
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoDashPreparer",5);
     QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe("AudioDashPreparer", 10);
 
-    Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
     public string streamName = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 
