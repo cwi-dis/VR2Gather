@@ -7,17 +7,6 @@ using UnityEngine;
 namespace VRTCore
 {
 
-    // This structure should really be declared in the sub package, but that creates a circular reference.
-    [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    public struct FrameInfo
-    {
-        // presentation timestamp, in milliseconds units.
-        public long timestamp;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-        public byte[] dsi;
-        public int dsi_size;
-    }
-
     public class BaseMemoryChunkReferences
     {
         static List<Type> types = new List<Type>();
