@@ -6,7 +6,7 @@ using VRTCore;
 public class VoiceSender : MonoBehaviour {
     BaseWorker reader;
     BaseWorker codec;
-    Workers.BaseWriter writer;
+    BaseWriter writer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe encoderQueue = new QueueThreadSafe("VoiceSenderEncoder");
