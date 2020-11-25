@@ -211,7 +211,7 @@ namespace Workers {
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
