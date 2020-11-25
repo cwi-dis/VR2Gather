@@ -11,7 +11,7 @@ namespace VRTCore
 
         public int totalForks;
         public int currentForks;
-        public cwipc.pointcloud currentPointcloud;
+        public BaseMemoryChunk currentPointcloud;
         public byte[] currentByteArray;
         public float[] currentFloatArray;
         public System.IntPtr currentBuffer;
