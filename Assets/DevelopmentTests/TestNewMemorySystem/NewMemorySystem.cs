@@ -2,6 +2,7 @@
 //#define TEST_PC
 //#define TEST_VOICECHAT
 
+using Dash;
 using OrchestratorWrapping;
 using System.Collections;
 using System.Collections.Generic;
@@ -72,22 +73,22 @@ public class NewMemorySystem : MonoBehaviour
                 encStreams[0].outQueue = writerQueue;
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
                 string uuid = System.Guid.NewGuid().ToString();
-                Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
+                B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].tileNumber = 0;
                 b2dStreams[0].quality = 0;
                 b2dStreams[0].inQueue = writerQueue;
                 remoteURL = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/pcc/";
                 remoteStream = "pointclouds";
-                dashWriter = new Workers.B2DWriter(remoteURL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
+                dashWriter = new B2DWriter(remoteURL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
             }
-            Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1]
+            PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1]
             {
-                    new Workers.PCSubReader.TileDescriptor() {
+                    new PCSubReader.TileDescriptor() {
                         outQueue = decoderQueue,
                         tileNumber = 0
                     }
             };
-            dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+            dashReader = new PCSubReader(remoteURL, remoteStream, 1, tiles);
             decoder = new Workers.PCDecoder[decoders];
             for (int i = 0; i < decoders; ++i)
                 decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);

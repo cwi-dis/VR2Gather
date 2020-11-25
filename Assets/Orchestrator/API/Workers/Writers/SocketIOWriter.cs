@@ -1,4 +1,5 @@
-﻿using OrchestratorWrapping;
+﻿using Dash;
+using OrchestratorWrapping;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,9 +9,9 @@ using VRTCore;
 namespace Workers
 {
     public class SocketIOWriter : BaseWriter {
-        Workers.B2DWriter.DashStreamDescription[] streams;
+        B2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(User user, string remoteStream, Workers.B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
+        public SocketIOWriter(User user, string remoteStream, B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End) {
             if (streams == null) {
                 throw new System.Exception($"[FPA] {Name()}: outQueue is null");
             }

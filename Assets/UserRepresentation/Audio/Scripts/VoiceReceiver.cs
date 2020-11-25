@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Dash;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 using Workers;
 
 public class VoiceReceiver : MonoBehaviour {
-    Workers.BaseReader      reader;
+    BaseReader reader;
     BaseWorker codec;
     Workers.AudioPreparer   preparer;
 
@@ -27,7 +28,7 @@ public class VoiceReceiver : MonoBehaviour {
         decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
         preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
-        if (UseDash)    reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+        if (UseDash)    reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
         else            reader = new Workers.SocketIOReader(user, _streamName, decoderQueue); 
 
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);

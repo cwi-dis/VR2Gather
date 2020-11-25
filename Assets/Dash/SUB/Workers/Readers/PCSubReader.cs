@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using VRTCore;
 
-namespace Workers
+namespace Dash
 {
     public class PCSubReader : BaseSubReader
     {
@@ -20,7 +20,7 @@ namespace Workers
         public PCSubReader(string _url, string _streamName, int _initialDelay, TileDescriptor[] _tileDescriptors)
         : base(_url, _streamName, _initialDelay)
         {
-            lock(this)
+            lock (this)
             {
                 tileDescriptors = _tileDescriptors;
                 int nTiles = tileDescriptors.Length;
@@ -38,7 +38,7 @@ namespace Workers
 
         protected override void _streamInfoAvailable()
         {
-            lock(this)
+            lock (this)
             {
                 //
                 // Get stream information
@@ -59,25 +59,25 @@ namespace Workers
 
         public void setTileQuality(int tileNumber, int quality)
         {
-            lock(this)
+            lock (this)
             {
                 if (quality > 0)
                 {
                     Debug.Log($"{Name()}: xxxjack SKIP enable_stream({tileNumber}, {quality});");
-//                    bool ok = subHandle.enable_stream(tileNumber, quality);
-//                    if (!ok)
-//                    {
-//                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
-//                    }
+                    //                    bool ok = subHandle.enable_stream(tileNumber, quality);
+                    //                    if (!ok)
+                    //                    {
+                    //                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
+                    //                    }
                 }
                 else
                 {
                     Debug.Log($"{Name()}: xxxjack SKIP disable_stream({tileNumber});");
-//                    bool ok = subHandle.disable_stream(tileNumber);
-//                    if (!ok)
-//                    {
-//                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
-//                    }
+                    //                    bool ok = subHandle.disable_stream(tileNumber);
+                    //                    if (!ok)
+                    //                    {
+                    //                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
+                    //                    }
                 }
             }
         }

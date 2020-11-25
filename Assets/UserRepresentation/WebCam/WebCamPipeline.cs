@@ -1,5 +1,6 @@
 ﻿#define NO_VOICE
 
+using Dash;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -72,15 +73,15 @@ public class WebCamPipeline : MonoBehaviour {
                     if (Bin2Dash == null)
                         throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
-                        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
-                        new Workers.B2DWriter.DashStreamDescription() {
+                        B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
+                        new B2DWriter.DashStreamDescription() {
                         tileNumber = 0,
                         quality = 0,
                         inQueue = writerQueue
                         }
                     };
                         if (useDash)
-                            writer = new Workers.B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
+                            writer = new B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
                         else
                             writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
                     }
@@ -118,7 +119,7 @@ public class WebCamPipeline : MonoBehaviour {
                 }
                 break;
             case "remote": // Remoto
-                if (useDash)    reader = new Workers.BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
+                if (useDash)    reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
                 else            reader = new Workers.SocketIOReader(user, "webcam", videoCodecQueue);
 
                 //
@@ -222,7 +223,7 @@ public class WebCamPipeline : MonoBehaviour {
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
-        Workers.B2DWriter pcWriter = (Workers.B2DWriter)writer;
+        B2DWriter pcWriter = (B2DWriter)writer;
         if (pcWriter != null)
         {
             rv.visuals = pcWriter.GetSyncInfo();
@@ -246,7 +247,7 @@ public class WebCamPipeline : MonoBehaviour {
             Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
             return;
         }
-        Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
+        PCSubReader pcReader = (PCSubReader)reader;
         if (pcReader != null)
         {
             pcReader.SetSyncInfo(config.visuals);

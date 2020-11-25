@@ -1,5 +1,6 @@
 ﻿#define NO_VOICE
 
+using Dash;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,7 @@ public class EntityPipeline : MonoBehaviour {
     List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
-    Workers.B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+    B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
     OrchestratorWrapping.User user;
     const bool debugTiling = false;
@@ -146,7 +147,7 @@ public class EntityPipeline : MonoBehaviour {
                     Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                     // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                     encoderStreamDescriptions = new Workers.PCEncoder.EncoderStreamDescription[nStream];
-                    dashStreamDescriptions = new Workers.B2DWriter.DashStreamDescription[nStream];
+                    dashStreamDescriptions = new B2DWriter.DashStreamDescription[nStream];
                     tilingConfig = new TilingConfig();
                     tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
                     for (int it = 0; it < nTileToTransmit; it++) {
@@ -161,7 +162,7 @@ public class EntityPipeline : MonoBehaviour {
                                 tileNumber = it+minTileNum,
                                 outQueue = thisQueue
                             };
-                            dashStreamDescriptions[i] = new Workers.B2DWriter.DashStreamDescription {
+                            dashStreamDescriptions[i] = new B2DWriter.DashStreamDescription {
                                 tileNumber = (uint)(it+minTileNum),
                                 quality = (uint)(100 * octreeBits + 75),
                                 inQueue = thisQueue
@@ -188,7 +189,7 @@ public class EntityPipeline : MonoBehaviour {
                         throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
                         if( Config.Instance.protocolType == Config.ProtocolType.Dash )
-                            writer = new Workers.B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         else
                             writer = new Workers.SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
@@ -234,7 +235,7 @@ public class EntityPipeline : MonoBehaviour {
         // Create the right number of rendering pipelines
         //
 
-        Workers.PCSubReader.TileDescriptor[] tilesToReceive = new Workers.PCSubReader.TileDescriptor[nTileToReceive];
+        PCSubReader.TileDescriptor[] tilesToReceive = new PCSubReader.TileDescriptor[nTileToReceive];
 
         for (int i = 0; i < nTileToReceive; i++)
         {
@@ -254,14 +255,14 @@ public class EntityPipeline : MonoBehaviour {
             //
             // And collect the relevant information for the Dash receiver
             //
-            tilesToReceive[i] = new Workers.PCSubReader.TileDescriptor()
+            tilesToReceive[i] = new PCSubReader.TileDescriptor()
             {
                 outQueue = decoderQueue,
                 tileNumber = tileNumbers[i]
             };
         };
         if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-            reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+            reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
         else
             reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
         Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, reader={reader.Name()}");
@@ -396,7 +397,7 @@ public class EntityPipeline : MonoBehaviour {
             return new SyncConfig();
         }
         SyncConfig rv = new SyncConfig();
-        if (writer is Workers.B2DWriter pcWriter)
+        if (writer is B2DWriter pcWriter)
         {
             rv.visuals = pcWriter.GetSyncInfo();
         }
@@ -420,7 +421,7 @@ public class EntityPipeline : MonoBehaviour {
             Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
             return;
         }
-        Workers.PCSubReader pcReader = (Workers.PCSubReader)reader;
+        PCSubReader pcReader = (PCSubReader)reader;
         if (pcReader != null)
         {
             pcReader.SetSyncInfo(config.visuals);

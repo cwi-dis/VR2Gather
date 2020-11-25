@@ -4,10 +4,11 @@ using System.IO;
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace Dash
 {
- 
-    public class B2DWriter : BaseWriter {
+
+    public class B2DWriter : BaseWriter
+    {
         public struct DashStreamDescription
         {
             public string name;
@@ -63,7 +64,7 @@ namespace Workers
                     {
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
-                        statsUpdate((int)mc.length); // xxxjack needs to be changed to be per-stream
+                        statsUpdate(mc.length); // xxxjack needs to be changed to be per-stream
                         if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
                             Debug.Log($"{Name()}({parent.url}): ERROR sending data");
                         mc.free();
@@ -97,7 +98,7 @@ namespace Workers
                 }
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
-                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets==0?1:statsTotalPackets))}");
+                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;
@@ -165,7 +166,7 @@ namespace Workers
 
         public override string Name()
         {
-            return $"{this.GetType().Name}#{instanceNumber}";
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
 
@@ -189,10 +190,11 @@ namespace Workers
         public override void OnStop()
         {
             // Signal that no more data is forthcoming to every pusher
-            for(int i=0; i<descriptions.Length; i++)
+            for (int i = 0; i < descriptions.Length; i++)
             {
                 var d = descriptions[i];
-                if (!d.inQueue.IsClosed()) {
+                if (!d.inQueue.IsClosed())
+                {
                     Debug.LogWarning($"{Name()}.{i}: input queue not closed. Closing.");
                     d.inQueue.Close();
                 }
@@ -222,7 +224,7 @@ namespace Workers
 
             return new SyncConfig.ClockCorrespondence
             {
-                wallClockTime = (System.Int64)sinceEpoch.TotalMilliseconds,
+                wallClockTime = (long)sinceEpoch.TotalMilliseconds,
                 streamClockTime = uploader.get_media_time(1000)
             };
         }

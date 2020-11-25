@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Dash;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
@@ -24,10 +25,10 @@ public class VoiceSender : MonoBehaviour {
 
         codec  = new Workers.VoiceEncoder(encoderQueue, senderQueue);
         reader = new Workers.VoiceReader(micro, this, ((Workers.VoiceEncoder)codec).bufferSize, encoderQueue);
-        Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
+        B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
         b2dStreams[0].inQueue = senderQueue;
         // xxxjack invented VR2a 4CC here. Is there a correct one?
-        if(UseDash) writer = new Workers.B2DWriter(user.sfuData.url_audio, _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
+        if(UseDash) writer = new B2DWriter(user.sfuData.url_audio, _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
         else        writer = new Workers.SocketIOWriter(user, _streamName, b2dStreams);
     }
 

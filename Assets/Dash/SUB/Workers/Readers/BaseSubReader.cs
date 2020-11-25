@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace Dash
 {
-    public class BaseReader : BaseWorker {
-        public BaseReader(WorkerType _type = WorkerType.Run): base(_type) { }
-        public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence) {
+    public class BaseReader : BaseWorker
+    {
+        public BaseReader(WorkerType _type = WorkerType.Run) : base(_type) { }
+        public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
+        {
         }
     }
 
-    public class BaseSubReader : BaseReader {
+    public class BaseSubReader : BaseReader
+    {
 
         public delegate bool NeedsSomething();
 
@@ -19,7 +22,7 @@ namespace Workers
         protected sub.connection subHandle;
         protected bool isPlaying;
         int numberOfUnsuccessfulReceives;
-//        object subLock = new object();
+        //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
         System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
@@ -29,8 +32,8 @@ namespace Workers
             public int[] streamIndexes;
         }
         protected ReceiverInfo[] receivers;
-//        protected QueueThreadSafe[] outQueues;
-//        protected int[] streamIndexes;
+        //        protected QueueThreadSafe[] outQueues;
+        //        protected int[] streamIndexes;
 
         // Mainly for debug messages:
         static int instanceCounter = 0;
@@ -109,7 +112,7 @@ namespace Workers
 
                         int stream_index = -1;
                         int bytesNeeded = 0;
-                        foreach(int si in receiverInfo.streamIndexes)
+                        foreach (int si in receiverInfo.streamIndexes)
                         {
                             // See whether data is available on this stream, and how many bytes we need to allocate
                             bytesNeeded = subHandle.grab_frame(si, System.IntPtr.Zero, 0, ref frameInfo);
@@ -155,7 +158,7 @@ namespace Workers
                         if (parent.clockCorrespondence.wallClockTime == 0)
                         {
                             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                            parent.clockCorrespondence.wallClockTime = (System.Int64)sinceEpoch.TotalMilliseconds;
+                            parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
                             parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
                         }
                         // Convert clock values to wallclock
@@ -188,7 +191,7 @@ namespace Workers
             double statsTotalLatency;
             const int statsInterval = 10;
 
-            public void statsUpdate(int nBytes, long timeStamp )
+            public void statsUpdate(int nBytes, long timeStamp)
             {
                 if (!statsInitialized)
                 {
@@ -200,7 +203,7 @@ namespace Workers
                     statsInitialized = true;
                 }
                 System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
-                double latency = (double)(sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                 // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
                 // if we appear to be ahead we adjust connection start time.
                 if (latency < 0)
@@ -226,9 +229,10 @@ namespace Workers
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init) { // Orchestrator Based SUB
+        protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init)
+        { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
-            lock(this)
+            lock (this)
             {
                 joinTimeout = 20000;
 
@@ -255,7 +259,7 @@ namespace Workers
 
         public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue) : this(_url, _streamName, _initialDelay)
         {
-            lock(this)
+            lock (this)
             {
                 receivers = new ReceiverInfo[]
                 {
@@ -272,7 +276,7 @@ namespace Workers
 
         public override string Name()
         {
-            return $"{this.GetType().Name}#{instanceNumber}";
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
         public override void Stop()
@@ -282,7 +286,8 @@ namespace Workers
             _closeQueues();
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
             _DeinitDash(true);
             base.OnStop();
@@ -291,7 +296,7 @@ namespace Workers
 
         protected sub.connection getSubHandle()
         {
-            lock(this)
+            lock (this)
             {
                 if (!isPlaying) return null;
                 return (sub.connection)subHandle.AddRef();
@@ -301,7 +306,7 @@ namespace Workers
 
         protected void playFailed()
         {
-            lock(this)
+            lock (this)
             {
                 isPlaying = false;
             }
@@ -309,7 +314,7 @@ namespace Workers
 
         protected virtual void _streamInfoAvailable()
         {
-            lock(this)
+            lock (this)
             {
                 //
                 // Get stream information
@@ -324,8 +329,9 @@ namespace Workers
             }
         }
 
-        protected bool InitDash() {
-            lock(this)
+        protected bool InitDash()
+        {
+            lock (this)
             {
                 if (System.DateTime.Now < subRetryNotBefore)
                 {
@@ -363,8 +369,9 @@ namespace Workers
             }
         }
 
-        protected void InitThreads() {
-            lock(this)
+        protected void InitThreads()
+        {
+            lock (this)
             {
                 int threadCount = receivers.Length;
                 threads = new SubPullThread[threadCount];
@@ -405,9 +412,10 @@ namespace Workers
             }
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
-            lock(this)
+            lock (this)
             {
                 // If we should stop playing we stop
 

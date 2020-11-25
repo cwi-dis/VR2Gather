@@ -1,4 +1,5 @@
-﻿using OrchestratorWrapping;
+﻿using Dash;
+using OrchestratorWrapping;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,11 +9,11 @@ using VRTCore;
 namespace Workers
 {
     public class SocketIOReader : BaseReader, ISocketReader {
-        Workers.PCSubReader.TileDescriptor[] descriptors;
+        PCSubReader.TileDescriptor[] descriptors;
 
         User    user;
 
-        public SocketIOReader(User user, string remoteStream, Workers.PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
+        public SocketIOReader(User user, string remoteStream, PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End) {
             this.user = user;
             if (descriptors == null) {
                 throw new System.Exception($"{Name()}: descriptors is null");

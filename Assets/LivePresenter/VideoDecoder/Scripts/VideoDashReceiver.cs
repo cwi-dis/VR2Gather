@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Dash;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
@@ -40,7 +41,7 @@ public class VideoDashReceiver : MonoBehaviour {
         try {
             decoder = new Workers.VideoDecoder( codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
             preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
-            reader = new Workers.AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
+            reader = new AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {
             Debug.Log($"VideoDashReceiver.Init: Exception: {e.Message}");

@@ -1,10 +1,12 @@
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace Dash
 {
-    public class AVSubReader : BaseSubReader {
-        public enum CCCC : uint {
+    public class AVSubReader : BaseSubReader
+    {
+        public enum CCCC : uint
+        {
             MP4A = 0x6134706D,
             AVC1 = 0x31637661,
             AAC = 0x5f636161,
@@ -12,8 +14,9 @@ namespace Workers
         };
 
         public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url, streamName, 0) {
-            lock(this)
+         : base(url, streamName, 0)
+        {
+            lock (this)
             {
                 int videoStream = -1;
                 int audioStream = -1;

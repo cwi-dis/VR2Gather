@@ -7,6 +7,7 @@ using System;
 using System.Threading;
 using UnityEngine.Networking.NetworkSystem;
 using VRTCore;
+using Dash;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
@@ -52,14 +53,14 @@ public class VideoWebCam : MonoBehaviour {
         try {
             recorder = new Workers.WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
             encoder  = new Workers.VideoEncoder(new Workers.VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
-            Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
-                new Workers.B2DWriter.DashStreamDescription() {
+            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
+                new B2DWriter.DashStreamDescription() {
                     tileNumber = 0,
                     quality = 0,
                     inQueue = writerQueue
                 }
             };
-            if(useDash) writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
             else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
 
 //            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
@@ -80,7 +81,7 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
+            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
             else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
         }
