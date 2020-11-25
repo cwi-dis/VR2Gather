@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Workers
+namespace VRTCore
 {
     public class Token
     {
-        public Token(int forks=1) { totalForks = forks; }
+        public Token(int forks = 1) { totalForks = forks; }
         public Token(Token token) { original = token; currentBuffer = token.currentBuffer; currentSize = token.currentSize; currentPointcloud = token.currentPointcloud; }
 
         public int totalForks;
@@ -22,7 +22,7 @@ namespace Workers
         // ---> userData
         public FrameInfo info;
         public bool isVideo;
-//        public bool needsVideo = true;
+        //        public bool needsVideo = true;
         ////
 
     }

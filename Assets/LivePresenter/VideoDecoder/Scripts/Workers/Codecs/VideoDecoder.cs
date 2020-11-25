@@ -4,8 +4,10 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
+using VRTCore;
 // TODO(FPA): Fix new Queue mode.
-namespace Workers {
+namespace Workers
+{
     public class VideoFrame {
         int width;
         int height;

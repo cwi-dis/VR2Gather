@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class BaseWriter : BaseWorker {
         public BaseWriter(WorkerType _type = WorkerType.Run): base(_type) {
         }

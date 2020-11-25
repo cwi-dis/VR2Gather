@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class PCMultiDecoder: PCDecoder {
         public PCMultiDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(_inQueue, _outQueue) {
         }

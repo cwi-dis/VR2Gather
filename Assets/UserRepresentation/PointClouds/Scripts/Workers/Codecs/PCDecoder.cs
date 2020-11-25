@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class PCDecoder : BaseWorker {
         protected cwipc.decoder decoder;
         protected QueueThreadSafe inQueue;

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Threading;
 using UnityEngine.Networking.NetworkSystem;
+using VRTCore;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
@@ -13,8 +14,8 @@ public class VideoWebCam : MonoBehaviour {
 
     Workers.WebCamReader    recorder;
     Workers.VideoEncoder    encoder;
-    Workers.BaseWorker      writer;
-    Workers.BaseWorker      reader;
+    BaseWorker writer;
+    BaseWorker reader;
 
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;

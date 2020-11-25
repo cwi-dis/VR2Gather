@@ -5,8 +5,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using System;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public unsafe class VideoEncoder : BaseWorker {
         
         public struct Setup

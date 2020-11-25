@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
 public class WebCamPipeline : MonoBehaviour {
     public int              width = 1280;
@@ -17,10 +18,10 @@ public class WebCamPipeline : MonoBehaviour {
 
     bool isSource = false;
     Workers.WebCamReader    webReader;
-    Workers.BaseWorker      reader;
-    Workers.BaseWorker      encoder;
+    BaseWorker reader;
+    BaseWorker encoder;
     Workers.VideoDecoder    decoder;
-    Workers.BaseWorker      writer;
+    BaseWorker writer;
     Workers.VideoPreparer   preparer;
 
     VoiceSender audioSender;

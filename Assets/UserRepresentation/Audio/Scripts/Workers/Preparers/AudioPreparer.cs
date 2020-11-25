@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class AudioPreparer : BaseWorker {
         int bufferSize;
 

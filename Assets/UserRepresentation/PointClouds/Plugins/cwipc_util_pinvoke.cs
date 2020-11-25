@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using VRTCore;
 
 internal class API_kernel
 {

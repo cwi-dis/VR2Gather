@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Workers {
-    public class BaseWorker {
+namespace VRTCore
+{
+    public class BaseWorker
+    {
         public enum WorkerType { Init, Run, End };
 
         public bool isRunning { get; private set; }
@@ -13,27 +15,31 @@ namespace Workers {
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
         protected const bool debugThreading = true;
 
-        public BaseWorker(WorkerType _type= WorkerType.Run) {
+        public BaseWorker(WorkerType _type = WorkerType.Run)
+        {
             type = _type;
         }
 
         public virtual string Name()
         {
-            return $"{this.GetType().Name}";
+            return $"{GetType().Name}";
         }
 
-        protected virtual void Start() {
+        protected virtual void Start()
+        {
             isRunning = true;
             thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
             thread.Name = Name();
             thread.Start();
         }
 
-        public virtual void Stop() {
+        public virtual void Stop()
+        {
             isRunning = false;
         }
 
-        public virtual void StopAndWait() {
+        public virtual void StopAndWait()
+        {
             if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             Stop();
             if (debugThreading) Debug.Log($"{Name()}: joining thread");
@@ -48,7 +54,8 @@ namespace Workers {
 
         public virtual void OnStop() { }
 
-        void _Update() {
+        void _Update()
+        {
             if (debugThreading) Debug.Log($"{Name()}: thread started");
             try
             {
@@ -75,6 +82,6 @@ namespace Workers {
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }
-        protected virtual void Update(){ }
+        protected virtual void Update() { }
     }
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class AVSubReader : BaseSubReader {
         public enum CCCC : uint {
             MP4A = 0x6134706D,

@@ -4,101 +4,122 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using UnityEngine;
 
-// This structure should really be declared in the sub package, but that creates a circular reference.
-[StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct FrameInfo
+namespace VRTCore
 {
-    // presentation timestamp, in milliseconds units.
-    public Int64 timestamp;
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-    public byte[] dsi;
-    public int dsi_size;
-}
 
-public class BaseMemoryChunkReferences {
-    static List<Type> types = new List<Type>();
-    public static void AddReference(Type _type) {
-        lock(types) {
-            types.Add(_type);
-        }
-    }
-    public static void DeleteReference(Type _type) {
-        lock (types) {
-            types.Remove(_type);
-        }
+    // This structure should really be declared in the sub package, but that creates a circular reference.
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct FrameInfo
+    {
+        // presentation timestamp, in milliseconds units.
+        public long timestamp;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+        public byte[] dsi;
+        public int dsi_size;
     }
 
-    public static void ShowTotalRefCount() {
-        lock (types) {
-            if (types.Count == 0) return;
-            Debug.Log($"BaseMemoryChunkReferences: {types.Count} TotalRefCount pending:");
-            for (int i = 0; i < types.Count; ++i)
-                Debug.Log($"BaseMemoryChunkReferences: [{i}] --> {types[i]}");
-        }
-    }
-}
-
-public class BaseMemoryChunk {
-
-    protected IntPtr        _pointer;
-    int                     refCount;
-    public FrameInfo        info;
-    public int              length { get; protected set; }
-
-    protected BaseMemoryChunk(IntPtr _pointer) {
-        if (_pointer== IntPtr.Zero)  throw new Exception("BaseMemoryChunk: constructor called with null pointer");
-        this._pointer = _pointer;
-        refCount = 1;
-        BaseMemoryChunkReferences.AddReference( this.GetType() );
-    }
-
-    protected BaseMemoryChunk() {
-        // _pointer will be set later, in the subclass constructor. Not a pattern I'm happy with but difficult to
-        refCount = 1;
-        BaseMemoryChunkReferences.AddReference(this.GetType());
-    }
-
-
-    public BaseMemoryChunk AddRef() {
-        lock (this)
+    public class BaseMemoryChunkReferences
+    {
+        static List<Type> types = new List<Type>();
+        public static void AddReference(Type _type)
         {
-            refCount++;
-            return this;
-        }
-    }
-    public IntPtr pointer { 
-        get {
-            lock(this)
+            lock (types)
             {
-                if (refCount <= 0)
-                {
-                    throw new System.Exception($"BaseMemoryChunk.pointer: refCount={refCount}");
-                }
-                return _pointer;
+                types.Add(_type);
             }
         }
-    }
-
-    public int free() {
-        lock (this)
+        public static void DeleteReference(Type _type)
         {
-            if ( --refCount < 1) {
-                if (refCount < 0)
-                {
-                    throw new System.Exception($"BaseMemoryChunk.free: refCount={refCount}");
-                }
-                if (_pointer!=IntPtr.Zero) {
-                    refCount = 1;   // Temporarily increase refcount so onfree() can use pointer.
-                    onfree();
-                    refCount = 0;
-                    _pointer = IntPtr.Zero;
-                    BaseMemoryChunkReferences.DeleteReference(this.GetType());
-                }
+            lock (types)
+            {
+                types.Remove(_type);
             }
-            return refCount;
+        }
+
+        public static void ShowTotalRefCount()
+        {
+            lock (types)
+            {
+                if (types.Count == 0) return;
+                Debug.Log($"BaseMemoryChunkReferences: {types.Count} TotalRefCount pending:");
+                for (int i = 0; i < types.Count; ++i)
+                    Debug.Log($"BaseMemoryChunkReferences: [{i}] --> {types[i]}");
+            }
         }
     }
 
-    protected virtual void onfree() {
+    public class BaseMemoryChunk
+    {
+
+        protected IntPtr _pointer;
+        int refCount;
+        public FrameInfo info;
+        public int length { get; protected set; }
+
+        protected BaseMemoryChunk(IntPtr _pointer)
+        {
+            if (_pointer == IntPtr.Zero) throw new Exception("BaseMemoryChunk: constructor called with null pointer");
+            this._pointer = _pointer;
+            refCount = 1;
+            BaseMemoryChunkReferences.AddReference(GetType());
+        }
+
+        protected BaseMemoryChunk()
+        {
+            // _pointer will be set later, in the subclass constructor. Not a pattern I'm happy with but difficult to
+            refCount = 1;
+            BaseMemoryChunkReferences.AddReference(GetType());
+        }
+
+
+        public BaseMemoryChunk AddRef()
+        {
+            lock (this)
+            {
+                refCount++;
+                return this;
+            }
+        }
+        public IntPtr pointer
+        {
+            get
+            {
+                lock (this)
+                {
+                    if (refCount <= 0)
+                    {
+                        throw new Exception($"BaseMemoryChunk.pointer: refCount={refCount}");
+                    }
+                    return _pointer;
+                }
+            }
+        }
+
+        public int free()
+        {
+            lock (this)
+            {
+                if (--refCount < 1)
+                {
+                    if (refCount < 0)
+                    {
+                        throw new Exception($"BaseMemoryChunk.free: refCount={refCount}");
+                    }
+                    if (_pointer != IntPtr.Zero)
+                    {
+                        refCount = 1;   // Temporarily increase refcount so onfree() can use pointer.
+                        onfree();
+                        refCount = 0;
+                        _pointer = IntPtr.Zero;
+                        BaseMemoryChunkReferences.DeleteReference(GetType());
+                    }
+                }
+                return refCount;
+            }
+        }
+
+        protected virtual void onfree()
+        {
+        }
     }
 }

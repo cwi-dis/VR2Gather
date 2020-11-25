@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 using Workers;
 
 public class VoiceReceiver : MonoBehaviour {
     Workers.BaseReader      reader;
-    Workers.BaseWorker      codec;
+    BaseWorker codec;
     Workers.AudioPreparer   preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.

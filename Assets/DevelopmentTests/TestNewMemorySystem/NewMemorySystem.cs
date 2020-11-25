@@ -6,6 +6,7 @@ using OrchestratorWrapping;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
 public class NewMemorySystem : MonoBehaviour
 {
@@ -20,14 +21,14 @@ public class NewMemorySystem : MonoBehaviour
     public string       remoteURL = "";
     public string       remoteStream="";
 
-    Workers.BaseWorker  reader;
-    Workers.BaseWorker  encoder;
+    BaseWorker reader;
+    BaseWorker encoder;
     public int          decoders = 1;
-    Workers.BaseWorker[] decoder;
-    Workers.BaseWorker  dashWriter;
-    Workers.BaseWorker  dashReader;
+    BaseWorker[] decoder;
+    BaseWorker dashWriter;
+    BaseWorker dashReader;
 
-    Workers.BaseWorker  preparer;
+    BaseWorker preparer;
     QueueThreadSafe     preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
     QueueThreadSafe     encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
     QueueThreadSafe     writerQueue = new QueueThreadSafe("NewMemorySystemWriter");

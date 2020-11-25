@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
 public class VideoDashReceiver : MonoBehaviour {
     new public Renderer renderer;
 
-    Workers.BaseWorker      reader;
+    BaseWorker reader;
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
@@ -17,7 +18,7 @@ public class VideoDashReceiver : MonoBehaviour {
     QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoDashPreparer",5);
     QueueThreadSafe         audioPreparerQueue = new QueueThreadSafe("AudioDashPreparer", 10);
 
-    Workers.Token token;
+    Token token;
     public string url = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
     public string streamName = ""; //"https://www.gpac-licensing.com/downloads/VRTogether/vod/dashcastx.mpd";
 

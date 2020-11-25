@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using Utils;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class MyRabbitMQReceiver : RabbitMQReceiver
     {
         public MyRabbitMQReceiver(string uri, string exchange)

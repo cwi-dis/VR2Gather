@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class MeshPreparer : BaseWorker {
         bool isReady = false;
         Unity.Collections.NativeArray<PointCouldVertex> vertexArray;

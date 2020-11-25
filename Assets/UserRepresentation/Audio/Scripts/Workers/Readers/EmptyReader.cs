@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BestHTTP.SocketIO;
+using VRTCore;
 
 namespace Workers
 {

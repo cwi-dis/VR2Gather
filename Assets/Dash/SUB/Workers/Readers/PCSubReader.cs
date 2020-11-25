@@ -1,7 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class PCSubReader : BaseSubReader
     {
 

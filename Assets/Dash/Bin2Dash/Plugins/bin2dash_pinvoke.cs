@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using VRTCore;
 
 public class bin2dash
 {

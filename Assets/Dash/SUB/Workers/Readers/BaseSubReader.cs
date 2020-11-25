@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class BaseReader : BaseWorker {
         public BaseReader(WorkerType _type = WorkerType.Run): base(_type) { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence) {

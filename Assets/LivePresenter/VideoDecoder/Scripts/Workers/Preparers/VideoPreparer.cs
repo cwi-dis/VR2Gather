@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class VideoPreparer : BaseWorker {
         float[] circularAudioBuffer;
         int audioBufferSize;

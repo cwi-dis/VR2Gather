@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FFmpeg.AutoGen;
+using VRTCore;
 
 public unsafe class VideoFilter
 {

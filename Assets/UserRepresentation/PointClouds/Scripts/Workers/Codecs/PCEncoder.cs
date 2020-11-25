@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class PCEncoder : BaseWorker {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;

@@ -3,14 +3,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
 public class EntityPipeline : MonoBehaviour {
     bool isSource = false;
-    Workers.BaseWorker  reader;
-    Workers.BaseWorker encoder;
-    List<Workers.BaseWorker> decoders = new List<Workers.BaseWorker>();
-    Workers.BaseWorker  writer;
-    List<Workers.BaseWorker>  preparers = new List<Workers.BaseWorker>();
+    BaseWorker reader;
+    BaseWorker encoder;
+    List<BaseWorker> decoders = new List<BaseWorker>();
+    BaseWorker writer;
+    List<BaseWorker>  preparers = new List<BaseWorker>();
     List<MonoBehaviour> renderers = new List<MonoBehaviour>();
     VoiceSender audioSender;
     VoiceReceiver audioReceiver;
@@ -41,7 +42,7 @@ public class EntityPipeline : MonoBehaviour {
         switch (cfg.sourceType) {
             case "self": // old "rs2"
                 isSource = true;
-                Workers.TiledWorker pcReader;
+                TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
                 Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={_user.userId}, representation={(int)user.userData.userRepresentationType}");
@@ -117,7 +118,7 @@ public class EntityPipeline : MonoBehaviour {
                     Vector3[] tileNormals = null;
                     if (PCSelfConfig.tiled)
                     {
-                        Workers.TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
+                        TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
                         if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                         {
                             minTileNum = 1;
@@ -248,7 +249,7 @@ public class EntityPipeline : MonoBehaviour {
             //
             // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
             //
-            Workers.BaseWorker decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
+            BaseWorker decoder = new Workers.PCDecoder(decoderQueue, preparerQueue);
             decoders.Add(decoder);
             //
             // And collect the relevant information for the Dash receiver

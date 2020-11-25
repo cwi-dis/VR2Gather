@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers { 
+namespace Workers
+{
     public class WebCamReader : BaseWorker {
         MonoBehaviour   monoBehaviour;
         Coroutine       coroutine;

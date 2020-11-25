@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Workers {
-    public class TiledWorker : BaseWorker {
+namespace VRTCore
+{
+    public class TiledWorker : BaseWorker
+    {
         public struct TileInfo
         {
             // xxxjack wrong: should be min and max angle in XZ plane
@@ -12,7 +14,8 @@ namespace Workers {
             public int cameraMask;
         }
 
-        public TiledWorker(WorkerType _type= WorkerType.Run) : base(_type) {
+        public TiledWorker(WorkerType _type = WorkerType.Run) : base(_type)
+        {
         }
 
         virtual public TileInfo[] getTiles()

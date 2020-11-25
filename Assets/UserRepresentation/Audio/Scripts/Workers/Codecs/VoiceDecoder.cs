@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
+namespace Workers
+{
     public class VoiceDecoder : BaseWorker {
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
