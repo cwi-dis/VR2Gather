@@ -36,7 +36,6 @@ public class WebCamPipeline : MonoBehaviour {
     QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec", 2,true);
     QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
-    TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
 
     const bool debugTiling = false;
 
