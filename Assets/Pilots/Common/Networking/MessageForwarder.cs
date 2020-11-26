@@ -5,13 +5,13 @@ using UnityEngine;
 namespace Pilots
 {
 
-	/// <summary>
-	/// Manager of message forwarders
-	/// User code can subscribe to messages of a certain type
-	/// and receive the message of that type when it arrives.
-	/// Types are managed by assigning an integer Id in the constructor
-	/// </summary>
-	public class MessageForwarderManager
+    /// <summary>
+    /// Manager of message forwarders
+    /// User code can subscribe to messages of a certain type
+    /// and receive the message of that type when it arrives.
+    /// Types are managed by assigning an integer Id in the constructor
+    /// </summary>
+    public class MessageForwarderManager
 	{
 		public Dictionary<int, Type> TypeFromId = new Dictionary<int, Type>();
 		public Dictionary<Type, int> IdFromType = new Dictionary<Type, int>();
