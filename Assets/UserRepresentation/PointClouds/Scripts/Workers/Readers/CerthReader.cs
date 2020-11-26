@@ -17,7 +17,7 @@ namespace Workers
         }
     }
 
-    public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
+    public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but PointCloudPipeline expects it.
     {
         float voxelSize;
         Vector3 originCorrection;

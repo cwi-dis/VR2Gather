@@ -48,7 +48,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (player.webcam.TryGetComponent(out WebCamPipeline web))
             Destroy(web);
         player.webcam.SetActive(false);
-        if (player.pc.TryGetComponent(out EntityPipeline pointcloud))
+        if (player.pc.TryGetComponent(out PointCloudPipeline pointcloud))
             Destroy(pointcloud);
         if (player.pc.TryGetComponent(out Workers.PointBufferRenderer renderer))
             Destroy(renderer);
@@ -105,7 +105,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<EntityPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
+                player.pc.AddComponent<PointCloudPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);

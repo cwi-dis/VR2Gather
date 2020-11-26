@@ -9,7 +9,7 @@ using UnityEngine;
 using Voice;
 using VRTCore;
 
-public class EntityPipeline : MonoBehaviour {
+public class PointCloudPipeline : MonoBehaviour {
     bool isSource = false;
     BaseWorker reader;
     BaseWorker encoder;
@@ -41,7 +41,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(User _user, Config._User cfg, bool preview = false) {
+    public PointCloudPipeline Init(User _user, Config._User cfg, bool preview = false) {
         user = _user;
         switch (cfg.sourceType) {
             case "self": // old "rs2"

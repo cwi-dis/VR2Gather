@@ -39,7 +39,7 @@ public class OrchestratorCalibration : MonoBehaviour {
         }
         else {
             player.pc.gameObject.SetActive(true);
-            player.pc.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
+            player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
         }
     }
 

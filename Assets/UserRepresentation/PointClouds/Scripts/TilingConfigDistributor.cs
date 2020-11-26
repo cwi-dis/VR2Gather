@@ -12,7 +12,7 @@ public class TilingConfigDistributor : MonoBehaviour
     private int interval = 1;    // How many seconds between transmissions of the data
     private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
     private string selfUserId;
-    private Dictionary<string, EntityPipeline> pipelines = new Dictionary<string, EntityPipeline>();
+    private Dictionary<string, PointCloudPipeline> pipelines = new Dictionary<string, PointCloudPipeline>();
     const bool debug = false;
 
     public TilingConfigDistributor Init(string _selfUserId)
@@ -21,7 +21,7 @@ public class TilingConfigDistributor : MonoBehaviour
         return this;
     }
 
-    public void RegisterPipeline(string userId, EntityPipeline pipeline)
+    public void RegisterPipeline(string userId, PointCloudPipeline pipeline)
     {
         if (pipelines.ContainsKey(userId))
         {
@@ -53,9 +53,9 @@ public class TilingConfigDistributor : MonoBehaviour
         }
         earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
         if (interval < 10) interval = interval * 2;
-        // Find EntityPipeline belonging to self user.
+        // Find PointCloudPipeline belonging to self user.
         var pipeline = pipelines[selfUserId];
-        // Get data from self EntityPipeline.
+        // Get data from self PointCloudPipeline.
         TilingConfig tilingConfig = pipeline.GetTilingConfig();
         if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
         var data = new TilingConfigMessage { data = tilingConfig };
@@ -86,14 +86,14 @@ public class TilingConfigDistributor : MonoBehaviour
 		}
         // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
         if (receivedData.SenderId == selfUserId) return;
-        // Find EntityPipeline belonging to receivedData.SenderId.
+        // Find PointCloudPipeline belonging to receivedData.SenderId.
         if (!pipelines.ContainsKey(receivedData.SenderId))
         {
             Debug.LogWarning($"TilingConfigDistributor: received data for unknown userId {receivedData.SenderId}");
             return;
         }
         var pipeline = pipelines[receivedData.SenderId];
-        // Give reveicedData.data to that EntityPipeline.
+        // Give reveicedData.data to that PointCloudPipeline.
         TilingConfig tilingConfig = receivedData.data;
         if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
         pipeline.SetTilingConfig(tilingConfig);
