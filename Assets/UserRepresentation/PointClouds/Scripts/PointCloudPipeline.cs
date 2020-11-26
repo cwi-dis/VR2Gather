@@ -9,7 +9,7 @@ using UnityEngine;
 using Voice;
 using VRTCore;
 
-public class PointCloudPipeline : MonoBehaviour {
+public class PointCloudPipeline : BasePipeline {
     bool isSource = false;
     BaseWorker reader;
     BaseWorker encoder;

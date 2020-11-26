@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Pilots;
+using VRTCore;
 
 public class TilingConfigDistributor : BaseConfigDistributor
 {
@@ -13,7 +14,7 @@ public class TilingConfigDistributor : BaseConfigDistributor
     private int interval = 1;    // How many seconds between transmissions of the data
     private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
     private string selfUserId;
-    private Dictionary<string, PointCloudPipeline> pipelines = new Dictionary<string, PointCloudPipeline>();
+    private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
     const bool debug = false;
 
     public TilingConfigDistributor Init(string _selfUserId)
@@ -22,7 +23,7 @@ public class TilingConfigDistributor : BaseConfigDistributor
         return this;
     }
 
-    public void RegisterPipeline(string userId, PointCloudPipeline pipeline)
+    public void RegisterPipeline(string userId, BasePipeline pipeline)
     {
         if (pipelines.ContainsKey(userId))
         {
@@ -50,13 +51,17 @@ public class TilingConfigDistributor : BaseConfigDistributor
         // Quick return if interval hasn't expired since last transmission.
         if (earliestNextTransmission != null && System.DateTime.Now < earliestNextTransmission)
         {
-            return;
+            return; // xxxjack should we print an error?
         }
         earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
         if (interval < 10) interval = interval * 2;
         // Find PointCloudPipeline belonging to self user.
-        var pipeline = pipelines[selfUserId];
+        PointCloudPipeline pipeline = (PointCloudPipeline)pipelines[selfUserId];
         // Get data from self PointCloudPipeline.
+        if (pipeline == null)
+        {
+            return;
+        }
         TilingConfig tilingConfig = pipeline.GetTilingConfig();
         if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
         var data = new TilingConfigMessage { data = tilingConfig };
@@ -93,7 +98,11 @@ public class TilingConfigDistributor : BaseConfigDistributor
             Debug.LogWarning($"TilingConfigDistributor: received data for unknown userId {receivedData.SenderId}");
             return;
         }
-        var pipeline = pipelines[receivedData.SenderId];
+        PointCloudPipeline pipeline = (PointCloudPipeline)pipelines[receivedData.SenderId];
+        if (pipeline == null)
+        {
+            return;
+        }
         // Give reveicedData.data to that PointCloudPipeline.
         TilingConfig tilingConfig = receivedData.data;
         if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");

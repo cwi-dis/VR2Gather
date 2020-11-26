@@ -198,7 +198,8 @@ namespace Pilots
 						// FER: Implementacion representacion de webcam.
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						playerManager.webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
+						Debug.LogError("xxxjack should playerManager.webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);");
+						playerManager.webcam.AddComponent<BasePipeline>().Init();  // xxxjack (FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
 						break;
 					case UserData.eUserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
@@ -210,18 +211,10 @@ namespace Pilots
 					case UserData.eUserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						var pipeline = playerManager.pc.AddComponent<PointCloudPipeline>();
-						pipeline.Init(user, userCfg);
-						// xxxjack debug code
-						if (isLocalPlayer)
-						{
-							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-							SyncConfig syncConfig = pipeline.GetSyncConfig();
-							Debug.Log($"xxxjack sync: self PointCloudPipeline audio: {syncConfig.audio.wallClockTime}={syncConfig.audio.streamClockTime}, visual: {syncConfig.visuals.wallClockTime}={syncConfig.visuals.streamClockTime}");
-							var tileInfo = pipeline.GetTilingConfig();
-							Debug.Log($"xxxjack tiling: self: {JsonUtility.ToJson(tileInfo)}");
-						}
+						Debug.LogError("xxxjack should playerManager.pc.AddComponent<PointCloudPipeline>();");
+						var pipeline = playerManager.pc.AddComponent<BasePipeline>(); // xxxjack
+						pipeline.Init(); // xxxjack pipeline.Init(user, userCfg);
+
 						// Register for distribution of tiling configurations
 						tilingConfigDistributor?.RegisterPipeline(user.userId, pipeline);
 						break;
