@@ -1,6 +1,7 @@
 ﻿#define NO_VOICE
 
 using Dash;
+using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -191,7 +192,7 @@ public class EntityPipeline : MonoBehaviour {
                         if( Config.Instance.protocolType == Config.ProtocolType.Dash )
                             writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         else
-                            writer = new Workers.SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                            writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
                     } catch (System.EntryPointNotFoundException e) {
                         Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
@@ -264,7 +265,7 @@ public class EntityPipeline : MonoBehaviour {
         if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
         else
-            reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
+            reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
         Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, reader={reader.Name()}");
     }
 

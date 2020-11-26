@@ -1,4 +1,5 @@
 ﻿using Dash;
+using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class VoiceReceiver : MonoBehaviour {
         preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
         if (UseDash)    reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
-        else            reader = new Workers.SocketIOReader(user, _streamName, decoderQueue); 
+        else            reader = new SocketIOReader(user, _streamName, decoderQueue); 
 
         codec = new Workers.VoiceDecoder(decoderQueue, preparerQueue);
         preparer = new Workers.AudioPreparer(preparerQueue);//, optimalAudioBufferSize);

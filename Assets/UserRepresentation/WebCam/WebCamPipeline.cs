@@ -1,6 +1,7 @@
 ﻿#define NO_VOICE
 
 using Dash;
+using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -83,7 +84,7 @@ public class WebCamPipeline : MonoBehaviour {
                         if (useDash)
                             writer = new B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
                         else
-                            writer = new Workers.SocketIOWriter(user, "webcam", b2dStreams);
+                            writer = new SocketIOWriter(user, "webcam", b2dStreams);
                     }
                     catch (System.EntryPointNotFoundException e) {
                         Debug.Log($"WebCamPipeline: SocketIOWriter(): EntryPointNotFound({e.Message})");
@@ -120,7 +121,7 @@ public class WebCamPipeline : MonoBehaviour {
                 break;
             case "remote": // Remoto
                 if (useDash)    reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
-                else            reader = new Workers.SocketIOReader(user, "webcam", videoCodecQueue);
+                else            reader = new SocketIOReader(user, "webcam", videoCodecQueue);
 
                 //
                 // Create video decoder.

@@ -8,6 +8,7 @@ using System.Threading;
 using UnityEngine.Networking.NetworkSystem;
 using VRTCore;
 using Dash;
+using SocketIO;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
@@ -61,7 +62,7 @@ public class VideoWebCam : MonoBehaviour {
                 }
             };
             if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
+            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
 
 //            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
@@ -82,7 +83,7 @@ public class VideoWebCam : MonoBehaviour {
             string remoteStream = "webcam";
 
             if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
-            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
+            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
         }
 

@@ -1,4 +1,5 @@
 ﻿using Dash;
+using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,7 +30,7 @@ public class VoiceSender : MonoBehaviour {
         b2dStreams[0].inQueue = senderQueue;
         // xxxjack invented VR2a 4CC here. Is there a correct one?
         if(UseDash) writer = new B2DWriter(user.sfuData.url_audio, _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
-        else        writer = new Workers.SocketIOWriter(user, _streamName, b2dStreams);
+        else        writer = new SocketIOWriter(user, _streamName, b2dStreams);
     }
 
     void OnDestroy() {
