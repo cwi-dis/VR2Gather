@@ -1,7 +1,8 @@
-﻿using System;
-using Utils;
+﻿using RabbitMQ.Utils;
+using System;
 
-namespace DataProviders {
+namespace DataProviders
+{
     public interface IDataProvider {
         event EventHandler<EventArgs<byte[]>> OnNewData;
     }

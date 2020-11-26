@@ -1,10 +1,10 @@
 ﻿using System;
 using UnityEngine;
-using Utils;
 using System.Runtime.InteropServices;
 using System.IO;
 using VRTCore;
 using RabbitMQ;
+using RabbitMQ.Utils;
 
 namespace DataProviders
 {

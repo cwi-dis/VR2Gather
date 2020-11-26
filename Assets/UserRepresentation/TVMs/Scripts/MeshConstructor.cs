@@ -1,10 +1,10 @@
 using UnityEngine;
-using Utils;
 using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using RabbitMQ.Utils;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]

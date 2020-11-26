@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Utils
+namespace RabbitMQ.Utils
 {
     public class EventArgs<T> : EventArgs
     {
@@ -16,7 +16,7 @@ namespace Utils
             get
             {
                 return m_Value;
-            }            
+            }
         }
     }
 }
