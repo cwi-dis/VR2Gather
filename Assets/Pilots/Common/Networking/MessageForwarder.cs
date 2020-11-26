@@ -31,7 +31,7 @@ namespace Pilots
 			AddTypeIdMapping(107, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
 			AddTypeIdMapping(108, typeof(Grabbable.RigidbodySyncMessage));
 			AddTypeIdMapping(109, typeof(TextChatManager.TextChatDataMessage));
-			AddTypeIdMapping(110, typeof(TilingConfigDistributor.TilingConfigMessage));
+			Debug.LogError("xxxjack not-yet-implemented: AddTypeIdMapping(110, typeof(TilingConfigDistributor.TilingConfigMessage));");
 			AddTypeIdMapping(111, typeof(Pilot3ExperienceController.InitCompleteMessage));
 			AddTypeIdMapping(112, typeof(KeywordResponseListener.KeywordsResponseData));
 			AddTypeIdMapping(113, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Pilots;
 
-public class TilingConfigDistributor : MonoBehaviour
+public class TilingConfigDistributor : BaseConfigDistributor
 {
     // Note there is an AddTypeIdMapping(420, typeof(TilingConfigDistributor.TilingConfigMessage))
     // in MessageForwarder that is part of the magic to make this work.
