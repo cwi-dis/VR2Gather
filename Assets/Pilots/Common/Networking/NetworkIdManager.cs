@@ -1,60 +1,63 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class NetworkIdManager
+namespace Pilots
 {
-	private Dictionary<string, NetworkIdBehaviour> _NetworkIdBehaviours;
-
-	static NetworkIdManager _Instance;
-
-	private NetworkIdManager()
+	public class NetworkIdManager
 	{
-		_NetworkIdBehaviours = new Dictionary<string, NetworkIdBehaviour>();
-	}
+		private Dictionary<string, NetworkIdBehaviour> _NetworkIdBehaviours;
 
-	public static bool Add(NetworkIdBehaviour behaviour)
-	{
-		if(_Instance == null)
+		static NetworkIdManager _Instance;
+
+		private NetworkIdManager()
 		{
-			_Instance = new NetworkIdManager();
+			_NetworkIdBehaviours = new Dictionary<string, NetworkIdBehaviour>();
 		}
 
-		return _Instance.InternalAdd(behaviour);
-	}
-
-	public static void Remove(NetworkIdBehaviour behaviour)
-	{
-		if(_Instance == null)
+		public static bool Add(NetworkIdBehaviour behaviour)
 		{
-			_Instance = new NetworkIdManager();
+			if (_Instance == null)
+			{
+				_Instance = new NetworkIdManager();
+			}
+
+			return _Instance.InternalAdd(behaviour);
 		}
 
-		_Instance.InternalRemove(behaviour);
-	}
-
-	private bool InternalAdd(NetworkIdBehaviour behaviour)
-	{
-		if(!_NetworkIdBehaviours.ContainsKey(behaviour.NetworkId))
+		public static void Remove(NetworkIdBehaviour behaviour)
 		{
-			_NetworkIdBehaviours.Add(behaviour.NetworkId, behaviour);
+			if (_Instance == null)
+			{
+				_Instance = new NetworkIdManager();
+			}
+
+			_Instance.InternalRemove(behaviour);
+		}
+
+		private bool InternalAdd(NetworkIdBehaviour behaviour)
+		{
+			if (!_NetworkIdBehaviours.ContainsKey(behaviour.NetworkId))
+			{
+				_NetworkIdBehaviours.Add(behaviour.NetworkId, behaviour);
+				return true;
+			}
+
+			var existingBehaviour = _NetworkIdBehaviours[behaviour.NetworkId];
+			if (existingBehaviour != null && existingBehaviour != behaviour)
+			{
+				if (Application.isPlaying)
+				{
+					Debug.LogError("[NetworkIdManager] Colliding network Ids! Couldn't add NetworkIdBehaviour.", behaviour);
+				}
+				return false;
+			}
+
 			return true;
 		}
 
-		var existingBehaviour = _NetworkIdBehaviours[behaviour.NetworkId];
-		if (existingBehaviour != null && existingBehaviour != behaviour)
+		private void InternalRemove(NetworkIdBehaviour behaviour)
 		{
-			if (Application.isPlaying)
-			{
-				Debug.LogError("[NetworkIdManager] Colliding network Ids! Couldn't add NetworkIdBehaviour.", behaviour);
-			}
-			return false;
+			_NetworkIdBehaviours.Remove(behaviour.NetworkId);
 		}
-
-		return true;
-	}
-
-	private void InternalRemove(NetworkIdBehaviour behaviour)
-	{
-		_NetworkIdBehaviours.Remove(behaviour.NetworkId);
 	}
 }

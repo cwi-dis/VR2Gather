@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Orchestrator;
+using Pilots;
 
 public class OrchestratorPilot0 : MonoBehaviour {
     public static OrchestratorPilot0 Instance { get; private set; }

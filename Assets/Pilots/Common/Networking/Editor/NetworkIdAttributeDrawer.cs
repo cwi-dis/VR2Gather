@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using Pilots;
 
 [CustomPropertyDrawer(typeof(NetworkIdAttribute))]
 public class NetworkIdAttributeDrawer : PropertyDrawer
