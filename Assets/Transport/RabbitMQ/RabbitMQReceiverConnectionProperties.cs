@@ -3,21 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class RabbitMQReceiverConnectionProperties : RabbitMQConnectionProperties
+namespace RabbitMQ
 {
-    private string m_QueueName = "";
-
-    public string QueueName
+    public class RabbitMQReceiverConnectionProperties : RabbitMQConnectionProperties
     {
-        get
+        private string m_QueueName = "";
+
+        public string QueueName
         {
-            return m_QueueName;
-        }
-        set
-        {
-            if(value != null)
-                m_QueueName = value;
+            get
+            {
+                return m_QueueName;
+            }
+            set
+            {
+                if (value != null)
+                    m_QueueName = value;
+            }
         }
     }
 }
-

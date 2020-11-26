@@ -4,6 +4,7 @@ using Utils;
 using System.Runtime.InteropServices;
 using System.IO;
 using VRTCore;
+using RabbitMQ;
 
 namespace DataProviders
 {
