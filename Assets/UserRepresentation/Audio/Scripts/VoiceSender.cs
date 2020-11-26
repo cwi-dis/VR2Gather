@@ -1,4 +1,5 @@
 ﻿using Dash;
+using Orchestrator;
 using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ public class VoiceSender : MonoBehaviour {
     QueueThreadSafe senderQueue = new QueueThreadSafe("VoiceSenderSender");
 
     // Start is called before the first frame update
-    public void Init(OrchestratorWrapping.User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {
+    public void Init(User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash) {
         string micro = null;
         if (user != null && user.userData != null)
             micro = user.userData.microphoneName;

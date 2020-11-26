@@ -1,7 +1,8 @@
 ﻿using LitJson;
+using OrchestratorWrapping;
 using System.Collections.Generic;
 
-namespace OrchestratorWrapping
+namespace Orchestrator
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement
@@ -25,7 +26,7 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class User: OrchestratorElement
+    public class User : OrchestratorElement
     {
         public string userId = "";
         public string userName = "";
@@ -56,7 +57,7 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class UserData: OrchestratorElement
+    public class UserData : OrchestratorElement
     {
         public string userMQexchangeName = "";
         public string userMQurl = "";
@@ -133,12 +134,12 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class NtpClock: OrchestratorElement
+    public class NtpClock : OrchestratorElement
     {
         public string ntpDate;
-        public System.Int64 ntpTimeMs;
+        public long ntpTimeMs;
 
-        public NtpClock() {}
+        public NtpClock() { }
         public int Timestamp { get { return (int)(ntpTimeMs / 1000); } }
     }
 

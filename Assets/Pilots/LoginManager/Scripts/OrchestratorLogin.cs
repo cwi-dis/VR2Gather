@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using OrchestratorWrapping;
 using UnityEditor;
 using VRTCore;
+using Orchestrator;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame

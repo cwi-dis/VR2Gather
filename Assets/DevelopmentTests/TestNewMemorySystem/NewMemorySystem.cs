@@ -3,7 +3,7 @@
 //#define TEST_VOICECHAT
 
 using Dash;
-using OrchestratorWrapping;
+using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -99,8 +99,8 @@ public class NewMemorySystem : MonoBehaviour
         if (useDashVoice) {
             useDashVoice = false;
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 2000, 10000, true); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 0, 1, true); //Audio Pipeline
+            gameObject.AddComponent<VoiceSender>().Init(new User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 2000, 10000, true); //Audio Pipeline
+            gameObject.AddComponent<VoiceReceiver>().Init(new User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 0, 1, true); //Audio Pipeline
         }
 
     }

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using OrchestratorWrapping;
 using VRTCore;
+using Orchestrator;
 
 public class OrchestratorCalibration : MonoBehaviour {
 

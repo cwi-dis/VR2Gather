@@ -9,8 +9,9 @@ using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using System.Text;
+using OrchestratorWrapping;
 
-namespace OrchestratorWrapping
+namespace Orchestrator
 {
     // class that describes the status for the response from the orchestrator
     public class ResponseStatus
@@ -20,8 +21,8 @@ namespace OrchestratorWrapping
 
         public ResponseStatus(int error, string message)
         {
-            this.Error = error;
-            this.Message = message;
+            Error = error;
+            Message = message;
         }
         public ResponseStatus() : this(0, "OK") { }
     }
@@ -63,7 +64,7 @@ namespace OrchestratorWrapping
 
         public UserAudioPacket(byte[] pAudioPacket, string pUserID)
         {
-            if(pAudioPacket != null)
+            if (pAudioPacket != null)
             {
                 audioPacket = pAudioPacket;
                 userID = pUserID;
@@ -125,7 +126,7 @@ namespace OrchestratorWrapping
 
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
-            if(instance is null)
+            if (instance is null)
             {
                 instance = this;
             }
@@ -169,7 +170,7 @@ namespace OrchestratorWrapping
         #region commands with Acks and responses
         public void Connect()
         {
-            if ((OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected))
+            if (OrchestrationSocketIoManager != null && OrchestrationSocketIoManager.isSocketConnected)
             {
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
@@ -227,7 +228,7 @@ namespace OrchestratorWrapping
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             try { myUserID = response.body["userId"].ToString(); }
-            catch { myUserID = "";  }
+            catch { myUserID = ""; }
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
@@ -252,7 +253,7 @@ namespace OrchestratorWrapping
         private void OnGetNTPTimeResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
+            NtpClock ntpTime = OrchestratorElement.ParseJsonData<NtpClock>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
@@ -268,7 +269,7 @@ namespace OrchestratorWrapping
         private void OnAddSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = Session.ParseJsonData<Session>(response.body);
+            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
 
@@ -294,7 +295,7 @@ namespace OrchestratorWrapping
         private void OnGetSessionInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = Session.ParseJsonData<Session>(response.body);
+            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
@@ -323,7 +324,7 @@ namespace OrchestratorWrapping
         private void OnJoinSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = Session.ParseJsonData<Session>(response.body);
+            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnJoinSessionResponse(status, session);
         }
 
@@ -348,7 +349,7 @@ namespace OrchestratorWrapping
         private void GetLivePresenterDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            LivePresenterData liveData = LivePresenterData.ParseJsonData<LivePresenterData>(response.body);
+            LivePresenterData liveData = OrchestratorElement.ParseJsonData<LivePresenterData>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
 
@@ -375,7 +376,7 @@ namespace OrchestratorWrapping
         private void OnGetScenarioInstanceInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            ScenarioInstance scenario = ScenarioInstance.ParseJsonData<ScenarioInstance>(response.body);
+            ScenarioInstance scenario = OrchestratorElement.ParseJsonData<ScenarioInstance>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
         }
 
@@ -404,7 +405,7 @@ namespace OrchestratorWrapping
         private void OnAddUserResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = User.ParseJsonData<User>(response.body);
+            User user = OrchestratorElement.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
@@ -418,7 +419,7 @@ namespace OrchestratorWrapping
         private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = User.ParseJsonData<User>(response.body);
+            User user = OrchestratorElement.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
@@ -441,7 +442,7 @@ namespace OrchestratorWrapping
             OrchestratorCommand command = GetOrchestratorCommand("ClearUserData");
             OrchestrationSocketIoManager.EmitCommand(command);
         }
-        
+
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
@@ -805,7 +806,7 @@ namespace OrchestratorWrapping
                 new List<Parameter>
                     {
                         new Parameter("userId", typeof(string))
-                    }, 
+                    },
                     OnGetUserInfoResponse),
                 new OrchestratorCommand("AddUser", new List<Parameter>
                 {

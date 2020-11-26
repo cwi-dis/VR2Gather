@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Orchestrator;
+using System.Collections.Generic;
 
 //Interfaces to be implemented to supervise the orchestrator
 namespace OrchestratorWrapping

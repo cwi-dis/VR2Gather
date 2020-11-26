@@ -1,6 +1,7 @@
 ﻿#define NO_VOICE
 
 using Dash;
+using Orchestrator;
 using SocketIO;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ public class EntityPipeline : MonoBehaviour {
     Workers.PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
     B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
-    OrchestratorWrapping.User user;
+    User user;
     const bool debugTiling = false;
     // Mainly for debug messages:
     static int instanceCounter = 0;
@@ -39,7 +40,7 @@ public class EntityPipeline : MonoBehaviour {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public EntityPipeline Init(OrchestratorWrapping.User _user, Config._User cfg, bool preview = false) {
+    public EntityPipeline Init(User _user, Config._User cfg, bool preview = false) {
         user = _user;
         switch (cfg.sourceType) {
             case "self": // old "rs2"
@@ -64,28 +65,28 @@ public class EntityPipeline : MonoBehaviour {
                 //
                 // Create reader
                 //
-                if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_) // PCSELF
+                if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_) // PCSELF
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_)
+                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWIK4A_)
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__)
+                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_PROXY__)
                 {
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
                     if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
                     pcReader = new Workers.ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_SYNTH__)
+                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
