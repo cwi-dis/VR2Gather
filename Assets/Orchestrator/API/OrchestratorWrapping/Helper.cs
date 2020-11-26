@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using LitJson;
 using System.Reflection;
-using Orchestrator;
 
-namespace OrchestratorWrapping
+namespace Orchestrator
 {
     public static class Helper
     {
@@ -15,7 +14,7 @@ namespace OrchestratorWrapping
             {
                 object[] arg = { dataList[i] };
                 // call the class function that knows how to parse the Json Data
-                T element = (T)(typeof(T).InvokeMember("ParseJsonData", BindingFlags.InvokeMethod, null, null, arg));
+                T element = (T)typeof(T).InvokeMember("ParseJsonData", BindingFlags.InvokeMethod, null, null, arg);
                 list.Add(element);
             }
             return list;
