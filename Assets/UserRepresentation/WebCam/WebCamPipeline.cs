@@ -37,8 +37,7 @@ public class WebCamPipeline : MonoBehaviour {
     QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
 
-    const bool debugTiling = false;
-
+ 
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
@@ -179,25 +178,6 @@ public class WebCamPipeline : MonoBehaviour {
 
 
 
-        if (debugTiling)
-        {
-            // Debugging: print position/orientation of camera and others every 10 seconds.
-            if (lastUpdateTime == null || (System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10)))
-            {
-                lastUpdateTime = System.DateTime.Now;
-                if (isSource)
-                {
-                    ViewerInformation vi = GetViewerInformation();
-                    Debug.Log($"xxxjack WebCamPipeline self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
-                }
-                else
-                {
-                    Vector3 position = GetPosition();
-                    Vector3 rotation = GetRotation();
-                    Debug.Log($"xxxjack WebCamPipeline other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
-                }
-            }
-        }
     }
 
     void OnDestroy() {
