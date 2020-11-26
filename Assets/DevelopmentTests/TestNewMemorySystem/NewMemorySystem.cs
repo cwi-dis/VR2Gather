@@ -7,6 +7,7 @@ using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Voice;
 using VRTCore;
 
 public class NewMemorySystem : MonoBehaviour

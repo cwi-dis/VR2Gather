@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace Voice
 {
-    public class AudioPreparer : BaseWorker {
+    public class AudioPreparer : BaseWorker
+    {
         int bufferSize;
 
         QueueThreadSafe inQueue;
 
-        public AudioPreparer(QueueThreadSafe _inQueue) : base(WorkerType.End) {
+        public AudioPreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
+        {
             inQueue = _inQueue;
             if (inQueue == null) Debug.LogError($"AudioPreparer: Programmer error: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
@@ -18,18 +20,22 @@ namespace Workers
             Start();
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             base.OnStop();
             Debug.Log("AudioPreparer: Stopped");
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
         }
 
         bool firstTime = true;
-        public bool GetAudioBuffer(float[] dst, int len) {
-            if (!inQueue.IsClosed()) {
+        public bool GetAudioBuffer(float[] dst, int len)
+        {
+            if (!inQueue.IsClosed())
+            {
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
                 if (mc == null) return false;
                 System.Array.Copy(mc.buffer, 0, dst, 0, len);
@@ -43,7 +49,7 @@ namespace Workers
         double statsDrops;
         const int statsInterval = 10;
 
-        public void statsUpdate(int samplesInOutputBuffer, bool dropped=false)
+        public void statsUpdate(int samplesInOutputBuffer, bool dropped = false)
         {
             if (statsLastTime == null)
             {
@@ -56,7 +62,7 @@ namespace Workers
             {
                 double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
                 double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / 10}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops/10}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / 10}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops / 10}");
                 statsTotalUpdates = 0;
                 statsTotalSamplesInOutputBuffer = 0;
                 statsDrops = 0;

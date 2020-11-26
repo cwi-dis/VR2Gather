@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using VRTCore;
 using Orchestrator;
+using Voice;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }
@@ -59,7 +60,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         StopMicrophone();
         currentMicrophoneName = microphoneName;
         if (currentMicrophoneName != "None") {
-            Workers.VoiceReader.PrepareDSP();
+            VoiceReader.PrepareDSP();
             recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
             readPosition = 0;
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace Voice
 {
     public class EmptyPreparer : BaseWorker
     {
@@ -13,7 +13,7 @@ namespace Workers
         int readPosition;
 
 
-        public EmptyPreparer(WorkerType _type= WorkerType.Run) : base(_type)
+        public EmptyPreparer(WorkerType _type = WorkerType.Run) : base(_type)
         {
             Start();
         }
