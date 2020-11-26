@@ -2,13 +2,6 @@
 using System.Runtime.InteropServices;
 using VRTCore;
 
-internal class API_kernel
-{
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-    internal static extern IntPtr GetModuleHandle(string lpModuleName);
-    [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-    internal static extern int GetModuleFileName(IntPtr hModule, System.Text.StringBuilder modulePath, int nSize);
-}
 
 public class cwipc
 {
