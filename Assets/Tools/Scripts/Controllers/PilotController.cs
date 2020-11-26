@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Video;
+using VRTCore;
 
 //public enum Actions { VIDEO_1_START, VIDEO_1_PAUSE, VIDEO_2_START, VIDEO_2_PAUSE, WAIT }
 

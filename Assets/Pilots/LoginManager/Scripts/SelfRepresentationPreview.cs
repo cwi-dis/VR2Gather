@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using OrchestratorWrapping;
 using System;
+using VRTCore;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

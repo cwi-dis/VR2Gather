@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System;
 using System.Text;
+using VRTCore;
 
 public class PerformanceMetrics : MonoBehaviour
 {

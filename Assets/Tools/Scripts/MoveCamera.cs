@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
+using VRTCore;
 
 public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;

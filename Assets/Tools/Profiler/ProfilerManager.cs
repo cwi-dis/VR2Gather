@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
+using VRTCore;
 
 public class ProfilerManager : MonoBehaviour {
     public bool TVMActive = false;

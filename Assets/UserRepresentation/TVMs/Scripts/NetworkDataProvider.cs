@@ -3,8 +3,10 @@ using UnityEngine;
 using Utils;
 using System.Runtime.InteropServices;
 using System.IO;
+using VRTCore;
 
-namespace DataProviders {  
+namespace DataProviders
+{
 
     public class NetworkDataProvider : MonoBehaviour, IDataProvider {
         public bool isMaster;
