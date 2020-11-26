@@ -1,0 +1,16 @@
+{
+    "name": "Orchestrator",
+    "references": [
+        "GUID:bc2eedf714adfad4dbb6809f4714c40c",
+        "GUID:6f16117c2be38af4f989c1918efefead"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
