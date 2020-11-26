@@ -1,7 +1,5 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SpatialTracking;
-using UnityEngine.UI;
 
 namespace Pilots
 {

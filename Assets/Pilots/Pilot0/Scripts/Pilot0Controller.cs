@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Pilots;
+using UnityEngine;
 
 public class Pilot0Controller : PilotController {
     public static Pilot0Controller Instance { get; private set; }
