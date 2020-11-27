@@ -198,9 +198,7 @@ namespace Pilots
 						// FER: Implementacion representacion de webcam.
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						Debug.LogError("xxxjack should playerManager.webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);");
-						playerManager.webcam.AddComponent<BasePipeline>().Init();  // xxxjack (FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash);
-						break;
+						playerManager.webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash); break;
 					case UserData.eUserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
 						break;
@@ -211,9 +209,8 @@ namespace Pilots
 					case UserData.eUserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						Debug.LogError("xxxjack should playerManager.pc.AddComponent<PointCloudPipeline>();");
-						var pipeline = playerManager.pc.AddComponent<BasePipeline>(); // xxxjack
-						pipeline.Init(); // xxxjack pipeline.Init(user, userCfg);
+						var pipeline = playerManager.pc.AddComponent<PointCloudPipeline>();
+						pipeline.Init(user, userCfg);
 
 						// Register for distribution of tiling configurations
 						tilingConfigDistributor?.RegisterPipeline(user.userId, pipeline);
