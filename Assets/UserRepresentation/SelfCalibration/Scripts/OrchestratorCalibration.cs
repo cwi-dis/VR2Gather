@@ -33,9 +33,10 @@ public class OrchestratorCalibration : MonoBehaviour {
         InitialiseControllerEvents();
 
         if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__TVM__) {
-            player.tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-            player.tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-            player.tvm.gameObject.SetActive(true);
+            DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)player.tvm;
+            tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
+            tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
+            tvm.gameObject.SetActive(true);
         }
         else {
             player.pc.gameObject.SetActive(true);

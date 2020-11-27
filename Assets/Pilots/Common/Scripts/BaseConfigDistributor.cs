@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using VRTCore;
 
 namespace Pilots
 {
@@ -19,8 +20,9 @@ namespace Pilots
             return this;
         }
 
-
-
-
+        public void RegisterPipeline(string userId, BasePipeline pipeline)
+        {
+            Debug.LogError("Programmer error: BaseConfigDistributor: RegisterPipeline not overridden");
+        }
     }
 }

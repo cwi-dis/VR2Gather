@@ -172,7 +172,7 @@ namespace Pilots
 		}
 
 		//Looks like this could very well be internal to the PlayerManager? 
-		private void SetUpPlayerManager(PlayerManager playerManager, User user, TilingConfigDistributor tilingConfigDistributor, bool firstTVM = false)
+		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor tilingConfigDistributor, bool firstTVM = false)
 		{
 
 			playerManager.orchestratorId = user.userId;
@@ -224,11 +224,15 @@ namespace Pilots
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
 							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
 						}
-						playerManager.tvm.isMaster = firstTVM;
-						if (firstTVM) firstTVM = false;
-						playerManager.tvm.connectionURI = user.userData.userMQurl;
-						playerManager.tvm.exchangeName = user.userData.userMQexchangeName;
-						playerManager.tvm.gameObject.SetActive(true);
+						DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)playerManager.tvm;
+						if (tvm)
+						{
+							tvm.isMaster = firstTVM;
+							if (firstTVM) firstTVM = false;
+							tvm.connectionURI = user.userData.userMQurl;
+							tvm.exchangeName = user.userData.userMQexchangeName;
+							tvm.gameObject.SetActive(true);
+						}
 						break;
 					default:
 						break;

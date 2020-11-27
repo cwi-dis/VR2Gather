@@ -53,7 +53,8 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (player.pc.TryGetComponent(out Workers.PointBufferRenderer renderer))
             Destroy(renderer);
         player.pc.SetActive(false);
-        player.tvm.gameObject.SetActive(false);
+        DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)player.tvm;
+        tvm?.gameObject.SetActive(false);
     }
 
     public void ChangeMicrophone(string microphoneName) {
