@@ -73,6 +73,9 @@ namespace Pilots
 
 		public void Awake()
 		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(PlayerLocationChangeRequest));
 			AllUsers = new List<NetworkPlayer>();
 			Players = new Dictionary<string, NetworkPlayer>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();

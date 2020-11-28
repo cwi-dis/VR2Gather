@@ -45,6 +45,11 @@ namespace Pilots
 		private bool _WasAButtonPressed = false;
 		private PlayerLocation _SelectedLocation;
 
+		public void Awake()
+		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
+		}
+
 		void Start()
 		{
 			_Animator = GetComponentInChildren<Animator>();

@@ -49,6 +49,7 @@ namespace Pilots
 		private void Awake()
 		{
 			_SendDelta = 1.0f / SendRate;
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
 			OrchestratorController.Instance.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 

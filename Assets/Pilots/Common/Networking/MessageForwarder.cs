@@ -5,13 +5,32 @@ using UnityEngine;
 namespace Pilots
 {
 
-    /// <summary>
-    /// Manager of message forwarders
-    /// User code can subscribe to messages of a certain type
-    /// and receive the message of that type when it arrives.
-    /// Types are managed by assigning an integer Id in the constructor
-    /// </summary>
-    public class MessageForwarderManager
+	public enum MessageTypeID
+	{
+		TID_NetworkPlayerData = 100,
+		TID_HandControllerData = 101,
+		TID_NetworkTriggerData = 102,
+		TID_PlayerLocationData = 103,
+		TID_PlayerLocationDataRequest = 104,
+		TID_PlayerLocationChangeRequest = 105,
+		TID_HandGrabEvent = 106,
+		TID_NetworkTransformSyncData = 107,
+		TID_RigidbodySyncMessage = 108,
+		TID_TextChatDataMessage = 109,
+		TID_TilingConfigMessage = 110,
+		TID_InitCompleteMessage = 111,
+		TID_KeywordsResponseData = 112,
+		TID_PlayerTransformSyncData = 113,
+		TID_AddPlayerToSequenceData = 114,
+	};
+
+	/// <summary>
+	/// Manager of message forwarders
+	/// User code can subscribe to messages of a certain type
+	/// and receive the message of that type when it arrives.
+	/// Types are managed by assigning an integer Id in the constructor
+	/// </summary>
+	public class MessageForwarderManager
 	{
 		public Dictionary<int, Type> TypeFromId = new Dictionary<int, Type>();
 		public Dictionary<Type, int> IdFromType = new Dictionary<Type, int>();
@@ -21,25 +40,26 @@ namespace Pilots
 		public MessageForwarderManager()
 		{
 			//Map a type to a specific integer ID. IDs can be chosen freely, as long as all clients have the same ID assignments
-			AddTypeIdMapping(100, typeof(NetworkPlayer.NetworkPlayerData));
-			AddTypeIdMapping(101, typeof(HandController.HandControllerData));
-			AddTypeIdMapping(102, typeof(NetworkTrigger.NetworkTriggerData));
-			AddTypeIdMapping(103, typeof(SessionPlayersManager.PlayerLocationData));
-			AddTypeIdMapping(104, typeof(SessionPlayersManager.PlayerLocationDataRequest));
-			AddTypeIdMapping(105, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
-			AddTypeIdMapping(106, typeof(HandInteractionManager.HandGrabEvent));
-			AddTypeIdMapping(107, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
-			AddTypeIdMapping(108, typeof(Grabbable.RigidbodySyncMessage));
-			AddTypeIdMapping(109, typeof(TextChatManager.TextChatDataMessage));
-			AddTypeIdMapping(110, typeof(TilingConfigDistributor.TilingConfigMessage));
-			AddTypeIdMapping(111, typeof(Pilot3ExperienceController.InitCompleteMessage));
-			AddTypeIdMapping(112, typeof(KeywordResponseListener.KeywordsResponseData));
-			AddTypeIdMapping(113, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));
-			AddTypeIdMapping(114, typeof(Pilot3SequenceController.AddPlayerToSequenceData));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayer.NetworkPlayerData));
+			//AddTypeIdMapping(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTrigger.NetworkTriggerData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationData, typeof(SessionPlayersManager.PlayerLocationData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationDataRequest, typeof(SessionPlayersManager.PlayerLocationDataRequest));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
+			//AddTypeIdMapping(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
+			//AddTypeIdMapping(MessageTypeID.TID_RigidbodySyncMessage, typeof(Grabbable.RigidbodySyncMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_TextChatDataMessage, typeof(TextChatManager.TextChatDataMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigDistributor.TilingConfigMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_InitCompleteMessage, typeof(Pilot3ExperienceController.InitCompleteMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_KeywordsResponseData, typeof(KeywordResponseListener.KeywordsResponseData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerTransformSyncData, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));
+			//AddTypeIdMapping(MessageTypeID.TID_AddPlayerToSequenceData, typeof(Pilot3SequenceController.AddPlayerToSequenceData));
 		}
 
-		private void AddTypeIdMapping(int typeId, Type type)
+		public void AddTypeIdMapping(MessageTypeID _typeId, Type type)
 		{
+			int typeId = (int)_typeId;
 			if (!type.IsSubclassOf(typeof(BaseMessage)))
 			{
 				Debug.LogError($"Programmer error: [MessageForwarder] The type {type.ToString()} is not derived from BaseMessage. Please ensure all types used in type mappings derived from BaseMessage.");
@@ -48,6 +68,11 @@ namespace Pilots
 
 			if (TypeFromId.ContainsKey(typeId))
 			{
+				if (TypeFromId[typeId] == type)
+				{
+					// Registered before. No problem: the class could have multiple instances
+					return;
+				}
 				Debug.LogError($"Programmer error: [MessageForwarder] A type with typeId {typeId} already exists! Please ensure all type mappings in MessageForwarder.cs have unique typeIds!");
 			}
 			else

@@ -32,6 +32,10 @@ namespace Pilots
 		private NetworkTransformSyncData _PreviousReceivedData = null;
 		private NetworkTransformSyncData _LastReceivedData = null;
 
+		public void Awake()
+		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncData));
+		}
 		void Start()
 		{
 			//prime the valus with some logical current data. 

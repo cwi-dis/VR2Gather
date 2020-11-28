@@ -30,6 +30,12 @@ namespace Pilots
 	{
 		private static MessageForwarderManager _MessageForwarderManager = new MessageForwarderManager();
 
+
+		public static void RegisterEventType(this OrchestratorController controller, MessageTypeID typeId, Type T)
+		{
+			_MessageForwarderManager.AddTypeIdMapping(typeId, T);
+		}
+
 		/// <summary>
 		/// Send a TypedMessage from the Master to all Users
 		/// </summary>
