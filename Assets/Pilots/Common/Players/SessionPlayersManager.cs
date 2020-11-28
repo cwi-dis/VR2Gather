@@ -112,12 +112,12 @@ namespace Pilots
 			bool firstTVM = true;
 
 			// First tell the tilingConfigDistributor what our user ID is.
-			var tilingConfigDistributor = FindObjectOfType<TilingConfigDistributor>();
-			if (tilingConfigDistributor == null)
+			var anyConfigDistributor = FindObjectOfType<BaseConfigDistributor>();
+			if (anyConfigDistributor == null)
 			{
-				Debug.LogWarning("No TilingConfigDistributor found");
+				Debug.LogWarning("No BaseConfigDistributor found");
 			}
-			tilingConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
+			anyConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -130,12 +130,12 @@ namespace Pilots
 
 				if (representationType == UserData.eUserRepresentationType.__TVM__ && firstTVM)
 				{
-					SetUpPlayerManager(playerManager, user, tilingConfigDistributor, true);
+					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
 					firstTVM = false;
 				}
 				else
 				{
-					SetUpPlayerManager(playerManager, user, tilingConfigDistributor);
+					SetUpPlayerManager(playerManager, user, anyConfigDistributor);
 				}
 
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
