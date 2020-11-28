@@ -27,6 +27,7 @@ namespace Pilots
 
 		public void Awake()
 		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
 			OrchestratorController.Instance.Subscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
 		}
 

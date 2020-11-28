@@ -17,6 +17,11 @@ public class TilingConfigDistributor : BaseConfigDistributor
     private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
     const bool debug = false;
 
+    public void Awake()
+    {
+        OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
+
+    }
     public TilingConfigDistributor Init(string _selfUserId)
     {
         selfUserId = _selfUserId;

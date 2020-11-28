@@ -14,6 +14,11 @@ namespace Pilots
 
 		public UnityEvent OnTrigger;
 
+		public void Awake()
+		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
+
+		}
 		public void OnEnable()
 		{
 			OrchestratorController.Instance.Subscribe<NetworkTriggerData>(OnNetworkTrigger);

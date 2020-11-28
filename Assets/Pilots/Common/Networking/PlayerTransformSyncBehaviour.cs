@@ -33,6 +33,11 @@ namespace Pilots
 
 		private bool _IsLocalPlayer = false;
 
+		private void Awake()
+		{
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerTransformSyncData, typeof(PlayerTransformSyncData));
+		}
+
 		void Start()
 		{
 			//prime the valus with some logical current data. 

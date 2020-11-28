@@ -26,6 +26,12 @@ namespace Pilots
 
 		private HandInteractionManager _CurrentGrabber;
 
+		public void Awake()
+		{
+
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
+
+		}
 		public void OnEnable()
 		{
 			GrabbableObjectManager.RegisterGrabbable(this);

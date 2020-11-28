@@ -5,56 +5,61 @@ using UnityEngine;
 namespace Pilots
 {
 
-    /// <summary>
-    /// Manager of message forwarders
-    /// User code can subscribe to messages of a certain type
-    /// and receive the message of that type when it arrives.
-    /// Types are managed by assigning an integer Id in the constructor
-    /// </summary>
-    public class MessageForwarderManager
+	public enum MessageTypeID
+	{
+		TID_NetworkPlayerData = 100,
+		TID_HandControllerData = 101,
+		TID_NetworkTriggerData = 102,
+		TID_PlayerLocationData = 103,
+		TID_PlayerLocationDataRequest = 104,
+		TID_PlayerLocationChangeRequest = 105,
+		TID_HandGrabEvent = 106,
+		TID_NetworkTransformSyncData = 107,
+		TID_RigidbodySyncMessage = 108,
+		TID_TextChatDataMessage = 109,
+		TID_TilingConfigMessage = 110,
+		TID_InitCompleteMessage = 111,
+		TID_KeywordsResponseData = 112,
+		TID_PlayerTransformSyncData = 113,
+		TID_AddPlayerToSequenceData = 114,
+	};
+
+	/// <summary>
+	/// Manager of message forwarders
+	/// User code can subscribe to messages of a certain type
+	/// and receive the message of that type when it arrives.
+	/// Types are managed by assigning an integer Id in the constructor
+	/// </summary>
+	public class MessageForwarderManager
 	{
 		public Dictionary<int, Type> TypeFromId = new Dictionary<int, Type>();
 		public Dictionary<Type, int> IdFromType = new Dictionary<Type, int>();
 
 		public Dictionary<Type, IMessageForwarder> MessageForwarders = new Dictionary<Type, IMessageForwarder>();
-		public const int TID_NetworkPlayerData = 100;
-		public const int TID_HandControllerData = 101;
-		public const int TID_NetworkTriggerData = 102;
-		public const int TID_PlayerLocationData = 103;
-		public const int TID_PlayerLocationDataRequest = 104;
-		public const int TID_PlayerLocationChangeRequest = 105;
-		public const int TID_HandGrabEvent = 106;
-		public const int TID_NetworkTransformSyncData = 107;
-		public const int TID_RigidbodySyncMessage = 108;
-		public const int TID_TextChatDataMessage = 109;
-		public const int TID_TilingConfigMessage = 110;
-		public const int TID_InitCompleteMessage = 111;
-		public const int TID_KeywordsResponseData = 112;
-		public const int TID_PlayerTransformSyncData = 113;
-		public const int TID_AddPlayerToSequenceData = 114;
 
 		public MessageForwarderManager()
 		{
 			//Map a type to a specific integer ID. IDs can be chosen freely, as long as all clients have the same ID assignments
-			AddTypeIdMapping(TID_NetworkPlayerData, typeof(NetworkPlayer.NetworkPlayerData));
-			AddTypeIdMapping(TID_HandControllerData, typeof(HandController.HandControllerData));
-			AddTypeIdMapping(TID_NetworkTriggerData, typeof(NetworkTrigger.NetworkTriggerData));
-			AddTypeIdMapping(TID_PlayerLocationData, typeof(SessionPlayersManager.PlayerLocationData));
-			AddTypeIdMapping(TID_PlayerLocationDataRequest, typeof(SessionPlayersManager.PlayerLocationDataRequest));
-			AddTypeIdMapping(TID_PlayerLocationChangeRequest, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
-			AddTypeIdMapping(TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
-			AddTypeIdMapping(TID_NetworkTransformSyncData, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
-			AddTypeIdMapping(TID_RigidbodySyncMessage, typeof(Grabbable.RigidbodySyncMessage));
-			AddTypeIdMapping(TID_TextChatDataMessage, typeof(TextChatManager.TextChatDataMessage));
-			AddTypeIdMapping(TID_TilingConfigMessage, typeof(TilingConfigDistributor.TilingConfigMessage));
-			AddTypeIdMapping(TID_InitCompleteMessage, typeof(Pilot3ExperienceController.InitCompleteMessage));
-			AddTypeIdMapping(TID_KeywordsResponseData, typeof(KeywordResponseListener.KeywordsResponseData));
-			AddTypeIdMapping(TID_PlayerTransformSyncData, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));
-			AddTypeIdMapping(TID_AddPlayerToSequenceData, typeof(Pilot3SequenceController.AddPlayerToSequenceData));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayer.NetworkPlayerData));
+			//AddTypeIdMapping(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTrigger.NetworkTriggerData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationData, typeof(SessionPlayersManager.PlayerLocationData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationDataRequest, typeof(SessionPlayersManager.PlayerLocationDataRequest));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
+			//AddTypeIdMapping(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
+			//AddTypeIdMapping(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
+			//AddTypeIdMapping(MessageTypeID.TID_RigidbodySyncMessage, typeof(Grabbable.RigidbodySyncMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_TextChatDataMessage, typeof(TextChatManager.TextChatDataMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigDistributor.TilingConfigMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_InitCompleteMessage, typeof(Pilot3ExperienceController.InitCompleteMessage));
+			//AddTypeIdMapping(MessageTypeID.TID_KeywordsResponseData, typeof(KeywordResponseListener.KeywordsResponseData));
+			//AddTypeIdMapping(MessageTypeID.TID_PlayerTransformSyncData, typeof(PlayerTransformSyncBehaviour.PlayerTransformSyncData));
+			//AddTypeIdMapping(MessageTypeID.TID_AddPlayerToSequenceData, typeof(Pilot3SequenceController.AddPlayerToSequenceData));
 		}
 
-		private void AddTypeIdMapping(int typeId, Type type)
+		public void AddTypeIdMapping(MessageTypeID _typeId, Type type)
 		{
+			int typeId = (int)_typeId;
 			if (!type.IsSubclassOf(typeof(BaseMessage)))
 			{
 				Debug.LogError($"Programmer error: [MessageForwarder] The type {type.ToString()} is not derived from BaseMessage. Please ensure all types used in type mappings derived from BaseMessage.");
