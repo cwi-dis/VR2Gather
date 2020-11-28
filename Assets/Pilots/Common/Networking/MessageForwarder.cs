@@ -68,6 +68,11 @@ namespace Pilots
 
 			if (TypeFromId.ContainsKey(typeId))
 			{
+				if (TypeFromId[typeId] == type)
+				{
+					// Registered before. No problem: the class could have multiple instances
+					return;
+				}
 				Debug.LogError($"Programmer error: [MessageForwarder] A type with typeId {typeId} already exists! Please ensure all type mappings in MessageForwarder.cs have unique typeIds!");
 			}
 			else
