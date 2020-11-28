@@ -10,7 +10,6 @@ using Voice;
 using VRTCore;
 
 public class PointCloudPipeline : BasePipeline {
-    bool isSource = false;
     BaseWorker reader;
     BaseWorker encoder;
     List<BaseWorker> decoders = new List<BaseWorker>();
@@ -406,7 +405,7 @@ public class PointCloudPipeline : BasePipeline {
         _CreatePointcloudReader(tileNumbers, 0);
     }
 
-    public SyncConfig GetSyncConfig()
+    public new SyncConfig GetSyncConfig()
     {
         if (!isSource)
         {
@@ -431,7 +430,7 @@ public class PointCloudPipeline : BasePipeline {
         return rv;
     }
 
-    public void SetSyncConfig(SyncConfig config)
+    public new void SetSyncConfig(SyncConfig config)
     {
         if (isSource)
         {
@@ -450,7 +449,7 @@ public class PointCloudPipeline : BasePipeline {
         audioReceiver?.SetSyncInfo(config.audio);
     }
 
-    public Vector3 GetPosition()
+    public new Vector3 GetPosition()
     {
         if (isSource)
         {
@@ -460,7 +459,7 @@ public class PointCloudPipeline : BasePipeline {
         return transform.position;
     }
 
-    public Vector3 GetRotation()
+    public new Vector3 GetRotation()
     {
         if (isSource)
         {
@@ -470,12 +469,12 @@ public class PointCloudPipeline : BasePipeline {
         return transform.rotation * Vector3.forward;
     }
 
-    public float GetBandwidthBudget()
+    public new float GetBandwidthBudget()
     {
         return 999999.0f;
     }
 
-    public ViewerInformation GetViewerInformation()
+    public new ViewerInformation GetViewerInformation()
     {
         if (!isSource)
         {
