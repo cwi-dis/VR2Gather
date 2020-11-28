@@ -36,8 +36,16 @@ public class WebCamPipeline : BasePipeline {
     QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec", 2,true);
     QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
+    public static void Register()
+    {
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__2D__, AddWebCamPipelineComponent);
+    }
 
- 
+    public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)
+    {
+        return dst.AddComponent<WebCamPipeline>();
+    }
+
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 

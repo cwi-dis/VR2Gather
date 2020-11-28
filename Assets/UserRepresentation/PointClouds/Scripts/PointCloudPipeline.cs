@@ -31,6 +31,20 @@ public class PointCloudPipeline : BasePipeline {
     static int instanceCounter = 0;
     int instanceNumber = instanceCounter++;
 
+    public static void Register()
+    {
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__PCC_CERTH__, AddPointCloudPipelineComponent);
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
+    }
+
+    public static BasePipeline AddPointCloudPipelineComponent(GameObject dst, UserRepresentationType i)
+    {
+        return dst.AddComponent<PointCloudPipeline>();
+    }
+
     public string Name()
     {
         return $"{this.GetType().Name}#{instanceNumber}";
@@ -66,28 +80,28 @@ public class PointCloudPipeline : BasePipeline {
                 //
                 // Create reader
                 //
-                if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_) // PCSELF
+                if (user.userData.userRepresentationType == UserRepresentationType.__PCC_CWI_) // PCSELF
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWIK4A_)
+                else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_CWIK4A_)
                 {
                     var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                     if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
                     pcReader = new Workers.K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_PROXY__)
+                else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PROXY__)
                 {
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
                     if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
                     pcReader = new Workers.ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     reader = pcReader;
                 }
-                else if (user.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_SYNTH__)
+                else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_SYNTH__)
                 {
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Orchestrator;
+using VRTCore;
 
 public delegate void FunctionToCallOnSendCommandButton();
 
@@ -201,9 +202,9 @@ public class OrchestratorGui : MonoBehaviour
         commandDropdown.onValueChanged.AddListener(delegate { SelectCommand(commandDropdown.value); });
         SelectCommand(commandDropdown.value); //init first command
 
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         userDataRepresentationTypeDD.ClearOptions();
-        userDataRepresentationTypeDD.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+        userDataRepresentationTypeDD.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
 
         // Add listener on the send button (call the function related to the selected command)
         sendCommandButton.onClick.AddListener(delegate { selectedCommand.FunctionToCall(); });
@@ -849,7 +850,7 @@ public class OrchestratorGui : MonoBehaviour
         UserData lUserData = new UserData();
         lUserData.userMQexchangeName = userDataMQnamePanel.GetComponentInChildren<InputField>().text;
         lUserData.userMQurl = userDataMQurlPanel.GetComponentInChildren<InputField>().text;
-        lUserData.userRepresentationType = (UserData.eUserRepresentationType)userDataRepresentationTypeDD.value;
+        lUserData.userRepresentationType = (UserRepresentationType)userDataRepresentationTypeDD.value;
 
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }
@@ -878,7 +879,7 @@ public class OrchestratorGui : MonoBehaviour
                 userAdmin.text = user.userAdmin.ToString();
                 userMQname.text = user.userData.userMQexchangeName;
                 userMQurl.text = user.userData.userMQurl;
-                userRepresentation.text = Enum.GetName(typeof(UserData.eUserRepresentationType), (int)user.userData.userRepresentationType);
+                userRepresentation.text = Enum.GetName(typeof(UserRepresentationType), (int)user.userData.userRepresentationType);
             }
         }
     }
