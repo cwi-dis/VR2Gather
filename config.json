@@ -1,9 +1,9 @@
 {
-	"orchestratorURL_": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
 	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
 	"openLogOnExit" : false,
 
-	"orchestratorURL": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
+	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
 	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
 
     "targetFrameRate": 30,
