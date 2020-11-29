@@ -32,7 +32,7 @@ public class OrchestratorCalibration : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__TVM__) {
+        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserRepresentationType.__TVM__) {
             DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)player.tvm;
             tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
             tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;

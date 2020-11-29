@@ -112,12 +112,12 @@ namespace Pilots
 			bool firstTVM = true;
 
 			// First tell the tilingConfigDistributor what our user ID is.
-			var tilingConfigDistributor = FindObjectOfType<TilingConfigDistributor>();
-			if (tilingConfigDistributor == null)
+			var anyConfigDistributor = FindObjectOfType<BaseConfigDistributor>();
+			if (anyConfigDistributor == null)
 			{
-				Debug.LogWarning("No TilingConfigDistributor found");
+				Debug.LogWarning("No BaseConfigDistributor found");
 			}
-			tilingConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
+			anyConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -128,14 +128,14 @@ namespace Pilots
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
 
-				if (representationType == UserData.eUserRepresentationType.__TVM__ && firstTVM)
+				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
-					SetUpPlayerManager(playerManager, user, tilingConfigDistributor, true);
+					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
 					firstTVM = false;
 				}
 				else
 				{
-					SetUpPlayerManager(playerManager, user, tilingConfigDistributor);
+					SetUpPlayerManager(playerManager, user, anyConfigDistributor);
 				}
 
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
@@ -143,7 +143,7 @@ namespace Pilots
 				networkPlayer.SetIsLocalPlayer(me.userId == user.userId);
 
 				AllUsers.Add(networkPlayer);
-				if (representationType != UserData.eUserRepresentationType.__NONE__ && representationType != UserData.eUserRepresentationType.__SPECTATOR__)
+				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__)
 				{
 					AddPlayer(networkPlayer);
 				}
@@ -153,7 +153,7 @@ namespace Pilots
 					player.transform.position = NonPlayersLocation.position;
 					player.transform.rotation = NonPlayersLocation.rotation;
 
-					if (representationType == UserData.eUserRepresentationType.__SPECTATOR__)
+					if (representationType == UserRepresentationType.__SPECTATOR__)
 					{
 						Spectators.Add(networkPlayer.UserId, networkPlayer);
 					}
@@ -193,32 +193,35 @@ namespace Pilots
 			}
 			Debug.Log($"stats: ts={DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=SessionPlayersManager, self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
-			if (user.userData.userRepresentationType != UserData.eUserRepresentationType.__NONE__)
+			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
 			{
 				switch (user.userData.userRepresentationType)
 				{
-					case UserData.eUserRepresentationType.__2D__:
+					case UserRepresentationType.__2D__:
 						// FER: Implementacion representacion de webcam.
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						playerManager.webcam.AddComponent<WebCamPipeline>().Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash); break;
-					case UserData.eUserRepresentationType.__AVATAR__:
+						BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
+						wcPipeline?.Init(user, userCfg); 
+						break;
+					case UserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
 						break;
-					case UserData.eUserRepresentationType.__PCC_CERTH__:
-					case UserData.eUserRepresentationType.__PCC_SYNTH__:
-					case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-					case UserData.eUserRepresentationType.__PCC_PROXY__:
-					case UserData.eUserRepresentationType.__PCC_CWI_: // PC
+					case UserRepresentationType.__PCC_CERTH__:
+					case UserRepresentationType.__PCC_SYNTH__:
+					case UserRepresentationType.__PCC_CWIK4A_:
+					case UserRepresentationType.__PCC_PROXY__:
+					case UserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						var pipeline = playerManager.pc.AddComponent<PointCloudPipeline>();
-						pipeline.Init(user, userCfg);
+						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
+						pcPipeline?.Init(user, userCfg);
 
 						// Register for distribution of tiling configurations
-						tilingConfigDistributor?.RegisterPipeline(user.userId, pipeline);
+						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
 						break;
-					case UserData.eUserRepresentationType.__TVM__: // TVM
+					case UserRepresentationType.__TVM__: // TVM
+						// xxxjack we should *really* create a dummy TVMPipeline object for this...
 						if (isLocalPlayer)
 						{
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));

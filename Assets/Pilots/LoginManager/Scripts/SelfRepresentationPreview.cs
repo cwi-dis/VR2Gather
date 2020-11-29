@@ -75,40 +75,41 @@ public class SelfRepresentationPreview : MonoBehaviour{
     }
 
 
-    public void ChangeRepresentation(UserData.eUserRepresentationType representation, string webcamName) {
+    public void ChangeRepresentation(UserRepresentationType representation, string webcamName) {
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
         Stop();
 
         switch (representation) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 player.gameObject.SetActive(false);
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
                 if (webcamName != "None") {
-                    WebCamPipeline wcPipeline = player.webcam.AddComponent<WebCamPipeline>();
-                    wcPipeline.Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(player.webcam, representation);
+                    wcPipeline.Init(new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, true);
                 }
 
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 //player.tvm.gameObject.SetActive(true);
                 Debug.Log("TVM PREVIEW");
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<PointCloudPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
+                BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);
+                pcPipeline.Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);
                 break;
             default:

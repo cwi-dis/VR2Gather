@@ -20,7 +20,6 @@ public class WebCamPipeline : BasePipeline {
     public WebCamTexture    webCamTexture;
 
 
-    bool isSource = false;
     Workers.WebCamReader    webReader;
     BaseWorker reader;
     BaseWorker encoder;
@@ -36,13 +35,29 @@ public class WebCamPipeline : BasePipeline {
     QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec", 2,true);
     QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
+    public static void Register()
+    {
+        BasePipeline.RegisterPipelineClass(UserRepresentationType.__2D__, AddWebCamPipelineComponent);
+    }
 
- 
+    public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)
+    {
+        return dst.AddComponent<WebCamPipeline>();
+    }
+
     /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(FFmpeg.AutoGen.AVCodecID codec, User user, Config._User cfg, bool useDash, bool preview = false) {
+    public override BasePipeline Init(System.Object _user, Config._User cfg, bool preview = false) {
+        User user = (User)_user;
+        if (user == null)
+        {
+            Debug.LogError($"WebCamPipeline: programmer error: incorrect user parameter");
+            return null;
+        }
+        bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
+        FFmpeg.AutoGen.AVCodecID codec = Config.Instance.videoCodec;
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
             case "self": // Local
@@ -197,7 +212,7 @@ public class WebCamPipeline : BasePipeline {
     }
 
 
-    public SyncConfig GetSyncConfig()
+    public new SyncConfig GetSyncConfig()
     {
         if (!isSource)
         {
@@ -222,7 +237,7 @@ public class WebCamPipeline : BasePipeline {
         return rv;
     }
 
-    public void SetSyncConfig(SyncConfig config)
+    public new void SetSyncConfig(SyncConfig config)
     {
         if (isSource)
         {
@@ -242,7 +257,7 @@ public class WebCamPipeline : BasePipeline {
         audioReceiver?.SetSyncInfo(config.audio);
     }
 
-    public Vector3 GetPosition()
+    public new Vector3 GetPosition()
     {
         if (isSource)
         {
@@ -252,7 +267,7 @@ public class WebCamPipeline : BasePipeline {
         return transform.position;
     }
 
-    public Vector3 GetRotation()
+    public new Vector3 GetRotation()
     {
         if (isSource)
         {
@@ -262,12 +277,12 @@ public class WebCamPipeline : BasePipeline {
         return transform.rotation * Vector3.forward;
     }
 
-    public float GetBandwidthBudget()
+    public new float GetBandwidthBudget()
     {
         return 999999.0f;
     }
 
-    public ViewerInformation GetViewerInformation()
+    public new ViewerInformation GetViewerInformation()
     {
         if (!isSource)
         {

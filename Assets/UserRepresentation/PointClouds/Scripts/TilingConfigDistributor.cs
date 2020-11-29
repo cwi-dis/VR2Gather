@@ -13,7 +13,6 @@ public class TilingConfigDistributor : BaseConfigDistributor
 	}
     private int interval = 1;    // How many seconds between transmissions of the data
     private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
-    private string selfUserId;
     private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
     const bool debug = false;
 

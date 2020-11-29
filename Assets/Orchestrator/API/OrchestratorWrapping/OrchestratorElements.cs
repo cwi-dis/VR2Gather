@@ -1,5 +1,6 @@
 ﻿using LitJson;
 using System.Collections.Generic;
+using VRTCore;
 
 namespace Orchestrator
 {
@@ -64,23 +65,10 @@ namespace Orchestrator
         public string userPCurl = "";
         public string userAudioUrl = "";
 
-        public eUserRepresentationType userRepresentationType;
+        public UserRepresentationType userRepresentationType;
         public string webcamName = "";
         public string microphoneName = "";
 
-        public enum eUserRepresentationType
-        {
-            __NONE__,
-            __2D__,
-            __AVATAR__,
-            __TVM__,
-            __PCC_CWI_,
-            __PCC_CWIK4A_,
-            __PCC_PROXY__,
-            __PCC_SYNTH__,
-            __PCC_CERTH__,
-            __SPECTATOR__
-        }
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
