@@ -37,7 +37,7 @@ public class MCUTest : MonoBehaviour {
             if (!initialized) initialized = mcu._API.SendInit(id, url, pos, rotation, fov, lod);
             else {
 
-                if (fusedPC == null) fusedPC = new GameObject("FusedPC").AddComponent<PointCloudPipeline>().Init(new User(),Config.Instance.RemoteUser);
+                if (fusedPC == null) fusedPC = (PointCloudPipeline)new GameObject("FusedPC").AddComponent<PointCloudPipeline>().Init(new User(),Config.Instance.RemoteUser);
                 if (Input.GetKeyDown(KeyCode.Alpha1)) mcu._API.SendPosition(id, pos);
                 //if (Input.GetKeyDown(KeyCode.Alpha2)) mcu._API.SendRotation(id, rotation);
                 if (Input.GetKeyDown(KeyCode.Alpha3)) mcu._API.SendFOV(id, fov);

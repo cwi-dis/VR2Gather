@@ -54,15 +54,16 @@ public class PointCloudPipeline : BasePipeline {
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
     /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-    public PointCloudPipeline Init(User _user, Config._User cfg, bool preview = false) {
-        user = _user;
+    public override BasePipeline Init(System.Object _user, Config._User cfg, bool preview = false) {
+        user = (User)_user;
+        bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
         switch (cfg.sourceType) {
             case "self": // old "rs2"
                 isSource = true;
                 TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={_user.userId}, representation={(int)user.userData.userRepresentationType}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
                 //
                 // Create renderer and preparer for self-view.
                 //
@@ -204,7 +205,7 @@ public class PointCloudPipeline : BasePipeline {
                     if (Bin2Dash == null)
                         throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
                     try {
-                        if( Config.Instance.protocolType == Config.ProtocolType.Dash )
+                        if( useDash )
                             writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         else
                             writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
@@ -217,7 +218,7 @@ public class PointCloudPipeline : BasePipeline {
             case "remote":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=0, userid={_user.userId}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=0, userid={user.userId}");
                 //
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
@@ -240,7 +241,7 @@ public class PointCloudPipeline : BasePipeline {
 
     private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
     {
-
+        bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
         int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
         if (nTileToReceive == 0)
         {
@@ -277,7 +278,7 @@ public class PointCloudPipeline : BasePipeline {
                 tileNumber = tileNumbers[i]
             };
         };
-        if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+        if (useDash)
             reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
         else
             reader = new SocketIOReader(user, "pointcloud", tilesToReceive);

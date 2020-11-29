@@ -88,8 +88,8 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserRepresentationType.__2D__:
                 player.webcam.SetActive(true);
                 if (webcamName != "None") {
-                    WebCamPipeline wcPipeline = player.webcam.AddComponent<WebCamPipeline>();
-                    wcPipeline.Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, false, true);
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(player.webcam, representation);
+                    wcPipeline.Init(new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, true);
                 }
 
                 break;
@@ -106,7 +106,8 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserRepresentationType.__PCC_SYNTH__:
             case UserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
-                player.pc.AddComponent<PointCloudPipeline>().Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
+                BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);
+                pcPipeline.Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
             case UserRepresentationType.__SPECTATOR__:
                 player.gameObject.SetActive(false);

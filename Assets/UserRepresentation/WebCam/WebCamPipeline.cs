@@ -20,7 +20,6 @@ public class WebCamPipeline : BasePipeline {
     public WebCamTexture    webCamTexture;
 
 
-    bool isSource = false;
     Workers.WebCamReader    webReader;
     BaseWorker reader;
     BaseWorker encoder;
@@ -50,7 +49,15 @@ public class WebCamPipeline : BasePipeline {
     /// <param name="cfg"> Config file json </param>
     /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
     /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-    public WebCamPipeline Init(FFmpeg.AutoGen.AVCodecID codec, User user, Config._User cfg, bool useDash, bool preview = false) {
+    public override BasePipeline Init(System.Object _user, Config._User cfg, bool preview = false) {
+        User user = (User)_user;
+        if (user == null)
+        {
+            Debug.LogError($"WebCamPipeline: programmer error: incorrect user parameter");
+            return null;
+        }
+        bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
+        FFmpeg.AutoGen.AVCodecID codec = Config.Instance.videoCodec;
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
             case "self": // Local

@@ -201,8 +201,9 @@ namespace Pilots
 						// FER: Implementacion representacion de webcam.
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						WebCamPipeline wc_pipeline = (WebCamPipeline)BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
-						wc_pipeline?.Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, user, userCfg, Config.Instance.protocolType == Config.ProtocolType.Dash); break;
+						BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
+						wcPipeline?.Init(user, userCfg); 
+						break;
 					case UserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
 						break;
@@ -213,13 +214,14 @@ namespace Pilots
 					case UserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						PointCloudPipeline pc_pipeline = (PointCloudPipeline)BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
-						pc_pipeline?.Init(user, userCfg);
+						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
+						pcPipeline?.Init(user, userCfg);
 
 						// Register for distribution of tiling configurations
-						tilingConfigDistributor?.RegisterPipeline(user.userId, pc_pipeline);
+						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
 						break;
 					case UserRepresentationType.__TVM__: // TVM
+						// xxxjack we should *really* create a dummy TVMPipeline object for this...
 						if (isLocalPlayer)
 						{
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));

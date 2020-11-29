@@ -19,19 +19,19 @@ public class TestWorkers : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         var tmp = Config.Instance;
-        p0 = new GameObject("SelfRepresentation&B2DSender").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.LocalUser); 
-        p1 = new GameObject("SUBReceiver&Representation-1").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        p0 = (PointCloudPipeline)new GameObject("SelfRepresentation&B2DSender").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.LocalUser); 
+        p1 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-1").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
     }
 
     void Update() {
-        if (p1 == null && Input.GetKeyDown(KeyCode.Alpha1)) p1 = new GameObject("SUBReceiver&Representation-1").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p2 == null && Input.GetKeyDown(KeyCode.Alpha2)) p2 = new GameObject("SUBReceiver&Representation-2").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = new GameObject("SUBReceiver&Representation-3").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = new GameObject("SUBReceiver&Representation-4").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = new GameObject("SUBReceiver&Representation-5").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = new GameObject("SUBReceiver&Representation-6").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = new GameObject("SUBReceiver&Representation-7").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p8 == null && Input.GetKeyDown(KeyCode.Alpha8)) p8 = new GameObject("SUBReceiver&Representation-8").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
-        if (p9 == null && Input.GetKeyDown(KeyCode.Alpha9)) p9 = new GameObject("SUBReceiver&Representation-9").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p1 == null && Input.GetKeyDown(KeyCode.Alpha1)) p1 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-1").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p2 == null && Input.GetKeyDown(KeyCode.Alpha2)) p2 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-2").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p3 == null && Input.GetKeyDown(KeyCode.Alpha3)) p3 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-3").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p4 == null && Input.GetKeyDown(KeyCode.Alpha4)) p4 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-4").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p5 == null && Input.GetKeyDown(KeyCode.Alpha5)) p5 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-5").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p6 == null && Input.GetKeyDown(KeyCode.Alpha6)) p6 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-6").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p7 == null && Input.GetKeyDown(KeyCode.Alpha7)) p7 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-7").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p8 == null && Input.GetKeyDown(KeyCode.Alpha8)) p8 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-8").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
+        if (p9 == null && Input.GetKeyDown(KeyCode.Alpha9)) p9 = (PointCloudPipeline)new GameObject("SUBReceiver&Representation-9").AddComponent<PointCloudPipeline>().Init(new User(), Config.Instance.RemoteUser);
     }
 }

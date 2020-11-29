@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace VRTCore
 {
-    public class BasePipeline : MonoBehaviour
+    abstract public class BasePipeline : MonoBehaviour
     {
         protected bool isSource = false;
 
@@ -26,25 +26,22 @@ namespace VRTCore
             }
             return PipelineTypeMapping[i](dst, i);
         }
-        public BasePipeline Init(bool preview = false)
-        {
 
-            return this;
-        }
+        abstract public BasePipeline Init(System.Object _user, Config._User cfg, bool preview = false);
 
-        public SyncConfig GetSyncConfig()
+        virtual public SyncConfig GetSyncConfig()
         {
             Debug.LogError("Programmer error: BasePipeline: GetSyncConfig should be overriden in subclass");
             return new SyncConfig();
         }
 
-        public void SetSyncConfig(SyncConfig config)
+        virtual public void SetSyncConfig(SyncConfig config)
         {
             Debug.LogError("Programmer error: BasePipeline: SetSyncConfig should be overriden in subclass");
 
         }
 
-        public Vector3 GetPosition()
+        virtual public Vector3 GetPosition()
         {
             if (isSource)
             {
@@ -54,7 +51,7 @@ namespace VRTCore
             return transform.position;
         }
 
-        public Vector3 GetRotation()
+        virtual public Vector3 GetRotation()
         {
             if (isSource)
             {
@@ -64,12 +61,12 @@ namespace VRTCore
             return transform.rotation * Vector3.forward;
         }
 
-        public float GetBandwidthBudget()
+        virtual public float GetBandwidthBudget()
         {
             return 999999.0f;
         }
 
-        public ViewerInformation GetViewerInformation()
+        virtual public ViewerInformation GetViewerInformation()
         {
             if (!isSource)
             {
