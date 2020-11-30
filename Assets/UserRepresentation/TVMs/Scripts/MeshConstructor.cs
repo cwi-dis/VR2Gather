@@ -3,11 +3,9 @@ using Utils;
 using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using System.Linq;
-
 using System;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
@@ -19,8 +17,6 @@ public class MeshConstructor : MonoBehaviour
     public int mesh_id;
     private bool received_new_frame = false;
     private int allFrames = 0;
-    private GameObject gameObj;
-    private GameObject mirror;
     private IDataProvider m_DataProvider;
     private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_d = new System.Diagnostics.Stopwatch();
@@ -48,46 +44,26 @@ public class MeshConstructor : MonoBehaviour
     private int m_numDevs;
     private int m_width;
     private int m_height;
+    private long m_timestamp;
     private object m_lockobj = new object();
     private int ind = 0;
-    private Transform otherTransform;
     private int total_decompressed_buffer_size = 0;
     public int fps = 0;
-
-    private double CalculateStdDev(IEnumerable<long> values)
-    {
-        double ret = 0;
-        if (values.Count() > 0)
-        {
-            //Compute the Average      
-            double avg = values.Average();
-            //Perform the Sum of (value-avg)_2_2      
-            double sum = values.Sum(d => Math.Pow(d - avg, 2));
-            //Put it all together      
-            ret = Math.Sqrt((sum) / (values.Count() - 1));
-        }
-        return ret;
-    }
+    private long timeNow;
 
     // Updating the mesh every time a new buffer is received from the network
     private void DataProvider_OnNewData(object sender, EventArgs<byte[]> e)
     {
-        if (allFrames == 0)
-            performanceMetricsObj.runCommand();
-
-        // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
         allFrames += 1;
 
         lock (e)
         {
             if (e.Value != null && received_new_frame == false)
             {
-                if (ind == 0)
-                    firstFrameTime = DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss");
-
                 stopWatch_d = System.Diagnostics.Stopwatch.StartNew();
                 stopWatch_ft = System.Diagnostics.Stopwatch.StartNew();
 
+                // Starting the stopwatch which counts the time needed to process a buffer until the mesh is rendered
                 if (stopWatch.ElapsedMilliseconds == 0)
                     stopWatch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -109,6 +85,7 @@ public class MeshConstructor : MonoBehaviour
                 m_colorInts.Clear();
                 m_tangentialCoeffs.Clear();
                 m_radialCoeffs.Clear();
+                m_timestamp = 0;
 
                 try
                 {
@@ -129,7 +106,6 @@ public class MeshConstructor : MonoBehaviour
 
                     // Freeing the GCHandler
                     gcRes.Free();
-
                     performanceMetricsObj.updateReceivingAndDeserializationMetrics(new List<System.Diagnostics.Stopwatch>() { stopWatch_d, stopWatch_d_f, stopWatch_d_t, stopWatch_d_g, stopWatch_d_p },
                                                                                    new List<int>() { size, total_decompressed_buffer_size, m_vertices.ToArray().Length, allFrames });
                     ++fps;
@@ -154,7 +130,14 @@ public class MeshConstructor : MonoBehaviour
         m_DataProvider = GetComponent<NetworkDataProvider>();
         m_DataProvider.OnNewData += DataProvider_OnNewData;
         performanceMetricsObj = this.gameObject.AddComponent<PerformanceMetrics>();
+        performanceMetricsObj.runPerfomanceMetricsExe();
         InvokeRepeating("printAndSaveMetricsEveryTenSec", 10.0f, 10.0f);
+        List<string> playerIds = new List<string>();
+        for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; i++)
+            if (OrchestratorController.Instance.ConnectedUsers[i].userData.userRepresentationType.ToString().ToLower().Contains("tvm"))
+                playerIds.Add(OrchestratorController.Instance.ConnectedUsers[i].userId);
+        playerIds.Sort();
+        mesh_id = playerIds.IndexOf(this.gameObject.transform.parent.name.Split('_')[1]);
     }
 
     private void OnDestroy()
@@ -162,9 +145,8 @@ public class MeshConstructor : MonoBehaviour
         // Removing the function DataProvider_OnNewData from its assignment to the NetworkDataProvider when the game object gets destroyed
         m_DataProvider.OnNewData -= DataProvider_OnNewData;
         performanceMetricsObj.clearAll();
-        performanceMetricsObj.saveAndDestroy(this.gameObject.name, firstFrameTime);
+        performanceMetricsObj.saveAndDestroy(this.transform.parent.parent.name + "_ID_" + this.gameObject.transform.parent.name.Split('_')[1]);
     }
-
 
     private void Update()
     {
@@ -192,6 +174,7 @@ public class MeshConstructor : MonoBehaviour
             int width;
             int height;
             int numDevs;
+            long tmstp;
 
             // Locking all the variables that refer to the data that need to be fed to the shader
             lock (m_lockobj)
@@ -202,6 +185,7 @@ public class MeshConstructor : MonoBehaviour
                 width = m_width;
                 height = m_height;
                 numDevs = m_numDevs;
+                tmstp = m_timestamp;
                 c_extrinsics = m_colorExts;
                 c_intrinsics = m_colorInts;
                 radial = m_radialCoeffs;
@@ -282,7 +266,8 @@ public class MeshConstructor : MonoBehaviour
 
             stopWatch_r.Stop();
             stopWatch_ft.Stop();
-            performanceMetricsObj.updateRenderingMetrics(stopWatch_r, stopWatch_ft);
+            timeNow = new DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds();
+            performanceMetricsObj.updateRenderingMetrics(stopWatch_r, stopWatch_ft, Convert.ToInt32(timeNow - tmstp));
         }
         catch (Exception ex)
         {
@@ -300,7 +285,7 @@ public class MeshConstructor : MonoBehaviour
     {
         stopWatch.Stop();
         allFrames = 0;
-        performanceMetricsObj.printMetrics(stopWatch, this.gameObject.name);
+        performanceMetricsObj.printMetrics(stopWatch, this.transform.parent.parent.name);
         performanceMetricsObj.saveMetrics(stopWatch);
         performanceMetricsObj.clearAll();
         stopWatch = new System.Diagnostics.Stopwatch();
@@ -365,6 +350,8 @@ public class MeshConstructor : MonoBehaviour
         float[] tangentialCoeffs = new float[mesh.numDevices * 2];
         Marshal.Copy(mesh.tangentialDistortionCoeffs, tangentialCoeffs, 0, mesh.numDevices * 2);
 
+        long timestamp = Convert.ToInt64(Marshal.PtrToStringAnsi(mesh.timestamp));
+
         if (stopWatch.ElapsedMilliseconds > 0)
             total_decompressed_buffer_size += (sizeof(float) * (mesh.numVertices + mesh.numDevices * 16 + mesh.numDevices * 9 + mesh.numDevices * 6 + mesh.numDevices * 2) + sizeof(int) * (2 * mesh.numVertices + 5));
 
@@ -379,6 +366,7 @@ public class MeshConstructor : MonoBehaviour
             m_colorInts.AddRange(colorIntrinsics);
             m_radialCoeffs.AddRange(radialCoeffs);
             m_tangentialCoeffs.AddRange(tangentialCoeffs);
+            m_timestamp = timestamp;
         }
     }
 

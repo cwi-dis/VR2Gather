@@ -11,6 +11,7 @@ public static class DllFunctions
         public int height;
         public int numVertices;
         public int numFaces;
+        public IntPtr timestamp;
         public IntPtr id1;
         public IntPtr id2;
         public IntPtr weights;

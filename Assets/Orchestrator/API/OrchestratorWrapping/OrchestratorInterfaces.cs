@@ -3,9 +3,9 @@
 //Interfaces to be implemented to supervise the orchestrator
 namespace OrchestratorWrapping
 {
-    // Interface to implement to listen the messages emitted spontaneously
+    // Interface to implement to listen the user messages emitted spontaneously
     // by the orchestrator
-    public interface IMessagesFromOrchestratorListener
+    public interface IUserMessagesListener
     {
         void OnUserMessageReceived(UserMessage userMessage);
         void OnMasterEventReceived(UserEvent pSceneEventData);
@@ -40,7 +40,7 @@ namespace OrchestratorWrapping
         void OnAddSessionResponse(ResponseStatus status, Session session);
         void OnGetSessionInfoResponse(ResponseStatus status, Session session);
         void OnDeleteSessionResponse(ResponseStatus status);
-        void OnJoinSessionResponse(ResponseStatus status);
+        void OnJoinSessionResponse(ResponseStatus status, Session session);
         void OnLeaveSessionResponse(ResponseStatus status);
 
         void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData);
@@ -67,9 +67,9 @@ namespace OrchestratorWrapping
     }
 
     // interface to implement to be updated from messages exchanged on the socketio
-    public interface IOrchestratorMessageIOListener
+    public interface IOrchestratorMessagesListener
     {
-        void OnOrchestratorResponse(int status, string response);
+        void OnOrchestratorResponse(int commandID, int status, string response);
         void OnOrchestratorRequest(string request);
     }
 }

@@ -30,7 +30,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
-    private bool joining = false;
 
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
@@ -125,7 +124,8 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Text sessionNumUsersText = null;
     [SerializeField] private Text userRepresentationLobbyText = null;
     [SerializeField] private Image userRepresentationLobbyImage = null;
-    
+    private string sessionMasterID = null;
+
     [Header("Buttons")]
     [SerializeField] private Button doneCreateButton = null;
     [SerializeField] private Button doneJoinButton = null;
@@ -238,32 +238,37 @@ public class OrchestratorLogin : MonoBehaviour {
         switch (user.userData.userRepresentationType) {
             case UserData.eUserRepresentationType.__NONE__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                textItem.text += " - (Voyeur)";
+                textItem.text += " - (No Rep)";
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                textItem.text += " - (WebCam)";
+                textItem.text += " - (2D Video)";
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                textItem.text += " - (Avatar)";
+                textItem.text += " - (3D Avatar)";
                 break;
             case UserData.eUserRepresentationType.__TVM__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                textItem.text += " - (TVM)";
+                textItem.text += " - (Volumetric 3D Mesh)";
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                textItem.text += " - (SinglePC)";
+                textItem.text += " - (Simple PC)";
+                break;
+            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (Synthetic PC)";
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                textItem.text += " - (MultiPC)";
+                textItem.text += " - (Volumetric PC)";
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                textItem.text += " - (Ghost)";
+                textItem.text += " - (Spectator)";
                 break;
             default:
                 break;
@@ -288,7 +293,7 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
         }
         else {
-            Debug.Log("[OrchestratorLogin][UpdateUsersSession] Error in Connected Users");
+            Debug.Log("[OrchestratorLogin][UpdateUsersSession] ConnectedUsers was null");
         }
     }
 
@@ -354,6 +359,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 case "__PCC_CWIK4A_":
                     enumName = "Simple PointCloud (Kinect)";
                     break;
+                case "__PCC_PROXY__":
+                    enumName = "Simple PointCloud (5G phone proxy)";
+                    break;
                 case "__PCC_SYNTH__":
                     enumName = "Synthetic PointCloud";
                     break;
@@ -406,28 +414,37 @@ public class OrchestratorLogin : MonoBehaviour {
         switch (_representationType) {
             case UserData.eUserRepresentationType.__NONE__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                userRepresentationLobbyText.text = "NO REPRESENTATION";
                 break;
             case UserData.eUserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
+                userRepresentationLobbyText.text = "2D VIDEO";
                 break;
             case UserData.eUserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                userRepresentationLobbyText.text = "3D AVATAR";
                 break;
             case UserData.eUserRepresentationType.__TVM__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                userRepresentationLobbyText.text = "VOLUMETRIC 3D MESH";
                 break;
             case UserData.eUserRepresentationType.__PCC_CWI_:
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "SIMPLE PC";
                 break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
+                userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
             case UserData.eUserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
+                userRepresentationLobbyText.text = "VOLUMETRIC PC";
                 break;
             case UserData.eUserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
+                userRepresentationLobbyText.text = "SPECTATOR";
                 break;
             default:
                 break;
@@ -455,6 +472,9 @@ public class OrchestratorLogin : MonoBehaviour {
             case UserData.eUserRepresentationType.__PCC_CWIK4A_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
                 break;
+            case UserData.eUserRepresentationType.__PCC_PROXY__:
+                selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
+                break;
             case UserData.eUserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
                 break;
@@ -478,6 +498,8 @@ public class OrchestratorLogin : MonoBehaviour {
         if (instance == null) {
             instance = this;
         }
+
+        Workers.VoiceReader.PrepareDSP();
 
         system = EventSystem.current;
 
@@ -530,8 +552,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        socketAudioToggle.isOn = false;
-        dashAudioToggle.isOn = true;
+        socketAudioToggle.isOn = true;
+        dashAudioToggle.isOn = false;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -559,7 +581,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        VUMeter.sizeDelta = new Vector2(450 * selfRepresentationPreview.MicrophoneLevel, 20);
+        if(VUMeter && selfRepresentationPreview)
+            VUMeter.sizeDelta = new Vector2(355 * Mathf.Min( 1, selfRepresentationPreview.MicrophoneLevel), 20);
 
         TabShortcut();
         if (state == State.Create) {
@@ -822,6 +845,14 @@ public class OrchestratorLogin : MonoBehaviour {
         {
             calibButton.gameObject.SetActive(true);
         }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_PROXY__)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_SYNTH__)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
         else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
             pccerthInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
@@ -840,9 +871,9 @@ public class OrchestratorLogin : MonoBehaviour {
         TerminateControllerEvents();
     }
 
-    #endregion
+#endregion
 
-    #region Input
+#region Input
 
     void SelectFirstIF() {
         try {
@@ -882,9 +913,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Buttons
+#region Buttons
 
     private void SigninButton() {
         loginPanel.SetActive(false);
@@ -1027,9 +1058,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Toggles 
+#region Toggles 
 
     private void AudioToggle() {
         socketAudioToggle.interactable = !socketAudioToggle.isOn;
@@ -1086,9 +1117,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }      
 
-    #endregion
+#endregion
 
-    #region Events listeners
+#region Events listeners
 
     // Subscribe to Orchestrator Wrapper Events
     private void InitialiseControllerEvents() {
@@ -1104,6 +1135,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
         OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
+        OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
         OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
@@ -1138,6 +1170,7 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
         OrchestratorController.Instance.OnGetSessionsEvent -= OnGetSessionsHandler;
         OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
+        OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
         OrchestratorController.Instance.OnJoinSessionEvent -= OnJoinSessionHandler;
         OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
         OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
@@ -1158,18 +1191,18 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
     }
 
-    #endregion
+#endregion
 
-    #region Commands
+#region Commands
 
-    #region Socket.io connect
+#region Socket.io connect
 
     public void SocketConnect() {
         switch (OrchestratorController.Instance.ConnectionStatus) {
-            case OrchestratorController.orchestratorConnectionStatus.DISCONNECTED:
+            case OrchestratorController.orchestratorConnectionStatus.__DISCONNECTED__:
                 OrchestratorController.Instance.SocketConnect(Config.Instance.orchestratorURL);
                 break;
-            case OrchestratorController.orchestratorConnectionStatus.CONNECTING:
+            case OrchestratorController.orchestratorConnectionStatus.__CONNECTING__:
                 OrchestratorController.Instance.Abort();
                 break;
         }
@@ -1185,7 +1218,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnConnecting() {
-        statusText.text = OrchestratorController.orchestratorConnectionStatus.CONNECTING.ToString();
+        statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
         statusText.color = connectingCol;
     }
 
@@ -1209,9 +1242,9 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.GetNTPTime();
     }
 
-    #endregion
+#endregion
 
-    #region Orchestrator Logs
+#region Orchestrator Logs
 
     // Display the sent message in the logs
     public void OnOrchestratorRequest(string pRequest) {
@@ -1225,9 +1258,9 @@ public class OrchestratorLogin : MonoBehaviour {
         StartCoroutine(ScrollLogsToBottom());
     }
 
-    #endregion
+#endregion
 
-    #region Login/Logout
+#region Login/Logout
 
     private void SignIn() {
         Debug.Log("[OrchestratorLogin][SignIn] Send SignIn registration for user " + userNameRegisterIF.text);
@@ -1302,9 +1335,9 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
     }
 
-    #endregion
+#endregion
 
-    #region NTP clock
+#region NTP clock
 
     private void GetNTPTime() {
         OrchestratorController.Instance.GetNTPTime();
@@ -1320,9 +1353,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
     }
 
-    #endregion
+#endregion
 
-    #region Sessions
+#region Sessions
 
     private void GetSessions() {
         OrchestratorController.Instance.GetSessions();
@@ -1337,8 +1370,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void AddSession() {
         OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioId,
-                                                    sessionNameIF.GetComponentInChildren<InputField>().text,
-                                                    sessionDescriptionIF.GetComponentInChildren<InputField>().text);
+                                                    sessionNameIF.text,
+                                                    sessionDescriptionIF.text);
     }
 
     private void OnAddSessionHandler(Session session) {
@@ -1351,6 +1384,7 @@ public class OrchestratorLogin : MonoBehaviour {
             isMaster = OrchestratorController.Instance.UserIsMaster;
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
@@ -1364,6 +1398,28 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionDescriptionText.text = "";
             scenarioIdText.text = "";
             sessionNumUsersText.text = "";
+            sessionMasterID = "";
+            RemoveComponentsFromList(usersSession.transform);
+        }
+    }
+
+    private void OnGetSessionInfoHandler(Session session) {
+        if (session != null) {
+            // Update the info in LobbyPanel
+            isMaster = OrchestratorController.Instance.UserIsMaster;
+            sessionNameText.text = session.sessionName;
+            sessionDescriptionText.text = session.sessionDescription;
+            if (session.sessionMaster != "")
+                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
+            // Update the list of session users
+            UpdateUsersSession(usersSession);
+        } else {
+            isMaster = false;
+            sessionNameText.text = "";
+            sessionDescriptionText.text = "";
+            scenarioIdText.text = "";
+            sessionNumUsersText.text = "";
+            sessionMasterID = "";
             RemoveComponentsFromList(usersSession.transform);
         }
     }
@@ -1390,7 +1446,6 @@ public class OrchestratorLogin : MonoBehaviour {
         else {
             string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
             OrchestratorController.Instance.JoinSession(sessionIdToJoin);
-            joining = true;
         }
     }
 
@@ -1400,6 +1455,7 @@ public class OrchestratorLogin : MonoBehaviour {
             // Update the info in LobbyPanel
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
@@ -1413,13 +1469,13 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionDescriptionText.text = "";
             scenarioIdText.text = "";
             sessionNumUsersText.text = "";
+            sessionMasterID = "";
             RemoveComponentsFromList(usersSession.transform);
         }
     }
 
     private void LeaveSession() {
         OrchestratorController.Instance.LeaveSession();
-        joining = false;
     }
 
     private void OnLeaveSessionHandler() {
@@ -1436,22 +1492,19 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void OnUserJoinedSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
-            UpdateUsersSession(usersSession);
-            if (!joining)
-                OrchestratorController.Instance.GetUserInfo(userID);
+            OrchestratorController.Instance.GetUsers();
         }
     }
 
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
-            UpdateUsersSession(usersSession);
             OrchestratorController.Instance.GetUsers();
         }
     }
 
-    #endregion
+#endregion
 
-    #region Scenarios
+#region Scenarios
 
     private void GetScenarios() {
         OrchestratorController.Instance.GetScenarios();
@@ -1464,18 +1517,17 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    #endregion
+#endregion
 
-    #region Live
+#region Live
 
     private void OnGetLivePresenterDataHandler(LivePresenterData liveData) {
         //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
-        joining = false;
     }
 
-    #endregion
+#endregion
 
-    #region Users
+#region Users
 
     private void GetUsers() {
         OrchestratorController.Instance.GetUsers();
@@ -1542,10 +1594,16 @@ public class OrchestratorLogin : MonoBehaviour {
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
 
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
+                // Session name
+
+#if UNITY_STANDALONE_WIN
+                string time = DateTime.Now.ToString("hhmmss");
+                sessionNameIF.text = $"{user.userName}_{time}";
+#endif
+
             }
 
-            if (!OrchestratorController.Instance.IsAutoRetrievingData)
-                GetUsers(); // To update the user representation
+            GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {
@@ -1565,9 +1623,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][DeleteUser] Not implemented");
     }
 
-    #endregion
+#endregion
 
-    #region Rooms
+#region Rooms
 
     private void GetRooms() {
         OrchestratorController.Instance.GetRooms();
@@ -1595,9 +1653,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnLeaveRoomHandler] Not implemented");
     }
 
-    #endregion
+#endregion
 
-    #region Messages
+#region Messages
 
     private void SendMessage() {
         Debug.Log("[OrchestratorLogin][SendMessage] Not implemented");
@@ -1614,9 +1672,9 @@ public class OrchestratorLogin : MonoBehaviour {
         LoginController.Instance.MessageActivation(userMessage.message);
     }
 
-    #endregion
+#endregion
 
-    #region Events
+#region Events
 
     private void SendEventToMaster() {
         Debug.Log("[OrchestratorLogin][SendEventToMaster] Not implemented");
@@ -1638,9 +1696,9 @@ public class OrchestratorLogin : MonoBehaviour {
         Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
     }
 
-    #endregion
+#endregion
 
-    #region Data Stream
+#region Data Stream
 
     private void GetAvailableDataStreams() {
         Debug.Log("[OrchestratorLogin][GetAvailableDataStreams] Not implemented");
@@ -1650,18 +1708,18 @@ public class OrchestratorLogin : MonoBehaviour {
         OrchestratorController.Instance.GetRegisteredDataStreams();
     }
 
-    #endregion
+#endregion
 
-    #region Errors
+#region Errors
 
     private void OnErrorHandler(ResponseStatus status) {
         Debug.Log("[OrchestratorLogin][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
         ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
 #if UNITY_STANDALONE_WIN
     void OnGUI() {
