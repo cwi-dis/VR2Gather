@@ -26,6 +26,7 @@ class GuiCommandDescription
  * **/
 public class OrchestratorGui : MonoBehaviour
 {
+
     #region GUI components
 
     //Connection and login components
@@ -69,6 +70,8 @@ public class OrchestratorGui : MonoBehaviour
     private Text userAdmin = null;
     [SerializeField]
     private Text userMaster = null;
+    [SerializeField]
+    private Text userIP = null;
     [SerializeField]
     private Text userMQurl = null;
     [SerializeField]
@@ -850,6 +853,7 @@ public class OrchestratorGui : MonoBehaviour
         lUserData.userMQexchangeName = userDataMQnamePanel.GetComponentInChildren<InputField>().text;
         lUserData.userMQurl = userDataMQurlPanel.GetComponentInChildren<InputField>().text;
         lUserData.userRepresentationType = (UserData.eUserRepresentationType)userDataRepresentationTypeDD.value;
+        lUserData.userIP = OrchestratorController.Instance.GetIPAddress();
 
         OrchestratorController.Instance.UpdateUserData(lUserData);
     }
@@ -867,6 +871,9 @@ public class OrchestratorGui : MonoBehaviour
 
     private void OnGetUserInfoHandler(User user)
     {
+        Debug.Log("NOW");
+        Debug.Log(user.userId);
+        Debug.Log(user.userData.userIP);
         if (user != null)
         {
             if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
@@ -876,6 +883,7 @@ public class OrchestratorGui : MonoBehaviour
                 userId.text = user.userId;
                 userName.text = user.userName;
                 userAdmin.text = user.userAdmin.ToString();
+                userIP.text = user.userData.userIP;
                 userMQname.text = user.userData.userMQexchangeName;
                 userMQurl.text = user.userData.userMQurl;
                 userRepresentation.text = Enum.GetName(typeof(UserData.eUserRepresentationType), (int)user.userData.userRepresentationType);

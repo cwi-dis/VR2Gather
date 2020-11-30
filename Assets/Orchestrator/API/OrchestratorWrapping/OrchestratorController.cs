@@ -281,7 +281,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
                 Debug.Log("[OrchestratorController][OnLoginResponse] User logged.");
 
                 userIsLogged = true;
-                orchestratorWrapper.GetUserInfo();
+
+                // Replaced by UpdateUserData to update the IP adress field of the user on the Login.
+                //orchestratorWrapper.GetUserInfo();
+
+                UserData lData = new UserData();
+                lData.userIP = GetIPAddress();
+                UpdateUserData(lData);
             }
             else
             {
@@ -1039,6 +1045,25 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         {
             DeleteSession(mySession.sessionId);
         }
+    }
+
+    #endregion
+
+    #region Utils
+
+    public string GetIPAddress()
+    {
+        var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                Debug.Log("[OrchestratorController][GetIPAdress] IPv4 adress: " + ip.ToString());
+                return ip.ToString();
+            }
+        }
+        Debug.Log("[OrchestratorController][GetIPAdress] Cannot retrieve IPv4 adress of the network adapater.");
+        return "";
     }
 
     #endregion
