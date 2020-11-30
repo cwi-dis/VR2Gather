@@ -170,7 +170,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         if(!(mySession is null))
         {
             Collect_SFU_Logs(mySession.sessionId);
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
         }
     }
 
@@ -281,7 +281,13 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
                 Debug.Log("[OrchestratorController][OnLoginResponse] User logged.");
 
                 userIsLogged = true;
-                orchestratorWrapper.GetUserInfo();
+
+                // Replaced by UpdateUserData to update the IP adress field of the user on the Login.
+                //orchestratorWrapper.GetUserInfo();
+
+                UserData lData = new UserData();
+                lData.userIP = GetIPAddress();
+                UpdateUserData(lData);
             }
             else
             {
@@ -380,7 +386,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
         Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=OrchestratorController, orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
 
         OnGetNTPTimeEvent?.Invoke(ntpTime);
     }
@@ -526,7 +532,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         }
 
         Debug.Log("[OrchestratorController][OnJoinSessionResponse] Session " + session.sessionName + " succesfully joined.");
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=OrchestratorController, starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
 
         // success
         mySession = session;
@@ -573,7 +579,7 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
         if (mySession != null && me != null)
         {
             Collect_SFU_Logs(mySession.sessionId);
-            Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=OrchestratorController, stopping=1, sessionId={mySession.sessionId}");
 
             // As the session creator, the session should be deleted when leaving.
             if (mySession.sessionAdministrator == me.userId)
@@ -1043,13 +1049,32 @@ public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListen
 
     #endregion
 
+    #region Utils
+
+    public string GetIPAddress()
+    {
+        var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                Debug.Log("[OrchestratorController][GetIPAdress] IPv4 adress: " + ip.ToString());
+                return ip.ToString();
+            }
+        }
+        Debug.Log("[OrchestratorController][GetIPAdress] Cannot retrieve IPv4 adress of the network adapater.");
+        return "";
+    }
+
+    #endregion
+
     #region Logs
 
     private void Collect_SFU_Logs(string pSessionID)
     {
         string dnsURL = Config.Instance.orchestratorLogURL;
         string requestURL = dnsURL + "?id=" + pSessionID + "&kind=sfu&download=1";
-        Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}, component=OrchestratorController, sfu_log={requestURL}");
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=OrchestratorController, sfu_log={requestURL}");
         if (Config.Instance.openLogOnExit)
         {
             Application.OpenURL(requestURL);
