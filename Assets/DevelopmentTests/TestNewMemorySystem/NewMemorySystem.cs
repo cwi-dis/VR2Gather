@@ -10,34 +10,65 @@ using UnityEngine;
 public class NewMemorySystem : MonoBehaviour
 {
 
-    public bool         forceMesh = false;
-    public bool         localPCs = false;
-    public bool         useCompression = true;
-    public bool         useDashVoice = false;
-    public bool         useSocketIO = true;
+    public bool forceMesh = false;
+    public bool localPCs = false;
+    public bool useCompression = true;
+    public bool useVoice = false;
+    public bool useSocketIO = true;
 
-    public bool         useRemoteStream = false;
-    public string       remoteURL = "https://vrt-evanescent1.viaccess-orca.com";
-    string              URL = "";
-    public string       remoteStream="";
+    public NetController orchestrator;
 
-    Workers.BaseWorker  reader;
-    Workers.BaseWorker  encoder;
-    public int          decoders = 1;
+    public bool useRemoteStream = false;
+    public string remoteURL = "https://vrt-evanescent1.viaccess-orca.com";
+    string URL = "";
+    public string remoteStream = "";
+
+    Workers.BaseWorker reader;
+    Workers.BaseWorker encoder;
+    public int decoders = 1;
     Workers.BaseWorker[] decoder;
-    Workers.BaseWorker  dashWriter;
-    Workers.BaseWorker  dashReader;
+    Workers.BaseWorker pointcloudsWriter;
+    Workers.BaseWorker pointcloudsReader;
 
-    Workers.BaseWorker  preparer;
-    QueueThreadSafe     preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
-    QueueThreadSafe     encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
-    QueueThreadSafe     writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
-    QueueThreadSafe     decoderQueue = new QueueThreadSafe("NewMemorySystemDecoder", 2, true);
-    MonoBehaviour       render;
+    Workers.BaseWorker preparer;
+    QueueThreadSafe preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
+    QueueThreadSafe encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
+    QueueThreadSafe writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
+    QueueThreadSafe decoderQueue = new QueueThreadSafe("NewMemorySystemDecoder", 2, true);
+    MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
+        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
+            new Workers.PCSubReader.TileDescriptor() {
+                outQueue = decoderQueue,
+                tileNumber = 0
+            }
+        };
+
+        Workers.B2DWriter.DashStreamDescription[] streams = new Workers.B2DWriter.DashStreamDescription[1] {
+            new Workers.B2DWriter.DashStreamDescription(){
+                tileNumber = 0,
+                quality = 0,
+                inQueue = writerQueue
+            }
+        };
+
+        if (useSocketIO && orchestrator) {
+            orchestrator.gameObject.SetActive(useSocketIO);
+            orchestrator.OnConnectReady = () => {
+                Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OnConnectReady");
+                string uuid = System.Guid.NewGuid().ToString();
+                User user = OrchestratorController.Instance.SelfUser;
+                gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
+                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
+
+                pointcloudsReader = new Workers.SocketIOReader(user, remoteStream, tiles);
+                pointcloudsWriter = new Workers.SocketIOWriter(user, remoteStream, streams);
+
+            };
+        }
 
         Config config = Config.Instance;
         if (forceMesh) {
@@ -73,32 +104,23 @@ public class NewMemorySystem : MonoBehaviour
                 encStreams[0].outQueue = writerQueue;
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
                 string uuid = System.Guid.NewGuid().ToString();
-                Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1];
-                b2dStreams[0].tileNumber = 0;
-                b2dStreams[0].quality = 0;
-                b2dStreams[0].inQueue = writerQueue;
                 URL = $"{remoteURL}/{uuid}/pcc/";
-                remoteStream = "pointclouds";
-                dashWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
+                pointcloudsWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
             } 
             else
                 URL = remoteURL;
-            Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1]
-            {
-                    new Workers.PCSubReader.TileDescriptor() {
-                        outQueue = decoderQueue,
-                        tileNumber = 0
-                    }
-            };
-            dashReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
+
+            if (!useSocketIO)
+                pointcloudsReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
+
             decoder = new Workers.PCDecoder[decoders];
             for (int i = 0; i < decoders; ++i)
                 decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
-
+        
 
         // using Audio over dash
-        if (useDashVoice) {
+        if (useVoice && !useSocketIO) {
             string uuid = System.Guid.NewGuid().ToString();
             gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { 
                 sfuData = new SfuData() { 
@@ -114,24 +136,11 @@ public class NewMemorySystem : MonoBehaviour
 
     }
 
-    private void Update() {
-
-        if(useSocketIO && Input.GetKeyDown(KeyCode.Space)) {//&& ) {
-            useSocketIO = false;
-            string uuid = System.Guid.NewGuid().ToString();
-            User user = OrchestratorController.Instance.SelfUser;
-            gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
-
-        }
-
-    }
-
     void OnDestroy() {
         reader?.StopAndWait();
         encoder?.StopAndWait();
-        dashWriter?.StopAndWait();
-        dashReader?.StopAndWait();
+        pointcloudsWriter?.StopAndWait();
+        pointcloudsReader?.StopAndWait();
         if (decoder != null) {
             for (int i = 0; i < decoders; ++i)
                 decoder[i]?.StopAndWait();
