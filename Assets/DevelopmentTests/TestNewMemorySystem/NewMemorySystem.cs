@@ -17,7 +17,7 @@ public class NewMemorySystem : MonoBehaviour
     public bool         useSocketIO = true;
 
     public bool         useRemoteStream = false;
-    public string       remoteURL = "";
+    public string       remoteURL = "https://vrt-evanescent1.viaccess-orca.com";
     string              URL = "";
     public string       remoteStream="";
 
@@ -102,12 +102,12 @@ public class NewMemorySystem : MonoBehaviour
             string uuid = System.Guid.NewGuid().ToString();
             gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { 
                 sfuData = new SfuData() { 
-                    url_audio = $"{remoteStream}/{uuid}/audio/" 
+                    url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
             }, "audio", 2000, 10000, true); //Audio Pipeline
             gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { 
                 sfuData = new SfuData() { 
-                    url_audio = $"{remoteStream}/{uuid}/audio/" 
+                    url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
             }, "audio", 0, 1, true); //Audio Pipeline
         }
