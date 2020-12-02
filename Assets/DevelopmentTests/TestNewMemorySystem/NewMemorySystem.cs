@@ -18,6 +18,7 @@ public class NewMemorySystem : MonoBehaviour
 
     public bool         useRemoteStream = false;
     public string       remoteURL = "";
+    string              URL = "";
     public string       remoteStream="";
 
     Workers.BaseWorker  reader;
@@ -48,6 +49,7 @@ public class NewMemorySystem : MonoBehaviour
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).SetPreparer((Workers.BufferPreparer)preparer);
         }
+        
         if (localPCs) {
             if (!useCompression)
                 reader = new Workers.RS2Reader(20f, 1000, preparerQueue);
@@ -75,10 +77,12 @@ public class NewMemorySystem : MonoBehaviour
                 b2dStreams[0].tileNumber = 0;
                 b2dStreams[0].quality = 0;
                 b2dStreams[0].inQueue = writerQueue;
-                remoteURL = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/pcc/";
+                URL = $"{remoteURL}/{uuid}/pcc/";
                 remoteStream = "pointclouds";
-                dashWriter = new Workers.B2DWriter(remoteURL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
-            }
+                dashWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, b2dStreams);
+            } 
+            else
+                URL = remoteURL;
             Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1]
             {
                     new Workers.PCSubReader.TileDescriptor() {
@@ -86,7 +90,7 @@ public class NewMemorySystem : MonoBehaviour
                         tileNumber = 0
                     }
             };
-            dashReader = new Workers.PCSubReader(remoteURL, remoteStream, 1, tiles);
+            dashReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
             decoder = new Workers.PCDecoder[decoders];
             for (int i = 0; i < decoders; ++i)
                 decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
@@ -95,10 +99,17 @@ public class NewMemorySystem : MonoBehaviour
 
         // using Audio over dash
         if (useDashVoice) {
-            useDashVoice = false;
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 2000, 10000, true); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { sfuData = new SfuData() { url_audio = $"https://vrt-evanescent1.viaccess-orca.com/{uuid}/audio/" } }, "audio", 0, 1, true); //Audio Pipeline
+            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { 
+                sfuData = new SfuData() { 
+                    url_audio = $"{remoteStream}/{uuid}/audio/" 
+                } 
+            }, "audio", 2000, 10000, true); //Audio Pipeline
+            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { 
+                sfuData = new SfuData() { 
+                    url_audio = $"{remoteStream}/{uuid}/audio/" 
+                } 
+            }, "audio", 0, 1, true); //Audio Pipeline
         }
 
     }
