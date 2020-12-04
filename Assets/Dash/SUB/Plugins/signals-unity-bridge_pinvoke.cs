@@ -259,6 +259,8 @@ public class sub
             //return false;
         }
         string dirName = Path.GetDirectoryName(modPath.ToString());
+        dirName = dirName.Replace("\\", "/");
+        dirName += "/";
         //UnityEngine.Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={dirName}");
         Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
         lastMSpathInstalled = module_base;

@@ -10,6 +10,7 @@ namespace Workers
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr                       currentBuffer;
         int                                 currentSize;
+        public ulong currentTimestamp;
         float                               currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
@@ -44,6 +45,7 @@ namespace Workers
                 unsafe
                 {
                     currentSize = pc.get_uncompressed_size();
+                    currentTimestamp = pc.timestamp();
                     if (currentSize <= 0)
                     {
                         // This happens very often with tiled pointclouds.

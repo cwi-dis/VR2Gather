@@ -6,11 +6,11 @@ using UnityEngine.Video;
 abstract public class PilotController : MonoBehaviour {
 
     [HideInInspector] public float timer = 0.0f;
-    [HideInInspector] public int my_id;
 
     // Start is called before the first frame update
     public virtual void Start() {
         var tmp = Config.Instance;
+<<<<<<< HEAD
         my_id = -1;
     }
 
@@ -262,6 +262,8 @@ abstract public class PilotController : MonoBehaviour {
                 firstPresenter = false;
             }
         }
+=======
+>>>>>>> develop
     }
 
     public abstract void MessageActivation(string message);

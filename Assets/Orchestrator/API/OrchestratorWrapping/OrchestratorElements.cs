@@ -58,15 +58,17 @@ namespace OrchestratorWrapping
 
     public class UserData: OrchestratorElement
     {
+        public string userIP = "";
         public string userMQexchangeName = "";
         public string userMQurl = "";
 
         public string userPCurl = "";
         public string userAudioUrl = "";
 
-        public eUserRepresentationType userRepresentationType;
         public string webcamName = "";
         public string microphoneName = "";
+
+        public eUserRepresentationType userRepresentationType;
 
         public enum eUserRepresentationType
         {
@@ -85,18 +87,6 @@ namespace OrchestratorWrapping
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
-
-        // Useless since UserData declaration shouldn't specify the whole data to be declared in a single step
-        /*
-        public UserData(string pMQname, string pMQurl, string pPCurl, string pAudioUrl)
-        {
-            userMQexchangeName = pMQname;
-            userMQurl = pMQurl;
-
-            userPCurl = pPCurl;
-            userAudioUrl = pAudioUrl;
-        }
-        */
     }
 
     public class SfuData : OrchestratorElement

@@ -272,7 +272,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: CerthReader: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDrops/statsInterval} drops per second");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=CerthReader, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, drops_per_second={statsDrops/statsInterval}");
                 if (statsDrops > 3 * statsInterval)
                 {
                     Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");

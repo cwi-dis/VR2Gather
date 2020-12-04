@@ -32,27 +32,13 @@ public class OrchestratorCalibration : MonoBehaviour {
         InitialiseControllerEvents();
 
         if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__TVM__) {
-            player.tvm.transform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-            player.tvm.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
             player.tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
             player.tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
             player.tvm.gameObject.SetActive(true);
         }
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWI_)
-        {
+        else {
             player.pc.gameObject.SetActive(true);
-        }
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_CWIK4A_)
-        {
-            player.pc.gameObject.SetActive(true);
-        }
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_PROXY__)
-        {
-            player.pc.gameObject.SetActive(true);
-        }
-        else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_SYNTH__)
-        {
-            player.pc.gameObject.SetActive(true);
+            player.pc.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
         }
         else if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__PCC_PRERECORDED__)
         {

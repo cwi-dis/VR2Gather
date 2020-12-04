@@ -1,10 +1,16 @@
 {
-
 	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
+	"openLogOnExit" : false,
+
+	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
+	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
+
     "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
     "nonHMDHeight": 1.5,
+	"pilot3NavigationLogs": true,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -21,40 +27,66 @@
             "z": 0.0
         }
     },
-    "Macintosh": {
-        "SIGNALS_SMD_PATH": "/Users/jack/lib"
+    "offsetRotation": {
+      "x": 0.0,
+      "y": 87.00109100341797,
+      "z": 0.0
+  },
+  "Macintosh": {
+    "SIGNALS_SMD_PATH": "/Users/jack/lib"
+  },
+  "PCs": {
+    "offsetPosition": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
-    "PCs": {
-        "offsetPosition": {
-            "x": 0,
-            "y": 0,
-            "z": 0
-        },
-        "offsetRotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "scale": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-        },
-        "forceMesh": false,
-		"defaultCellSize": 0.005,
-		"cellSizeFactor": 1
+    "offsetRotation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
     },
+    "scale": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "forceMesh": false,
+    "defaultCellSize": 0.005,
+    "cellSizeFactor": 1
+  },
 
-    "LocalUser": {
-        "sourceType": "self",
-        "SUBConfig": {
-            "tileNumber": 0,
-            "initialDelay": 0
+  "LocalUser": {
+    "sourceType": "self",
+    "SUBConfig": {
+      "tileNumber": 0,
+      "initialDelay": 0
+    },
+    "AudioSUBConfig": {
+      "streamNumber": 0,
+      "initialDelay": 0
+    },
+    "PCSelfConfig": {
+      "RS2ReaderConfig": {
+        "configFilename": "./cameraconfig.xml"
+      },
+      "SynthReaderConfig": {
+        "nPoints": 8000
+      },
+      "ProxyReaderConfig": {
+        "localIP": "",
+        "port": 9335
+      },
+      "CerthReaderConfig": {
+        "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
+        "PCLExchangeName": "VolumetricData",
+        "MetaExchangeName": "VolumetricMetaData",
+        "OriginCorrection": {
+          "x": 0,
+          "y": -0.82,
+          "z": 0
         },
-        "AudioSUBConfig": {
-            "streamNumber": 0,
-            "initialDelay": 0
-        },
+<<<<<<< HEAD
         "PCSelfConfig": {
             "RS2ReaderConfig": {
                 "configFilename": "./cameraconfig.xml"
@@ -95,76 +127,118 @@
                 "segmentSize": 2000,
                 "segmentLife": 10000
             }
+=======
+        "BoundingBotLeft": {
+          "x": -1,
+          "y": 0.1,
+          "z": -1
+>>>>>>> develop
         },
-        "Render": {
-            "pointSize": 0,
-            "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": -1.0
-            }
+        "BoundingTopRight": {
+          "x": 1,
+          "y": 2.2,
+          "z": 1
         }
-    },
-    "RemoteUser": {
-        "sourceType": "remote",
-        "SUBConfig": {
-            "initialDelay": 0
-        },
-        "AudioSUBConfig": {
-            "streamNumber": 0,
-            "initialDelay": 0
-        },
-        "PCSelfConfig": {
-            "RS2ReaderConfig": {
-                "configFilename": ""
-            },
-            "CerthReaderConfig": {
-                "ConnectionURI": "",
-                "PCLExchangeName": "",
-                "MetaExchangeName": "",
-				"OriginCorrection": {"x":0, "y":-0.82, "z":0},
-				"BoundingBotLeft": {"x":-1, "y":0.1, "z":-1},
-				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
+      },
+      "voxelSize": 0.005,
+      "frameRate": 15,
+      "tiled": false,
+      "Encoders": [
+        {
+          "octreeBits": 9
+        }
 
-            },
-            "voxelSize": 0.0,
-            "Encoders": [],
-            "Bin2Dash": {
-                "segmentSize": 0,
-                "segmentLife": 0
-            },
-            "AudioBin2Dash": {
-                "segmentSize": 0,
-                "segmentLife": 0
-            }
-        },
-        "Render": {
-            "pointSize": 0,
-            "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-            },
-            "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": -1.0
-            }
-        }
+      ],
+      "Bin2Dash": {
+        "segmentSize": 2000,
+        "segmentLife": 10000
+      },
+      "AudioBin2Dash": {
+        "segmentSize": 2000,
+        "segmentLife": 10000
+      }
+    },
+    "Render": {
+      "pointSize": 0,
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      }
     }
+  },
+  "RemoteUser": {
+    "sourceType": "remote",
+    "SUBConfig": {
+      "initialDelay": 0
+    },
+    "AudioSUBConfig": {
+      "streamNumber": 0,
+      "initialDelay": 0
+    },
+    "PCSelfConfig": {
+      "RS2ReaderConfig": {
+        "configFilename": ""
+      },
+      "CerthReaderConfig": {
+        "ConnectionURI": "",
+        "PCLExchangeName": "",
+        "MetaExchangeName": "",
+        "OriginCorrection": {
+          "x": 0,
+          "y": -0.82,
+          "z": 0
+        },
+        "BoundingBotLeft": {
+          "x": -1,
+          "y": 0.1,
+          "z": -1
+        },
+        "BoundingTopRight": {
+          "x": 1,
+          "y": 2.2,
+          "z": 1
+        }
+
+      },
+      "voxelSize": 0.0,
+      "Encoders": [],
+      "Bin2Dash": {
+        "segmentSize": 0,
+        "segmentLife": 0
+      },
+      "AudioBin2Dash": {
+        "segmentSize": 0,
+        "segmentLife": 0
+      }
+    },
+    "Render": {
+      "pointSize": 0,
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      }
+    }
+  }
 }

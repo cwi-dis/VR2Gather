@@ -44,6 +44,7 @@ public class EntityPipeline : MonoBehaviour {
                 Workers.TiledWorker pcReader;
                 var PCSelfConfig = cfg.PCSelfConfig;
                 if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={_user.userId}, representation={(int)user.userData.userRepresentationType}");
                 //
                 // Create renderer and preparer for self-view.
                 //
@@ -53,6 +54,10 @@ public class EntityPipeline : MonoBehaviour {
                 // Allocate queues we need for this sourceType
                 //
                 encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+                //
+                // Ensure we can determine from the log file who this is.
+                //
+
                 //
                 // Create reader
                 //
@@ -197,29 +202,17 @@ public class EntityPipeline : MonoBehaviour {
                         Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
-                    ////
-                    //// Create pipeline for audio, if needed.
-                    //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                    ////
-                    //var AudioBin2Dash = cfg.PCSelfConfig.AudioBin2Dash;
-                    //if (AudioBin2Dash == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.AudioBin2Dash config");
-                    //try {
-                    //    audioSender = gameObject.AddComponent<VoiceSender>();
-                    //    audioSender.Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash);
-                    //}
-                    //catch (System.EntryPointNotFoundException e) {
-                    //    Debug.Log($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    //    throw new System.Exception($"{Name()}: VoiceDashSender.Init() raised EntryPointNotFound exception, skipping voice encoding\n" + e);
-                    //}
                 }
                 break;
             case "remote":
                 var SUBConfig = cfg.SUBConfig;
                 if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=0, userid={_user.userId}");
                 //
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
                 Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
+<<<<<<< HEAD
 
                 ////
                 //// Create pipeline for audio, if needed.
@@ -229,6 +222,8 @@ public class EntityPipeline : MonoBehaviour {
                 //if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
                 //audioReceiver = gameObject.AddComponent<VoiceReceiver>();
                 //audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+=======
+>>>>>>> develop
                 break;
             default:
                 Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
@@ -238,32 +233,9 @@ public class EntityPipeline : MonoBehaviour {
         // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
         // in the scene.
         //
-        //Position depending on config calibration done by PCCalibration Scene
-        switch (user.userData.userRepresentationType) {
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWI_:
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_PROXY__:
-                //Position in the center
-                if (cfg.sourceType == "self") {
-                    transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                    transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-                }
-                else {
-                    transform.localPosition = new Vector3(0, 0, 0);
-                    transform.localRotation = Quaternion.Euler(0, 0, 0);
-                }
-                break;
-            case OrchestratorWrapping.UserData.eUserRepresentationType.__PCC_CERTH__:
-                transform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-                break;
-            default:
-                //Position in the center
-                transform.localPosition = new Vector3(0, 0, 0);
-                transform.localRotation = Quaternion.Euler(0, 0, 0);
-                break;
-        }
-
+        //Position in the center
+        transform.localPosition = new Vector3(0, 0, 0);
+        transform.localRotation = Quaternion.Euler(0, 0, 0);
         transform.localScale = cfg.Render.scale;
         return this;
     }
@@ -311,6 +283,7 @@ public class EntityPipeline : MonoBehaviour {
             reader = new Workers.PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
         else
             reader = new Workers.SocketIOReader(user, "pointcloud", tilesToReceive);
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, reader={reader.Name()}");
     }
 
     public QueueThreadSafe _CreateRendererAndPreparer()
@@ -328,6 +301,7 @@ public class EntityPipeline : MonoBehaviour {
             preparers.Add(preparer);
             // For meshes we use a single renderer and multiple preparers (one per tile).
             Workers.PointMeshRenderer render = gameObject.AddComponent<Workers.PointMeshRenderer>();
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
             renderers.Add(render);
             render.SetPreparer(preparer);
         }
@@ -337,6 +311,7 @@ public class EntityPipeline : MonoBehaviour {
             Workers.BufferPreparer preparer = new Workers.BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparers.Add(preparer);
             Workers.PointBufferRenderer render = gameObject.AddComponent<Workers.PointBufferRenderer>();
+            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
             renderers.Add(render);
             render.SetPreparer(preparer);
         }
@@ -380,6 +355,7 @@ public class EntityPipeline : MonoBehaviour {
         {
             preparer?.StopAndWait();
         }
+        Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, finished=1");
         // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
         BaseMemoryChunkReferences.ShowTotalRefCount();
     }

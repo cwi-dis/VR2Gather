@@ -89,8 +89,8 @@ namespace Workers {
             }
 
             System.DateTime statsLastTime;
-            double statsTotalBytes;
-            double statsTotalPackets;
+            double statsTotalBytes = 0;
+            double statsTotalPackets = 0;
             const int statsInterval = 10;
 
             public void statsUpdate(int nBytes)
@@ -103,7 +103,7 @@ namespace Workers {
                 }
                 if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
                 {
-                    Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPackets / statsInterval} fps, {(int)(statsTotalBytes / statsTotalPackets)} bytes per packet");
+                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets==0?1:statsTotalPackets))}");
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
                     statsLastTime = System.DateTime.Now;

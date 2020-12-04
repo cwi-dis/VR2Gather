@@ -167,9 +167,9 @@ namespace Workers {
         }
 
         System.DateTime statsLastTime;
-        double statsTotalPoints;
-        double statsTotalPointclouds;
-        double statsDrops;
+        double statsTotalPoints = 0;
+        double statsTotalPointclouds = 0;
+        double statsDrops = 0;
         const int statsInterval = 10;
 
         public void statsUpdate(int pointCount, bool dropped=false)
@@ -183,7 +183,7 @@ namespace Workers {
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDrops / statsInterval} drops per second");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds==0?1: statsTotalPointclouds))}, drops_per_second={statsDrops / statsInterval}");
                 if (statsDrops > 3*statsInterval)
                 {
                     Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");

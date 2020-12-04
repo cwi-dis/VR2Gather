@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 7c471e64dbf7dda4684cd9fa592a941d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -265,6 +265,7 @@ MonoBehaviour:
   webcam: {fileID: 5186154985833321788}
   pc: {fileID: 7392659942812053531}
   audio: {fileID: 3351168079407659644}
+  teleporter: {fileID: 0}
 --- !u!114 &7417336769330361896
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +407,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
+  wheelSlope: 0.05
+  bottomLimit: 1
+  topLimit: 1.8
   spectator: 0
   playerBody: {fileID: 4434842229477826213}
   avatarHead: {fileID: 3553503978304500670}

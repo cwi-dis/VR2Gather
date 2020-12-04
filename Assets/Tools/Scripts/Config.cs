@@ -22,12 +22,15 @@ public class Config {
     }
 
     public string       orchestratorURL = "";
+    public string       orchestratorLogURL = "";
+    public bool         openLogOnExit = true;
     public int          targetFrameRate = 90;
     public float        memoryDamping = 1.3f;
     public ProtocolType protocolType = ProtocolType.SocketIO;
     public UserRepresentation userRepresentation = UserRepresentation.PC;
     public Presenter    presenter = Presenter.None;
     public float        nonHMDHeight = 1.8f;
+    public bool pilot3NavigationLogs = true;
     [Serializable]
     public class _TVMs
     {

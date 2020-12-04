@@ -28,7 +28,7 @@ public class WebCamPipeline : MonoBehaviour {
 
     QueueThreadSafe encoderQueue;
     QueueThreadSafe writerQueue         = new QueueThreadSafe("WebCamPipelineWriter");
-    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec");
+    QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec", 2,true);
     QueueThreadSafe videoPreparerQueue  = new QueueThreadSafe("WebCamPipelinePreparer");
 
     TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
@@ -110,6 +110,8 @@ public class WebCamPipeline : MonoBehaviour {
                     var renderer = screen.GetComponent<Renderer>();
                     if (renderer != null) {
                         renderer.material.mainTexture = webCamTexture;
+                        renderer.material.SetFloat("_convertGamma", preview ? 0 : 1);
+
                         renderer.transform.localScale = new Vector3(0.5f, (webCamTexture.height / (float)webCamTexture.width) * 0.5f, 1);
                     }
                 }
@@ -149,6 +151,7 @@ public class WebCamPipeline : MonoBehaviour {
         if (ready) {
             lock (preparer) {
                 if (preparer.availableVideo > 0) {
+                    UnityEngine.Debug.Log($"WebCamPipeline.Update ");
                     if (texture == null) {
                         texture = new Texture2D( decoder!=null?decoder.Width: width, decoder != null ? decoder.Height:height, TextureFormat.RGB24, false, true);
                         Transform screen = transform.Find("PlayerHeadScreen");
@@ -162,8 +165,10 @@ public class WebCamPipeline : MonoBehaviour {
                         texture.LoadRawTextureData(preparer.GetVideoPointer(preparer.videFrameSize), preparer.videFrameSize);
                         texture.Apply();
                     } catch {
+                        UnityEngine.Debug.Log($"WebCamPipeline.Update ERR");
                         Debug.Log("[FPA] ERROR on LoadRawTextureData.");
                     }
+                    UnityEngine.Debug.Log($"WebCamPipeline.Update OK");
                 }
             }
         }
