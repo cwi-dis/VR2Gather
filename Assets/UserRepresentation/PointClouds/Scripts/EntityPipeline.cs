@@ -212,18 +212,6 @@ public class EntityPipeline : MonoBehaviour {
                 // Determine how many tiles (and therefore decode/render pipelines) we need
                 //
                 Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
-<<<<<<< HEAD
-
-                ////
-                //// Create pipeline for audio, if needed.
-                //// Note that this will create its own infrastructure (capturer, encoder, transmitter and queues) internally.
-                ////
-                //var AudioSUBConfig = cfg.AudioSUBConfig;
-                //if (AudioSUBConfig == null) throw new System.Exception($"{Name()}: missing other-user AudioSUBConfig config");
-                //audioReceiver = gameObject.AddComponent<VoiceReceiver>();
-                //audioReceiver.Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
-=======
->>>>>>> develop
                 break;
             default:
                 Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
