@@ -39,6 +39,7 @@ namespace Voice
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
                 if (mc == null) return false;
                 System.Array.Copy(mc.buffer, 0, dst, 0, len);
+                mc.free();
             }
             return true;
         }
