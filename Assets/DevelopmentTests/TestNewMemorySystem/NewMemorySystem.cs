@@ -3,6 +3,7 @@
 //#define TEST_VOICECHAT
 
 using Dash;
+using SocketIO;
 using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,14 +28,14 @@ public class NewMemorySystem : MonoBehaviour
     string URL = "";
     public string remoteStream = "";
 
-    Workers.BaseWorker reader;
-    Workers.BaseWorker encoder;
+    BaseWorker reader;
+    BaseWorker encoder;
     public int decoders = 1;
-    Workers.BaseWorker[] decoder;
-    Workers.BaseWorker pointcloudsWriter;
-    Workers.BaseWorker pointcloudsReader;
+    BaseWorker[] decoder;
+    BaseWorker pointcloudsWriter;
+    BaseWorker pointcloudsReader;
 
-    Workers.BaseWorker preparer;
+    BaseWorker preparer;
     QueueThreadSafe preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
     QueueThreadSafe encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
     QueueThreadSafe writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
@@ -44,15 +45,15 @@ public class NewMemorySystem : MonoBehaviour
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
-        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-            new Workers.PCSubReader.TileDescriptor() {
+        PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
+            new PCSubReader.TileDescriptor() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }
         };
 
-        Workers.B2DWriter.DashStreamDescription[] streams = new Workers.B2DWriter.DashStreamDescription[1] {
-            new Workers.B2DWriter.DashStreamDescription(){
+        B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
+            new B2DWriter.DashStreamDescription(){
                 tileNumber = 0,
                 quality = 0,
                 inQueue = writerQueue
@@ -68,8 +69,8 @@ public class NewMemorySystem : MonoBehaviour
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
 
-                pointcloudsReader = new Workers.SocketIOReader(user, remoteStream, tiles);
-                pointcloudsWriter = new Workers.SocketIOWriter(user, remoteStream, streams);
+                pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
+                pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
 
             };
         }
@@ -109,13 +110,13 @@ public class NewMemorySystem : MonoBehaviour
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
                 string uuid = System.Guid.NewGuid().ToString();
                 URL = $"{remoteURL}/{uuid}/pcc/";
-                pointcloudsWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+                pointcloudsWriter = new Dash.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
             } 
             else
                 URL = remoteURL;
 
             if (!useSocketIO)
-                pointcloudsReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
+                pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
 
             decoder = new Workers.PCDecoder[decoders];
             for (int i = 0; i < decoders; ++i)
@@ -126,12 +127,12 @@ public class NewMemorySystem : MonoBehaviour
         // using Audio over dash
         if (useDashVoice && !useSocketIO) {
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { 
+            gameObject.AddComponent<VoiceSender>().Init(new Orchestrator.User() { 
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
             }, "audio", 2000, 10000, true); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { 
+            gameObject.AddComponent<VoiceReceiver>().Init(new Orchestrator.User() { 
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 

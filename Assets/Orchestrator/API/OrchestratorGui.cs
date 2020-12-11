@@ -853,7 +853,7 @@ public class OrchestratorGui : MonoBehaviour
         UserData lUserData = new UserData();
         lUserData.userMQexchangeName = userDataMQnamePanel.GetComponentInChildren<InputField>().text;
         lUserData.userMQurl = userDataMQurlPanel.GetComponentInChildren<InputField>().text;
-        lUserData.userRepresentationType = (UserData.eUserRepresentationType)userDataRepresentationTypeDD.value;
+        lUserData.userRepresentationType = (UserRepresentationType)userDataRepresentationTypeDD.value;
         lUserData.userIP = OrchestratorController.Instance.GetIPAddress();
 
         OrchestratorController.Instance.UpdateUserData(lUserData);

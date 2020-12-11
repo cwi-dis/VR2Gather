@@ -51,7 +51,7 @@ public class PerformanceMetrics : MonoBehaviour
         OrchestratorController.Instance.GetUserInfo(connectedUserIds[userNum]);
     }
 
-    private void OnGetUserInfoHandler(OrchestratorWrapping.User user)
+    private void OnGetUserInfoHandler(Orchestrator.User user)
     {
         if (!String.IsNullOrEmpty(user.userData.userIP) && !connectionNames.Contains(user.userData.userIP))
             connectionNames.Add(user.userData.userIP);
