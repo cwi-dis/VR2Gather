@@ -9,18 +9,19 @@ using UnityEngine.Networking.NetworkSystem;
 using VRTCore;
 using Dash;
 using SocketIO;
+using VRTVideo;
 
 public class LivePresenter : MonoBehaviour {
     public Renderer rendererOrg;
     public Renderer rendererDst;
 
-    Workers.WebCamReader    recorder;
-    Workers.VideoEncoder    encoder;
+    WebCamReader recorder;
+    VideoEncoder encoder;
     BaseWorker writer;
     BaseWorker reader;
 
-    Workers.VideoDecoder    decoder;
-    Workers.VideoPreparer   preparer;
+    VideoDecoder decoder;
+    VideoPreparer preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("LivePresenterReader");
     QueueThreadSafe         writerQueue = new QueueThreadSafe("LivePresenterWriter");
@@ -52,8 +53,8 @@ public class LivePresenter : MonoBehaviour {
         string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
         string remoteStream = "webcam";
         try {
-            recorder = new Workers.WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
-            encoder  = new Workers.VideoEncoder(new Workers.VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
+            recorder = new WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
+            encoder  = new VideoEncoder(new VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
             B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
                 new B2DWriter.DashStreamDescription() {
                     tileNumber = 0,
@@ -67,8 +68,8 @@ public class LivePresenter : MonoBehaviour {
 //            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
-            decoder = new Workers.VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
-            preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+            decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+            preparer = new VideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
             Debug.Log($"LivePresenter.Init: Exception: {e.Message}");

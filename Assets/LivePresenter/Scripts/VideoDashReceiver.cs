@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
+using VRTVideo;
 
 public class VideoDashReceiver : MonoBehaviour {
     new public Renderer renderer;
 
     BaseWorker reader;
-    Workers.VideoDecoder    decoder;
-    Workers.VideoPreparer   preparer;
+    VideoDecoder decoder;
+    VideoPreparer preparer;
 
     // xxxjack nothing is dropped here. Need to investigate what is the best idea.
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoDashReceiver");
@@ -39,8 +40,8 @@ public class VideoDashReceiver : MonoBehaviour {
     // Start is called before the first frame update
     public void Init(FFmpeg.AutoGen.AVCodecID codec= FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264) {
         try {
-            decoder = new Workers.VideoDecoder( codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
-            preparer = new Workers.VideoPreparer(videoPreparerQueue, audioPreparerQueue);
+            decoder = new VideoDecoder( codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
+            preparer = new VideoPreparer(videoPreparerQueue, audioPreparerQueue);
             reader = new AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
         }
         catch (System.Exception e) {

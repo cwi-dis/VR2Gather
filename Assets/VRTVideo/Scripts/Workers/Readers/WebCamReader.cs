@@ -8,26 +8,28 @@ using System.Threading;
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace VRTVideo
 {
-    public class WebCamReader : BaseWorker {
-        MonoBehaviour   monoBehaviour;
-        Coroutine       coroutine;
+    public class WebCamReader : BaseWorker
+    {
+        MonoBehaviour monoBehaviour;
+        Coroutine coroutine;
         QueueThreadSafe outQueue;
-        VideoFilter     RGBA2RGBFilter;
+        VideoFilter RGBA2RGBFilter;
 
-        SemaphoreSlim       frameReady;
-        bool                isFrameReady=false;
-        CancellationTokenSource   isClosed;
+        SemaphoreSlim frameReady;
+        bool isFrameReady = false;
+        CancellationTokenSource isClosed;
 
-        System.IntPtr data;
+        IntPtr data;
 
         public int width;
         public int height;
         public int fps;
 
 
-        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init) {
+        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init)
+        {
 
             if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;
 
@@ -46,22 +48,28 @@ namespace Workers
             Start();
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
             if (outQueue.IsClosed()) return;
-            try {
-                lock (this) {
+            try
+            {
+                lock (this)
+                {
                     //frameReady.Wait(isClosed.Token);
                     //if (!isClosed.IsCancellationRequested)
-                    if(isFrameReady)
+                    if (isFrameReady)
                         Color32ArrayToByteArray(webcamColors, outQueue);
                 }
-            } catch(OperationCanceledException e ){
-//                frameReady.Release();
+            }
+            catch (OperationCanceledException e)
+            {
+                //                frameReady.Release();
             }
         }
 
-        public override void Stop() {
+        public override void Stop()
+        {
             base.Stop();
             UnityEngine.Debug.Log($"[FPA] -----> WebCamReader.Stop");
             webcamTexture?.Stop();
@@ -70,28 +78,33 @@ namespace Workers
             monoBehaviour.StopCoroutine(coroutine);
         }
 
-        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue) {
+        void Color32ArrayToByteArray(Color32[] colors, QueueThreadSafe outQueue)
+        {
             GCHandle handle = default;
-            try {
+            try
+            {
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;
                 outQueue.Enqueue(chunk);
                 isFrameReady = false;
-            } finally {
-                if (handle != default(GCHandle))
+            }
+            finally
+            {
+                if (handle != default)
                     handle.Free();
             }
         }
 
         float timeToFrame;
-        float                   frameTime;
-        Color32[]               webcamColors;
-        public WebCamTexture    webcamTexture { get; private set; }
+        float frameTime;
+        Color32[] webcamColors;
+        public WebCamTexture webcamTexture { get; private set; }
         byte[] infoData;
 
-        void Init(string deviceName) {
+        void Init(string deviceName)
+        {
             /*
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
@@ -111,7 +124,8 @@ namespace Workers
             height = webcamTexture.height;
 
             if (webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
-            else {
+            else
+            {
                 webcamColors = new Color32[width * height];
                 UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized");
             }
@@ -127,11 +141,16 @@ namespace Workers
             BitConverter.GetBytes(fps).CopyTo(infoData, 8);
         }
 
-        IEnumerator WebCamRecorder(string deviceName) {
-            while (true) {
-                lock (this) {
-                    if (!isFrameReady && timeToFrame < Time.realtimeSinceStartup) {//&& frameReady.CurrentCount == 0) {
-                        if (webcamTexture.isPlaying) {
+        IEnumerator WebCamRecorder(string deviceName)
+        {
+            while (true)
+            {
+                lock (this)
+                {
+                    if (!isFrameReady && timeToFrame < Time.realtimeSinceStartup)
+                    {//&& frameReady.CurrentCount == 0) {
+                        if (webcamTexture.isPlaying)
+                        {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
                             isFrameReady = true;
                         }

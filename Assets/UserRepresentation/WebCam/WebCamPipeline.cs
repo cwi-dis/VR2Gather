@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Voice;
 using VRTCore;
+using VRTVideo;
 
 public class WebCamPipeline : BasePipeline {
     public int              width = 1280;
@@ -20,12 +21,12 @@ public class WebCamPipeline : BasePipeline {
     public WebCamTexture    webCamTexture;
 
 
-    Workers.WebCamReader    webReader;
+    WebCamReader webReader;
     BaseWorker reader;
     BaseWorker encoder;
-    Workers.VideoDecoder    decoder;
+    VideoDecoder decoder;
     BaseWorker writer;
-    Workers.VideoPreparer   preparer;
+    VideoPreparer preparer;
 
     VoiceSender audioSender;
     VoiceReceiver audioReceiver;
@@ -76,14 +77,14 @@ public class WebCamPipeline : BasePipeline {
                 //
                 // Create reader
                 //
-                webReader = new Workers.WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
+                webReader = new WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                 webCamTexture = webReader.webcamTexture;
                 if (!preview) {
                     //
                     // Create encoders for transmission
                     //
                     try {
-                        encoder = new Workers.VideoEncoder( new Workers.VideoEncoder.Setup() { codec = codec, width = width, height= height, fps= fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
+                        encoder = new VideoEncoder( new VideoEncoder.Setup() { codec = codec, width = width, height= height, fps= fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
                     }
                     catch (System.EntryPointNotFoundException e) {
                         Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
@@ -148,11 +149,11 @@ public class WebCamPipeline : BasePipeline {
                 //
                 // Create video decoder.
                 //
-                decoder = new Workers.VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+                decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
                 //
                 // Create video preparer.
                 //
-                preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+                preparer = new VideoPreparer(videoPreparerQueue, null);
                 /*
                                 //
                                 // Create pipeline for audio, if needed.
