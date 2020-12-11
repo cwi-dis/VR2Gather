@@ -227,7 +227,7 @@ namespace Pilots
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
 							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
 						}
-						ITVMHookUp tvm = (DataProviders.NetworkDataProvider)playerManager.tvm;
+						ITVMHookUp tvm = playerManager.tvm;
 						if (tvm != null)
 						{
 							tvm.HookUp(firstTVM, user.userData.userMQurl, user.userData.userMQexchangeName);
