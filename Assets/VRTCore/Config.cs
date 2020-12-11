@@ -33,7 +33,7 @@ namespace VRTCore
         public int targetFrameRate = 90;
         public float memoryDamping = 1.3f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
-        public FFmpeg.AutoGen.AVCodecID videoCodec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
+        public string videoCodec = "h264";
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public float nonHMDHeight = 1.8f;
