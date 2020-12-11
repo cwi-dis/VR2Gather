@@ -227,14 +227,12 @@ namespace Pilots
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
 							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
 						}
-						DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)playerManager.tvm;
-						if (tvm)
+						ITVMHookUp tvm = (DataProviders.NetworkDataProvider)playerManager.tvm;
+						if (tvm != null)
 						{
-							tvm.isMaster = firstTVM;
-							if (firstTVM) firstTVM = false;
-							tvm.connectionURI = user.userData.userMQurl;
-							tvm.exchangeName = user.userData.userMQexchangeName;
-							tvm.gameObject.SetActive(true);
+							tvm.HookUp(firstTVM, user.userData.userMQurl, user.userData.userMQexchangeName);
+							firstTVM = false;
+							
 						}
 						break;
 					default:

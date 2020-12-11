@@ -9,7 +9,7 @@ using RabbitMQ.Utils;
 namespace DataProviders
 {
 
-    public class NetworkDataProvider : MonoBehaviour, IDataProvider {
+    public class NetworkDataProvider : MonoBehaviour, IDataProvider, ITVMHookUp {
         public bool isMaster;
         public string connectionURI;
         public string exchangeName;
@@ -25,6 +25,14 @@ namespace DataProviders
 			}
         }
 
+        public void HookUp(bool _firstTVM, string _connectionURI, string _exchangeName)
+        {
+            isMaster = _firstTVM;
+            connectionURI = _connectionURI;
+            exchangeName = _exchangeName;
+            gameObject.SetActive(true);
+
+        }
         private void Awake() {
             m_RabbitMQReceiver.OnDataReceived += RabbitMQReceiver_OnDataReceived;
 
