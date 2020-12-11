@@ -57,7 +57,14 @@ public class WebCamPipeline : BasePipeline {
             return null;
         }
         bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
-        FFmpeg.AutoGen.AVCodecID codec = Config.Instance.videoCodec;
+        FFmpeg.AutoGen.AVCodecID codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
+        if (Config.Instance.videoCodec == "h264")
+        {
+            codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
+        } else
+        {
+            Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.videoCodec}");
+        }
         if (user!=null && user.userData != null && user.userData.webcamName == "None") return this;
         switch (cfg.sourceType) {
             case "self": // Local
