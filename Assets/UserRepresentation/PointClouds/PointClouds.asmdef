@@ -1,0 +1,21 @@
+{
+    "name": "PointClouds",
+    "references": [
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:30bd862cd7044fd4484784b07598041d",
+        "GUID:483ef9d2ea25bb34cb9cdc48962c5283",
+        "GUID:6f443a5d6715b3048a4c955e8bae1e88",
+        "GUID:4dcc3f21fd748874d81ef4c8739ebdb3",
+        "GUID:0fe28dc2fadbc7445be6b310124197c6",
+        "GUID:8830b9e06f5eb184f963f1aec82206c7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
