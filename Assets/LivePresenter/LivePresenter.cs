@@ -10,7 +10,7 @@ using VRTCore;
 using Dash;
 using SocketIO;
 
-public class VideoWebCam : MonoBehaviour {
+public class LivePresenter : MonoBehaviour {
     public Renderer rendererOrg;
     public Renderer rendererDst;
 
