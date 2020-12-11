@@ -22,10 +22,10 @@ public class LivePresenter : MonoBehaviour {
     Workers.VideoDecoder    decoder;
     Workers.VideoPreparer   preparer;
 
-    QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
-    QueueThreadSafe         writerQueue = new QueueThreadSafe("VideoWebCamWriter");
-    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe("VideoWebCamCodec");
-    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("VideoWebCamPreparer",5);
+    QueueThreadSafe         videoDataQueue = new QueueThreadSafe("LivePresenterReader");
+    QueueThreadSafe         writerQueue = new QueueThreadSafe("LivePresenterWriter");
+    QueueThreadSafe         videoCodecQueue = new QueueThreadSafe("LivePresenterCodec");
+    QueueThreadSafe         videoPreparerQueue = new QueueThreadSafe("LivePresenterPreparer", 5);
 
     Texture2D       texture;
     public int      width = 1280;
@@ -71,7 +71,7 @@ public class LivePresenter : MonoBehaviour {
             preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
-            Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");
+            Debug.Log($"LivePresenter.Init: Exception: {e.Message}");
             throw e;
         }
         ready = true;
