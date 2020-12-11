@@ -30,11 +30,15 @@ namespace Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
             preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
-            if (UseDash) reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
-            else reader = new SocketIOReader(user, _streamName, decoderQueue);
+			if (UseDash) {
+				decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 32, true);
+				reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+			} else {
+				decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+				reader = new Workers.SocketIOReader(user, _streamName, decoderQueue);
+			}
 
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
