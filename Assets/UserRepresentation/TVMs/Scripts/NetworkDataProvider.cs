@@ -16,9 +16,7 @@ namespace DataProviders
         private Config cfg;
         private Config._TVMs tvm;
         private bool isReceiverConnected = false;
-        //public Config config;
         public event EventHandler<EventArgs<byte[]>> OnNewData;
-
         private RabbitMQReceiver m_RabbitMQReceiver = new RabbitMQReceiver();
 
         private void RabbitMQReceiver_OnDataReceived(object sender, EventArgs<byte[]> e) {

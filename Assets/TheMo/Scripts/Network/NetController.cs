@@ -16,6 +16,9 @@ public class NetController : MonoBehaviour {
     public static float OffsetClock;
     public static float NetClock;
 
+    public delegate void ConnectReadyEvent();
+    public ConnectReadyEvent OnConnectReady;
+
     Scenario scenarioToConnect;
 
     BinaryConnection connection;
@@ -134,6 +137,8 @@ public class NetController : MonoBehaviour {
     Session mySession;
     private void OnAddSessionHandler(Session session) {
         mySession = session;
+        OnConnectReady?.Invoke();
+
         // Here you should store the retrieved session.
         /*
         if (session != null) {
@@ -144,33 +149,7 @@ public class NetController : MonoBehaviour {
     }
 
     private void OnJoinSessionHandler(Session session) {
-        Debug.Log($"OnJoinSessionHandler [{session}]");
-        /*
-        if (session != null) {
-            SubscribeToBinaryChannel();
-            SendBinaryData();
-        } 
-        */
-    }
-
-    string binaryDataChannelName = "BINARY_CHANNEL";
-    private void SubscribeToBinaryChannel() {
-        Debug.Log($"SubscribeToBinaryChannel {binaryDataChannelName} user {UserID}");
-        OrchestratorWrapper.instance.DeclareDataStream(binaryDataChannelName);
-        OrchestratorWrapper.instance.RegisterForDataStream(UserID, binaryDataChannelName);
-        OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
-    }
-
-    private void SendBinaryData() {
-        byte[] data = new byte[] { 1, 2, 3, 4, 5 };
-        OrchestratorWrapper.instance.SendData(binaryDataChannelName, data);
-        Debug.Log($"SendBinaryData {data.Length} ");
-    }
-
-    private void OnDataPacketReceived(UserDataStreamPacket pPacket) {
-        if (pPacket.dataStreamUserID == UserID) {
-            Debug.Log($"!!! DATA {pPacket.dataStreamPacket.Length} dataStreamUserID {pPacket.dataStreamUserID}");
-        }
+        OnConnectReady?.Invoke();
     }
 
     private void OnUserLeftSessionHandler(string userID) {
@@ -178,8 +157,6 @@ public class NetController : MonoBehaviour {
     }
 
     public void Disconnect() {
-        OrchestratorWrapper.instance.UnregisterFromDataStream(UserID, binaryDataChannelName);
-        OrchestratorWrapper.instance.RemoveDataStream(binaryDataChannelName);
         connection?.Close();
     }
 /*
