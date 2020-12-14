@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Orchestrator;
 using Pilots;
+using VRTCore;
 
 public class OrchestratorPilot0 : MonoBehaviour {
     public static OrchestratorPilot0 Instance { get; private set; }

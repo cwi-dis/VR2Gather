@@ -1,26 +1,33 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ErrorPopup : MonoBehaviour {
+namespace VRTCore
+{
+    public class ErrorPopup : MonoBehaviour
+    {
 
-    [Header("ErrorHandling")]
-    [SerializeField] private Text errorTitle = null;
-    [SerializeField] private Text errorMessage = null;
-    [SerializeField] private Button errorButton = null; 
-    
-    public string ErrorMessage { get { return errorMessage.text; } }
+        [Header("ErrorHandling")]
+        [SerializeField] private Text errorTitle = null;
+        [SerializeField] private Text errorMessage = null;
+        [SerializeField] private Button errorButton = null;
 
-    // Start is called before the first frame update
-    void Start() {
-        errorButton.onClick.AddListener(delegate { ErrorButton(); });        
-    }
+        public string ErrorMessage { get { return errorMessage.text; } }
 
-    public void FillError(string title, string message) {
-        errorTitle.text = title;
-        errorMessage.text = message.Length< 4096 ? message: message.Substring( 0, 4096);
-    }
+        // Start is called before the first frame update
+        void Start()
+        {
+            errorButton.onClick.AddListener(delegate { ErrorButton(); });
+        }
 
-    public void ErrorButton() {
-        Destroy(gameObject);
+        public void FillError(string title, string message)
+        {
+            errorTitle.text = title;
+            errorMessage.text = message.Length < 4096 ? message : message.Substring(0, 4096);
+        }
+
+        public void ErrorButton()
+        {
+            Destroy(gameObject);
+        }
     }
 }
