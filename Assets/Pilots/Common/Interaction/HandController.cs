@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Orchestrator;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
 namespace Pilots
 {
-	public class HandController : MonoBehaviour
+    public class HandController : MonoBehaviour
 	{
 		public class HandControllerData : BaseMessage
 		{

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Orchestrator;
+using UnityEngine;
 
 namespace Pilots
 {
-	[RequireComponent(typeof(HandController))]
+    [RequireComponent(typeof(HandController))]
 	public class HandInteractionManager : MonoBehaviour
 	{
 		public enum HandInteractionEventType

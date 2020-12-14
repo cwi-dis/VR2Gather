@@ -5,6 +5,7 @@ using VRTCore;
 using Dash;
 using SocketIO;
 using VRTVideo;
+using Orchestrator;
 
 public class LivePresenter : MonoBehaviour {
     public Renderer rendererOrg;

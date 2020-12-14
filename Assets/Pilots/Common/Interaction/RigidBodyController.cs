@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Orchestrator;
+using UnityEngine;
 
 namespace Pilots
 {
-	[RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(NetworkTransformSyncBehaviour))]
 	public class RigidBodyController : MonoBehaviour
 	{

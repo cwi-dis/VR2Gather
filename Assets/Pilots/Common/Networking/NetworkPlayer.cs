@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Orchestrator;
+using UnityEngine;
 using UnityEngine.SpatialTracking;
 
 namespace Pilots
 {
-	public class NetworkPlayer : MonoBehaviour
+    public class NetworkPlayer : MonoBehaviour
 	{
 		#region NetworkPlayerData
 		/// <summary>

@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using OrchestratorWSManagement;
 using LitJson;
 using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using System.Text;
+using Orchestrator.WSManagement;
 
 namespace Orchestrator
 {
