@@ -2,7 +2,8 @@
     "name": "Pilot0",
     "references": [
         "Orchestrator",
-        "Pilots"
+        "Pilots",
+        "VRTCore"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
