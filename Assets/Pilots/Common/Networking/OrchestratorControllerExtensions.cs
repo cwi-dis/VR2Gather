@@ -5,10 +5,10 @@ using UnityEngine;
 namespace Pilots
 {
 
-	/// <summary>
-	/// A typed message
-	/// </summary>
-	public class TypedMessage
+    /// <summary>
+    /// A typed message
+    /// </summary>
+    public class TypedMessage
 	{
 		/// <summary>
 		/// Integer type Id for the type, registered in the MessageForwarderManager

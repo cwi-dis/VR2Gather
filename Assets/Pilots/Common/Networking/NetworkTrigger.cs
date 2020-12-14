@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Orchestrator;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Pilots
 {
-	public class NetworkTrigger : NetworkIdBehaviour
+    public class NetworkTrigger : NetworkIdBehaviour
 	{
 		public class NetworkTriggerData : BaseMessage
 		{

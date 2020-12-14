@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using Orchestrator;
+using UnityEngine;
 
 namespace Pilots
 {
-	public class PlayerTransformSyncBehaviour : MonoBehaviour
+    public class PlayerTransformSyncBehaviour : MonoBehaviour
 	{
 		public class PlayerTransformSyncData : BaseMessage
 		{

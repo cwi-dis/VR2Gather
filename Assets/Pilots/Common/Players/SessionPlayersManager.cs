@@ -9,11 +9,11 @@ using VRTCore;
 namespace Pilots
 {
 
-	/// <summary>
-	/// Spawns the player prefab for players in a session, and if we're the 
-	/// Master, it assigns them to an available location when AutoSpawnOnLocation is true
-	/// </summary>
-	public class SessionPlayersManager : MonoBehaviour
+    /// <summary>
+    /// Spawns the player prefab for players in a session, and if we're the 
+    /// Master, it assigns them to an available location when AutoSpawnOnLocation is true
+    /// </summary>
+    public class SessionPlayersManager : MonoBehaviour
 	{
 		/// <summary>
 		/// Empty request message to ask the Master to inform us about the player locations
