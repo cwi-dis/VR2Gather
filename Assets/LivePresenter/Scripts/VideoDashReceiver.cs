@@ -5,7 +5,7 @@ using VRTCore;
 using VRT.Video;
 using VRT.Transport.Dash;
 
-namespace VRTLivePresenter
+namespace VRT.LivePresenter
 {
     public class VideoDashReceiver : MonoBehaviour
     {
