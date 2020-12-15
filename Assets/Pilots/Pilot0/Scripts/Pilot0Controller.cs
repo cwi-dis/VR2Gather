@@ -1,4 +1,4 @@
-﻿using Pilots;
+﻿using VRTPilots;
 using UnityEngine;
 
 public class Pilot0Controller : PilotController {

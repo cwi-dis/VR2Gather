@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Pilots
+namespace VRTPilots
 {
     public class NetworkTrigger : NetworkIdBehaviour
 	{

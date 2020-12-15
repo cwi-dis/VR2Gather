@@ -6,7 +6,7 @@ using UnityEngine.XR;
 using Voice;
 using VRTCore;
 
-namespace Pilots
+namespace VRTPilots
 {
 
     /// <summary>

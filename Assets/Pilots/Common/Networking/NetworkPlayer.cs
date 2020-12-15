@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SpatialTracking;
 
-namespace Pilots
+namespace VRTPilots
 {
     public class NetworkPlayer : MonoBehaviour
 	{

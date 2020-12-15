@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-namespace Pilots
+namespace VRTPilots
 {
     public class HandController : MonoBehaviour
 	{
