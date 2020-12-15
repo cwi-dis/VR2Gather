@@ -1,4 +1,4 @@
-﻿using Dash;
+﻿using VRTDash;
 using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.IO;
 using UnityEngine;
 using VRTCore;
 
-namespace SocketIO
+namespace VRTSocketIO
 {
     public class SocketIOReader : BaseReader, ISocketReader
     {

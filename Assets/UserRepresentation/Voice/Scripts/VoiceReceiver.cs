@@ -1,12 +1,12 @@
-﻿using Dash;
+﻿using VRTDash;
 using Orchestrator;
-using SocketIO;
+using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace Voice
+namespace VRTVoice
 {
     public class VoiceReceiver : MonoBehaviour
     {

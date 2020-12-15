@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Pilots
+namespace VRTPilots
 {
 	public class NetworkIdManager
 	{

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace Pilots
+namespace VRTPilots
 {
 
     /// <summary>

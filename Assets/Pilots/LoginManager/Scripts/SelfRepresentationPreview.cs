@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using VRTCore;
 using Orchestrator;
-using Voice;
+using VRTVoice;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

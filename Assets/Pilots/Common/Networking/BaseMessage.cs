@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Pilots
+namespace VRTPilots
 {
 
     /// <summary>

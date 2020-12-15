@@ -1,12 +1,12 @@
 ﻿#define NO_VOICE
 
-using Dash;
+using VRTDash;
 using Orchestrator;
-using SocketIO;
+using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Voice;
+using VRTVoice;
 using VRTCore;
 
 public class PointCloudPipeline : BasePipeline {

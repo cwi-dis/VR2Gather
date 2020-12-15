@@ -1,7 +1,7 @@
 ﻿using Orchestrator;
 using UnityEngine;
 
-namespace Pilots
+namespace VRTPilots
 {
     [RequireComponent(typeof(HandController))]
 	public class HandInteractionManager : MonoBehaviour

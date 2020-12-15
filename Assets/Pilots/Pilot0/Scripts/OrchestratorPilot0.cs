@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Orchestrator;
-using Pilots;
+using VRTPilots;
 using VRTCore;
 
 public class OrchestratorPilot0 : MonoBehaviour {

@@ -1,11 +1,12 @@
 ﻿using Orchestrator;
-using Pilots;
+using VRTPilots;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using VRTCore;
+using VRTLivePresenter;
 
 public class LoginController : PilotController {
 

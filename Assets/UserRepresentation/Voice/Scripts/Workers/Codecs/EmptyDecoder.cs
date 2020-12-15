@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace Voice
+namespace VRTVoice
 {
     public class EmptyDecoder : BaseWorker
     {

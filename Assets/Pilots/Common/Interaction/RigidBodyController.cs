@@ -1,7 +1,7 @@
 ﻿using Orchestrator;
 using UnityEngine;
 
-namespace Pilots
+namespace VRTPilots
 {
     [RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(NetworkTransformSyncBehaviour))]

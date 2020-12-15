@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using VRTCore;
 
-namespace Dash
+namespace VRTDash
 {
     public class sub
     {

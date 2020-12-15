@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using VRTCore;
 
-namespace Dash
+namespace VRTDash
 {
     public class PCSubReader : BaseSubReader
     {

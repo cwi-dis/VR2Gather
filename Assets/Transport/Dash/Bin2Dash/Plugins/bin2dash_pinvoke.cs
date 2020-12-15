@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using VRTCore;
 
-namespace Dash
+namespace VRTDash
 {
     public class bin2dash
     {
