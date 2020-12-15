@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
-using Voice;
+using VRTVoice;
 using VRTCore;
 
 namespace VRTPilots

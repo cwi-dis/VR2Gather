@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using VRTCore;
 
-namespace Voice
+namespace VRTVoice
 {
     public class VoiceEncoder : BaseWorker
     {

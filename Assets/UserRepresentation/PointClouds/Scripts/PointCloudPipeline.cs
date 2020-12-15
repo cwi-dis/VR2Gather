@@ -6,7 +6,7 @@ using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Voice;
+using VRTVoice;
 using VRTCore;
 
 public class PointCloudPipeline : BasePipeline {
