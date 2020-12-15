@@ -17,8 +17,6 @@ public class PointCloudPipeline : BasePipeline {
     BaseWorker writer;
     List<BaseWorker>  preparers = new List<BaseWorker>();
     List<MonoBehaviour> renderers = new List<MonoBehaviour>();
-    VoiceSender audioSender;
-    VoiceReceiver audioReceiver;
 
     List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
     QueueThreadSafe encoderQueue; 
@@ -424,11 +422,6 @@ public class PointCloudPipeline : BasePipeline {
             Debug.LogWarning($"{Name()}: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
         }
 
-        if (audioSender != null)
-        {
-            rv.audio = audioSender.GetSyncInfo();
-        }
-        // xxxjack also need to do something for VioceIOSender....
         return rv;
     }
 
@@ -448,7 +441,6 @@ public class PointCloudPipeline : BasePipeline {
         {
             Debug.LogWarning($"{Name()}: SetSyncConfig: reader is not a PCSubReader");
         }
-        audioReceiver?.SetSyncInfo(config.audio);
     }
 
     public new Vector3 GetPosition()

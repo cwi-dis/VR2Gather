@@ -29,9 +29,6 @@ public class WebCamPipeline : BasePipeline {
     BaseWorker writer;
     VideoPreparer preparer;
 
-    VoiceSender audioSender;
-    VoiceReceiver audioReceiver;
-
     QueueThreadSafe encoderQueue;
     QueueThreadSafe writerQueue         = new QueueThreadSafe("WebCamPipelineWriter");
     QueueThreadSafe videoCodecQueue     = new QueueThreadSafe("WebCamPipelineCodec", 2,true);
@@ -173,7 +170,6 @@ public class WebCamPipeline : BasePipeline {
 
     // Update is called once per frame
     System.DateTime lastUpdateTime;
-    float timeToFrame = 0;
     private void Update() {
         if (ready) {
             lock (preparer) {
@@ -238,11 +234,6 @@ public class WebCamPipeline : BasePipeline {
         {
             Debug.LogWarning("WebCamPipeline: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
         }
-        if (audioSender != null)
-        {
-            rv.audio = audioSender.GetSyncInfo();
-        }
-        // xxxjack also need to do something for VioceIOSender....
         return rv;
     }
 
@@ -263,7 +254,6 @@ public class WebCamPipeline : BasePipeline {
             Debug.LogWarning("WebCamPipeline: SetSyncConfig: reader is not a PCSubReader");
         }
 
-        audioReceiver?.SetSyncInfo(config.audio);
     }
 
     public new Vector3 GetPosition()

@@ -11,6 +11,6 @@ public class PlayerManager : MonoBehaviour {
     public GameObject avatar;
     public GameObject webcam;
     public GameObject pc;
-    public GameObject audio;
+    public GameObject vrt_audio;
     public GameObject teleporter;
 }

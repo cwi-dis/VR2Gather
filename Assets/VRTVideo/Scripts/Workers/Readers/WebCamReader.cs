@@ -62,7 +62,7 @@ namespace VRT.Video
                         Color32ArrayToByteArray(webcamColors, outQueue);
                 }
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 //                frameReady.Release();
             }

@@ -14,6 +14,7 @@ namespace VRTVoice
         {
             outQueue = _outQueue;
             this.bufferLength = bufferLength;
+            device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
             Start();
