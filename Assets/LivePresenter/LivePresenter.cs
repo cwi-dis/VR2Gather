@@ -3,7 +3,7 @@ using UnityEngine;
 
 using VRTCore;
 using VRTDash;
-using SocketIO;
+using VRTSocketIO;
 using VRTVideo;
 using Orchestrator;
 

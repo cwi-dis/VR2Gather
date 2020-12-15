@@ -3,7 +3,7 @@
 //#define TEST_VOICECHAT
 
 using VRTDash;
-using SocketIO;
+using VRTSocketIO;
 using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
