@@ -12,7 +12,7 @@ public class ProfilerManager : MonoBehaviour {
     private string csvOutputPathname;
     private float SamplingRate = 1 / 30f;
     private bool FPSActive = true;
-    private bool HMDActive = Config.Instance.pilot3NavigationLogs;
+    private bool HMDActive = false;
     private bool printedStatMessage = false;
     private float timeToNext = 0.0f;
     private uint lineCount = 0;
@@ -26,6 +26,7 @@ public class ProfilerManager : MonoBehaviour {
 
     private void Awake() {
         Instance = this;
+        HMDActive = Config.Instance.pilot3NavigationLogs;
         csvOutputPathname = string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName);
     }
 
