@@ -3,7 +3,7 @@ using LitJson;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Orchestrator;
+using VRT.Orchestrator.Wrapping;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -16,7 +16,7 @@ using Orchestrator;
  *              main object by its ID. That allows to access it directly via its ID on JS, but it's not parsable directly on C#.
  **/
 
-namespace Orchestrator.WSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     public interface IOrchestratorConnectionListener
     {

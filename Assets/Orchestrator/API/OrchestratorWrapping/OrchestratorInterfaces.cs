@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 //Interfaces to be implemented to supervise the orchestrator
-namespace Orchestrator
+namespace VRT.Orchestrator.Wrapping
 {
     // Interface to implement to listen the user messages emitted spontaneously
     // by the orchestrator

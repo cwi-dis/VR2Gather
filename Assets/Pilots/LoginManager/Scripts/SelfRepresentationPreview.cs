@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using VRTCore;
-using Orchestrator;
 using VRTVoice;
 using VRT.Core;
+using VRT.Orchestrator.Wrapping;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

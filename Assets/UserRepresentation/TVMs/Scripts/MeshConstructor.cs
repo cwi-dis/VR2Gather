@@ -3,8 +3,8 @@ using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
-using Orchestrator;
 using VRT.Transport.RabbitMQ.Utils;
+using VRT.Orchestrator.Wrapping;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]

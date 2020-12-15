@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Orchestrator
+namespace VRT.Orchestrator
 {
     public class OrchestratorGuiInitializer : MonoBehaviour
     {

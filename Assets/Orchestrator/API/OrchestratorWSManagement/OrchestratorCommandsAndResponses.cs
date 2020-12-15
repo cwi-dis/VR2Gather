@@ -5,7 +5,7 @@ using BestHTTP.SocketIO.Events;
 using LitJson;
 
 // class used as a convenience to represent the commands and the responses
-namespace Orchestrator.WSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     // template for functions that treat the responses (command = the command sent, response = the response to parse)
     public delegate void ResponseCallbackManager(OrchestratorCommand command, OrchestratorResponse response);

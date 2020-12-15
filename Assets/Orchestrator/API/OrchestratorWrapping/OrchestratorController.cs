@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using VRTCore;
 
-namespace Orchestrator
+namespace VRT.Orchestrator.Wrapping
 {
     public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {

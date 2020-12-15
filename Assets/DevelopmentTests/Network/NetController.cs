@@ -1,6 +1,6 @@
-﻿using Orchestrator;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Orchestrator.Wrapping;
 
 public class NetController : MonoBehaviour {
     public static NetController Instance { get; private set; }

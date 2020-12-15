@@ -2,7 +2,7 @@
 using LitJson;
 using System.Reflection;
 
-namespace Orchestrator
+namespace VRT.Orchestrator.Wrapping
 {
     public static class Helper
     {
