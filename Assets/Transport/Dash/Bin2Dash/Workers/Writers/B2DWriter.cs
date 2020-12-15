@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using VRTCore;
 
-namespace Dash
+namespace VRTDash
 {
 
     public class B2DWriter : BaseWriter

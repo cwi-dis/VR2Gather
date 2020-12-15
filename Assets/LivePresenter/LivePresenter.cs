@@ -2,7 +2,7 @@
 using UnityEngine;
 
 using VRTCore;
-using Dash;
+using VRTDash;
 using SocketIO;
 using VRTVideo;
 using Orchestrator;

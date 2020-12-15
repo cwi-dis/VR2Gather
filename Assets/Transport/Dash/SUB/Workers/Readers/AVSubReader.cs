@@ -1,7 +1,7 @@
 using UnityEngine;
 using VRTCore;
 
-namespace Dash
+namespace VRTDash
 {
     public class AVSubReader : BaseSubReader
     {

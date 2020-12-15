@@ -2,7 +2,7 @@
 //#define TEST_PC
 //#define TEST_VOICECHAT
 
-using Dash;
+using VRTDash;
 using SocketIO;
 using Orchestrator;
 using System.Collections;
@@ -110,7 +110,7 @@ public class NewMemorySystem : MonoBehaviour
                 encoder = new Workers.PCEncoder(encoderQueue, encStreams);
                 string uuid = System.Guid.NewGuid().ToString();
                 URL = $"{remoteURL}/{uuid}/pcc/";
-                pointcloudsWriter = new Dash.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+                pointcloudsWriter = new VRTDash.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
             } 
             else
                 URL = remoteURL;
