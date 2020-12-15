@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using VRTVoice;
 using VRTCore;
+using VRT.Core;
 
 namespace VRTPilots
 {

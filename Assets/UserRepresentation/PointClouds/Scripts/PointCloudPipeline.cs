@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTVoice;
 using VRTCore;
+using VRT.Core;
 
 public class PointCloudPipeline : BasePipeline {
     BaseWorker reader;

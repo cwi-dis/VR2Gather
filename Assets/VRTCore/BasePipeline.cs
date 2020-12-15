@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using VRTCore;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public interface ITVMHookUp
     {
@@ -15,7 +16,7 @@ namespace VRTCore
         public delegate BasePipeline AddPipelineComponentDelegate(GameObject dst, UserRepresentationType i);
 
         private static Dictionary<UserRepresentationType, AddPipelineComponentDelegate> PipelineTypeMapping = new Dictionary<UserRepresentationType, AddPipelineComponentDelegate>();
- 
+
         protected static void RegisterPipelineClass(UserRepresentationType i, AddPipelineComponentDelegate ctor)
         {
             Debug.Log($"BasePipeline: register Pipeline constructor for {i}");
@@ -32,7 +33,7 @@ namespace VRTCore
             return PipelineTypeMapping[i](dst, i);
         }
 
-        abstract public BasePipeline Init(System.Object _user, Config._User cfg, bool preview = false);
+        abstract public BasePipeline Init(object _user, Config._User cfg, bool preview = false);
 
         virtual public SyncConfig GetSyncConfig()
         {

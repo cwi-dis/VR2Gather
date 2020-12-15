@@ -5,6 +5,7 @@ using System.IO;
 using VRTCore;
 using RabbitMQ;
 using RabbitMQ.Utils;
+using VRT.Core;
 
 namespace DataProviders
 {

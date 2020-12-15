@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using VRTCore;
+using VRT.Core;
 
 namespace VRTPilots
 {

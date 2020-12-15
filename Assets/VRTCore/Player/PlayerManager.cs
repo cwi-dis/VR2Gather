@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Reflection;
-using VRTCore;
+using VRT.Core;
 
 public class PlayerManager : MonoBehaviour {
     public int      id;

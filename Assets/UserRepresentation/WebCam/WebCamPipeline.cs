@@ -9,6 +9,7 @@ using UnityEngine;
 using VRTVoice;
 using VRTCore;
 using VRTVideo;
+using VRT.Core;
 
 public class WebCamPipeline : BasePipeline {
     public int              width = 1280;
