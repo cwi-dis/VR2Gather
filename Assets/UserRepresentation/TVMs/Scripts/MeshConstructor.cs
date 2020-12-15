@@ -25,7 +25,6 @@ public class MeshConstructor : MonoBehaviour
     private System.Diagnostics.Stopwatch stopWatch_d_p = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_r = new System.Diagnostics.Stopwatch();
     private System.Diagnostics.Stopwatch stopWatch_ft = new System.Diagnostics.Stopwatch();
-    private string firstFrameTime = "";
     private PerformanceMetrics performanceMetricsObj;
 
     private List<Texture2D> m_Textures = new List<Texture2D>();

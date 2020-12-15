@@ -22,13 +22,13 @@ public class TilingConfigDistributor : BaseConfigDistributor
         OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
 
     }
-    public TilingConfigDistributor Init(string _selfUserId)
+    new public TilingConfigDistributor Init(string _selfUserId)
     {
         selfUserId = _selfUserId;
         return this;
     }
 
-    public void RegisterPipeline(string userId, BasePipeline pipeline)
+    new public void RegisterPipeline(string userId, BasePipeline pipeline)
     {
         if (pipelines.ContainsKey(userId))
         {

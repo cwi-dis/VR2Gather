@@ -47,7 +47,7 @@ namespace VRTVoice
             {
                 len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
                 Debug.Log($"[FPA] Error on decompressing {mcIn.length}");
             }
