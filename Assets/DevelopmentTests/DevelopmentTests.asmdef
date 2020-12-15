@@ -1,0 +1,20 @@
+{
+    "name": "DevelopmentTests",
+    "references": [
+        "VRTCore",
+        "Dash",
+        "SocketIO",
+        "Orchestrator",
+        "Voice",
+        "PointClouds"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
