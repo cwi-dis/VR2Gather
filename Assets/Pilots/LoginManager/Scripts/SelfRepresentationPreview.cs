@@ -5,6 +5,7 @@ using System;
 using VRTCore;
 using Orchestrator;
 using VRTVoice;
+using VRT.Core;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

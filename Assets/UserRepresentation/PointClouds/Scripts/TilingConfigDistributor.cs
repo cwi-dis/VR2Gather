@@ -1,8 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using VRTPilots;
-using VRTCore;
 using Orchestrator;
+using VRT.Core;
 
 public class TilingConfigDistributor : BaseConfigDistributor
 {
