@@ -87,12 +87,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6217702019079343384}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23719054a0dc54b45878c14118af249b, type: 3}
+  m_Script: {fileID: 11500000, guid: c2e50711c87c68a48828eb6fd22b290f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  errorTitle: {fileID: 6217702019196180207}
-  errorMessage: {fileID: 6217702020017196770}
-  errorButton: {fileID: 6217702019920810275}
+  errorTitle: {fileID: 0}
+  errorMessage: {fileID: 0}
+  errorButton: {fileID: 0}
 --- !u!1 &6217702019145916217
 GameObject:
   m_ObjectHideFlags: 0
