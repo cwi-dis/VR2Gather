@@ -5,7 +5,7 @@ using UnityEngine;
 using VRTCore;
 using VRTVideo;
 
-namespace LivePresenter
+namespace VRTLivePresenter
 {
     public class VideoDashReceiver : MonoBehaviour
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using VRTCore;
-using LivePresenter;
+using VRTLivePresenter;
 
 public class LoginController : PilotController {
 

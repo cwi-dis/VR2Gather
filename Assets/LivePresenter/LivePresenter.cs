@@ -7,7 +7,7 @@ using SocketIO;
 using VRTVideo;
 using Orchestrator;
 
-namespace LivePresenter
+namespace VRTLivePresenter
 {
     public class LivePresenter : MonoBehaviour
     {
