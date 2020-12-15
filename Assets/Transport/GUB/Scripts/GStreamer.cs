@@ -23,42 +23,44 @@ using System.Runtime.InteropServices;	// For DllImport.
 using System;
 using System.IO;
 
-public class GStreamer
+namespace VRT.Transport.GUB
 {
-    internal const string DllName = "GstUnityBridge";
-
-    [DllImport("gstreamer_android", CallingConvention = CallingConvention.Cdecl)]
-    extern static private UIntPtr gst_android_get_application_class_loader();
-
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.I4)]
-    extern static private bool gub_ref([MarshalAs(UnmanagedType.LPStr)]string gst_debug_string);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    extern static private void gub_unref();
-
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    [return: MarshalAs(UnmanagedType.I4)]
-    extern static private bool gub_is_active();
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate void GUBUnityDebugLogPFN(
-        [MarshalAs(UnmanagedType.I4)]int level,
-        [MarshalAs(UnmanagedType.LPStr)]string message);
-
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-    extern static private void gub_log_set_unity_handler(GUBUnityDebugLogPFN pfn);
-
-    internal static bool IsActive
+    public class GStreamer
     {
-        get
+        internal const string DllName = "GstUnityBridge";
+
+        [DllImport("gstreamer_android", CallingConvention = CallingConvention.Cdecl)]
+        extern static private UIntPtr gst_android_get_application_class_loader();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I4)]
+        extern static private bool gub_ref([MarshalAs(UnmanagedType.LPStr)]string gst_debug_string);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        extern static private void gub_unref();
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.I4)]
+        extern static private bool gub_is_active();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void GUBUnityDebugLogPFN(
+            [MarshalAs(UnmanagedType.I4)]int level,
+            [MarshalAs(UnmanagedType.LPStr)]string message);
+
+        [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+        extern static private void gub_log_set_unity_handler(GUBUnityDebugLogPFN pfn);
+
+        internal static bool IsActive
         {
-            return gub_is_active();
+            get
+            {
+                return gub_is_active();
+            }
         }
-    }
 
-    public static void AddPluginsToPath()
-    {
+        public static void AddPluginsToPath()
+        {
 
 #if UNITY_ANDROID
         // Force loading of gstreamer_android.so before GstUnityBridge.so
@@ -70,28 +72,28 @@ public class GStreamer
         gstAndroid.CallStatic("init", activity);
 #endif
 
-        // Setup the PATH environment variable so it can find the GstUnityBridge dll.
-        var currentPath = Environment.GetEnvironmentVariable("PATH",
-            EnvironmentVariableTarget.Process);
-        var dllPath = "";
+            // Setup the PATH environment variable so it can find the GstUnityBridge dll.
+            var currentPath = Environment.GetEnvironmentVariable("PATH",
+                EnvironmentVariableTarget.Process);
+            var dllPath = "";
 
 #if UNITY_EDITOR
 
 #if UNITY_EDITOR_32
         dllPath = Application.dataPath + "/Plugins/GStreamer/x86";
 #elif UNITY_EDITOR_64
-        dllPath = Application.dataPath + "/Tools/Plugins/GStreamer/x86_64";
+            dllPath = Application.dataPath + "/Tools/Plugins/GStreamer/x86_64";
 #endif
-        //Debug.Log(Application.dataPath);
-        //Debug.Log(dllPath);
-        //Debug.Log(currentPath);
+            //Debug.Log(Application.dataPath);
+            //Debug.Log(dllPath);
+            //Debug.Log(currentPath);
 
-        if (currentPath != null && currentPath.Contains(dllPath) == false)
-            Environment.SetEnvironmentVariable("PATH",
-                dllPath + Path.PathSeparator +
-                //dllPath + "/GStreamer/bin" + Path.PathSeparator +
-                currentPath,
-                EnvironmentVariableTarget.Process);
+            if (currentPath != null && currentPath.Contains(dllPath) == false)
+                Environment.SetEnvironmentVariable("PATH",
+                    dllPath + Path.PathSeparator +
+                    //dllPath + "/GStreamer/bin" + Path.PathSeparator +
+                    currentPath,
+                    EnvironmentVariableTarget.Process);
 #else
         dllPath = Application.dataPath + "/Plugins";
         if (currentPath != null && currentPath.Contains(dllPath) == false)
@@ -101,17 +103,18 @@ public class GStreamer
                 EnvironmentVariableTarget.Process);
         Environment.SetEnvironmentVariable("GST_PLUGIN_PATH", dllPath, EnvironmentVariableTarget.Process);
 #endif
-    }
+        }
 
-    internal static void Ref(string gst_debug_string, GUBUnityDebugLogPFN log_handler)
-    {
+        internal static void Ref(string gst_debug_string, GUBUnityDebugLogPFN log_handler)
+        {
 
-        gub_log_set_unity_handler(log_handler);
-        gub_ref(gst_debug_string);
-    }
+            gub_log_set_unity_handler(log_handler);
+            gub_ref(gst_debug_string);
+        }
 
-    internal static void Unref()
-    {
-        gub_unref();
+        internal static void Unref()
+        {
+            gub_unref();
+        }
     }
 }
