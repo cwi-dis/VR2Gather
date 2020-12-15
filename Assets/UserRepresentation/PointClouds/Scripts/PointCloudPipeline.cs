@@ -2,13 +2,13 @@
 
 using VRTDash;
 using Orchestrator;
-using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTVoice;
 using VRTCore;
 using VRT.Core;
+using VRT.Transport.SocketIO;
 
 public class PointCloudPipeline : BasePipeline {
     BaseWorker reader;

@@ -1,10 +1,10 @@
 ﻿using VRTDash;
 using Orchestrator;
-using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
+using VRT.Transport.SocketIO;
 
 namespace VRTVoice
 {

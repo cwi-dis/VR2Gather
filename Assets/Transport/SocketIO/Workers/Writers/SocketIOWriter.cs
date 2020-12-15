@@ -6,7 +6,7 @@ using System.IO;
 using UnityEngine;
 using VRTCore;
 
-namespace VRTSocketIO
+namespace VRT.Transport.SocketIO
 {
     public class SocketIOWriter : BaseWriter
     {

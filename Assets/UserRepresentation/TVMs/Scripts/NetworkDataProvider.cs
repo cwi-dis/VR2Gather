@@ -3,9 +3,9 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System.IO;
 using VRTCore;
-using RabbitMQ;
-using RabbitMQ.Utils;
 using VRT.Core;
+using VRT.Transport.RabbitMQ;
+using VRT.Transport.RabbitMQ.Utils;
 
 namespace DataProviders
 {

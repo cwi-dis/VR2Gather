@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RabbitMQ.Utils
+namespace VRT.Transport.RabbitMQ.Utils
 {
     public class EventArgs<T> : EventArgs
     {

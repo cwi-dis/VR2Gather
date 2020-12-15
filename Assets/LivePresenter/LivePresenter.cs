@@ -3,9 +3,9 @@ using UnityEngine;
 
 using VRTCore;
 using VRTDash;
-using VRTSocketIO;
 using Orchestrator;
 using VRT.Video;
+using VRT.Transport.SocketIO;
 
 namespace VRTLivePresenter
 {

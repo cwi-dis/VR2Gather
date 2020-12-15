@@ -2,7 +2,6 @@
 
 using VRTDash;
 using Orchestrator;
-using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +9,7 @@ using VRTVoice;
 using VRTCore;
 using VRT.Core;
 using VRT.Video;
+using VRT.Transport.SocketIO;
 
 public class WebCamPipeline : BasePipeline {
     public int              width = 1280;

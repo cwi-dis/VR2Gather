@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RabbitMQ
+namespace VRT.Transport.RabbitMQ
 {
     public class RabbitMQReceiverConnectionProperties : RabbitMQConnectionProperties
     {

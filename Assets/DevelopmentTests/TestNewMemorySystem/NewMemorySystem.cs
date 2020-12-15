@@ -3,13 +3,13 @@
 //#define TEST_VOICECHAT
 
 using VRTDash;
-using VRTSocketIO;
 using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTVoice;
 using VRTCore;
+using VRT.Transport.SocketIO;
 
 public class NewMemorySystem : MonoBehaviour
 {

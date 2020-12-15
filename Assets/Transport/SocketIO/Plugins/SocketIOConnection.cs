@@ -4,7 +4,7 @@ using UnityEngine;
 
 using BestHTTP.SocketIO;
 
-namespace VRTSocketIO
+namespace VRT.Transport.SocketIO
 {
     public interface ISocketReader
     {
