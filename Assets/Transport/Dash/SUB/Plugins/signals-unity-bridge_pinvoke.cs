@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using VRTCore;
 
-namespace VRTDash
+namespace VRT.Transport.Dash
 {
     public class sub
     {

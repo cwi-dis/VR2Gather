@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using VRTCore;
 
-namespace VRTDash
+namespace VRT.Transport.Dash
 {
     public class PCSubReader : BaseSubReader
     {

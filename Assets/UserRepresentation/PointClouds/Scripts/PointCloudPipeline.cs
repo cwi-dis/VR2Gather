@@ -1,6 +1,5 @@
 ﻿#define NO_VOICE
 
-using VRTDash;
 using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using VRTVoice;
 using VRTCore;
 using VRT.Core;
 using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
 
 public class PointCloudPipeline : BasePipeline {
     BaseWorker reader;
