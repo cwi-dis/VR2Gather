@@ -8,7 +8,7 @@ using System.Threading;
 using UnityEngine;
 using VRTCore;
 
-namespace VRTVideo
+namespace VRT.Video
 {
     public class WebCamReader : BaseWorker
     {

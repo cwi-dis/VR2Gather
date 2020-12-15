@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using VRTCore;
 
-namespace VRTDash
+namespace VRT.Transport.Dash
 {
     public class bin2dash
     {

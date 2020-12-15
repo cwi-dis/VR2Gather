@@ -23,57 +23,60 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GstUnityBridgeStarter : MonoBehaviour
+namespace VRT.Transport.GUB
 {
-	[Tooltip("Enable the debug logs for GStreamer")]
-    public bool GStreamerDebugActivated = true;
-    private readonly string GStreamerDebugString = "2,dashdemux:5";
-
-    /// <summary>
-	/// Initializes the GStreamer on Awake
-	/// </summary>
-    void Awake()
+    public class GstUnityBridgeStarter : MonoBehaviour
     {
-        LoadGStreamer();
-    }
+        [Tooltip("Enable the debug logs for GStreamer")]
+        public bool GStreamerDebugActivated = true;
+        private readonly string GStreamerDebugString = "2,dashdemux:5";
 
-    /// <summary>
-    /// When Application is closed calls UnloadGStreamer method
-    /// </summary>
-    void OnApplicationQuit()
-    {
-        UnLoadGStreamer();
-    }
-
-    /// <summary>
-    /// Loads GStreamer and makes the ref for the GStreamer's Log_handler.
-    /// </summary>
-    void LoadGStreamer()
-    {
-        try
+        /// <summary>
+        /// Initializes the GStreamer on Awake
+        /// </summary>
+        void Awake()
         {
-            GStreamer.AddPluginsToPath();
-        }
-        catch
-        {
-            Debug.LogWarning("GStreamer not loaded correctly.");
+            LoadGStreamer();
         }
 
-        GStreamer.GUBUnityDebugLogPFN log_handler = null;
-        if (Application.isEditor && GStreamerDebugActivated)
+        /// <summary>
+        /// When Application is closed calls UnloadGStreamer method
+        /// </summary>
+        void OnApplicationQuit()
         {
-            log_handler = (int level, string message) => Debug.unityLogger.Log((LogType)level, "GUB", message);
+            UnLoadGStreamer();
         }
 
-        GStreamer.Ref(GStreamerDebugString.Length == 0 ? null : GStreamerDebugString, log_handler);
-    }
+        /// <summary>
+        /// Loads GStreamer and makes the ref for the GStreamer's Log_handler.
+        /// </summary>
+        void LoadGStreamer()
+        {
+            try
+            {
+                GStreamer.AddPluginsToPath();
+            }
+            catch
+            {
+                Debug.LogWarning("GStreamer not loaded correctly.");
+            }
+
+            GStreamer.GUBUnityDebugLogPFN log_handler = null;
+            if (Application.isEditor && GStreamerDebugActivated)
+            {
+                log_handler = (level, message) => Debug.unityLogger.Log((LogType)level, "GUB", message);
+            }
+
+            GStreamer.Ref(GStreamerDebugString.Length == 0 ? null : GStreamerDebugString, log_handler);
+        }
 
 
-    /// <summary>
-    /// Unload the GStreamer's Log_handler
-    /// </summary>
-    void UnLoadGStreamer()
-    {
-        GStreamer.Unref();
+        /// <summary>
+        /// Unload the GStreamer's Log_handler
+        /// </summary>
+        void UnLoadGStreamer()
+        {
+            GStreamer.Unref();
+        }
     }
 }

@@ -1,9 +1,9 @@
-﻿using RabbitMQ;
-using RabbitMQ.Utils;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using VRT.Transport.RabbitMQ;
+using VRT.Transport.RabbitMQ.Utils;
 using VRTCore;
 
 namespace Workers

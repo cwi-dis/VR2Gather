@@ -4,7 +4,7 @@ using UnityEngine;
 using FFmpeg.AutoGen;
 using VRTCore;
 
-namespace VRTVideo
+namespace VRT.Video
 {
     public unsafe class VideoFilter
     {

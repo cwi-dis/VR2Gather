@@ -2,10 +2,10 @@
 using UnityEngine;
 
 using VRTCore;
-using VRTDash;
-using VRTSocketIO;
-using VRTVideo;
 using Orchestrator;
+using VRT.Video;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
 
 namespace VRTLivePresenter
 {

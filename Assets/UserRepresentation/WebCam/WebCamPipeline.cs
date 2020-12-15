@@ -1,15 +1,15 @@
 ﻿#define NO_VOICE
 
-using VRTDash;
 using Orchestrator;
-using VRTSocketIO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRTVoice;
 using VRTCore;
-using VRTVideo;
 using VRT.Core;
+using VRT.Video;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
 
 public class WebCamPipeline : BasePipeline {
     public int              width = 1280;

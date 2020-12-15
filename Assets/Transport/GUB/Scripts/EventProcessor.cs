@@ -2,48 +2,52 @@
 using System;
 using System.Collections.Generic;
 
-/*
- * Event processor to ensure events are executed from the main thread.
- * http://stackoverflow.com/questions/22513881/unity3d-how-to-process-events-in-the-correct-thread
- */
-
-public class EventProcessor : MonoBehaviour
+namespace VRT.Transport.GUB
 {
 
-	public void QueueEvent(Action action)
-	{
-		lock (m_queueLock)
-		{
-			m_queuedEvents.Add(action);
-		}
-	}
+	/*
+	 * Event processor to ensure events are executed from the main thread.
+	 * http://stackoverflow.com/questions/22513881/unity3d-how-to-process-events-in-the-correct-thread
+	 */
 
-	void Update()
+	public class EventProcessor : MonoBehaviour
 	{
-		MoveQueuedEventsToExecuting();
 
-		while (m_executingEvents.Count > 0)
+		public void QueueEvent(Action action)
 		{
-			Action e = m_executingEvents[0];
-			m_executingEvents.RemoveAt(0);
-			e();
-		}
-	}
-
-	private void MoveQueuedEventsToExecuting()
-	{
-		lock (m_queueLock)
-		{
-			while (m_queuedEvents.Count > 0)
+			lock (m_queueLock)
 			{
-				Action e = m_queuedEvents[0];
-				m_executingEvents.Add(e);
-				m_queuedEvents.RemoveAt(0);
+				m_queuedEvents.Add(action);
 			}
 		}
-	}
 
-	private object m_queueLock = new object();
-	private List<Action> m_queuedEvents = new List<Action>();
-	private List<Action> m_executingEvents = new List<Action>();
+		void Update()
+		{
+			MoveQueuedEventsToExecuting();
+
+			while (m_executingEvents.Count > 0)
+			{
+				Action e = m_executingEvents[0];
+				m_executingEvents.RemoveAt(0);
+				e();
+			}
+		}
+
+		private void MoveQueuedEventsToExecuting()
+		{
+			lock (m_queueLock)
+			{
+				while (m_queuedEvents.Count > 0)
+				{
+					Action e = m_queuedEvents[0];
+					m_executingEvents.Add(e);
+					m_queuedEvents.RemoveAt(0);
+				}
+			}
+		}
+
+		private object m_queueLock = new object();
+		private List<Action> m_queuedEvents = new List<Action>();
+		private List<Action> m_executingEvents = new List<Action>();
+	}
 }

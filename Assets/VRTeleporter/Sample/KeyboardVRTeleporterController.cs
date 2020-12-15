@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
-
+using VRT.Teleporter;
 
 public class KeyboardVRTeleporterController : MonoBehaviour
 {

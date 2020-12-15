@@ -1,5 +1,5 @@
-﻿using RabbitMQ.Utils;
-using System;
+﻿using System;
+using VRT.Transport.RabbitMQ.Utils;
 
 namespace DataProviders
 {

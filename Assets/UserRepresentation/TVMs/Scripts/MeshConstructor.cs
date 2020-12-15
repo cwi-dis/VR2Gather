@@ -3,8 +3,8 @@ using DataProviders;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System;
-using RabbitMQ.Utils;
 using Orchestrator;
+using VRT.Transport.RabbitMQ.Utils;
 
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]

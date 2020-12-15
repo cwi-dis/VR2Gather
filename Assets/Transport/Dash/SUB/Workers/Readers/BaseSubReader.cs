@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRTCore;
 
-namespace VRTDash
+namespace VRT.Transport.Dash
 {
     public class BaseReader : BaseWorker
     {

@@ -5,9 +5,9 @@ using System.Threading;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.MessagePatterns;
-using RabbitMQ.Utils;
+using VRT.Transport.RabbitMQ.Utils;
 
-namespace RabbitMQ
+namespace VRT.Transport.RabbitMQ
 {
     public class RabbitMQReceiver
     {

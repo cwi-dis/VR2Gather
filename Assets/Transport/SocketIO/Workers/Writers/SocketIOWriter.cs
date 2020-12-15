@@ -1,12 +1,12 @@
-﻿using VRTDash;
-using Orchestrator;
+﻿using Orchestrator;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using VRTCore;
+using VRT.Transport.Dash;
 
-namespace VRTSocketIO
+namespace VRT.Transport.SocketIO
 {
     public class SocketIOWriter : BaseWriter
     {

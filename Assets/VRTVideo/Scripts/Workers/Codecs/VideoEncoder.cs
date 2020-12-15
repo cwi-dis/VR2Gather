@@ -7,7 +7,7 @@ using FFmpeg.AutoGen;
 using System;
 using VRTCore;
 
-namespace VRTVideo
+namespace VRT.Video
 {
     public unsafe class VideoEncoder : BaseWorker
     {
