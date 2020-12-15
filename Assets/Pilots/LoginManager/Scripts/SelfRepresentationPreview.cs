@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using VRTCore;
-using VRTVoice;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.WebCam;
+using VRT.UserRepresentation.Voice;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

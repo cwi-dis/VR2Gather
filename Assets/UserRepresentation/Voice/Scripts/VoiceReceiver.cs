@@ -6,7 +6,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTVoice
+namespace VRT.UserRepresentation.Voice
 {
     public class VoiceReceiver : MonoBehaviour
     {
@@ -32,13 +32,16 @@ namespace VRTVoice
 
             preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
-			if (UseDash) {
-				decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 32, true);
-				reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
-			} else {
-				decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
-				reader = new SocketIOReader(user, _streamName, decoderQueue);
-			}
+            if (UseDash)
+            {
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 32, true);
+                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+            }
+            else
+            {
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+                reader = new SocketIOReader(user, _streamName, decoderQueue);
+            }
 
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);

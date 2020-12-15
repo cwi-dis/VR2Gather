@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using VRTCore;
 
-namespace VRTVoice
+namespace VRT.UserRepresentation.Voice
 {
     public class VoiceEncoder : BaseWorker
     {
@@ -39,10 +39,11 @@ namespace VRTVoice
         protected override void Update()
         {
             base.Update();
-            if (!inQueue.IsClosed()) {
+            if (!inQueue.IsClosed())
+            {
                 FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
                 if (mcIn == null) return;
-                if (sendBuffer == null) sendBuffer = new byte[(int)(mcIn.length)];
+                if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
 #if USE_SPEEX
                 int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
                 NativeMemoryChunk mcOut = new NativeMemoryChunk(len);

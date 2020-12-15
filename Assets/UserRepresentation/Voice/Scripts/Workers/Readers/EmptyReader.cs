@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace VRTVoice
+namespace VRT.UserRepresentation.Voice
 {
     public class EmptyReader : BaseWorker
     {

@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTVoice;
+using VRT.UserRepresentation.Voice;
 using VRTCore;
 using VRT.Core;
 using VRT.Transport.SocketIO;
