@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using VRTCore;
 // TODO(FPA): Fix new Queue mode.
-namespace VRTVideo
+namespace VRT.Video
 {
     public class VideoFrame
     {

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using VRTCore;
 
-namespace VRTVideo
+namespace VRT.Video
 {
     public class VideoPreparer : BaseWorker
     {
