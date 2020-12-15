@@ -4,10 +4,11 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
+#endif
+
 
 namespace VRTPilots
 {
-#endif
 
 	public class NetworkIdBehaviour : MonoBehaviour
 	{
