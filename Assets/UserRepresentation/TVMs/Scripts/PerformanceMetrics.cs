@@ -6,7 +6,7 @@ using System;
 using System.Text;
 using VRTCore;
 using System.Net.Http;
-using Orchestrator;
+using VRT.Orchestrator.Wrapping;
 
 public class PerformanceMetrics : MonoBehaviour
 {
@@ -52,7 +52,7 @@ public class PerformanceMetrics : MonoBehaviour
         OrchestratorController.Instance.GetUserInfo(connectedUserIds[userNum]);
     }
 
-    private void OnGetUserInfoHandler(Orchestrator.User user)
+    private void OnGetUserInfoHandler(User user)
     {
         if (!String.IsNullOrEmpty(user.userData.userIP) && !connectionNames.Contains(user.userData.userIP))
             connectionNames.Add(user.userData.userIP);

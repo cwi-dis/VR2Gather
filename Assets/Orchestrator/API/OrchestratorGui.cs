@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VRT.Orchestrator.Wrapping;
 using VRTCore;
 
-namespace Orchestrator
+namespace VRT.Orchestrator
 {
     public delegate void FunctionToCallOnSendCommandButton();
 

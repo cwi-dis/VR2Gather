@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Orchestrator
+namespace VRT.Orchestrator
 {
     public class MonitoringTool : MonoBehaviour
     {

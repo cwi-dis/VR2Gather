@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Orchestrator;
 using VRTPilots;
 using VRTCore;
+using VRT.Orchestrator.Wrapping;
 
 public class OrchestratorPilot0 : MonoBehaviour {
     public static OrchestratorPilot0 Instance { get; private set; }

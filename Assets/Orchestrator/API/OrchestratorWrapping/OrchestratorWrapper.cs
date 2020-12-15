@@ -8,9 +8,9 @@ using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using System.Text;
-using Orchestrator.WSManagement;
+using VRT.Orchestrator.WSManagement;
 
-namespace Orchestrator
+namespace VRT.Orchestrator.Wrapping
 {
     // class that describes the status for the response from the orchestrator
     public class ResponseStatus

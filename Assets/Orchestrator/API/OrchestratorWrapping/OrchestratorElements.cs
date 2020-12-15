@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VRTCore;
 
-namespace Orchestrator
+namespace VRT.Orchestrator.Wrapping
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement

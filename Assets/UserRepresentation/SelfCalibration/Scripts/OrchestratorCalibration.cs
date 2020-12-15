@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using VRTCore;
-using Orchestrator;
+using VRT.Orchestrator.Wrapping;
 
 public class OrchestratorCalibration : MonoBehaviour {
 
