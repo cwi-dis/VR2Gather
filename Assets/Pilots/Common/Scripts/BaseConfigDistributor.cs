@@ -4,7 +4,7 @@ using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
-    public class BaseConfigDistributor : MonoBehaviour
+    abstract public class BaseConfigDistributor : MonoBehaviour
     {
         // Note there is an AddTypeIdMapping(420, typeof(TilingConfigDistributor.TilingConfigMessage))
         // in MessageForwarder that is part of the magic to make this work.
@@ -14,15 +14,8 @@ namespace VRT.Pilots.Common
         }
         protected string selfUserId;
 
-        public BaseConfigDistributor Init(string _selfUserId)
-        {
-            selfUserId = _selfUserId;
-            return this;
-        }
+        abstract public BaseConfigDistributor Init(string _selfUserId);
 
-        public void RegisterPipeline(string userId, BasePipeline pipeline)
-        {
-            Debug.LogError("Programmer error: BaseConfigDistributor: RegisterPipeline not overridden");
-        }
+        abstract public void RegisterPipeline(string userId, BasePipeline pipeline);
     }
 }
