@@ -6,7 +6,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTVoice
+namespace VRT.UserRepresentation.Voice
 {
     public class VoiceSender : MonoBehaviour
     {

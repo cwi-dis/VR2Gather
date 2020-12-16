@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 
 	/// <summary>

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 	public class PlayerLocation : NetworkIdBehaviour
 	{

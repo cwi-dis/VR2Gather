@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using VRTPilots;
+using VRT.Pilots.Common;
 
 [CustomPropertyDrawer(typeof(DisableEditingAttribute))]
 public class DisableEditingAttributeDrawer : PropertyDrawer

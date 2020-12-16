@@ -7,7 +7,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTLivePresenter
+namespace VRT.LivePresenter
 {
     public class LivePresenter : MonoBehaviour
     {

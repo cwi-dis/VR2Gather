@@ -1,4 +1,4 @@
-﻿namespace VRTLivePresenter
+﻿namespace VRT.LivePresenter
 {
     public class MessageType
     {

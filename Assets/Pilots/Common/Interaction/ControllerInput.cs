@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 	public class ControllerInput : MonoBehaviour
 	{

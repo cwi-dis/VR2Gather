@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using VRT.Core;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
     public class BaseConfigDistributor : MonoBehaviour
     {

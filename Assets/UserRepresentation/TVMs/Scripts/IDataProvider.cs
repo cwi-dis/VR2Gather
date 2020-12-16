@@ -1,9 +1,10 @@
 ﻿using System;
 using VRT.Transport.RabbitMQ.Utils;
 
-namespace DataProviders
+namespace VRT.UserRepresentation.TVM.DataProviders
 {
-    public interface IDataProvider {
+    public interface IDataProvider
+    {
         event EventHandler<EventArgs<byte[]>> OnNewData;
     }
 }

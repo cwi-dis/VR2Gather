@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace VRT.UserRepresentation.PointCloud
 {
-    public class MeshPreparer : BaseWorker {
+    public class MeshPreparer : BaseWorker
+    {
         bool isReady = false;
         Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
         System.IntPtr currentBuffer;
@@ -17,7 +18,8 @@ namespace Workers
         float cellSizeFactor;
         QueueThreadSafe InQueue;
 
-        public MeshPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End) {
+        public MeshPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
+        {
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.008f;
             cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 0.71f;
             if (_InQueue == null)
@@ -29,19 +31,22 @@ namespace Workers
             Start();
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             base.OnStop();
             if (InQueue != null && !InQueue.IsClosed()) InQueue.Close();
             if (vertexArray.Length != 0) vertexArray.Dispose();
         }
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)] // Also tried with Pack=1
-        public struct PointCouldVertex {
+        public struct PointCouldVertex
+        {
             public Vector3 vertex;
             public Color32 color;
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
             lock (this)
             {
@@ -51,7 +56,8 @@ namespace Workers
                 if (InQueue.IsClosed()) return; // Weare shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null) return;
-                unsafe {
+                unsafe
+                {
                     int bufferSize = pc.get_uncompressed_size();
                     currentTimestamp = pc.timestamp();
                     currentCellSize = pc.cellsize();
@@ -59,14 +65,16 @@ namespace Workers
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                     int size = bufferSize / PointCouldVertexSize;
                     int dampedSize = (int)(size * Config.Instance.memoryDamping);
-                    if (vertexArray.Length < dampedSize) {
+                    if (vertexArray.Length < dampedSize)
+                    {
                         vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(dampedSize, Unity.Collections.Allocator.Persistent);
                         currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
                     }
                     int ret = pc.copy_uncompressed(currentBuffer, bufferSize);
                     pc.free();
                     // Check that sizes make sense. Note that copy_uncompressed returns the number of points
-                    if (ret != size) {
+                    if (ret != size)
+                    {
                         Debug.Log($"MeshPreparer: decoding problem: copy_uncompressed() size={ret}, get_uncompressed_size()={bufferSize}, vertexSize={size}");
                         Debug.LogError("Programmer error while rendering a participant.");
                     }
@@ -74,7 +82,8 @@ namespace Workers
                     points = new Vector3[size];
                     indices = new int[size];
                     colors = new Color32[size];
-                    for (int i = 0; i < size; i++) {
+                    for (int i = 0; i < size; i++)
+                    {
                         points[i] = vertexArray[i].vertex;
                         indices[i] = i;
                         colors[i] = vertexArray[i].color;
@@ -84,9 +93,12 @@ namespace Workers
             }
         }
 
-        public bool GetMesh(ref Mesh mesh) {
-            lock (this) {
-                if (isReady) {
+        public bool GetMesh(ref Mesh mesh)
+        {
+            lock (this)
+            {
+                if (isReady)
+                {
                     mesh.Clear();
                     mesh.vertices = points;
                     mesh.colors32 = colors;
@@ -99,7 +111,8 @@ namespace Workers
             return false;
         }
 
-        public float GetPointSize() {
+        public float GetPointSize()
+        {
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
             else return defaultCellSize * cellSizeFactor;
         }

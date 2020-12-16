@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    [RequireComponent(typeof(Rigidbody))]
+	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(NetworkTransformSyncBehaviour))]
 	public class RigidBodyController : MonoBehaviour
 	{

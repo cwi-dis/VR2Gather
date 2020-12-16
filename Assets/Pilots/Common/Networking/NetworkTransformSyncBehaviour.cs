@@ -1,9 +1,9 @@
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    public class NetworkTransformSyncBehaviour : NetworkIdBehaviour
+	public class NetworkTransformSyncBehaviour : NetworkIdBehaviour
 	{
 		public class NetworkTransformSyncData : BaseMessage
 		{

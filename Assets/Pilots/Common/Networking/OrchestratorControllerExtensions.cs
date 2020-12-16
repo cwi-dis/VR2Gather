@@ -2,13 +2,13 @@
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 
-    /// <summary>
-    /// A typed message
-    /// </summary>
-    public class TypedMessage
+	/// <summary>
+	/// A typed message
+	/// </summary>
+	public class TypedMessage
 	{
 		/// <summary>
 		/// Integer type Id for the type, registered in the MessageForwarderManager

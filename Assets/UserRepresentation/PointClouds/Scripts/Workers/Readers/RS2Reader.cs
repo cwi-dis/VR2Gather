@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRTCore;
 
-namespace Workers
+namespace VRT.UserRepresentation.PointCloud
 {
-    public class RS2Reader : TiledWorker {
+    public class RS2Reader : TiledWorker
+    {
         cwipc.source reader;
         float voxelSize;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -82,7 +83,7 @@ namespace Workers
             if (origTileInfo == null || origTileInfo.Length <= 1) return null;
             int nTile = origTileInfo.Length;
             TileInfo[] rv = new TileInfo[nTile];
-            for (int i=0; i<nTile; i++)
+            for (int i = 0; i < nTile; i++)
             {
                 rv[i].normal = new Vector3((float)origTileInfo[i].normal.x, (float)origTileInfo[i].normal.y, (float)origTileInfo[i].normal.z);
                 rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
@@ -98,7 +99,8 @@ namespace Workers
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             base.OnStop();
             reader?.free();
             reader = null;
@@ -107,7 +109,8 @@ namespace Workers
             Debug.Log($"{Name()}: Stopped.");
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
             //
             // Limit framerate, if required
@@ -126,12 +129,14 @@ namespace Workers
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
-            if (voxelSize != 0) {
+            if (voxelSize != 0)
+            {
                 var newPc = cwipc.downsample(pc, voxelSize);
                 if (newPc == null)
                 {
                     Debug.LogWarning($"{Name()}: Voxelating pointcloud with {voxelSize} got rid of all points?");
-                } else
+                }
+                else
                 {
                     pc.free();
                     pc = newPc;
@@ -174,7 +179,7 @@ namespace Workers
         double statsDrops = 0;
         const int statsInterval = 10;
 
-        public void statsUpdate(int pointCount, bool dropped=false)
+        public void statsUpdate(int pointCount, bool dropped = false)
         {
             if (statsLastTime == null)
             {
@@ -185,8 +190,8 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds==0?1: statsTotalPointclouds))}, drops_per_second={statsDrops / statsInterval}");
-                if (statsDrops > 3*statsInterval)
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drops_per_second={statsDrops / statsInterval}");
+                if (statsDrops > 3 * statsInterval)
                 {
                     Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
                 }

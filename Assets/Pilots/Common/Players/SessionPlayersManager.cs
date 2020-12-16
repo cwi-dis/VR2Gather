@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
-using VRTVoice;
 using VRTCore;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.Voice;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 
-    /// <summary>
-    /// Spawns the player prefab for players in a session, and if we're the 
-    /// Master, it assigns them to an available location when AutoSpawnOnLocation is true
-    /// </summary>
-    public class SessionPlayersManager : MonoBehaviour
+	/// <summary>
+	/// Spawns the player prefab for players in a session, and if we're the 
+	/// Master, it assigns them to an available location when AutoSpawnOnLocation is true
+	/// </summary>
+	public class SessionPlayersManager : MonoBehaviour
 	{
 		/// <summary>
 		/// Empty request message to ask the Master to inform us about the player locations
@@ -203,7 +203,7 @@ namespace VRTPilots
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
-						wcPipeline?.Init(user, userCfg); 
+						wcPipeline?.Init(user, userCfg);
 						break;
 					case UserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
@@ -222,7 +222,7 @@ namespace VRTPilots
 						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
 						break;
 					case UserRepresentationType.__TVM__: // TVM
-						// xxxjack we should *really* create a dummy TVMPipeline object for this...
+														 // xxxjack we should *really* create a dummy TVMPipeline object for this...
 						if (isLocalPlayer)
 						{
 							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
@@ -233,7 +233,7 @@ namespace VRTPilots
 						{
 							tvm.HookUp(firstTVM, user.userData.userMQurl, user.userData.userMQexchangeName);
 							firstTVM = false;
-							
+
 						}
 						break;
 					default:

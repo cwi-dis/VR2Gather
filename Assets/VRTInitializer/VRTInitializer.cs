@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.UserRepresentation.PointCloud;
+using VRT.UserRepresentation.WebCam;
 
 public class VRTInitializer : MonoBehaviour
 {

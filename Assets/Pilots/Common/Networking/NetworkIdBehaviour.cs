@@ -7,7 +7,7 @@ using UnityEditor.SceneManagement;
 #endif
 
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
 
 	public class NetworkIdBehaviour : MonoBehaviour
