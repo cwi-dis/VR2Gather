@@ -22,16 +22,16 @@ namespace VRT.UserRepresentation.PointCloud
         public void Awake()
         {
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
-
         }
-        new public TilingConfigDistributor Init(string _selfUserId)
+        public override BaseConfigDistributor Init(string _selfUserId)
         {
             selfUserId = _selfUserId;
             return this;
         }
 
-        new public void RegisterPipeline(string userId, BasePipeline pipeline)
+        public override void RegisterPipeline(string userId, BasePipeline pipeline)
         {
+
             if (pipelines.ContainsKey(userId))
             {
                 Debug.LogError($"Programmer error: TilingConfigDistributor: registering duplicate userId {userId}");
