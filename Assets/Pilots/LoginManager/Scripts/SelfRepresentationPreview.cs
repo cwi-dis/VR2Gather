@@ -7,6 +7,7 @@ using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
+using VRT.UserRepresentation.PointCloud;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }
@@ -52,7 +53,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         player.webcam.SetActive(false);
         if (player.pc.TryGetComponent(out PointCloudPipeline pointcloud))
             Destroy(pointcloud);
-        if (player.pc.TryGetComponent(out Workers.PointBufferRenderer renderer))
+        if (player.pc.TryGetComponent(out PointBufferRenderer renderer))
             Destroy(renderer);
         player.pc.SetActive(false);
         DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)player.tvm;

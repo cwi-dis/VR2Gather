@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.PointCloud;
 using VRTCore;
 
 namespace VRT.MCU

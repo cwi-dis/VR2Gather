@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Workers;
 
 public class Calibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }

@@ -10,6 +10,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
+using VRT.UserRepresentation.PointCloud;
 
 public class NewMemorySystem : MonoBehaviour
 {
@@ -77,37 +78,37 @@ public class NewMemorySystem : MonoBehaviour
 
         Config config = Config.Instance;
         if (forceMesh) {
-            preparer = new Workers.MeshPreparer(preparerQueue);
-            render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            ((Workers.PointMeshRenderer)render).SetPreparer((Workers.MeshPreparer)preparer);
+            preparer = new MeshPreparer(preparerQueue);
+            render = gameObject.AddComponent<PointMeshRenderer>();
+            ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);
         } else {
-            preparer = new Workers.BufferPreparer(preparerQueue);
-            render = gameObject.AddComponent<Workers.PointBufferRenderer>();
-            ((Workers.PointBufferRenderer)render).SetPreparer((Workers.BufferPreparer)preparer);
+            preparer = new BufferPreparer(preparerQueue);
+            render = gameObject.AddComponent<PointBufferRenderer>();
+            ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
         }
         
         if (localPCs) {
             if (!useCompression)
-                reader = new Workers.RS2Reader(20f, 1000, preparerQueue);
+                reader = new RS2Reader(20f, 1000, preparerQueue);
             else {
-                reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                reader = new RS2Reader(20f, 1000, encoderQueue);
+                PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
                 encStreams[0].octreeBits = 10;
                 encStreams[0].tileNumber = 0;
                 encStreams[0].outQueue = writerQueue;
-                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                decoder = new Workers.PCDecoder[decoders];
+                encoder = new PCEncoder(encoderQueue, encStreams);
+                decoder = new PCDecoder[decoders];
                 for (int i = 0; i < decoders; ++i)
-                    decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
+                    decoder[i] = new PCDecoder(writerQueue, preparerQueue);
             }
         } else {
             if (!useRemoteStream) {
-                reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                reader = new RS2Reader(20f, 1000, encoderQueue);
+                PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
                 encStreams[0].octreeBits = 10;
                 encStreams[0].tileNumber = 0;
                 encStreams[0].outQueue = writerQueue;
-                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
+                encoder = new PCEncoder(encoderQueue, encStreams);
                 string uuid = System.Guid.NewGuid().ToString();
                 URL = $"{remoteURL}/{uuid}/pcc/";
                 pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
@@ -118,9 +119,9 @@ public class NewMemorySystem : MonoBehaviour
             if (!useSocketIO)
                 pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
 
-            decoder = new Workers.PCDecoder[decoders];
+            decoder = new PCDecoder[decoders];
             for (int i = 0; i < decoders; ++i)
-                decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
+                decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
         }
         
 
