@@ -2,9 +2,9 @@
 using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    public class GrabbableObjectManager : MonoBehaviour
+	public class GrabbableObjectManager : MonoBehaviour
 	{
 		private Dictionary<string, Grabbable> _GrabbableObjects = new Dictionary<string, Grabbable>();
 

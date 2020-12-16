@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEngine.XR;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    public class HandController : MonoBehaviour
+	public class HandController : MonoBehaviour
 	{
 		public class HandControllerData : BaseMessage
 		{

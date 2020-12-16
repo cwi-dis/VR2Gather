@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using VRTPilots;
+using VRT.Pilots.Common;
 
 [CustomPropertyDrawer(typeof(NetworkIdAttribute))]
 public class NetworkIdAttributeDrawer : PropertyDrawer

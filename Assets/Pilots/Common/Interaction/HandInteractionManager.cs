@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    [RequireComponent(typeof(HandController))]
+	[RequireComponent(typeof(HandController))]
 	public class HandInteractionManager : MonoBehaviour
 	{
 		public enum HandInteractionEventType

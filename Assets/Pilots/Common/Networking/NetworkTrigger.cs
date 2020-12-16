@@ -2,9 +2,9 @@
 using UnityEngine.Events;
 using VRT.Orchestrator.Wrapping;
 
-namespace VRTPilots
+namespace VRT.Pilots.Common
 {
-    public class NetworkTrigger : NetworkIdBehaviour
+	public class NetworkTrigger : NetworkIdBehaviour
 	{
 		public class NetworkTriggerData : BaseMessage
 		{

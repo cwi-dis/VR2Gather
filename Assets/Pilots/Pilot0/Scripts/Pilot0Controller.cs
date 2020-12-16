@@ -1,5 +1,5 @@
-﻿using VRTPilots;
-using UnityEngine;
+﻿using UnityEngine;
+using VRT.Pilots.Common;
 
 public class Pilot0Controller : PilotController {
     public static Pilot0Controller Instance { get; private set; }
