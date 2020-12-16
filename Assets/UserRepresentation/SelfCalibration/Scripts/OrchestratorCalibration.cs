@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using VRTCore;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.PointCloud;
+using VRT.UserRepresentation.TVM.DataProviders;
 
 public class OrchestratorCalibration : MonoBehaviour {
 
@@ -34,7 +35,7 @@ public class OrchestratorCalibration : MonoBehaviour {
         InitialiseControllerEvents();
 
         if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserRepresentationType.__TVM__) {
-            DataProviders.NetworkDataProvider tvm = (DataProviders.NetworkDataProvider)player.tvm;
+            NetworkDataProvider tvm = (NetworkDataProvider)player.tvm;
             tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
             tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
             tvm.gameObject.SetActive(true);

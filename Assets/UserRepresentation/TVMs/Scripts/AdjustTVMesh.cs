@@ -2,112 +2,115 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AdjustTVMesh : MonoBehaviour
+namespace VRT.UserRepresentation.TVM
 {
-    private bool _calibEnabled = false;
-    private float _rotationStep = 5f, _rotationSlightStep = 1f;
-
-
-    public float TranslationStep;
-
-    public bool CalibEnabled
+    public class AdjustTVMesh : MonoBehaviour
     {
-        get
+        private bool _calibEnabled = false;
+        private float _rotationStep = 5f, _rotationSlightStep = 1f;
+
+
+        public float TranslationStep;
+
+        public bool CalibEnabled
         {
-            return _calibEnabled;
-        }
-
-        set
-        {
-            _calibEnabled = value;
-        }
-    }
-
-    // Use this for initialization
-    void Start()
-    {
-        this.transform.position = new Vector3(
-                            PlayerPrefs.GetFloat("x_pos"),
-                            PlayerPrefs.GetFloat("y_pos"),
-                            PlayerPrefs.GetFloat("z_pos")
-                            );
-
-        this.transform.rotation = Quaternion.Euler(
-                            PlayerPrefs.GetFloat("x"),
-                            PlayerPrefs.GetFloat("y"),
-                            PlayerPrefs.GetFloat("z")
-                            );
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad0))
-        {
-            _calibEnabled = !_calibEnabled;
-
-            if (!_calibEnabled)
+            get
             {
-                var pos = this.transform.position;
+                return _calibEnabled;
+            }
 
-                PlayerPrefs.SetFloat("x_pos", pos.x);
-                PlayerPrefs.SetFloat("y_pos", pos.y);
-                PlayerPrefs.SetFloat("z_pos", pos.z);
-
-                var rot = this.transform.rotation.eulerAngles;
-
-                PlayerPrefs.SetFloat("x", rot.x);
-                PlayerPrefs.SetFloat("y", rot.y);
-                PlayerPrefs.SetFloat("z", rot.z);
+            set
+            {
+                _calibEnabled = value;
             }
         }
 
-
-        if (_calibEnabled)
+        // Use this for initialization
+        void Start()
         {
-            if (Input.GetKeyDown(KeyCode.Keypad4))
-            {
-                this.transform.Rotate(Vector3.up, -_rotationStep);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad6))
-            {
-                this.transform.Rotate(Vector3.up, _rotationStep);
+            transform.position = new Vector3(
+                                PlayerPrefs.GetFloat("x_pos"),
+                                PlayerPrefs.GetFloat("y_pos"),
+                                PlayerPrefs.GetFloat("z_pos")
+                                );
 
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                this.transform.Rotate(Vector3.up, -_rotationSlightStep);
-            }
-            else if (Input.GetKeyDown(KeyCode.Keypad3))
-            {
-                this.transform.Rotate(Vector3.up, _rotationSlightStep);
+            transform.rotation = Quaternion.Euler(
+                                PlayerPrefs.GetFloat("x"),
+                                PlayerPrefs.GetFloat("y"),
+                                PlayerPrefs.GetFloat("z")
+                                );
+        }
 
+        // Update is called once per frame
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Keypad0))
+            {
+                _calibEnabled = !_calibEnabled;
+
+                if (!_calibEnabled)
+                {
+                    var pos = transform.position;
+
+                    PlayerPrefs.SetFloat("x_pos", pos.x);
+                    PlayerPrefs.SetFloat("y_pos", pos.y);
+                    PlayerPrefs.SetFloat("z_pos", pos.z);
+
+                    var rot = transform.rotation.eulerAngles;
+
+                    PlayerPrefs.SetFloat("x", rot.x);
+                    PlayerPrefs.SetFloat("y", rot.y);
+                    PlayerPrefs.SetFloat("z", rot.z);
+                }
             }
 
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                this.transform.Translate(new Vector3(0, 0, TranslationStep));
-            }
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                this.transform.Translate(new Vector3(0, 0, -TranslationStep));
 
-            }
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            if (_calibEnabled)
             {
-                this.transform.Translate(new Vector3(-TranslationStep, 0, 0));
-            }
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                this.transform.Translate(new Vector3(TranslationStep, 0, 0));
-            }
-            else if (Input.GetKeyDown(KeyCode.KeypadMinus))
-            {
-                this.transform.Translate(new Vector3(0, TranslationStep, 0));
-            }
-            else if (Input.GetKeyDown(KeyCode.KeypadPlus))
-            {
-                this.transform.Translate(new Vector3(0, -TranslationStep, 0));
+                if (Input.GetKeyDown(KeyCode.Keypad4))
+                {
+                    transform.Rotate(Vector3.up, -_rotationStep);
+                }
+                else if (Input.GetKeyDown(KeyCode.Keypad6))
+                {
+                    transform.Rotate(Vector3.up, _rotationStep);
+
+                }
+                else if (Input.GetKeyDown(KeyCode.Keypad1))
+                {
+                    transform.Rotate(Vector3.up, -_rotationSlightStep);
+                }
+                else if (Input.GetKeyDown(KeyCode.Keypad3))
+                {
+                    transform.Rotate(Vector3.up, _rotationSlightStep);
+
+                }
+
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    transform.Translate(new Vector3(0, 0, TranslationStep));
+                }
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    transform.Translate(new Vector3(0, 0, -TranslationStep));
+
+                }
+                else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                {
+                    transform.Translate(new Vector3(-TranslationStep, 0, 0));
+                }
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                {
+                    transform.Translate(new Vector3(TranslationStep, 0, 0));
+                }
+                else if (Input.GetKeyDown(KeyCode.KeypadMinus))
+                {
+                    transform.Translate(new Vector3(0, TranslationStep, 0));
+                }
+                else if (Input.GetKeyDown(KeyCode.KeypadPlus))
+                {
+                    transform.Translate(new Vector3(0, -TranslationStep, 0));
+                }
             }
         }
     }

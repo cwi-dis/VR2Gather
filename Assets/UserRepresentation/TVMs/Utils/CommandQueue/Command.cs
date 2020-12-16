@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public class Command : IDisposable
     {
@@ -19,9 +19,9 @@ namespace Utils
         private object m_ReturnValue;
 
         public Command(Delegate del, params object[] args)
-        {           
+        {
             m_Delegate = del;
-            m_Arguments = args;            
+            m_Arguments = args;
         }
 
         public Command(bool autoDisposeOnExecute, Delegate del, params object[] args)
@@ -100,7 +100,7 @@ namespace Utils
             {
                 m_WaitHandle.Close();
             }
-            catch(Exception)
+            catch (Exception)
             {
 
             }
