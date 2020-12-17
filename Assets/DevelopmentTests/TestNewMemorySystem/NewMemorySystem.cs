@@ -14,6 +14,7 @@ public class NewMemorySystem : MonoBehaviour
     public bool localPCs = false;
     public bool useCompression = true;
     public bool useVoice = false;
+    public bool usePointClouds = false;
     public bool useSocketIO = true;
 
     public NetController orchestrator;
@@ -63,7 +64,6 @@ public class NewMemorySystem : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
-
                 pointcloudsReader = new Workers.SocketIOReader(user, remoteStream, tiles);
                 pointcloudsWriter = new Workers.SocketIOWriter(user, remoteStream, streams);
 
@@ -80,42 +80,43 @@ public class NewMemorySystem : MonoBehaviour
             render = gameObject.AddComponent<Workers.PointBufferRenderer>();
             ((Workers.PointBufferRenderer)render).SetPreparer((Workers.BufferPreparer)preparer);
         }
-        
-        if (localPCs) {
-            if (!useCompression)
-                reader = new Workers.RS2Reader(20f, 1000, preparerQueue);
-            else {
-                reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
-                encStreams[0].octreeBits = 10;
-                encStreams[0].tileNumber = 0;
-                encStreams[0].outQueue = writerQueue;
-                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
+
+        if (usePointClouds) {
+            if (localPCs) {
+                if (!useCompression)
+                    reader = new Workers.RS2Reader(20f, 1000, preparerQueue);
+                else {
+                    reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
+                    Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                    encStreams[0].octreeBits = 10;
+                    encStreams[0].tileNumber = 0;
+                    encStreams[0].outQueue = writerQueue;
+                    encoder = new Workers.PCEncoder(encoderQueue, encStreams);
+                    decoder = new Workers.PCDecoder[decoders];
+                    for (int i = 0; i < decoders; ++i)
+                        decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
+                }
+            } else {
+                if (!useRemoteStream) {
+                    reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
+                    Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
+                    encStreams[0].octreeBits = 10;
+                    encStreams[0].tileNumber = 0;
+                    encStreams[0].outQueue = writerQueue;
+                    encoder = new Workers.PCEncoder(encoderQueue, encStreams);
+                    string uuid = System.Guid.NewGuid().ToString();
+                    URL = $"{remoteURL}/{uuid}/pcc/";
+                    pointcloudsWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+                } else
+                    URL = remoteURL;
+
+                if (!useSocketIO)
+                    pointcloudsReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
+
                 decoder = new Workers.PCDecoder[decoders];
                 for (int i = 0; i < decoders; ++i)
-                    decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
+                    decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
             }
-        } else {
-            if (!useRemoteStream) {
-                reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
-                encStreams[0].octreeBits = 10;
-                encStreams[0].tileNumber = 0;
-                encStreams[0].outQueue = writerQueue;
-                encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                string uuid = System.Guid.NewGuid().ToString();
-                URL = $"{remoteURL}/{uuid}/pcc/";
-                pointcloudsWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
-            } 
-            else
-                URL = remoteURL;
-
-            if (!useSocketIO)
-                pointcloudsReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
-
-            decoder = new Workers.PCDecoder[decoders];
-            for (int i = 0; i < decoders; ++i)
-                decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
         }
         
 
