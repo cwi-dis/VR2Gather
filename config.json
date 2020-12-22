@@ -10,7 +10,7 @@
     "memoryDamping": 1.2999999523162842,
     "useAudio": true,
     "nonHMDHeight": 1.5,
-	"pilot3NavigationLogs": true,
+	"pilot3NavigationLogs": false,
     "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -27,7 +27,7 @@
             "z": 0.0
         }
     },
-    "offsetRotation": {
+	    "offsetRotation": {
       "x": 0.0,
       "y": 87.00109100341797,
       "z": 0.0
@@ -70,14 +70,18 @@
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.xml"
       },
-      "SynthReaderConfig": {
+	    "SynthReaderConfig": {
         "nPoints": 8000
       },
-      "ProxyReaderConfig": {
-        "localIP": "",
-        "port": 9335
-      },
-      "CerthReaderConfig": {
+	  "ProxyReaderConfig" : {
+				"localIP" : "",
+				"port" : 9335
+		},
+		"PrerecordedReaderConfig" : {
+				"folder" : "../H4_C2_R4",
+				"ply" : false
+			},
+            "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
         "PCLExchangeName": "VolumetricData",
         "MetaExchangeName": "VolumetricMetaData",
@@ -86,53 +90,10 @@
           "y": -0.82,
           "z": 0
         },
-<<<<<<< HEAD
-        "PCSelfConfig": {
-            "RS2ReaderConfig": {
-                "configFilename": "./cameraconfig.xml"
-            },
-			"SynthReaderConfig" : {
-				"nPoints" : 8000
-			},
-			"PrerecordedReaderConfig" : {
-				"folder" : "../lootDump70K",
-				"ply" : false
-			},
-			"ProxyReaderConfig" : {
-				"localIP" : "",
-				"port" : 9335
-			},
-            "CerthReaderConfig": {
-                "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
-                "PCLExchangeName": "VolumetricData",
-                "MetaExchangeName": "VolumetricMetaData",
-				"OriginCorrection": {"x":0, "y":-0.82, "z":0},
-				"BoundingBotLeft": {"x":-1, "y":0.1, "z":-1},
-				"BoundingTopRight": {"x":1, "y":2.2, "z":1}
-            },
-            "voxelSize": 0.005,
-            "frameRate" : 15,
-            "tiled": false,
-            "Encoders": [
-				{
-					"octreeBits": 9
-				}
-				
-            ],
-            "Bin2Dash": {
-                "segmentSize": 2000,
-                "segmentLife": 10000
-            },
-            "AudioBin2Dash": {
-                "segmentSize": 2000,
-                "segmentLife": 10000
-            }
-=======
         "BoundingBotLeft": {
           "x": -1,
           "y": 0.1,
           "z": -1
->>>>>>> develop
         },
         "BoundingTopRight": {
           "x": 1,
@@ -141,7 +102,7 @@
         }
       },
       "voxelSize": 0.005,
-      "frameRate": 15,
+      "frameRate": 25,
       "tiled": false,
       "Encoders": [
         {
