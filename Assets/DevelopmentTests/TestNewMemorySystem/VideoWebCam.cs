@@ -1,23 +1,24 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-using System.Runtime.InteropServices;
-using System;
-using System.Threading;
-using UnityEngine.Networking.NetworkSystem;
+using VRTCore;
+using VRT.Core;
+using VRT.Video;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
+using VRT.Orchestrator.Wrapping;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
     public Renderer rendererDst;
 
-    Workers.WebCamReader    recorder;
-    Workers.VideoEncoder    encoder;
-    Workers.BaseWorker      writer;
-    Workers.BaseWorker      reader;
+    WebCamReader    recorder;
+    VideoEncoder    encoder;
+    BaseWorker      writer;
+    BaseWorker      reader;
 
-    Workers.VideoDecoder    decoder;
-    Workers.VideoPreparer   preparer;
+    VideoDecoder    decoder;
+    VideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
     QueueThreadSafe         writerQueue = new QueueThreadSafe("VideoWebCamWriter");
@@ -49,23 +50,23 @@ public class VideoWebCam : MonoBehaviour {
         string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
         string remoteStream = "webcam";
         try {
-            recorder = new Workers.WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
-            encoder  = new Workers.VideoEncoder(new Workers.VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
-            Workers.B2DWriter.DashStreamDescription[] b2dStreams = new Workers.B2DWriter.DashStreamDescription[1] {
-                new Workers.B2DWriter.DashStreamDescription() {
+            recorder = new WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
+            encoder  = new VideoEncoder(new VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
+            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
+                new B2DWriter.DashStreamDescription() {
                     tileNumber = 0,
                     quality = 0,
                     inQueue = writerQueue
                 }
             };
-            if(useDash) writer = new Workers.B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new Workers.SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
+            if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
 
-//            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
-//            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
+//            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
+//            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
-            decoder = new Workers.VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
-            preparer = new Workers.VideoPreparer(videoPreparerQueue, null);
+            decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+            preparer = new VideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
             Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");
@@ -79,8 +80,8 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new Workers.BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
-            else reader = new Workers.SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
+            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
+            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
         }
 
