@@ -6,7 +6,8 @@
         "SocketIO",
         "Orchestrator",
         "Voice",
-        "PointClouds"
+        "PointClouds",
+        "VRTVideo"
     ],
     "includePlatforms": [
         "Editor"
