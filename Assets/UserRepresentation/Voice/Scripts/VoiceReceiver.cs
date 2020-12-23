@@ -34,8 +34,8 @@ namespace VRT.UserRepresentation.Voice
 
             if (UseDash)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 32, true);
-                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue, 20);
             }
             else
             {

@@ -21,6 +21,7 @@ namespace VRT.Transport.Dash
         protected uint[] stream4CCs;
         protected sub.connection subHandle;
         protected bool isPlaying;
+        protected int frequency=20;
         int numberOfUnsuccessfulReceives;
         //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
@@ -47,16 +48,18 @@ namespace VRT.Transport.Dash
             //            QueueThreadSafe outQueue;
             int thread_index;
             ReceiverInfo receiverInfo;
+            int frequency = 20;
             System.Threading.Thread myThread;
             System.DateTime lastSuccessfulReceive;
             System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(5);
             System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
 
-            public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
+            public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo, int _frenquecy)
             {
                 parent = _parent;
                 thread_index = _thread_index;
                 receiverInfo = _receiverInfo;
+                frequency = _frenquecy;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 lastSuccessfulReceive = System.DateTime.Now;
@@ -79,6 +82,11 @@ namespace VRT.Transport.Dash
 
             protected void run()
             {
+                bool bCanQueue = (frequency==0); // If frequency is 0 enqueue at the very begining
+                // Create a stopwatch to measure the time.
+                System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+                stopWatch.Start();
+                System.TimeSpan oldElapsed = System.TimeSpan.Zero;
                 Debug.Log($"{Name()}: xxxjack thread started, looking at {receiverInfo.streamIndexes.Length} streams");
                 try
                 {
@@ -144,6 +152,7 @@ namespace VRT.Transport.Dash
                         // Allocate and read.
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
                         int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+
                         // We no longer need subHandle
                         subHandle.free();
 
@@ -163,12 +172,25 @@ namespace VRT.Transport.Dash
                         }
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
-
-                        // Push to queue
                         mc.info = frameInfo;
-                        receiverInfo.outQueue.Enqueue(mc);
 
-                        statsUpdate(bytesRead, frameInfo.timestamp);
+                        // Check if can start to enqueue
+                        if (!bCanQueue) {
+                            receiverInfo.outQueue.Enqueue(mc);
+                        } else { 
+                            // Check time btween last package.
+                            System.TimeSpan newElapsed = stopWatch.Elapsed;
+                            // If is not the first and the time is greater or igual than frequency start to enqueue
+                            if (oldElapsed != System.TimeSpan.Zero && (newElapsed - oldElapsed).TotalMilliseconds >= frequency) {
+                                bCanQueue = true;
+                                // Enqueue the first chunk
+                                receiverInfo.outQueue.Enqueue(mc);
+                            } else {
+                                // if not, release data an save the elapsed time.
+                                oldElapsed = newElapsed;
+                                mc.free();
+                            }
+                        }
                     }
                 }
                 catch (System.Exception e)
@@ -181,6 +203,7 @@ namespace VRT.Transport.Dash
 #endif
                 }
 
+                stopWatch.Stop();
             }
 
             bool statsInitialized = false;
@@ -229,7 +252,7 @@ namespace VRT.Transport.Dash
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseSubReader(string _url, string _streamName, int _initialDelay) : base(WorkerType.Init)
+        protected BaseSubReader(string _url, string _streamName, int _initialDelay, int _frequency=0) : base(WorkerType.Init)
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -254,10 +277,11 @@ namespace VRT.Transport.Dash
                     Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
                     subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
                 }
+                frequency = _frequency;
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue) : this(_url, _streamName, _initialDelay)
+        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _initialDelay, _frenquecy)
         {
             lock (this)
             {
@@ -377,7 +401,7 @@ namespace VRT.Transport.Dash
                 threads = new SubPullThread[threadCount];
                 for (int i = 0; i < threadCount; i++)
                 {
-                    threads[i] = new SubPullThread(this, i, receivers[i]);
+                    threads[i] = new SubPullThread(this, i, receivers[i], frequency);
                 }
                 foreach (var t in threads)
                 {
