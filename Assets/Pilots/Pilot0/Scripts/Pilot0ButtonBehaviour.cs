@@ -1,27 +1,31 @@
 ﻿using UnityEngine;
+using VRT.Pilots.Common;
 
-public class Pilot0ButtonBehaviour : MonoBehaviour
+namespace VRT.Pilots.Pilot0
 {
-	public NetworkTrigger Pilot0ButtonTrigger;
-
-	public float TimeOutBetweenTriggers = 1f;
-	private float _ButtonLastTriggered;
-
-	private void OnTriggerEnter(Collider other)
+	public class Pilot0ButtonBehaviour : MonoBehaviour
 	{
-		if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
+		public NetworkTrigger Pilot0ButtonTrigger;
+
+		public float TimeOutBetweenTriggers = 1f;
+		private float _ButtonLastTriggered;
+
+		private void OnTriggerEnter(Collider other)
 		{
-			string layer = LayerMask.LayerToName(other.gameObject.layer);
-			if (layer != "TouchCollider")
+			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
-				return;
+				string layer = LayerMask.LayerToName(other.gameObject.layer);
+				if (layer != "TouchCollider")
+				{
+					return;
+				}
+
+				Debug.Log($"[Pilot0ButtonBehaviour] Triggered by {other.name} on layer {other.gameObject.layer}");
+
+				Pilot0ButtonTrigger.Trigger();
+
+				_ButtonLastTriggered = Time.realtimeSinceStartup;
 			}
-
-			Debug.Log($"[Pilot0ButtonBehaviour] Triggered by {other.name} on layer {other.gameObject.layer}");
-
-			Pilot0ButtonTrigger.Trigger();
-
-			_ButtonLastTriggered = Time.realtimeSinceStartup;
 		}
 	}
 }

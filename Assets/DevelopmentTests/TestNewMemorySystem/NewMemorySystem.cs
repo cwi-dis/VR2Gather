@@ -2,18 +2,24 @@
 //#define TEST_PC
 //#define TEST_VOICECHAT
 
-using OrchestratorWrapping;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
+using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.Voice;
+using VRT.UserRepresentation.PointCloud;
 
 public class NewMemorySystem : MonoBehaviour
 {
 
+
     public bool forceMesh = false;
     public bool localPCs = false;
     public bool useCompression = true;
-    public bool useVoice = false;
+    public bool useDashVoice = false;
     public bool usePointClouds = false;
     public bool useSocketIO = true;
 
@@ -24,14 +30,14 @@ public class NewMemorySystem : MonoBehaviour
     string URL = "";
     public string remoteStream = "";
 
-    Workers.BaseWorker reader;
-    Workers.BaseWorker encoder;
+    BaseWorker reader;
+    BaseWorker encoder;
     public int decoders = 1;
-    Workers.BaseWorker[] decoder;
-    Workers.BaseWorker pointcloudsWriter;
-    Workers.BaseWorker pointcloudsReader;
+    BaseWorker[] decoder;
+    BaseWorker pointcloudsWriter;
+    BaseWorker pointcloudsReader;
 
-    Workers.BaseWorker preparer;
+    BaseWorker preparer;
     QueueThreadSafe preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
     QueueThreadSafe encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
     QueueThreadSafe writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
@@ -41,15 +47,15 @@ public class NewMemorySystem : MonoBehaviour
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
-        Workers.PCSubReader.TileDescriptor[] tiles = new Workers.PCSubReader.TileDescriptor[1] {
-            new Workers.PCSubReader.TileDescriptor() {
+        PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
+            new PCSubReader.TileDescriptor() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }
         };
 
-        Workers.B2DWriter.DashStreamDescription[] streams = new Workers.B2DWriter.DashStreamDescription[1] {
-            new Workers.B2DWriter.DashStreamDescription(){
+        B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
+            new B2DWriter.DashStreamDescription(){
                 tileNumber = 0,
                 quality = 0,
                 inQueue = writerQueue
@@ -64,71 +70,72 @@ public class NewMemorySystem : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
-                pointcloudsReader = new Workers.SocketIOReader(user, remoteStream, tiles);
-                pointcloudsWriter = new Workers.SocketIOWriter(user, remoteStream, streams);
+                pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
+                pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
 
             };
         }
 
         Config config = Config.Instance;
         if (forceMesh) {
-            preparer = new Workers.MeshPreparer(preparerQueue);
-            render = gameObject.AddComponent<Workers.PointMeshRenderer>();
-            ((Workers.PointMeshRenderer)render).SetPreparer((Workers.MeshPreparer)preparer);
+            preparer = new MeshPreparer(preparerQueue);
+            render = gameObject.AddComponent<PointMeshRenderer>();
+            ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);
         } else {
-            preparer = new Workers.BufferPreparer(preparerQueue);
-            render = gameObject.AddComponent<Workers.PointBufferRenderer>();
-            ((Workers.PointBufferRenderer)render).SetPreparer((Workers.BufferPreparer)preparer);
+            preparer = new BufferPreparer(preparerQueue);
+            render = gameObject.AddComponent<PointBufferRenderer>();
+            ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
         }
 
         if (usePointClouds) {
-            if (localPCs) {
-                if (!useCompression)
-                    reader = new Workers.RS2Reader(20f, 1000, preparerQueue);
-                else {
-                    reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                    Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
-                    encStreams[0].octreeBits = 10;
-                    encStreams[0].tileNumber = 0;
-                    encStreams[0].outQueue = writerQueue;
-                    encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                    decoder = new Workers.PCDecoder[decoders];
-                    for (int i = 0; i < decoders; ++i)
-                        decoder[i] = new Workers.PCDecoder(writerQueue, preparerQueue);
-                }
-            } else {
-                if (!useRemoteStream) {
-                    reader = new Workers.RS2Reader(20f, 1000, encoderQueue);
-                    Workers.PCEncoder.EncoderStreamDescription[] encStreams = new Workers.PCEncoder.EncoderStreamDescription[1];
-                    encStreams[0].octreeBits = 10;
-                    encStreams[0].tileNumber = 0;
-                    encStreams[0].outQueue = writerQueue;
-                    encoder = new Workers.PCEncoder(encoderQueue, encStreams);
-                    string uuid = System.Guid.NewGuid().ToString();
-                    URL = $"{remoteURL}/{uuid}/pcc/";
-                    pointcloudsWriter = new Workers.B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
-                } else
-                    URL = remoteURL;
+			if (localPCs) {
+				if (!useCompression)
+					reader = new RS2Reader(20f, 1000, preparerQueue);
+				else {
+					reader = new RS2Reader(20f, 1000, encoderQueue);
+					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					encStreams[0].octreeBits = 10;
+					encStreams[0].tileNumber = 0;
+					encStreams[0].outQueue = writerQueue;
+					encoder = new PCEncoder(encoderQueue, encStreams);
+					decoder = new PCDecoder[decoders];
+					for (int i = 0; i < decoders; ++i)
+						decoder[i] = new PCDecoder(writerQueue, preparerQueue);
+				}
+			} else {
+				if (!useRemoteStream) {
+					reader = new RS2Reader(20f, 1000, encoderQueue);
+					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					encStreams[0].octreeBits = 10;
+					encStreams[0].tileNumber = 0;
+					encStreams[0].outQueue = writerQueue;
+					encoder = new PCEncoder(encoderQueue, encStreams);
+					string uuid = System.Guid.NewGuid().ToString();
+					URL = $"{remoteURL}/{uuid}/pcc/";
+					pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+				} 
+				else
+					URL = remoteURL;
 
-                if (!useSocketIO)
-                    pointcloudsReader = new Workers.PCSubReader(URL, remoteStream, 1, tiles);
+				if (!useSocketIO)
+					pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
 
-                decoder = new Workers.PCDecoder[decoders];
-                for (int i = 0; i < decoders; ++i)
-                    decoder[i] = new Workers.PCDecoder(decoderQueue, preparerQueue);
-            }
+				decoder = new PCDecoder[decoders];
+				for (int i = 0; i < decoders; ++i)
+					decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
+			}
         }
         
 
         // using Audio over dash
-        if (useVoice && !useSocketIO) {
+        if (useDashVoice && !useSocketIO) {
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new OrchestratorWrapping.User() { 
+            gameObject.AddComponent<VoiceSender>().Init(new User() { 
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
             }, "audio", 2000, 10000, true); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new OrchestratorWrapping.User() { 
+            gameObject.AddComponent<VoiceReceiver>().Init(new User() { 
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 

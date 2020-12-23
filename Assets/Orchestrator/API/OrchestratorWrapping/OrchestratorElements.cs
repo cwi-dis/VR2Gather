@@ -1,7 +1,8 @@
 ﻿using LitJson;
 using System.Collections.Generic;
+using VRTCore;
 
-namespace OrchestratorWrapping
+namespace VRT.Orchestrator.Wrapping
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement
@@ -25,7 +26,7 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class User: OrchestratorElement
+    public class User : OrchestratorElement
     {
         public string userId = "";
         public string userName = "";
@@ -56,7 +57,7 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class UserData: OrchestratorElement
+    public class UserData : OrchestratorElement
     {
         public string userIP = "";
         public string userMQexchangeName = "";
@@ -65,24 +66,11 @@ namespace OrchestratorWrapping
         public string userPCurl = "";
         public string userAudioUrl = "";
 
+        public UserRepresentationType userRepresentationType;
         public string webcamName = "";
         public string microphoneName = "";
 
-        public eUserRepresentationType userRepresentationType;
 
-        public enum eUserRepresentationType
-        {
-            __NONE__,
-            __2D__,
-            __AVATAR__,
-            __TVM__,
-            __PCC_CWI_,
-            __PCC_CWIK4A_,
-            __PCC_PROXY__,
-            __PCC_SYNTH__,
-            __PCC_CERTH__,
-            __SPECTATOR__
-        }
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
@@ -123,12 +111,12 @@ namespace OrchestratorWrapping
         }
     }
 
-    public class NtpClock: OrchestratorElement
+    public class NtpClock : OrchestratorElement
     {
         public string ntpDate;
-        public System.Int64 ntpTimeMs;
+        public long ntpTimeMs;
 
-        public NtpClock() {}
+        public NtpClock() { }
         public int Timestamp { get { return (int)(ntpTimeMs / 1000); } }
     }
 

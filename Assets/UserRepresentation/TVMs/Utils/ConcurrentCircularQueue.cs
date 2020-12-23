@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public class ConcurrentCircularQueue<T> : IDisposable
     {
@@ -74,7 +74,7 @@ namespace Utils
         }
 
         #endregion
-       
+
         #region Public Methods
         /// <summary>
         /// Enqueues a new element to the end of the queue. If the queue is full, the first element is dequeued.
@@ -84,7 +84,7 @@ namespace Utils
         /// <returns></returns>
         public T Enqueue(T obj)
         {
-            lock(m_Queue)
+            lock (m_Queue)
             {
                 return EnqueueCore(obj);
             }
@@ -93,7 +93,7 @@ namespace Utils
         public T Dequeue()
         {
             T val;
-            lock(m_Queue)
+            lock (m_Queue)
             {
                 val = DequeueCore();
             }
@@ -106,10 +106,10 @@ namespace Utils
         /// <param name="obj"></param>
         public void WaitAndEnqueue(T obj)
         {
-            bool enqueued = false;            
-            while(!enqueued)
+            bool enqueued = false;
+            while (!enqueued)
             {
-                lock(m_Queue)
+                lock (m_Queue)
                 {
                     if (!IsFullCore())
                     {
@@ -118,8 +118,8 @@ namespace Utils
                     }
                     else
                     {
-                        m_DequeueWaitHandle.Reset();                        
-                    }                        
+                        m_DequeueWaitHandle.Reset();
+                    }
                 }
                 if (!enqueued)
                     m_DequeueWaitHandle.WaitOne();
@@ -128,21 +128,21 @@ namespace Utils
 
         public T WaitAndDequeue()
         {
-            bool dequeued = false;            
+            bool dequeued = false;
             T val = m_DefaultReturnValue;
 
-            while(!dequeued)
+            while (!dequeued)
             {
-                lock(m_Queue)
+                lock (m_Queue)
                 {
-                    if(!IsEmptyCore())
+                    if (!IsEmptyCore())
                     {
                         val = DequeueCore();
                         dequeued = true;
                     }
                     else
                     {
-                        m_EnqueueWaitHandle.Reset();                        
+                        m_EnqueueWaitHandle.Reset();
                     }
                 }
                 if (!dequeued)
@@ -157,13 +157,13 @@ namespace Utils
         /// <returns></returns>
         public T Peek()
         {
-            lock(m_Queue)
+            lock (m_Queue)
             {
                 if (m_Queue.Count == 0)
                     return m_DefaultReturnValue;
                 return m_Queue.Peek();
             }
-        }        
+        }
 
         public T WaitAndPeek()
         {
@@ -192,7 +192,7 @@ namespace Utils
 
         public void Clear()
         {
-            lock(m_Queue)
+            lock (m_Queue)
             {
                 m_Queue.Clear();
             }
@@ -205,7 +205,7 @@ namespace Utils
         {
             get
             {
-                lock(m_Queue)
+                lock (m_Queue)
                 {
                     return m_Queue.Count;
                 }
@@ -216,7 +216,7 @@ namespace Utils
         {
             get
             {
-                lock(m_Queue)
+                lock (m_Queue)
                 {
                     return IsEmptyCore();
                 }
@@ -232,7 +232,7 @@ namespace Utils
                     return IsFullCore();
                 }
             }
-        }        
+        }
 
         public T DefaultReturnValue
         {
@@ -242,13 +242,13 @@ namespace Utils
             }
             set
             {
-                lock(m_Queue)
+                lock (m_Queue)
                 {
                     m_DefaultReturnValue = value;
                 }
             }
         }
-        
+
         public int QueueSize
         {
             get
@@ -259,12 +259,12 @@ namespace Utils
             {
                 if (value >= 0)
                 {
-                    lock(m_Queue)
+                    lock (m_Queue)
                     {
                         m_QueueSize = value;
                         FitToQueueSize();
-                    }                    
-                }                    
+                    }
+                }
             }
         }
         #endregion
@@ -277,7 +277,7 @@ namespace Utils
                 m_DequeueWaitHandle.Close();
                 m_EnqueueWaitHandle.Close();
             }
-            catch(Exception)
+            catch (Exception)
             {
 
             }

@@ -2,62 +2,65 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonitoringTool : MonoBehaviour
+namespace VRT.Orchestrator
 {
-    public static MonitoringTool instance;
-
-    private int startPoint;
-    private int endPoint;
-
-    private float ms = 0F;
-
-    private bool bReady = false;
-
-    private void Awake()
+    public class MonitoringTool : MonoBehaviour
     {
-        if(instance == null)
-            instance = this;
-    }
+        public static MonitoringTool instance;
 
+        private int startPoint;
+        private int endPoint;
 
-    void Start()
-    {
-        
-    }
+        private float ms = 0F;
 
-    void Update()
-    {
-        ms += Time.deltaTime * 1000;
-    }
+        private bool bReady = false;
 
-    public void WriteStartPoint()
-    {
-        if (bReady)
+        private void Awake()
         {
-            startPoint = (int)ms;
-            bReady = false;
-        }
-    }
-
-    public void WriteEndPoint()
-    {
-        if(!bReady)
-        {
-            endPoint = (int)ms;
-            CalculateLatency();
-            bReady = true;
-        }
-    }
-
-    private void CalculateLatency()
-    {
-        float lLatency = 0; 
-
-        if (endPoint >= startPoint)
-        {
-            lLatency = endPoint - startPoint;
+            if (instance == null)
+                instance = this;
         }
 
-        //Debug.Log("[MonitoringTool][CalculateLantecy] : " + lLatency + " ms");
+
+        void Start()
+        {
+
+        }
+
+        void Update()
+        {
+            ms += Time.deltaTime * 1000;
+        }
+
+        public void WriteStartPoint()
+        {
+            if (bReady)
+            {
+                startPoint = (int)ms;
+                bReady = false;
+            }
+        }
+
+        public void WriteEndPoint()
+        {
+            if (!bReady)
+            {
+                endPoint = (int)ms;
+                CalculateLatency();
+                bReady = true;
+            }
+        }
+
+        private void CalculateLatency()
+        {
+            float lLatency = 0;
+
+            if (endPoint >= startPoint)
+            {
+                lLatency = endPoint - startPoint;
+            }
+
+            //Debug.Log("[MonitoringTool][CalculateLantecy] : " + lLatency + " ms");
+        }
     }
 }

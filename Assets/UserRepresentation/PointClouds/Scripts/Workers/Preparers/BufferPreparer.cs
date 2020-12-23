@@ -1,23 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers
+namespace VRT.UserRepresentation.PointCloud
 {
     public class BufferPreparer : BaseWorker
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
-        System.IntPtr                       currentBuffer;
-        int                                 currentSize;
+        System.IntPtr currentBuffer;
+        int currentSize;
         public ulong currentTimestamp;
-        float                               currentCellSize = 0.008f;
+        float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
-        QueueThreadSafe                     InQueue;
-        public BufferPreparer(QueueThreadSafe _InQueue, float _defaultCellSize=0, float _cellSizeFactor=0):base(WorkerType.End) {
-            defaultCellSize = _defaultCellSize!=0?_defaultCellSize:0.008f;
-            cellSizeFactor = _cellSizeFactor!=0?_cellSizeFactor:0.71f;
+        QueueThreadSafe InQueue;
+        public BufferPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
+        {
+            defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.008f;
+            cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 0.71f;
             if (_InQueue == null)
             {
                 throw new System.Exception("BufferPreparer: InQueue is null");
@@ -26,13 +28,15 @@ namespace Workers
             Start();
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             base.OnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("BufferPreparer Stopped");
         }
 
-        protected override void Update() {
+        protected override void Update()
+        {
             base.Update();
             lock (this)
             {
@@ -72,18 +76,23 @@ namespace Workers
             }
         }
 
-        public int GetComputeBuffer(ref ComputeBuffer computeBuffer) {
+        public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
+        {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
             int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
-            lock (this) {
-                if (isReady && size != 0) {
-                    unsafe {
+            lock (this)
+            {
+                if (isReady && size != 0)
+                {
+                    unsafe
+                    {
                         int dampedSize = (int)(size * Config.Instance.memoryDamping);
-                        if (computeBuffer == null || computeBuffer.count < dampedSize) {
+                        if (computeBuffer == null || computeBuffer.count < dampedSize)
+                        {
                             if (computeBuffer != null) computeBuffer.Release();
                             computeBuffer = new ComputeBuffer(dampedSize, sizeof(float) * 4);
                         }
-                        computeBuffer.SetData<byte>(byteArray, 0, 0, byteArray.Length);
+                        computeBuffer.SetData(byteArray, 0, 0, byteArray.Length);
                     }
                     isReady = false;
                 }
@@ -91,8 +100,9 @@ namespace Workers
             return size;
         }
 
-        public float GetPointSize() {
-            if (currentCellSize > 0.0000f) return currentCellSize*cellSizeFactor;
+        public float GetPointSize()
+        {
+            if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
             else return defaultCellSize * cellSizeFactor;
         }
 

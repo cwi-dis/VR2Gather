@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Workers
+namespace VRT.UserRepresentation.PointCloud
 {
     public class PointMeshRenderer : MonoBehaviour
     {
-        Material        material;
-        Mesh            mesh;
-        Workers.MeshPreparer preparer;
+        Material material;
+        Mesh mesh;
+        MeshPreparer preparer;
 
         // Start is called before the first frame update
-        void Start() {
+        void Start()
+        {
             if (material == null) material = Resources.Load<Material>("PointCloudsMesh");
             mesh = new Mesh();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
@@ -19,10 +20,10 @@ namespace Workers
 
         public string Name()
         {
-            return $"{this.GetType().Name}#{instanceNumber}";
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void SetPreparer(Workers.MeshPreparer _preparer)
+        public void SetPreparer(MeshPreparer _preparer)
         {
             if (preparer != null)
             {
@@ -31,7 +32,8 @@ namespace Workers
             preparer = _preparer;
         }
 
-        private void Update() {
+        private void Update()
+        {
             if (preparer == null) return;
             material.SetFloat("_PointSize", preparer.GetPointSize());
             if (mesh == null) return;
@@ -48,7 +50,8 @@ namespace Workers
             }
         }
 
-        public void OnDestroy() {
+        public void OnDestroy()
+        {
             if (material != null) { material = null; }
         }
 
@@ -70,7 +73,7 @@ namespace Workers
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount==0?1: statsTotalMeshCount))}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
+                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount == 0 ? 1 : statsTotalMeshCount))}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
                 statsTotalMeshCount = 0;
                 statsTotalVertexCount = 0;
                 statsLastTime = System.DateTime.Now;

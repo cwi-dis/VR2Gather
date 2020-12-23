@@ -2,8 +2,8 @@
 using LitJson;
 using System;
 using System.Collections.Generic;
-using OrchestratorWrapping;
 using System.Diagnostics;
+using VRT.Orchestrator.Wrapping;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -16,7 +16,7 @@ using System.Diagnostics;
  *              main object by its ID. That allows to access it directly via its ID on JS, but it's not parsable directly on C#.
  **/
 
-namespace OrchestratorWSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     public interface IOrchestratorConnectionListener
     {
@@ -45,10 +45,10 @@ namespace OrchestratorWSManagement
         private SocketManager Manager;
 
         // Is this client is connected to the orchestrator
-        public Boolean isSocketConnected = false;
+        public bool isSocketConnected = false;
 
         // To deal with the commands sent and the responses
-        public Boolean IsWaitingResponse = false;
+        public bool IsWaitingResponse = false;
         public int commandId = 0;
 
         // listener for the connection state with the orchestrator upon socketio
@@ -67,7 +67,7 @@ namespace OrchestratorWSManagement
         // Constructor
         public OrchestratorWSManager(string orchestratorUrl, IOrchestratorConnectionListener connectionListener, IMessagesListener messagesListener)
         {
-            this.OrchestratorUrl = orchestratorUrl;
+            OrchestratorUrl = orchestratorUrl;
             this.connectionListener = connectionListener;
             this.messagesListener = messagesListener;
         }
@@ -84,10 +84,10 @@ namespace OrchestratorWSManagement
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
             options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
-            
+
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
-            
+
             Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
@@ -100,7 +100,7 @@ namespace OrchestratorWSManagement
             {
                 Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
-            
+
             // Open the socket
             Manager.Open();
         }
@@ -147,7 +147,7 @@ namespace OrchestratorWSManagement
         // Called when socket connection error occurs
         void OnServerError(Socket socket, Packet packet, params object[] args)
         {
-            if(args != null)
+            if (args != null)
             {
                 Error error = args[0] as Error;
                 ResponseStatus status = new ResponseStatus((int)error.Code, error.Message);
@@ -165,11 +165,14 @@ namespace OrchestratorWSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            lock (this) {
-                if (command.Parameters != null) {
+            lock (this)
+            {
+                if (command.Parameters != null)
+                {
                     object[] parameters = new object[command.Parameters.Count];
 
-                    for (int i = 0; i < parameters.Length; i++) {
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
                         parameters[i] = command.Parameters[i].ParamValue;
                     }
 
@@ -182,20 +185,29 @@ namespace OrchestratorWSManagement
         // Emit a command
         public void EmitCommand(OrchestratorCommand command)
         {
-            lock (this) {
+            lock (this)
+            {
                 // the JsonData that will own the parameters and their values
                 JsonData parameters = new JsonData();
 
-                if (command.Parameters != null) {
+                if (command.Parameters != null)
+                {
                     // for each parameter defined in the command, fill the parameter with its value
-                    command.Parameters.ForEach(delegate (Parameter parameter) {
-                        if (parameter.ParamValue != null) {
-                            if (parameter.type == typeof(bool)) {
+                    command.Parameters.ForEach(delegate (Parameter parameter)
+                    {
+                        if (parameter.ParamValue != null)
+                        {
+                            if (parameter.type == typeof(bool))
+                            {
                                 parameters[parameter.ParamName] = (bool)parameter.ParamValue;
-                            } else {
+                            }
+                            else
+                            {
                                 parameters[parameter.ParamName] = parameter.ParamValue.ToString();
                             }
-                        } else {
+                        }
+                        else
+                        {
                             parameters[parameter.ParamName] = "";
                         }
                     });
@@ -209,7 +221,8 @@ namespace OrchestratorWSManagement
                 commandQueue.Add(command);
 
                 // warn the messages Listener that new message is emitted
-                if (messagesListener != null) {
+                if (messagesListener != null)
+                {
                     messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
                 }
 
@@ -233,9 +246,10 @@ namespace OrchestratorWSManagement
         }
 
         // [deprecated] send the command (command name, parameters)
-        private Boolean SendCommand(string command, JsonData parameters)
+        private bool SendCommand(string command, JsonData parameters)
         {
-            lock (this) {
+            lock (this)
+            {
                 // increment the commandId and add it to the command parameters (see NOTE on top of file)
                 commandId++;
                 parameters["commandId"] = commandId;
@@ -244,9 +258,11 @@ namespace OrchestratorWSManagement
                 // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
                 //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
                 //        could be done if the orchestrator integrates the commandId with the response
-                if (!IsWaitingResponse) {
+                if (!IsWaitingResponse)
+                {
                     // warn the messages Listener that new message is emitted
-                    if (messagesListener != null) {
+                    if (messagesListener != null)
+                    {
                         messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
                     }
 
