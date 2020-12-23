@@ -202,7 +202,7 @@ namespace VRT.Pilots.Common
 						// FER: Implementacion representacion de webcam.
 						playerManager.webcam.SetActive(true);
 						Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-						BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
+						BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(playerManager.webcam, user.userData.userRepresentationType);
 						wcPipeline?.Init(user, userCfg);
 						break;
 					case UserRepresentationType.__AVATAR__:
