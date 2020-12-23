@@ -20,6 +20,7 @@ public class NewMemorySystem : MonoBehaviour
     public bool localPCs = false;
     public bool useCompression = true;
     public bool useDashVoice = false;
+    public bool usePointClouds = false;
     public bool useSocketIO = true;
 
     public NetController orchestrator;
@@ -69,7 +70,6 @@ public class NewMemorySystem : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
-
                 pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
                 pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
 
@@ -86,42 +86,44 @@ public class NewMemorySystem : MonoBehaviour
             render = gameObject.AddComponent<PointBufferRenderer>();
             ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
         }
-        
-        if (localPCs) {
-            if (!useCompression)
-                reader = new RS2Reader(20f, 1000, preparerQueue);
-            else {
-                reader = new RS2Reader(20f, 1000, encoderQueue);
-                PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
-                encStreams[0].octreeBits = 10;
-                encStreams[0].tileNumber = 0;
-                encStreams[0].outQueue = writerQueue;
-                encoder = new PCEncoder(encoderQueue, encStreams);
-                decoder = new PCDecoder[decoders];
-                for (int i = 0; i < decoders; ++i)
-                    decoder[i] = new PCDecoder(writerQueue, preparerQueue);
-            }
-        } else {
-            if (!useRemoteStream) {
-                reader = new RS2Reader(20f, 1000, encoderQueue);
-                PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
-                encStreams[0].octreeBits = 10;
-                encStreams[0].tileNumber = 0;
-                encStreams[0].outQueue = writerQueue;
-                encoder = new PCEncoder(encoderQueue, encStreams);
-                string uuid = System.Guid.NewGuid().ToString();
-                URL = $"{remoteURL}/{uuid}/pcc/";
-                pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
-            } 
-            else
-                URL = remoteURL;
 
-            if (!useSocketIO)
-                pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
+        if (usePointClouds) {
+			if (localPCs) {
+				if (!useCompression)
+					reader = new RS2Reader(20f, 1000, preparerQueue);
+				else {
+					reader = new RS2Reader(20f, 1000, encoderQueue);
+					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					encStreams[0].octreeBits = 10;
+					encStreams[0].tileNumber = 0;
+					encStreams[0].outQueue = writerQueue;
+					encoder = new PCEncoder(encoderQueue, encStreams);
+					decoder = new PCDecoder[decoders];
+					for (int i = 0; i < decoders; ++i)
+						decoder[i] = new PCDecoder(writerQueue, preparerQueue);
+				}
+			} else {
+				if (!useRemoteStream) {
+					reader = new RS2Reader(20f, 1000, encoderQueue);
+					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					encStreams[0].octreeBits = 10;
+					encStreams[0].tileNumber = 0;
+					encStreams[0].outQueue = writerQueue;
+					encoder = new PCEncoder(encoderQueue, encStreams);
+					string uuid = System.Guid.NewGuid().ToString();
+					URL = $"{remoteURL}/{uuid}/pcc/";
+					pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+				} 
+				else
+					URL = remoteURL;
 
-            decoder = new PCDecoder[decoders];
-            for (int i = 0; i < decoders; ++i)
-                decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
+				if (!useSocketIO)
+					pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
+
+				decoder = new PCDecoder[decoders];
+				for (int i = 0; i < decoders; ++i)
+					decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
+			}
         }
         
 
