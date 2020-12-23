@@ -36,8 +36,18 @@ namespace VRT.UserRepresentation.Voice
         protected override void Update()
         {
             base.Update();
+            // Wipe out the inQueue for initial burst.
             NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
+            if(inQueue._Count > 100){
+                Debug.Log($"[FPA] WIPE OUT!!! {inQueue._Count}");
+                while(inQueue._Count > 1) {
+                    mcIn.free();
+                    mcIn = (NativeMemoryChunk)inQueue.Dequeue();
+                }
+            }
             if (mcIn == null) return;
+
+
 #if USE_SPEEX
             byte[] buffer = new byte[mcIn.length];
             if (temporalBuffer == null) temporalBuffer = new float[mcIn.length * 10]; // mcIn.length*10
