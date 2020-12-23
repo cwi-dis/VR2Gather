@@ -1,10 +1,13 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "Orchestrator",
+    "references": [
+        "BestHTTP",
+        "VRTCore"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -1,6 +1,10 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "Pilot0",
+    "references": [
+        "Orchestrator",
+        "Pilots",
+        "VRTCore"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

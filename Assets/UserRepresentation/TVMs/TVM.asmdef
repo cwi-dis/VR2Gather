@@ -1,6 +1,10 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "TVM",
+    "references": [
+        "VRTCore",
+        "RabbitMQ",
+        "Orchestrator"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

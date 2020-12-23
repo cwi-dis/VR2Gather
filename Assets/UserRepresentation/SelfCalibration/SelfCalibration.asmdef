@@ -1,6 +1,12 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "SelfCalibration",
+    "references": [
+        "VRTCore",
+        "Orchestrator",
+        "Pilots",
+        "PointClouds",
+        "TVM"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

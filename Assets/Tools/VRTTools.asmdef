@@ -1,6 +1,9 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "VRTTools",
+    "references": [
+        "VRTCore",
+        "TVM"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

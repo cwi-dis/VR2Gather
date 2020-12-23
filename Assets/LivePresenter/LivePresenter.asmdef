@@ -1,6 +1,12 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "LivePresenter",
+    "references": [
+        "VRTCore",
+        "VRTVideo",
+        "Dash",
+        "SocketIO",
+        "Orchestrator"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

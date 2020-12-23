@@ -1,6 +1,11 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "VRTInitializer",
+    "references": [
+        "VRTCore",
+        "PointClouds",
+        "WebCam",
+        "TVM"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
