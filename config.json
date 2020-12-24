@@ -78,7 +78,8 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../H4_C2_R4",
+				"folder" : "../H4_C0_R0",
+				"folder_" : "../lootDump70K",
 				"ply" : false
 			},
             "CerthReaderConfig": {
@@ -101,7 +102,7 @@
           "z": 1
         }
       },
-      "voxelSize": 0.005,
+      "voxelSize": 0,
       "frameRate": 25,
       "tiled": false,
       "Encoders": [

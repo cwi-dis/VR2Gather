@@ -86,18 +86,19 @@ namespace Workers {
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
-            bool didDrop = false;
+            bool didDropSelfView = false;
+            bool didDropEncoder = false;
             if (outQueue == null)
             {
                 Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
-                didDrop = true;
+                didDropSelfView = true;
             }
             else
             {
                 bool ok = outQueue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
-                    didDrop = true;
+                    didDropSelfView = true;
                 }
             }
             if (out2Queue == null)
@@ -109,43 +110,47 @@ namespace Workers {
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
-                    didDrop = true;
+                    didDropEncoder = true;
                 }
             }
-            statsUpdate(pc.count(), didDrop);
+            statsUpdate(pc.count(), didDropSelfView, didDropEncoder);
             pc.free();
         }
 
         System.DateTime statsLastTime;
         double statsTotalPoints;
         double statsTotalPointclouds;
-        double statsDrops;
+        double statsDropsSelf;
+        double statsDropsEncoder;
         const int statsInterval = 10;
 
-        public void statsUpdate(int pointCount, bool dropped=false)
+        public void statsUpdate(int pointCount, bool droppedSelf=false, bool droppedEncoder=false)
         {
             if (statsLastTime == null)
             {
                 statsLastTime = System.DateTime.Now;
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
-                statsDrops = 0;
+                statsDropsSelf = 0;
+                statsDropsEncoder = 0;
             }
             if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
             {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDrops / statsInterval} drops per second");
-                if (statsDrops > 3*statsInterval)
+                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDropsSelf / statsInterval} selfview drops per second, {statsDropsEncoder / statsInterval} encoder drops per second");
+                if (statsDropsSelf > 3 * statsInterval || statsDropsEncoder > 3 * statsInterval)
                 {
                     Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
                 }
                 statsTotalPoints = 0;
                 statsTotalPointclouds = 0;
-                statsDrops = 0;
+                statsDropsSelf = 0;
+                statsDropsEncoder = 0;
                 statsLastTime = System.DateTime.Now;
             }
             statsTotalPoints += pointCount;
             statsTotalPointclouds += 1;
-            if (dropped) statsDrops++;
+            if (droppedSelf) statsDropsSelf++;
+            if (droppedEncoder) statsDropsEncoder++;
         }
     }
 }
