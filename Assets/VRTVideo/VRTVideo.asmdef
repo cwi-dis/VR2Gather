@@ -1,9 +1,11 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "VRTVideo",
+    "references": [
+        "VRTCore"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

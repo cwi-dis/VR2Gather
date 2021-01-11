@@ -1,11 +1,15 @@
 {
-    "name": "BestHTTP",
-    "references": [],
+    "name": "VRTeleporter",
+    "references": [
+        "com.unity.multiplayer-hlapi.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        ""
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
