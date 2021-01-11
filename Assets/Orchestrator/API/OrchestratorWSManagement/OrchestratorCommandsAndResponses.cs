@@ -5,7 +5,7 @@ using BestHTTP.SocketIO.Events;
 using LitJson;
 
 // class used as a convenience to represent the commands and the responses
-namespace OrchestratorWSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     // template for functions that treat the responses (command = the command sent, response = the response to parse)
     public delegate void ResponseCallbackManager(OrchestratorCommand command, OrchestratorResponse response);
@@ -21,16 +21,16 @@ namespace OrchestratorWSManagement
         // type of the parameter value (not used anymore but could be reused to add genericity)
         public Type type;
         // the object owning the value of the parameter
-        public Object ParamValue;
+        public object ParamValue;
 
         // Constructor
-        public Parameter(string paramName, Type type, Object paramValue)
+        public Parameter(string paramName, Type type, object paramValue)
         {
             ParamName = paramName;
             ParamValue = paramValue;
             this.type = type;
         }
-        public Parameter(string paramName, Type type): this(paramName, type, null){}
+        public Parameter(string paramName, Type type) : this(paramName, type, null) { }
     }
 
     // Class that defines the availble commands
@@ -54,9 +54,9 @@ namespace OrchestratorWSManagement
             List<Parameter> parameters,
             ResponseCallbackManager responseCallback)
         {
-            this.SocketEventName = socketEventName;
-            this.Parameters = parameters;
-            this.ResponseCallback = responseCallback;
+            SocketEventName = socketEventName;
+            Parameters = parameters;
+            ResponseCallback = responseCallback;
         }
         public OrchestratorCommand(string socketEventName, List<Parameter> parameters) : this(socketEventName, parameters, null)
         {
@@ -91,8 +91,8 @@ namespace OrchestratorWSManagement
         public OrchestratorMessageReceiver(string socketEventName,
             SocketIOCallback orchestratorMessageCallback)
         {
-            this.SocketEventName = socketEventName;
-            this.OrchestratorMessageCallback = orchestratorMessageCallback;
+            SocketEventName = socketEventName;
+            OrchestratorMessageCallback = orchestratorMessageCallback;
         }
     }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
 	public enum TimeGuardStatus
 	{
@@ -22,17 +22,19 @@ namespace Utils
 		{
 			m_GuardTime = guardTime;
 		}
-		
+
 		public void Trigger(bool restart)
 		{
-			if (!m_SW.IsRunning) {
-				m_SW.Start ();
+			if (!m_SW.IsRunning)
+			{
+				m_SW.Start();
 				m_Status = TimeGuardStatus.Unknown;
 			}
-			else if(restart){
-				m_SW.Stop ();
-				m_SW.Reset ();
-				m_SW.Start ();
+			else if (restart)
+			{
+				m_SW.Stop();
+				m_SW.Reset();
+				m_SW.Start();
 				m_Status = TimeGuardStatus.Unknown;
 			}
 
@@ -40,9 +42,9 @@ namespace Utils
 
 		public void Trigger()
 		{
-			Trigger (false);
+			Trigger(false);
 		}
-		
+
 		public void Abort()
 		{
 			if (m_SW.IsRunning)
@@ -55,7 +57,8 @@ namespace Utils
 
 		public TimeGuardStatus Update()
 		{
-			if (!IsGuarded && m_Status == TimeGuardStatus.Unknown) {
+			if (!IsGuarded && m_Status == TimeGuardStatus.Unknown)
+			{
 				m_Status = TimeGuardStatus.Success;
 			}
 			return m_Status;
@@ -65,13 +68,14 @@ namespace Utils
 		{
 			get
 			{
-				return m_SW.IsRunning && (m_SW.ElapsedMilliseconds < m_GuardTime);
+				return m_SW.IsRunning && m_SW.ElapsedMilliseconds < m_GuardTime;
 			}
 		}
 
 		public TimeGuardStatus Status
 		{
-			get {
+			get
+			{
 				return m_Status;
 			}
 		}
@@ -84,7 +88,7 @@ namespace Utils
 			}
 			set
 			{
-				if(value >= 0.0f)
+				if (value >= 0.0f)
 					m_GuardTime = value;
 			}
 		}
