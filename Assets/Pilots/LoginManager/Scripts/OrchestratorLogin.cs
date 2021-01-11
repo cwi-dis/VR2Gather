@@ -264,7 +264,7 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Synthetic PC)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_PRERECORDED__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Prerecorded PC)";
                 break;

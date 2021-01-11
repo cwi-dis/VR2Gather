@@ -2,7 +2,8 @@
 using UnityEngine;
 using VRTCore;
 
-namespace Workers {
+namespace VRT.UserRepresentation.PointCloud
+{
     public class PrerecordedReader : TiledWorker {
         List<string> filenames;
         bool ply;

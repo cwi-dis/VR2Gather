@@ -107,7 +107,14 @@ namespace VRTCore
                 }
                 public _SynthReaderConfig SynthReaderConfig;
                 [Serializable]
-                public class _CerthReaderConfig
+				public class _PrerecordedReaderConfig
+				{
+					public string folder;
+					public bool ply;
+				};
+				public _PrerecordedReaderConfig PrerecordedReaderConfig;
+				[Serializable]
+				public class _CerthReaderConfig
                 {
                     public string ConnectionURI;
                     public string PCLExchangeName;
