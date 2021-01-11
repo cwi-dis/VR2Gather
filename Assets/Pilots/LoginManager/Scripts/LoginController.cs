@@ -104,6 +104,10 @@ public class LoginController : PilotController {
                     // Load Pilot
                     if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
                     break;
+                case "Development": // Temporary scenario-placeholder. Use for QualityAssesment on this branch.
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("QualityAssesment"));
+                    break;
                 default:
                     Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
                     break;
