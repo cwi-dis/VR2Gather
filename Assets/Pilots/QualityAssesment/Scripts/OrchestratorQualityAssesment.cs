@@ -2,7 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using OrchestratorWrapping;
+using VRTCore;
+using VRT.Orchestrator.Wrapping;
+using VRT.Pilots.Common;
 
 public class OrchestratorQualityAssesment : MonoBehaviour {
     public static OrchestratorQualityAssesment Instance { get; private set; }

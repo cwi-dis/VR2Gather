@@ -581,35 +581,35 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return new pointcloud(rvPtr);
         }
-    }
 
-    public static pointcloud read(string filename, UInt64 timestamp)
-    {
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-        System.IntPtr rvPtr = _API_cwipc_util.cwipc_read(filename, timestamp, ref errorPtr);
-        if (rvPtr == System.IntPtr.Zero)
+        public static pointcloud read(string filename, UInt64 timestamp)
         {
-            if (errorPtr == System.IntPtr.Zero)
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_read(filename, timestamp, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
             {
-                throw new System.Exception("cwipc.read: returned null without setting error message");
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
-            throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            return new pointcloud(rvPtr);
         }
-        return new pointcloud(rvPtr);
-    }
 
-    public static pointcloud readdump(string filename)
-    {
-        System.IntPtr errorPtr = System.IntPtr.Zero;
-        System.IntPtr rvPtr = _API_cwipc_util.cwipc_read_debugdump(filename, ref errorPtr);
-        if (rvPtr == System.IntPtr.Zero)
+        public static pointcloud readdump(string filename)
         {
-            if (errorPtr == System.IntPtr.Zero)
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_read_debugdump(filename, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
             {
-                throw new System.Exception("cwipc.read: returned null without setting error message");
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
-            throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            return new pointcloud(rvPtr);
         }
-        return new pointcloud(rvPtr);
     }
 }

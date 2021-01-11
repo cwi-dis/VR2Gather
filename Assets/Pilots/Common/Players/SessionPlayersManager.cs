@@ -210,6 +210,7 @@ namespace VRT.Pilots.Common
 						break;
 					case UserRepresentationType.__PCC_CERTH__:
 					case UserRepresentationType.__PCC_SYNTH__:
+					case UserRepresentationType.__PCC_PRERECORDED__:
 					case UserRepresentationType.__PCC_CWIK4A_:
 					case UserRepresentationType.__PCC_PROXY__:
 					case UserRepresentationType.__PCC_CWI_: // PC

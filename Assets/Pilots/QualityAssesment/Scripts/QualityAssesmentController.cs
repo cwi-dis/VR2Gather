@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using VRT.Pilots.Common;
+
 //XXXShishir switched back to original pilot0controller, ToDo: Cherry pick the rating scale scene transitions, ToDo: Reimplement scene controller to use modified entity pipeline later
 //Note: Use scenemanager.loadsceneasync for the rating scale scene once remote user prerecorded view is reimplemented
 public class QualityAssesmentController : PilotController {
