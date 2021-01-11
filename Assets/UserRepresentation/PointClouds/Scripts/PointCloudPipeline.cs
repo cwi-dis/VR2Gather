@@ -38,6 +38,7 @@ namespace VRT.UserRepresentation.PointCloud
             RegisterPipelineClass(UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
         }
 
@@ -113,6 +114,14 @@ namespace VRT.UserRepresentation.PointCloud
                         pcReader = new RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
+					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
+					{
+						var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
+						if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
+							throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
+						pcReader = new PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+						reader = pcReader;
+					}
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
                     {
                         var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
