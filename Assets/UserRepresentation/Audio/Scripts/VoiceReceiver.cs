@@ -26,8 +26,8 @@ public class VoiceReceiver : MonoBehaviour {
         preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
         if (UseDash) {
-            decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
-            reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue, 20);
+            decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
+            reader = new Workers.BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue );
         } else {
             decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
             reader = new Workers.SocketIOReader(user, _streamName, decoderQueue);
