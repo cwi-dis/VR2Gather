@@ -53,7 +53,7 @@
     },
     "forceMesh": false,
     "defaultCellSize": 0.005,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 1.4
   },
 
   "LocalUser": {

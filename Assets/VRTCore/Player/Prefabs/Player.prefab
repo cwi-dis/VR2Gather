@@ -260,7 +260,6 @@ MonoBehaviour:
   orchestratorId: 
   userName: {fileID: 5919579606087306534}
   cam: {fileID: 4434842230143733182}
-  tvm: {fileID: 1701608656947646053}
   avatar: {fileID: 2747435642897048392}
   webcam: {fileID: 5186154985833321788}
   pc: {fileID: 7392659942812053531}
@@ -374,7 +373,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
+  near clip plane: 0.15
   far clip plane: 200
   field of view: 60
   orthographic: 0
@@ -407,9 +406,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
+  joystickSensitivity: 100
   wheelSlope: 0.05
-  bottomLimit: 1
-  topLimit: 1.8
   spectator: 0
   playerBody: {fileID: 4434842229477826213}
   avatarHead: {fileID: 3553503978304500670}
@@ -1072,15 +1070,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5608360512978009425}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1701608656947646053 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6505926999242552116, guid: 5d9e1f582b9ac2b4f8ea19b2aa15dafc,
-    type: 3}
-  m_PrefabInstance: {fileID: 5608360512978009425}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 265563f5bbd28854b864ae17c28e20d6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

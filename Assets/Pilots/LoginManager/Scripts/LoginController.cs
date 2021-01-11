@@ -113,7 +113,7 @@ public class LoginController : PilotController {
                     if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("QualityAssesment"));
                     break;
                 default:
-                    Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
+                    Debug.LogError($"Selected scenario \"{msg[1]}\" not implemented in this player");
                     break;
             }
         }

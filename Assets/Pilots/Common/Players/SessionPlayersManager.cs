@@ -215,6 +215,11 @@ namespace VRT.Pilots.Common
 					case UserRepresentationType.__PCC_PROXY__:
 					case UserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
+						if (isLocalPlayer)
+						{
+							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+						}
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
 						pcPipeline?.Init(user, userCfg);
