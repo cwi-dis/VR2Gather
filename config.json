@@ -1,10 +1,10 @@
 {
 	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
-	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
-	"openLogOnExit" : false,
-
 	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
 	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
+	"orchestratorURL_": "http://192.168.1.10:8080/socket.io/",
+	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
+	"openLogOnExit" : false,
 
     "targetFrameRate": 30,
     "memoryDamping": 1.2999999523162842,
@@ -78,8 +78,8 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../H4_C0_R0",
-				"folder_" : "../lootDump70K",
+				"folder_" : "../H4_C0_R0",
+				"folder" : "../lootDump70K",
 				"ply" : false
 			},
             "CerthReaderConfig": {
