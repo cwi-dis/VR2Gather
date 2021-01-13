@@ -1,4 +1,27 @@
-﻿using System;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,18 +29,16 @@ using UnityEngine.UI;
 using VRT.Orchestrator.Wrapping;
 using VRTCore;
 
-namespace VRT.Orchestrator
-{
+namespace VRT.Orchestrator {
+
     public delegate void FunctionToCallOnSendCommandButton();
 
-    class GuiCommandDescription
-    {
+    class GuiCommandDescription {
         public string CommandName;
         public List<RectTransform> VisibleEditionPanels;
         public FunctionToCallOnSendCommandButton FunctionToCall;
 
-        public GuiCommandDescription(string commandName, List<RectTransform> visibleEditionPanels, FunctionToCallOnSendCommandButton functionToCall)
-        {
+        public GuiCommandDescription(string commandName, List<RectTransform> visibleEditionPanels, FunctionToCallOnSendCommandButton functionToCall) {
             CommandName = commandName;
             VisibleEditionPanels = visibleEditionPanels;
             FunctionToCall = functionToCall;
@@ -27,9 +48,7 @@ namespace VRT.Orchestrator
     /**
      * Main Gui class
      * **/
-    public class OrchestratorGui : MonoBehaviour
-    {
-
+    public class OrchestratorGui : MonoBehaviour {
         #region GUI components
 
         //Connection and login components
@@ -177,8 +196,7 @@ namespace VRT.Orchestrator
 
         #region Unity
 
-        void Start()
-        {
+        void Start() {
             // font to build gui components for logs!
             ArialFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
@@ -193,8 +211,7 @@ namespace VRT.Orchestrator
             BuildCommandsPanels();
 
             //// Add the commands to the options data : will be used to build the dropdown
-            GuiCommands.ForEach(delegate (GuiCommandDescription commandDescription)
-            {
+            GuiCommands.ForEach(delegate (GuiCommandDescription commandDescription) {
                 commandsListData.Add(new Dropdown.OptionData(commandDescription.CommandName));
             });
 
@@ -207,7 +224,7 @@ namespace VRT.Orchestrator
             commandDropdown.onValueChanged.AddListener(delegate { SelectCommand(commandDropdown.value); });
             SelectCommand(commandDropdown.value); //init first command
 
-            // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
             userDataRepresentationTypeDD.ClearOptions();
             userDataRepresentationTypeDD.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
 
@@ -225,10 +242,9 @@ namespace VRT.Orchestrator
         #region GUI
 
         // Build the commands available
-        private void BuildCommandsPanels()
-        {
+        private void BuildCommandsPanels() {
             GuiCommands = new List<GuiCommandDescription>
-        {
+            {
             //Log
             new GuiCommandDescription("SignIn", new List<RectTransform> { userNamePanel, userPasswordPanel }, SignIn),
             new GuiCommandDescription("Login", new List<RectTransform> { userNamePanel, userPasswordPanel }, Login),
@@ -276,86 +292,73 @@ namespace VRT.Orchestrator
         }
 
         // update connect and login buttons according to the states
-        private void UpdateEnabledItems()
-        {
+        private void UpdateEnabledItems() {
             bool lConnectedToOrchestrator = OrchestratorController.Instance.ConnectionStatus == OrchestratorController.orchestratorConnectionStatus.__CONNECTED__;
 
             connectButton.interactable = !lConnectedToOrchestrator;
             disconnectButton.interactable = lConnectedToOrchestrator;
-            loginButton.interactable = lConnectedToOrchestrator && !OrchestratorController.Instance.UserIsLogged;
+            loginButton.interactable = lConnectedToOrchestrator && (!OrchestratorController.Instance.UserIsLogged);
             logoutButton.interactable = lConnectedToOrchestrator && OrchestratorController.Instance.UserIsLogged;
             commandDropdown.interactable = lConnectedToOrchestrator;
             sendCommandButton.interactable = lConnectedToOrchestrator;
         }
 
         // Select a command
-        private void SelectCommand(int value)
-        {
+        private void SelectCommand(int value) {
             RemoveAllParamsPanels();
             selectedCommand = GuiCommands[value];
             UpdateParamsPanels(selectedCommand);
         }
 
         // remove all parameters panel from the view (before to fill it with the good ones according to the selected command)
-        private void RemoveAllParamsPanels()
-        {
-            for (var i = paramsContainer.transform.childCount - 1; i >= 0; i--)
-            {
+        private void RemoveAllParamsPanels() {
+            for (var i = paramsContainer.transform.childCount - 1; i >= 0; i--) {
                 RectTransform objectA = (RectTransform)paramsContainer.transform.GetChild(i);
                 objectA.gameObject.SetActive(false);
             }
         }
 
         // update the params panel acoording to the selected GuiCommand
-        private void UpdateParamsPanels(GuiCommandDescription selectedCommand)
-        {
-            if (selectedCommand != null && selectedCommand.VisibleEditionPanels != null && selectedCommand.VisibleEditionPanels.Count > 0)
-            {
-                selectedCommand.VisibleEditionPanels.ForEach(delegate (RectTransform panel)
-                {
+        private void UpdateParamsPanels(GuiCommandDescription selectedCommand) {
+            if ((selectedCommand != null) && (selectedCommand.VisibleEditionPanels != null) && (selectedCommand.VisibleEditionPanels.Count > 0)) {
+                selectedCommand.VisibleEditionPanels.ForEach(delegate (RectTransform panel) {
                     panel.gameObject.SetActive(true);
                 });
             }
         }
 
         // update the list of connected users in a session to display
-        private void UpdateConnectedUsersGUI()
-        {
+        private void UpdateConnectedUsersGUI() {
             // clean the text field before setting new values
             userSessionUsers.text = "";
 
-            foreach (User u in OrchestratorController.Instance.ConnectedUsers)
-            {
+            foreach (User u in OrchestratorController.Instance.ConnectedUsers) {
                 userSessionUsers.text += u.userName + "; ";
             }
         }
 
-        private IEnumerator ScrollLogsToBottom()
-        {
+        private IEnumerator ScrollLogsToBottom() {
             yield return new WaitForSeconds(0.2f);
             logsScrollRect.verticalScrollbar.value = 0;
         }
 
-        private void ClearLogsGUI()
-        {
-            foreach (Transform child in logsContainer)
-            {
+        private void ClearLogsGUI() {
+            foreach (Transform child in logsContainer) {
                 Destroy(child.gameObject);
             }
         }
 
-        private void CleanUserUI()
-        {
+        private void CleanUserUI() {
             userId.text = "";
             userName.text = "";
             userAdmin.text = "";
             userMQname.text = "";
             userMQurl.text = "";
             userRepresentation.text = "";
+            userIP.text = "";
         }
 
-        private void CleanSessionUI()
-        {
+        private void CleanSessionUI() {
             userMaster.text = "";
             userSession.text = "";
             userSessionUsers.text = "";
@@ -367,8 +370,7 @@ namespace VRT.Orchestrator
         }
 
         // Fill a scroll view with a text item
-        private void AddTextComponentOnContent(Transform container, string value)
-        {
+        private void AddTextComponentOnContent(Transform container, string value) {
             GameObject textGO = new GameObject();
             textGO.name = "Text-" + value;
             textGO.transform.SetParent(container);
@@ -392,10 +394,8 @@ namespace VRT.Orchestrator
         }
 
         // remove a component from a list
-        private void RemoveComponentsFromList(Transform container)
-        {
-            for (var i = container.childCount - 1; i >= 0; i--)
-            {
+        private void RemoveComponentsFromList(Transform container) {
+            for (var i = container.childCount - 1; i >= 0; i--) {
                 var obj = container.GetChild(i);
                 obj.transform.SetParent(null);
                 Destroy(obj.gameObject);
@@ -407,8 +407,7 @@ namespace VRT.Orchestrator
         #region Events listeners
 
         // Subscribe to Orchestrator Wrapper Events
-        private void InitialiseControllerEvents()
-        {
+        private void InitialiseControllerEvents() {
             OrchestratorController.Instance.OnConnectionEvent += OnConnect;
             OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
             OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
@@ -447,10 +446,8 @@ namespace VRT.Orchestrator
 
         #region Socket.io connect
 
-        public void SocketConnect()
-        {
-            switch (OrchestratorController.Instance.ConnectionStatus)
-            {
+        public void SocketConnect() {
+            switch (OrchestratorController.Instance.ConnectionStatus) {
                 case OrchestratorController.orchestratorConnectionStatus.__DISCONNECTED__:
                     OrchestratorController.Instance.SocketConnect(orchestratorUrlIF.text);
                     break;
@@ -460,27 +457,23 @@ namespace VRT.Orchestrator
             }
         }
 
-        private void OnConnect(bool pConnected)
-        {
+        private void OnConnect(bool pConnected) {
             orchestratorConnected.text = pConnected.ToString();
             connectButton.GetComponentInChildren<Text>().text = "socket connection";
             UpdateEnabledItems();
         }
 
-        private void OnConnecting()
-        {
+        private void OnConnecting() {
             orchestratorConnected.text = "Connecting...";
             connectButton.GetComponentInChildren<Text>().text = "abort";
         }
 
-        private void socketDisconnect()
-        {
+        private void socketDisconnect() {
             OrchestratorController.Instance.socketDisconnect();
         }
 
-        private void OnDisconnect(bool pConnected)
-        {
-            userId.text = "";
+        private void OnDisconnect(bool pConnected) {
+            this.userId.text = "";
             userName.text = "";
             userAdmin.text = "";
             orchestratorConnected.text = pConnected.ToString();
@@ -489,8 +482,7 @@ namespace VRT.Orchestrator
             UpdateEnabledItems();
         }
 
-        private void OnGetOrchestratorVersionHandler(string pVersion)
-        {
+        private void OnGetOrchestratorVersionHandler(string pVersion) {
             orchestratorVersion.text = pVersion;
         }
 
@@ -499,14 +491,12 @@ namespace VRT.Orchestrator
         #region Orchestrator Logs
 
         // Display the sent message in the logs
-        public void OnOrchestratorRequest(string pRequest)
-        {
+        public void OnOrchestratorRequest(string pRequest) {
             AddTextComponentOnContent(logsContainer.transform, ">>> " + pRequest);
         }
 
         // Display the received message in the logs
-        public void OnOrchestratorResponse(string pResponse)
-        {
+        public void OnOrchestratorResponse(string pResponse) {
             //Debug.Log("[OrchestratorGui][OnOrchestratorResponse]::Response lenght::" + pResponse.Length);
             string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
             AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
@@ -517,37 +507,29 @@ namespace VRT.Orchestrator
 
         #region Login/Logout
 
-        private void SignIn()
-        {
+        private void SignIn() {
             OrchestratorController.Instance.SignIn(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void OnSignIn()
-        {
+        private void OnSignIn() {
             userNameIF.text = userNamePanel.GetComponentInChildren<InputField>().text;
             userPasswordIF.text = userPasswordPanel.GetComponentInChildren<InputField>().text;
             HeadLogin();
         }
 
         // Login from the main buttons Login & Logout
-        private void HeadLogin()
-        {
+        private void HeadLogin() {
             OrchestratorController.Instance.Login(userNameIF.text, userPasswordIF.text);
         }
 
-        private void Login()
-        {
+        private void Login() {
             OrchestratorController.Instance.Login(userNamePanel.GetComponentInChildren<InputField>().text, userPasswordPanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void OnLogin(bool userLoggedSucessfully)
-        {
-            if (userLoggedSucessfully)
-            {
+        private void OnLogin(bool userLoggedSucessfully) {
+            if (userLoggedSucessfully) {
                 OrchestratorController.Instance.IsAutoRetrievingData = autoRetrieveOrchestratorDataOnConnect.isOn;
-            }
-            else
-            {
+            } else {
                 CleanUserUI();
             }
 
@@ -556,15 +538,12 @@ namespace VRT.Orchestrator
         }
 
 
-        private void Logout()
-        {
+        private void Logout() {
             OrchestratorController.Instance.Logout();
         }
 
-        private void OnLogout(bool userLogoutSucessfully)
-        {
-            if (userLogoutSucessfully)
-            {
+        private void OnLogout(bool userLogoutSucessfully) {
+            if (userLogoutSucessfully) {
                 userLogged.text = false.ToString();
                 CleanUserUI();
                 CleanSessionUI();
@@ -576,8 +555,7 @@ namespace VRT.Orchestrator
 
         #region NTP clock
 
-        private void GetNTPTime()
-        {
+        private void GetNTPTime() {
             OrchestratorController.Instance.GetNTPTime();
         }
 
@@ -585,84 +563,68 @@ namespace VRT.Orchestrator
 
         #region Sessions
 
-        private void GetSessions()
-        {
+        private void GetSessions() {
             OrchestratorController.Instance.GetSessions();
         }
 
-        private void OnGetSessionsHandler(Session[] sessions)
-        {
+        private void OnGetSessionsHandler(Session[] sessions) {
             // clean current session items
             RemoveComponentsFromList(orchestratorSessions.transform);
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
             dd.ClearOptions();
 
             // update the list of available sessions
-            if (sessions != null && sessions.Length > 0)
-            {
-                Array.ForEach(sessions, delegate (Session element)
-                {
+            if (sessions != null && sessions.Length > 0) {
+                Array.ForEach(sessions, delegate (Session element) {
                     AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
                 });
 
                 // update the dropdown
                 List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-                Array.ForEach(sessions, delegate (Session session)
-                {
+                Array.ForEach(sessions, delegate (Session session) {
                     options.Add(new Dropdown.OptionData(session.GetGuiRepresentation()));
                 });
                 dd.AddOptions(options);
             }
         }
 
-        private void GetSessionInfo()
-        {
+        private void GetSessionInfo() {
             OrchestratorController.Instance.GetSessionInfo();
         }
 
-        private void OnGetSessionInfoHandler(Session session)
-        {
-            if (session != null)
-            {
+        private void OnGetSessionInfoHandler(Session session) {
+            if (session != null) {
                 userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
                 userSession.text = session.GetGuiRepresentation();
 
-                if (!string.IsNullOrEmpty(session.sessionAdministrator))
-                {
+                if (!string.IsNullOrEmpty(session.sessionAdministrator)) {
                     userSessionCreator.text = OrchestratorController.Instance.GetUser(session.sessionAdministrator).userName;
                 }
 
-                if (!string.IsNullOrEmpty(session.sessionMaster))
-                {
+                if (!string.IsNullOrEmpty(session.sessionMaster)) {
                     userSessionMaster.text = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
                 }
 
                 userScenario.text = session.scenarioId;
                 UpdateConnectedUsersGUI();
-            }
-            else
-            {
+            } else {
                 CleanSessionUI();
             }
         }
 
-        private void AddSession()
-        {
+        private void AddSession() {
             Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[dd.value].scenarioId,
             sessionNamePanel.GetComponentInChildren<InputField>().text,
             sessionDescriptionPanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void OnAddSessionHandler(Session session)
-        {
+        private void OnAddSessionHandler(Session session) {
             // Is equal to AddSession + Join Session, except that session is returned (not on JoinSession)
-            if (session != null)
-            {
+            if (session != null) {
                 // update the list of available sessions
                 RemoveComponentsFromList(orchestratorSessions.transform);
-                Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session element)
-                {
+                Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session element) {
                     AddTextComponentOnContent(orchestratorSessions.transform, element.GetGuiRepresentation());
                 });
 
@@ -670,8 +632,7 @@ namespace VRT.Orchestrator
                 Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
                 dd.ClearOptions();
                 List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-                Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session sess)
-                {
+                Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session sess) {
                     options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
                 });
                 dd.AddOptions(options);
@@ -682,77 +643,60 @@ namespace VRT.Orchestrator
                 userSessionMaster.text = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
                 userScenario.text = session.scenarioId;
                 UpdateConnectedUsersGUI();
-            }
-            else
-            {
+            } else {
                 CleanSessionUI();
             }
         }
 
-        private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario)
-        {
-            if (scenario != null)
-            {
+        private void OnGetScenarioInstanceInfoHandler(ScenarioInstance scenario) {
+            if (scenario != null) {
                 userScenario.text = scenario.GetGuiRepresentation();
             }
         }
 
-        private void DeleteSession()
-        {
+        private void DeleteSession() {
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.AvailableSessions[dd.value].sessionId);
         }
 
-        private void OnDeleteSessionHandler()
-        {
+        private void OnDeleteSessionHandler() {
             CleanSessionUI();
         }
 
-        private void JoinSession()
-        {
+        private void JoinSession() {
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
             string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[dd.value].sessionId;
             OrchestratorController.Instance.JoinSession(sessionIdToJoin);
         }
 
-        private void OnJoinSessionHandler(Session session)
-        {
-            if (session != null)
-            {
+        private void OnJoinSessionHandler(Session session) {
+            if (session != null) {
                 userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
                 userSession.text = session.GetGuiRepresentation();
                 userSessionCreator.text = OrchestratorController.Instance.GetUser(session.sessionAdministrator).userName;
                 userSessionMaster.text = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
                 userScenario.text = session.scenarioId;
                 UpdateConnectedUsersGUI();
-            }
-            else
-            {
+            } else {
                 CleanSessionUI();
             }
         }
 
-        private void LeaveSession()
-        {
+        private void LeaveSession() {
             OrchestratorController.Instance.LeaveSession();
         }
 
-        private void OnLeaveSessionHandler()
-        {
+        private void OnLeaveSessionHandler() {
             CleanSessionUI();
         }
 
-        private void OnUserJoinedSessionHandler(string userID)
-        {
-            if (!string.IsNullOrEmpty(userID))
-            {
+        private void OnUserJoinedSessionHandler(string userID) {
+            if (!string.IsNullOrEmpty(userID)) {
             }
         }
 
-        private void OnUserLeftSessionHandler(string userID)
-        {
-            if (!string.IsNullOrEmpty(userID))
-            {
+        private void OnUserLeftSessionHandler(string userID) {
+            if (!string.IsNullOrEmpty(userID)) {
             }
         }
 
@@ -760,19 +704,15 @@ namespace VRT.Orchestrator
 
         #region Scenarios
 
-        private void GetScenarios()
-        {
+        private void GetScenarios() {
             OrchestratorController.Instance.GetScenarios();
         }
 
-        private void OnGetScenariosHandler(Scenario[] scenarios)
-        {
-            if (scenarios != null && scenarios.Length > 0)
-            {
+        private void OnGetScenariosHandler(Scenario[] scenarios) {
+            if (scenarios != null && scenarios.Length > 0) {
                 // update the list of available scenarios
                 RemoveComponentsFromList(orchestratorScenarios.transform);
-                Array.ForEach(scenarios, delegate (Scenario element)
-                {
+                Array.ForEach(scenarios, delegate (Scenario element) {
                     AddTextComponentOnContent(orchestratorScenarios.transform, element.GetGuiRepresentation());
                 });
 
@@ -780,8 +720,7 @@ namespace VRT.Orchestrator
                 Dropdown dd = scenarioIdPanel.GetComponentInChildren<Dropdown>();
                 dd.ClearOptions();
                 List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-                Array.ForEach(scenarios, delegate (Scenario scenario)
-                {
+                Array.ForEach(scenarios, delegate (Scenario scenario) {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                 });
                 dd.AddOptions(options);
@@ -792,15 +731,11 @@ namespace VRT.Orchestrator
 
         #region Live
 
-        private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
-        {
-            if (liveData != null)
-            {
+        private void OnGetLivePresenterDataHandler(LivePresenterData liveData) {
+            if (liveData != null) {
                 userLiveURL.text = liveData.liveAddress;
                 userVODLiveURL.text = liveData.vodAddress;
-            }
-            else
-            {
+            } else {
                 userLiveURL.text = "";
                 userVODLiveURL.text = "";
             }
@@ -810,19 +745,15 @@ namespace VRT.Orchestrator
 
         #region Users
 
-        private void GetUsers()
-        {
+        private void GetUsers() {
             OrchestratorController.Instance.GetUsers();
         }
 
-        private void OnGetUsersHandler(User[] users)
-        {
-            if (users != null && users.Length > 0)
-            {
+        private void OnGetUsersHandler(User[] users) {
+            if (users != null && users.Length > 0) {
                 // update the list of available users
                 RemoveComponentsFromList(orchestratorUsers.transform);
-                Array.ForEach(users, delegate (User element)
-                {
+                Array.ForEach(users, delegate (User element) {
                     AddTextComponentOnContent(orchestratorUsers.transform, element.GetGuiRepresentation());
                 });
 
@@ -830,57 +761,45 @@ namespace VRT.Orchestrator
                 Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
                 dd.ClearOptions();
                 List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-                Array.ForEach(users, delegate (User user)
-                {
+                Array.ForEach(users, delegate (User user) {
                     options.Add(new Dropdown.OptionData(user.GetGuiRepresentation()));
                 });
                 dd.AddOptions(options);
             }
         }
 
-        private void AddUser()
-        {
+        private void AddUser() {
             OrchestratorController.Instance.AddUser(userNamePanel.GetComponentInChildren<InputField>().text,
                                             userPasswordPanel.GetComponentInChildren<InputField>().text,
                                             userAdminPanel.GetComponentInChildren<Toggle>().isOn);
         }
 
-        private void OnAddUserHandler(User user)
-        {
+        private void OnAddUserHandler(User user) {
             //Nothing to do here, free to add your own behaviour.
         }
 
-        private void UpdateUserData()
-        {
+        private void UpdateUserData() {
             UserData lUserData = new UserData();
             lUserData.userMQexchangeName = userDataMQnamePanel.GetComponentInChildren<InputField>().text;
             lUserData.userMQurl = userDataMQurlPanel.GetComponentInChildren<InputField>().text;
             lUserData.userRepresentationType = (UserRepresentationType)userDataRepresentationTypeDD.value;
             lUserData.userIP = OrchestratorController.Instance.GetIPAddress();
 
-            OrchestratorController.Instance.UpdateUserData(lUserData);
+            OrchestratorController.Instance.UpdateFullUserData(lUserData);
         }
 
-        private void ClearUserData()
-        {
+        private void ClearUserData() {
             OrchestratorController.Instance.ClearUserData();
         }
 
-        private void GetUserInfo()
-        {
+        private void GetUserInfo() {
             Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.GetUserInfo(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
         }
 
-        private void OnGetUserInfoHandler(User user)
-        {
-            Debug.Log("NOW");
-            Debug.Log(user.userId);
-            Debug.Log(user.userData.userIP);
-            if (user != null)
-            {
-                if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
-                {
+        private void OnGetUserInfoHandler(User user) {
+            if (user != null) {
+                if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId) {
                     OrchestratorController.Instance.SelfUser = user;
 
                     userId.text = user.userId;
@@ -894,8 +813,7 @@ namespace VRT.Orchestrator
             }
         }
 
-        private void DeleteUser()
-        {
+        private void DeleteUser() {
             Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.DeleteUser(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
         }
@@ -904,50 +822,41 @@ namespace VRT.Orchestrator
 
         #region Rooms
 
-        private void GetRooms()
-        {
+        private void GetRooms() {
             OrchestratorController.Instance.GetRooms();
         }
 
-        private void OnGetRoomsHandler(RoomInstance[] rooms)
-        {
-            if (rooms != null && rooms.Length > 0)
-            {
+        private void OnGetRoomsHandler(RoomInstance[] rooms) {
+            if (rooms != null && rooms.Length > 0) {
                 //update the data in the dropdown
                 Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
                 dd.ClearOptions();
                 List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-                Array.ForEach(rooms, delegate (RoomInstance room)
-                {
+                Array.ForEach(rooms, delegate (RoomInstance room) {
                     options.Add(new Dropdown.OptionData(room.GetGuiRepresentation()));
                 });
                 dd.AddOptions(options);
             }
         }
 
-        private void JoinRoom()
-        {
+        private void JoinRoom() {
             Dropdown dd = roomIdPanel.GetComponentInChildren<Dropdown>();
             RoomInstance room = OrchestratorController.Instance.AvailableRooms[dd.value];
             userRoom.text = room.GetGuiRepresentation();
             OrchestratorController.Instance.JoinRoom(room.roomId);
         }
 
-        private void OnJoinRoomHandler(bool hasJoined)
-        {
-            if (!hasJoined)
-            {
+        private void OnJoinRoomHandler(bool hasJoined) {
+            if (!hasJoined) {
                 userRoom.text = "";
             }
         }
 
-        private void LeaveRoom()
-        {
+        private void LeaveRoom() {
             OrchestratorController.Instance.LeaveRoom();
         }
 
-        private void OnLeaveRoomHandler()
-        {
+        private void OnLeaveRoomHandler() {
             userRoom.text = "";
         }
 
@@ -955,19 +864,16 @@ namespace VRT.Orchestrator
 
         #region Messages
 
-        private void SendMessage()
-        {
+        private void SendMessage() {
             Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.SendMessage(messagePanel.GetComponentInChildren<InputField>().text, OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
         }
 
-        private void SendMessageToAll()
-        {
+        private void SendMessageToAll() {
             OrchestratorController.Instance.SendMessageToAll(messagePanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void OnUserMessageReceivedHandler(UserMessage userMessage)
-        {
+        private void OnUserMessageReceivedHandler(UserMessage userMessage) {
             AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
             StartCoroutine(ScrollLogsToBottom());
         }
@@ -976,34 +882,28 @@ namespace VRT.Orchestrator
 
         #region Events
 
-        private void SendEventToMaster()
-        {
-            if (!OrchestratorController.Instance.UserIsMaster)
-            {
+        private void SendEventToMaster() {
+            if (!OrchestratorController.Instance.UserIsMaster) {
                 OrchestratorController.Instance.SendEventToMaster(eventPanel.GetComponentInChildren<InputField>().text);
             }
         }
 
-        private void SendEventToUser()
-        {
+        private void SendEventToUser() {
             Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.SendEventToUser(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId, eventPanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void SendEventToAll()
-        {
+        private void SendEventToAll() {
             OrchestratorController.Instance.SendEventToAll(eventPanel.GetComponentInChildren<InputField>().text);
         }
 
-        private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
-        {
+        private void OnMasterEventReceivedHandler(UserEvent pMasterEventData) {
             //Add your event handling
             AddTextComponentOnContent(logsContainer.transform, "<<< MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
             StartCoroutine(ScrollLogsToBottom());
         }
 
-        private void OnUserEventReceivedHandler(UserEvent pUserEventData)
-        {
+        private void OnUserEventReceivedHandler(UserEvent pUserEventData) {
             //Add your event handling
             AddTextComponentOnContent(logsContainer.transform, "<<< USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
             StartCoroutine(ScrollLogsToBottom());
@@ -1013,14 +913,12 @@ namespace VRT.Orchestrator
 
         #region Data Stream
 
-        private void GetAvailableDataStreams()
-        {
+        private void GetAvailableDataStreams() {
             Dropdown dd = userIdPanel.GetComponentInChildren<Dropdown>();
             OrchestratorController.Instance.GetAvailableDataStreams(OrchestratorController.Instance.AvailableUserAccounts[dd.value].userId);
         }
 
-        private void GetRegisteredDataStreams()
-        {
+        private void GetRegisteredDataStreams() {
             OrchestratorController.Instance.GetRegisteredDataStreams();
         }
 
@@ -1028,8 +926,7 @@ namespace VRT.Orchestrator
 
         #region Errors
 
-        private void OnErrorHandler(ResponseStatus status)
-        {
+        private void OnErrorHandler(ResponseStatus status) {
             //Nothing to do here, free to add your own behaviour.
         }
 

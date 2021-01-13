@@ -1,4 +1,27 @@
-﻿using BestHTTP.SocketIO;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using BestHTTP.SocketIO;
 using LitJson;
 using System;
 using System.Collections.Generic;
@@ -45,10 +68,10 @@ namespace VRT.Orchestrator.WSManagement
         private SocketManager Manager;
 
         // Is this client is connected to the orchestrator
-        public bool isSocketConnected = false;
+        public Boolean isSocketConnected = false;
 
         // To deal with the commands sent and the responses
-        public bool IsWaitingResponse = false;
+        public Boolean IsWaitingResponse = false;
         public int commandId = 0;
 
         // listener for the connection state with the orchestrator upon socketio
@@ -67,7 +90,7 @@ namespace VRT.Orchestrator.WSManagement
         // Constructor
         public OrchestratorWSManager(string orchestratorUrl, IOrchestratorConnectionListener connectionListener, IMessagesListener messagesListener)
         {
-            OrchestratorUrl = orchestratorUrl;
+            this.OrchestratorUrl = orchestratorUrl;
             this.connectionListener = connectionListener;
             this.messagesListener = messagesListener;
         }
@@ -84,10 +107,10 @@ namespace VRT.Orchestrator.WSManagement
             SocketOptions options = new SocketOptions();
             options.AutoConnect = false;
             options.ConnectWith = BestHTTP.SocketIO.Transports.TransportTypes.WebSocket;
-
+            
             // Create the Socket.IO manager
             Manager = new SocketManager(new Uri(OrchestratorUrl), options);
-
+            
             Manager.Encoder = new BestHTTP.SocketIO.JsonEncoders.LitJsonEncoder(); //
             Manager.Socket.AutoDecodePayload = false;
             Manager.Socket.On(SocketIOEventTypes.Connect, OnServerConnect);
@@ -100,7 +123,7 @@ namespace VRT.Orchestrator.WSManagement
             {
                 Manager.Socket.On(messageReceiver.SocketEventName, messageReceiver.OrchestratorMessageCallback);
             });
-
+            
             // Open the socket
             Manager.Open();
         }
@@ -147,7 +170,7 @@ namespace VRT.Orchestrator.WSManagement
         // Called when socket connection error occurs
         void OnServerError(Socket socket, Packet packet, params object[] args)
         {
-            if (args != null)
+            if(args != null)
             {
                 Error error = args[0] as Error;
                 ResponseStatus status = new ResponseStatus((int)error.Code, error.Message);
@@ -165,14 +188,11 @@ namespace VRT.Orchestrator.WSManagement
 
         public void EmitPacket(OrchestratorCommand command)
         {
-            lock (this)
-            {
-                if (command.Parameters != null)
-                {
+            lock (this) {
+                if (command.Parameters != null) {
                     object[] parameters = new object[command.Parameters.Count];
 
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
+                    for (int i = 0; i < parameters.Length; i++) {
                         parameters[i] = command.Parameters[i].ParamValue;
                     }
 
@@ -185,29 +205,20 @@ namespace VRT.Orchestrator.WSManagement
         // Emit a command
         public void EmitCommand(OrchestratorCommand command)
         {
-            lock (this)
-            {
+            lock (this) {
                 // the JsonData that will own the parameters and their values
                 JsonData parameters = new JsonData();
 
-                if (command.Parameters != null)
-                {
+                if (command.Parameters != null) {
                     // for each parameter defined in the command, fill the parameter with its value
-                    command.Parameters.ForEach(delegate (Parameter parameter)
-                    {
-                        if (parameter.ParamValue != null)
-                        {
-                            if (parameter.type == typeof(bool))
-                            {
+                    command.Parameters.ForEach(delegate (Parameter parameter) {
+                        if (parameter.ParamValue != null) {
+                            if (parameter.type == typeof(bool)) {
                                 parameters[parameter.ParamName] = (bool)parameter.ParamValue;
-                            }
-                            else
-                            {
+                            } else {
                                 parameters[parameter.ParamName] = parameter.ParamValue.ToString();
                             }
-                        }
-                        else
-                        {
+                        } else {
                             parameters[parameter.ParamName] = "";
                         }
                     });
@@ -221,8 +232,7 @@ namespace VRT.Orchestrator.WSManagement
                 commandQueue.Add(command);
 
                 // warn the messages Listener that new message is emitted
-                if (messagesListener != null)
-                {
+                if (messagesListener != null) {
                     messagesListener.OnOrchestratorRequest(command.SocketEventName + " " + parameters.ToJson());
                 }
 
@@ -246,10 +256,9 @@ namespace VRT.Orchestrator.WSManagement
         }
 
         // [deprecated] send the command (command name, parameters)
-        private bool SendCommand(string command, JsonData parameters)
+        private Boolean SendCommand(string command, JsonData parameters)
         {
-            lock (this)
-            {
+            lock (this) {
                 // increment the commandId and add it to the command parameters (see NOTE on top of file)
                 commandId++;
                 parameters["commandId"] = commandId;
@@ -258,11 +267,9 @@ namespace VRT.Orchestrator.WSManagement
                 // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
                 //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
                 //        could be done if the orchestrator integrates the commandId with the response
-                if (!IsWaitingResponse)
-                {
+                if (!IsWaitingResponse) {
                     // warn the messages Listener that new message is emitted
-                    if (messagesListener != null)
-                    {
+                    if (messagesListener != null) {
                         messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
                     }
 
