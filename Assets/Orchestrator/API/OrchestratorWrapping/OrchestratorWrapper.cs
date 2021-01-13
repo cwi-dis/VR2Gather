@@ -1,4 +1,27 @@
-﻿using System;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,8 +43,8 @@ namespace VRT.Orchestrator.Wrapping
 
         public ResponseStatus(int error, string message)
         {
-            Error = error;
-            Message = message;
+            this.Error = error;
+            this.Message = message;
         }
         public ResponseStatus() : this(0, "OK") { }
     }
@@ -63,7 +86,7 @@ namespace VRT.Orchestrator.Wrapping
 
         public UserAudioPacket(byte[] pAudioPacket, string pUserID)
         {
-            if (pAudioPacket != null)
+            if(pAudioPacket != null)
             {
                 audioPacket = pAudioPacket;
                 userID = pUserID;
@@ -125,7 +148,7 @@ namespace VRT.Orchestrator.Wrapping
 
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IOrchestratorMessagesListener messagesListener, IUserMessagesListener userMessagesListener, IUserSessionEventsListener userSessionEventsListener)
         {
-            if (instance is null)
+            if(instance is null)
             {
                 instance = this;
             }
@@ -169,7 +192,7 @@ namespace VRT.Orchestrator.Wrapping
         #region commands with Acks and responses
         public void Connect()
         {
-            if (OrchestrationSocketIoManager != null && OrchestrationSocketIoManager.isSocketConnected)
+            if ((OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected))
             {
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
@@ -227,7 +250,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnLoginResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             try { myUserID = response.body["userId"].ToString(); }
-            catch { myUserID = ""; }
+            catch { myUserID = "";  }
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
@@ -252,7 +275,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnGetNTPTimeResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            NtpClock ntpTime = OrchestratorElement.ParseJsonData<NtpClock>(response.body);
+            NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
@@ -268,7 +291,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnAddSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
+            Session session = Session.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
 
@@ -294,7 +317,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnGetSessionInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
+            Session session = Session.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
@@ -323,7 +346,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnJoinSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            Session session = OrchestratorElement.ParseJsonData<Session>(response.body);
+            Session session = Session.ParseJsonData<Session>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnJoinSessionResponse(status, session);
         }
 
@@ -348,7 +371,7 @@ namespace VRT.Orchestrator.Wrapping
         private void GetLivePresenterDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            LivePresenterData liveData = OrchestratorElement.ParseJsonData<LivePresenterData>(response.body);
+            LivePresenterData liveData = LivePresenterData.ParseJsonData<LivePresenterData>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
 
@@ -375,7 +398,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnGetScenarioInstanceInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            ScenarioInstance scenario = OrchestratorElement.ParseJsonData<ScenarioInstance>(response.body);
+            ScenarioInstance scenario = ScenarioInstance.ParseJsonData<ScenarioInstance>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
         }
 
@@ -404,7 +427,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnAddUserResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = OrchestratorElement.ParseJsonData<User>(response.body);
+            User user = User.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
@@ -418,8 +441,22 @@ namespace VRT.Orchestrator.Wrapping
         private void OnGetUserInfoResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
-            User user = OrchestratorElement.ParseJsonData<User>(response.body);
+            User user = User.ParseJsonData<User>(response.body);
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
+        }
+
+        public void UpdateUserData(string userDataKey, string userDataValue)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
+            command.GetParameter("userDataKey").ParamValue = userDataKey;
+            command.GetParameter("userDataValue").ParamValue = userDataValue;
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
 
         public void UpdateUserDataJson(UserData userData)
@@ -441,7 +478,7 @@ namespace VRT.Orchestrator.Wrapping
             OrchestratorCommand command = GetOrchestratorCommand("ClearUserData");
             OrchestrationSocketIoManager.EmitCommand(command);
         }
-
+        
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
@@ -805,7 +842,7 @@ namespace VRT.Orchestrator.Wrapping
                 new List<Parameter>
                     {
                         new Parameter("userId", typeof(string))
-                    },
+                    }, 
                     OnGetUserInfoResponse),
                 new OrchestratorCommand("AddUser", new List<Parameter>
                 {
@@ -814,6 +851,12 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+                new OrchestratorCommand("UpdateUserData", new List<Parameter>
+                {
+                    new Parameter("userDataKey", typeof(string)),
+                    new Parameter("userDataValue", typeof(string))
+                },
+                OnUpdateUserDataResponse),
                 new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
                 {
                     new Parameter("userDataJson", typeof(string))

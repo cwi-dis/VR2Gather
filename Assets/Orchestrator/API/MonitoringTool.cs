@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRT.Orchestrator
-{
-    public class MonitoringTool : MonoBehaviour
-    {
+namespace VRT.Orchestrator {
+    public class MonitoringTool : MonoBehaviour {
         public static MonitoringTool instance;
 
         private int startPoint;
@@ -15,48 +13,39 @@ namespace VRT.Orchestrator
 
         private bool bReady = false;
 
-        private void Awake()
-        {
+        private void Awake() {
             if (instance == null)
                 instance = this;
         }
 
 
-        void Start()
-        {
+        void Start() {
 
         }
 
-        void Update()
-        {
+        void Update() {
             ms += Time.deltaTime * 1000;
         }
 
-        public void WriteStartPoint()
-        {
-            if (bReady)
-            {
+        public void WriteStartPoint() {
+            if (bReady) {
                 startPoint = (int)ms;
                 bReady = false;
             }
         }
 
-        public void WriteEndPoint()
-        {
-            if (!bReady)
-            {
+        public void WriteEndPoint() {
+            if (!bReady) {
                 endPoint = (int)ms;
                 CalculateLatency();
                 bReady = true;
             }
         }
 
-        private void CalculateLatency()
-        {
+        private void CalculateLatency() {
             float lLatency = 0;
 
-            if (endPoint >= startPoint)
-            {
+            if (endPoint >= startPoint) {
                 lLatency = endPoint - startPoint;
             }
 
