@@ -1,10 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace VRT.Orchestrator
-{
-    public class OrchestratorGuiInitializer : MonoBehaviour
-    {
+namespace VRT.Orchestrator {
+    public class OrchestratorGuiInitializer : MonoBehaviour {
         [SerializeField]
         bool overrideFields = false;
         [Header("User Credentials")]
@@ -34,9 +32,9 @@ namespace VRT.Orchestrator
         private InputField MQnameIF = null;
 
 #if UNITY_EDITOR
-        void Awake()
-        {
-            if (!overrideFields) return;
+        void Awake() {
+            if (!overrideFields)
+                return;
 
             defaulOrchUrlIF.text = defaulOrchURL;
             userNameIF.text = defaultUserName;
