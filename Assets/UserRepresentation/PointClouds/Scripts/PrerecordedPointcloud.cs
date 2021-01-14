@@ -12,26 +12,41 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PrerecordedPointcloud : PointCloudPipeline
     {
-        public string dirPath;
+        [Tooltip("Overrides PrerecordedReaderConfig setting")]
+        public string folder;
         User dummyUser;
         Config._User cfg;
 
         public void Awake()
         {
-            Debug.Log($"{Name()}: xxxjack Awake called, dirPath={dirPath}");
 
             dummyUser = new User();
             dummyUser.userData = new UserData();
             dummyUser.userData.userRepresentationType = UserRepresentationType.__PCC_PRERECORDED__;
 
+            Config._User realUser = Config.Instance.LocalUser;
+
             cfg = new Config._User();
             cfg.sourceType = "self";
             cfg.PCSelfConfig = new Config._User._PCSelfConfig();
             cfg.PCSelfConfig.PrerecordedReaderConfig = new Config._User._PCSelfConfig._PrerecordedReaderConfig();
-            cfg.PCSelfConfig.PrerecordedReaderConfig.folder = dirPath;
+            if (folder == null || folder == "")
+            {
+                folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+            }
+            Debug.Log($"{Name()}: folder={folder}");
+            cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
+            cfg.Render = realUser.Render;
 
-            Init(dummyUser, cfg, true);
-            Debug.Log($"{Name()}: xxxjack Init(...) returned");
+            try
+            {
+                Init(dummyUser, cfg, true);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Cannot initialize prerecorded pointcloud: {e.Message}");
+                throw e;
+            }
         }
     }
 }
