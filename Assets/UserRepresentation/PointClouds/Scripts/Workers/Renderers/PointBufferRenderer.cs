@@ -21,7 +21,11 @@ namespace VRT.UserRepresentation.PointCloud
         // Start is called before the first frame update
         void Start()
         {
-            if (material == null) material = Resources.Load<Material>("PointCloudsBuffer");
+            if (material == null)
+            {
+                var _material = Resources.Load<Material>("PointCloudsBuffer");
+                material = new Material(_material);
+            }
             block = new MaterialPropertyBlock();
         }
 
