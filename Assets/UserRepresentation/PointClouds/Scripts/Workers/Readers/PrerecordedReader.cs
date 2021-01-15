@@ -5,7 +5,34 @@ using VRTCore;
 namespace VRT.UserRepresentation.PointCloud
 {
 
-    public class PrerecordedReader : TiledWorker {
+    public class PrerecordedReader : TiledWorker
+    {
+        List<PrerecordedTileReader> tileReaders = new List<PrerecordedTileReader>();
+
+        public PrerecordedReader() : base(WorkerType.Init)
+        {
+        }
+
+        public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        {
+            PrerecordedTileReader tileReader = new PrerecordedTileReader(dirname, _ply, _loop, _frameRate, _outQueue, _out2Queue);
+            tileReaders.Add(tileReader);
+        }
+
+        public override void Stop()
+        {
+            base.Stop();
+            foreach(var tr in tileReaders)
+            {
+                tr.Stop();
+            }
+        }
+
+
+    }
+
+    public class PrerecordedTileReader : BaseWorker
+    {
         string[] filenames; // All files in the sequence
         int filenamesCurIndex;  // Where we are now
         bool ply;
@@ -15,11 +42,7 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public PrerecordedReader() : base(WorkerType.Init)
-        {
-        }
-
-        public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public PrerecordedTileReader(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             if (_outQueue == null)
             {

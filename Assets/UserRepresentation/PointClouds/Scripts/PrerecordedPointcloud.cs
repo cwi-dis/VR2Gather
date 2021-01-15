@@ -44,7 +44,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Cannot initialize prerecorded pointcloud: {e.Message}");
+                Debug.LogError($"Cannot initialize prerecorded pointcloud: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw e;
             }
         }
