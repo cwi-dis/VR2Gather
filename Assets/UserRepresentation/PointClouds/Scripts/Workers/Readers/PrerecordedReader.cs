@@ -46,7 +46,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         public override void Stop()
         {
-            Debug.Log($"Name(): xxxjack Stop");
             base.Stop();
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             outQueue = null;
@@ -55,7 +54,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         public override void OnStop() {
-            Debug.Log($"Name(): xxxjack OnStop");
             base.OnStop();
             filenames = null;
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
