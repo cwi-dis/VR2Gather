@@ -4,6 +4,7 @@ using VRTCore;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+
     public class PrerecordedReader : TiledWorker {
         List<string> filenames;
         bool ply;
@@ -13,18 +14,22 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        PrerecordedReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public PrerecordedReader() : base(WorkerType.Init)
+        {
+        }
+
+        public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
             if (_outQueue == null)
             {
                 throw new System.Exception("{Name()}: outQueue is null");
             }
+            if (outQueue != null)
+            {
+                throw new System.Exception($"{Name()}: only single Add() allowed");
+            }
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-        }
-
-        public PrerecordedReader(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
-        {
             ply = _ply;
             var _filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
             Debug.Log($"{Name()}: Recording consists of {_filenames.Length} files");

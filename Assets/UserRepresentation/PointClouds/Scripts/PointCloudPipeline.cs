@@ -116,13 +116,7 @@ namespace VRT.UserRepresentation.PointCloud
                     }
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
 					{
-						var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
-						if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folders == null)
-							throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-                        if (PrerecordedReaderConfig.folders.Length != 1)
-                            throw new System.Exception($"{Name()}: multiple tiles not yet implemented");
-						pcReader = new PrerecordedReader(PrerecordedReaderConfig.folders[0], PrerecordedReaderConfig.ply, true, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-						reader = pcReader;
+                        throw new System.Exception($"{Name()}: Programmer error, should use sourceType=\"prerecorded\"");
 					}
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
                     {
@@ -241,6 +235,18 @@ namespace VRT.UserRepresentation.PointCloud
                         }
                     }
                     break;
+                case "prerecorded":
+                    var PrerecordedReaderConfig = cfg.PCSelfConfig.PrerecordedReaderConfig;
+                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folders == null || PrerecordedReaderConfig.folders.Length == 0)
+                        throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
+                    var _reader = new PrerecordedReader();
+                    foreach (var folder in PrerecordedReaderConfig.folders)
+                    {
+                        var _prepQueue = _CreateRendererAndPreparer();
+                        _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                    }
+                    break;
+
                 case "remote":
                     var SUBConfig = cfg.SUBConfig;
                     if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");

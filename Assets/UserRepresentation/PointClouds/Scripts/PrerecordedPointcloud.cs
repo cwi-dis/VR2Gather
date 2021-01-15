@@ -27,7 +27,7 @@ namespace VRT.UserRepresentation.PointCloud
             Config._User realUser = Config.Instance.LocalUser;
 
             cfg = new Config._User();
-            cfg.sourceType = "self";
+            cfg.sourceType = "prerecorded";
             cfg.PCSelfConfig = new Config._User._PCSelfConfig();
             cfg.PCSelfConfig.PrerecordedReaderConfig = new Config._User._PCSelfConfig._PrerecordedReaderConfig();
             if (folders == null || folders.Length == 0)
