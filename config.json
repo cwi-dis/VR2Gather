@@ -78,8 +78,8 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder_" : "../H4_C0_R0",
-				"folder" : "../lootDump70K",
+				"folders_" : ["../H4_C0_R0"],
+				"folders" : ["../lootDump70K"],
 				"ply" : false
 			},
             "CerthReaderConfig": {

@@ -117,9 +117,11 @@ namespace VRT.UserRepresentation.PointCloud
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
 					{
 						var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
-						if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
-							throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folder");
-						pcReader = new PrerecordedReader(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+						if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folders == null)
+							throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
+                        if (PrerecordedReaderConfig.folders.Length != 1)
+                            throw new System.Exception($"{Name()}: multiple tiles not yet implemented");
+						pcReader = new PrerecordedReader(PrerecordedReaderConfig.folders[0], PrerecordedReaderConfig.ply, true, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
 						reader = pcReader;
 					}
                     else // sourcetype == pccerth: same as pcself but using Certh capturer

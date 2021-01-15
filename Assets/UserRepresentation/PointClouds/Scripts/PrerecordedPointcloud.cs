@@ -13,7 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
     public class PrerecordedPointcloud : PointCloudPipeline
     {
         [Tooltip("Overrides PrerecordedReaderConfig setting")]
-        public string folder;
+        public string[] folders;
         User dummyUser;
         Config._User cfg;
 
@@ -30,12 +30,12 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.sourceType = "self";
             cfg.PCSelfConfig = new Config._User._PCSelfConfig();
             cfg.PCSelfConfig.PrerecordedReaderConfig = new Config._User._PCSelfConfig._PrerecordedReaderConfig();
-            if (folder == null || folder == "")
+            if (folders == null || folders.Length == 0)
             {
-                folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+                folders = realUser.PCSelfConfig.PrerecordedReaderConfig.folders;
             }
-            Debug.Log($"{Name()}: folder={folder}");
-            cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
+            Debug.Log($"{Name()}: folder={folders}");
+            cfg.PCSelfConfig.PrerecordedReaderConfig.folders = folders;
             cfg.Render = realUser.Render;
 
             try

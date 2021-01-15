@@ -109,7 +109,7 @@ namespace VRTCore
                 [Serializable]
 				public class _PrerecordedReaderConfig
 				{
-					public string folder;
+					public string[] folders;
 					public bool ply;
 				};
 				public _PrerecordedReaderConfig PrerecordedReaderConfig;
