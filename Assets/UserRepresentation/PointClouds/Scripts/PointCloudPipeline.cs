@@ -245,6 +245,7 @@ namespace VRT.UserRepresentation.PointCloud
                         var _prepQueue = _CreateRendererAndPreparer();
                         _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
                     }
+                    reader = _reader;
                     break;
 
                 case "remote":
