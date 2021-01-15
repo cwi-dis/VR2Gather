@@ -6,7 +6,8 @@ namespace VRT.UserRepresentation.PointCloud
 {
 
     public class PrerecordedReader : TiledWorker {
-        List<string> filenames;
+        string[] filenames; // All files in the sequence
+        int filenamesCurIndex;  // Where we are now
         bool ply;
         bool loop;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -31,11 +32,11 @@ namespace VRT.UserRepresentation.PointCloud
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             ply = _ply;
-            var _filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
-            Debug.Log($"{Name()}: Recording consists of {_filenames.Length} files");
-            filenames = new List<string>(_filenames);
-            filenames.Sort();
-            loop = _loop;
+            filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
+            System.Array.Sort(filenames);
+            Debug.Log($"{Name()}: Recording consists of {filenames.Length} files");
+            filenamesCurIndex = 0;
+            loop = _loop && filenames.Length > 0;
             if (_frameRate > 0)
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
@@ -45,15 +46,20 @@ namespace VRT.UserRepresentation.PointCloud
 
         public override void Stop()
         {
+            Debug.Log($"Name(): xxxjack Stop");
             base.Stop();
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+            outQueue = null;
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
+            out2Queue = null;
         }
 
         public override void OnStop() {
+            Debug.Log($"Name(): xxxjack OnStop");
             base.OnStop();
             filenames = null;
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
+            outQueue = null;
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
             Debug.Log($"{Name()}: Stopped.");
         }
@@ -76,10 +82,20 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
-            if (filenames.Count == 0) return;
-            var nextFilename = filenames[0];
-            filenames.RemoveAt(0);
-            if (loop) filenames.Add(nextFilename);
+            // Check whether we have to start from the top, or are done.
+            if (loop)
+            {
+                if (filenamesCurIndex >= filenames.Length) filenamesCurIndex = 0;
+            }
+            if (filenames == null || filenamesCurIndex >= filenames.Length)
+            {
+                Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
+                return;
+            }
+
+            var nextFilename = filenames[filenamesCurIndex];
+            filenamesCurIndex++;
+
             cwipc.pointcloud pc;
             if (ply)
             {
@@ -93,7 +109,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return;
             bool didDropSelfView = false;
             bool didDropEncoder = false;
-            if (outQueue == null)
+            if (outQueue == null || outQueue.IsClosed())
             {
                 Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
                 didDropSelfView = true;
@@ -106,7 +122,7 @@ namespace VRT.UserRepresentation.PointCloud
                     didDropSelfView = true;
                 }
             }
-            if (out2Queue == null)
+            if (out2Queue == null || out2Queue.IsClosed())
             {
                 // This is not an error. Debug.LogError($"{Name()}: no outQueue2, dropping pointcloud");
             }
