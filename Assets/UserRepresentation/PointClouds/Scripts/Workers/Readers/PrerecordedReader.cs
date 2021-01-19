@@ -8,6 +8,7 @@ namespace VRT.UserRepresentation.PointCloud
     public class PrerecordedReader : TiledWorker
     {
         List<PrerecordedTileReader> tileReaders = new List<PrerecordedTileReader>();
+        SharedCounter sharedCounter = new SharedCounter();
 
         public PrerecordedReader() : base(WorkerType.Init)
         {
@@ -15,7 +16,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
-            PrerecordedTileReader tileReader = new PrerecordedTileReader(dirname, _ply, _loop, _frameRate, _outQueue, _out2Queue);
+            PrerecordedTileReader tileReader = new PrerecordedTileReader(sharedCounter, dirname, _ply, _loop, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
@@ -27,14 +28,27 @@ namespace VRT.UserRepresentation.PointCloud
                 tr.Stop();
             }
         }
+    }
 
+    public class SharedCounter
+    {
+        System.Threading.Barrier barrier = new System.Threading.Barrier(0);
+        public void Subscribe()
+        {
+            barrier.AddParticipant();
+        }
 
+        public long WaitAndGet()
+        {
+            barrier.SignalAndWait();
+            return barrier.CurrentPhaseNumber;
+        }
     }
 
     public class PrerecordedTileReader : BaseWorker
     {
         string[] filenames; // All files in the sequence
-        int filenamesCurIndex;  // Where we are now
+        SharedCounter positionCounter;
         bool ply;
         bool loop;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
@@ -42,7 +56,7 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
 
-        public PrerecordedTileReader(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public PrerecordedTileReader(SharedCounter _positionCounter, string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             if (_outQueue == null)
             {
@@ -52,6 +66,8 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: only single Add() allowed");
             }
+            positionCounter = _positionCounter;
+            positionCounter.Subscribe();
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             ply = _ply;
@@ -60,7 +76,6 @@ namespace VRT.UserRepresentation.PointCloud
             System.Array.Sort(filenames);
             Debug.Log($"{Name()}: Recording consists of {filenames.Length} files");
             if (filenames.Length == 0) throw new System.Exception($"{Name()}: no files matching {pattern} found in {dirname}");
-            filenamesCurIndex = 0;
             loop = _loop && filenames.Length > 0;
             if (_frameRate > 0)
             {
@@ -106,18 +121,16 @@ namespace VRT.UserRepresentation.PointCloud
                 earliestNextCapture = System.DateTime.Now + frameInterval;
             }
             // Check whether we have to start from the top, or are done.
-            if (loop)
-            {
-                if (filenamesCurIndex >= filenames.Length) filenamesCurIndex = 0;
-            }
-            if (filenames == null || filenamesCurIndex >= filenames.Length)
+            long curIndex = positionCounter.WaitAndGet();
+            if (filenames == null)
             {
                 Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
                 return;
             }
-
-            var nextFilename = filenames[filenamesCurIndex];
-            filenamesCurIndex++;
+            if (!loop && curIndex >= filenames.Length) return;
+            curIndex = curIndex % filenames.Length;
+            Debug.Log($"{Name()}: xxxjack index={curIndex}");
+            var nextFilename = filenames[curIndex];
 
             cwipc.pointcloud pc;
             if (ply)
