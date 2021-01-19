@@ -55,9 +55,11 @@ namespace VRT.UserRepresentation.PointCloud
             outQueue = _outQueue;
             out2Queue = _out2Queue;
             ply = _ply;
-            filenames = System.IO.Directory.GetFiles(dirname, ply ? "*.ply" : "*.cwipcdump");
+            string pattern = ply ? "*.ply" : "*.cwipcdump";
+            filenames = System.IO.Directory.GetFiles(dirname, pattern);
             System.Array.Sort(filenames);
             Debug.Log($"{Name()}: Recording consists of {filenames.Length} files");
+            if (filenames.Length == 0) throw new System.Exception($"{Name()}: no files matching {pattern} found in {dirname}");
             filenamesCurIndex = 0;
             loop = _loop && filenames.Length > 0;
             if (_frameRate > 0)
