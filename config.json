@@ -79,8 +79,9 @@
 		},
 		"PrerecordedReaderConfig" : {
 				"folders_" : ["../H4_C0_R0"],
-				"folders" : ["../lootDump70K"],
-				"ply" : false
+				"folders_" : ["../lootDump70K"],
+				"folders" : ["../ShishirTestDataset/H1loot"],
+				"ply" : true
 			},
             "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
