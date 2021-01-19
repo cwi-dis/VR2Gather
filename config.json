@@ -53,7 +53,7 @@
     },
     "forceMesh": false,
     "defaultCellSize": 0.008,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 3
   },
 
   "LocalUser": {
@@ -80,8 +80,14 @@
 		"PrerecordedReaderConfig" : {
 				"folders_" : ["../H4_C0_R0"],
 				"folders_" : ["../lootDump70K"],
-				"folders" : ["../ShishirTestDataset/H1loot"],
-				"ply" : true
+				"folders_" : ["../SampleTiledDataset/H2_C0_R0"],
+				"folders" : [
+					"../SampleTiledDataset/Tiles/Tile1/6_65",
+					"../SampleTiledDataset/Tiles/Tile2/9_65",
+					"../SampleTiledDataset/Tiles/Tile3/6_65",
+					"../SampleTiledDataset/Tiles/Tile4/9_65"
+					],
+				"ply" : false
 			},
             "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
