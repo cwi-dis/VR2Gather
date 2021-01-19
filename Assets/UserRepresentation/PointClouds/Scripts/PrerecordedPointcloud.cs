@@ -12,8 +12,10 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PrerecordedPointcloud : PointCloudPipeline
     {
-        [Tooltip("Overrides PrerecordedReaderConfig setting")]
+        [Tooltip("Overrides PrerecordedReaderConfig setting: directories to read")]
         public string[] folders;
+        [Tooltip("Read .ply files in stead of .cwipcdump files")]
+        public bool ply;
         User dummyUser;
         Config._User cfg;
 
@@ -33,9 +35,12 @@ namespace VRT.UserRepresentation.PointCloud
             if (folders == null || folders.Length == 0)
             {
                 folders = realUser.PCSelfConfig.PrerecordedReaderConfig.folders;
+                ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
+                Debug.Log($"xxxjack folders={folders} ply={ply}");
             }
             Debug.Log($"{Name()}: folder={folders}");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folders = folders;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.Render = realUser.Render;
 
             try
