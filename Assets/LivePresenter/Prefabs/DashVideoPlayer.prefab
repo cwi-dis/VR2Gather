@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3978027943129949488}
   - component: {fileID: 8089213663031753637}
-  - component: {fileID: 4630110187107366578}
   m_Layer: 0
   m_Name: DashVideoPlayer
   m_TagString: Untagged
@@ -42,23 +41,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6352897663232098506}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a72381863445bc444b6325a7f88a06dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4630110187107366578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6352897663232098506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66aaec90b869ff4419509142eb3cc4df, type: 3}
+  m_Script: {fileID: 11500000, guid: ba533dc781cf1ba40b0131d1e6a62562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   renderer: {fileID: 5822838722279654869}
-  url: https://www.gpac-licensing.com/downloads/VRTogether/presenter/dash/dashcastx.mpd
+  url: https://www.gpac-licensing.com/downloads/VRTogether/presenter/dash/
+  streamName: dashcastx
   texture: {fileID: 0}
 --- !u!1 &7535545803835838239
 GameObject:
@@ -114,6 +102,7 @@ MeshRenderer:
   m_MotionVectors: 2
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -125,6 +114,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
