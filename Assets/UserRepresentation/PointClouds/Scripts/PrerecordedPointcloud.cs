@@ -12,8 +12,12 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PrerecordedPointcloud : PointCloudPipeline
     {
-        [Tooltip("Overrides PrerecordedReaderConfig setting: directories to read")]
-        public string[] folders;
+        [Tooltip("Overrides PrerecordedReaderConfig setting: directory to read")]
+        public string folder;
+        [Tooltip("Overrides PrerecordedReaderConfig setting: per-tile subfolders")]
+        public string[] tiles;
+        [Tooltip("Overrides PrerecordedReaderConfig setting: per-quality subfolders")]
+        public string[] qualities;
         [Tooltip("Read .ply files in stead of .cwipcdump files")]
         public bool ply;
         User dummyUser;
@@ -32,14 +36,17 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.sourceType = "prerecorded";
             cfg.PCSelfConfig = new Config._User._PCSelfConfig();
             cfg.PCSelfConfig.PrerecordedReaderConfig = new Config._User._PCSelfConfig._PrerecordedReaderConfig();
-            if (folders == null || folders.Length == 0)
+            if (folder == null || folder == "")
             {
-                folders = realUser.PCSelfConfig.PrerecordedReaderConfig.folders;
+                folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+                tiles = realUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+                qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
                 ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
-                Debug.Log($"xxxjack folders={folders} ply={ply}");
             }
-            Debug.Log($"{Name()}: folder={folders}");
-            cfg.PCSelfConfig.PrerecordedReaderConfig.folders = folders;
+            Debug.Log($"{Name()}:  folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities");
+            cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.Render = realUser.Render;
 

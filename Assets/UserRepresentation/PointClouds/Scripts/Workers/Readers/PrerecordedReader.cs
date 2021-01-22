@@ -12,9 +12,18 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
+        string[] qualitySubdirs;
+        string dirname;
 
-        public PrerecordedReader() : base(WorkerType.Init)
+        public PrerecordedReader(string[] _qualities) : base(WorkerType.Init)
         {
+            if (_qualities == null)
+            {
+                qualitySubdirs = new string[1] { "" };
+            } else
+            {
+                qualitySubdirs = _qualities;
+            }
         }
 
         public override string Name()
@@ -22,12 +31,23 @@ namespace VRT.UserRepresentation.PointCloud
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public void Add(string _dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
-            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, _ply, _loop, _frameRate, _outQueue, _out2Queue);
+            dirname = _dirname;
+            string subDir = System.IO.Path.Combine(dirname, qualitySubdirs[0]);
+            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, subDir, _ply, _loop, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
+        public void SelectTileQualities(int[] qualities)
+        {
+            Debug.Log($"{Name()}: xxxjack not yet implemented");
+            for(int i=0; i<qualities.Length; i++)
+            {
+                string newDir = System.IO.Path.Combine(dirname, qualitySubdirs[qualities[i]]);
+                tileReaders[i].setDir(newDir);
+            }
+        }
         public override void Stop()
         {
             base.Stop();
@@ -60,6 +80,7 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PrerecordedTileReader : BaseWorker
     {
+        string dirname;
         string[] filenames; // All files in the sequence
         SharedCounter positionCounter;
         bool ply;
@@ -71,8 +92,9 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedReader parent;
 
-        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string _dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
+            dirname = _dirname;
             if (_outQueue == null)
             {
                 throw new System.Exception("{Name()}: outQueue is null");
@@ -105,9 +127,15 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Start();
         }
-        public string Name()
+        public override string Name()
         {
             return $"{parent.Name()}.{thread_index}";
+        }
+
+        public void setDir(string newDir)
+        {
+            dirname = newDir;
+            Debug.LogError($"{Name()}: xxxjack not yet implemented");
         }
 
         public override void Stop()
