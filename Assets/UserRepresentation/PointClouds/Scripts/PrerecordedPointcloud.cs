@@ -68,28 +68,45 @@ namespace VRT.UserRepresentation.PointCloud
         int xxxjack_nQualities;
         int xxxjack_nTiles;
         int[] xxxjack_selectedQualities;
-        int xxxjack_lastSeconds;
         int xxxjack_tileToSwitch;
 
         private void Update()
         {
-            int seconds = (int)System.DateTime.Now.TimeOfDay.TotalSeconds;
-            if (seconds == xxxjack_lastSeconds) return;
-            xxxjack_lastSeconds = seconds;
-            for(int i=0; i<xxxjack_nTiles; i++)
+            if (Input.GetKeyDown(KeyCode.Alpha0))
             {
-                if ((seconds & (1<<i)) != 0)
-                {
-                    // Switch this tile
-                    xxxjack_selectedQualities[i]++;
-                    if (xxxjack_selectedQualities[i] >= xxxjack_nQualities)
-                    {
-                        xxxjack_selectedQualities[i] = 0;
-                    }
-                    Debug.Log($"{Name()}: xxxjack Switch {i} to {xxxjack_selectedQualities[i]}");
-                }
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
+                SelectTileQualities(xxxjack_selectedQualities);
             }
-            SelectTileQualities(xxxjack_selectedQualities);
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = xxxjack_nQualities - 1;
+                SelectTileQualities(xxxjack_selectedQualities);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
+                xxxjack_selectedQualities[0] = xxxjack_nQualities - 1;
+                SelectTileQualities(xxxjack_selectedQualities);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
+                xxxjack_selectedQualities[1] = xxxjack_nQualities - 1;
+                SelectTileQualities(xxxjack_selectedQualities);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
+                xxxjack_selectedQualities[2] = xxxjack_nQualities - 1;
+                SelectTileQualities(xxxjack_selectedQualities);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
+                xxxjack_selectedQualities[3] = xxxjack_nQualities - 1;
+                SelectTileQualities(xxxjack_selectedQualities);
+            }
+
         }
     }
 }
