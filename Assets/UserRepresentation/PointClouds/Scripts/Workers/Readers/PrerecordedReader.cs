@@ -111,7 +111,13 @@ namespace VRT.UserRepresentation.PointCloud
             out2Queue = _out2Queue;
             ply = _ply;
             string pattern = ply ? "*.ply" : "*.cwipcdump";
-            filenames = System.IO.Directory.GetFiles(dirname, pattern);
+            filenames = System.IO.Directory.GetFileSystemEntries(dirname, pattern);
+            // Remove path, keep only filename 
+            for(int i=0; i<filenames.Length; i++)
+            {
+                filenames[i] = System.IO.Path.GetFileName(filenames[i]);
+            }
+            // Sort alphabetically
             System.Array.Sort(filenames);
             Debug.Log($"{Name()}: Recording consists of {filenames.Length} files");
             if (filenames.Length == 0) throw new System.Exception($"{Name()}: no files matching {pattern} found in {dirname}");
@@ -184,8 +190,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (!loop && curIndex >= filenames.Length) return;
             curIndex = curIndex % filenames.Length;
             //Debug.Log($"{Name()}: xxxjack index={curIndex}");
-            var nextFilename = filenames[curIndex];
-
+            var nextFilename = System.IO.Path.Combine(dirname, filenames[curIndex]);
+            Debug.Log($"{Name()}: xxxjack nextFilename={nextFilename}");
             cwipc.pointcloud pc;
             if (ply)
             {
