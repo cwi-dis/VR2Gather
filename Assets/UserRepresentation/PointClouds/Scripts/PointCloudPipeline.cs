@@ -237,16 +237,21 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
                 case "prerecorded":
                     var PrerecordedReaderConfig = cfg.PCSelfConfig.PrerecordedReaderConfig;
+                    int nQualities = PrerecordedReaderConfig.qualities == null ? 1 : PrerecordedReaderConfig.qualities.Length;
+                    if (nQualities == 0) nQualities = 1;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
                     var _reader = new PrerecordedReader(PrerecordedReaderConfig.qualities);
+                    int nTiles;
                     if (PrerecordedReaderConfig.tiles == null)
                     {
                         // Untiled. 
+                        nTiles = 1;
                         var _prepQueue = _CreateRendererAndPreparer();
                         _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
                     } else
                     {
+                        nTiles = PrerecordedReaderConfig.tiles.Length;
                         foreach (var tileFolder in PrerecordedReaderConfig.tiles)
                         {
                             string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
@@ -257,6 +262,33 @@ namespace VRT.UserRepresentation.PointCloud
 
                     }
                     reader = _reader;
+                    //
+                    // Initialize tiling configuration. We invent this, but it has the correct number of tiles
+                    // and the correct number of qualities, and the qualities are organized so that earlier
+                    // ones have lower utility and lower bandwidth than later ones.
+                    //
+                    // xxxjack: we do not initialize the normal vectors. Maybe we should.
+                    //
+                    tilingConfig = new TilingConfig();
+                    tilingConfig.tiles = new TilingConfig.TileInformation[nTiles];
+                    for (int i=0; i<nTiles; i++)
+                    {
+                        // Initialize per-tile information
+                        tilingConfig.tiles[i] = new TilingConfig.TileInformation();
+                        tilingConfig.tiles[i].qualities = new TilingConfig.TileInformation.QualityInformation[nQualities];
+                        var ti = tilingConfig.tiles[i];
+                        for (int j=0; j<nQualities; j++)
+                        {
+                            ti.qualities[j] = new TilingConfig.TileInformation.QualityInformation();
+                            //
+                            // Insert bullshit numbers: every next quality takes twice as much bandwidth
+                            // and is more useful than the previous one
+                            //
+                            ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
+                            ti.qualities[j].representation = (float)j / (float)nQualities;
+                        }
+                    }
+
                     break;
 
                 case "remote":

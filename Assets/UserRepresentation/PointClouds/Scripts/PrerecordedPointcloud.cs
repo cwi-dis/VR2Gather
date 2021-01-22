@@ -43,13 +43,16 @@ namespace VRT.UserRepresentation.PointCloud
                 qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
                 ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
             }
-            Debug.Log($"{Name()}:  folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities");
+            Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
             cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
             cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.Render = realUser.Render;
-
+            // xxxjack debug
+            xxxjack_nQualities = cfg.PCSelfConfig.PrerecordedReaderConfig.qualities.Length;
+            xxxjack_nTiles = cfg.PCSelfConfig.PrerecordedReaderConfig.tiles.Length;
+            xxxjack_selectedQualities = new int[xxxjack_nTiles];
             try
             {
                 Init(dummyUser, cfg, true);
@@ -59,6 +62,34 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Cannot initialize prerecorded pointcloud: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw e;
             }
+        }
+
+        // xxxjack debug code
+        int xxxjack_nQualities;
+        int xxxjack_nTiles;
+        int[] xxxjack_selectedQualities;
+        int xxxjack_lastSeconds;
+        int xxxjack_tileToSwitch;
+
+        private void Update()
+        {
+            int seconds = (int)System.DateTime.Now.TimeOfDay.TotalSeconds;
+            if (seconds == xxxjack_lastSeconds) return;
+            xxxjack_lastSeconds = seconds;
+            for(int i=0; i<xxxjack_nTiles; i++)
+            {
+                if ((seconds & (1<<i)) != 0)
+                {
+                    // Switch this tile
+                    xxxjack_selectedQualities[i]++;
+                    if (xxxjack_selectedQualities[i] >= xxxjack_nQualities)
+                    {
+                        xxxjack_selectedQualities[i] = 0;
+                    }
+                    Debug.Log($"{Name()}: xxxjack Switch {i} to {xxxjack_selectedQualities[i]}");
+                }
+            }
+            SelectTileQualities(xxxjack_selectedQualities);
         }
     }
 }

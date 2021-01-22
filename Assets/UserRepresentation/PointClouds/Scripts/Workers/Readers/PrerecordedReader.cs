@@ -41,7 +41,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void SelectTileQualities(int[] qualities)
         {
-            Debug.Log($"{Name()}: xxxjack not yet implemented");
             for(int i=0; i<qualities.Length; i++)
             {
                 string newDir = System.IO.Path.Combine(dirname, qualitySubdirs[qualities[i]]);
@@ -141,7 +140,6 @@ namespace VRT.UserRepresentation.PointCloud
         public void setDir(string newDir)
         {
             dirname = newDir;
-            Debug.LogError($"{Name()}: xxxjack not yet implemented");
         }
 
         public override void Stop()
@@ -191,7 +189,7 @@ namespace VRT.UserRepresentation.PointCloud
             curIndex = curIndex % filenames.Length;
             //Debug.Log($"{Name()}: xxxjack index={curIndex}");
             var nextFilename = System.IO.Path.Combine(dirname, filenames[curIndex]);
-            Debug.Log($"{Name()}: xxxjack nextFilename={nextFilename}");
+            //Debug.Log($"{Name()}: xxxjack nextFilename={nextFilename}");
             cwipc.pointcloud pc;
             if (ply)
             {
