@@ -78,14 +78,16 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folders_" : ["../H4_C0_R0"],
-				"folders_" : ["../lootDump70K"],
-				"folders_" : ["../SampleTiledDataset/H2_C0_R0"],
-				"folders" : [
-					"../SampleTiledDataset/Tiles/Tile1/6_65",
-					"../SampleTiledDataset/Tiles/Tile2/9_65",
-					"../SampleTiledDataset/Tiles/Tile3/6_65",
-					"../SampleTiledDataset/Tiles/Tile4/9_65"
+				"folder" : "../SampleTiledDataset",
+				"tiles" : [
+					"Tiles/Tile1",
+					"Tiles/Tile2",
+					"Tiles/Tile3",
+					"Tiles/Tile4"
+					],
+				"qualities" : [
+					"6_65",
+					"9_65"
 					],
 				"ply" : false
 			},

@@ -237,15 +237,58 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
                 case "prerecorded":
                     var PrerecordedReaderConfig = cfg.PCSelfConfig.PrerecordedReaderConfig;
-                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folders == null || PrerecordedReaderConfig.folders.Length == 0)
+                    int nQualities = PrerecordedReaderConfig.qualities == null ? 1 : PrerecordedReaderConfig.qualities.Length;
+                    if (nQualities == 0) nQualities = 1;
+                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-                    var _reader = new PrerecordedReader();
-                    foreach (var folder in PrerecordedReaderConfig.folders)
+                    var _reader = new PrerecordedReader(PrerecordedReaderConfig.qualities);
+                    int nTiles;
+                    if (PrerecordedReaderConfig.tiles == null)
                     {
+                        // Untiled. 
+                        nTiles = 1;
                         var _prepQueue = _CreateRendererAndPreparer();
-                        _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                        _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                    } else
+                    {
+                        nTiles = PrerecordedReaderConfig.tiles.Length;
+                        foreach (var tileFolder in PrerecordedReaderConfig.tiles)
+                        {
+                            string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
+                            Debug.Log($"{Name()}: xxxjack tiled folder {folder}");
+                            var _prepQueue = _CreateRendererAndPreparer();
+                            _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                        }
+
                     }
                     reader = _reader;
+                    //
+                    // Initialize tiling configuration. We invent this, but it has the correct number of tiles
+                    // and the correct number of qualities, and the qualities are organized so that earlier
+                    // ones have lower utility and lower bandwidth than later ones.
+                    //
+                    // xxxjack: we do not initialize the normal vectors. Maybe we should.
+                    //
+                    tilingConfig = new TilingConfig();
+                    tilingConfig.tiles = new TilingConfig.TileInformation[nTiles];
+                    for (int i=0; i<nTiles; i++)
+                    {
+                        // Initialize per-tile information
+                        tilingConfig.tiles[i] = new TilingConfig.TileInformation();
+                        tilingConfig.tiles[i].qualities = new TilingConfig.TileInformation.QualityInformation[nQualities];
+                        var ti = tilingConfig.tiles[i];
+                        for (int j=0; j<nQualities; j++)
+                        {
+                            ti.qualities[j] = new TilingConfig.TileInformation.QualityInformation();
+                            //
+                            // Insert bullshit numbers: every next quality takes twice as much bandwidth
+                            // and is more useful than the previous one
+                            //
+                            ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
+                            ti.qualities[j].representation = (float)j / (float)nQualities;
+                        }
+                    }
+
                     break;
 
                 case "remote":
@@ -438,6 +481,21 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileIndex++;
             }
             _CreatePointcloudReader(tileNumbers, 0);
+        }
+
+        public void SelectTileQualities(int[] tileQualities)
+        {
+            if (tileQualities.Length != tilingConfig.tiles.Length)
+            {
+                Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
+            }
+            PrerecordedReader _reader = (PrerecordedReader)reader;
+            if (_reader == null)
+            {
+                Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");
+                return;
+            }
+            _reader.SelectTileQualities(tileQualities);
         }
 
         public new SyncConfig GetSyncConfig()

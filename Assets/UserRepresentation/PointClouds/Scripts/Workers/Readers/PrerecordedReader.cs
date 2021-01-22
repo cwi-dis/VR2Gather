@@ -12,9 +12,17 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
-
-        public PrerecordedReader() : base(WorkerType.Init)
+        string[] qualitySubdirs;
+        
+        public PrerecordedReader(string[] _qualities) : base(WorkerType.Init)
         {
+            if (_qualities == null)
+            {
+                qualitySubdirs = new string[1] { "" };
+            } else
+            {
+                qualitySubdirs = _qualities;
+            }
         }
 
         public override string Name()
@@ -24,10 +32,19 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
-            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, _ply, _loop, _frameRate, _outQueue, _out2Queue);
+            string subDir = qualitySubdirs[0];
+            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
+        public void SelectTileQualities(int[] qualities)
+        {
+            for(int i=0; i<qualities.Length; i++)
+            {
+                string newSubDir = qualitySubdirs[qualities[i]];
+                tileReaders[i].setSubDir(newSubDir);
+            }
+        }
         public override void Stop()
         {
             base.Stop();
@@ -60,6 +77,8 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PrerecordedTileReader : BaseWorker
     {
+        string dirname;
+        string subdir;
         string[] filenames; // All files in the sequence
         SharedCounter positionCounter;
         bool ply;
@@ -71,8 +90,10 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedReader parent;
 
-        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
+            dirname = _dirname;
+            subdir = _subdir;
             if (_outQueue == null)
             {
                 throw new System.Exception("{Name()}: outQueue is null");
@@ -89,7 +110,13 @@ namespace VRT.UserRepresentation.PointCloud
             out2Queue = _out2Queue;
             ply = _ply;
             string pattern = ply ? "*.ply" : "*.cwipcdump";
-            filenames = System.IO.Directory.GetFiles(dirname, pattern);
+            filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
+            // Remove path, keep only filename 
+            for(int i=0; i<filenames.Length; i++)
+            {
+                filenames[i] = System.IO.Path.GetFileName(filenames[i]);
+            }
+            // Sort alphabetically
             System.Array.Sort(filenames);
             Debug.Log($"{Name()}: Recording consists of {filenames.Length} files");
             if (filenames.Length == 0) throw new System.Exception($"{Name()}: no files matching {pattern} found in {dirname}");
@@ -105,9 +132,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Start();
         }
-        public string Name()
+        public override string Name()
         {
             return $"{parent.Name()}.{thread_index}";
+        }
+
+        public void setSubDir(string newSubDir)
+        {
+            if (subdir == newSubDir) return;
+            // Debug.Log($"{Name()}: xxxjack setSubDir {subdir} -> {newSubDir}");
+            subdir = newSubDir;
         }
 
         public override void Stop()
@@ -155,9 +189,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             if (!loop && curIndex >= filenames.Length) return;
             curIndex = curIndex % filenames.Length;
-            //Debug.Log($"{Name()}: xxxjack index={curIndex}");
-            var nextFilename = filenames[curIndex];
-
+            var nextFilename = System.IO.Path.Combine(dirname, subdir, filenames[curIndex]);
             cwipc.pointcloud pc;
             if (ply)
             {
