@@ -20,6 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         public string[] qualities;
         [Tooltip("Read .ply files in stead of .cwipcdump files")]
         public bool ply;
+        public PrerecordedTileSelector tileSelector;
         User dummyUser;
         Config._User cfg;
 
@@ -50,9 +51,9 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.Render = realUser.Render;
             // xxxjack debug
-            xxxjack_nQualities = cfg.PCSelfConfig.PrerecordedReaderConfig.qualities.Length;
-            xxxjack_nTiles = cfg.PCSelfConfig.PrerecordedReaderConfig.tiles.Length;
-            xxxjack_selectedQualities = new int[xxxjack_nTiles];
+            int nQualities = cfg.PCSelfConfig.PrerecordedReaderConfig.qualities.Length;
+            int nTiles = cfg.PCSelfConfig.PrerecordedReaderConfig.tiles.Length;
+            Debug.Log($"PrerecordedPointcloud nTiles={nTiles} nQualities={nQualities}");
             try
             {
                 Init(dummyUser, cfg, true);
@@ -62,50 +63,11 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Cannot initialize prerecorded pointcloud: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw e;
             }
-        }
-
-        // xxxjack debug code
-        int xxxjack_nQualities;
-        int xxxjack_nTiles;
-        int[] xxxjack_selectedQualities;
-        int xxxjack_tileToSwitch;
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha0))
+            if (tileSelector == null)
             {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
-                SelectTileQualities(xxxjack_selectedQualities);
+                Debug.LogWarning($"{Name()}: no tileSelector");
             }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = xxxjack_nQualities - 1;
-                SelectTileQualities(xxxjack_selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
-                xxxjack_selectedQualities[0] = xxxjack_nQualities - 1;
-                SelectTileQualities(xxxjack_selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
-                xxxjack_selectedQualities[1] = xxxjack_nQualities - 1;
-                SelectTileQualities(xxxjack_selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
-                xxxjack_selectedQualities[2] = xxxjack_nQualities - 1;
-                SelectTileQualities(xxxjack_selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                for (int i = 0; i < xxxjack_nTiles; i++) xxxjack_selectedQualities[i] = 0;
-                xxxjack_selectedQualities[3] = xxxjack_nQualities - 1;
-                SelectTileQualities(xxxjack_selectedQualities);
-            }
+            tileSelector?.Init(this, nQualities, nTiles);
 
         }
     }
