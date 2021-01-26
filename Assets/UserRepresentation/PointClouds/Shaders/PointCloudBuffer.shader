@@ -110,7 +110,7 @@ Shader "Entropy/PointCloud"{
 				half4 Fragment(Varyings input) : SV_Target{
 					half a = tex2D(_MainTex, input.uv).a;
 					clip(a - _Cutoff);
-					half4 c = half4(input.color, _Tint.a) * a;
+					half4 c = half4(input.color, _Tint.a)/* * a */;
 					// Erase black points
 					if (c.x <= 0.0f && c.y <= 0.0f && c.z <= 0.0f)
 						clip(c.x - _Cutoff);
