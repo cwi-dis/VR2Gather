@@ -108,6 +108,10 @@ public class LoginController : PilotController {
                     // Load Pilot
                     if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
                     break;
+                case "Development": // PILOT 0
+                    // Load Pilot
+                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("CWI_cake"));
+                    break;
                 default:
                     Debug.LogError($"Selected scenario \"{msg[1]}\" not implemented in this player");
                     break;
