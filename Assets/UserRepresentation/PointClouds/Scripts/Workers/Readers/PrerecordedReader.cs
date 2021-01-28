@@ -182,6 +182,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // Check whether we have to start from the top, or are done.
             long curIndex = positionCounter.WaitAndGet();
+            //xxxshishir set current position for tile selection
+            PrerecordedTileSelector.curIndex = curIndex;
+
             if (filenames == null)
             {
                 Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
