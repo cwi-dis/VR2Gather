@@ -455,7 +455,13 @@ namespace VRT.Pilots.Common
 							new PlayerLocationChangeRequest { LocationNetworkId = locationNetworkId }
 							);
 					}
+				} else
+				{
+					Debug.Log($"[SessionsPlayersManager] RequestLocationChange destination {locationNetworkId} is occupied");
 				}
+			} else
+			{
+				Debug.Log($"[SessionPlayersManager] could not TryGetPlayerLocationFromNetworkId for {locationNetworkId}");
 			}
 		}
 
