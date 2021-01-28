@@ -18,7 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         int nQualities;
         int nTiles;
-        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest };
+        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
         public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive; // xxxjack to be determined by overall controller
 
         //xxxshishir tile selector stuff ToDo Check with Jack before refactor
@@ -88,6 +88,15 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
                 case SelectionAlgorithm.frontTileBest:
                     getTilesFrontTileBest(a1, a2, a3, a4, budget);
+                    break;
+                case SelectionAlgorithm.greedy:
+                    getTilesGreedy(a1, a2, a3, a4, budget);
+                    break;
+                case SelectionAlgorithm.uniform:
+                    getTilesUniform(a1, a2, a3, a4, budget);
+                    break;
+                case SelectionAlgorithm.hybrid:
+                    getTilesHybrid(a1, a2, a3, a4, budget);
                     break;
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
