@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using VRT.UserRepresentation.Voice;
 using VRTCore;
@@ -37,11 +38,30 @@ namespace VRT.UserRepresentation.PointCloud
         private Vector3 TileC2 = new Vector3(1, 0, 0);
         private Vector3 TileC3 = new Vector3(0, 0, -1);
         private Vector3 TileC4 = new Vector3(-1, 0, 0);
+        //Adaptation Variables ToDo Refactor
+        private List<adaptationSet> [] aTile = new List<adaptationSet>[4];
 
+        public static long curIndex;
 
         string Name()
         {
             return "PrerecordedTileSelector";
+        }
+        //xxxshishir adaptation set struct
+        public struct adaptationSet
+        {
+            public string PCframe;
+            //public double[] encodedSize;
+            public List<double> encodedSize;
+            public void addEncodedSize(double a, int i)
+            {
+                if (encodedSize == null)
+                    encodedSize = new List<double>();
+                if ((encodedSize.Count - 1) < i)
+                    encodedSize.Add(a);
+                else
+                    encodedSize[i] = a;
+            }
         }
 
         public void Init(PrerecordedPointcloud _prerecordedPointcloud, int _nQualities, int _nTiles)
@@ -54,6 +74,32 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: Only 4 tiles implemented");
             }
+
+            //xxxshishir load the tile description csv files
+            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+            string [] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+            for(int i =0;i < nTiles;i++)
+            {
+                FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                if(!tileDescFile.Exists)
+                    Debug.LogError("Tile description not found for tile "+ i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                StreamReader tileDescReader = tileDescFile.OpenText();
+                //Skip header
+                var aLine = tileDescReader.ReadLine();
+                while((aLine = tileDescReader.ReadLine()) != null)
+                {
+                    adaptationSet aFrame = new adaptationSet();
+                    var aLineValues = aLine.Split(',');
+                    aFrame.PCframe = aLineValues[0];
+                    for(int j =1;i<aLineValues.Length;i++)
+                    {
+                        aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
+                    }
+                    aTile[i].Add(aFrame);
+                }
+            }
+            //filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
+
         }
 
         private void Update()
