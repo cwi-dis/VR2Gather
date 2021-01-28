@@ -173,6 +173,7 @@ namespace VRT.UserRepresentation.PointCloud
         //xxxshishir actual tile selection strategies used for evaluation
         void getTilesGreedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            getTileOrder();
             int[] Tiles = new int[4];
             Tiles[0] = 0;
             Tiles[1] = 0;
@@ -216,6 +217,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         void getTilesUniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            getTileOrder();
             int[] Tiles = new int[4];
             Tiles[0] = 0;
             Tiles[1] = 0;
@@ -258,6 +260,8 @@ namespace VRT.UserRepresentation.PointCloud
         }
         void getTilesHybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            getTileOrder();
+            getTileVisibility();
             int[] Tiles = new int[4];
             Tiles[0] = 0;
             Tiles[1] = 0;
