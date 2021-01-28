@@ -23,6 +23,8 @@ namespace VRT.UserRepresentation.PointCloud
 
         //xxxshishir tile selector stuff ToDo Check with Jack before refactor
         public double bitRatebudget;
+        private double savings;
+        private bool[] tileVisibility;
         private Transform cameraTransform;
         private Vector3 cameraForward;
         private int[] tileOrder;
@@ -166,6 +168,178 @@ namespace VRT.UserRepresentation.PointCloud
             Array.Sort(tileUtilities, tileOrder);
             //The tile vectors represent the camera that sees the tile not the orientation of tile surface (ie dot product of 1 is highest utility tile, dot product of -1 is the lowest utility tile)
             Array.Reverse(tileOrder);
+        }
+
+        //xxxshishir actual tile selection strategies used for evaluation
+        void getTilesGreedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            int[] Tiles = new int[4];
+            Tiles[0] = 0;
+            Tiles[1] = 0;
+            Tiles[2] = 0;
+            Tiles[3] = 0;
+            double[][] adaptationSet = new double[a1.Length][];
+            adaptationSet[0] = a1;
+            adaptationSet[1] = a2;
+            adaptationSet[2] = a3;
+            adaptationSet[3] = a4;
+            double spent;
+            spent = a1[0] + a2[0] + a3[0] + a4[0];
+            double nextSpend;
+            bool representationSet = false;
+            bool stepComplete = false;
+            while (representationSet != true)
+            {
+                stepComplete = false;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    {
+                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        if ((spent + nextSpend) <= budget)
+                        {
+                            Tiles[tileOrder[i]]++;
+                            stepComplete = true;
+                            spent = spent + nextSpend;
+                            break;
+                        }
+                    }
+                }
+                if (stepComplete == false)
+                {
+                    representationSet = true;
+                    savings = budget - spent;
+                    // UnityEngine.Debug.Log("<color=green> XXXDebug Budget" + budget + " spent " + spent + " savings " + savings + " </color> ");
+                }
+            }
+            prerecordedPointcloud.SelectTileQualities(Tiles);
+        }
+        void getTilesUniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            int[] Tiles = new int[4];
+            Tiles[0] = 0;
+            Tiles[1] = 0;
+            Tiles[2] = 0;
+            Tiles[3] = 0;
+            double[][] adaptationSet = new double[a1.Length][];
+            adaptationSet[0] = a1;
+            adaptationSet[1] = a2;
+            adaptationSet[2] = a3;
+            adaptationSet[3] = a4;
+            double spent;
+            spent = a1[0] + a2[0] + a3[0] + a4[0];
+            double nextSpend;
+            bool representationSet = false;
+            bool stepComplete = false;
+            while (representationSet != true)
+            {
+                stepComplete = false;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    {
+                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        if ((spent + nextSpend) <= budget)
+                        {
+                            Tiles[tileOrder[i]]++;
+                            stepComplete = true;
+                            spent = spent + nextSpend;
+                        }
+                    }
+
+                }
+                if (stepComplete == false)
+                {
+                    representationSet = true;
+                    savings = budget - spent;
+                }
+            }
+            prerecordedPointcloud.SelectTileQualities(Tiles);
+        }
+        void getTilesHybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            int[] Tiles = new int[4];
+            Tiles[0] = 0;
+            Tiles[1] = 0;
+            Tiles[2] = 0;
+            Tiles[3] = 0;
+            double[][] adaptationSet = new double[a1.Length][];
+            adaptationSet[0] = a1;
+            adaptationSet[1] = a2;
+            adaptationSet[2] = a3;
+            adaptationSet[3] = a4;
+            double spent;
+            spent = a1[0] + a2[0] + a3[0] + a4[0];
+            double nextSpend;
+            bool representationSet = false;
+            bool stepComplete = false;
+            while (representationSet != true)
+            {
+                stepComplete = false;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    {
+                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true)
+                        {
+                            Tiles[tileOrder[i]]++;
+                            stepComplete = true;
+                            spent = spent + nextSpend;
+                        }
+                    }
+
+                }
+                //Increse representation of tiles facing away from the user if the visible tiles are already maxed
+                if (stepComplete == false)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                        {
+                            nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                            if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false)
+                            {
+                                Tiles[tileOrder[i]]++;
+                                stepComplete = true;
+                                spent = spent + nextSpend;
+                            }
+                        }
+
+                    }
+                }
+                if (stepComplete == false)
+                {
+                    representationSet = true;
+                    savings = budget - spent;
+                }
+            }
+            prerecordedPointcloud.SelectTileQualities(Tiles);
+        }
+        void getTileVisibility()
+        {
+            tileVisibility = new bool[4];
+            tileVisibility[0] = false;
+            tileVisibility[1] = false;
+            tileVisibility[2] = false;
+            tileVisibility[3] = false;
+            //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
+            if (Vector3.Dot(cameraForward, TileC1) > 0)
+                tileVisibility[0] = true;
+            if (Vector3.Dot(cameraForward, TileC2) > 0)
+                tileVisibility[1] = true;
+            if (Vector3.Dot(cameraForward, TileC3) > 0)
+                tileVisibility[2] = true;
+            if (Vector3.Dot(cameraForward, TileC4) > 0)
+                tileVisibility[3] = true;
+        }
+        public void setCamera(Vector3 Orientation)
+        {
+            cameraForward = Orientation;
+        }
+        public void setBudget(double budget)
+        {
+            bitRatebudget = budget;
         }
     }
 }
