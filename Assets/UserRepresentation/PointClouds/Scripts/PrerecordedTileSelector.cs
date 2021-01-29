@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
 using VRTCore;
 using VRT.Core;
@@ -159,6 +160,8 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     break;
             }
+            if (Input.GetKeyDown(KeyCode.Escape))
+                SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
         }
 
         void getTilesInteractive(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
