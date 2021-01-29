@@ -182,9 +182,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // Check whether we have to start from the top, or are done.
             long curIndex = positionCounter.WaitAndGet();
-            //xxxshishir set current position for tile selection
-            PrerecordedTileSelector.curIndex = curIndex;
-
             if (filenames == null)
             {
                 Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
@@ -193,6 +190,10 @@ namespace VRT.UserRepresentation.PointCloud
             if (!loop && curIndex >= filenames.Length) return;
             curIndex = curIndex % filenames.Length;
             var nextFilename = System.IO.Path.Combine(dirname, subdir, filenames[curIndex]);
+
+            //xxxshishir set current position for tile selection
+            PrerecordedTileSelector.curIndex = curIndex;
+
             cwipc.pointcloud pc;
             if (ply)
             {
