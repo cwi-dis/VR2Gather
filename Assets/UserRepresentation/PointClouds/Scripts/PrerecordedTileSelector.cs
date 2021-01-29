@@ -34,9 +34,9 @@ namespace VRT.UserRepresentation.PointCloud
         private float t2Utility;
         private float t3Utility;
         private float t4Utility;
-        private Vector3 TileC1 = new Vector3(0, 0, 1);
+        private Vector3 TileC1 = new Vector3(0, 0, -1);
         private Vector3 TileC2 = new Vector3(1, 0, 0);
-        private Vector3 TileC3 = new Vector3(0, 0, -1);
+        private Vector3 TileC3 = new Vector3(0, 0, 1);
         private Vector3 TileC4 = new Vector3(-1, 0, 0);
         //Adaptation Variables ToDo Refactor
         private List<adaptationSet> [] aTile = new List<adaptationSet>[4];
@@ -100,8 +100,6 @@ namespace VRT.UserRepresentation.PointCloud
                     aFrame = new adaptationSet();
                 }
             }
-            Debug.Log("<color=red> Size of atile </color> " + aTile.Length + " tile 1 " + aTile[0].Count + " tile 2 " + aTile[1].Count + " tile 3 " + aTile[2].Count + " tile 4 " + aTile[3].Count);
-
         }
 
         private void Update()
@@ -136,7 +134,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError("Camera not found!");
             cameraTransform = cam.transform;
             cameraForward = cameraTransform.forward;
-
+            //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
             switch (algorithm)
             {
                 case SelectionAlgorithm.interactive:
