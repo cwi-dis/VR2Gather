@@ -78,27 +78,29 @@ namespace VRT.UserRepresentation.PointCloud
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string [] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
-            for(int i =0;i < nTiles;i++)
+            for(int i=0;i < aTile.Length;i++)
             {
+                aTile[i] = new List<adaptationSet>();
                 FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
                 if(!tileDescFile.Exists)
                     Debug.LogError("Tile description not found for tile "+ i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
                 StreamReader tileDescReader = tileDescFile.OpenText();
                 //Skip header
                 var aLine = tileDescReader.ReadLine();
-                while((aLine = tileDescReader.ReadLine()) != null)
-                {
-                    adaptationSet aFrame = new adaptationSet();
+                adaptationSet aFrame = new adaptationSet();
+                while ((aLine = tileDescReader.ReadLine()) != null)
+                {                  
                     var aLineValues = aLine.Split(',');
                     aFrame.PCframe = aLineValues[0];
-                    for(int j =1;i<aLineValues.Length;i++)
+                    for(int j =1;j<aLineValues.Length;j++)
                     {
                         aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
                     }
                     aTile[i].Add(aFrame);
+                    aFrame = new adaptationSet();
                 }
             }
-            //filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
+            Debug.Log("<color=red> Size of atile </color> " + aTile.Length + " tile 1 " + aTile[0].Count + " tile 2 " + aTile[1].Count + " tile 3 " + aTile[2].Count + " tile 4 " + aTile[3].Count);
 
         }
 
@@ -110,13 +112,24 @@ namespace VRT.UserRepresentation.PointCloud
                 // Not yet initialized
                 return;
             }
-            // xxxjack need to be obtained from somewhere...
-            double[] a1 = null;
-            double[] a2 = null;
-            double[] a3 = null;
-            double[] a4 = null;
-            double budget = 0;
-
+            double[] a1 = aTile[0][(int)curIndex].encodedSize.ToArray();
+            double[] a2 = aTile[1][(int)curIndex].encodedSize.ToArray();
+            double[] a3 = aTile[2][(int)curIndex].encodedSize.ToArray();
+            double[] a4 = aTile[3][(int)curIndex].encodedSize.ToArray();
+            //xxxshishir debug code
+            if (a1 == null)
+            {
+                Debug.Log("<color=red> Current Index </color> " + curIndex);
+                a1 = aTile[0][0].encodedSize.ToArray();
+            }
+            if (a2 == null)
+                a2 = aTile[1][0].encodedSize.ToArray();
+            if (a3 == null)
+                a3 = aTile[2][0].encodedSize.ToArray();
+            if (a4 == null)
+                a4 = aTile[3][0].encodedSize.ToArray();
+            double budget = bitRatebudget;
+            if (budget == 0) budget = 100000;
             //xxxshishir get camera orientation ToDo: Move to getTileOrder ?
             var cam = FindObjectOfType<Camera>().gameObject;
             if (cam == null)
@@ -234,7 +247,7 @@ namespace VRT.UserRepresentation.PointCloud
             Tiles[1] = 0;
             Tiles[2] = 0;
             Tiles[3] = 0;
-            double[][] adaptationSet = new double[a1.Length][];
+            double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
             adaptationSet[2] = a3;
@@ -278,7 +291,7 @@ namespace VRT.UserRepresentation.PointCloud
             Tiles[1] = 0;
             Tiles[2] = 0;
             Tiles[3] = 0;
-            double[][] adaptationSet = new double[a1.Length][];
+            double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
             adaptationSet[2] = a3;
@@ -322,7 +335,7 @@ namespace VRT.UserRepresentation.PointCloud
             Tiles[1] = 0;
             Tiles[2] = 0;
             Tiles[3] = 0;
-            double[][] adaptationSet = new double[a1.Length][];
+            double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
             adaptationSet[2] = a3;
