@@ -17,7 +17,7 @@ namespace Assets.Pilots.QualityAssesment.Scripts
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                SceneManager.UnloadSceneAsync("QualityAssesmentRatingScene");
+                SceneManager.LoadScene("QualityAssesment");
             }
         }
     }

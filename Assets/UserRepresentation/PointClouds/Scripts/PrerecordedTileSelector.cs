@@ -161,7 +161,10 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
             }
             if (Input.GetKeyDown(KeyCode.Escape))
-                SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
+            {
+                //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
+                SceneManager.LoadScene("QualityAssesmentRatingScene");
+            }
         }
 
         void getTilesInteractive(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
