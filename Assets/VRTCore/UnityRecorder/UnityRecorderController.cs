@@ -45,8 +45,8 @@ namespace VRTCore
             m_Settings.VideoBitRateMode = VideoBitrateMode.Medium;
 
             m_Settings.ImageInputSettings = new Camera360InputSettings {
-                OutputWidth = 1024,
-                OutputHeight = 2048,
+                OutputWidth = 4096,
+                OutputHeight = 2160,
                 MapSize = 1024,
                 CameraTag = "MainCamera",
                 RenderStereo = false
