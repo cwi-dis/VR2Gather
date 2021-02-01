@@ -40,7 +40,7 @@ namespace VRT.UserRepresentation.PointCloud
         private Vector3 TileC3 = new Vector3(0, 0, 1);
         private Vector3 TileC4 = new Vector3(-1, 0, 0);
         //Adaptation Variables ToDo Refactor
-        private List<adaptationSet> [] aTile = new List<adaptationSet>[4];
+        private List<adaptationSet>[] aTile = null;
 
         public static long curIndex;
 
@@ -75,6 +75,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: Only 4 tiles implemented");
             }
+            aTile = new List<adaptationSet>[4];
 
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
@@ -84,7 +85,10 @@ namespace VRT.UserRepresentation.PointCloud
                 aTile[i] = new List<adaptationSet>();
                 FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
                 if(!tileDescFile.Exists)
-                    Debug.LogError("Tile description not found for tile "+ i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                {
+                    aTile = null; // Delete tile datastructure to forestall further errors
+                    throw new System.Exception($"Tile description not found for tile " + i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                }
                 StreamReader tileDescReader = tileDescFile.OpenText();
                 //Skip header
                 var aLine = tileDescReader.ReadLine();
@@ -106,7 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void Update()
         {
             //Debug.Log($"xxxjack PrerecordedPointcloud update called");
-            if (prerecordedPointcloud == null)
+            if (prerecordedPointcloud == null || aTile == null)
             {
                 // Not yet initialized
                 return;
