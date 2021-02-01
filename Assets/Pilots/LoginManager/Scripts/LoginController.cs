@@ -61,61 +61,12 @@ public class LoginController : PilotController {
                     break;
                 default:
                     break;
-            } 
-            // Check Pilot
-            switch (msg[1]) {
-                case "Pilot 0": // PILOT 0
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
-                    break;
-                case "Pilot 1": // PILOT 1
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot1"));
-                    break;
-                case "Pilot 2": // PILOT 2
-                    // Check Presenter
-                    switch (msg[3]) {
-                        case "0": // NONE
-                            Config.Instance.presenter = Config.Presenter.None;
-                            break;
-                        case "1": // LOCAL
-                            Config.Instance.presenter = Config.Presenter.Local;
-                            break;
-                        case "2": // LIVE
-                            Config.Instance.presenter = Config.Presenter.Live;
-                            break;
-                        default:
-                            break;
-                    }
-                    // Load Pilot
-                    if (loadCoroutine == null) {
-                        if (OrchestratorController.Instance.UserIsMaster && Config.Instance.presenter == Config.Presenter.Live)
-                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Presenter"));
-                        else
-                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
-                    }
-                    break;
-				case "Pilot 3":
-					if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot3"));
-					break;
-                case "Museum":
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Museum"));
-                    break;
-                case "HoloConference":
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloMeet"));
-                    break;
-                case "MedicalExamination": // PILOT 0
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
-                    break;
-                case "Development": // PILOT 0
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("CWI_cake"));
-                    break;
-                default:
-                    Debug.LogError($"Selected scenario \"{msg[1]}\" not implemented in this player");
-                    break;
             }
+            string pilotName = msg[1];
+            string pilotVariant = null;
+            if (msg.Length > 3) pilotVariant = msg[3];
+            string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+            if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
         }
         else if (msg[0] == MessageType.READY) {
             // Do something to check if all the users are ready (future implementation)
