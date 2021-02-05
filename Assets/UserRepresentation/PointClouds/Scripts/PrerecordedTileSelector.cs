@@ -17,34 +17,52 @@ namespace VRT.UserRepresentation.PointCloud
     {
         PrerecordedPointcloud prerecordedPointcloud;
  
+        // Pseudo-constant: number of tiles.
+        const int nTiles = 4;
+        // Pseudo-constant: orientation of each tile, relative to the pointcloud centroid.
+        Vector3[] TileOrientation = new Vector3[nTiles]
+        {
+            new Vector3(0, 0, -1),
+            new Vector3(1, 0, 0),
+            new Vector3(0, 0, 1),
+            new Vector3(-1, 0, 0)
+        };
 
+ 
+        // Number of qualities available per tile.
         int nQualities;
-        int nTiles;
-        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
-        public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive; // xxxjack to be determined by overall controller
-        public bool debugDecisions = false;
-        //xxxshishir tile selector stuff ToDo Check with Jack before refactor
-        public double bitRatebudget;
-        private double savings;
-        private bool[] tileVisibility;
-        private Transform cameraTransform;
-        private Vector3 cameraForward;
-        private int[] tileOrder;
-        private Vector3 TileOrientationVector1 = new Vector3(0, 0, -1);
-        private Vector3 TileOrientationVector2 = new Vector3(1, 0, 0);
-        private Vector3 TileOrientationVector3 = new Vector3(0, 0, 1);
-        private Vector3 TileOrientationVector4 = new Vector3(-1, 0, 0);
-        //Adaptation Variables ToDo Refactor
-        private List<adaptationSet>[] aTile = null;
 
+        // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
+        private List<AdaptationSet>[] aTile = null;
+
+        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
+        //
+        // Set by overall controller (in production): which algorithm to use for this scene run.
+        //
+        public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive;
+        //
+        // Can be set (in scene editor) to print all decision made by the algorithms.
+        //
+        public bool debugDecisions = false;
+        //
+        // Set by overall controller (in production): total available bitrate for this run.
+        //
+        public double bitRatebudget = 1000000;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
         public static long curIndex;
 
+        private Vector3 cameraForward;
+        private int[] tileOrder;
+        
+        
         string Name()
         {
             return "PrerecordedTileSelector";
         }
         //xxxshishir adaptation set struct
-        public struct adaptationSet
+        public struct AdaptationSet
         {
             public string PCframe;
             //public double[] encodedSize;
@@ -64,20 +82,19 @@ namespace VRT.UserRepresentation.PointCloud
         {
             prerecordedPointcloud = _prerecordedPointcloud;
             nQualities = _nQualities;
-            nTiles = _nTiles;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
-            if (nTiles != 4)
+            if (_nTiles != nTiles)
             {
-                Debug.LogError($"{Name()}: Only 4 tiles implemented");
+                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
             }
-            aTile = new List<adaptationSet>[4];
+            aTile = new List<AdaptationSet>[nTiles];
 
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string [] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
             for(int i=0;i < aTile.Length;i++)
             {
-                aTile[i] = new List<adaptationSet>();
+                aTile[i] = new List<AdaptationSet>();
                 FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
                 if(!tileDescFile.Exists)
                 {
@@ -87,7 +104,7 @@ namespace VRT.UserRepresentation.PointCloud
                 StreamReader tileDescReader = tileDescFile.OpenText();
                 //Skip header
                 var aLine = tileDescReader.ReadLine();
-                adaptationSet aFrame = new adaptationSet();
+                AdaptationSet aFrame = new AdaptationSet();
                 while ((aLine = tileDescReader.ReadLine()) != null)
                 {                  
                     var aLineValues = aLine.Split(',');
@@ -97,7 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
                         aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
                     }
                     aTile[i].Add(aFrame);
-                    aFrame = new adaptationSet();
+                    aFrame = new AdaptationSet();
                 }
             }
         }
@@ -132,7 +149,7 @@ namespace VRT.UserRepresentation.PointCloud
             var cam = FindObjectOfType<Camera>().gameObject;
             if (cam == null)
                 Debug.LogError("Camera not found!");
-            cameraTransform = cam.transform;
+            Transform cameraTransform = cameraTransform = cam.transform;
             cameraForward = cameraTransform.forward;
             //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
             int[] selectedTileQualities = getTileQualities(a1, a2, a3, a4, budget);
@@ -157,14 +174,17 @@ namespace VRT.UserRepresentation.PointCloud
 
         void getTileOrder()
         {
-            tileOrder = new int[4];
+            tileOrder = new int[nTiles];
             //Initialize index array
-            for (int i = 0; i < 4; i++) tileOrder[i] = i;
-            float[] tileUtilities = new float[4]; //Set tile utilities
-            tileUtilities[0] = Vector3.Dot(cameraForward, TileOrientationVector1);
-            tileUtilities[1] = Vector3.Dot(cameraForward, TileOrientationVector2);
-            tileUtilities[2] = Vector3.Dot(cameraForward, TileOrientationVector3);
-            tileUtilities[3] = Vector3.Dot(cameraForward, TileOrientationVector4);
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileOrder[i] = i;
+            }
+            float[] tileUtilities = new float[nTiles];
+            for (int i=0; i<nTiles; i++)
+            {
+                tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+            }
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(tileUtilities, tileOrder);
             //The tile vectors represent the camera that sees the tile not the orientation of tile surface (ie dot product of 1 is highest utility tile, dot product of -1 is the lowest utility tile)
@@ -253,8 +273,10 @@ namespace VRT.UserRepresentation.PointCloud
         //xxxshishir actual tile selection strategies used for evaluation
         int[] getTileQualities_Greedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            double savings;
+            double spent = 0;
             getTileOrder();
-            int[] selectedQualities = new int[4];
+            int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
@@ -264,7 +286,6 @@ namespace VRT.UserRepresentation.PointCloud
             adaptationSet[1] = a2;
             adaptationSet[2] = a3;
             adaptationSet[3] = a4;
-            double spent;
             spent = a1[0] + a2[0] + a3[0] + a4[0];
             double nextSpend;
             bool representationSet = false;
@@ -272,7 +293,7 @@ namespace VRT.UserRepresentation.PointCloud
             while (representationSet != true)
             {
                 stepComplete = false;
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < nTiles; i++)
                 {
                     if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
@@ -297,8 +318,9 @@ namespace VRT.UserRepresentation.PointCloud
         }
         int[] getTileQualities_Uniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            double savings;
             getTileOrder();
-            int[] selectedQualities = new int[4];
+            int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
@@ -316,7 +338,7 @@ namespace VRT.UserRepresentation.PointCloud
             while (representationSet != true)
             {
                 stepComplete = false;
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < nTiles; i++)
                 {
                     if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
@@ -340,9 +362,10 @@ namespace VRT.UserRepresentation.PointCloud
         }
         int[] getTileQualities_Hybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
+            double savings;
             getTileOrder();
-            getTileVisibility();
-            int[] selectedQualities = new int[4];
+            bool[] tileVisibility = getTileVisibility();
+            int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
@@ -360,7 +383,7 @@ namespace VRT.UserRepresentation.PointCloud
             while (representationSet != true)
             {
                 stepComplete = false;
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < nTiles; i++)
                 {
                     if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
@@ -377,7 +400,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //Increse representation of tiles facing away from the user if the visible tiles are already maxed
                 if (stepComplete == false)
                 {
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < nTiles; i++)
                     {
                         if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                         {
@@ -400,22 +423,15 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return selectedQualities;
         }
-        void getTileVisibility()
+        bool[] getTileVisibility()
         {
-            tileVisibility = new bool[4];
-            tileVisibility[0] = false;
-            tileVisibility[1] = false;
-            tileVisibility[2] = false;
-            tileVisibility[3] = false;
+            bool[] tileVisibility = new bool[nTiles];
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
-            if (Vector3.Dot(cameraForward, TileOrientationVector1) > 0)
-                tileVisibility[0] = true;
-            if (Vector3.Dot(cameraForward, TileOrientationVector2) > 0)
-                tileVisibility[1] = true;
-            if (Vector3.Dot(cameraForward, TileOrientationVector3) > 0)
-                tileVisibility[2] = true;
-            if (Vector3.Dot(cameraForward, TileOrientationVector4) > 0)
-                tileVisibility[3] = true;
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileVisibility[i] = Vector3.Dot(cameraForward, TileOrientation[i]) > 0;
+            }
+            return tileVisibility;
         }
         public void setCamera(Vector3 Orientation)
         {
