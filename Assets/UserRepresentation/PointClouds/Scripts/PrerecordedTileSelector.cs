@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
         int nTiles;
         public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
         public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive; // xxxjack to be determined by overall controller
-
+        public bool debugDecisions = false;
         //xxxshishir tile selector stuff ToDo Check with Jack before refactor
         public double bitRatebudget;
         private double savings;
@@ -30,15 +30,10 @@ namespace VRT.UserRepresentation.PointCloud
         private Transform cameraTransform;
         private Vector3 cameraForward;
         private int[] tileOrder;
-        private float[] tileUtilities;
-        private float t1Utility;
-        private float t2Utility;
-        private float t3Utility;
-        private float t4Utility;
-        private Vector3 TileC1 = new Vector3(0, 0, -1);
-        private Vector3 TileC2 = new Vector3(1, 0, 0);
-        private Vector3 TileC3 = new Vector3(0, 0, 1);
-        private Vector3 TileC4 = new Vector3(-1, 0, 0);
+        private Vector3 TileOrientationVector1 = new Vector3(0, 0, -1);
+        private Vector3 TileOrientationVector2 = new Vector3(1, 0, 0);
+        private Vector3 TileOrientationVector3 = new Vector3(0, 0, 1);
+        private Vector3 TileOrientationVector4 = new Vector3(-1, 0, 0);
         //Adaptation Variables ToDo Refactor
         private List<adaptationSet>[] aTile = null;
 
@@ -140,30 +135,15 @@ namespace VRT.UserRepresentation.PointCloud
             cameraTransform = cam.transform;
             cameraForward = cameraTransform.forward;
             //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
-            switch (algorithm)
+            int[] selectedTileQualities = getTileQualities(a1, a2, a3, a4, budget);
+            if (selectedTileQualities != null)
             {
-                case SelectionAlgorithm.interactive:
-                    getTilesInteractive(a1, a2, a3, a4, budget);
-                    break;
-                case SelectionAlgorithm.alwaysBest:
-                    getTilesAlwaysBest(a1, a2, a3, a4, budget);
-                    break;
-                case SelectionAlgorithm.frontTileBest:
-                    getTilesFrontTileBest(a1, a2, a3, a4, budget);
-                    break;
-                case SelectionAlgorithm.greedy:
-                    getTilesGreedy(a1, a2, a3, a4, budget);
-                    break;
-                case SelectionAlgorithm.uniform:
-                    getTilesUniform(a1, a2, a3, a4, budget);
-                    break;
-                case SelectionAlgorithm.hybrid:
-                    getTilesHybrid(a1, a2, a3, a4, budget);
-                    break;
-                default:
-                    Debug.LogError($"{Name()}: Unknown algorithm");
-                    break;
+                // xxxjack print for debug
+                prerecordedPointcloud.SelectTileQualities(selectedTileQualities);
             }
+            //
+            // Check whether the user wants to leave the scene (by pressing escape)
+            //
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
@@ -171,90 +151,110 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        void getTilesInteractive(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
-        {
-            int[] selectedQualities = new int[nTiles];
-            if (Input.GetKeyDown(KeyCode.Alpha0))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha9))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-                selectedQualities[0] = nQualities - 1;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-                selectedQualities[1] = nQualities - 1;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-                selectedQualities[2] = nQualities - 1;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-                selectedQualities[3] = nQualities - 1;
-                prerecordedPointcloud.SelectTileQualities(selectedQualities);
-            }
-
-        }
-        void getTilesAlwaysBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
-        {
-            int[] selectedQualities = new int[nTiles];
-            
-            for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
-             prerecordedPointcloud.SelectTileQualities(selectedQualities);
-        }
-        void getTilesFrontTileBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
-        {
-            getTileOrder();
-            int[] selectedQualities = new int[nTiles];
-            for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
-            selectedQualities[tileOrder[0]] = nQualities - 1;
-            prerecordedPointcloud.SelectTileQualities(selectedQualities);
-        }
         void getTileOrder()
         {
             tileOrder = new int[4];
             //Initialize index array
             for (int i = 0; i < 4; i++) tileOrder[i] = i;
-            tileUtilities = new float[4];
-            //Set tile utilities
-            tileUtilities[0] = Vector3.Dot(cameraForward, TileC1);
-            tileUtilities[1] = Vector3.Dot(cameraForward, TileC2);
-            tileUtilities[2] = Vector3.Dot(cameraForward, TileC3);
-            tileUtilities[3] = Vector3.Dot(cameraForward, TileC4);
-            t1Utility = tileUtilities[0];
-            t2Utility = tileUtilities[1];
-            t3Utility = tileUtilities[2];
-            t4Utility = tileUtilities[3];
+            float[] tileUtilities = new float[4]; //Set tile utilities
+            tileUtilities[0] = Vector3.Dot(cameraForward, TileOrientationVector1);
+            tileUtilities[1] = Vector3.Dot(cameraForward, TileOrientationVector2);
+            tileUtilities[2] = Vector3.Dot(cameraForward, TileOrientationVector3);
+            tileUtilities[3] = Vector3.Dot(cameraForward, TileOrientationVector4);
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(tileUtilities, tileOrder);
             //The tile vectors represent the camera that sees the tile not the orientation of tile surface (ie dot product of 1 is highest utility tile, dot product of -1 is the lowest utility tile)
             Array.Reverse(tileOrder);
         }
 
-        //xxxshishir actual tile selection strategies used for evaluation
-        void getTilesGreedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        // Get array of per-tile quality wanted, based on current timestamp/framenumber, budget
+        // and algorithm
+        int[] getTileQualities(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            switch (algorithm)
+            {
+                case SelectionAlgorithm.interactive:
+                    return getTileQualities_Interactive(a1, a2, a3, a4, budget);
+                case SelectionAlgorithm.alwaysBest:
+                    return getTileQualities_AlwaysBest(a1, a2, a3, a4, budget);
+                case SelectionAlgorithm.frontTileBest:
+                    return getTilesFrontTileBest(a1, a2, a3, a4, budget);
+                case SelectionAlgorithm.greedy:
+                    return getTileQualities_Greedy(a1, a2, a3, a4, budget);
+                case SelectionAlgorithm.uniform:
+                    return getTileQualities_Uniform(a1, a2, a3, a4, budget);
+                case SelectionAlgorithm.hybrid:
+                    return getTileQualities_Hybrid(a1, a2, a3, a4, budget);
+                default:
+                    Debug.LogError($"{Name()}: Unknown algorithm");
+                    return null;
+            }
+        }
+
+        int[] getTileQualities_Interactive(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            int[] selectedQualities = new int[nTiles];
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[0] = nQualities - 1;
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[1] = nQualities - 1;
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[2] = nQualities - 1;
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[3] = nQualities - 1;
+                return selectedQualities;
+            }
+            return null;
+        }
+        int[] getTileQualities_AlwaysBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            int[] selectedQualities = new int[nTiles];
+
+            for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
+            return selectedQualities;
+        }
+        int[] getTilesFrontTileBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
             getTileOrder();
-            int[] Tiles = new int[4];
-            Tiles[0] = 0;
-            Tiles[1] = 0;
-            Tiles[2] = 0;
-            Tiles[3] = 0;
+            int[] selectedQualities = new int[nTiles];
+            for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+            selectedQualities[tileOrder[0]] = nQualities - 1;
+            return selectedQualities;
+        }
+
+        //xxxshishir actual tile selection strategies used for evaluation
+        int[] getTileQualities_Greedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        {
+            getTileOrder();
+            int[] selectedQualities = new int[4];
+            selectedQualities[0] = 0;
+            selectedQualities[1] = 0;
+            selectedQualities[2] = 0;
+            selectedQualities[3] = 0;
             double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
@@ -270,12 +270,12 @@ namespace VRT.UserRepresentation.PointCloud
                 stepComplete = false;
                 for (int i = 0; i < 4; i++)
                 {
-                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget)
                         {
-                            Tiles[tileOrder[i]]++;
+                            selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
                             spent = spent + nextSpend;
                             break;
@@ -289,16 +289,16 @@ namespace VRT.UserRepresentation.PointCloud
                     // UnityEngine.Debug.Log("<color=green> XXXDebug Budget" + budget + " spent " + spent + " savings " + savings + " </color> ");
                 }
             }
-            prerecordedPointcloud.SelectTileQualities(Tiles);
+            return selectedQualities;
         }
-        void getTilesUniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Uniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
             getTileOrder();
-            int[] Tiles = new int[4];
-            Tiles[0] = 0;
-            Tiles[1] = 0;
-            Tiles[2] = 0;
-            Tiles[3] = 0;
+            int[] selectedQualities = new int[4];
+            selectedQualities[0] = 0;
+            selectedQualities[1] = 0;
+            selectedQualities[2] = 0;
+            selectedQualities[3] = 0;
             double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
@@ -314,12 +314,12 @@ namespace VRT.UserRepresentation.PointCloud
                 stepComplete = false;
                 for (int i = 0; i < 4; i++)
                 {
-                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget)
                         {
-                            Tiles[tileOrder[i]]++;
+                            selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
                             spent = spent + nextSpend;
                         }
@@ -332,17 +332,17 @@ namespace VRT.UserRepresentation.PointCloud
                     savings = budget - spent;
                 }
             }
-            prerecordedPointcloud.SelectTileQualities(Tiles);
+            return selectedQualities;
         }
-        void getTilesHybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Hybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
         {
             getTileOrder();
             getTileVisibility();
-            int[] Tiles = new int[4];
-            Tiles[0] = 0;
-            Tiles[1] = 0;
-            Tiles[2] = 0;
-            Tiles[3] = 0;
+            int[] selectedQualities = new int[4];
+            selectedQualities[0] = 0;
+            selectedQualities[1] = 0;
+            selectedQualities[2] = 0;
+            selectedQualities[3] = 0;
             double[][] adaptationSet = new double[nTiles][];
             adaptationSet[0] = a1;
             adaptationSet[1] = a2;
@@ -358,12 +358,12 @@ namespace VRT.UserRepresentation.PointCloud
                 stepComplete = false;
                 for (int i = 0; i < 4; i++)
                 {
-                    if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true)
                         {
-                            Tiles[tileOrder[i]]++;
+                            selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
                             spent = spent + nextSpend;
                         }
@@ -375,12 +375,12 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        if (Tiles[tileOrder[i]] < (a1.Length - 1))
+                        if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
                         {
-                            nextSpend = adaptationSet[tileOrder[i]][(Tiles[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][Tiles[tileOrder[i]]];
+                            nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
                             if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false)
                             {
-                                Tiles[tileOrder[i]]++;
+                                selectedQualities[tileOrder[i]]++;
                                 stepComplete = true;
                                 spent = spent + nextSpend;
                             }
@@ -394,7 +394,7 @@ namespace VRT.UserRepresentation.PointCloud
                     savings = budget - spent;
                 }
             }
-            prerecordedPointcloud.SelectTileQualities(Tiles);
+            return selectedQualities;
         }
         void getTileVisibility()
         {
@@ -404,13 +404,13 @@ namespace VRT.UserRepresentation.PointCloud
             tileVisibility[2] = false;
             tileVisibility[3] = false;
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
-            if (Vector3.Dot(cameraForward, TileC1) > 0)
+            if (Vector3.Dot(cameraForward, TileOrientationVector1) > 0)
                 tileVisibility[0] = true;
-            if (Vector3.Dot(cameraForward, TileC2) > 0)
+            if (Vector3.Dot(cameraForward, TileOrientationVector2) > 0)
                 tileVisibility[1] = true;
-            if (Vector3.Dot(cameraForward, TileC3) > 0)
+            if (Vector3.Dot(cameraForward, TileOrientationVector3) > 0)
                 tileVisibility[2] = true;
-            if (Vector3.Dot(cameraForward, TileC4) > 0)
+            if (Vector3.Dot(cameraForward, TileOrientationVector4) > 0)
                 tileVisibility[3] = true;
         }
         public void setCamera(Vector3 Orientation)
