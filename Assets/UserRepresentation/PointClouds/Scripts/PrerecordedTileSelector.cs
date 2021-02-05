@@ -138,7 +138,11 @@ namespace VRT.UserRepresentation.PointCloud
             int[] selectedTileQualities = getTileQualities(a1, a2, a3, a4, budget);
             if (selectedTileQualities != null)
             {
-                // xxxjack print for debug
+                if(debugDecisions)
+                {
+                    // xxxjack: we could do this in stats: format too, may help analysis.
+                    Debug.Log($"Name(): tileQualities: {selectedTileQualities[0]}, {selectedTileQualities[1]}, {selectedTileQualities[2]}, {selectedTileQualities[3]}");
+                }
                 prerecordedPointcloud.SelectTileQualities(selectedTileQualities);
             }
             //
