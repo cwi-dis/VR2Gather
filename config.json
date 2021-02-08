@@ -53,7 +53,7 @@
     },
     "forceMesh": false,
     "defaultCellSize": 0.0001,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 0.6
   },
 
   "LocalUser": {
@@ -78,7 +78,7 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../SampleTiledDataset",
+				"folder" : "../SampleDataset_cellsize5NN",
 				"tiles" : [
 					"Tiles/Tile1",
 					"Tiles/Tile2",
