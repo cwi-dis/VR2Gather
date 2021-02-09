@@ -54,8 +54,6 @@ namespace VRT.UserRepresentation.PointCloud
         public static long curIndex;
 
         private Vector3 cameraForward;
-        private int[] tileOrder;
-        
         
         string Name()
         {
@@ -179,9 +177,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        void getTileOrder()
+        int[] getTileOrder()
         {
-            tileOrder = new int[nTiles];
+            int[] tileOrder = new int[nTiles];
             //Initialize index array
             for (int i = 0; i < nTiles; i++)
             {
@@ -196,6 +194,7 @@ namespace VRT.UserRepresentation.PointCloud
             Array.Sort(tileUtilities, tileOrder);
             //The tile vectors represent the camera that sees the tile not the orientation of tile surface (ie dot product of 1 is highest utility tile, dot product of -1 is the lowest utility tile)
             Array.Reverse(tileOrder);
+            return tileOrder;
         }
 
         // Get array of per-tile quality wanted, based on current timestamp/framenumber, budget
@@ -270,7 +269,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, double budget)
         {
-            getTileOrder();
+            int[] tileOrder = getTileOrder();
             int[] selectedQualities = new int[nTiles];
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
@@ -281,7 +280,7 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, double budget)
         {
             double spent = 0;
-            getTileOrder();
+            int[] tileOrder = getTileOrder();
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
@@ -321,7 +320,7 @@ namespace VRT.UserRepresentation.PointCloud
         int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, double budget)
         {
             double spent = 0;
-            getTileOrder();
+            int[] tileOrder = getTileOrder();
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
@@ -361,7 +360,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             bool[] tileVisibility = getTileVisibility();
             double spent = 0;
-            getTileOrder();
+            int[] tileOrder = getTileOrder();
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
