@@ -173,10 +173,13 @@ namespace VRT.UserRepresentation.PointCloud
                 // Not yet initialized
                 return;
             }
-            double[][] bandwidthUsageMatrix = getBandwidthUsageMatrix(getCurrentFrameIndex());
+            long currentFrameIndex = getCurrentFrameIndex();
+            double[][] bandwidthUsageMatrix = getBandwidthUsageMatrix(currentFrameIndex);
             double budget = bitRatebudget;
             if (budget == 0) budget = 100000;
-            int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget);
+            Vector3 cameraForward = getCameraForward();
+            Vector3 pointcloudPosition = getPointcloudPosition(currentFrameIndex);
+            int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
             if (selectedTileQualities != null)
             {
                 if(debugDecisions)
@@ -196,9 +199,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        int[] getTileOrder()
+        int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
         {
-            Vector3 cameraForward = getCameraForward();
             int[] tileOrder = new int[nTiles];
             //Initialize index array
             for (int i = 0; i < nTiles; i++)
@@ -219,29 +221,29 @@ namespace VRT.UserRepresentation.PointCloud
 
         // Get array of per-tile quality wanted, based on current timestamp/framenumber, budget
         // and algorithm
-        int[] getTileQualities(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             switch (algorithm)
             {
                 case SelectionAlgorithm.interactive:
-                    return getTileQualities_Interactive(bandwidthUsageMatrix, budget);
+                    return getTileQualities_Interactive(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.alwaysBest:
-                    return getTileQualities_AlwaysBest(bandwidthUsageMatrix, budget);
+                    return getTileQualities_AlwaysBest(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.frontTileBest:
-                    return getTilesFrontTileBest(bandwidthUsageMatrix, budget);
+                    return getTilesFrontTileBest(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.greedy:
-                    return getTileQualities_Greedy(bandwidthUsageMatrix, budget);
+                    return getTileQualities_Greedy(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.uniform:
-                    return getTileQualities_Uniform(bandwidthUsageMatrix, budget);
+                    return getTileQualities_Uniform(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.hybrid:
-                    return getTileQualities_Hybrid(bandwidthUsageMatrix, budget);
+                    return getTileQualities_Hybrid(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     return null;
             }
         }
 
-        int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             int[] selectedQualities = new int[nTiles];
             if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -280,16 +282,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return null;
         }
-        int[] getTileQualities_AlwaysBest(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities_AlwaysBest(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             int[] selectedQualities = new int[nTiles];
 
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
             return selectedQualities;
         }
-        int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
-            int[] tileOrder = getTileOrder();
+            int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             int[] selectedQualities = new int[nTiles];
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
             selectedQualities[tileOrder[0]] = nQualities - 1;
@@ -297,10 +299,10 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         //xxxshishir actual tile selection strategies used for evaluation
-        int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             double spent = 0;
-            int[] tileOrder = getTileOrder();
+            int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
@@ -337,10 +339,10 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return selectedQualities;
         }
-        int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             double spent = 0;
-            int[] tileOrder = getTileOrder();
+            int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
@@ -376,11 +378,11 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return selectedQualities;
         }
-        int[] getTileQualities_Hybrid(double[][] bandwidthUsageMatrix, double budget)
+        int[] getTileQualities_Hybrid(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
         {
-            bool[] tileVisibility = getTileVisibility();
+            bool[] tileVisibility = getTileVisibility(cameraForward, pointcloudPosition);
             double spent = 0;
-            int[] tileOrder = getTileOrder();
+            int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
@@ -434,9 +436,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return selectedQualities;
         }
-        bool[] getTileVisibility()
+        bool[] getTileVisibility(Vector3 cameraForward, Vector3 pointcloudPosition)
         {
-            Vector3 cameraForward = getCameraForward();
+            // xxxjack currently ignores pointcloud position, which is probably wrong...
             bool[] tileVisibility = new bool[nTiles];
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
             for (int i = 0; i < nTiles; i++)
@@ -452,7 +454,8 @@ namespace VRT.UserRepresentation.PointCloud
 
         Vector3 getCameraForward()
         {
-            //xxxshishir get camera orientation ToDo: Move to getTileOrder ?
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
             var cam = FindObjectOfType<Camera>().gameObject;
             if (cam == null)
                 Debug.LogError("Camera not found!");
@@ -460,6 +463,11 @@ namespace VRT.UserRepresentation.PointCloud
             Transform cameraTransform = cameraTransform = cam.transform;
             return cameraTransform.forward;
 
+        }
+
+        Vector3 getPointcloudPosition(long currentFrameNumber)
+        {
+            return new Vector3(0, 0, 0);
         }
     }
 }
