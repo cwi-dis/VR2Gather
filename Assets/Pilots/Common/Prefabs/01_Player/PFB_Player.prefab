@@ -804,7 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: b8596b53a22b6684aba33de7eb989a09, type: 2}
+  m_Material: {fileID: 2100000, guid: 757b4f5a5288d12409785f6c9c90e606, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_Maskable: 0
@@ -2640,7 +2640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 25e94fc0446cd0d43a390d8eddea7d23, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -4205,6 +4205,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
         type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -4220,6 +4225,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -4232,16 +4242,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
         type: 3}
