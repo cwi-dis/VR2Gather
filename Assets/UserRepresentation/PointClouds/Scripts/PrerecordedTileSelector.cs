@@ -13,27 +13,16 @@ using System;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PrerecordedTileSelector : MonoBehaviour
+    public abstract class BaseTileSelector : MonoBehaviour
     {
-        PrerecordedPointcloud prerecordedPointcloud;
- 
-        // Pseudo-constant: number of tiles.
-        const int nTiles = 4;
-        // Pseudo-constant: orientation of each tile, relative to the pointcloud centroid.
-        Vector3[] TileOrientation = new Vector3[nTiles]
-        {
-            new Vector3(0, 0, -1),
-            new Vector3(1, 0, 0),
-            new Vector3(0, 0, 1),
-            new Vector3(-1, 0, 0)
-        };
+        protected PrerecordedPointcloud prerecordedPointcloud;
 
- 
+        // Number of tiles available
+        int nTiles;
+
         // Number of qualities available per tile.
         int nQualities;
 
-        // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
-        private List<AdaptationSet>[] prerecordedTileAdaptationSets = null;
 
         public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
         //
@@ -44,138 +33,39 @@ namespace VRT.UserRepresentation.PointCloud
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
         public bool debugDecisions = false;
-        //
-        // Set by overall controller (in production): total available bitrate for this run.
-        //
-        public double bitRatebudget = 1000000;
-        //
-        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
-        //
-        public static long curIndex;
 
         
         string Name()
         {
-            return "PrerecordedTileSelector";
-        }
-        //xxxshishir adaptation set struct
-        public struct AdaptationSet
-        {
-            public string PCframe;
-            //public double[] encodedSize;
-            public List<double> encodedSize;
-            public void addEncodedSize(double a, int i)
-            {
-                if (encodedSize == null)
-                    encodedSize = new List<double>();
-                if ((encodedSize.Count - 1) < i)
-                    encodedSize.Add(a);
-                else
-                    encodedSize[i] = a;
-            }
-        }
-
-        public void Init(PrerecordedPointcloud _prerecordedPointcloud, int _nQualities, int _nTiles)
-        {
-            prerecordedPointcloud = _prerecordedPointcloud;
-            nQualities = _nQualities;
-            Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
-            if (_nTiles != nTiles)
-            {
-                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
-            }
-            LoadAdaptationSets();
-        }
-
-        //
-        // Load the adaptationSet data: per-frame, per-tile, per-quality bandwidth usage.
-        // This data is read from (per-tile) CSV files, which have a row per frame and a column
-        // per quality level.
-        //
-        // Note: The location of the files is obtained from the configfile instance (it would be better
-        // design to get this from our parent PrerecordedPointcloud, as this would allow for showing
-        // multiple prerecorded pointclouds at the same time).
-        //
-        private void LoadAdaptationSets()
-        {
-            prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
-
-            //xxxshishir load the tile description csv files
-            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
-            string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
-            for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
-            {
-                prerecordedTileAdaptationSets[i] = new List<AdaptationSet>();
-                FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
-                if (!tileDescFile.Exists)
-                {
-                    prerecordedTileAdaptationSets = null; // Delete tile datastructure to forestall further errors
-                    throw new System.Exception($"Tile description not found for tile " + i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
-                }
-                StreamReader tileDescReader = tileDescFile.OpenText();
-                //Skip header
-                var aLine = tileDescReader.ReadLine();
-                AdaptationSet aFrame = new AdaptationSet();
-                while ((aLine = tileDescReader.ReadLine()) != null)
-                {
-                    var aLineValues = aLine.Split(',');
-                    aFrame.PCframe = aLineValues[0];
-                    for (int j = 1; j < aLineValues.Length; j++)
-                    {
-                        aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
-                    }
-                    prerecordedTileAdaptationSets[i].Add(aFrame);
-                    aFrame = new AdaptationSet();
-                }
-            }
+            return "BaseTileSelector";
         }
 
         //
         // Get the per-tile per-quality bandwidth usage matrix for the current frame.
         //
-        protected double[][] getBandwidthUsageMatrix(long currentFrameNumber)
-        {
-            double[] a1 = prerecordedTileAdaptationSets[0][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a2 = prerecordedTileAdaptationSets[1][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a3 = prerecordedTileAdaptationSets[2][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a4 = prerecordedTileAdaptationSets[3][(int)currentFrameNumber].encodedSize.ToArray();
-            //xxxshishir debug code
-            if (a1 == null)
-            {
-                Debug.Log("<color=red> Current Index </color> " + currentFrameNumber);
-                a1 = prerecordedTileAdaptationSets[0][0].encodedSize.ToArray();
-            }
-            if (a2 == null)
-                a2 = prerecordedTileAdaptationSets[1][0].encodedSize.ToArray();
-            if (a3 == null)
-                a3 = prerecordedTileAdaptationSets[2][0].encodedSize.ToArray();
-            if (a4 == null)
-                a4 = prerecordedTileAdaptationSets[3][0].encodedSize.ToArray();
-            double[][] bandwidthUsageMatrix = new double[4][]
-            {
-                a1,
-                a2,
-                a3,
-                a4
-            };
-            return bandwidthUsageMatrix;
-        }
+        abstract protected double[][] getBandwidthUsageMatrix(long currentFrameNumber);
 
-        long getCurrentFrameIndex()
-        {
-            return curIndex;
-        }
+
+        abstract protected long getCurrentFrameIndex();
+
+        abstract protected double getBitrateBudget();
+
         private void Update()
         {
             //Debug.Log($"xxxjack PrerecordedPointcloud update called");
-            if (prerecordedPointcloud == null || prerecordedTileAdaptationSets == null)
+            if (prerecordedPointcloud == null)
             {
                 // Not yet initialized
                 return;
             }
             long currentFrameIndex = getCurrentFrameIndex();
             double[][] bandwidthUsageMatrix = getBandwidthUsageMatrix(currentFrameIndex);
-            double budget = bitRatebudget;
+            if (bandwidthUsageMatrix == null)
+            {
+                // Not yet initialized
+                return;
+            }
+            double budget = getBitrateBudget();
             if (budget == 0) budget = 100000;
             Vector3 cameraForward = getCameraForward();
             Vector3 pointcloudPosition = getPointcloudPosition(currentFrameIndex);
@@ -447,12 +337,147 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return tileVisibility;
         }
-        public void setBudget(double budget)
+        
+        protected abstract Vector3 getCameraForward();
+        protected abstract Vector3 getPointcloudPosition(long currentFrameNumber);
+    }
+
+    public class PrecordedTileSelector : BaseTileSelector
+    {
+        // Pseudo-constant: number of tiles.
+        const int nTiles = 4;
+        // Pseudo-constant: orientation of each tile, relative to the pointcloud centroid.
+        Vector3[] TileOrientation = new Vector3[nTiles]
         {
-            bitRatebudget = budget;
+            new Vector3(0, 0, -1),
+            new Vector3(1, 0, 0),
+            new Vector3(0, 0, 1),
+            new Vector3(-1, 0, 0)
+        };
+
+        //
+        // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
+        //
+        private List<AdaptationSet>[] prerecordedTileAdaptationSets = null;
+        //
+        // Set by overall controller (in production): total available bitrate for this run.
+        //
+        public double bitRatebudget = 1000000;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
+        string Name()
+        {
+            return "PrerecordedTileSelector";
         }
 
-        Vector3 getCameraForward()
+        //xxxshishir adaptation set struct
+        public struct AdaptationSet
+        {
+            public string PCframe;
+            //public double[] encodedSize;
+            public List<double> encodedSize;
+            public void addEncodedSize(double a, int i)
+            {
+                if (encodedSize == null)
+                    encodedSize = new List<double>();
+                if ((encodedSize.Count - 1) < i)
+                    encodedSize.Add(a);
+                else
+                    encodedSize[i] = a;
+            }
+        }
+
+        public void Init(PrerecordedPointcloud _prerecordedPointcloud, int _nQualities, int _nTiles)
+        {
+            prerecordedPointcloud = _prerecordedPointcloud;
+            nQualities = _nQualities;
+            Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            if (_nTiles != nTiles)
+            {
+                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
+            }
+            LoadAdaptationSets();
+        }
+
+        //
+        // Load the adaptationSet data: per-frame, per-tile, per-quality bandwidth usage.
+        // This data is read from (per-tile) CSV files, which have a row per frame and a column
+        // per quality level.
+        //
+        // Note: The location of the files is obtained from the configfile instance (it would be better
+        // design to get this from our parent PrerecordedPointcloud, as this would allow for showing
+        // multiple prerecorded pointclouds at the same time).
+        //
+        private void LoadAdaptationSets()
+        {
+            prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
+
+            //xxxshishir load the tile description csv files
+            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+            string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+            for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
+            {
+                prerecordedTileAdaptationSets[i] = new List<AdaptationSet>();
+                FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                if (!tileDescFile.Exists)
+                {
+                    prerecordedTileAdaptationSets = null; // Delete tile datastructure to forestall further errors
+                    throw new System.Exception($"Tile description not found for tile " + i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                }
+                StreamReader tileDescReader = tileDescFile.OpenText();
+                //Skip header
+                var aLine = tileDescReader.ReadLine();
+                AdaptationSet aFrame = new AdaptationSet();
+                while ((aLine = tileDescReader.ReadLine()) != null)
+                {
+                    var aLineValues = aLine.Split(',');
+                    aFrame.PCframe = aLineValues[0];
+                    for (int j = 1; j < aLineValues.Length; j++)
+                    {
+                        aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
+                    }
+                    prerecordedTileAdaptationSets[i].Add(aFrame);
+                    aFrame = new AdaptationSet();
+                }
+            }
+        }
+
+        protected double[][] getBandwidthUsageMatrix(long currentFrameNumber)
+        {
+            double[] a1 = prerecordedTileAdaptationSets[0][(int)currentFrameNumber].encodedSize.ToArray();
+            double[] a2 = prerecordedTileAdaptationSets[1][(int)currentFrameNumber].encodedSize.ToArray();
+            double[] a3 = prerecordedTileAdaptationSets[2][(int)currentFrameNumber].encodedSize.ToArray();
+            double[] a4 = prerecordedTileAdaptationSets[3][(int)currentFrameNumber].encodedSize.ToArray();
+            //xxxshishir debug code
+            if (a1 == null)
+            {
+                Debug.Log("<color=red> Current Index </color> " + currentFrameNumber);
+                a1 = prerecordedTileAdaptationSets[0][0].encodedSize.ToArray();
+            }
+            if (a2 == null)
+                a2 = prerecordedTileAdaptationSets[1][0].encodedSize.ToArray();
+            if (a3 == null)
+                a3 = prerecordedTileAdaptationSets[2][0].encodedSize.ToArray();
+            if (a4 == null)
+                a4 = prerecordedTileAdaptationSets[3][0].encodedSize.ToArray();
+            double[][] bandwidthUsageMatrix = new double[4][]
+            {
+                a1,
+                a2,
+                a3,
+                a4
+            };
+            return bandwidthUsageMatrix;
+        }
+
+        protected long getCurrentFrameIndex()
+        {
+            return curIndex;
+        }
+
+        protected override Vector3 getCameraForward()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
             // but maybe camera position is better. Or both.
@@ -465,9 +490,10 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
-        Vector3 getPointcloudPosition(long currentFrameNumber)
+        protected override Vector3 getPointcloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }
+
     }
 }
