@@ -15,14 +15,17 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public abstract class BaseTileSelector : MonoBehaviour
     {
+        // Object where we send our quality selection decisions. Initialized by subclass.
         protected PrerecordedPointcloud prerecordedPointcloud;
 
-        // Number of tiles available
-        int nTiles;
+        // Number of tiles available. Initialized by subclass.
+        protected int nTiles;
 
-        // Number of qualities available per tile.
-        int nQualities;
+        // Number of qualities available per tile. Initialized by subclass.
+        protected int nQualities;
 
+        // Where the individual tiles are facing. Initialized by subclass.
+        protected Vector3[] TileOrientation;
 
         public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
         //
@@ -42,13 +45,33 @@ namespace VRT.UserRepresentation.PointCloud
 
         //
         // Get the per-tile per-quality bandwidth usage matrix for the current frame.
+        // Must be implemented in subclass.
         //
         abstract protected double[][] getBandwidthUsageMatrix(long currentFrameNumber);
 
-
+        //
+        // Get current frame number or timestamp or whatever.
+        // To be implemented by subclass
+        //
         abstract protected long getCurrentFrameIndex();
 
+        //
+        // Get current total badnwidth available for this pointcloud.
+        // To be implemented by subclass.
+        //
         abstract protected double getBitrateBudget();
+
+        //
+        // Get viewer forward-fsacing vector.
+        // To be implemented by subclass.
+        //
+        protected abstract Vector3 getCameraForward();
+
+        //
+        // Get best known position for viewed pointcloud.
+        // To be implemented by subclass.
+        //
+        protected abstract Vector3 getPointcloudPosition(long currentFrameNumber);
 
         private void Update()
         {
@@ -338,27 +361,15 @@ namespace VRT.UserRepresentation.PointCloud
             return tileVisibility;
         }
         
-        protected abstract Vector3 getCameraForward();
-        protected abstract Vector3 getPointcloudPosition(long currentFrameNumber);
     }
 
-    public class PrecordedTileSelector : BaseTileSelector
+    public class PrerecordedTileSelector : BaseTileSelector
     {
-        // Pseudo-constant: number of tiles.
-        const int nTiles = 4;
-        // Pseudo-constant: orientation of each tile, relative to the pointcloud centroid.
-        Vector3[] TileOrientation = new Vector3[nTiles]
-        {
-            new Vector3(0, 0, -1),
-            new Vector3(1, 0, 0),
-            new Vector3(0, 0, 1),
-            new Vector3(-1, 0, 0)
-        };
-
+        
         //
         // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
         //
-        private List<AdaptationSet>[] prerecordedTileAdaptationSets = null;
+        List<AdaptationSet>[] prerecordedTileAdaptationSets = null;
         //
         // Set by overall controller (in production): total available bitrate for this run.
         //
@@ -367,6 +378,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
         //
         public static long curIndex;
+        
         string Name()
         {
             return "PrerecordedTileSelector";
@@ -394,10 +406,19 @@ namespace VRT.UserRepresentation.PointCloud
             prerecordedPointcloud = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            nTiles = 4;
             if (_nTiles != nTiles)
             {
                 Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
             }
+            TileOrientation = new Vector3[4]
+            {
+                new Vector3(0, 0, -1),
+                new Vector3(1, 0, 0),
+                new Vector3(0, 0, 1),
+                new Vector3(-1, 0, 0)
+            };
+
             LoadAdaptationSets();
         }
 
@@ -444,7 +465,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        protected double[][] getBandwidthUsageMatrix(long currentFrameNumber)
+        protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {
             double[] a1 = prerecordedTileAdaptationSets[0][(int)currentFrameNumber].encodedSize.ToArray();
             double[] a2 = prerecordedTileAdaptationSets[1][(int)currentFrameNumber].encodedSize.ToArray();
@@ -471,12 +492,16 @@ namespace VRT.UserRepresentation.PointCloud
             };
             return bandwidthUsageMatrix;
         }
-
-        protected long getCurrentFrameIndex()
+        protected override double getBitrateBudget()
+        {
+            return bitRatebudget;
+        }
+        protected override long getCurrentFrameIndex()
         {
             return curIndex;
         }
 
+       
         protected override Vector3 getCameraForward()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
