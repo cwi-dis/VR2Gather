@@ -53,7 +53,6 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public static long curIndex;
 
-        private Vector3 cameraForward;
         
         string Name()
         {
@@ -150,13 +149,6 @@ namespace VRT.UserRepresentation.PointCloud
             };
             double budget = bitRatebudget;
             if (budget == 0) budget = 100000;
-            //xxxshishir get camera orientation ToDo: Move to getTileOrder ?
-            var cam = FindObjectOfType<Camera>().gameObject;
-            if (cam == null)
-                Debug.LogError("Camera not found!");
-            Transform cameraTransform = cameraTransform = cam.transform;
-            cameraForward = cameraTransform.forward;
-            //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget);
             if (selectedTileQualities != null)
             {
@@ -179,6 +171,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         int[] getTileOrder()
         {
+            Vector3 cameraForward = getCameraForward();
             int[] tileOrder = new int[nTiles];
             //Initialize index array
             for (int i = 0; i < nTiles; i++)
@@ -416,6 +409,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         bool[] getTileVisibility()
         {
+            Vector3 cameraForward = getCameraForward();
             bool[] tileVisibility = new bool[nTiles];
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
             for (int i = 0; i < nTiles; i++)
@@ -424,13 +418,21 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return tileVisibility;
         }
-        public void setCamera(Vector3 Orientation)
-        {
-            cameraForward = Orientation;
-        }
         public void setBudget(double budget)
         {
             bitRatebudget = budget;
+        }
+
+        Vector3 getCameraForward()
+        {
+            //xxxshishir get camera orientation ToDo: Move to getTileOrder ?
+            var cam = FindObjectOfType<Camera>().gameObject;
+            if (cam == null)
+                Debug.LogError("Camera not found!");
+            //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
+            Transform cameraTransform = cameraTransform = cam.transform;
+            return cameraTransform.forward;
+
         }
     }
 }
