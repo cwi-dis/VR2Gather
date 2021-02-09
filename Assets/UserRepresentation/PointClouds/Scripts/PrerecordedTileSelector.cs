@@ -143,6 +143,13 @@ namespace VRT.UserRepresentation.PointCloud
                 a3 = aTile[2][0].encodedSize.ToArray();
             if (a4 == null)
                 a4 = aTile[3][0].encodedSize.ToArray();
+            double[][] bandwidthUsageMatrix = new double[4][]
+            {
+                a1,
+                a2,
+                a3,
+                a4
+            };
             double budget = bitRatebudget;
             if (budget == 0) budget = 100000;
             //xxxshishir get camera orientation ToDo: Move to getTileOrder ?
@@ -152,7 +159,7 @@ namespace VRT.UserRepresentation.PointCloud
             Transform cameraTransform = cameraTransform = cam.transform;
             cameraForward = cameraTransform.forward;
             //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
-            int[] selectedTileQualities = getTileQualities(a1, a2, a3, a4, budget);
+            int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget);
             if (selectedTileQualities != null)
             {
                 if(debugDecisions)
@@ -193,29 +200,29 @@ namespace VRT.UserRepresentation.PointCloud
 
         // Get array of per-tile quality wanted, based on current timestamp/framenumber, budget
         // and algorithm
-        int[] getTileQualities(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities(double[][] bandwidthUsageMatrix, double budget)
         {
             switch (algorithm)
             {
                 case SelectionAlgorithm.interactive:
-                    return getTileQualities_Interactive(a1, a2, a3, a4, budget);
+                    return getTileQualities_Interactive(bandwidthUsageMatrix, budget);
                 case SelectionAlgorithm.alwaysBest:
-                    return getTileQualities_AlwaysBest(a1, a2, a3, a4, budget);
+                    return getTileQualities_AlwaysBest(bandwidthUsageMatrix, budget);
                 case SelectionAlgorithm.frontTileBest:
-                    return getTilesFrontTileBest(a1, a2, a3, a4, budget);
+                    return getTilesFrontTileBest(bandwidthUsageMatrix, budget);
                 case SelectionAlgorithm.greedy:
-                    return getTileQualities_Greedy(a1, a2, a3, a4, budget);
+                    return getTileQualities_Greedy(bandwidthUsageMatrix, budget);
                 case SelectionAlgorithm.uniform:
-                    return getTileQualities_Uniform(a1, a2, a3, a4, budget);
+                    return getTileQualities_Uniform(bandwidthUsageMatrix, budget);
                 case SelectionAlgorithm.hybrid:
-                    return getTileQualities_Hybrid(a1, a2, a3, a4, budget);
+                    return getTileQualities_Hybrid(bandwidthUsageMatrix, budget);
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     return null;
             }
         }
 
-        int[] getTileQualities_Interactive(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Interactive(double[][] bandwidthUsageMatrix, double budget)
         {
             int[] selectedQualities = new int[nTiles];
             if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -254,14 +261,14 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return null;
         }
-        int[] getTileQualities_AlwaysBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_AlwaysBest(double[][] bandwidthUsageMatrix, double budget)
         {
             int[] selectedQualities = new int[nTiles];
 
             for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
             return selectedQualities;
         }
-        int[] getTilesFrontTileBest(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTilesFrontTileBest(double[][] bandwidthUsageMatrix, double budget)
         {
             getTileOrder();
             int[] selectedQualities = new int[nTiles];
@@ -271,33 +278,28 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         //xxxshishir actual tile selection strategies used for evaluation
-        int[] getTileQualities_Greedy(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Greedy(double[][] bandwidthUsageMatrix, double budget)
         {
-            double savings;
             double spent = 0;
             getTileOrder();
+            // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
             selectedQualities[3] = 0;
-            double[][] adaptationSet = new double[nTiles][];
-            adaptationSet[0] = a1;
-            adaptationSet[1] = a2;
-            adaptationSet[2] = a3;
-            adaptationSet[3] = a4;
-            spent = a1[0] + a2[0] + a3[0] + a4[0];
-            double nextSpend;
+            // Assume we spend at least minimal quality badnwidth requirements for each tile
+            for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
             bool stepComplete = false;
-            while (representationSet != true)
+            while (!representationSet)
             {
                 stepComplete = false;
                 for (int i = 0; i < nTiles; i++)
                 {
-                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < nQualities - 1)
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                        double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget)
                         {
                             selectedQualities[tileOrder[i]]++;
@@ -307,32 +309,27 @@ namespace VRT.UserRepresentation.PointCloud
                         }
                     }
                 }
-                if (stepComplete == false)
+                if (!stepComplete)
                 {
                     representationSet = true;
-                    savings = budget - spent;
+                    double savings = budget - spent;
                     // UnityEngine.Debug.Log("<color=green> XXXDebug Budget" + budget + " spent " + spent + " savings " + savings + " </color> ");
                 }
             }
             return selectedQualities;
         }
-        int[] getTileQualities_Uniform(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Uniform(double[][] bandwidthUsageMatrix, double budget)
         {
-            double savings;
+            double spent = 0;
             getTileOrder();
+            // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
             selectedQualities[3] = 0;
-            double[][] adaptationSet = new double[nTiles][];
-            adaptationSet[0] = a1;
-            adaptationSet[1] = a2;
-            adaptationSet[2] = a3;
-            adaptationSet[3] = a4;
-            double spent;
-            spent = a1[0] + a2[0] + a3[0] + a4[0];
-            double nextSpend;
+            // Assume we spend at least minimal quality badnwidth requirements for each tile
+            for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
             bool stepComplete = false;
             while (representationSet != true)
@@ -340,9 +337,9 @@ namespace VRT.UserRepresentation.PointCloud
                 stepComplete = false;
                 for (int i = 0; i < nTiles; i++)
                 {
-                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                        double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget)
                         {
                             selectedQualities[tileOrder[i]]++;
@@ -355,29 +352,24 @@ namespace VRT.UserRepresentation.PointCloud
                 if (stepComplete == false)
                 {
                     representationSet = true;
-                    savings = budget - spent;
+                    double savings = budget - spent;
                 }
             }
             return selectedQualities;
         }
-        int[] getTileQualities_Hybrid(double[] a1, double[] a2, double[] a3, double[] a4, double budget)
+        int[] getTileQualities_Hybrid(double[][] bandwidthUsageMatrix, double budget)
         {
-            double savings;
-            getTileOrder();
             bool[] tileVisibility = getTileVisibility();
+            double spent = 0;
+            getTileOrder();
+            // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
             selectedQualities[0] = 0;
             selectedQualities[1] = 0;
             selectedQualities[2] = 0;
             selectedQualities[3] = 0;
-            double[][] adaptationSet = new double[nTiles][];
-            adaptationSet[0] = a1;
-            adaptationSet[1] = a2;
-            adaptationSet[2] = a3;
-            adaptationSet[3] = a4;
-            double spent;
-            spent = a1[0] + a2[0] + a3[0] + a4[0];
-            double nextSpend;
+            // Assume we spend at least minimal quality badnwidth requirements for each tile
+            for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
             bool stepComplete = false;
             while (representationSet != true)
@@ -385,9 +377,9 @@ namespace VRT.UserRepresentation.PointCloud
                 stepComplete = false;
                 for (int i = 0; i < nTiles; i++)
                 {
-                    if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
+                    if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
-                        nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                        double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
                         if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true)
                         {
                             selectedQualities[tileOrder[i]]++;
@@ -402,9 +394,9 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     for (int i = 0; i < nTiles; i++)
                     {
-                        if (selectedQualities[tileOrder[i]] < (a1.Length - 1))
+                        if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                         {
-                            nextSpend = adaptationSet[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - adaptationSet[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                            double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
                             if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false)
                             {
                                 selectedQualities[tileOrder[i]]++;
@@ -418,7 +410,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (stepComplete == false)
                 {
                     representationSet = true;
-                    savings = budget - spent;
+                    double savings = budget - spent;
                 }
             }
             return selectedQualities;
