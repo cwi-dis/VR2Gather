@@ -475,29 +475,15 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {
-            double[] a1 = prerecordedTileAdaptationSets[0][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a2 = prerecordedTileAdaptationSets[1][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a3 = prerecordedTileAdaptationSets[2][(int)currentFrameNumber].encodedSize.ToArray();
-            double[] a4 = prerecordedTileAdaptationSets[3][(int)currentFrameNumber].encodedSize.ToArray();
-            //xxxshishir debug code
-            if (a1 == null)
+            Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
+            double[][] bandwidthUsageMatrix = new double[4][];
+            for(int i=0; i<4; i++)
             {
-                Debug.Log("<color=red> Current Index </color> " + currentFrameNumber);
-                a1 = prerecordedTileAdaptationSets[0][0].encodedSize.ToArray();
+                var thisTile = prerecordedTileAdaptationSets[i];
+                var thisFrame = thisTile[(int)currentFrameNumber];
+                var thisBandwidth = thisFrame.encodedSize.ToArray();
+                bandwidthUsageMatrix[i] = thisBandwidth;
             }
-            if (a2 == null)
-                a2 = prerecordedTileAdaptationSets[1][0].encodedSize.ToArray();
-            if (a3 == null)
-                a3 = prerecordedTileAdaptationSets[2][0].encodedSize.ToArray();
-            if (a4 == null)
-                a4 = prerecordedTileAdaptationSets[3][0].encodedSize.ToArray();
-            double[][] bandwidthUsageMatrix = new double[4][]
-            {
-                a1,
-                a2,
-                a3,
-                a4
-            };
             return bandwidthUsageMatrix;
         }
         protected override double getBitrateBudget()
