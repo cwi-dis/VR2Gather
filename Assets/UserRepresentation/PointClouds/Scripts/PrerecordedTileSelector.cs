@@ -440,21 +440,29 @@ namespace VRT.UserRepresentation.PointCloud
             string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
             for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
             {
+                string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv");
                 prerecordedTileAdaptationSets[i] = new List<AdaptationSet>();
-                FileInfo tileDescFile = new FileInfo(System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                FileInfo tileDescFile = new FileInfo(csvFilename);
                 if (!tileDescFile.Exists)
                 {
                     prerecordedTileAdaptationSets = null; // Delete tile datastructure to forestall further errors
-                    throw new System.Exception($"Tile description not found for tile " + i + " at" + System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv"));
+                    throw new System.Exception($"Tile description not found for tile {i} at {csvFilename}");
                 }
                 StreamReader tileDescReader = tileDescFile.OpenText();
                 //Skip header
                 var aLine = tileDescReader.ReadLine();
                 AdaptationSet aFrame = new AdaptationSet();
+                // Check that all lines have the same number of fields
+                int numfields = -1;
                 while ((aLine = tileDescReader.ReadLine()) != null)
                 {
                     var aLineValues = aLine.Split(',');
                     aFrame.PCframe = aLineValues[0];
+                    if (numfields < 0) numfields = aLineValues.Length;
+                    if (aLineValues.Length != numfields)
+                    {
+                        throw new System.Exception($"{Name()}: some lines have {numfields} fields, others have {aLineValues.Length} in {csvFilename}");
+                    }
                     for (int j = 1; j < aLineValues.Length; j++)
                     {
                         aFrame.addEncodedSize(double.Parse(aLineValues[j]), j - 1);
