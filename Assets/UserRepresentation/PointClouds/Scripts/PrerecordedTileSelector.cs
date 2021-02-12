@@ -98,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (debugDecisions)
                 {
                     // xxxjack: we could do this in stats: format too, may help analysis.
-                    Debug.Log($"Name(): tileQualities: {selectedTileQualities[0]}, {selectedTileQualities[1]}, {selectedTileQualities[2]}, {selectedTileQualities[3]}");
+                    Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
                 }
                 pipeline.SelectTileQualities(selectedTileQualities);
             }
@@ -218,10 +218,6 @@ namespace VRT.UserRepresentation.PointCloud
             int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
-            selectedQualities[0] = 0;
-            selectedQualities[1] = 0;
-            selectedQualities[2] = 0;
-            selectedQualities[3] = 0;
             // Assume we spend at least minimal quality badnwidth requirements for each tile
             for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
@@ -258,10 +254,6 @@ namespace VRT.UserRepresentation.PointCloud
             int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
-            selectedQualities[0] = 0;
-            selectedQualities[1] = 0;
-            selectedQualities[2] = 0;
-            selectedQualities[3] = 0;
             // Assume we spend at least minimal quality badnwidth requirements for each tile
             for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
@@ -298,10 +290,6 @@ namespace VRT.UserRepresentation.PointCloud
             int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
             // Start by selecting minimal quality for each tile
             int[] selectedQualities = new int[nTiles];
-            selectedQualities[0] = 0;
-            selectedQualities[1] = 0;
-            selectedQualities[2] = 0;
-            selectedQualities[3] = 0;
             // Assume we spend at least minimal quality badnwidth requirements for each tile
             for (int i = 0; i < nTiles; i++) spent += bandwidthUsageMatrix[i][0];
             bool representationSet = false;
@@ -410,19 +398,13 @@ namespace VRT.UserRepresentation.PointCloud
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
-            nTiles = 4;
-            if (_nTiles != nTiles)
+            nTiles = _nTiles;
+            TileOrientation = new Vector3[nTiles];
+            for (int ti = 0; ti < nTiles; ti++)
             {
-                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
+                double angle = ti * Math.PI / 2;
+                TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
-            TileOrientation = new Vector3[4]
-            {
-                new Vector3(0, 0, -1),
-                new Vector3(1, 0, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(-1, 0, 0)
-            };
-
             LoadAdaptationSets();
         }
 
@@ -480,13 +462,13 @@ namespace VRT.UserRepresentation.PointCloud
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {
             Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
-            double[][] bandwidthUsageMatrix = new double[4][];
-            for (int i = 0; i < 4; i++)
+            double[][] bandwidthUsageMatrix = new double[nTiles][];
+            for (int ti = 0; ti < nTiles; ti++)
             {
-                var thisTile = prerecordedTileAdaptationSets[i];
+                var thisTile = prerecordedTileAdaptationSets[ti];
                 var thisFrame = thisTile[(int)currentFrameNumber];
                 var thisBandwidth = thisFrame.encodedSize.ToArray();
-                bandwidthUsageMatrix[i] = thisBandwidth;
+                bandwidthUsageMatrix[ti] = thisBandwidth;
             }
             return bandwidthUsageMatrix;
         }
@@ -526,10 +508,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Temporary variable (should be measured from internet connection): total available bitrate for this run.
         //
         public double bitRatebudget = 1000000;
-        //
-        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
-        //
-        public static long curIndex;
+       
         TilingConfig tilingConfig;
 
         string Name()
@@ -548,11 +527,7 @@ namespace VRT.UserRepresentation.PointCloud
             pipeline = _pipeline;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
-            nTiles = 4;
-            if (_nTiles != nTiles)
-            {
-                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
-            }
+            nTiles = _nTiles;
             TileOrientation = new Vector3[_nTiles];
             for (int i = 0; i < _nTiles; i++)
             {
@@ -560,11 +535,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-
-
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {
-            Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
+            if (currentFrameNumber != 0)
+            {
+                Debug.LogError($"{Name()}: Programmer error: currentFrameNumber={currentFrameNumber}");
+            }
             int nTiles = tilingConfig.tiles.Length;
             if (nTiles == 0) return null; // Not yet initialized
             int nQualities = tilingConfig.tiles[0].qualities.Length;
@@ -589,7 +565,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         protected override long getCurrentFrameIndex()
         {
-            return curIndex;
+            return 0;
         }
 
 
