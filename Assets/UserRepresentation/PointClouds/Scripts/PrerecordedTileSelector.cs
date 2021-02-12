@@ -16,7 +16,7 @@ namespace VRT.UserRepresentation.PointCloud
     public abstract class BaseTileSelector : MonoBehaviour
     {
         // Object where we send our quality selection decisions. Initialized by subclass.
-        protected PrerecordedPointcloud prerecordedPointcloud;
+        protected PointCloudPipeline pipeline;
 
         // Number of tiles available. Initialized by subclass.
         protected int nTiles;
@@ -76,7 +76,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void Update()
         {
             //Debug.Log($"xxxjack PrerecordedPointcloud update called");
-            if (prerecordedPointcloud == null)
+            if (pipeline == null)
             {
                 // Not yet initialized
                 return;
@@ -100,7 +100,7 @@ namespace VRT.UserRepresentation.PointCloud
                     // xxxjack: we could do this in stats: format too, may help analysis.
                     Debug.Log($"Name(): tileQualities: {selectedTileQualities[0]}, {selectedTileQualities[1]}, {selectedTileQualities[2]}, {selectedTileQualities[3]}");
                 }
-                prerecordedPointcloud.SelectTileQualities(selectedTileQualities);
+                pipeline.SelectTileQualities(selectedTileQualities);
             }
             //
             // Check whether the user wants to leave the scene (by pressing escape)
@@ -401,9 +401,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public void Init(PrerecordedPointcloud _prerecordedPointcloud, int _nQualities, int _nTiles)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles)
         {
-            prerecordedPointcloud = _prerecordedPointcloud;
+            pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
             nTiles = 4;
