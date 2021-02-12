@@ -72,6 +72,28 @@ public class MoveCamera : MonoBehaviour {
             }
             
         }
+        // Keyboard Camera rotation
+        {
+            float hAngle = 0;
+            float vAngle = 0;
+            if (Input.GetKey(KeyCode.J)) hAngle = 5;
+            if (Input.GetKey(KeyCode.L)) hAngle = -5;
+            if (Input.GetKey(KeyCode.I)) vAngle = -5;
+            if (Input.GetKey(KeyCode.K)) vAngle = 5;
+            if (hAngle != 0 || vAngle != 0) {
+                xRotation += vAngle;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+                if (!spectator)
+                {
+                    playerBody.Rotate(Vector3.up, -hAngle);
+                    avatarHead.Rotate(Vector3.right, vAngle);
+                }
+
+            }
+        }
 
     }
 }
