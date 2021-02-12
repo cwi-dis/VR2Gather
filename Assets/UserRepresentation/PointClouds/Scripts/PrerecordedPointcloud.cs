@@ -20,8 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         public string[] qualities;
         [Tooltip("Read .ply files in stead of .cwipcdump files")]
         public bool ply;
-        public PrerecordedTileSelector tileSelector;
-        User dummyUser;
+         User dummyUser;
         Config._User cfg;
 
         public void Awake()
@@ -50,25 +49,28 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.Render = realUser.Render;
-            // xxxjack debug
-            int nQualities = cfg.PCSelfConfig.PrerecordedReaderConfig.qualities.Length;
-            int nTiles = cfg.PCSelfConfig.PrerecordedReaderConfig.tiles.Length;
-            Debug.Log($"PrerecordedPointcloud nTiles={nTiles} nQualities={nQualities}");
             try
             {
                 Init(dummyUser, cfg, true);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Cannot initialize prerecorded pointcloud: Exception: {e.Message} Stack: {e.StackTrace}");
+                Debug.LogError($"{Name()}: initialize: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw e;
             }
+            _InitTileSelector();
+        }
+        protected override void _InitTileSelector()
+        {
+            int nQualities = qualities.Length;
+            int nTiles = tiles.Length;
+            Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
+            if (nQualities <= 1) return;
             if (tileSelector == null)
             {
                 Debug.LogWarning($"{Name()}: no tileSelector");
             }
-            tileSelector?.Init(this, nQualities, nTiles);
-
+            tileSelector?.Init(this, nQualities, nTiles, null);
         }
     }
 }

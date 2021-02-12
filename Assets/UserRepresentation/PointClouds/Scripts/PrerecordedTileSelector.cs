@@ -37,7 +37,7 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public bool debugDecisions = false;
 
-        
+
         string Name()
         {
             return "BaseTileSelector";
@@ -95,7 +95,7 @@ namespace VRT.UserRepresentation.PointCloud
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
             if (selectedTileQualities != null)
             {
-                if(debugDecisions)
+                if (debugDecisions)
                 {
                     // xxxjack: we could do this in stats: format too, may help analysis.
                     Debug.Log($"Name(): tileQualities: {selectedTileQualities[0]}, {selectedTileQualities[1]}, {selectedTileQualities[2]}, {selectedTileQualities[3]}");
@@ -121,7 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
                 tileOrder[i] = i;
             }
             float[] tileUtilities = new float[nTiles];
-            for (int i=0; i<nTiles; i++)
+            for (int i = 0; i < nTiles; i++)
             {
                 tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
             }
@@ -360,12 +360,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
             return tileVisibility;
         }
-        
+
     }
 
     public class PrerecordedTileSelector : BaseTileSelector
     {
-        
+
         //
         // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
         //
@@ -378,7 +378,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
         //
         public static long curIndex;
-        
+
         string Name()
         {
             return "PrerecordedTileSelector";
@@ -401,8 +401,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
         {
+            if (tilingConfig != null)
+            {
+                throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
+            }
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
@@ -477,7 +481,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
             double[][] bandwidthUsageMatrix = new double[4][];
-            for(int i=0; i<4; i++)
+            for (int i = 0; i < 4; i++)
             {
                 var thisTile = prerecordedTileAdaptationSets[i];
                 var thisFrame = thisTile[(int)currentFrameNumber];
@@ -495,7 +499,7 @@ namespace VRT.UserRepresentation.PointCloud
             return curIndex;
         }
 
-       
+
         protected override Vector3 getCameraForward()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
@@ -513,6 +517,100 @@ namespace VRT.UserRepresentation.PointCloud
         {
             return new Vector3(0, 0, 0);
         }
+
+    }
+    public class LiveTileSelector : BaseTileSelector
+    {
+
+        //
+        // Temporary variable (should be measured from internet connection): total available bitrate for this run.
+        //
+        public double bitRatebudget = 1000000;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
+        TilingConfig tilingConfig;
+
+        string Name()
+        {
+            return "LiveTileSelector";
+        }
+
+
+        public void Init(PointCloudPipeline _pipeline, int _nQualities, int _nTiles, TilingConfig? _tilingConfig)
+        {
+            if (_tilingConfig == null)
+            {
+                throw new System.Exception($"{Name()}: Must have tilingConfig argument");
+            }
+            tilingConfig = (TilingConfig)_tilingConfig;
+            pipeline = _pipeline;
+            nQualities = _nQualities;
+            Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            nTiles = 4;
+            if (_nTiles != nTiles)
+            {
+                Debug.LogError($"{Name()}: Only {nTiles} tiles implemented");
+            }
+            TileOrientation = new Vector3[_nTiles];
+            for (int i = 0; i < _nTiles; i++)
+            {
+                TileOrientation[i] = tilingConfig.tiles[i].orientation;
+            }
+        }
+
+
+
+        protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
+        {
+            Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
+            int nTiles = tilingConfig.tiles.Length;
+            if (nTiles == 0) return null; // Not yet initialized
+            int nQualities = tilingConfig.tiles[0].qualities.Length;
+            double[][] bandwidthUsageMatrix = new double[nTiles][];
+            for (int ti = 0; ti < nTiles; ti++)
+            {
+                var thisTile = tilingConfig.tiles[ti];
+                var thisBandwidth = new double[nQualities];
+                for (int qi = 0; qi < nQualities; qi++)
+                {
+                    var thisQuality = thisTile.qualities[qi];
+                    thisBandwidth[qi] = thisQuality.bandwidthRequirement;
+                }
+
+                bandwidthUsageMatrix[ti] = thisBandwidth;
+            }
+            return bandwidthUsageMatrix;
+        }
+        protected override double getBitrateBudget()
+        {
+            return bitRatebudget;
+        }
+        protected override long getCurrentFrameIndex()
+        {
+            return curIndex;
+        }
+
+
+        protected override Vector3 getCameraForward()
+        {
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
+            var cam = FindObjectOfType<Camera>().gameObject;
+            if (cam == null)
+                Debug.LogError("Camera not found!");
+            //Debug.Log("<color=red> Camera Transform </color>" + cameraForward.x + " " + cameraForward.y + " " + cameraForward.z);
+            Transform cameraTransform = cameraTransform = cam.transform;
+            return cameraTransform.forward;
+
+        }
+
+        protected override Vector3 getPointcloudPosition(long currentFrameNumber)
+        {
+            return new Vector3(0, 0, 0);
+        }
+
 
     }
 }

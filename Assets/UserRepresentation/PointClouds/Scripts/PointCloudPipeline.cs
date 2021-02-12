@@ -14,6 +14,9 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PointCloudPipeline : BasePipeline
     {
+        [Tooltip("Object responsible for tile quality adaptation algorithm")]
+        public PrerecordedTileSelector tileSelector = null;
+
         BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -481,6 +484,33 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileIndex++;
             }
             _CreatePointcloudReader(tileNumbers, 0);
+            _InitTileSelector();
+        }
+
+        protected virtual void _InitTileSelector()
+        {
+            Debug.LogError($"{Name()}: _InitTileSelector not yet implemented");
+            if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
+            {
+                throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
+            }
+            int nTiles = tilingConfig.tiles.Length;
+            int nQualities = tilingConfig.tiles[0].qualities.Length;
+            // Sanity check: all tiles should have the same number of qualities
+            foreach(var t in tilingConfig.tiles)
+            {
+                if (t.qualities.Length != nQualities)
+                {
+                    throw new System.Exception($"{Name()}: All tiles should have same number of qualities");
+                }
+            }
+            Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
+            if (nQualities <= 1) return;
+            if (tileSelector == null)
+            {
+                Debug.LogWarning($"{Name()}: no tileSelector");
+            }
+            tileSelector?.Init(this, nQualities, nTiles, tilingConfig);
         }
 
         public void SelectTileQualities(int[] tileQualities)
