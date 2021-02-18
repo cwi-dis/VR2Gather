@@ -5,10 +5,9 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Fader
-  m_Shader: {fileID: 4800000, guid: 53935f87e2b352d4181aa86e7a60c1f0, type: 3}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: MonoVideo
+  m_Shader: {fileID: 4800000, guid: 598dd27d8282f3d4aa688316d2d30bf4, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -73,5 +72,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 0.70980394}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
