@@ -1,0 +1,19 @@
+{
+    "name": "Pilots-Editor",
+    "references": [
+        "GUID:8830b9e06f5eb184f963f1aec82206c7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

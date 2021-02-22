@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using OrchestratorWrapping;
+using VRTCore;
+using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.PointCloud;
+using VRT.UserRepresentation.TVM.DataProviders;
 
 public class OrchestratorCalibration : MonoBehaviour {
 
@@ -31,14 +34,15 @@ public class OrchestratorCalibration : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserData.eUserRepresentationType.__TVM__) {
-            player.tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
-            player.tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
-            player.tvm.gameObject.SetActive(true);
+        if (OrchestratorController.Instance.SelfUser.userData.userRepresentationType == UserRepresentationType.__TVM__) {
+            NetworkDataProvider tvm = (NetworkDataProvider)player.tvm;
+            tvm.connectionURI = OrchestratorController.Instance.SelfUser.userData.userMQurl;
+            tvm.exchangeName = OrchestratorController.Instance.SelfUser.userData.userMQexchangeName;
+            tvm.gameObject.SetActive(true);
         }
         else {
             player.pc.gameObject.SetActive(true);
-            player.pc.AddComponent<EntityPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
+            player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
         }
     }
 

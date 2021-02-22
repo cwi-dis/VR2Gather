@@ -5,8 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using OrchestratorWrapping;
 using UnityEditor;
+using VRTCore;
+using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.Voice;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
@@ -236,37 +238,37 @@ public class OrchestratorLogin : MonoBehaviour {
         rectImage.localScale = Vector3.one;
         // IMAGE
         switch (user.userData.userRepresentationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 textItem.text += " - (No Rep)";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                 textItem.text += " - (2D Video)";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 textItem.text += " - (3D Avatar)";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric 3D Mesh)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_PROXY__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Simple PC)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_SYNTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Synthetic PC)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_CERTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric PC)";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 textItem.text += " - (Spectator)";
                 break;
@@ -334,11 +336,11 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void UpdateRepresentations(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
-        //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+        //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
         List<string> finalNames = new List<string>();
-        foreach (string type in Enum.GetNames(typeof(UserData.eUserRepresentationType))) {
+        foreach (string type in Enum.GetNames(typeof(UserRepresentationType))) {
             string enumName;
             switch (type) {
                 case "__NONE__":
@@ -381,7 +383,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void UpdateWebcams(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
         WebCamDevice[] devices = WebCamTexture.devices;
         List<string> webcams = new List<string>();
@@ -392,7 +394,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void Updatemicrophones(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
         string[] devices = Microphone.devices;
         List<string> microphones = new List<string>();
@@ -408,41 +410,41 @@ public class OrchestratorLogin : MonoBehaviour {
         logsScrollRect.verticalScrollbar.value = 0;
     }
 
-    private void SetUserRepresentationGUI(UserData.eUserRepresentationType _representationType) {
+    private void SetUserRepresentationGUI(UserRepresentationType _representationType) {
         userRepresentationLobbyText.text = _representationType.ToString();
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 userRepresentationLobbyText.text = "NO REPRESENTATION";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                 userRepresentationLobbyText.text = "2D VIDEO";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "3D AVATAR";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC 3D MESH";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 userRepresentationLobbyText.text = "SIMPLE PC";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_SYNTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC PC";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 userRepresentationLobbyText.text = "SPECTATOR";
                 break;
@@ -451,37 +453,37 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    private void SetUserRepresentationDescription(UserData.eUserRepresentationType _representationType) {
+    private void SetUserRepresentationDescription(UserRepresentationType _representationType) {
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 selfRepresentationDescription.text = "No visual representation, and no audio communication. The user can only listen.";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 selfRepresentationDescription.text = "2D video window from your camera, as in typical conferencing services.";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 selfRepresentationDescription.text = "3D Synthetic Avatar.";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a Time Varying Meshes (TVM).";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWI_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_CWIK4A_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_PROXY__:
                 selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_CERTH__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 selfRepresentationDescription.text = "No visual representation, but audio communication.";
                 break;
             default:
@@ -499,7 +501,7 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
-        Workers.VoiceReader.PrepareDSP();
+        VoiceReader.PrepareDSP();
 
         system = EventSystem.current;
 
@@ -512,7 +514,7 @@ public class OrchestratorLogin : MonoBehaviour {
         // Font to build gui components for logs!
         //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
         UpdateWebcams(webcamDropdown);
         Updatemicrophones(microphoneDropdown);
@@ -833,36 +835,36 @@ public class OrchestratorLogin : MonoBehaviour {
         webcamInfoGO.SetActive(false);
         pccerthInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
-        if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
+        if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__TVM__) {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWI_)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWIK4A_)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWIK4A_)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_PROXY__)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_PROXY__)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_SYNTH__)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_SYNTH__)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CERTH__) {
             pccerthInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__) {
             webcamInfoGO.SetActive(true);
         }
         // Preview
-        SetUserRepresentationDescription((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
-        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+        SetUserRepresentationDescription((UserRepresentationType)representationTypeConfigDropdown.value);
+        selfRepresentationPreview.ChangeRepresentation((UserRepresentationType)representationTypeConfigDropdown.value,
             webcamDropdown.options[webcamDropdown.value].text);
         selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
     }
@@ -1305,7 +1307,7 @@ public class OrchestratorLogin : MonoBehaviour {
             //UserData lUserData = new UserData {
             //    userMQexchangeName = exchangeNameLoginIF.text,
             //    userMQurl = connectionURILoginIF.text,
-            //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
+            //    userRepresentationType = (UserRepresentationType)representationTypeLoginDropdown.value
             //};
             //OrchestratorController.Instance.UpdateUserData(lUserData);
             state = State.Logged;
@@ -1568,11 +1570,11 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = Config.Instance.TVMs.exchangeName,
             userMQurl = Config.Instance.TVMs.connectionURI,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
-        OrchestratorController.Instance.UpdateUserData(lUserData);
+        OrchestratorController.Instance.UpdateFullUserData(lUserData);
     }
 
     private void GetUserInfo() {

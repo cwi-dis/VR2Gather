@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTCore;
 
-namespace Workers {
-    public class PCEncoder : BaseWorker {
+namespace VRT.UserRepresentation.PointCloud
+{
+    public class PCEncoder : BaseWorker
+    {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
         System.Threading.Thread[] pusherThreads;
@@ -17,7 +20,8 @@ namespace Workers {
         };
         EncoderStreamDescription[] outputs;
 
-        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs ) :base(WorkerType.Run) {
+        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        {
             if (_inQueue == null)
             {
                 throw new System.Exception("{Name()}: inQueue is null");
@@ -50,7 +54,8 @@ namespace Workers {
                 Start();
                 Debug.Log($"{Name()}: Inited");
             }
-            catch (System.Exception e) {
+            catch (System.Exception e)
+            {
                 Debug.Log($"{Name()}: Exception during constructor: {e.Message}");
                 throw e;
             }
@@ -61,7 +66,7 @@ namespace Workers {
             base.Start();
             int nThreads = encoderOutputs.Length;
             pusherThreads = new System.Threading.Thread[nThreads];
-            for (int i=0; i<nThreads; i++)
+            for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
@@ -69,17 +74,18 @@ namespace Workers {
                     () => PusherThread(stream_number)
                     );
             }
-            foreach(var t in pusherThreads)
+            foreach (var t in pusherThreads)
             {
                 t.Start();
             }
         }
 
-        public override void OnStop() {
+        public override void OnStop()
+        {
             // Signal end-of-data
             encoderGroup.close();
             // Wait for each pusherThread to see this and terminate
-            foreach(var t in pusherThreads)
+            foreach (var t in pusherThreads)
             {
                 t.Join();
             }
@@ -90,7 +96,7 @@ namespace Workers {
             base.OnStop();
             // Clear the encoderGroup including all of its encoders
             tmp?.free();
-            foreach(var eo in encoderOutputs)
+            foreach (var eo in encoderOutputs)
             {
                 eo.free();
             }
@@ -104,14 +110,15 @@ namespace Workers {
             base.Update();
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
             if (pc == null) return; // Terminating
-            if (encoderGroup != null) {
+            if (encoderGroup != null)
+            {
                 // Not terminating yet
                 encoderGroup.feed(pc);
             }
             pc.free();
         }
 
-        protected  void PusherThread(int stream_number)
+        protected void PusherThread(int stream_number)
         {
             try
             {

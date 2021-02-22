@@ -1,0 +1,16 @@
+{
+    "name": "Orchestrator",
+    "references": [
+        "BestHTTP",
+        "VRTCore"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

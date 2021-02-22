@@ -1,16 +1,39 @@
-﻿using System;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using OrchestratorWSManagement;
 using LitJson;
 using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using System.Text;
+using VRT.Orchestrator.WSManagement;
 
-namespace OrchestratorWrapping
+namespace VRT.Orchestrator.Wrapping
 {
     // class that describes the status for the response from the orchestrator
     public class ResponseStatus
@@ -422,6 +445,20 @@ namespace OrchestratorWrapping
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
 
+        public void UpdateUserData(string userDataKey, string userDataValue)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
+            command.GetParameter("userDataKey").ParamValue = userDataKey;
+            command.GetParameter("userDataValue").ParamValue = userDataValue;
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
+        }
+
         public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
@@ -814,6 +851,12 @@ namespace OrchestratorWrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+                new OrchestratorCommand("UpdateUserData", new List<Parameter>
+                {
+                    new Parameter("userDataKey", typeof(string)),
+                    new Parameter("userDataValue", typeof(string))
+                },
+                OnUpdateUserDataResponse),
                 new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
                 {
                     new Parameter("userDataJson", typeof(string))

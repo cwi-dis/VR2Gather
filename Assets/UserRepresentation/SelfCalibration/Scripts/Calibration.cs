@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Workers;
 
 public class Calibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }
@@ -104,7 +103,7 @@ public class Calibration : MonoBehaviour {
                 if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.U)) yAxis = 1;
                 if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.D)) yAxis = -1;
                 // Code added by Jack to allow resetting of position (mainly for non-HMD users)
-                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0) || Input.GetKeyDown(KeyCode.JoystickButton2))
                 {
                     cameraReference.transform.localPosition = new Vector3(0, 0, 0);
                     Debug.Log("Calibration: Try translation 0,0,0");
@@ -145,7 +144,7 @@ public class Calibration : MonoBehaviour {
                 if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.L)) yAxisR = -1;
                 if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.R)) yAxisR =  1;
                 // Code added by Jack to allow resetting of rotation (mainly for non-HMD users)
-                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0))
+                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0) || Input.GetKeyDown(KeyCode.JoystickButton0))
                 {
                     Debug.Log("Calibration: Try rotation 0,0,0");
                     cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);

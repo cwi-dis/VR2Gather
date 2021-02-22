@@ -1,12 +1,18 @@
 ﻿using System;
 using UnityEngine;
-using Utils;
 using System.Runtime.InteropServices;
 using System.IO;
+using VRTCore;
+using VRT.Core;
+using VRT.Transport.RabbitMQ;
+using VRT.Transport.RabbitMQ.Utils;
+using VRT.UserRepresentation.TVM;
 
-namespace DataProviders {  
+namespace VRT.UserRepresentation.TVM.DataProviders
+{
 
-    public class NetworkDataProvider : MonoBehaviour, IDataProvider {
+    public class NetworkDataProvider : MonoBehaviour, IDataProvider, ITVMHookUp
+    {
         public bool isMaster;
         public string connectionURI;
         public string exchangeName;
@@ -16,20 +22,32 @@ namespace DataProviders {
         public event EventHandler<EventArgs<byte[]>> OnNewData;
         private RabbitMQReceiver m_RabbitMQReceiver = new RabbitMQReceiver();
 
-        private void RabbitMQReceiver_OnDataReceived(object sender, EventArgs<byte[]> e) {
-			if (OnNewData != null) {
-                OnNewData (this, e);
-			}
+        private void RabbitMQReceiver_OnDataReceived(object sender, EventArgs<byte[]> e)
+        {
+            if (OnNewData != null)
+            {
+                OnNewData(this, e);
+            }
         }
 
-        private void Awake() {
+        public void HookUp(bool _firstTVM, string _connectionURI, string _exchangeName)
+        {
+            isMaster = _firstTVM;
+            connectionURI = _connectionURI;
+            exchangeName = _exchangeName;
+            gameObject.SetActive(true);
+
+        }
+        private void Awake()
+        {
             m_RabbitMQReceiver.OnDataReceived += RabbitMQReceiver_OnDataReceived;
 
             cfg = Config.Instance;
             tvm = cfg.TVMs;
         }
 
-        private void Start() {
+        private void Start()
+        {
             if (isMaster) DllFunctions.set_number_TVMS(8);
             m_RabbitMQReceiver.ConnectionProperties.ConnectionURI = connectionURI;
             m_RabbitMQReceiver.ConnectionProperties.ExchangeName = exchangeName;
@@ -40,18 +58,22 @@ namespace DataProviders {
         //    m_RabbitMQReceiver.Enabled = true;
         //}
 
-		private void Update() {
-			if (this.isReceiverConnected != this.m_RabbitMQReceiver.IsConnected) {
-				this.isReceiverConnected = this.m_RabbitMQReceiver.IsConnected;				
-			}
-		}
+        private void Update()
+        {
+            if (isReceiverConnected != m_RabbitMQReceiver.IsConnected)
+            {
+                isReceiverConnected = m_RabbitMQReceiver.IsConnected;
+            }
+        }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             m_RabbitMQReceiver.Enabled = false;
         }
 
-        private void OnDestroy() {
-			m_RabbitMQReceiver.OnDataReceived -= RabbitMQReceiver_OnDataReceived;
+        private void OnDestroy()
+        {
+            m_RabbitMQReceiver.OnDataReceived -= RabbitMQReceiver_OnDataReceived;
             m_RabbitMQReceiver.Enabled = false;
         }
 

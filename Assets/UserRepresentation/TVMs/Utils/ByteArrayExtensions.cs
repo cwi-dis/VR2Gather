@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public static class ByteArrayExtensions
     {
@@ -18,7 +18,7 @@ namespace Utils
             int nElements = arr.Length / sizeofVector3;
             Vector3[] varr = new Vector3[nElements];
             int offset = 0;
-            for(int i=0;i<nElements;i++)
+            for (int i = 0; i < nElements; i++)
             {
                 float x = BitConverter.ToSingle(arr, offset);
                 offset += sizeof(float);
@@ -66,7 +66,7 @@ namespace Utils
             int nElements = arr.Length / sizeOfInt;
             int[] iarr = new int[arr.Length / sizeOfInt];
             int offset = 0;
-            for(int i=0; i<nElements;i++)
+            for (int i = 0; i < nElements; i++)
             {
                 int v = BitConverter.ToInt32(arr, offset);
                 offset += sizeof(int);

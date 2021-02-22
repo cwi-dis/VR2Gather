@@ -1,7 +1,31 @@
-﻿using LitJson;
-using System.Collections.Generic;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
 
-namespace OrchestratorWrapping
+using LitJson;
+using System.Collections.Generic;
+using VRTCore;
+
+namespace VRT.Orchestrator.Wrapping
 {
     // Base class for the elements returned by the orchestrator
     public abstract class OrchestratorElement
@@ -68,21 +92,7 @@ namespace OrchestratorWrapping
         public string webcamName = "";
         public string microphoneName = "";
 
-        public eUserRepresentationType userRepresentationType;
-
-        public enum eUserRepresentationType
-        {
-            __NONE__,
-            __2D__,
-            __AVATAR__,
-            __TVM__,
-            __PCC_CWI_,
-            __PCC_CWIK4A_,
-            __PCC_PROXY__,
-            __PCC_SYNTH__,
-            __PCC_CERTH__,
-            __SPECTATOR__
-        }
+        public UserRepresentationType userRepresentationType;
 
         // empty constructor callled by the JsonData parser
         public UserData() { }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public class CommandQueue : SynchronizationContext
-    {        
+    {
         Queue<Command> m_CommandQueue = new Queue<Command>();
 
         public void Enqueue(Command cmd)
@@ -15,7 +15,7 @@ namespace Utils
             lock (m_CommandQueue)
             {
                 m_CommandQueue.Enqueue(cmd);
-            }            
+            }
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Utils
         public void EnqueueAndWaitForExecution(Command cmd)
         {
             Enqueue(cmd);
-            cmd.WaitForExecution();            
+            cmd.WaitForExecution();
         }
 
         public bool ExecuteOne()
@@ -58,7 +58,7 @@ namespace Utils
             lock (m_CommandQueue)
             {
                 m_CommandQueue.Clear();
-            }            
+            }
         }
 
         public int Count
@@ -92,7 +92,7 @@ namespace Utils
             Command cmd = new Command(false, d, state);
             Enqueue(cmd);
             cmd.WaitForExecution();
-            cmd.Dispose();            
+            cmd.Dispose();
         }
     }
 }

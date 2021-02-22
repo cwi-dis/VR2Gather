@@ -1,0 +1,17 @@
+{
+    "name": "VRTMCU",
+    "references": [
+        "VRTCore",
+        "Orchestrator",
+        "PointClouds"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
