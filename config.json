@@ -11,7 +11,7 @@
   "useAudio": true,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": true,
-  "statsInterval": 0,
+  "statsInterval": 10,
   "statsOutputFile":  "",
   "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
