@@ -18,7 +18,7 @@ public class LoginController : PilotController {
     Coroutine loadCoroutine = null;
 
     void Awake() {
-        if (!XRDevice.isPresent) {
+        if (!XRUtility.isPresent()) {
             Resolution[] resolutions = Screen.resolutions;
             bool fullRes = false;
             foreach (var res in resolutions) {
