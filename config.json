@@ -6,12 +6,14 @@
 	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
 	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
 
-    "targetFrameRate": 30,
-    "memoryDamping": 1.2999999523162842,
-    "useAudio": true,
-    "nonHMDHeight": 1.5,
-	"pilot3NavigationLogs": true,
-    "TVMs": {
+  "targetFrameRate": 30,
+  "memoryDamping": 1.2999999523162842,
+  "useAudio": true,
+  "nonHMDHeight": 1.5,
+  "pilot3NavigationLogs": true,
+  "statsInterval": 0,
+  "statsOutputFile":  "",
+  "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
 		"printMetrics": false,

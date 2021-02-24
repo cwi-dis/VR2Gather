@@ -1,4 +1,5 @@
 using UnityEngine;
+using VRTCore;
 
 namespace VRT.Core
 {
@@ -6,14 +7,30 @@ namespace VRT.Core
     {
         protected string name;
         protected System.DateTime statsLastTime;
-        private const int statsInterval = 10;
+        private static bool initialized = false;
+        private static double statsInterval = 10;
 
+        private static void Init()
+        {
+            statsInterval = Config.Instance.statsInterval;
+            initialized = true;
+        }
+
+        private static void DeInit()
+        {
+            Debug.Log("xxxjack BaseStats DeInit called");
+        }
         protected BaseStats(string _name)
         {
+            if (!initialized) Init();
             name = _name;
             statsLastTime = System.DateTime.Now;
         }
 
+        ~BaseStats()
+        {
+            DeInit();
+        }
         protected bool ShouldClear()
         {
             return false;
