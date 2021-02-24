@@ -13,7 +13,7 @@ public class MoveCamera : MonoBehaviour {
     public Transform avatarHead;
 
     void Awake() {
-        if (XRDevice.isPresent) {
+        if (XRUtility.isPresent()) {
             // Note by Jack: there is something to be said for allowing this behaviour also for HMD
             // users, *for some scenarios*. It may be useful (even though the usual caveats about
             // motion sickness when forcibly moving HMD users' viewpoint apply).
