@@ -13,6 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         protected QueueThreadSafe outQueue;
         protected QueueThreadSafe out2Queue;
+        protected bool dontWait = false;
 
         protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
@@ -99,6 +100,9 @@ namespace VRT.UserRepresentation.PointCloud
             if (frameInterval != null)
             {
                 earliestNextCapture = System.DateTime.Now + frameInterval;
+            }
+            if (dontWait) {
+            	if (!reader.available(false)) return;
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
