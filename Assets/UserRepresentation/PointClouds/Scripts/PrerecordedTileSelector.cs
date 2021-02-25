@@ -27,6 +27,9 @@ namespace VRT.UserRepresentation.PointCloud
         // Where the individual tiles are facing. Initialized by subclass.
         protected Vector3[] TileOrientation;
 
+        // Most-recently selected tile qualities (if non-null)
+        protected int[] previousSelectedTileQualities;
+
         public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
         //
         // Set by overall controller (in production): which algorithm to use for this scene run.
@@ -36,7 +39,6 @@ namespace VRT.UserRepresentation.PointCloud
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
         public bool debugDecisions = false;
-
 
         string Name()
         {
@@ -93,7 +95,18 @@ namespace VRT.UserRepresentation.PointCloud
             Vector3 cameraForward = getCameraForward();
             Vector3 pointcloudPosition = getPointcloudPosition(currentFrameIndex);
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
-            if (selectedTileQualities != null)
+            bool changed = previousSelectedTileQualities == null;
+            if (!changed)
+            {
+                for(int i=0; i != selectedTileQualities.Length; i++)
+                {
+                    if (selectedTileQualities[i] != previousSelectedTileQualities[i])
+                    {
+                        changed = true;
+                    }
+                }
+            }
+            if (changed)
             {
                 if (debugDecisions)
                 {
@@ -101,6 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
                 }
                 pipeline.SelectTileQualities(selectedTileQualities);
+                previousSelectedTileQualities = selectedTileQualities;
             }
             //
             // Check whether the user wants to leave the scene (by pressing escape)
@@ -461,7 +475,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
         {
-            Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
+            //Debug.Log($"xxxjack frameNumber={currentFrameNumber}");
             double[][] bandwidthUsageMatrix = new double[nTiles][];
             for (int ti = 0; ti < nTiles; ti++)
             {
