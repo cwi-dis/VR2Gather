@@ -146,7 +146,7 @@ namespace VRT.UserRepresentation.PointCloud
             pc.free();
         }
 
-        public class Stats : VRT.Core.BaseStats
+        protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
 
@@ -183,6 +183,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        Stats stats;
+        protected Stats stats;
     }
 }
