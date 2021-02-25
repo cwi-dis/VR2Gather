@@ -167,7 +167,7 @@ namespace VRT.UserRepresentation.PointCloud
     
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval()}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drops_per_second={statsDrops / Interval()}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drops_per_second={statsDrops / Interval()}");
                     if (statsDrops > 3 * Interval())
                     {
                         Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");

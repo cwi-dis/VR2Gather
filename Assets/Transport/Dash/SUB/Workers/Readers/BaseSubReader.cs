@@ -242,7 +242,7 @@ namespace VRT.Transport.Dash
                     if (ShouldOutput())
                     {
                         int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps={statsTotalPackets / Interval()}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
                      }
                     if (ShouldClear())
                     {

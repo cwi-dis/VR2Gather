@@ -109,7 +109,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldOutput())
                 {
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval()}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
                  }
                 if (ShouldClear())
                 {
