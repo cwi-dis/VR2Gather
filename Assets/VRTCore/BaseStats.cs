@@ -13,6 +13,7 @@ namespace VRT.Core
 
         private static void Init()
         {
+            if (initialized) return;
             statsInterval = Config.Instance.statsInterval;
             if (Config.Instance.statsOutputFile != "")
             {
@@ -38,7 +39,6 @@ namespace VRT.Core
         }
         private static void DeInit()
         {
-            Debug.Log("xxxjack BaseStats DeInit called");
             if (statsStream != null) statsStream.Flush();
         }
         protected BaseStats(string _name)
@@ -74,6 +74,22 @@ namespace VRT.Core
 
         protected void Output(string s)
         {
+            string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={name}, {s}";
+            if (statsStream == null)
+            {
+                Debug.Log(statsLine);
+            }
+            else
+            {
+                statsStream.WriteLine(statsLine);
+                Flush();
+            }
+        }
+
+        // statis method, for use when only one or two stats lines are produced.
+        public static void Output(string name, string s)
+        {
+            if (!initialized) Init();
             string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={name}, {s}";
             if (statsStream == null)
             {

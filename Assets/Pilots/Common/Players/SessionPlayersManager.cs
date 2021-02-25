@@ -192,7 +192,7 @@ namespace VRT.Pilots.Common
 			{
 				playerManager.teleporter.SetActive(false);
 			}
-			Debug.Log($"stats: ts={DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=SessionPlayersManager, self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
 			{

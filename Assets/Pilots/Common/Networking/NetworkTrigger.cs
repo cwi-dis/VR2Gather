@@ -51,7 +51,7 @@ namespace VRT.Pilots.Common
 			else
 			{
 				OnTrigger.Invoke();
-				Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=NetworkTrigger, name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
 				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
 			}
 		}
@@ -60,7 +60,7 @@ namespace VRT.Pilots.Common
 		{
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
-				Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=NetworkTrigger, name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
 
 				OnTrigger.Invoke();
 
