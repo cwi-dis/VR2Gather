@@ -20,8 +20,11 @@ namespace VRT.UserRepresentation.PointCloud
             }
             mesh = new Mesh();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            stats = new Stats(Name());
         }
 
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
         public string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
@@ -43,7 +46,7 @@ namespace VRT.UserRepresentation.PointCloud
             material.SetFloat("_PointSize", pointSize);
             if (mesh == null) return;
             preparer.GetMesh(ref mesh); // <- Bottleneck
-            statsUpdate(mesh.vertexCount, pointSize, preparer.currentTimestamp);
+            stats.statsUpdate(mesh.vertexCount, pointSize, preparer.currentTimestamp);
         }
 
         public void OnRenderObject()
@@ -59,35 +62,40 @@ namespace VRT.UserRepresentation.PointCloud
             if (material != null) { material = null; }
         }
 
-        static int instanceCounter = 0;
-        int instanceNumber = instanceCounter++;
-        System.DateTime statsLastTime;
-        double statsTotalMeshCount = 0;
-        double statsTotalVertexCount = 0;
-        double statsTotalPointSize = 0;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int vertexCount, float pointSize, ulong timestamp)
+        protected class Stats : VRT.Core.BaseStats
         {
-            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalPointcloudCount = 0;
+            double statsTotalVertexCount = 0;
+            double statsTotalPointSize = 0;
+
+            public void statsUpdate(int vertexCount, float pointSize, ulong timestamp)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalMeshCount = 0;
-                statsTotalVertexCount = 0;
-                statsTotalPointSize = 0;
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalPointcloudCount = 0;
+                    statsTotalVertexCount = 0;
+                    statsTotalPointSize = 0;
+                }
+
+                statsTotalVertexCount += vertexCount;
+                statsTotalPointcloudCount += 1;
+                statsTotalPointSize += pointSize;
+
+                if (ShouldOutput())
+                {
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    Output($"fps={statsTotalPointcloudCount / Interval()}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
+                    statsTotalPointcloudCount = 0;
+                    statsTotalVertexCount = 0;
+                    statsTotalPointSize = 0;
+                    statsLastTime = System.DateTime.Now;
+                }
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalMeshCount / statsInterval}, vertices_per_mesh={(int)(statsTotalVertexCount / (statsTotalMeshCount == 0 ? 1 : statsTotalMeshCount))}, pc_timestamp={timestamp}, avg_pointsize={(statsTotalPointSize / (statsTotalMeshCount == 0 ? 1 : statsTotalMeshCount))}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
-                statsTotalMeshCount = 0;
-                statsTotalVertexCount = 0;
-                statsTotalPointSize = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalVertexCount += vertexCount;
-            statsTotalMeshCount += 1;
-            statsTotalPointSize += pointSize;
+
         }
+        protected Stats stats;
     }
 }
