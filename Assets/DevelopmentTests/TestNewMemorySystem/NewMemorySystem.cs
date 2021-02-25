@@ -90,9 +90,9 @@ public class NewMemorySystem : MonoBehaviour
         if (usePointClouds) {
 			if (localPCs) {
 				if (!useCompression)
-					reader = new RS2Reader(20f, 1000, preparerQueue);
+					reader = new PCReader(20f, 1000, preparerQueue);
 				else {
-					reader = new RS2Reader(20f, 1000, encoderQueue);
+					reader = new PCReader(20f, 1000, encoderQueue);
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;
@@ -104,7 +104,7 @@ public class NewMemorySystem : MonoBehaviour
 				}
 			} else {
 				if (!useRemoteStream) {
-					reader = new RS2Reader(20f, 1000, encoderQueue);
+					reader = new PCReader(20f, 1000, encoderQueue);
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;

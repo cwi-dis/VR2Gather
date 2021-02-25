@@ -63,6 +63,7 @@ namespace VRT.Transport.Dash
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 lastSuccessfulReceive = System.DateTime.Now;
+                stats = new Stats(Name());
             }
 
             public string Name()
@@ -173,7 +174,9 @@ namespace VRT.Transport.Dash
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                         mc.info = frameInfo;
-
+                        stats.statsUpdate(bytesRead, frameInfo.timestamp);
+                        // xxxjack we should investigate the following code (and its history). It looks
+                        // like some half-way attempt to lower latency, but unsure.
                         // Check if can start to enqueue
                         if (!bCanQueue) {
                             receiverInfo.outQueue.Enqueue(mc);
@@ -206,47 +209,53 @@ namespace VRT.Transport.Dash
                 stopWatch.Stop();
             }
 
-            bool statsInitialized = false;
-            System.DateTime statsLastTime;
-            System.DateTime statsConnectionStartTime;
-            double statsTotalBytes;
-            double statsTotalPackets;
-            double statsTotalLatency;
-            const int statsInterval = 10;
-
-            public void statsUpdate(int nBytes, long timeStamp)
+            protected class Stats : VRT.Core.BaseStats
             {
-                if (!statsInitialized)
-                {
-                    statsLastTime = System.DateTime.Now;
-                    statsConnectionStartTime = System.DateTime.Now;
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
-                    statsTotalLatency = 0;
-                    statsInitialized = true;
-                }
-                System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
-                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-                // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
-                // if we appear to be ahead we adjust connection start time.
-                if (latency < 0)
-                {
-                    statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
-                    latency = 0;
-                }
-                statsTotalLatency += latency;
+                public Stats(string name) : base(name) { }
 
-                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
+                System.DateTime statsConnectionStartTime;
+                double statsTotalBytes;
+                double statsTotalPackets;
+                double statsTotalLatency;
+                bool statsGotFirstReception;
+
+                public void statsUpdate(int nBytes, long timeStamp)
                 {
-                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
-                    statsLastTime = System.DateTime.Now;
+                    if (!statsGotFirstReception)
+                    {
+                        statsConnectionStartTime = System.DateTime.Now;
+                        statsGotFirstReception = true;
+                    }
+      
+                    System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
+                    double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                    // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
+                    // if we appear to be ahead we adjust connection start time.
+                    if (latency < 0)
+                    {
+                        statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
+                        latency = 0;
+                    }
+                    statsTotalLatency += latency;
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets++;
+                    if (ShouldOutput())
+                    {
+                        int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                     }
+                    if (ShouldClear())
+                    {
+                        Clear();
+                        statsTotalBytes = 0;
+                        statsTotalPackets = 0;
+                        statsTotalLatency = 0;
+                    }
                 }
-                statsTotalBytes += nBytes;
-                statsTotalPackets += 1;
             }
+
+            protected Stats stats;
+
         }
         SubPullThread[] threads;
 

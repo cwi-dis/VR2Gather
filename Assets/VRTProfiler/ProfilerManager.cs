@@ -58,7 +58,7 @@ namespace VRT.Profiler
             // xxxjack should bail out quickly if no profilers active
             if (!printedStatMessage)
             {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, FPSActive={FPSActive}, HMDActive={HMDActive}, TVMActive={TVMActive}");
+                VRT.Core.BaseStats.Output("ProfilerManager", $"started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, FPSActive={FPSActive}, HMDActive={HMDActive}, TVMActive={TVMActive}");
                 printedStatMessage = true;
             }
             if (HMDActive == true)
@@ -107,7 +107,7 @@ namespace VRT.Profiler
         {
             lastLogWriteTime = Time.time;
             StringBuilder sb = new StringBuilder();
-            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=0, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            VRT.Core.BaseStats.Output("ProfilerManager", $"finished=0, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
             if (!headerWritten)
             {
                 foreach (var profile in profiles)
@@ -132,7 +132,7 @@ namespace VRT.Profiler
         private void OnDestroy()
         {
             StringBuilder sb = new StringBuilder();
-            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=ProfilerManager, finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            VRT.Core.BaseStats.Output("ProfilerManager", $"finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
             if (profiles.Count > 0)
             {
                 savelog();

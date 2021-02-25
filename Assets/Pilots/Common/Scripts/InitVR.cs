@@ -36,7 +36,7 @@ namespace VRT.Pilots.Common
             yield return null;
             XRSettings.enabled = true;
             yield return null;
-            if (XRDevice.isPresent)
+            if (XRUtility.isPresent())
             {
                 if (XRSettings.loadedDeviceName == "Oculus")
                     ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);

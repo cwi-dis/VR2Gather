@@ -71,7 +71,7 @@ namespace VRT.UserRepresentation.PointCloud
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
-                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+                    BaseStats.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
                     //
                     // Create renderer and preparer for self-view.
                     //
@@ -114,7 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nPoints = 0;
                         var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                         if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                        pcReader = new RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                        pcReader = new PCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
@@ -297,7 +297,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case "remote":
                     var SUBConfig = cfg.SUBConfig;
                     if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
-                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, self=0, userid={user.userId}");
+                    BaseStats.Output(Name(), $"self=0, userid={user.userId}");
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need
                     //
@@ -361,7 +361,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
             else
                 reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
-            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, reader={reader.Name()}");
+            BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
         public QueueThreadSafe _CreateRendererAndPreparer()
@@ -379,7 +379,7 @@ namespace VRT.UserRepresentation.PointCloud
                 preparers.Add(preparer);
                 // For meshes we use a single renderer and multiple preparers (one per tile).
                 PointMeshRenderer render = gameObject.AddComponent<PointMeshRenderer>();
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
+                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
@@ -389,7 +389,7 @@ namespace VRT.UserRepresentation.PointCloud
                 BufferPreparer preparer = new BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
                 preparers.Add(preparer);
                 PointBufferRenderer render = gameObject.AddComponent<PointBufferRenderer>();
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, preparer={preparer.Name()}, renderer={render.Name()}");
+                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
@@ -434,7 +434,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 preparer?.StopAndWait();
             }
-            Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, finished=1");
+            BaseStats.Output(Name(), $"finished=1");
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
             BaseMemoryChunkReferences.ShowTotalRefCount();
         }

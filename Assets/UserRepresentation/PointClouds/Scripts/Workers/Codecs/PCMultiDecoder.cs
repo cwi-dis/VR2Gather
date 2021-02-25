@@ -33,7 +33,7 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                statsUpdate(pc.count(), pc.timestamp());
+                stats.statsUpdate(pc.count(), pc.timestamp());
                 (outQueue as QueueOrderedThreadSafe).Enqueue(pc, order, this);
             }
         }
