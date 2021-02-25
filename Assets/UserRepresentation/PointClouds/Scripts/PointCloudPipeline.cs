@@ -110,7 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nPoints = 0;
                         var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                         if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                        pcReader = new RS2Reader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                        pcReader = new PCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
