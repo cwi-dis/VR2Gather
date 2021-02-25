@@ -25,6 +25,7 @@ namespace VRT.Transport.SocketIO
                 Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
+            stats = new Stats(Name());
             try
             {
                 Start();
