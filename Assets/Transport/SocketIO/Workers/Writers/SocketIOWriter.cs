@@ -46,9 +46,9 @@ namespace VRT.Transport.SocketIO
         }
 
 
-        public override void Stop()
+        public override void OnStop()
         {
-            base.Stop();
+            base.OnStop();
             for (int i = 0; i < streams.Length; ++i)
             {
                 if (!streams[i].inQueue.IsClosed())

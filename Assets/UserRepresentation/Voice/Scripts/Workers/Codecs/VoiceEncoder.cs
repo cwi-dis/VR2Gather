@@ -39,24 +39,30 @@ namespace VRT.UserRepresentation.Voice
         protected override void Update()
         {
             base.Update();
-            if (!inQueue.IsClosed())
+            if (inQueue.IsClosed())
             {
-                FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
-                if (mcIn == null) return;
-                if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
+                if (outQueue != null && !outQueue.IsClosed())
+                {
+                    outQueue.Close();
+                    outQueue = null;
+                }
+                return;
+            }
+            FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
+            if (mcIn == null) return;
+            if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
 #if USE_SPEEX
-                int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
-                NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
-                Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
+            int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
+            NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
+            Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
 #else
             int len = mcIn.elements;
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
             Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
 #endif
-                if (!outQueue.IsClosed())
-                    outQueue.Enqueue(mcOut);
-                mcIn.free();
-            }
+            if (!outQueue.IsClosed())
+                outQueue.Enqueue(mcOut);
+            mcIn.free();
         }
     }
 }
