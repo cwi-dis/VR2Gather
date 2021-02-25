@@ -37,9 +37,11 @@ namespace VRT.Transport.SocketIO
             }
         }
 
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
         public override string Name()
         {
-            return $"{GetType().Name}";
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
 
@@ -66,11 +68,12 @@ namespace VRT.Transport.SocketIO
                 for (int i = 0; i < streams.Length; ++i)
                 {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
-                    if (chk == null) return;
+                    if (chk == null) return; // xxxjack shouldn't this be continue?????
 
                     var buf = new byte[chk.length];
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+                    stats.statsUpdate(chk.length);
                     chk.free();
 
                 }
@@ -83,5 +86,30 @@ namespace VRT.Transport.SocketIO
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             return new SyncConfig.ClockCorrespondence();
         }
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalBytes;
+            double statsTotalPackets;
+           
+            public void statsUpdate(int nBytes)
+            {
+                statsTotalBytes += nBytes;
+                statsTotalPackets++;
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }
