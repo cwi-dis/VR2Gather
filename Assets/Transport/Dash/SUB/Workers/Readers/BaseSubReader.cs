@@ -226,14 +226,7 @@ namespace VRT.Transport.Dash
                         statsConnectionStartTime = System.DateTime.Now;
                         statsGotFirstReception = true;
                     }
-                    if (ShouldClear())
-                    {
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalPackets = 0;
-                        statsTotalLatency = 0;
-                    }
-
+      
                     System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
                     double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                     // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
@@ -244,11 +237,16 @@ namespace VRT.Transport.Dash
                         latency = 0;
                     }
                     statsTotalLatency += latency;
-
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets++;
                     if (ShouldOutput())
                     {
                         int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
                         Output($"fps={statsTotalPackets / Interval()}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                     }
+                    if (ShouldClear())
+                    {
+                        Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
                         statsTotalLatency = 0;

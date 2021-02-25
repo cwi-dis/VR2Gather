@@ -72,14 +72,7 @@ namespace VRT.UserRepresentation.PointCloud
 
             public void statsUpdate(int vertexCount, float pointSize, ulong timestamp)
             {
-                if (ShouldClear())
-                {
-                    Clear();
-                    statsTotalPointcloudCount = 0;
-                    statsTotalVertexCount = 0;
-                    statsTotalPointSize = 0;
-                }
-
+     
                 statsTotalVertexCount += vertexCount;
                 statsTotalPointcloudCount += 1;
                 statsTotalPointSize += pointSize;
@@ -88,10 +81,13 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     Output($"fps={statsTotalPointcloudCount / Interval()}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
+                 }
+                if (ShouldClear())
+                {
+                    Clear();
                     statsTotalPointcloudCount = 0;
                     statsTotalVertexCount = 0;
                     statsTotalPointSize = 0;
-                    statsLastTime = System.DateTime.Now;
                 }
             }
 

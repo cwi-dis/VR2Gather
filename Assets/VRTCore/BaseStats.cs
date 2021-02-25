@@ -6,7 +6,7 @@ namespace VRT.Core
     public class BaseStats
     {
         protected string name;
-        protected System.DateTime statsLastTime;
+        private System.DateTime statsLastTime;
         private static bool initialized = false;
         private static double statsInterval = 10;
         private static System.IO.StreamWriter statsStream;
@@ -54,7 +54,7 @@ namespace VRT.Core
         }
         protected bool ShouldClear()
         {
-            return false;
+            return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval);
         }
 
         protected void Clear()

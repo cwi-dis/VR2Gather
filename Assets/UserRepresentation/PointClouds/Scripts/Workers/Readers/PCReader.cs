@@ -160,13 +160,6 @@ namespace VRT.UserRepresentation.PointCloud
 
             public void statsUpdate(int pointCount, bool dropped = false)
             {
-                if (ShouldClear())
-                {
-                    Clear();                   
-                    statsTotalPoints = 0;
-                    statsTotalPointclouds = 0;
-                    statsDrops = 0;
-                }
                 
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds += 1;
@@ -179,10 +172,13 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
                     }
+                 }
+                if (ShouldClear())
+                {
+                    Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsDrops = 0;
-                    statsLastTime = System.DateTime.Now;
                 }
             }
         }

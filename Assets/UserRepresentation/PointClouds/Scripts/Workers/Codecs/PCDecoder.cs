@@ -100,21 +100,20 @@ namespace VRT.UserRepresentation.PointCloud
 
             public void statsUpdate(int pointCount, ulong timeStamp)
             {
-                 if (ShouldClear())
-                {
-                    Clear();
-                    statsTotalPoints = 0;
-                    statsTotalPointclouds = 0;
-                    statsTotalLatency = 0;
-                }
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                statsTotalPoints += pointCount;
+                statsTotalPointclouds++;
+                statsTotalLatency += latency;
 
-   
                 if (ShouldOutput())
                 {
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
                     Output($"fps={statsTotalPointclouds / Interval()}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
+                 }
+                if (ShouldClear())
+                {
+                    Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsTotalLatency = 0;

@@ -93,22 +93,19 @@ namespace VRT.Transport.Dash
 
                 public void statsUpdate(int nBytes)
                 {
-                    if (ShouldClear())
-                    {
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalPackets = 0;
-                    }
-
+ 
                     statsTotalBytes += nBytes;
                     statsTotalPackets += 1;
 
                     if (ShouldOutput())
                     {
                         Output($"fps={statsTotalPackets / Interval()}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
+                      }
+                    if (ShouldClear())
+                    {
+                        Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
-                        statsLastTime = System.DateTime.Now;
                     }
                 }
             }
