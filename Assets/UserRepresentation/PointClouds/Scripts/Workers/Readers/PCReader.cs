@@ -121,6 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
 
             bool didDrop = false;
+            bool didDropSelf = false;
             if (outQueue == null)
             {
                 Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
@@ -131,7 +132,7 @@ namespace VRT.UserRepresentation.PointCloud
                 bool ok = outQueue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
-                    didDrop = true;
+                    didDropSelf = true;
                 }
             }
             if (out2Queue == null)
@@ -146,7 +147,7 @@ namespace VRT.UserRepresentation.PointCloud
                     didDrop = true;
                 }
             }
-            stats.statsUpdate(pc.count(), didDrop);
+            stats.statsUpdate(pc.count(), didDrop, didDropSelf);
             pc.free();
         }
 
@@ -157,17 +158,19 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
             double statsDrops = 0;
+            double statsSelfDrops = 0;
 
-            public void statsUpdate(int pointCount, bool dropped = false)
+            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf)
             {
                 
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds += 1;
                 if (dropped) statsDrops++;
-    
+                if (droppedSelf) statsSelfDrops++;
+
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drops_per_second={statsDrops / Interval()}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drops_per_second={statsDrops / Interval()}, self_drops_per_second={statsSelfDrops / Interval()}");
                     if (statsDrops > 3 * Interval())
                     {
                         Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
@@ -179,6 +182,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsDrops = 0;
+                    statsSelfDrops = 0;
                 }
             }
         }
