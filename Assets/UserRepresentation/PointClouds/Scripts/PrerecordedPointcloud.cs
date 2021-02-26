@@ -48,6 +48,7 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
             cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
+            cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             cfg.Render = realUser.Render;
             try
             {
