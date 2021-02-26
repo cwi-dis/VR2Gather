@@ -233,12 +233,9 @@ namespace VRT.UserRepresentation.PointCloud
                     didDropEncoder = true;
                 }
             }
-            //xxxshishir exp adding pc timestamp to reader stats to debug sync
-            bool logPCTimestamp = true;
+          
             ulong PCTimestamp = 0;
-            if (logPCTimestamp)
-                PCTimestamp = pc.timestamp();
-            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, logPCTimestamp, PCTimestamp);
+            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp());
             pc.free();
         }
 
@@ -251,7 +248,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsDrops = 0;
             double statsSelfDrops = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, bool logPCTimestamp, ulong timestamp)
+            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong timestamp)
             {
                 
                 statsTotalPoints += pointCount;
@@ -261,10 +258,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    if (logPCTimestamp)
-                        Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}");
-                    else
-                        Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}");
                     if (statsDrops > 3 * Interval())
                     {
                         Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
