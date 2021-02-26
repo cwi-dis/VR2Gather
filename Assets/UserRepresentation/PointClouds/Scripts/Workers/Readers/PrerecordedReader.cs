@@ -130,6 +130,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
             }
+            stats = new Stats(Name());
             Start();
         }
         public override string Name()
@@ -232,44 +233,46 @@ namespace VRT.UserRepresentation.PointCloud
                     didDropEncoder = true;
                 }
             }
-            statsUpdate(pc.count(), didDropSelfView, didDropEncoder);
+            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView);
             pc.free();
         }
 
-        System.DateTime statsLastTime;
-        double statsTotalPoints;
-        double statsTotalPointclouds;
-        double statsDropsSelf;
-        double statsDropsEncoder;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int pointCount, bool droppedSelf=false, bool droppedEncoder=false)
+        protected class Stats : VRT.Core.BaseStats
         {
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalPoints = 0;
+            double statsTotalPointclouds = 0;
+            double statsDrops = 0;
+            double statsSelfDrops = 0;
+
+            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDropsSelf = 0;
-                statsDropsEncoder = 0;
-            }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: {Name()}: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDropsSelf / statsInterval} selfview drops per second, {statsDropsEncoder / statsInterval} encoder drops per second");
-                if (statsDropsSelf > 3 * statsInterval || statsDropsEncoder > 3 * statsInterval)
+                
+                statsTotalPoints += pointCount;
+                statsTotalPointclouds += 1;
+                if (dropped) statsDrops++;
+                if (droppedSelf) statsSelfDrops++;
+
+                if (ShouldOutput())
                 {
-                    Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}");
+                    if (statsDrops > 3 * Interval())
+                    {
+                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                    }
+                 }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalPoints = 0;
+                    statsTotalPointclouds = 0;
+                    statsDrops = 0;
+                    statsSelfDrops = 0;
                 }
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDropsSelf = 0;
-                statsDropsEncoder = 0;
-                statsLastTime = System.DateTime.Now;
             }
-            statsTotalPoints += pointCount;
-            statsTotalPointclouds += 1;
-            if (droppedSelf) statsDropsSelf++;
-            if (droppedEncoder) statsDropsEncoder++;
         }
+
+        protected Stats stats;
     }
 }
