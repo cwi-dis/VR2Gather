@@ -43,8 +43,8 @@ public class PilotRegistry
                 return "HoloMeet";
             case "MedicalExamination":
                 return "MedicalExamination";
-			case "Development": // Temporary scenario-placeholder. Use for QualityAssesment on this branch.
-				return "QualityAssesment";
+			case "Development": // Temporary scenario-placeholder. Use for PerformanceAssesment on this branch.
+				return "PerformanceAssesment";
             default:
                 throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
                 return null;

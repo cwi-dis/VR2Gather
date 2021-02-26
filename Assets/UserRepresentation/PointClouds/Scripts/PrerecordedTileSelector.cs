@@ -123,15 +123,7 @@ namespace VRT.UserRepresentation.PointCloud
                 pipeline.SelectTileQualities(selectedTileQualities);
                 previousSelectedTileQualities = selectedTileQualities;
             }
-            //
-            // Check whether the user wants to leave the scene (by pressing escape)
-            //
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
-                SceneManager.LoadScene("QualityAssesmentRatingScene");
-            }
-        }
+         }
 
         int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
         {

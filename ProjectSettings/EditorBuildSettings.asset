@@ -21,10 +21,10 @@ EditorBuildSettings:
     path: Assets/Pilots/MedicalExamination/Scenes/MedicalExamination.unity
     guid: a7e3aa5f5caa42f49ab8c87a882ebfb1
   - enabled: 1
-    path: Assets/Pilots/QualityAssesment/Scenes/QualityAssesment.unity
+    path: Assets/Pilots/PerformanceAssesment/Scenes/PerformanceAssesment.unity
     guid: 6cce64eabf06e4bddbe88c39cc84def1
   - enabled: 1
-    path: Assets/Pilots/QualityAssesment/Scenes/QualityAssesmentRatingScene.unity
+    path: Assets/Pilots/PerformanceAssesment/Scenes/QualityAssesmentRatingScene.unity
     guid: be9f25e9e6515f446a0a7fd4201a1805
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,

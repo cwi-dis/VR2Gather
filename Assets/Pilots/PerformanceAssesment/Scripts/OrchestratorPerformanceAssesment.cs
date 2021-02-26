@@ -6,8 +6,8 @@ using VRTCore;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 
-public class OrchestratorQualityAssesment : MonoBehaviour {
-    public static OrchestratorQualityAssesment Instance { get; private set; }
+public class OrchestratorPerformanceAssesment : MonoBehaviour {
+    public static OrchestratorPerformanceAssesment Instance { get; private set; }
 
     #region GUI components
 
@@ -83,19 +83,19 @@ public class OrchestratorQualityAssesment : MonoBehaviour {
     }
 
     private void OnLeaveSessionHandler() {
-        Debug.Log("[OrchestratorQualityAssesment][OnLeaveSessionHandler] Session Leaved");
+        Debug.Log("[OrchestratorPerformanceAssesment][OnLeaveSessionHandler] Session Leaved");
         SceneManager.LoadScene("LoginManager");
     }
 
     private void OnUserJoinedSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
-            Debug.Log("[OrchestratorQualityAssesment][OnUserJoinedSessionHandler] User joined: " + userID);
+            Debug.Log("[OrchestratorPerformanceAssesment][OnUserJoinedSessionHandler] User joined: " + userID);
         }
     }
 
     private void OnUserLeftSessionHandler(string userID) {
         if (!string.IsNullOrEmpty(userID)) {
-            Debug.Log("[OrchestratorQualityAssesment][OnUserLeftSessionHandler] User left: " + userID);
+            Debug.Log("[OrchestratorPerformanceAssesment][OnUserLeftSessionHandler] User left: " + userID);
         }
     }
 
@@ -104,7 +104,7 @@ public class OrchestratorQualityAssesment : MonoBehaviour {
     #region Errors
 
     private void OnErrorHandler(ResponseStatus status) {
-        Debug.Log("[OrchestratorQualityAssesment][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+        Debug.Log("[OrchestratorPerformanceAssesment][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
         ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
     }
 
