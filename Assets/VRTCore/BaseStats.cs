@@ -74,17 +74,10 @@ namespace VRT.Core
 
         protected void Output(string s)
         {
-            string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={name}, {s}";
-            if (statsStream == null)
-            {
-                Debug.Log(statsLine);
-            }
-            else
-            {
-                statsStream.WriteLine(statsLine);
-                Flush();
-            }
+            Output(name, s);
         }
+
+        static object lockObj = new object();
 
         // statis method, for use when only one or two stats lines are produced.
         public static void Output(string name, string s)
@@ -97,8 +90,11 @@ namespace VRT.Core
             }
             else
             {
-                statsStream.WriteLine(statsLine);
-                Flush();
+                lock (lockObj)
+                {
+                    statsStream.WriteLine(statsLine);
+                    Flush();
+                }
             }
         }
     }
