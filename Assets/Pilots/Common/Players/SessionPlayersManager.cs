@@ -223,7 +223,10 @@ namespace VRT.Pilots.Common
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
 						pcPipeline?.Init(user, userCfg);
-
+						if (tilingConfigDistributor == null)
+                        {
+							Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
+                        }
 						// Register for distribution of tiling configurations
 						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
 						break;
