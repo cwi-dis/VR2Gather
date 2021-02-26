@@ -54,7 +54,7 @@
       "z": 0.0
     },
     "forceMesh": false,
-    "defaultCellSize": 0.0001,
+    "defaultCellSize": 0.005,
     "cellSizeFactor": 0.6
   },
 
@@ -114,8 +114,8 @@
           "z": 1
         }
       },
-      "voxelSize": 0,
-      "frameRate": 25,
+      "voxelSize": 0.005,
+      "frameRate": 15,
       "tiled": false,
       "Encoders": [
         {
