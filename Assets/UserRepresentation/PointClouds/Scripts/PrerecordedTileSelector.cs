@@ -113,6 +113,13 @@ namespace VRT.UserRepresentation.PointCloud
                     // xxxjack: we could do this in stats: format too, may help analysis.
                     Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
                 }
+                string statMsg = $"tile0={selectedTileQualities[0]}";
+                for(int i=1; i<selectedTileQualities.Length; i++)
+                {
+                    statMsg += $", tile{i}={selectedTileQualities[i]}";
+                }
+                BaseStats.Output(Name(), statMsg);
+
                 pipeline.SelectTileQualities(selectedTileQualities);
                 previousSelectedTileQualities = selectedTileQualities;
             }
