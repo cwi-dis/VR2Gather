@@ -131,6 +131,10 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
             }
+            else
+            {
+                Debug.LogError($"{Name()}: Invalid framerate, the target framerate is set to 0, sync is disabled");
+            }
             stats = new Stats(Name());
             Start();
         }
