@@ -11,8 +11,8 @@
 	"useAudio": true,
 	"nonHMDHeight": 1.5,
 	"pilot3NavigationLogs": false,
-	"statsInterval": 10,
-	"statsOutputFile":  "",
+	"statsInterval": 0,
+	"statsOutputFile":  "vrtiny-receiver-untiled.txt",
 	"TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -80,18 +80,7 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../SampleDataset_cellsize5NN",
-				"tiles" : [
-					"Tiles/Tile1",
-					"Tiles/Tile2",
-					"Tiles/Tile3",
-					"Tiles/Tile4"
-					],
-				"qualities" : [
-					"0_00",
-					"6_65",
-					"9_65"
-					],
+				"folder" : "../mmsys-loot-dump",
 				"ply" : false
 			},
             "CerthReaderConfig": {

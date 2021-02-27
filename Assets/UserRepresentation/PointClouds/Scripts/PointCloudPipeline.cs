@@ -118,9 +118,11 @@ namespace VRT.UserRepresentation.PointCloud
                         reader = pcReader;
                     }
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
-					{
-                        throw new System.Exception($"{Name()}: Programmer error, should use sourceType=\"prerecorded\"");
-					}
+                    {
+                        var prConfig = PCSelfConfig.PrerecordedReaderConfig;
+                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        reader = pcReader;
+                    }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
                     {
                         var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
