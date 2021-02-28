@@ -50,7 +50,7 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20201022;
+            public const ulong CWIPC_API_VERSION = 0x20210228;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
@@ -62,6 +62,10 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static int cwipc_count(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static float cwipc_cellsize(IntPtr pc);
+            [DllImport(myDllName)]
+            internal extern static void cwipc__set_cellsize(IntPtr pc, float cellsize);
+            [DllImport(myDllName)]
+            internal extern static void cwipc__set_timestamp(IntPtr pc, ulong timestamp);
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_get_uncompressed_size(IntPtr pc);
             [DllImport(myDllName)]
@@ -203,6 +207,12 @@ namespace VRT.UserRepresentation.PointCloud
                 return _API_cwipc_util.cwipc_timestamp(pointer);
             }
 
+            public void _set_timestamp(ulong timestamp)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
+                _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
+            }
+
             public int count()
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.count called with NULL pointer");
@@ -214,6 +224,11 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.cellsize called with NULL pointer");
                 return _API_cwipc_util.cwipc_cellsize(pointer);
+            }
+            public void _set_cellsize(float cellsize)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_cellsize called with NULL pointer");
+                _API_cwipc_util.cwipc__set_cellsize(pointer, cellsize);
             }
 
             public int get_uncompressed_size()
