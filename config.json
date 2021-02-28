@@ -80,7 +80,7 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../mmsys-loot-dump",
+				"folder" : "../mmsys2021-loot-150K",
 				"ply" : false
 			},
             "CerthReaderConfig": {
