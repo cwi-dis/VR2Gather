@@ -43,6 +43,10 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void Update()
         {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
+        {
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
             float pointSize = preparer.GetPointSize();
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;

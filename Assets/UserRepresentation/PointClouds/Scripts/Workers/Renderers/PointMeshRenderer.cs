@@ -41,6 +41,10 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void Update()
         {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
+        {
             if (preparer == null) return;
             float pointSize = preparer.GetPointSize();
             material.SetFloat("_PointSize", pointSize);
