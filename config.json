@@ -80,7 +80,7 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../SampleDataset_cellsize5NN",
+				"folder" : "../SampleDatasetSyncTest",
 				"tiles" : [
 					"Tiles/Tile1",
 					"Tiles/Tile2",
@@ -88,7 +88,6 @@
 					"Tiles/Tile4"
 					],
 				"qualities" : [
-					"0_00",
 					"6_65",
 					"9_65"
 					],
