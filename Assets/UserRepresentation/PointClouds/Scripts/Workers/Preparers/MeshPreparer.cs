@@ -92,6 +92,10 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
         }
+        public void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
+        }
 
         public bool GetMesh(ref Mesh mesh)
         {

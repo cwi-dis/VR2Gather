@@ -76,6 +76,10 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
+        public void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
+        }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
         {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
