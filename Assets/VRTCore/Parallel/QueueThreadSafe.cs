@@ -111,8 +111,23 @@ namespace VRTCore
         {
             lock (queue)
             {
+                if (queue.Count <= 0) return null;
                 return queue.Peek();
             }
+        }
+
+        // Return timestamp of next frame, or zeroReturn if frame has no timestamp, or 0 if there is nothing in
+        // the queue. Potentially unsafe.
+        public ulong _PeekTimestamp(ulong zeroReturn=0)
+        {
+            BaseMemoryChunk head = _Peek();
+            if (head != null)
+            {
+                ulong rv = (ulong)head.info.timestamp;
+                if (rv == 0) rv = zeroReturn;
+                return rv;
+            }
+            return 0;
         }
 
         // Get the next item from the queue.
