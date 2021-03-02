@@ -6,9 +6,16 @@ namespace VRTCore
 {
     public class BasePreparer : BaseWorker
     {
-        Synchronizer synchronizer = null;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+        protected Synchronizer synchronizer = null;
+
         public BasePreparer(WorkerType _type = WorkerType.Run) : base(_type)
         {
+        }
+        public override string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
         public void SetSynchronizer(Synchronizer _synchronizer)
@@ -19,7 +26,7 @@ namespace VRTCore
         public virtual void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
-            Debug.Log($"{Name()}: xxxjack Synchronize on {UnityEngine.Time.frameCount}");
+            //Debug.Log($"{Name()}: xxxjack Synchronize on {UnityEngine.Time.frameCount}");
         }
 
         // Start is called before the first frame update
