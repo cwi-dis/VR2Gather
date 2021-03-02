@@ -76,8 +76,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public void Synchronize()
+        public override void Synchronize()
         {
+            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)

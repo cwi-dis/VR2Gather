@@ -165,6 +165,7 @@ namespace VRT.UserRepresentation.WebCam
                     // Create video preparer.
                     //
                     preparer = new VideoPreparer(videoPreparerQueue, null);
+                    // xxxjack should set Synchronizer here
                     /*
                                     //
                                     // Create pipeline for audio, if needed.

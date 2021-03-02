@@ -16,6 +16,8 @@ namespace VRT.UserRepresentation.PointCloud
     {
         [Tooltip("Object responsible for tile quality adaptation algorithm")]
         public PrerecordedTileSelector tileSelector = null;
+        [Tooltip("Object responsible for synchronizing playout")]
+        public Synchronizer synchronizer = null;
 
         BaseWorker reader;
         BaseWorker encoder;
@@ -64,6 +66,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             user = (User)_user;
             bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
+            synchronizer = new Synchronizer();
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
@@ -376,6 +379,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
             { // Mesh
                 MeshPreparer preparer = new MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+                preparer.SetSynchronizer(synchronizer);
                 preparers.Add(preparer);
                 // For meshes we use a single renderer and multiple preparers (one per tile).
                 PointMeshRenderer render = gameObject.AddComponent<PointMeshRenderer>();
@@ -387,6 +391,7 @@ namespace VRT.UserRepresentation.PointCloud
             { // Buffer
               // For buffers we use a renderer/preparer for each tile
                 BufferPreparer preparer = new BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+                preparer.SetSynchronizer(synchronizer); 
                 preparers.Add(preparer);
                 PointBufferRenderer render = gameObject.AddComponent<PointBufferRenderer>();
                 BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");

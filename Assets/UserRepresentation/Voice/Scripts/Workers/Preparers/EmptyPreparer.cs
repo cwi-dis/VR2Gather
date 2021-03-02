@@ -5,7 +5,7 @@ using VRTCore;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class EmptyPreparer : BaseWorker
+    public class EmptyPreparer : BasePreparer
     {
         float[] circularBuffer;
         int bufferSize;
@@ -25,8 +25,9 @@ namespace VRT.UserRepresentation.Voice
             Debug.Log("EmptyPreparer Sopped");
         }
 
-        public void Synchronize()
+        public override void Synchronize()
         {
+            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 
