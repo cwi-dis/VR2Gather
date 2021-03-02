@@ -29,6 +29,7 @@ namespace VRTCore
         public void SetTimestampRangeForCurrentFrame(ulong earliestTimestamp, ulong latestTimestamp)
         {
             _Reset();
+            //Debug.Log($"{Name()}: xxxjack SetTimestampRangeForCurrentFrame: frame={currentFrameCount}, earliest={earliestTimestamp}, latest={latestTimestamp}");
             // Record (for current frame) earliest and latest timestamp available on all prepareres.
             // In other words: the maximum of all earliest timestamps and minimum of all latest reported.
             if (latestTimestamp == 0) latestTimestamp = earliestTimestamp;
@@ -55,6 +56,7 @@ namespace VRTCore
         // Start is called before the first frame update
         void Start()
         {
+            Debug.Log($"{Name()}: xxxjack synchronizer started");
         }
 
         // Update is called once per frame
