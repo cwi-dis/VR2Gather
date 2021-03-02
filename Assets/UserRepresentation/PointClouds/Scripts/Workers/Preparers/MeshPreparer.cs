@@ -45,9 +45,8 @@ namespace VRT.UserRepresentation.PointCloud
             public Color32 color;
         }
 
-        protected override void Update()
+        public override void LatchFrame()
         {
-            base.Update();
             lock (this)
             {
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
@@ -94,7 +93,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
         public override void Synchronize()
         {
-            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 

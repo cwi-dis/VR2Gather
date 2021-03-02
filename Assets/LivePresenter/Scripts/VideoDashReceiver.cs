@@ -63,10 +63,15 @@ namespace VRT.LivePresenter
         float currentTime = 0;
         float lastFrame = 0;
 
-        void Update()
+        private void Update()
+        {
+            preparer.Synchronize();
+        }
+        void LateUpdate()
         {
             lock (preparer)
             {
+                preparer.LatchFrame();
                 if (preparer.availableVideo > 0)
                 {
                     if (timeToWait < 0)

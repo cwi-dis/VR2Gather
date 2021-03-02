@@ -35,10 +35,9 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log("BufferPreparer Stopped");
         }
 
-        protected override void Update()
+        public override void LatchFrame()
         {
-            base.Update();
-            lock (this)
+           lock (this)
             {
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
@@ -78,7 +77,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         public override void Synchronize()
         {
-            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
