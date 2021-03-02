@@ -21,8 +21,8 @@ namespace VRTCore
 
         public void SetSynchronizer(Synchronizer _synchronizer)
         {
-            Debug.Log($"{Name()}: xxxjack SetSynchronizer({synchronizer}, {synchronizer?.Name()})");
             synchronizer = _synchronizer;
+            Debug.Log($"{Name()}: xxxjack SetSynchronizer({synchronizer}, {synchronizer?.Name()})");
         }
 
         public abstract void Synchronize();

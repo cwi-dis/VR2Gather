@@ -42,12 +42,12 @@ namespace VRT.UserRepresentation.PointCloud
                 if (synchronizer != null)
                 {
                     ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp == currentTimestamp)
+                    if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
-                        Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
                         return;
                     }
-                    Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
+                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
 
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
@@ -90,12 +90,13 @@ namespace VRT.UserRepresentation.PointCloud
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                synchronizer.SetEarliestTimestampForCurrentFrame(currentTimestamp);
+                ulong nextTimestamp = 0;
                 if (InQueue != null && InQueue._CanDequeue())
                 {
                     // xxxjack Not the correct timestamp for next frame, but goot enough for now
-                    synchronizer.SetLatestTimestampForCurrentFrame(currentTimestamp + 1);
+                    nextTimestamp = currentTimestamp + 1;
                 }
+                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)

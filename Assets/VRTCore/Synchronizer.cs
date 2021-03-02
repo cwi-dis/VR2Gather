@@ -26,30 +26,25 @@ namespace VRTCore
                 currentLatestTimestamp = 0;
             }
         }
-        public void SetEarliestTimestampForCurrentFrame(ulong timestamp)
+        public void SetTimestampRangeForCurrentFrame(ulong earliestTimestamp, ulong latestTimestamp)
         {
             _Reset();
-            // Record (for current frame) earliest timestamp available on all prepareres.
-            // In other words: the maximum of all earliest timestamps reported.
-            if (timestamp == 0) return;
-            if (currentEarliestTimestamp == 0 || timestamp > currentEarliestTimestamp)
+            // Record (for current frame) earliest and latest timestamp available on all prepareres.
+            // In other words: the maximum of all earliest timestamps and minimum of all latest reported.
+            if (latestTimestamp == 0) latestTimestamp = earliestTimestamp;
+            if (earliestTimestamp == 0) earliestTimestamp = latestTimestamp;
+            if (earliestTimestamp == 0) return;
+            if (currentEarliestTimestamp == 0 || earliestTimestamp > currentEarliestTimestamp)
             {
-                currentEarliestTimestamp = timestamp;
+                currentEarliestTimestamp = earliestTimestamp;
             }
-        }
-        public void SetLatestTimestampForCurrentFrame(ulong timestamp)
-        {
-            _Reset();
-            // Record (for current frame) latest timestamp available on all prepareres.
-            // In other words: the minimum of all latest timestamps reported.
-            if (timestamp == 0) return;
-            if (currentLatestTimestamp == 0 || timestamp < currentLatestTimestamp)
+            if (currentLatestTimestamp == 0 || latestTimestamp < currentLatestTimestamp)
             {
-                currentLatestTimestamp = timestamp;
+                currentLatestTimestamp = latestTimestamp;
             }
 
         }
-
+ 
         public ulong GetBestTimestampForCurrentFrame()
         {
             _Reset();
@@ -60,13 +55,11 @@ namespace VRTCore
         // Start is called before the first frame update
         void Start()
         {
-
         }
 
         // Update is called once per frame
         void Update()
         {
-
         }
     }
 }
