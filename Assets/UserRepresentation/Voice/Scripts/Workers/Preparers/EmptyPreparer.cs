@@ -24,11 +24,12 @@ namespace VRT.UserRepresentation.Voice
             //            if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("EmptyPreparer Sopped");
         }
+        public override void LatchFrame()
+        {
+        }
 
         public override void Synchronize()
         {
-            base.Synchronize();
-            // Synchronize playout for the current frame with other preparers (if needed)
         }
 
         protected override void Update()
