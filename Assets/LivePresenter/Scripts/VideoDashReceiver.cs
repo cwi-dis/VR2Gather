@@ -48,6 +48,7 @@ namespace VRT.LivePresenter
             {
                 decoder = new VideoDecoder(codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
                 preparer = new VideoPreparer(videoPreparerQueue, audioPreparerQueue);
+                // xxxjack should set Synchronizer here
                 reader = new AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
             }
             catch (System.Exception e)

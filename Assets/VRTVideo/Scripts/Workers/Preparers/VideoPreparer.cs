@@ -56,6 +56,7 @@ namespace VRT.Video
         }
         public override void Synchronize()
         {
+            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 
