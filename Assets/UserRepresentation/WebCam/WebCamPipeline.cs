@@ -184,12 +184,18 @@ namespace VRT.UserRepresentation.WebCam
 
         // Update is called once per frame
         System.DateTime lastUpdateTime;
+
         private void Update()
+        {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
         {
             if (ready)
             {
                 lock (preparer)
                 {
+                    preparer.LatchFrame();
                     if (preparer.availableVideo > 0)
                     {
                         Debug.Log($"WebCamPipeline.Update ");

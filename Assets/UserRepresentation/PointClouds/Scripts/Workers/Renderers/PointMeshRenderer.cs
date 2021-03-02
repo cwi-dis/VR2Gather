@@ -46,6 +46,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             if (preparer == null) return;
+            preparer.LatchFrame();
             float pointSize = preparer.GetPointSize();
             material.SetFloat("_PointSize", pointSize);
             if (mesh == null) return;

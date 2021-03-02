@@ -56,11 +56,10 @@ namespace VRT.Video
         }
         public override void Synchronize()
         {
-            base.Synchronize();
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 
-        protected override void Update()
+        public override void LatchFrame()
         {
             base.Update();
             if (inVideoQueue != null && inVideoQueue._CanDequeue())

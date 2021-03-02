@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRTCore
 {
-    public class BasePreparer : BaseWorker
+    public abstract class BasePreparer : BaseWorker
     {
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -23,12 +23,9 @@ namespace VRTCore
             synchronizer = _synchronizer;
         }
 
-        public virtual void Synchronize()
-        {
-            // Synchronize playout for the current frame with other preparers (if needed)
-            //Debug.Log($"{Name()}: xxxjack Synchronize on {UnityEngine.Time.frameCount}");
-        }
+        public abstract void Synchronize();
 
+        public abstract void LatchFrame();
         // Start is called before the first frame update
         protected override void Start()
         {
