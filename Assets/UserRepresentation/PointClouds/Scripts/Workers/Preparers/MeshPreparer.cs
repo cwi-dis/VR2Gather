@@ -3,7 +3,7 @@ using VRTCore;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class MeshPreparer : BaseWorker
+    public class MeshPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<PointCouldVertex> vertexArray;

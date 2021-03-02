@@ -5,7 +5,7 @@ using VRTCore;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class BufferPreparer : BaseWorker
+    public class BufferPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
