@@ -6,13 +6,14 @@ namespace VRTCore
 {
     public abstract class BasePreparer : BaseWorker
     {
-        static int instanceCounter = 0;
-        int instanceNumber = instanceCounter++;
         protected Synchronizer synchronizer = null;
 
         public BasePreparer(WorkerType _type = WorkerType.Run) : base(_type)
         {
         }
+
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
         public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
@@ -20,6 +21,7 @@ namespace VRTCore
 
         public void SetSynchronizer(Synchronizer _synchronizer)
         {
+            Debug.Log($"{Name()}: xxxjack SetSynchronizer({synchronizer}, {synchronizer?.Name()})");
             synchronizer = _synchronizer;
         }
 

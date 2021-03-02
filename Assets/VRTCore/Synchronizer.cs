@@ -9,7 +9,14 @@ namespace VRTCore
         int currentFrameCount = 0;
         ulong currentEarliestTimestamp = 0;
         ulong currentLatestTimestamp = 0;
-        
+
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+        public string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
+
         void _Reset()
         {
             if (UnityEngine.Time.frameCount != currentFrameCount)
