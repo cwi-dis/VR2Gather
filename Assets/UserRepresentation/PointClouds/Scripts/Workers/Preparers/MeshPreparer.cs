@@ -49,10 +49,10 @@ namespace VRT.UserRepresentation.PointCloud
         {
             lock (this)
             {
+                if (synchronizer != null && synchronizer.GetBestTimestampForCurrentFrame() == currentTimestamp) return;
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (isReady) return;    // We already have one.
-                if (InQueue.IsClosed()) return; // Weare shutting down
+                if (InQueue.IsClosed()) return; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null) return;
                 unsafe
@@ -94,6 +94,15 @@ namespace VRT.UserRepresentation.PointCloud
         public override void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
+            if (synchronizer)
+            {
+                synchronizer.SetEarliestTimestampForCurrentFrame(currentTimestamp);
+                if (InQueue != null && InQueue._CanDequeue())
+                {
+                    // xxxjack Not the correct timestamp for next frame, but goot enough for now
+                    synchronizer.SetLatestTimestampForCurrentFrame(currentTimestamp + 1);
+                }
+            }
         }
 
         public bool GetMesh(ref Mesh mesh)
