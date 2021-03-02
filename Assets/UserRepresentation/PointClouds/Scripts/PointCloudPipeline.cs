@@ -66,7 +66,6 @@ namespace VRT.UserRepresentation.PointCloud
         {
             user = (User)_user;
             bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
-            synchronizer = new Synchronizer();
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
@@ -261,7 +260,6 @@ namespace VRT.UserRepresentation.PointCloud
                         foreach (var tileFolder in PrerecordedReaderConfig.tiles)
                         {
                             string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
-                            Debug.Log($"{Name()}: xxxjack tiled folder {folder}");
                             var _prepQueue = _CreateRendererAndPreparer();
                             _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
                         }

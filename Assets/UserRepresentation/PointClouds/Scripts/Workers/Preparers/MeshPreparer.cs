@@ -49,8 +49,17 @@ namespace VRT.UserRepresentation.PointCloud
         {
             lock (this)
             {
-                if (synchronizer != null && synchronizer.GetBestTimestampForCurrentFrame() == currentTimestamp) return;
-                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
+                if (synchronizer != null)
+                {
+                    ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
+                    {
+                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        return;
+                    }
+                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
+
+                }              // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (InQueue.IsClosed()) return; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
@@ -96,12 +105,13 @@ namespace VRT.UserRepresentation.PointCloud
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                synchronizer.SetEarliestTimestampForCurrentFrame(currentTimestamp);
+                ulong nextTimestamp = 0;
                 if (InQueue != null && InQueue._CanDequeue())
                 {
                     // xxxjack Not the correct timestamp for next frame, but goot enough for now
-                    synchronizer.SetLatestTimestampForCurrentFrame(currentTimestamp + 1);
+                    nextTimestamp = currentTimestamp + 1;
                 }
+                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
             }
         }
 
