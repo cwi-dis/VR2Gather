@@ -62,7 +62,11 @@ namespace VRT.UserRepresentation.PointCloud
         {
             user = (User)_user;
             bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
-            synchronizer = new Synchronizer();
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<Synchronizer>();
+                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
+            }
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
