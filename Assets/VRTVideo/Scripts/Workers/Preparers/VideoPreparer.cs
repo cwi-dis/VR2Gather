@@ -6,7 +6,7 @@ using VRTCore;
 
 namespace VRT.Video
 {
-    public class VideoPreparer : BaseWorker
+    public class VideoPreparer : BasePreparer
     {
         float[] circularAudioBuffer;
         int audioBufferSize;
@@ -53,6 +53,10 @@ namespace VRT.Video
         {
             base.OnStop();
             Debug.Log($"{Name()}: Stopped");
+        }
+        public override void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
         }
 
         protected override void Update()

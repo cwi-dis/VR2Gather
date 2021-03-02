@@ -25,6 +25,11 @@ namespace VRT.UserRepresentation.Voice
             Debug.Log("EmptyPreparer Sopped");
         }
 
+        public void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
+        }
+
         protected override void Update()
         {
             base.Update();
