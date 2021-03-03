@@ -10,6 +10,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using System;
+using System.Linq;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -39,7 +40,16 @@ namespace VRT.UserRepresentation.PointCloud
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
         public bool debugDecisions = false;
-
+        //Keep track of stimuli being played back
+        public static int stimuliIndex = -1;
+        public static string[] stimuliList;
+        public string currentStimuli;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
+        //Adaptation gap limiter
+        public int maxAdaptation = 30;
         string Name()
         {
             return "BaseTileSelector";
@@ -113,7 +123,7 @@ namespace VRT.UserRepresentation.PointCloud
                     // xxxjack: we could do this in stats: format too, may help analysis.
                     Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
                 }
-                string statMsg = $"tile0={selectedTileQualities[0]}";
+                string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]},";
                 for(int i=1; i<selectedTileQualities.Length; i++)
                 {
                     statMsg += $", tile{i}={selectedTileQualities[i]}";
@@ -126,7 +136,9 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Check whether the user wants to leave the scene (by pressing escape)
             //
-            if (Input.GetKeyDown(KeyCode.Escape))
+            float rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
+            float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
+            if (Input.GetKeyDown(KeyCode.Escape) || rightTrigger >= 0.8f)
             {
                 //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
                 SceneManager.LoadScene("QualityAssesmentRatingScene");
@@ -251,7 +263,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < nQualities - 1)
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget)
+                        if ((spent + nextSpend) <= budget && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
@@ -287,7 +299,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget)
+                        if ((spent + nextSpend) <= budget && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
@@ -323,7 +335,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true)
+                        if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
@@ -340,7 +352,7 @@ namespace VRT.UserRepresentation.PointCloud
                         if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                         {
                             double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                            if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false)
+                            if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                             {
                                 selectedQualities[tileOrder[i]]++;
                                 stepComplete = true;
@@ -383,10 +395,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Set by overall controller (in production): total available bitrate for this run.
         //
         public double bitRatebudget = 1000000;
-        //
-        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
-        //
-        public static long curIndex;
+
 
         string Name()
         {
@@ -441,7 +450,48 @@ namespace VRT.UserRepresentation.PointCloud
         private void LoadAdaptationSets()
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
+            Config._User realUser = Config.Instance.LocalUser;
+            stimuliIndex++;
+            stimuliList = Config.Instance.stimuliList;
+            if (stimuliIndex == stimuliList.Length)
+                stimuliIndex = 0;
+            currentStimuli = stimuliList[stimuliIndex];
+            int dataset = int.Parse(currentStimuli[1].ToString());
+            int codec = int.Parse(currentStimuli[4].ToString());
+            int ratepoint = int.Parse(currentStimuli[7].ToString());
+            maxAdaptation = Config.Instance.maxAdaptation;
+            realUser.PCSelfConfig.PrerecordedReaderConfig.folder = System.IO.Path.Combine(Config.Instance.rootFolder, "H" + dataset.ToString());
 
+            switch (codec)
+            {
+                case 3:
+                    algorithm = SelectionAlgorithm.greedy;
+                    break;
+                case 4:
+                    algorithm = SelectionAlgorithm.hybrid;
+                    break;
+                case 5:
+                    algorithm = SelectionAlgorithm.uniform;
+                    break;
+            }
+            switch (ratepoint)
+            {
+                case 1:
+                    bitRatebudget = 19287;
+                    break;
+                case 2:
+                    bitRatebudget = 58896;
+                    break;
+                case 3:
+                    bitRatebudget = 196215;
+                    break;
+                case 4:
+                    bitRatebudget = 516196;
+                    break;
+                default:
+                    bitRatebudget = 100000;
+                    break;
+            }
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;

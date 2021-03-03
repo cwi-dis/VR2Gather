@@ -22,16 +22,23 @@ namespace Assets.Pilots.QualityAssesment.Scripts
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || ratingRegistered==true)
+            float rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
+            float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
+            if (Input.GetKeyDown(KeyCode.Escape) || ratingRegistered==true || leftTrigger >= 0.8f)
             {
                 SceneManager.LoadScene("QualityAssesment");
             }
             if (camFound==false)
             {
-                var cam = FindObjectOfType<Camera>();
-                Canvas ratingCanvas = FindObjectOfType<Canvas>();
+                var cam = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+                Canvas ratingCanvas = GameObject.FindWithTag("MainRatingCanvas").GetComponent<Canvas>();
                 ratingCanvas.worldCamera = cam;
-                camFound = true;
+                if (cam != null && ratingCanvas != null)
+                {
+                    camFound = true;
+                }
+                var legacyFadeCanvas = GameObject.Find("CameraFadeCanvas");
+                legacyFadeCanvas.SetActive(false);
             }
         }
     }
