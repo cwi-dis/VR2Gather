@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
 
     public class BaseMemoryChunkReferences

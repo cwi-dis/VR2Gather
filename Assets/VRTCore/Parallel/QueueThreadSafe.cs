@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class QueueThreadSafe
     {
@@ -118,7 +118,7 @@ namespace VRTCore
 
         // Return timestamp of next frame, or zeroReturn if frame has no timestamp, or 0 if there is nothing in
         // the queue. Potentially unsafe.
-        public ulong _PeekTimestamp(ulong zeroReturn=0)
+        public ulong _PeekTimestamp(ulong zeroReturn = 0)
         {
             BaseMemoryChunk head = _Peek();
             if (head != null)

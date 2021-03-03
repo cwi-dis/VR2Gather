@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using VRTCore;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using VRT.Core;
 
 namespace VRT.Pilots.Pilot0
 {

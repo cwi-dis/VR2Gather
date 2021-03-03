@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {

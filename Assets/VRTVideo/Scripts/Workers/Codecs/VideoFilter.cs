@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using FFmpeg.AutoGen;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Video
 {

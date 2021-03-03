@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Video
 {

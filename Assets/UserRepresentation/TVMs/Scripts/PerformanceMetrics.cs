@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System;
 using System.Text;
-using VRTCore;
 using System.Net.Http;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.TVM
 {
