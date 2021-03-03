@@ -105,12 +105,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong nextTimestamp = 0;
-                if (InQueue != null && InQueue._CanDequeue())
-                {
-                    // xxxjack Not the correct timestamp for next frame, but goot enough for now
-                    nextTimestamp = currentTimestamp + 1;
-                }
+                ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
                 synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
             }
         }

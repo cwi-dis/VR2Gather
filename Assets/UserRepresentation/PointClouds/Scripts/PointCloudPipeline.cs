@@ -18,7 +18,6 @@ namespace VRT.UserRepresentation.PointCloud
         public PrerecordedTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-
         BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -66,6 +65,11 @@ namespace VRT.UserRepresentation.PointCloud
         {
             user = (User)_user;
             bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<Synchronizer>();
+                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
+            }
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
