@@ -59,6 +59,7 @@ namespace VRTCore
             if (currentLatestTimestamp <= currentEarliestTimestamp)
             {
                 bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                stats.statsUpdate(false, true, false, workingEpoch);
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
@@ -70,12 +71,14 @@ namespace VRTCore
                 {
                     Debug.Log($"{Name()}: xxxjack currentLatestTimestamp={currentLatestTimestamp}, too far ahead by {currentLatestTimestamp - (ulong)expectedNextTimestamp}");
                     bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                    stats.statsUpdate(false, false, true, workingEpoch);
                     return;
                 }
             }
             // We are going to show new data in the current frame. Update our epoch.
             workingEpoch = (long)currentLatestTimestamp - utcMillisForCurrentFrame;
             bestTimestampForCurrentFrame = currentLatestTimestamp;
+            stats.statsUpdate(true, false, false, workingEpoch);
         }
         public ulong GetBestTimestampForCurrentFrame()
         {
@@ -88,11 +91,48 @@ namespace VRTCore
         void Start()
         {
             Debug.Log($"{Name()}: xxxjack synchronizer started");
+            stats = new Stats(Name());
         }
 
         // Update is called once per frame
         void Update()
         {
         }
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalEpochOffset;
+            double statsTotalCalls = 0;
+            double statsTotalFreshReturn = 0;
+            double statsTotalStaleReturn = 0;
+            double statsTotalHoldoffReturn = 0;
+
+            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset)
+            {
+                statsTotalEpochOffset += epochOffset;
+                statsTotalCalls++;
+                if (freshReturn) statsTotalFreshReturn++;
+                if (staleReturn) statsTotalStaleReturn++;
+                if (holdReturn) statsTotalHoldoffReturn++;
+                
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, offset_ms={(int)(statsTotalEpochOffset / Interval())}" );
+                    
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalEpochOffset = 0;
+                    statsTotalCalls = 0;
+                    statsTotalFreshReturn = 0;
+                    statsTotalHoldoffReturn = 0;
+                    statsTotalStaleReturn = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }
