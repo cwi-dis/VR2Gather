@@ -10,7 +10,6 @@ namespace VRTCore
         public int catchUpMs = 0;
         long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        long utcMillisForCurrentFrame;  // Time we started working on current frame
         ulong currentEarliestTimestamp = 0; // Earliest timestamp available for this frame, for all clients
         ulong currentLatestTimestamp = 0;   // Latest timestamp available for this frame, for all clients
         ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
@@ -27,8 +26,6 @@ namespace VRTCore
             if (UnityEngine.Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = UnityEngine.Time.frameCount;
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
                 currentEarliestTimestamp = 0;
                 currentLatestTimestamp = 0;
                 bestTimestampForCurrentFrame = 0;
@@ -55,11 +52,13 @@ namespace VRTCore
  
         void _ComputeTimestampForCurrentFrame()
         {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
             // If there is no latest timestamp, or it is old anyway, we use the earliest timestamp for this frame.
             if (currentLatestTimestamp <= currentEarliestTimestamp)
             {
                 bestTimestampForCurrentFrame = currentEarliestTimestamp;
-                stats.statsUpdate(false, true, false, workingEpoch);
+                stats.statsUpdate(false, true, false, workingEpoch, bestTimestampForCurrentFrame);
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
@@ -69,16 +68,15 @@ namespace VRTCore
                 long expectedNextTimestamp = utcMillisForCurrentFrame + workingEpoch + catchUpMs;
                 if (currentLatestTimestamp > (ulong)expectedNextTimestamp)
                 {
-                    Debug.Log($"{Name()}: xxxjack currentLatestTimestamp={currentLatestTimestamp}, too far ahead by {currentLatestTimestamp - (ulong)expectedNextTimestamp}");
                     bestTimestampForCurrentFrame = currentEarliestTimestamp;
-                    stats.statsUpdate(false, false, true, workingEpoch);
+                    stats.statsUpdate(false, false, true, workingEpoch, bestTimestampForCurrentFrame);
                     return;
                 }
             }
             // We are going to show new data in the current frame. Update our epoch.
-            workingEpoch = (long)currentLatestTimestamp - utcMillisForCurrentFrame;
+            workingEpoch = utcMillisForCurrentFrame - (long)currentLatestTimestamp;
             bestTimestampForCurrentFrame = currentLatestTimestamp;
-            stats.statsUpdate(true, false, false, workingEpoch);
+            stats.statsUpdate(true, false, false, workingEpoch, bestTimestampForCurrentFrame);
         }
         public ulong GetBestTimestampForCurrentFrame()
         {
@@ -108,7 +106,7 @@ namespace VRTCore
             double statsTotalStaleReturn = 0;
             double statsTotalHoldoffReturn = 0;
 
-            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset)
+            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset, ulong timestamp)
             {
                 statsTotalEpochOffset += epochOffset;
                 statsTotalCalls++;
@@ -118,7 +116,7 @@ namespace VRTCore
                 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, offset_ms={(int)(statsTotalEpochOffset / Interval())}" );
+                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / Interval())}, timestamp={timestamp}" );
                     
                 }
                 if (ShouldClear())
