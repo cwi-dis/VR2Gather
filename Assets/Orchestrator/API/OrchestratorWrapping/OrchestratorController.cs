@@ -191,6 +191,7 @@ namespace VRT.Orchestrator.Wrapping
         private void OnDestroy() {
             if (!(mySession is null)) {
                 Collect_SFU_Logs(mySession.sessionId);
+                VRT.Core.BaseStats.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
             }
         }
 
@@ -366,7 +367,7 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
-
+            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
@@ -409,7 +410,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-
+            VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
