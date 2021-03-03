@@ -11,8 +11,8 @@
 	"useAudio": true,
 	"nonHMDHeight": 1.5,
 	"pilot3NavigationLogs": false,
-	"statsInterval": 0,
-	"statsOutputFile":  "statistics.log",
+	"statsInterval_": 0,
+	"statsOutputFile_":  "statistics.log",
 	"TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -80,16 +80,10 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../SampleDatasetSyncTest",
+				"folder" : "../mmsys2021-loot-150K",
 				"tiles" : [
-					"Tiles/Tile1",
-					"Tiles/Tile2",
-					"Tiles/Tile3",
-					"Tiles/Tile4"
 					],
 				"qualities" : [
-					"6_65",
-					"9_65"
 					],
 				"ply" : false
 			},
