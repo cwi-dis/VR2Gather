@@ -45,6 +45,7 @@ namespace VRT.UserRepresentation.Voice
 
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+            // xxxjack should set Synchronizer here
         }
 
         void OnDestroy()

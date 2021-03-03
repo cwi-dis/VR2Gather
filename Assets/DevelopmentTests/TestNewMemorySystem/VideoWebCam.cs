@@ -75,7 +75,11 @@ public class VideoWebCam : MonoBehaviour {
         ready = true;
     }
     float timeToFrame = 0;
-    void Update() {
+    private void Update()
+    {
+        preparer.Synchronize();
+    }
+    void LateUpdate() {
         if (Input.GetKeyDown(KeyCode.V)){
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
@@ -88,6 +92,7 @@ public class VideoWebCam : MonoBehaviour {
 
         if (ready) {
             lock (preparer) {
+                preparer.LatchFrame();
                 if (preparer.availableVideo > 0) {
                     if (texture == null) {
                         texture = new Texture2D(decoder.Width, decoder.Height, TextureFormat.RGB24, false, true);

@@ -5,7 +5,7 @@ using VRTCore;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class AudioPreparer : BaseWorker
+    public class AudioPreparer : BasePreparer
     {
         int bufferSize;
 
@@ -30,6 +30,14 @@ namespace VRT.UserRepresentation.Voice
         protected override void Update()
         {
             base.Update();
+        }
+        public override void Synchronize()
+        {
+        }
+
+        public override void LatchFrame()
+        {
+            // xxxjack Not implemented yet for audio...
         }
 
         bool firstTime = true;
