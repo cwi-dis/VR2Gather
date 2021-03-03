@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class Synchronizer : MonoBehaviour
     {
@@ -23,9 +23,9 @@ namespace VRTCore
 
         void _Reset()
         {
-            if (UnityEngine.Time.frameCount != currentFrameCount)
+            if (Time.frameCount != currentFrameCount)
             {
-                currentFrameCount = UnityEngine.Time.frameCount;
+                currentFrameCount = Time.frameCount;
                 currentEarliestTimestamp = 0;
                 currentLatestTimestamp = 0;
                 bestTimestampForCurrentFrame = 0;
@@ -49,7 +49,7 @@ namespace VRTCore
                 currentLatestTimestamp = latestTimestamp;
             }
         }
- 
+
         void _ComputeTimestampForCurrentFrame()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
@@ -96,7 +96,7 @@ namespace VRTCore
         void Update()
         {
         }
-        protected class Stats : VRT.Core.BaseStats
+        protected class Stats : BaseStats
         {
             public Stats(string name) : base(name) { }
 
@@ -113,11 +113,11 @@ namespace VRTCore
                 if (freshReturn) statsTotalFreshReturn++;
                 if (staleReturn) statsTotalStaleReturn++;
                 if (holdReturn) statsTotalHoldoffReturn++;
-                
+
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / Interval())}, timestamp={timestamp}" );
-                    
+                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / Interval())}, timestamp={timestamp}");
+
                 }
                 if (ShouldClear())
                 {

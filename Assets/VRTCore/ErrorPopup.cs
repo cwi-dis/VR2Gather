@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class ErrorPopup : MonoBehaviour
     {

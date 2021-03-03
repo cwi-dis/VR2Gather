@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     [Serializable]
     public class Config
