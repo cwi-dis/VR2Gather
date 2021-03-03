@@ -100,11 +100,11 @@ namespace VRTCore
         {
             public Stats(string name) : base(name) { }
 
-            double statsTotalEpochOffset;
-            double statsTotalCalls = 0;
-            double statsTotalFreshReturn = 0;
-            double statsTotalStaleReturn = 0;
-            double statsTotalHoldoffReturn = 0;
+            long statsTotalEpochOffset;
+            int statsTotalCalls = 0;
+            int statsTotalFreshReturn = 0;
+            int statsTotalStaleReturn = 0;
+            int statsTotalHoldoffReturn = 0;
 
             public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset, ulong timestamp)
             {
