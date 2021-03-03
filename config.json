@@ -11,8 +11,8 @@
   "useAudio": true,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": true,
-  "statsInterval": 0,
-  "statsOutputFile":  "statistics.log",
+  "statsInterval": 10,
+  "statsOutputFile":  "",
   "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -109,8 +109,8 @@
 
       ],
       "Bin2Dash": {
-        "segmentSize": 4000,
-        "segmentLife": 20000
+        "segmentSize": 2000,
+        "segmentLife": 10000
       },
       "AudioBin2Dash": {
         "segmentSize": 2000,
