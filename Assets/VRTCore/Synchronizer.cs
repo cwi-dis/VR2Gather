@@ -6,9 +6,14 @@ namespace VRTCore
 {
     public class Synchronizer : MonoBehaviour
     {
-        int currentFrameCount = 0;
-        ulong currentEarliestTimestamp = 0;
-        ulong currentLatestTimestamp = 0;
+        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame. Default: as fast as possible.")]
+        public int catchUpMs = 0;
+        long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
+        int currentFrameCount = 0;  // Unity frame number we are currently working for
+        long utcMillisForCurrentFrame;  // Time we started working on current frame
+        ulong currentEarliestTimestamp = 0; // Earliest timestamp available for this frame, for all clients
+        ulong currentLatestTimestamp = 0;   // Latest timestamp available for this frame, for all clients
+        ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -22,8 +27,11 @@ namespace VRTCore
             if (UnityEngine.Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = UnityEngine.Time.frameCount;
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
                 currentEarliestTimestamp = 0;
                 currentLatestTimestamp = 0;
+                bestTimestampForCurrentFrame = 0;
             }
         }
         public void SetTimestampRangeForCurrentFrame(ulong earliestTimestamp, ulong latestTimestamp)
@@ -43,14 +51,37 @@ namespace VRTCore
             {
                 currentLatestTimestamp = latestTimestamp;
             }
-
         }
  
+        void _ComputeTimestampForCurrentFrame()
+        {
+            // If there is no latest timestamp, or it is old anyway, we use the earliest timestamp for this frame.
+            if (currentLatestTimestamp <= currentEarliestTimestamp)
+            {
+                bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                return;
+            }
+            // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
+            if (catchUpMs != 0 && workingEpoch != 0)
+            {
+                // currentLatestTimestamp may be too far in the future. 
+                long expectedNextTimestamp = utcMillisForCurrentFrame + workingEpoch + catchUpMs;
+                if (currentLatestTimestamp > (ulong)expectedNextTimestamp)
+                {
+                    Debug.Log($"{Name()}: xxxjack currentLatestTimestamp={currentLatestTimestamp}, too far ahead by {currentLatestTimestamp - (ulong)expectedNextTimestamp}");
+                    bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                    return;
+                }
+            }
+            // We are going to show new data in the current frame. Update our epoch.
+            workingEpoch = (long)currentLatestTimestamp - utcMillisForCurrentFrame;
+            bestTimestampForCurrentFrame = currentLatestTimestamp;
+        }
         public ulong GetBestTimestampForCurrentFrame()
         {
             _Reset();
-            if (currentLatestTimestamp != 0) return currentLatestTimestamp;
-            return currentEarliestTimestamp;
+            if (bestTimestampForCurrentFrame == 0) _ComputeTimestampForCurrentFrame();
+            return bestTimestampForCurrentFrame;
         }
 
         // Start is called before the first frame update
