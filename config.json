@@ -12,7 +12,7 @@
 	"nonHMDHeight": 1.5,
 	"pilot3NavigationLogs": false,
 	"statsInterval": 0,
-	"statsOutputFile":  "vrtiny-receiver-untiled.txt",
+	"statsOutputFile":  "statistics.log",
 	"TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -54,7 +54,7 @@
       "z": 0.0
     },
     "forceMesh": false,
-    "defaultCellSize": 0.005,
+    "defaultCellSize": 0.0001,
     "cellSizeFactor": 0.6
   },
 
@@ -80,7 +80,17 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../mmsys2021-loot-150K",
+				"folder" : "../SampleDatasetSyncTest",
+				"tiles" : [
+					"Tiles/Tile1",
+					"Tiles/Tile2",
+					"Tiles/Tile3",
+					"Tiles/Tile4"
+					],
+				"qualities" : [
+					"6_65",
+					"9_65"
+					],
 				"ply" : false
 			},
             "CerthReaderConfig": {
@@ -103,8 +113,8 @@
           "z": 1
         }
       },
-      "voxelSize": 0.005,
-      "frameRate": 15,
+      "voxelSize": 0,
+      "frameRate": 25,
       "tiled": false,
       "Encoders": [
         {

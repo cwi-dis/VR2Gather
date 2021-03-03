@@ -43,6 +43,11 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void Update()
         {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
+        {
+            preparer.LatchFrame();
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
             float pointSize = preparer.GetPointSize();
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
@@ -79,7 +84,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                   }
                 if (ShouldClear())
                 {

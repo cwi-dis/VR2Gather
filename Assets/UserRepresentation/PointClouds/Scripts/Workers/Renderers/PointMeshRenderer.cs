@@ -41,7 +41,12 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void Update()
         {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
+        {
             if (preparer == null) return;
+            preparer.LatchFrame();
             float pointSize = preparer.GetPointSize();
             material.SetFloat("_PointSize", pointSize);
             if (mesh == null) return;
@@ -80,7 +85,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, pc_timestamp={timestamp}, pc_latency_ms={(ulong)sinceEpoch.TotalMilliseconds - timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount}, pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                  }
                 if (ShouldClear())
                 {

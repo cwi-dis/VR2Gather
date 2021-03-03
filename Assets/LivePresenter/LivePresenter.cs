@@ -81,7 +81,12 @@ namespace VRT.LivePresenter
             ready = true;
         }
         float timeToFrame = 0;
-        void Update()
+
+        private void Update()
+        {
+            preparer.Synchronize();
+        }
+        void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.V))
             {
@@ -98,6 +103,7 @@ namespace VRT.LivePresenter
             {
                 lock (preparer)
                 {
+                    preparer.LatchFrame();
                     if (preparer.availableVideo > 0)
                     {
                         if (texture == null)

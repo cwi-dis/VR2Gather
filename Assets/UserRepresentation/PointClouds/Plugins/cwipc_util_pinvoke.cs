@@ -190,6 +190,8 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 if (_pointer == IntPtr.Zero)
                     throw new Exception("cwipc.pointcloud called with NULL pointer argument");
+                // This is a hack. We copy the timestamp from the cwipc data to our info structure.
+                info.timestamp = (long)timestamp();
             }
 
             ~pointcloud()
