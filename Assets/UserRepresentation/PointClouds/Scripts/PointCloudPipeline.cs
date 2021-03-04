@@ -125,7 +125,7 @@ namespace VRT.UserRepresentation.PointCloud
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
                     {
                         var prConfig = PCSelfConfig.PrerecordedReaderConfig;
-                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -258,7 +258,7 @@ namespace VRT.UserRepresentation.PointCloud
                         // Untiled. 
                         nTiles = 1;
                         var _prepQueue = _CreateRendererAndPreparer();
-                        _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                        _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, 0, cfg.PCSelfConfig.frameRate, _prepQueue);
                     } else
                     {
                         nTiles = PrerecordedReaderConfig.tiles.Length;
@@ -266,7 +266,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
                             var _prepQueue = _CreateRendererAndPreparer();
-                            _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                            _reader.Add(folder, PrerecordedReaderConfig.ply, true, 0, cfg.PCSelfConfig.frameRate, _prepQueue);
                         }
 
                     }

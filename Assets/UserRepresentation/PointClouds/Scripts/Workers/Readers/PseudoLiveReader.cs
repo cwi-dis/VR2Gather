@@ -8,11 +8,11 @@ namespace VRT.UserRepresentation.PointCloud
     public class PseudoLiveReader : PrerecordedReader
     {
 
-        public PseudoLiveReader(string _dirname, bool _ply, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public PseudoLiveReader(string _dirname, bool _ply, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         : base(null)
         {
         	newTimestamps = true;
-			Add(_dirname, _ply, true, _frameRate, _outQueue, _out2Queue);
+			Add(_dirname, _ply, true, _voxelSize, _frameRate, _outQueue, _out2Queue);
             Start();
         }
 	}

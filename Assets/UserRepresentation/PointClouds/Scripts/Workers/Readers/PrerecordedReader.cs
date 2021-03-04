@@ -31,10 +31,10 @@ namespace VRT.UserRepresentation.PointCloud
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void Add(string dirname, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public void Add(string dirname, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
             string subDir = qualitySubdirs[0];
-            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _frameRate, _outQueue, _out2Queue);
+            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
@@ -84,6 +84,7 @@ namespace VRT.UserRepresentation.PointCloud
         SharedCounter positionCounter;
         bool ply;
         bool loop;
+        float voxelSize = 0;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
         System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         QueueThreadSafe outQueue;
@@ -91,7 +92,7 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedReader parent;
 
-        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             dirname = _dirname;
             subdir = _subdir;
@@ -109,6 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
             thread_index = _index;
             outQueue = _outQueue;
             out2Queue = _out2Queue;
+            voxelSize = _voxelSize;
             ply = _ply;
             string pattern = ply ? "*.ply" : "*.cwipcdump";
             filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
@@ -216,6 +218,18 @@ namespace VRT.UserRepresentation.PointCloud
                 ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
                 pc._set_timestamp(timestamp);
             }
+            if (voxelSize != 0)
+            {
+                cwipc.pointcloud voxelizedPC = cwipc.downsample(pc, voxelSize);
+                if (voxelizedPC == null)
+                {
+                    Debug.LogError($"{Name()}: downsample({voxelSize}) failed to produce new pc");
+                } else
+                {
+                    pc.free();
+                    pc = voxelizedPC;
+                }
+            }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
             if (outQueue == null || outQueue.IsClosed())
@@ -244,7 +258,6 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
           
-            ulong PCTimestamp = 0;
             stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp());
             pc.free();
         }
