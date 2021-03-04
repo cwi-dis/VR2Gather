@@ -95,7 +95,7 @@ namespace VRT.UserRepresentation.PointCloud
             Vector3 pointcloudPosition = getPointcloudPosition(currentFrameIndex);
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
             bool changed = previousSelectedTileQualities == null;
-            if (!changed)
+            if (!changed && selectedTileQualities != null)
             {
                 for(int i=0; i != selectedTileQualities.Length; i++)
                 {
@@ -105,7 +105,7 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                 }
             }
-            if (changed)
+            if (changed && selectedTileQualities != null)
             {
                 if (debugDecisions)
                 {
