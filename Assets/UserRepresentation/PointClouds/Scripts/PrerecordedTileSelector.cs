@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
-using VRTCore;
 using VRT.Core;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;

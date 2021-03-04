@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
