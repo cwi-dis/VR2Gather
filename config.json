@@ -107,8 +107,8 @@
           "z": 1
         }
       },
-      "voxelSize": 0,
-      "frameRate": 25,
+      "voxelSize": 0.01,
+      "frameRate": 15,
       "tiled": false,
       "Encoders": [
         {
