@@ -87,6 +87,11 @@
 					],
 				"tileInfos" : [
 					{
+						"normal" : {"x":0, "y":0, "z":0},
+						"cameraName" : "all",
+						"cameraMask" : 0
+					},
+					{
 						"normal" : {"x":1, "y":0, "z":0},
 						"cameraName" : "front",
 						"cameraMask" : 1
