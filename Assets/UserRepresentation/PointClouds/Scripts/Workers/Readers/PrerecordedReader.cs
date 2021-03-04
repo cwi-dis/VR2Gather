@@ -13,6 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
         string[] qualitySubdirs;
+        public bool newTimestamps = false;
         
         public PrerecordedReader(string[] _qualities) : base(WorkerType.Init)
         {
@@ -210,6 +211,11 @@ namespace VRT.UserRepresentation.PointCloud
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
+            if (parent.newTimestamps) {
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
+                pc._set_timestamp(timestamp);
+            }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
             if (outQueue == null || outQueue.IsClosed())
