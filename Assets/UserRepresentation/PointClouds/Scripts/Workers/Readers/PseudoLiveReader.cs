@@ -13,6 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
         	newTimestamps = true;
 			Add(_dirname, _ply, true, _frameRate, _outQueue, _out2Queue);
+            Start();
         }
 	}
 }
