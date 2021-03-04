@@ -213,8 +213,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return;
             if (parent.newTimestamps) {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-
-                // xxxjack not implemented pc._set_timestamp(sinceEpoch.TotalMilliseconds);
+                ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
+                pc._set_timestamp(timestamp);
             }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
