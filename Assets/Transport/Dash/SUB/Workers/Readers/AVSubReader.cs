@@ -1,5 +1,5 @@
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Transport.Dash
 {

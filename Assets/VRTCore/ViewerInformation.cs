@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public struct ViewerInformation
     {

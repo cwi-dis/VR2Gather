@@ -23,7 +23,7 @@
 
 using LitJson;
 using System.Collections.Generic;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Orchestrator.Wrapping
 {

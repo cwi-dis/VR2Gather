@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace VRTCore
+namespace VRT.Core
 {
 
     // This structure should really be declared in the sub package, but that creates a circular reference.

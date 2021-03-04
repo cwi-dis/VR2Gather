@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Video
 {

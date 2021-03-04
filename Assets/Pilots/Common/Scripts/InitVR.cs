@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.XR;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Pilots.Common
 {

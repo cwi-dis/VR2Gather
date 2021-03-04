@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-using VRTCore;
 using VRT.Video;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.LivePresenter
 {

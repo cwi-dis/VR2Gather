@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.UserRepresentation.Voice;
-using VRTCore;
 using VRT.Core;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;

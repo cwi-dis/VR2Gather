@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {

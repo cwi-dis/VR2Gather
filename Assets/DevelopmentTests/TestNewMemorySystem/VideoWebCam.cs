@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-using VRTCore;
 using VRT.Core;
 using VRT.Video;
 using VRT.Transport.SocketIO;

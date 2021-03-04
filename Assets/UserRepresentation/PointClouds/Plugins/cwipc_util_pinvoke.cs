@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
