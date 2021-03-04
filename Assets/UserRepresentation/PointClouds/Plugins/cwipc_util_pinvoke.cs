@@ -215,6 +215,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
                 _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
+                info.timestamp = (long)timestamp;
             }
 
             public int count()
