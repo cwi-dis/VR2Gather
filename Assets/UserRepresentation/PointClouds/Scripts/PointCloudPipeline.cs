@@ -256,7 +256,7 @@ namespace VRT.UserRepresentation.PointCloud
                         // Untiled. 
                         nTiles = 1;
                         var _prepQueue = _CreateRendererAndPreparer();
-                        _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                        _reader.Add(PrerecordedReaderConfig.folder, PrerecordedReaderConfig.ply, true, 0, cfg.PCSelfConfig.frameRate, _prepQueue);
                     } else
                     {
                         nTiles = PrerecordedReaderConfig.tiles.Length;
@@ -264,7 +264,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
                             var _prepQueue = _CreateRendererAndPreparer();
-                            _reader.Add(folder, PrerecordedReaderConfig.ply, true, cfg.PCSelfConfig.frameRate, _prepQueue);
+                            _reader.Add(folder, PrerecordedReaderConfig.ply, true, 0, cfg.PCSelfConfig.frameRate, _prepQueue);
                         }
 
                     }
