@@ -40,6 +40,11 @@ namespace VRT.Core
 
         public virtual void StopAndWait()
         {
+            if (thread == null)
+            {
+                Debug.LogWarning($"{Name()}: No thread");
+                return;
+            }
             if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             Stop();
             if (debugThreading) Debug.Log($"{Name()}: joining thread");
