@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using VRTCore;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.Transport.SocketIO
 {

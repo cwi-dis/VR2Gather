@@ -1,4 +1,4 @@
-namespace VRTCore
+namespace VRT.Core
 {
     public enum UserRepresentationType
     {

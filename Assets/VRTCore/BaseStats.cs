@@ -1,5 +1,4 @@
 using UnityEngine;
-using VRTCore;
 
 namespace VRT.Core
 {

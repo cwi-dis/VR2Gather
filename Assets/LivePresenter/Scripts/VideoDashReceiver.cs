@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
 using VRT.Video;
 using VRT.Transport.Dash;
+using VRT.Core;
 
 namespace VRT.LivePresenter
 {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using VRT.Core;
 using VRT.Transport.RabbitMQ;
 using VRT.Transport.RabbitMQ.Utils;
-using VRTCore;
 
 namespace VRT.UserRepresentation.PointCloud
 {

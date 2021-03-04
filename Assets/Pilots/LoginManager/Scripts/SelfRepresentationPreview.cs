@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using VRTCore;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;

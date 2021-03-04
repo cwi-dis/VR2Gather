@@ -1,5 +1,4 @@
-
-namespace VRTCore
+namespace VRT.Core
 {
     public class BaseWriter : BaseWorker
     {

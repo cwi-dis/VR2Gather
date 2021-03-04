@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Profiler
 {

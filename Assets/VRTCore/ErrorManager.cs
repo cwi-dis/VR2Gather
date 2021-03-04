@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class ErrorManager : MonoBehaviour
     {

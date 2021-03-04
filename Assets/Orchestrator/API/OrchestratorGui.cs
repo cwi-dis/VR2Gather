@@ -26,10 +26,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using VRT.Core;
 using VRT.Orchestrator.Wrapping;
-using VRTCore;
 
-namespace VRT.Orchestrator {
+namespace VRT.Orchestrator
+{
 
     public delegate void FunctionToCallOnSendCommandButton();
 
