@@ -125,7 +125,8 @@ namespace VRT.UserRepresentation.PointCloud
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
                     {
                         var prConfig = PCSelfConfig.PrerecordedReaderConfig;
-                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        Debug.Log($"{Name()}: xxxjack prerecorded {prConfig.tileInfos.Length} tiles");
+                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, prConfig.tileInfos, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer

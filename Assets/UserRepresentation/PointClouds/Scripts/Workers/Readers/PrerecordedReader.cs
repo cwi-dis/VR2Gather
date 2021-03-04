@@ -76,7 +76,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
     }
 
-    public class PrerecordedTileReader : BaseWorker
+    public class PrerecordedTileReader : TiledWorker
     {
         string dirname;
         string subdir;

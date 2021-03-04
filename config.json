@@ -85,6 +85,28 @@
 					],
 				"qualities" : [
 					],
+				"tileInfos" : [
+					{
+						"normal" : {"x":1, "y":0, "z":0},
+						"cameraName" : "front",
+						"cameraMask" : 1
+					},
+					{
+						"normal" : {"x":0, "y":0, "z":1},
+						"cameraName" : "left",
+						"cameraMask" : 2
+					},
+					{
+						"normal" : {"x":-1, "y":0, "z":0},
+						"cameraName" : "back",
+						"cameraMask" : 4
+					},
+					{
+						"normal" : {"x":0, "y":0, "z":-1},
+						"cameraName" : "right",
+						"cameraMask" : 8
+					}
+				],
 				"ply" : false
 			},
             "CerthReaderConfig": {
@@ -109,7 +131,7 @@
       },
       "voxelSize": 0.01,
       "frameRate": 15,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
         {
           "octreeBits": 9
