@@ -263,7 +263,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < nQualities - 1)
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
+                        if ((spent + nextSpend) <= budget)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
@@ -299,7 +299,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
+                        if ((spent + nextSpend) <= budget)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
