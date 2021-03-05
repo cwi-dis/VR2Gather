@@ -145,7 +145,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+        public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             int[] tileOrder = new int[nTiles];
             //Initialize index array
@@ -395,6 +395,10 @@ namespace VRT.UserRepresentation.PointCloud
         // Set by overall controller (in production): total available bitrate for this run.
         //
         public double bitRatebudget = 1000000;
+        //
+        //Datastructure that contains tile geometry data (per-tile, per-sequencenumber, per-frame tile geometry information)
+        //
+        List<TileGeometry>[] prerecordedTileGeometrySets = null;
 
 
         string Name()
@@ -417,6 +421,23 @@ namespace VRT.UserRepresentation.PointCloud
                 else
                     encodedSize[i] = a;
             }
+        }
+        //xxxshishir Struct to store tile geometry information
+        public struct TileGeometry
+        {
+            public string PCframe;
+            public float PCCentroidX;
+            public float PCCentroidY;
+            public float PCCentroidZ;
+            public float PCBBXmin;
+            public float PCBBYmin;
+            public float PCBBZmin;
+            public float PCBBXmax;
+            public float PCBBYmax;
+            public float PCBBZmax;
+            public float PCBBXCentroid;
+            public float PCBBYCentroid;
+            public float PCBBZCentroid;
         }
 
         public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
@@ -450,6 +471,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void LoadAdaptationSets()
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
+            prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
             Config._User realUser = Config.Instance.LocalUser;
             stimuliIndex++;
             stimuliList = Config.Instance.stimuliList;
@@ -528,6 +550,42 @@ namespace VRT.UserRepresentation.PointCloud
                     aFrame = new AdaptationSet();
                 }
             }
+            //xxxshishir load the tile geometry csv files
+            for (int i = 0; i < prerecordedTileGeometrySets.Length; i++)
+            {
+                string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tilegeometry.csv");
+                prerecordedTileGeometrySets[i] = new List<TileGeometry>();
+                FileInfo tileDescFile = new FileInfo(csvFilename);
+                if (!tileDescFile.Exists)
+                {
+                    prerecordedTileGeometrySets = null; // Delete tile datastructure to forestall further errors
+                    throw new System.Exception($"Tile geometry description not found for tile {i} at {csvFilename}");
+                }
+                StreamReader tileDescReader = tileDescFile.OpenText();
+                //Skip header
+                var gLine = tileDescReader.ReadLine();
+                TileGeometry gFrame = new TileGeometry();
+                while ((gLine = tileDescReader.ReadLine()) != null)
+                {
+                    var gLineValues = gLine.Split(',');
+                    gFrame.PCframe = gLineValues[0];
+                    gFrame.PCCentroidX = float.Parse(gLineValues[1]);
+                    gFrame.PCCentroidY = float.Parse(gLineValues[2]);
+                    gFrame.PCCentroidZ = float.Parse(gLineValues[3]);
+                    gFrame.PCBBXmin = float.Parse(gLineValues[4]);
+                    gFrame.PCBBYmin = float.Parse(gLineValues[5]);
+                    gFrame.PCBBZmin = float.Parse(gLineValues[6]);
+                    gFrame.PCBBXmax = float.Parse(gLineValues[7]);
+                    gFrame.PCBBYmax = float.Parse(gLineValues[8]);
+                    gFrame.PCBBZmax = float.Parse(gLineValues[9]);
+                    gFrame.PCBBXCentroid = float.Parse(gLineValues[10]);
+                    gFrame.PCBBYCentroid = float.Parse(gLineValues[11]);
+                    gFrame.PCBBZCentroid = float.Parse(gLineValues[12]);
+                    prerecordedTileGeometrySets[i].Add(gFrame);
+                    gFrame = new TileGeometry();
+                }
+            }
+
         }
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
@@ -551,8 +609,6 @@ namespace VRT.UserRepresentation.PointCloud
         {
             return curIndex;
         }
-
-
         protected override Vector3 getCameraForward()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
@@ -566,9 +622,81 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
+        public Vector3 getCameraPosition()
+        {
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
+            var cam = FindObjectOfType<Camera>().gameObject;
+            if (cam == null)
+                Debug.LogError("Camera not found!");
+            Transform cameraTransform = cam.transform;
+            return cameraTransform.position;
+
+        }
+
         protected override Vector3 getPointcloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
+        }
+
+        public override int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+        {
+            int[] tileOrder = new int[nTiles];
+            int[] tileOrderDistances = new int[nTiles];
+            //Initialize index array
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileOrder[i] = i;
+                tileOrderDistances[i] = i;
+            }
+            float[] tileUtilities = new float[nTiles];
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+            }
+            //Reassign the utility values based on distance to tiles
+            float[] tileDistances = new float[nTiles];
+            Vector3 camPosition = new Vector3();
+            camPosition = getCameraPosition();
+            Vector3[] tileLocations = new Vector3[nTiles];
+            for (int i =0;i < nTiles; i++)
+            {
+                var thisTile = prerecordedTileGeometrySets[i];
+                var thisFrame = thisTile[(int)curIndex];
+                Vector3 tilePosition = new Vector3(thisFrame.PCBBXCentroid, thisFrame.PCBBYCentroid, thisFrame.PCBBZCentroid);
+                tileDistances[i] = Vector3.Distance(camPosition, tilePosition);
+            }
+            //Modify utility values so the sign is determined by the distance
+            float[] hybridTileUtilities = new float[nTiles];
+            for (int i=0;i<nTiles;i++)
+            {
+                hybridTileUtilities[i] = -1 * Math.Abs(tileUtilities[i]);
+            }
+            for(int i=0;i<nTiles;i++)
+            {
+                for(int j =0;j<nTiles;j++)
+                {
+                    if (i != j && hybridTileUtilities[i] == hybridTileUtilities[j] && tileDistances[i] < tileDistances[j])
+                        hybridTileUtilities[i] *= -1;
+                }
+            }
+            //Array.Sort(tileDistances, tileOrderDistances);
+            //hybridTileUtilities[tileOrderDistances[0]] *= -1;
+            //hybridTileUtilities[tileOrderDistances[1]] *= -1;
+
+            //xxxshishir debug prints
+            for (int i = 0; i < nTiles; i++)
+            {
+                Debug.Log($"Name():Tile: {i} tileUtilities: {tileUtilities[i]}");
+                Debug.Log($"Name():Tile: {i} hybridTileUtilities: {hybridTileUtilities[i]}");
+                Debug.Log($"Name():Tile: {i} Distance: {tileDistances[i]}");
+            }
+
+
+            //Sort tile utilities and apply the same sort to tileOrder
+            Array.Sort(hybridTileUtilities, tileOrder);
+            Array.Reverse(tileOrder);
+            return tileOrder;
         }
 
     }
