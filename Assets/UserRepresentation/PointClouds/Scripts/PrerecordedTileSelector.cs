@@ -446,6 +446,13 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
             }
+            //xxxshishir randomize initial orientation of prerecorded pointcloud
+            var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
+            float yRotation = UnityEngine.Random.Range(0, 360);
+            prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, InitialRotation={yRotation}";
+            BaseStats.Output(Name(), statMsg);
+
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
@@ -454,8 +461,18 @@ namespace VRT.UserRepresentation.PointCloud
             for (int ti = 0; ti < nTiles; ti++)
             {
                 double angle = ti * Math.PI / 2;
-                TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
+                Vector3 InitalVector = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
+                TileOrientation[ti] = Quaternion.Euler(0.0f, yRotation, 0.0f) * InitalVector;
+                TileOrientation[ti] = Vector3.Normalize(TileOrientation[ti]);
+                //TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
+            string statsMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Orientationtile0={TileOrientation[0]},";
+            for (int i = 1; i < nTiles; i++)
+            {
+                statsMsg += $", Orientationtile{i}={TileOrientation[i]}";
+            }
+            BaseStats.Output(Name(), statsMsg);
+
             LoadAdaptationSets();
         }
 
@@ -685,12 +702,18 @@ namespace VRT.UserRepresentation.PointCloud
             //hybridTileUtilities[tileOrderDistances[1]] *= -1;
 
             //xxxshishir debug prints
-            for (int i = 0; i < nTiles; i++)
+            //for (int i = 0; i < nTiles; i++)
+            //{
+            //Debug.Log($"Name():Tile: {i} tileUtilities: {tileUtilities[i]}");
+            //Debug.Log($"Name():Tile: {i} hybridTileUtilities: {hybridTileUtilities[i]}");
+            //Debug.Log($"Name():Tile: {i} Distance: {tileDistances[i]}");
+            //}
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Utilitytile0={hybridTileUtilities[0]},";
+            for (int i = 1; i < nTiles; i++)
             {
-                Debug.Log($"Name():Tile: {i} tileUtilities: {tileUtilities[i]}");
-                Debug.Log($"Name():Tile: {i} hybridTileUtilities: {hybridTileUtilities[i]}");
-                Debug.Log($"Name():Tile: {i} Distance: {tileDistances[i]}");
+                statMsg += $", Utilitytile{i}={hybridTileUtilities[i]}";
             }
+            BaseStats.Output(Name(), statMsg);
 
 
             //Sort tile utilities and apply the same sort to tileOrder
