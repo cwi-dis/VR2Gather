@@ -116,23 +116,20 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                 }
             }
-            if (changed)
+            if (debugDecisions)
             {
-                if (debugDecisions)
-                {
-                    // xxxjack: we could do this in stats: format too, may help analysis.
-                    Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
-                }
-                string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]},";
-                for(int i=1; i<selectedTileQualities.Length; i++)
-                {
-                    statMsg += $", tile{i}={selectedTileQualities[i]}";
-                }
-                BaseStats.Output(Name(), statMsg);
-
-                pipeline.SelectTileQualities(selectedTileQualities);
-                previousSelectedTileQualities = selectedTileQualities;
+                // xxxjack: we could do this in stats: format too, may help analysis.
+                Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
             }
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]},";
+            for(int i=1; i<selectedTileQualities.Length; i++)
+            {
+                statMsg += $", tile{i}={selectedTileQualities[i]}";
+            }
+            BaseStats.Output(Name(), statMsg);
+
+            pipeline.SelectTileQualities(selectedTileQualities);
+            previousSelectedTileQualities = selectedTileQualities;
             //
             // Check whether the user wants to leave the scene (by pressing escape)
             //
