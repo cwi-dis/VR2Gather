@@ -135,7 +135,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             float rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
             float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
-            if (Input.GetKeyDown(KeyCode.Escape) || rightTrigger >= 0.8f)
+            if (Input.GetKeyDown(KeyCode.Escape) || leftTrigger >= 0.8f)
             {
                 //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
                 SceneManager.LoadScene("QualityAssesmentRatingScene");
