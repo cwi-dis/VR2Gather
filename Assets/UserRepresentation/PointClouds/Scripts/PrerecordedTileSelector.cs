@@ -76,10 +76,11 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void Update()
         {
-            //Debug.Log($"xxxjack PrerecordedPointcloud update called");
+            // Debug.Log($"{Name()}: xxxjack update called");
             if (pipeline == null)
             {
                 // Not yet initialized
+                Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
                 return;
             }
             long currentFrameIndex = getCurrentFrameIndex();
@@ -87,6 +88,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (bandwidthUsageMatrix == null)
             {
                 // Not yet initialized
+                Debug.LogWarning($"{Name()}: Update() called, but no bandwidthUsageMatrix set yet");
                 return;
             }
             double budget = getBitrateBudget();
@@ -121,6 +123,9 @@ namespace VRT.UserRepresentation.PointCloud
 
                 pipeline.SelectTileQualities(selectedTileQualities);
                 previousSelectedTileQualities = selectedTileQualities;
+            } else
+            {
+                // Debug.Log($"{Name()}: xxxjack Update(): no new selection decision");
             }
             //
             // Check whether the user wants to leave the scene (by pressing escape)
