@@ -399,7 +399,10 @@ namespace VRT.UserRepresentation.PointCloud
         //Datastructure that contains tile geometry data (per-tile, per-sequencenumber, per-frame tile geometry information)
         //
         List<TileGeometry>[] prerecordedTileGeometrySets = null;
-
+        //
+        // Randomized rotation angle used for each stimuli
+        //
+        private float yRotation;
 
         string Name()
         {
@@ -448,7 +451,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             //xxxshishir randomize initial orientation of prerecorded pointcloud
             var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
-            float yRotation = UnityEngine.Random.Range(0, 360);
+            yRotation = UnityEngine.Random.Range(0, 360);
             prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
             string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, InitialRotation={yRotation}";
             BaseStats.Output(Name(), statMsg);
@@ -575,7 +578,7 @@ namespace VRT.UserRepresentation.PointCloud
                 FileInfo tileDescFile = new FileInfo(csvFilename);
                 if (!tileDescFile.Exists)
                 {
-                    prerecordedTileGeometrySets = null; // Delete tile datastructure to forestall further errors
+                    prerecordedTileGeometrySets = null; // Delete tile geometry datastructure to forestall further errors
                     throw new System.Exception($"Tile geometry description not found for tile {i} at {csvFilename}");
                 }
                 StreamReader tileDescReader = tileDescFile.OpenText();
@@ -681,6 +684,8 @@ namespace VRT.UserRepresentation.PointCloud
                 var thisTile = prerecordedTileGeometrySets[i];
                 var thisFrame = thisTile[(int)curIndex];
                 Vector3 tilePosition = new Vector3(thisFrame.PCBBXCentroid, thisFrame.PCBBYCentroid, thisFrame.PCBBZCentroid);
+                //xxxshishir trying to apply the randomly generated initial rotation to the tile bounding box centroid to compute the correct distances from camera to tile centroid
+                tilePosition = Quaternion.Euler(0.0f, yRotation, 0.0f) * tilePosition;
                 tileDistances[i] = Vector3.Distance(camPosition, tilePosition);
             }
             //Modify utility values so the sign is determined by the distance
@@ -698,30 +703,17 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             //Array.Sort(tileDistances, tileOrderDistances);
-            //hybridTileUtilities[tileOrderDistances[0]] *= -1;
-            //hybridTileUtilities[tileOrderDistances[1]] *= -1;
-
-            //xxxshishir debug prints
-            //for (int i = 0; i < nTiles; i++)
-            //{
-            //Debug.Log($"Name():Tile: {i} tileUtilities: {tileUtilities[i]}");
-            //Debug.Log($"Name():Tile: {i} hybridTileUtilities: {hybridTileUtilities[i]}");
-            //Debug.Log($"Name():Tile: {i} Distance: {tileDistances[i]}");
-            //}
             string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Utilitytile0={hybridTileUtilities[0]},";
             for (int i = 1; i < nTiles; i++)
             {
                 statMsg += $", Utilitytile{i}={hybridTileUtilities[i]}";
             }
             BaseStats.Output(Name(), statMsg);
-
-
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(hybridTileUtilities, tileOrder);
             Array.Reverse(tileOrder);
             return tileOrder;
         }
-
     }
     public class LiveTileSelector : BaseTileSelector
     {
