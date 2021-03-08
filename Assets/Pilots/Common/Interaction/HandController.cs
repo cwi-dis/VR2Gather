@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.XR;
 using VRT.Orchestrator.Wrapping;
+using UnityEngine.EventSystems;
 
 namespace VRT.Pilots.Common
 {
@@ -116,6 +117,21 @@ namespace VRT.Pilots.Common
 								_SelectedLocation = null;
 							}
 						}
+						//xxxshishir modified for rating scene buttons in VR mode
+						else if(hit.collider.gameObject.tag == "RatingButton")
+                        {
+							TeleportLineRenderer.material = TeleportPossibleMaterial;
+							if(index_trigger_pressed)
+                            {
+								GameObject ratingButton = hit.collider.gameObject;
+								if (ratingButton != null)
+                                {
+									IPointerClickHandler clickHandler = hit.collider.gameObject.GetComponent<IPointerClickHandler>();
+									PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+									clickHandler.OnPointerClick(pointerEventData);
+                                }
+                            }
+                        }
 						else
 						{
 							TeleportLineRenderer.material = TeleportImpossibleMaterial;
