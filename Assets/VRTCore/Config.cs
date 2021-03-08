@@ -113,9 +113,10 @@ namespace VRT.Core
 				public class _PrerecordedReaderConfig
 				{
 					public string folder;
-                    public string[] tiles;
-					public string[] qualities;
+                    public string[] tiles;  // Only for PrerecordedReader: subdirectory names per tile
+					public string[] qualities; // Only for prerecordedReader: subsubdirectory names per quality
                     public bool ply;
+                    public TiledWorker.TileInfo[] tileInfos; // Only for PseudoLiveReader: list of tile definitions
                 };
 				public _PrerecordedReaderConfig PrerecordedReaderConfig;
 				[Serializable]
