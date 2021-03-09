@@ -260,11 +260,13 @@ namespace VRT.UserRepresentation.PointCloud
                     } else
                     {
                         nTiles = PrerecordedReaderConfig.tiles.Length;
+                        int curTile = 0;
                         foreach (var tileFolder in PrerecordedReaderConfig.tiles)
                         {
                             string folder = System.IO.Path.Combine(PrerecordedReaderConfig.folder, tileFolder);
-                            var _prepQueue = _CreateRendererAndPreparer();
+                            var _prepQueue = _CreateRendererAndPreparer(curTile);
                             _reader.Add(folder, PrerecordedReaderConfig.ply, true, 0, cfg.PCSelfConfig.frameRate, _prepQueue);
+                            curTile++;
                         }
 
                     }
@@ -346,7 +348,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create renderer
                 //
-                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer();
+                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer(i);
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
@@ -368,7 +370,7 @@ namespace VRT.UserRepresentation.PointCloud
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
-        public QueueThreadSafe _CreateRendererAndPreparer()
+        public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
             //
             // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
@@ -384,7 +386,12 @@ namespace VRT.UserRepresentation.PointCloud
                 preparers.Add(preparer);
                 // For meshes we use a single renderer and multiple preparers (one per tile).
                 PointMeshRenderer render = gameObject.AddComponent<PointMeshRenderer>();
-                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
+                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+                if (curTile >= 0)
+                {
+                    msg += $", tile={curTile}";
+                }
+                BaseStats.Output(Name(), msg);
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
@@ -395,7 +402,12 @@ namespace VRT.UserRepresentation.PointCloud
                 preparer.SetSynchronizer(synchronizer); 
                 preparers.Add(preparer);
                 PointBufferRenderer render = gameObject.AddComponent<PointBufferRenderer>();
-                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
+                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+                if (curTile >= 0)
+                {
+                    msg += $", tile={curTile}";
+                }
+                BaseStats.Output(Name(), msg);
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
