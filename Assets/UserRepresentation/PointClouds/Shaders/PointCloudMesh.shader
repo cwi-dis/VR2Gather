@@ -8,7 +8,8 @@
     SubShader{
         Lighting Off
         LOD 100
-        Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}        LOD 200
+        Cull Off
+        Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}
 
         Pass {
         CGPROGRAM
