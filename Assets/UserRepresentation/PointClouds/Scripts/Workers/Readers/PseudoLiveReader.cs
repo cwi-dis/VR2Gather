@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.PointCloud
         TileInfo[] tileInfo;
 
         public PseudoLiveReader(string _dirname, bool _ply, TileInfo[] _tileInfo, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
-        : base(null)
+        : base(null, false)
         {
         	newTimestamps = true;
             tileInfo = _tileInfo;
