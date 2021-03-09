@@ -1,7 +1,9 @@
 {
     "name": "VRTCore",
     "references": [
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.Recorder",
+        "Unity.Recorder.Editor"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

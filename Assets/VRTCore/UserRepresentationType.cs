@@ -11,6 +11,7 @@ namespace VRT.Core
         __PCC_PROXY__,
         __PCC_SYNTH__,
         __PCC_CERTH__,
-        __SPECTATOR__
+        __SPECTATOR__,
+        __CAMERAMAN__
     }
 }
