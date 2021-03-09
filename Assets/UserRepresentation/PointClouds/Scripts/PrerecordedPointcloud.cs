@@ -19,6 +19,8 @@ namespace VRT.UserRepresentation.PointCloud
         public string[] qualities;
         [Tooltip("Read .ply files in stead of .cwipcdump files")]
         public bool ply;
+        [Tooltip("Prefer best quality in stead of worst quality")]
+        public bool preferBest;
          User dummyUser;
         Config._User cfg;
 
@@ -41,12 +43,14 @@ namespace VRT.UserRepresentation.PointCloud
                 tiles = realUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
                 qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
                 ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
+                preferBest = realUser.PCSelfConfig.PrerecordedReaderConfig.preferBest;
             }
-            Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities");
+            Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities, preferBest={preferBest}");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
             cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
             cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.preferBest = preferBest;
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             cfg.Render = realUser.Render;
             try

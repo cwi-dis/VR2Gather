@@ -249,7 +249,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (nQualities == 0) nQualities = 1;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-                    var _reader = new PrerecordedReader(PrerecordedReaderConfig.qualities);
+                     var _reader = new PrerecordedReader(PrerecordedReaderConfig.qualities, PrerecordedReaderConfig.preferBest);
                     int nTiles;
                     if (PrerecordedReaderConfig.tiles == null)
                     {

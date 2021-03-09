@@ -13,9 +13,10 @@ namespace VRT.UserRepresentation.PointCloud
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
         string[] qualitySubdirs;
+        bool preferBest;
         public bool newTimestamps = false;
         
-        public PrerecordedReader(string[] _qualities) : base(WorkerType.Init)
+        public PrerecordedReader(string[] _qualities, bool _preferBest) : base(WorkerType.Init)
         {
             if (_qualities == null)
             {
@@ -24,6 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 qualitySubdirs = _qualities;
             }
+            preferBest = _preferBest;
         }
 
         public override string Name()
@@ -34,6 +36,10 @@ namespace VRT.UserRepresentation.PointCloud
         public void Add(string dirname, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
             string subDir = qualitySubdirs[0];
+            if (preferBest)
+            {
+                subDir = qualitySubdirs[qualitySubdirs.Length - 1];
+            }
             PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
