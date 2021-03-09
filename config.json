@@ -112,7 +112,8 @@
 						"cameraMask" : 8
 					}
 				],
-				"ply" : false
+				"ply" : false,
+				"preferBest" : true
 			},
             "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",

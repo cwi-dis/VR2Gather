@@ -13,9 +13,10 @@ namespace VRT.UserRepresentation.PointCloud
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
         string[] qualitySubdirs;
+        bool preferBest;
         public bool newTimestamps = false;
         
-        public PrerecordedReader(string[] _qualities) : base(WorkerType.Init)
+        public PrerecordedReader(string[] _qualities, bool _preferBest) : base(WorkerType.Init)
         {
             if (_qualities == null)
             {
@@ -24,6 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 qualitySubdirs = _qualities;
             }
+            preferBest = _preferBest;
         }
 
         public override string Name()
@@ -34,6 +36,10 @@ namespace VRT.UserRepresentation.PointCloud
         public void Add(string dirname, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
             string subDir = qualitySubdirs[0];
+            if (preferBest)
+            {
+                subDir = qualitySubdirs[qualitySubdirs.Length - 1];
+            }
             PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
@@ -258,7 +264,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
           
-            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp());
+            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp(), subdir);
             pc.free();
         }
 
@@ -271,7 +277,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsDrops = 0;
             double statsSelfDrops = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong timestamp)
+            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong timestamp, string subdir)
             {
                 
                 statsTotalPoints += pointCount;
@@ -281,7 +287,12 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}");
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}";
+                    if (subdir != null && subdir != "")
+                    {
+                        msg += $", quality={subdir}";
+                    }
+                    Output(msg);
                     if (statsDrops > 3 * Interval())
                     {
                         Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
