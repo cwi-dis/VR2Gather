@@ -18,14 +18,15 @@ namespace VRT.Transport.SocketIO
             {
                 throw new System.Exception($"[FPA] {Name()}: outQueue is null");
             }
+            stats = new Stats(Name());
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
                 streams[i].name = $"{user.userId}{remoteStream}#{i}";
                 Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
+                BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, quality={streams[i].quality}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
-            stats = new Stats(Name());
             try
             {
                 Start();
@@ -74,7 +75,7 @@ namespace VRT.Transport.SocketIO
                     var buf = new byte[chk.length];
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
-                    stats.statsUpdate(chk.length);
+                    stats.statsUpdate(chk.length, i);
                     chk.free();
 
                 }
@@ -94,13 +95,13 @@ namespace VRT.Transport.SocketIO
             double statsTotalBytes;
             double statsTotalPackets;
            
-            public void statsUpdate(int nBytes)
+            public void statsUpdate(int nBytes, int streamIndex)
             {
                 statsTotalBytes += nBytes;
                 statsTotalPackets++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                    Output($"packets_per_second={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
                 }
                 if (ShouldClear())
                 {
