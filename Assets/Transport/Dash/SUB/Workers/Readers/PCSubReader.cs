@@ -51,7 +51,7 @@ namespace VRT.Transport.Dash
                 streamDescriptors = subHandle.get_streams();
                 foreach (var sd in streamDescriptors)
                 {
-                    Debug.Log($"{Name()}: xxxjack streamIndex={sd.streamIndex}, tileNumber={sd.tileNumber}, quality={sd.quality}");
+                    BaseStats.Output(Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, quality={sd.quality}");
                 }
                 _recomputeStreams();
             }
@@ -63,6 +63,7 @@ namespace VRT.Transport.Dash
             {
                 if (quality > 0)
                 {
+                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, quality={quality}");
                     Debug.Log($"{Name()}: xxxjack SKIP enable_stream({tileNumber}, {quality});");
                     //                    bool ok = subHandle.enable_stream(tileNumber, quality);
                     //                    if (!ok)
@@ -72,6 +73,7 @@ namespace VRT.Transport.Dash
                 }
                 else
                 {
+                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=0");
                     Debug.Log($"{Name()}: xxxjack SKIP disable_stream({tileNumber});");
                     //                    bool ok = subHandle.disable_stream(tileNumber);
                     //                    if (!ok)
@@ -112,6 +114,7 @@ namespace VRT.Transport.Dash
                     }
                     // We know all the streams that may be used for this tile. Remember for the puller thread.
                     ri.streamIndexes = streamIndexes.ToArray();
+                    ri.tileNumber = i;
                     Debug.Log($"{Name()}: xxxjack _recomputeStreams: tile {i}: looking at {ri.streamIndexes.Length} streams");
                     // And we can also tell the SUB which quality we want for this tile.
                     setTileQuality(td.tileNumber, td.currentQuality);

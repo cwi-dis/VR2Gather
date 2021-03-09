@@ -31,6 +31,7 @@ namespace VRT.Transport.Dash
         {
             public QueueThreadSafe outQueue;
             public int[] streamIndexes;
+            public int tileNumber = -1;
         }
         protected ReceiverInfo[] receivers;
         //        protected QueueThreadSafe[] outQueues;
@@ -174,7 +175,7 @@ namespace VRT.Transport.Dash
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                         mc.info = frameInfo;
-                        stats.statsUpdate(bytesRead, frameInfo.timestamp);
+                        stats.statsUpdate(bytesRead, frameInfo.timestamp, stream_index);
                         // xxxjack we should investigate the following code (and its history). It looks
                         // like some half-way attempt to lower latency, but unsure.
                         // Check if can start to enqueue
@@ -219,7 +220,7 @@ namespace VRT.Transport.Dash
                 double statsTotalLatency;
                 bool statsGotFirstReception;
 
-                public void statsUpdate(int nBytes, long timeStamp)
+                public void statsUpdate(int nBytes, long timeStamp, int stream_index)
                 {
                     if (!statsGotFirstReception)
                     {
@@ -242,7 +243,7 @@ namespace VRT.Transport.Dash
                     if (ShouldOutput())
                     {
                         int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
                      }
                     if (ShouldClear())
                     {
@@ -411,6 +412,12 @@ namespace VRT.Transport.Dash
                 for (int i = 0; i < threadCount; i++)
                 {
                     threads[i] = new SubPullThread(this, i, receivers[i], frequency);
+                    string msg = $"pull_thread={threads[i].Name()}";
+                    if (receivers[i].tileNumber >= 0)
+                    {
+                        msg += $", tile={receivers[i].tileNumber}";
+                    }
+                    BaseStats.Output(Name(), msg);
                 }
                 foreach (var t in threads)
                 {
