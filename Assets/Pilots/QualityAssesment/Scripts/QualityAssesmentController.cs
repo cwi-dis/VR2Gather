@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using VRT.Pilots.Common;
-using VRTCore;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 //XXXShishir switched back to original pilot0controller, ToDo: Cherry pick the rating scale scene transitions, ToDo: Reimplement scene controller to use modified entity pipeline later
