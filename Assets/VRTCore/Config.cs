@@ -40,7 +40,9 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
-
+        public string[] stimuliList;
+        public string rootFolder;
+        public int maxAdaptation;
         [Serializable]
         public class _TVMs
         {

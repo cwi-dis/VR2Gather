@@ -9,6 +9,9 @@ TagManager:
   - Spectator
   - Plants
   - Teleportable
+  - Room
+  - MainRatingCanvas
+  - RatingButton
   layers:
   - Default
   - TransparentFX

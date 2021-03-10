@@ -8,18 +8,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
-  - enabled: 1
-    path: Assets/Pilots/HoloMeet/Scenes/HoloMeet.unity
-    guid: 5c134d40d6bda4d419638dc9cbe450a9
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
     guid: 01e8d4050e184da48aba95c97a697601
   - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
-  - enabled: 1
-    path: Assets/Pilots/MedicalExamination/Scenes/MedicalExamination.unity
-    guid: a7e3aa5f5caa42f49ab8c87a882ebfb1
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/Pilots/QualityAssesment/Scenes/QualityAssesment.unity
     guid: 6cce64eabf06e4bddbe88c39cc84def1

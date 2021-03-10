@@ -10,9 +10,12 @@
 	"memoryDamping": 1.2999999523162842,
 	"useAudio": true,
 	"nonHMDHeight": 1.5,
-	"pilot3NavigationLogs": false,
+	"pilot3NavigationLogs": true,
 	"statsInterval": 0,
 	"statsOutputFile":  "statistics.log",
+	"stimuliList": ["H1_C3_R1","H2_C4_R4","H3_C5_R3","H1_C4_R3","H4_C3_R4","H1_C4_R2"],
+	"rootFolder": "E:/ACMMM21TiledDataset/dump/",
+	"maxAdaptation": 30,
 	"TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -80,7 +83,7 @@
 				"port" : 9335
 		},
 		"PrerecordedReaderConfig" : {
-				"folder" : "../SampleDatasetSyncTest",
+				"folder" : "E:/ACMMM21TiledDataset/dump/H1",
 				"tiles" : [
 					"Tiles/Tile1",
 					"Tiles/Tile2",
@@ -88,8 +91,36 @@
 					"Tiles/Tile4"
 					],
 				"qualities" : [
+					"6_55",
 					"6_65",
-					"9_65"
+					"6_75",
+					"6_85",
+					"6_95",
+					"7_55",
+					"7_65",
+					"7_75",
+					"7_85",
+					"7_95",
+					"8_55",
+					"8_65",
+					"8_75",
+					"8_85",
+					"8_95",	
+					"9_55",
+					"9_65",
+					"9_75",
+					"9_85",
+					"9_95",
+					"10_55",
+					"10_65",
+					"10_75",
+					"10_85",
+					"10_95",
+					"11_55",
+					"11_65",
+					"11_75",
+					"11_85",
+					"11_95"
 					],
 				"ply" : false,
 				"preferBest" : true
