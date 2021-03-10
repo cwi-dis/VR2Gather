@@ -124,7 +124,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             pipeline.SelectTileQualities(selectedTileQualities);
             previousSelectedTileQualities = selectedTileQualities;
-            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]},";
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]}";
             for(int i=1; i<selectedTileQualities.Length; i++)
             {
                 statMsg += $", tile{i}={selectedTileQualities[i]}";
@@ -705,10 +705,10 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             //Array.Sort(tileDistances, tileOrderDistances);
-            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex},initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y},cameraforwardz={cameraForward.z},camerapositionx={camPosition.x},camerapositiony={camPosition.y},camerapositionz={camPosition.z}";
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y}, cameraforwardz={cameraForward.z}, camerapositionx={camPosition.x}, camerapositiony={camPosition.y}, camerapositionz={camPosition.z}";
             for (int i = 0; i < nTiles; i++)
             {
-                statMsg += $",Tile{i}Orientationx={TileOrientation[i].x},Tile{i}Orientationy={TileOrientation[i].y},Tile{i}Orientationz={TileOrientation[i].z},Tile{i}BBCentroidLocationx={tileLocations[i].x},Tile{i}BBCentroidLocationy={tileLocations[i].y},Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
+                statMsg += $", Tile{i}Orientationx={TileOrientation[i].x}, Tile{i}Orientationy={TileOrientation[i].y}, Tile{i}Orientationz={TileOrientation[i].z}, Tile{i}BBCentroidLocationx={tileLocations[i].x}, Tile{i}BBCentroidLocationy={tileLocations[i].y}, Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
             BaseStats.Output(Name(), statMsg);
             //Sort tile utilities and apply the same sort to tileOrder
