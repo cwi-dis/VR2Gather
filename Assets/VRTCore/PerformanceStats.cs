@@ -47,10 +47,12 @@ namespace VRT.Core
             public Stats(string name) : base(name)
             {
                 totalCpuCounter = new PerformanceCounter("Process", "% Processor Time", "_Total");
-                cpuCounter = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName);
+                myProcess = Process.GetCurrentProcess();
+                cpuCounter = new PerformanceCounter("Process", "% Processor Time", myProcess.ProcessName);
                 ramCounter = new PerformanceCounter("Memory", "Available MBytes");
             }
 
+            Process myProcess;
             PerformanceCounter totalCpuCounter;
             PerformanceCounter cpuCounter;
             PerformanceCounter ramCounter;
@@ -61,8 +63,8 @@ namespace VRT.Core
                 if (ShouldOutput())
                 {
                     float totalCpu = totalCpuCounter.NextValue();
-                    float cpu = cpuCounter.NextValue();
-                    float memory = ramCounter.NextValue();
+                    double cpu = myProcess.TotalProcessorTime.TotalSeconds;
+                    long memory = myProcess.WorkingSet64;
                     double received = 0;
                     double sent = 0;
                     Output($"total_cpu={totalCpu}, cpu={cpu}, memory={memory}, received={received}, sent={sent}");
