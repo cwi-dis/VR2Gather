@@ -453,8 +453,8 @@ namespace VRT.UserRepresentation.PointCloud
             var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
             yRotation = UnityEngine.Random.Range(0, 360);
             prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
-            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, InitialRotation={yRotation}";
-            BaseStats.Output(Name(), statMsg);
+            //string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, InitialRotation={yRotation}";
+            //BaseStats.Output(Name(), statMsg);
 
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
@@ -469,12 +469,13 @@ namespace VRT.UserRepresentation.PointCloud
                 TileOrientation[ti] = Vector3.Normalize(TileOrientation[ti]);
                 //TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
-            string statsMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Orientationtile0={TileOrientation[0]},";
-            for (int i = 1; i < nTiles; i++)
-            {
-                statsMsg += $", Orientationtile{i}={TileOrientation[i]}";
-            }
-            BaseStats.Output(Name(), statsMsg);
+            //xxxshishir moved tile orientation logging to gettileorder(), need to log x,y,z components of a vector3 separately or it breaks the json formatting!
+            //string statsMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Orientationtile0={TileOrientation[0]},";
+            //for (int i = 1; i < nTiles; i++)
+            //{
+            //    statsMsg += $", Orientationtile{i}={TileOrientation[i]}";
+            //}
+            //BaseStats.Output(Name(), statsMsg);
 
             LoadAdaptationSets();
         }
@@ -704,12 +705,12 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             //Array.Sort(tileDistances, tileOrderDistances);
-            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y},cameraforwardz={cameraForward.z},camerapositionx={camPosition.x},camerapositiony={camPosition.y},camerapositionz={camPosition.z}";
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex},initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y},cameraforwardz={cameraForward.z},camerapositionx={camPosition.x},camerapositiony={camPosition.y},camerapositionz={camPosition.z}";
             for (int i = 0; i < nTiles; i++)
             {
-                statMsg += $",Tile{i}BBCentroidLocationx={tileLocations[i].x},Tile{i}BBCentroidLocationy={tileLocations[i].y},Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
+                statMsg += $",Tile{i}Orientationx={TileOrientation[i].x},Tile{i}Orientationy={TileOrientation[i].y},Tile{i}Orientationz={TileOrientation[i].z},Tile{i}BBCentroidLocationx={tileLocations[i].x},Tile{i}BBCentroidLocationy={tileLocations[i].y},Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
-            BaseStats.Output(Name()+"_adaptationlog", statMsg);
+            BaseStats.Output(Name(), statMsg);
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(hybridTileUtilities, tileOrder);
             Array.Reverse(tileOrder);
