@@ -687,6 +687,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //xxxshishir trying to apply the randomly generated initial rotation to the tile bounding box centroid to compute the correct distances from camera to tile centroid
                 tilePosition = Quaternion.Euler(0.0f, yRotation, 0.0f) * tilePosition;
                 tileDistances[i] = Vector3.Distance(camPosition, tilePosition);
+                tileLocations[i] = tilePosition;
             }
             //Modify utility values so the sign is determined by the distance
             float[] hybridTileUtilities = new float[nTiles];
@@ -703,12 +704,12 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
             //Array.Sort(tileDistances, tileOrderDistances);
-            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Utilitytile0={hybridTileUtilities[0]},";
-            for (int i = 1; i < nTiles; i++)
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y},cameraforwardz={cameraForward.z},camerapositionx={camPosition.x},camerapositiony={camPosition.y},camerapositionz={camPosition.z}";
+            for (int i = 0; i < nTiles; i++)
             {
-                statMsg += $", Utilitytile{i}={hybridTileUtilities[i]}";
+                statMsg += $",Tile{i}BBCentroidLocationx={tileLocations[i].x},Tile{i}BBCentroidLocationy={tileLocations[i].y},Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
-            BaseStats.Output(Name(), statMsg);
+            BaseStats.Output(Name()+"_adaptationlog", statMsg);
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(hybridTileUtilities, tileOrder);
             Array.Reverse(tileOrder);
