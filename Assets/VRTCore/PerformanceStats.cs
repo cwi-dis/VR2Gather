@@ -7,71 +7,43 @@ namespace VRT.Core
 {
     public class PerformanceStats : MonoBehaviour
     {
-        System.Threading.Thread thread;
-        public bool isRunning { get; private set; }
-
-        [Tooltip("Interval in ms for performance measurements")]
-        public int interval = 1000;
-
         // Start is called before the first frame update
         void Start()
         {
             stats = new Stats("PerformanceStats");
-            thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
-            thread.Name = "PerformanceStats";
-            isRunning = true;
-            thread.Start();
-        }
-        public virtual void OnDestroy()
-        {
-            isRunning = false;
-        }
-
+         }
+  
         // Update is called once per frame
         void Update()
         {
             stats.statsUpdate();
         }
 
-        void _Update()
-        {
-            while(isRunning)
-            {
-                stats.statsUpdate();
-                System.Threading.Thread.Sleep(interval);
-            }
-        }
-
+ 
         protected class Stats : BaseStats
         {
             public Stats(string name) : base(name)
             {
-                totalCpuCounter = new PerformanceCounter("Process", "% Processor Time", "_Total");
                 myProcess = Process.GetCurrentProcess();
-                cpuCounter = new PerformanceCounter("Process", "% Processor Time", myProcess.ProcessName);
-                ramCounter = new PerformanceCounter("Memory", "Available MBytes");
             }
 
             Process myProcess;
-            PerformanceCounter totalCpuCounter;
-            PerformanceCounter cpuCounter;
-            PerformanceCounter ramCounter;
+            double prevCpu = 0;
 
             public void statsUpdate()
             {
-
                 if (ShouldOutput())
                 {
-                    float totalCpu = totalCpuCounter.NextValue();
+                    myProcess.Refresh();
                     double cpu = myProcess.TotalProcessorTime.TotalSeconds;
-                    long memory = myProcess.WorkingSet64;
-                    double received = 0;
-                    double sent = 0;
-                    Output($"total_cpu={totalCpu}, cpu={cpu}, memory={memory}, received={received}, sent={sent}");
+                    long memory = myProcess.VirtualMemorySize64;
+                    
+                    Output($"cpu={(cpu-prevCpu)/Interval()}, memory={memory}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
+                    prevCpu = myProcess.TotalProcessorTime.TotalSeconds;
                 }
             }
         }
