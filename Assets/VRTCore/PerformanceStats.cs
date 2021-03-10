@@ -22,7 +22,7 @@ namespace VRT.Core
             isRunning = true;
             thread.Start();
         }
-        public virtual void Stop()
+        public virtual void OnDestroy()
         {
             isRunning = false;
         }
