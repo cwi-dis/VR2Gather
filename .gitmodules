@@ -1,0 +1,3 @@
+[submodule "Assets/PilotsExternal/mediaScape"]
+	path = Assets/PilotsExternal/mediaScape
+	url = ssh://git@github.com/cwi-dis/VRTApp-mediaScape.git
