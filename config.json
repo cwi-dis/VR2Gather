@@ -1,7 +1,8 @@
 {
-	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorURL_": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
 	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
 	"orchestratorURL_": "http://192.168.37.11:8080/socket.io/",
+	"orchestratorURL": "http://vrtnuc.huiskamer.private:8080/socket.io/",
 	"orchestratorURL_": "http://192.168.1.10:8080/socket.io/",
 	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
 	"openLogOnExit" : false,
@@ -137,7 +138,7 @@
       },
       "voxelSize": 0.01,
       "frameRate": 15,
-      "tiled": true,
+      "tiled": false,
       "Encoders": [
         {
           "octreeBits": 9
