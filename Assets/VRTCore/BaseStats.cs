@@ -77,19 +77,21 @@ namespace VRT.Core
         }
 
         static object lockObj = new object();
+        static int seq = 0;
 
         // statis method, for use when only one or two stats lines are produced.
         public static void Output(string name, string s)
         {
             if (!initialized) Init();
-            string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={name}, {s}";
-            if (statsStream == null)
+            lock (lockObj)
             {
-                Debug.Log(statsLine);
-            }
-            else
-            {
-                lock (lockObj)
+                seq++;
+                string statsLine = $"stats: seq={seq}, ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={name}, {s}";
+                if (statsStream == null)
+                {
+                    Debug.Log(statsLine);
+                }
+                else
                 {
                     statsStream.WriteLine(statsLine);
                     Flush();
