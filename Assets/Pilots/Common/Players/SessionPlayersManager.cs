@@ -266,6 +266,11 @@ namespace VRT.Pilots.Common
 
 		public void LoadAudio(PlayerManager player, User user)
 		{
+			if (user.userData.microphoneName == "None")
+            {
+				Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");
+				return;
+            }
 			if (user.userId == OrchestratorController.Instance.SelfUser.userId)
 			{ // Sender
 				var AudioBin2Dash = Config.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
