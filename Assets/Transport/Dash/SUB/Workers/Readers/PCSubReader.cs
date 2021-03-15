@@ -64,22 +64,25 @@ namespace VRT.Transport.Dash
                 if (quality > 0)
                 {
                     BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, quality={quality}");
-                    Debug.Log($"{Name()}: xxxjack SKIP enable_stream({tileNumber}, {quality});");
-                    //                    bool ok = subHandle.enable_stream(tileNumber, quality);
-                    //                    if (!ok)
-                    //                    {
-                    //                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
-                    //                    }
-                }
+                    bool ok = subHandle.disable_stream(tileNumber);
+                    if (!ok)
+                    {
+                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber} to enable {quality}");
+                    }
+                    ok = subHandle.enable_stream(tileNumber, quality);
+                    if (!ok)
+                    {
+                        Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
+                    }
+}
                 else
                 {
                     BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=0");
-                    Debug.Log($"{Name()}: xxxjack SKIP disable_stream({tileNumber});");
-                    //                    bool ok = subHandle.disable_stream(tileNumber);
-                    //                    if (!ok)
-                    //                    {
-                    //                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
-                    //                    }
+                    bool ok = subHandle.disable_stream(tileNumber);
+                    if (!ok)
+                    {
+                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber}");
+                    }
                 }
             }
         }
