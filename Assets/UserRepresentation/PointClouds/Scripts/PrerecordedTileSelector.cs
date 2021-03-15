@@ -10,6 +10,7 @@ using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using System;
 using System.Linq;
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -40,8 +41,6 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public bool debugDecisions = false;
         //Keep track of stimuli being played back
-        public static int stimuliIndex = -1;
-        public static string[] stimuliList;
         public string currentStimuli;
         //
         // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
@@ -469,14 +468,6 @@ namespace VRT.UserRepresentation.PointCloud
                 TileOrientation[ti] = Vector3.Normalize(TileOrientation[ti]);
                 //TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
-            //xxxshishir moved tile orientation logging to gettileorder(), need to log x,y,z components of a vector3 separately or it breaks the json formatting!
-            //string statsMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, Orientationtile0={TileOrientation[0]},";
-            //for (int i = 1; i < nTiles; i++)
-            //{
-            //    statsMsg += $", Orientationtile{i}={TileOrientation[i]}";
-            //}
-            //BaseStats.Output(Name(), statsMsg);
-
             LoadAdaptationSets();
         }
 
@@ -494,47 +485,7 @@ namespace VRT.UserRepresentation.PointCloud
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
             Config._User realUser = Config.Instance.LocalUser;
-            stimuliIndex++;
-            stimuliList = Config.Instance.stimuliList;
-            if (stimuliIndex == stimuliList.Length)
-                stimuliIndex = 0;
-            currentStimuli = stimuliList[stimuliIndex];
-            int dataset = int.Parse(currentStimuli[1].ToString());
-            int codec = int.Parse(currentStimuli[4].ToString());
-            int ratepoint = int.Parse(currentStimuli[7].ToString());
-            maxAdaptation = Config.Instance.maxAdaptation;
-            realUser.PCSelfConfig.PrerecordedReaderConfig.folder = System.IO.Path.Combine(Config.Instance.rootFolder, "H" + dataset.ToString());
-
-            switch (codec)
-            {
-                case 3:
-                    algorithm = SelectionAlgorithm.greedy;
-                    break;
-                case 4:
-                    algorithm = SelectionAlgorithm.hybrid;
-                    break;
-                case 5:
-                    algorithm = SelectionAlgorithm.uniform;
-                    break;
-            }
-            switch (ratepoint)
-            {
-                case 1:
-                    bitRatebudget = 19287;
-                    break;
-                case 2:
-                    bitRatebudget = 58896;
-                    break;
-                case 3:
-                    bitRatebudget = 196215;
-                    break;
-                case 4:
-                    bitRatebudget = 516196;
-                    break;
-                default:
-                    bitRatebudget = 100000;
-                    break;
-            }
+            
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
