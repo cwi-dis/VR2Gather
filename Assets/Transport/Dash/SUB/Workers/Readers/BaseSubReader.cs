@@ -171,6 +171,7 @@ namespace VRT.Transport.Dash
                             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                             parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
                             parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                            BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime-parent.clockCorrespondence.streamClockTime}");
                         }
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
