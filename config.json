@@ -13,9 +13,9 @@
 	"pilot3NavigationLogs": true,
 	"statsInterval": 0,
 	"statsOutputFile":  "statistics.log",
-	"stimuliList": ["H1_C3_R1","H2_C4_R4","H3_C5_R3","H1_C4_R3","H4_C3_R4","H1_C4_R2"],
-	"rootFolder": "E:/ACMMM21TiledDataset/dump/",
-	"maxAdaptation": 30,
+	"stimuliList": ["H2_C3_R2","H2_C4_R2","H2_C5_R2","H3_C3_R3","H3_C4_R3","H3_C5_R3","H1_C3_R1","H1_C4_R1","H1_C5_R1","H4_C3_R4","H4_C4_R4","H4_C5_R4"],
+	"rootFolder": "C:/Users/VRTogether/VRtogether/Dataset/dump/",
+	"maxAdaptation": 5,
 	"TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
