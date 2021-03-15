@@ -11,6 +11,7 @@ using VRT.Orchestrator.Wrapping;
 using System;
 using System.Linq;
 using VRT.Pilots.Common;
+using QualityAssesment;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -485,7 +486,21 @@ namespace VRT.UserRepresentation.PointCloud
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
             Config._User realUser = Config.Instance.LocalUser;
-            
+            currentStimuli = StimuliController.getCurrentStimulus();
+            bitRatebudget = StimuliController.getBitrateBudget();
+            int codec = StimuliController.getCodec();
+            switch(codec)
+            {
+                case 3:
+                    algorithm = SelectionAlgorithm.greedy;
+                    break;
+                case 4:
+                    algorithm = SelectionAlgorithm.hybrid;
+                    break;
+                case 5:
+                    algorithm = SelectionAlgorithm.uniform;
+                    break;
+            }
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;

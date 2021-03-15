@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 using VRT.Core;
 using VRT.UserRepresentation.PointCloud;
 
-namespace Assets.Pilots.QualityAssesment.Scripts
+namespace QualityAssesment
 {
     public class RatingSceneController : MonoBehaviour
     {
@@ -26,7 +26,7 @@ namespace Assets.Pilots.QualityAssesment.Scripts
             ratingValue = rating;
             Debug.Log("<color=green> Rating Registered:  </color>" + ratingValue);
             ratingRegistered = true;
-            string statMsg = $"currentstimuli={"To be Implemented"}, RatingReceived={rating}";
+            string statMsg = $"currentstimuli={StimuliController.getCurrentStimulus()}, RatingReceived={rating}";
             BaseStats.Output(Name(), statMsg);
         }
         private void Update()
@@ -35,6 +35,7 @@ namespace Assets.Pilots.QualityAssesment.Scripts
             float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
             if (Input.GetKeyDown(KeyCode.Escape) || ratingRegistered==true)
             {
+                StimuliController.loadnext();
                 SceneManager.LoadScene("QualityAssesment");
             }
             if (camFound==false)

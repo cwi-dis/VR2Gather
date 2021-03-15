@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿//using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
+//using UnityEngine;
 using VRT.Core;
-using VRT.Orchestrator.Wrapping;
-using System;
-using System.Linq;
+//using VRT.Orchestrator.Wrapping;
+//using System;
+//using System.Linq;
 
-namespace VRT.Pilots.Common
+namespace QualityAssesment
 {
     public static class StimuliController
     {
@@ -73,7 +73,10 @@ namespace VRT.Pilots.Common
             //xxxshishir set tilefolders to null if stimulus is not tiled
             stimuliIndex++;
             if (stimuliIndex == stimuliList.Length)
+            {
+                stimuliIndex = 0;
                 return false;
+            }
             else
                 return true;
         }
