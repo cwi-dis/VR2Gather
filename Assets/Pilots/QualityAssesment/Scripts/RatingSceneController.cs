@@ -23,11 +23,14 @@ namespace QualityAssesment
         }
         public void registerScore(int rating)
         {
-            ratingValue = rating;
-            Debug.Log("<color=green> Rating Registered:  </color>" + ratingValue);
-            ratingRegistered = true;
-            string statMsg = $"currentstimuli={StimuliController.getCurrentStimulus()}, RatingReceived={rating}";
-            BaseStats.Output(Name(), statMsg);
+            if (ratingRegistered == false)
+            {
+                ratingValue = rating;
+                Debug.Log("<color=green> Rating Registered:  </color>" + ratingValue);
+                ratingRegistered = true;
+                string statMsg = $"currentstimuli={StimuliController.getCurrentStimulus()}, RatingReceived={rating}";
+                BaseStats.Output(Name(), statMsg);
+            }
         }
         private void Update()
         {
@@ -35,8 +38,11 @@ namespace QualityAssesment
             float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
             if (Input.GetKeyDown(KeyCode.Escape) || ratingRegistered==true)
             {
-                StimuliController.loadnext();
-                SceneManager.LoadScene("QualityAssesment");
+                bool playnext = StimuliController.loadnext();
+                if (playnext)
+                    SceneManager.LoadScene("QualityAssesment");
+                else
+                    SceneManager.LoadScene("LoginManager");
             }
             if (camFound==false)
             {

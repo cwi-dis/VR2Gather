@@ -67,7 +67,7 @@ namespace QualityAssesment
             QAStimuli sframe = stimuliDescription.Find(x => x.stimuliName == currentStimulus);
             bitrateBudget = sframe.budget;
             codec = sframe.codec;
-            //Set the instanceconig variable so the readers are initialized correctly
+            //Set the instance config variable so the readers are initialized correctly
             Config._User realUser = Config.Instance.LocalUser;
             realUser.PCSelfConfig.PrerecordedReaderConfig.folder = System.IO.Path.Combine(Config.Instance.rootFolder, "H" + currentStimulus[1]);
             //xxxshishir set tilefolders to null if stimulus is not tiled
