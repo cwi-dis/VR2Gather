@@ -47,8 +47,10 @@ namespace VRT.UserRepresentation.PointCloud
         // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
         //
         public static long curIndex;
-        //Adaptation gap limiter
+        //Adaptation quality difference cap between tiles
         public int maxAdaptation = 30;
+
+        public bool altHybridTileSelection = false;
         string Name()
         {
             return "BaseTileSelector";
@@ -374,11 +376,21 @@ namespace VRT.UserRepresentation.PointCloud
         {
             // xxxjack currently ignores pointcloud position, which is probably wrong...
             bool[] tileVisibility = new bool[nTiles];
+            float[] tileDirection = new float[nTiles];
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
             for (int i = 0; i < nTiles; i++)
             {
-                tileVisibility[i] = Vector3.Dot(cameraForward, TileOrientation[i]) > 0;
+                if (!altHybridTileSelection)
+                    tileVisibility[i] = Vector3.Dot(cameraForward, TileOrientation[i]) > 0;
+                else
+                {
+                    tileDirection[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+                    tileVisibility[i] = true;
+                }
             }
+            if (altHybridTileSelection)
+                tileVisibility[Array.IndexOf(tileDirection, tileDirection.Min())] = false;
+
             return tileVisibility;
         }
 
@@ -492,6 +504,7 @@ namespace VRT.UserRepresentation.PointCloud
             currentStimuli = StimuliController.getCurrentStimulus();
             bitRatebudget = StimuliController.getBitrateBudget();
             int codec = StimuliController.getCodec();
+            maxAdaptation = Config.Instance.maxAdaptation;
             switch(codec)
             {
                 case 3:
