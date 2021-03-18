@@ -63,6 +63,11 @@ namespace QualityAssesment
         {
             if (!initialized)
                 init();
+            if (stimuliIndex == stimuliList.Length)
+            {
+                stimuliIndex = 0;
+                return false;
+            }
             currentStimulus = stimuliList[stimuliIndex];
             QAStimuli sframe = stimuliDescription.Find(x => x.stimuliName == currentStimulus);
             bitrateBudget = sframe.budget;
@@ -72,13 +77,7 @@ namespace QualityAssesment
             realUser.PCSelfConfig.PrerecordedReaderConfig.folder = System.IO.Path.Combine(Config.Instance.rootFolder, "H" + currentStimulus[1]);
             //xxxshishir set tilefolders to null if stimulus is not tiled
             stimuliIndex++;
-            if (stimuliIndex == stimuliList.Length)
-            {
-                stimuliIndex = 0;
-                return false;
-            }
-            else
-                return true;
+            return true;
         }
         public static string getCurrentStimulus()
         {

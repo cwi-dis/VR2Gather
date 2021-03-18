@@ -388,6 +388,7 @@ namespace VRT.UserRepresentation.PointCloud
                     tileVisibility[i] = true;
                 }
             }
+            //xxxshishir the greedy prime bit, only the worst tile is set to not visible
             if (altHybridTileSelection)
                 tileVisibility[Array.IndexOf(tileDirection, tileDirection.Min())] = false;
 
