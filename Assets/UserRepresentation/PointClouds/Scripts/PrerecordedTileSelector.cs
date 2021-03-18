@@ -403,6 +403,10 @@ namespace VRT.UserRepresentation.PointCloud
         // Randomized rotation angle used for each stimuli
         //
         private float yRotation;
+        //
+        // Transform for the prerecorded point cloud object (position,scale and rotation from this game object can be applied to other geometry metadata)
+        //
+        private Transform prerecordedPCTransform;
 
         string Name()
         {
@@ -453,8 +457,8 @@ namespace VRT.UserRepresentation.PointCloud
             var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
             yRotation = UnityEngine.Random.Range(0, 360);
             prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
-            //string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, InitialRotation={yRotation}";
-            //BaseStats.Output(Name(), statMsg);
+            //xxxshishir we assume no more modifications are made to the game object transform after this point, we use this transform on all tile geometry meta data
+            prerecordedPCTransform = prerecordedGameObject.transform;
 
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
@@ -465,9 +469,8 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 double angle = ti * Math.PI / 2;
                 Vector3 InitalVector = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
-                TileOrientation[ti] = Quaternion.Euler(0.0f, yRotation, 0.0f) * InitalVector;
+                TileOrientation[ti] = prerecordedPCTransform.TransformDirection(InitalVector);
                 TileOrientation[ti] = Vector3.Normalize(TileOrientation[ti]);
-                //TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
             LoadAdaptationSets();
         }
@@ -652,7 +655,10 @@ namespace VRT.UserRepresentation.PointCloud
                 var thisFrame = thisTile[(int)curIndex];
                 Vector3 tilePosition = new Vector3(thisFrame.PCBBXCentroid, thisFrame.PCBBYCentroid, thisFrame.PCBBZCentroid);
                 //xxxshishir trying to apply the randomly generated initial rotation to the tile bounding box centroid to compute the correct distances from camera to tile centroid
-                tilePosition = Quaternion.Euler(0.0f, yRotation, 0.0f) * tilePosition;
+                tilePosition = prerecordedPCTransform.TransformPoint(tilePosition);
+                //xxxshishir drop all the points on the floor before measuring distances
+                tilePosition.y = 0;
+                camPosition.y = 0;
                 tileDistances[i] = Vector3.Distance(camPosition, tilePosition);
                 tileLocations[i] = tilePosition;
             }
@@ -670,7 +676,6 @@ namespace VRT.UserRepresentation.PointCloud
                         hybridTileUtilities[i] *= -1;
                 }
             }
-            //Array.Sort(tileDistances, tileOrderDistances);
             string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y}, cameraforwardz={cameraForward.z}, camerapositionx={camPosition.x}, camerapositiony={camPosition.y}, camerapositionz={camPosition.z}";
             for (int i = 0; i < nTiles; i++)
             {
