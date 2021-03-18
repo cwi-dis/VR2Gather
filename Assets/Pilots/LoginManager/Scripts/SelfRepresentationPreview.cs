@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using VRTCore;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
@@ -114,6 +113,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
                 pcPipeline.Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                 break;
             case UserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__CAMERAMAN__:
                 player.gameObject.SetActive(false);
                 break;
             default:

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class FloatMemoryChunk : NativeMemoryChunk
     {

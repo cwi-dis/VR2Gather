@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using System;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Video
 {

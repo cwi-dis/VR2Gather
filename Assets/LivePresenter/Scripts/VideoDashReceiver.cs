@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
 using VRT.Video;
 using VRT.Transport.Dash;
+using VRT.Core;
 
 namespace VRT.LivePresenter
 {
@@ -48,6 +48,7 @@ namespace VRT.LivePresenter
             {
                 decoder = new VideoDecoder(codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
                 preparer = new VideoPreparer(videoPreparerQueue, audioPreparerQueue);
+                // xxxjack should set Synchronizer here
                 reader = new AVSubReader(url, streamName, videoCodecQueue, audioCodecQueue);
             }
             catch (System.Exception e)
@@ -62,10 +63,15 @@ namespace VRT.LivePresenter
         float currentTime = 0;
         float lastFrame = 0;
 
-        void Update()
+        private void Update()
+        {
+            preparer.Synchronize();
+        }
+        void LateUpdate()
         {
             lock (preparer)
             {
+                preparer.LatchFrame();
                 if (preparer.availableVideo > 0)
                 {
                     if (timeToWait < 0)

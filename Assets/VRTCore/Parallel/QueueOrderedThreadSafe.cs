@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class QueueOrderedThreadSafe : QueueThreadSafe
     {

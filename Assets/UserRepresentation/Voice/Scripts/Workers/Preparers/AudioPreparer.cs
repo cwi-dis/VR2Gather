@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class AudioPreparer : BaseWorker
+    public class AudioPreparer : BasePreparer
     {
         int bufferSize;
 
@@ -17,6 +17,7 @@ namespace VRT.UserRepresentation.Voice
             if (inQueue == null) Debug.LogError($"AudioPreparer: Programmer error: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
             Debug.Log("AudioPreparer: Started.");
+            // xxxjack stats not used? stats = new Stats(Name());
             Start();
         }
 
@@ -29,6 +30,14 @@ namespace VRT.UserRepresentation.Voice
         protected override void Update()
         {
             base.Update();
+        }
+        public override void Synchronize()
+        {
+        }
+
+        public override void LatchFrame()
+        {
+            // xxxjack Not implemented yet for audio...
         }
 
         bool firstTime = true;
@@ -44,34 +53,42 @@ namespace VRT.UserRepresentation.Voice
             return true;
         }
 
-        System.DateTime statsLastTime;
-        double statsTotalUpdates;
-        double statsTotalSamplesInOutputBuffer;
-        double statsDrops;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int samplesInOutputBuffer, bool dropped = false)
+        protected class Stats : VRT.Core.BaseStats
         {
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalUpdates;
+            double statsTotalSamplesInOutputBuffer;
+            double statsDrops;
+
+            public void statsUpdate(int samplesInOutputBuffer, bool dropped)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalUpdates = 0;
-                statsTotalSamplesInOutputBuffer = 0;
-                statsDrops = 0;
+
+                statsTotalUpdates += 1;
+                statsTotalSamplesInOutputBuffer += samplesInOutputBuffer;
+                if (dropped) statsDrops++;
+
+                if (ShouldOutput())
+                {
+                    double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
+                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
+                    Output($"fps={statsTotalUpdates / Interval():F3}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops / Interval()}");
+                    if (statsDrops > 3 * Interval())
+                    {
+                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                    }
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalUpdates = 0;
+                    statsTotalSamplesInOutputBuffer = 0;
+                    statsDrops = 0;
+                }
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(10))
-            {
-                double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
-                double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / 10}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops / 10}");
-                statsTotalUpdates = 0;
-                statsTotalSamplesInOutputBuffer = 0;
-                statsDrops = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalUpdates += 1;
-            statsTotalSamplesInOutputBuffer += samplesInOutputBuffer;
-            if (dropped) statsDrops++;
         }
+
+        protected Stats stats;
+
     }
 }

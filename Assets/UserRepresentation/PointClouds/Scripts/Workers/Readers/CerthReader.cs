@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using VRT.Core;
 using VRT.Transport.RabbitMQ;
 using VRT.Transport.RabbitMQ.Utils;
-using VRTCore;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -214,7 +214,7 @@ namespace VRT.UserRepresentation.PointCloud
                     //
                     // Push the cwipc pointcloud to the consumers
                     //
-                    statsUpdate(pc.count());
+                    // Couldn't be bothered to update to BaseStats: statsUpdate(pc.count());
                     if (pc == null)
                     {
                         Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
@@ -267,36 +267,6 @@ namespace VRT.UserRepresentation.PointCloud
 
 
         }
-        System.DateTime statsLastTime;
-        double statsTotalPoints;
-        double statsTotalPointclouds;
-        double statsDrops;
-        const int statsInterval = 10;
 
-        public void statsUpdate(int pointCount, bool dropped = false)
-        {
-            if (statsLastTime == null)
-            {
-                statsLastTime = System.DateTime.Now;
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDrops = 0;
-            }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=CerthReader, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, drops_per_second={statsDrops / statsInterval}");
-                if (statsDrops > 3 * statsInterval)
-                {
-                    Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
-                }
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDrops = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalPoints += pointCount;
-            statsTotalPointclouds += 1;
-            if (dropped) statsDrops++;
-        }
     }
 }

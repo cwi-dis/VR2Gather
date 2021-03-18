@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
@@ -45,6 +45,7 @@ namespace VRT.UserRepresentation.Voice
 
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+            // xxxjack should set Synchronizer here
         }
 
         void OnDestroy()

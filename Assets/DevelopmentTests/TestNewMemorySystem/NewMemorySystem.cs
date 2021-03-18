@@ -5,12 +5,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
+using VRT.Core;
 
 public class NewMemorySystem : MonoBehaviour
 {
@@ -22,6 +22,8 @@ public class NewMemorySystem : MonoBehaviour
     public bool useDashVoice = false;
     public bool usePointClouds = false;
     public bool useSocketIO = true;
+    public float targetFPS = 20f;
+    public int numPoints = 1000;
 
     public NetController orchestrator;
 
@@ -31,17 +33,18 @@ public class NewMemorySystem : MonoBehaviour
     public string remoteStream = "";
 
     BaseWorker reader;
-    BaseWorker encoder;
+    BaseWorker[] encoder;
     public int decoders = 1;
+    public int encoders = 1;
     BaseWorker[] decoder;
     BaseWorker pointcloudsWriter;
     BaseWorker pointcloudsReader;
 
     BaseWorker preparer;
-    QueueThreadSafe preparerQueue = new QueueThreadSafe("NewMemorySystemPreparer");
-    QueueThreadSafe encoderQueue = new QueueThreadSafe("NewMemorySystemEncoder");
-    QueueThreadSafe writerQueue = new QueueThreadSafe("NewMemorySystemWriter");
-    QueueThreadSafe decoderQueue = new QueueThreadSafe("NewMemorySystemDecoder", 2, true);
+    QueueThreadSafe preparerQueue = new QueueThreadSafe("PreparerQueue", 10,true);
+    QueueThreadSafe encoderQueue = new QueueThreadSafe("EncoderQueue", 10,true);
+    QueueThreadSafe writerQueue = new QueueThreadSafe("WriterQueue", 10,true);
+    QueueThreadSafe decoderQueue = new QueueThreadSafe("DecoderQueue", 10, true);
     MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
@@ -90,27 +93,33 @@ public class NewMemorySystem : MonoBehaviour
         if (usePointClouds) {
 			if (localPCs) {
 				if (!useCompression)
-					reader = new RS2Reader(20f, 1000, preparerQueue);
+					reader = new PCReader(targetFPS, numPoints, preparerQueue);
 				else {
-					reader = new RS2Reader(20f, 1000, encoderQueue);
+					reader = new PCReader(targetFPS, numPoints, encoderQueue);
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;
 					encStreams[0].outQueue = writerQueue;
-					encoder = new PCEncoder(encoderQueue, encStreams);
-					decoder = new PCDecoder[decoders];
+					encoder = new PCEncoder[encoders];
+                    for (int i = 0; i < encoders; ++i)
+                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
+                    decoder = new PCDecoder[decoders];
 					for (int i = 0; i < decoders; ++i)
 						decoder[i] = new PCDecoder(writerQueue, preparerQueue);
 				}
 			} else {
 				if (!useRemoteStream) {
-					reader = new RS2Reader(20f, 1000, encoderQueue);
+					reader = new PCReader(targetFPS, numPoints, encoderQueue);
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;
 					encStreams[0].outQueue = writerQueue;
-					encoder = new PCEncoder(encoderQueue, encStreams);
-					string uuid = System.Guid.NewGuid().ToString();
+
+                    encoder = new PCEncoder[encoders];
+                    for (int i = 0; i < encoders; ++i)
+                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
+
+                    string uuid = System.Guid.NewGuid().ToString();
 					URL = $"{remoteURL}/{uuid}/pcc/";
 					pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
 				} 
@@ -146,9 +155,12 @@ public class NewMemorySystem : MonoBehaviour
 
     void OnDestroy() {
         reader?.StopAndWait();
-        encoder?.StopAndWait();
         pointcloudsWriter?.StopAndWait();
         pointcloudsReader?.StopAndWait();
+        if (encoder != null) {
+            for (int i = 0; i < encoders; ++i)
+                encoder[i]?.StopAndWait();
+        }
         if (decoder != null) {
             for (int i = 0; i < decoders; ++i)
                 decoder[i]?.StopAndWait();

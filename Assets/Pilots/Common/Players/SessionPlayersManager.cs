@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
-using VRTCore;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
@@ -10,11 +9,11 @@ using VRT.UserRepresentation.Voice;
 namespace VRT.Pilots.Common
 {
 
-	/// <summary>
-	/// Spawns the player prefab for players in a session, and if we're the 
-	/// Master, it assigns them to an available location when AutoSpawnOnLocation is true
-	/// </summary>
-	public class SessionPlayersManager : MonoBehaviour
+    /// <summary>
+    /// Spawns the player prefab for players in a session, and if we're the 
+    /// Master, it assigns them to an available location when AutoSpawnOnLocation is true
+    /// </summary>
+    public class SessionPlayersManager : MonoBehaviour
 	{
 		/// <summary>
 		/// Empty request message to ask the Master to inform us about the player locations
@@ -128,7 +127,6 @@ namespace VRT.Pilots.Common
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
-
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
 					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
@@ -144,7 +142,7 @@ namespace VRT.Pilots.Common
 				networkPlayer.SetIsLocalPlayer(me.userId == user.userId);
 
 				AllUsers.Add(networkPlayer);
-				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__)
+				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__ && representationType != UserRepresentationType.__CAMERAMAN__)
 				{
 					AddPlayer(networkPlayer);
 				}
@@ -160,6 +158,13 @@ namespace VRT.Pilots.Common
 					}
 					else
 					{
+						// __NONE__ && __CAMERAMAN__
+#if UNITY_EDITOR
+						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
+							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
+							playerManager.cam.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+						}
+#endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
 					}
 				}
@@ -192,7 +197,7 @@ namespace VRT.Pilots.Common
 			{
 				playerManager.teleporter.SetActive(false);
 			}
-			Debug.Log($"stats: ts={DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=SessionPlayersManager, self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
 			{
@@ -222,7 +227,10 @@ namespace VRT.Pilots.Common
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
 						pcPipeline?.Init(user, userCfg);
-
+						if (tilingConfigDistributor == null)
+                        {
+							Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
+                        }
 						// Register for distribution of tiling configurations
 						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
 						break;

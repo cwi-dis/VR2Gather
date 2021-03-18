@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using VRTCore;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.Transport.SocketIO
 {
@@ -31,7 +31,7 @@ namespace VRT.Transport.SocketIO
                     OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
-
+                stats = new Stats(Name());
                 Start();
                 Debug.Log($"{Name()}: Started {remoteStream}.");
             }
@@ -54,13 +54,15 @@ namespace VRT.Transport.SocketIO
               }
             )
         {
+            stats = new Stats(Name());
         }
 
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
         public override string Name()
         {
-            return $"{GetType().Name}";
+            return $"{GetType().Name}#{instanceNumber}";
         }
-
 
         public override void Stop()
         {
@@ -83,6 +85,8 @@ namespace VRT.Transport.SocketIO
                 {
                     BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
+                    // xxxjack note: this means we are _not_ distinghuising tiles for socketIO. Should be fixed, but difficult.
+                    stats.statsUpdate(chunk.length);
                     descriptors[id].outQueue.Enqueue(chunk);
                 }
             }
@@ -100,6 +104,43 @@ namespace VRT.Transport.SocketIO
         {
             base.Update();
         }
+
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
+
+            System.DateTime statsConnectionStartTime;
+            double statsTotalBytes;
+            double statsTotalPackets;
+            bool statsGotFirstReception;
+
+            public void statsUpdate(int nBytes)
+            {
+                if (!statsGotFirstReception)
+                {
+                    statsConnectionStartTime = System.DateTime.Now;
+                    statsGotFirstReception = true;
+                }
+
+                System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
+             
+                statsTotalBytes += nBytes;
+                statsTotalPackets++;
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalBytes = 0;
+                    statsTotalPackets = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
+
     }
 
 }

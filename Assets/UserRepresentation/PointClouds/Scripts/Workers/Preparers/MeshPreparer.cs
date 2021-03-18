@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class MeshPreparer : BaseWorker
+    public class MeshPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
@@ -45,15 +45,23 @@ namespace VRT.UserRepresentation.PointCloud
             public Color32 color;
         }
 
-        protected override void Update()
+        public override void LatchFrame()
         {
-            base.Update();
             lock (this)
             {
-                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
+                if (synchronizer != null)
+                {
+                    ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
+                    {
+                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        return;
+                    }
+                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
+
+                }              // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (isReady) return;    // We already have one.
-                if (InQueue.IsClosed()) return; // Weare shutting down
+                if (InQueue.IsClosed()) return; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null) return;
                 unsafe
@@ -90,6 +98,15 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                     isReady = true;
                 }
+            }
+        }
+        public override void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
+            if (synchronizer)
+            {
+                ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
+                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
             }
         }
 

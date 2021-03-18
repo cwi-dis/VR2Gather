@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.UserRepresentation.Voice;
-using VRTCore;
 using VRT.Core;
 using VRT.Video;
 using VRT.Transport.SocketIO;
@@ -165,6 +164,7 @@ namespace VRT.UserRepresentation.WebCam
                     // Create video preparer.
                     //
                     preparer = new VideoPreparer(videoPreparerQueue, null);
+                    // xxxjack should set Synchronizer here
                     /*
                                     //
                                     // Create pipeline for audio, if needed.
@@ -183,12 +183,18 @@ namespace VRT.UserRepresentation.WebCam
 
         // Update is called once per frame
         System.DateTime lastUpdateTime;
+
         private void Update()
+        {
+            preparer.Synchronize();
+        }
+        private void LateUpdate()
         {
             if (ready)
             {
                 lock (preparer)
                 {
+                    preparer.LatchFrame();
                     if (preparer.availableVideo > 0)
                     {
                         Debug.Log($"WebCamPipeline.Update ");

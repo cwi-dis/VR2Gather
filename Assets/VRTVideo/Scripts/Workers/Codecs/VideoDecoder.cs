@@ -4,7 +4,7 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
-using VRTCore;
+using VRT.Core;
 // TODO(FPA): Fix new Queue mode.
 namespace VRT.Video
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -41,7 +41,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw e;
             }
-
+            stats = new Stats(Name());
         }
 
         public override string Name()
@@ -86,40 +86,42 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                statsUpdate(pc.count(), pc.timestamp());
+                stats.statsUpdate(pc.count(), pc.timestamp());
                 outQueue.Enqueue(pc);
             }
         }
-
-        System.DateTime statsLastTime;
-        double statsTotalPoints = 0;
-        double statsTotalPointclouds = 0;
-        double statsTotalLatency = 0;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int pointCount, ulong timeStamp)
+        protected class Stats : VRT.Core.BaseStats
         {
-            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalPoints = 0;
+            double statsTotalPointclouds = 0;
+            double statsTotalLatency = 0;
+
+            public void statsUpdate(int pointCount, ulong timeStamp)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsTotalLatency = 0;
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
+                statsTotalPoints += pointCount;
+                statsTotalPointclouds++;
+                statsTotalLatency += latency;
+
+                if (ShouldOutput())
+                {
+                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
+                 }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalPoints = 0;
+                    statsTotalPointclouds = 0;
+                    statsTotalLatency = 0;
+                }
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPointclouds / statsInterval}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsTotalLatency = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalPoints += pointCount;
-            statsTotalPointclouds += 1;
-            statsTotalLatency += latency;
         }
+
+        protected Stats stats;
+
     }
 }

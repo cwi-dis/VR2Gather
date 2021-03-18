@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class EmptyPreparer : BaseWorker
+    public class EmptyPreparer : BasePreparer
     {
         float[] circularBuffer;
         int bufferSize;
@@ -23,6 +23,13 @@ namespace VRT.UserRepresentation.Voice
             base.OnStop();
             //            if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("EmptyPreparer Sopped");
+        }
+        public override void LatchFrame()
+        {
+        }
+
+        public override void Synchronize()
+        {
         }
 
         protected override void Update()

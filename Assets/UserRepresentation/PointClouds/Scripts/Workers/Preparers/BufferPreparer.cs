@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class BufferPreparer : BaseWorker
+    public class BufferPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
@@ -35,14 +35,23 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log("BufferPreparer Stopped");
         }
 
-        protected override void Update()
+        public override void LatchFrame()
         {
-            base.Update();
-            lock (this)
+           lock (this)
             {
+                if (synchronizer != null)
+                {
+                    ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
+                    {
+                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        return;
+                    }
+                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
+
+                }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (isReady) return;    // We already have one.
                 if (InQueue.IsClosed()) return; // Weare shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null) return;
@@ -76,6 +85,15 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
+        public override void Synchronize()
+        {
+            // Synchronize playout for the current frame with other preparers (if needed)
+            if (synchronizer)
+            {
+                ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
+                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
+            }
+        }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
         {
             // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.

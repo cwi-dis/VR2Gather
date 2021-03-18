@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using VRTCore;
+using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
@@ -37,6 +37,7 @@ namespace VRT.Transport.Dash
                 description = _description;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
+                stats = new Stats(Name());
             }
 
             public string Name()
@@ -64,7 +65,7 @@ namespace VRT.Transport.Dash
                     {
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
-                        statsUpdate(mc.length); // xxxjack needs to be changed to be per-stream
+                        stats.statsUpdate(mc.length); // xxxjack needs to be changed to be per-stream
                         if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
                             Debug.Log($"{Name()}({parent.url}): ERROR sending data");
                         mc.free();
@@ -83,31 +84,35 @@ namespace VRT.Transport.Dash
 
             }
 
-            System.DateTime statsLastTime;
-            double statsTotalBytes = 0;
-            double statsTotalPackets = 0;
-            const int statsInterval = 10;
-
-            public void statsUpdate(int nBytes)
+            protected class Stats : VRT.Core.BaseStats
             {
-                if (statsLastTime == null)
-                {
-                    statsLastTime = System.DateTime.Now;
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
-                }
-                if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-                {
-                    Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalPackets / statsInterval}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
-                    statsTotalBytes = 0;
-                    statsTotalPackets = 0;
-                    statsLastTime = System.DateTime.Now;
-                }
-                statsTotalBytes += nBytes;
-                statsTotalPackets += 1;
-            }
-        }
+                public Stats(string name) : base(name) { }
 
+                double statsTotalBytes = 0;
+                double statsTotalPackets = 0;
+
+                public void statsUpdate(int nBytes)
+                {
+ 
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets += 1;
+
+                    if (ShouldOutput())
+                    {
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
+                      }
+                    if (ShouldClear())
+                    {
+                        Clear();
+                        statsTotalBytes = 0;
+                        statsTotalPackets = 0;
+                    }
+                }
+            }
+
+            protected Stats stats;
+        }
+ 
         B2DPushThread[] pusherThreads;
 
 

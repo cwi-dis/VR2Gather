@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class BaseWorker
     {
@@ -78,7 +78,7 @@ namespace VRTCore
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
-                Debug.LogError("Error encountered while cleaning up");
+                Debug.LogError($"Error encountered while cleaning up {Name()}");
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }

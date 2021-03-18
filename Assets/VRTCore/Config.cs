@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     [Serializable]
     public class Config
@@ -38,6 +38,9 @@ namespace VRTCore
         public Presenter presenter = Presenter.None;
         public float nonHMDHeight = 1.8f;
         public bool pilot3NavigationLogs = true;
+        public double statsInterval = 10.0;
+        public string statsOutputFile = "";
+
         [Serializable]
         public class _TVMs
         {

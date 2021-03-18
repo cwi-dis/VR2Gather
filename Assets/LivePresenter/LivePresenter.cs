@@ -1,11 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-using VRTCore;
 using VRT.Video;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.LivePresenter
 {
@@ -81,7 +80,12 @@ namespace VRT.LivePresenter
             ready = true;
         }
         float timeToFrame = 0;
-        void Update()
+
+        private void Update()
+        {
+            preparer.Synchronize();
+        }
+        void LateUpdate()
         {
             if (Input.GetKeyDown(KeyCode.V))
             {
@@ -98,6 +102,7 @@ namespace VRT.LivePresenter
             {
                 lock (preparer)
                 {
+                    preparer.LatchFrame();
                     if (preparer.availableVideo > 0)
                     {
                         if (texture == null)

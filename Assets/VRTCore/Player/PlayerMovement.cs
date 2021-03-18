@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour {
     public CharacterController controller;
 
     void Awake() {
-        if (XRDevice.isPresent)
+        if (XRUtility.isPresent())
             enabled = false; // Check if you're wearing an HMD
     }
 

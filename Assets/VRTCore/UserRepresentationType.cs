@@ -1,4 +1,4 @@
-namespace VRTCore
+namespace VRT.Core
 {
     public enum UserRepresentationType
     {
@@ -11,6 +11,7 @@ namespace VRTCore
         __PCC_PROXY__,
         __PCC_SYNTH__,
         __PCC_CERTH__,
-        __SPECTATOR__
+        __SPECTATOR__,
+        __CAMERAMAN__
     }
 }
