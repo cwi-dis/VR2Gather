@@ -8,7 +8,7 @@ namespace VRT.UserRepresentation.PointCloud
     {
         ComputeBuffer pointBuffer;
         int pointCount = 0;
-        Material material;
+        public Material material;
         MaterialPropertyBlock block;
         BufferPreparer preparer;
         static int instanceCounter = 0;
