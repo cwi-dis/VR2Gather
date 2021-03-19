@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestHTTP", "BestHTTP.csproj", "{96135125-875B-830B-B816-357A6A7D0BE7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRTeleporter", "VRTeleporter.csproj", "{3175E222-743F-CA95-4FB7-5AEFAFB6C032}"
@@ -38,6 +38,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRTInitializer", "VRTInitializer.csproj", "{96D1BB67-C1A4-D3AD-44D0-6AC2766B3E1D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot0", "Pilot0.csproj", "{CBB8996F-9876-B441-2B14-D9686D74FD78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaScape", "MediaScape.csproj", "{9534CD44-95A6-07A7-1274-7A1D75CA4B48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VRTProfiler", "VRTProfiler.csproj", "{C40526A2-B9C2-4EAE-8584-84D74859F7EB}"
 EndProject
@@ -139,6 +141,10 @@ Global
 		{CBB8996F-9876-B441-2B14-D9686D74FD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBB8996F-9876-B441-2B14-D9686D74FD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBB8996F-9876-B441-2B14-D9686D74FD78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9534CD44-95A6-07A7-1274-7A1D75CA4B48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9534CD44-95A6-07A7-1274-7A1D75CA4B48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9534CD44-95A6-07A7-1274-7A1D75CA4B48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9534CD44-95A6-07A7-1274-7A1D75CA4B48}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C40526A2-B9C2-4EAE-8584-84D74859F7EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C40526A2-B9C2-4EAE-8584-84D74859F7EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C40526A2-B9C2-4EAE-8584-84D74859F7EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
