@@ -12,10 +12,10 @@ namespace VRT.Transport.Dash
             public string name;
             public QueueThreadSafe outQueue;
             public int tileNumber;
-            public int currentQuality;
+            public sub.StreamDescriptor[] streamDescriptors; // streams for this tile only
         }
         protected TileDescriptor[] tileDescriptors;
-        protected sub.StreamDescriptor[] streamDescriptors;
+        protected sub.StreamDescriptor[] allStreamDescriptors;
 
         public PCSubReader(string _url, string _streamName, int _initialDelay, TileDescriptor[] _tileDescriptors)
         : base(_url, _streamName, _initialDelay)
@@ -24,12 +24,25 @@ namespace VRT.Transport.Dash
             {
                 tileDescriptors = _tileDescriptors;
                 int nTiles = tileDescriptors.Length;
+                //Debug.Log($"xxxjack {Name()}: constructor: nTiles={nTiles}");
                 receivers = new ReceiverInfo[nTiles];
                 for (int ti = 0; ti < nTiles; ti++)
                 {
                     ReceiverInfo ri = new ReceiverInfo();
+                    ri.tileNumber = ti;
+                    TileDescriptor td = tileDescriptors[ti];
+                    ri.tileDescriptor = td;
                     ri.outQueue = tileDescriptors[ti].outQueue;
-                    ri.streamIndexes = new int[0];
+                    // Probably streamDescriptors will be received later,
+                    // then we set the current streamIndex to -1 (nothing to receive yet)
+                    if (td.streamDescriptors == null || td.streamDescriptors.Length == 0)
+                    {
+                        ri.curStreamIndex = -1;
+                    } 
+                    else
+                    {
+                        ri.curStreamIndex = td.streamDescriptors[0].streamIndex;
+                    }
                     receivers[ti] = ri;
                 }
                 Start();
@@ -48,8 +61,8 @@ namespace VRT.Transport.Dash
                 //
                 // Get more stream information
                 //
-                streamDescriptors = subHandle.get_streams();
-                foreach (var sd in streamDescriptors)
+                allStreamDescriptors = subHandle.get_streams();
+                foreach (var sd in allStreamDescriptors)
                 {
                     BaseStats.Output(Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, quality={sd.quality}");
                 }
@@ -61,20 +74,50 @@ namespace VRT.Transport.Dash
         {
             lock (this)
             {
-                if (quality > 0)
+                // Find correct receiver for this tile
+                ReceiverInfo ri = null;
+                foreach (var _ri in receivers)
                 {
-                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, quality={quality}");
-                    bool ok = subHandle.disable_stream(tileNumber);
-                    if (!ok)
+                    Debug.Log($"{Name()}: setTileQuality: tileNumber={_ri.tileNumber} quality={quality}");
+                    if (_ri.tileNumber == tileNumber) ri = _ri;
+                }
+                if (ri == null)
+                {
+                    Debug.LogError($"{Name()}: setTileQuality: unknown tileNumber {tileNumber}");
+                    return;
+                }
+                // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
+                int streamIndex = -1;
+                if (quality >= 0)
+                {
+                    TileDescriptor td = (TileDescriptor)ri.tileDescriptor;
+                    sub.StreamDescriptor? sd = null;
+                    foreach (var _sd in td.streamDescriptors)
                     {
-                        Debug.LogError($"{Name()}: Could not disable tile {tileNumber} to enable {quality}");
+                        if (_sd.quality == quality) sd = _sd;
                     }
-                    ok = subHandle.enable_stream(tileNumber, quality);
+                    if (sd == null)
+                    {
+                        Debug.LogError($"{Name()}: setTileQuality: unknown quality {quality} for tile {tileNumber}");
+                        return;
+                    }
+                    // Found the right tile and the right quality, so now we have the streamIndex.
+                    streamIndex = sd.Value.streamIndex;
+                    Debug.Log($"{Name()}: setTileQuality: found streamIndex={streamIndex}");
+                }
+                // We can now tell the receiver to start receiving this stream (or stop receiving altogether)
+                ri.curStreamIndex = streamIndex;
+                // And we tell the SUB to enable the stream for this tile/quality (or disable for this tile)
+                if (streamIndex >= 0)
+                {
+                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, quality={quality}, streamIndex={streamIndex}");
+                    bool ok = subHandle.enable_stream(tileNumber, quality);
                     if (!ok)
                     {
                         Debug.LogError($"{Name()}: Could not enable quality {quality} for tile {tileNumber}");
                     }
-}
+                    
+                }
                 else
                 {
                     BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=0");
@@ -97,48 +140,39 @@ namespace VRT.Transport.Dash
                 Debug.Log($"{Name()}: xxxjack _recomputeStreams: looking at {tileDescriptors.Length} tiles");
                 for (int i = 0; i < tileDescriptors.Length; i++)
                 {
-                    var td = tileDescriptors[i];
-                    var ri = receivers[i];
+                    TileDescriptor td = tileDescriptors[i];
+                    ReceiverInfo ri = receivers[i];
 
-                    List<int> streamIndexes = new List<int>();
-                    foreach (var sd in streamDescriptors)
+                    List<sub.StreamDescriptor> streamDescriptorsPerTile = new List<sub.StreamDescriptor>();
+                    foreach (var sd in allStreamDescriptors)
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
+                            Debug.Log($"{Name()}: xxxjack found tile={sd.tileNumber} quality={sd.quality} streamIndex={sd.streamIndex}");
                             // If this stream is for this tile we remember the streamIndex.
-                            streamIndexes.Add(sd.streamIndex);
-                            // And if this is the first time we see a stream for this tile
-                            // we select this quality
-                            if (td.currentQuality <= 0)
-                            {
-                                td.currentQuality = sd.quality;
-                            }
-                        }
+                            streamDescriptorsPerTile.Add(sd);
+                          }
                     }
+                    // Convert per-tile stream descriptor to an array
+                    td.streamDescriptors = streamDescriptorsPerTile.ToArray();
+                    // And update per-receiver tile information
+                    ri.tileDescriptor = td;
                     // We know all the streams that may be used for this tile. Remember for the puller thread.
-                    ri.streamIndexes = streamIndexes.ToArray();
-                    ri.tileNumber = i;
-                    Debug.Log($"{Name()}: xxxjack _recomputeStreams: tile {i}: looking at {ri.streamIndexes.Length} streams");
-                    // And we can also tell the SUB which quality we want for this tile.
-                    setTileQuality(td.tileNumber, td.currentQuality);
-                }
-                //
-                // Finally, we disable the tiles that exist but that we are not interested in.
-                //
-                foreach (var sd in streamDescriptors)
-                {
-                    bool tileUsed = false;
-                    foreach (var td in tileDescriptors)
+                    if (td.streamDescriptors.Length == 0)
                     {
-                        if (td.tileNumber == sd.tileNumber)
-                        {
-                            tileUsed = true;
-                            break;
-                        }
+                        Debug.LogError($"{Name()} _recomputeStreams: tile={i} has no streams");
                     }
-                    if (!tileUsed)
+#if bad
+                    else if (true || td.streamDescriptors.Length == 1)
                     {
-                        setTileQuality(sd.tileNumber, -1);
+                        Debug.Log($"{Name()}: _recomputeStreams: tile {i}: {td.streamDescriptors.Length} streams, no reason to update");
+                    }
+#endif
+                    else
+                    {
+                        Debug.Log($"{Name()}:_recomputeStreams: tile {td.tileNumber}: looking at {td.streamDescriptors.Length} streams");
+                        // And we can also tell the SUB which quality we want for this tile.
+                        setTileQuality(td.tileNumber, td.streamDescriptors[0].quality);
                     }
                 }
             }

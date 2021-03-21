@@ -57,12 +57,12 @@ namespace VRT.Transport.Dash
                 new ReceiverInfo()
                 {
                     outQueue = _outQueue,
-                    streamIndexes = new int[] { videoStream}
+                    curStreamIndex = videoStream
                 },
                 new ReceiverInfo()
                 {
                     outQueue = _out2Queue,
-                    streamIndexes = new int[] { audioStream}
+                    curStreamIndex = audioStream
                 },
                 };
 

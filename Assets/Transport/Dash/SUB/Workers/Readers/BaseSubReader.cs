@@ -30,18 +30,18 @@ namespace VRT.Transport.Dash
         public class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
-            public int[] streamIndexes;
+            //public int[] streamIndexes;
+            public object tileDescriptor;
             public int tileNumber = -1;
+            public int curStreamIndex = -1;
         }
         protected ReceiverInfo[] receivers;
         //        protected QueueThreadSafe[] outQueues;
         //        protected int[] streamIndexes;
 
-        // Mainly for debug messages:
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        // xxxjack
         public class SubPullThread
         {
             BaseSubReader parent;
@@ -89,7 +89,6 @@ namespace VRT.Transport.Dash
                 System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
                 stopWatch.Start();
                 System.TimeSpan oldElapsed = System.TimeSpan.Zero;
-                Debug.Log($"{Name()}: xxxjack thread started, looking at {receiverInfo.streamIndexes.Length} streams");
                 try
                 {
                     while (true)
@@ -111,28 +110,21 @@ namespace VRT.Transport.Dash
                             return;
                         }
 
-                        if (receiverInfo.streamIndexes.Length == 0)
+                        if (receiverInfo.curStreamIndex < 0)
                         {
                             continue;
                         }
                         //
-                        // We have work to do. Check which of our streamIndexes has data available.
+                        // We have work to do. 
                         //
                         FrameInfo frameInfo = new FrameInfo();
-
-                        int stream_index = -1;
+                        int stream_index = receiverInfo.curStreamIndex;
+                        Debug.Log($"xxxjack SubPullFrame looking at stream {stream_index}");
                         int bytesNeeded = 0;
-                        foreach (int si in receiverInfo.streamIndexes)
-                        {
-                            // See whether data is available on this stream, and how many bytes we need to allocate
-                            bytesNeeded = subHandle.grab_frame(si, System.IntPtr.Zero, 0, ref frameInfo);
-                            if (bytesNeeded > 0)
-                            {
-                                stream_index = si;
-                                break;
-                            }
-
-                        }
+                       
+                        // See whether data is available on this stream, and how many bytes we need to allocate
+                        bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
+  
 
                         // If no data is available we may want to close the subHandle, or sleep a bit
                         if (bytesNeeded == 0)
@@ -153,6 +145,7 @@ namespace VRT.Transport.Dash
 
                         // Allocate and read.
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                        Debug.Log($"xxxjack SubPullFrame getting {bytesNeeded} bytes from stream {stream_index}");
                         int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
 
                         // We no longer need subHandle
@@ -301,7 +294,7 @@ namespace VRT.Transport.Dash
                     new ReceiverInfo()
                     {
                         outQueue = outQueue,
-                        streamIndexes = new int[] { streamIndex}
+                        curStreamIndex = streamIndex
                     },
                 };
                 Start();
