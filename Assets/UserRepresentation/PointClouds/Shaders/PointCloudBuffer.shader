@@ -10,10 +10,8 @@ Shader "Entropy/PointCloud"{
 		SubShader{
 			Lighting Off
 			LOD 100
+			Cull Off
 			Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}
-	//				Tags { "Queue" = "Transparent" "RenderType" = "Transparent" "IgnoreProjector" = "True" }
-	//				Blend SrcAlpha OneMinusSrcAlpha
-	//				ZWrite Off
 
 			Pass {
 				Tags { "LightMode" = "ForwardBase" }

@@ -12,6 +12,9 @@ namespace VRT.UserRepresentation.PointCloud
         System.Threading.Thread[] pusherThreads;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+
         public struct EncoderStreamDescription
         {
             public int octreeBits;
@@ -59,6 +62,10 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: Exception during constructor: {e.Message}");
                 throw e;
             }
+            stats = new Stats(Name());
+        }
+        public override string Name() {
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
         protected override void Start()
@@ -134,6 +141,7 @@ namespace VRT.UserRepresentation.PointCloud
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
+                            stats.statsUpdate();
                             outQueue.Enqueue(mc);
                         }
                         else
@@ -159,5 +167,27 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
             }
         }
+
+        protected class Stats : VRT.Core.BaseStats {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalPointclouds = 0;
+
+            public void statsUpdate() {
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                statsTotalPointclouds++;
+
+                if (ShouldOutput()) {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}");
+                }
+                if (ShouldClear()) {
+                    Clear();
+                    statsTotalPointclouds = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
+
     }
 }

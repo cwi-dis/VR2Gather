@@ -6,7 +6,7 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PointMeshRenderer : MonoBehaviour
     {
-        Material material;
+        public Material material;
         Mesh mesh;
         MeshPreparer preparer;
 

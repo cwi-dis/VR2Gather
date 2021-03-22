@@ -276,6 +276,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 textItem.text += " - (Spectator)";
                 break;
+            case UserRepresentationType.__CAMERAMAN__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                textItem.text += " - (Cameraman)";
+                break;
             default:
                 break;
         }
@@ -377,6 +381,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 case "__SPECTATOR__":
                     enumName = "Spectator";
                     break;
+                case "__CAMERAMAN__":
+                    enumName = "Cameraman";
+                    break;
                 default:
                     enumName = type + " Not Defined";
                     break;
@@ -456,6 +463,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 userRepresentationLobbyText.text = "SPECTATOR";
                 break;
+            case UserRepresentationType.__CAMERAMAN__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                userRepresentationLobbyText.text = "CAMERAMAN";
+                break;
             default:
                 break;
         }
@@ -496,6 +507,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserRepresentationType.__SPECTATOR__:
                 selfRepresentationDescription.text = "No visual representation, but audio communication.";
+                break;
+            case UserRepresentationType.__CAMERAMAN__:
+                selfRepresentationDescription.text = "Local video recorder.";
                 break;
             default:
                 break;

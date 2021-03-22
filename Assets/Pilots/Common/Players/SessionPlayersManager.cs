@@ -127,7 +127,6 @@ namespace VRT.Pilots.Common
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
-
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
 					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
@@ -143,7 +142,7 @@ namespace VRT.Pilots.Common
 				networkPlayer.SetIsLocalPlayer(me.userId == user.userId);
 
 				AllUsers.Add(networkPlayer);
-				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__)
+				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__ && representationType != UserRepresentationType.__CAMERAMAN__)
 				{
 					AddPlayer(networkPlayer);
 				}
@@ -159,6 +158,13 @@ namespace VRT.Pilots.Common
 					}
 					else
 					{
+						// __NONE__ && __CAMERAMAN__
+#if UNITY_EDITOR
+						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
+							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
+							playerManager.cam.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+						}
+#endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
 					}
 				}
