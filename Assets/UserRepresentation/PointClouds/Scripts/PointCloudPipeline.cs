@@ -126,7 +126,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         var prConfig = PCSelfConfig.PrerecordedReaderConfig;
                         Debug.Log($"{Name()}: xxxjack prerecorded {prConfig.tileInfos.Length} tiles");
-                        pcReader = new PseudoLiveReader(prConfig.folder, prConfig.ply, prConfig.tileInfos, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new PrerecordedLiveReader(prConfig.folder, prConfig.ply, prConfig.tileInfos, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -253,7 +253,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (nQualities == 0) nQualities = 1;
                     if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
                         throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-                     var _reader = new PrerecordedReader(PrerecordedReaderConfig.qualities, PrerecordedReaderConfig.preferBest);
+                     var _reader = new PrerecordedBaseReader(PrerecordedReaderConfig.qualities, PrerecordedReaderConfig.preferBest);
                     int nTiles;
                     if (PrerecordedReaderConfig.tiles == null)
                     {
@@ -541,7 +541,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
             }
-            PrerecordedReader _reader = (PrerecordedReader)reader;
+            PrerecordedBaseReader _reader = (PrerecordedBaseReader)reader;
             if (_reader == null)
             {
                 Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");

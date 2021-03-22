@@ -5,11 +5,11 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PseudoLiveReader : PrerecordedReader
+    public class PrerecordedLiveReader : PrerecordedBaseReader
     {
         TileInfo[] tileInfo;
 
-        public PseudoLiveReader(string _dirname, bool _ply, TileInfo[] _tileInfo, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public PrerecordedLiveReader(string _dirname, bool _ply, TileInfo[] _tileInfo, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         : base(null, false)
         {
         	newTimestamps = true;

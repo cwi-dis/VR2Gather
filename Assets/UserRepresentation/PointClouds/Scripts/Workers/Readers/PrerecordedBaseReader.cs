@@ -5,9 +5,18 @@ using VRT.Core;
 namespace VRT.UserRepresentation.PointCloud
 {
 
-    public class PrerecordedReader : TiledWorker
+    // PrerecordedBaseReader reads pointclouds from .ply or .cwipcdump files.
+    //
+    // It contains the common code for two distinct use cases (subclasses):
+    // - PrerecordedLiveReader reads a single directory full of files, where each file may contain
+    // a pointcloud with multiple tiles. It is used to simulate a users' self-representation
+    // from a prerecorded set of pointclouds.
+    // - PrerecordedPlaybackReader reads a multilevel directory structure, with each tile and quality
+    // level is a distinct directory. It is meant for playback, not self-representation, for the
+    // quality-assessment experiments.
+    public class PrerecordedBaseReader : TiledWorker
     {
-        List<PrerecordedTileReader> tileReaders = new List<PrerecordedTileReader>();
+        List<_SingleDirectoryReader> tileReaders = new List<_SingleDirectoryReader>();
         public SharedCounter sharedCounter = new SharedCounter();
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -16,7 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool preferBest;
         public bool newTimestamps = false;
         
-        public PrerecordedReader(string[] _qualities, bool _preferBest) : base(WorkerType.Init)
+        public PrerecordedBaseReader(string[] _qualities, bool _preferBest) : base(WorkerType.Init)
         {
             if (_qualities == null)
             {
@@ -40,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 subDir = qualitySubdirs[qualitySubdirs.Length - 1];
             }
-            PrerecordedTileReader tileReader = new PrerecordedTileReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
+            _SingleDirectoryReader tileReader = new _SingleDirectoryReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
@@ -82,7 +91,20 @@ namespace VRT.UserRepresentation.PointCloud
         }
     }
 
-    public class PrerecordedTileReader : TiledWorker
+    //
+    // Helper class for PrerecordedBaseReader.
+    // Reads files from a single directory and feeds the pointclouds into 1 or 2
+    // QueueThreadSafe queues.
+    //
+    // The parent PrerecordedBaseReader may change the directory to read from on the fly,
+    // as long as the old and new directories contain exactlhy the same number of files
+    // with the same filenames.
+    //
+    // The reason for this convoluted organization is that it allows very fast (near instantaneous)
+    // switching of representations (and therefore quality levels) for the PrerecordedPlaybackReader,
+    // which is needed for the quality assessment trial.
+    //
+    public class _SingleDirectoryReader : TiledWorker
     {
         string dirname;
         string subdir;
@@ -96,9 +118,9 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
         int thread_index;
-        PrerecordedReader parent;
+        PrerecordedBaseReader parent;
 
-        public PrerecordedTileReader(PrerecordedReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             dirname = _dirname;
             subdir = _subdir;
