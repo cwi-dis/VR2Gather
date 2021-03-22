@@ -119,7 +119,6 @@ namespace VRT.Transport.Dash
                         //
                         FrameInfo frameInfo = new FrameInfo();
                         int stream_index = receiverInfo.curStreamIndex;
-                        Debug.Log($"xxxjack SubPullFrame looking at stream {stream_index}");
                         int bytesNeeded = 0;
                        
                         // See whether data is available on this stream, and how many bytes we need to allocate
@@ -145,7 +144,6 @@ namespace VRT.Transport.Dash
 
                         // Allocate and read.
                         NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        Debug.Log($"xxxjack SubPullFrame getting {bytesNeeded} bytes from stream {stream_index}");
                         int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
 
                         // We no longer need subHandle
