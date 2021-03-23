@@ -53,7 +53,12 @@ namespace VRT.Core
                 Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
                 thread.Abort();
             }
-            thread.Join();
+            if (!thread.Join(joinTimeout))
+            {
+                // xxxjack a stack trace would be nice, but apparently mono doesn't support GetStackTrace...
+                Debug.LogError($"{Name()}: thread did not stop and could not be aborted. Please restart application.");
+                return;
+            }
             if (debugThreading) Debug.Log($"{Name()}: thread joined");
         }
 
