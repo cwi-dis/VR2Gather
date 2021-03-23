@@ -384,6 +384,17 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public static long curIndex;
 
+        //
+        // For quality assessment experiment: information on tile directory names
+        // and quality directory names to allow obtaining the filenames for the
+        // prediction matrices.
+        //
+        StaticPredictionInformation? staticPredictionInformation;
+        //
+        // For live: we precompute the bandwidth usage matrix based on the reported
+        // figures in the tiling configuration. It's all guesswork for now.
+        //
+        float[][] guessedBandwidthUsageMatrix;
         string Name()
         {
             return "PrerecordedTileSelector";
@@ -406,23 +417,47 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, StaticPredictionInformation _staticPredictionInformation)
         {
-            if (tilingConfig != null)
-            {
-                throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
-            }
+            staticPredictionInformation = _staticPredictionInformation;
             pipeline = _prerecordedPointcloud;
-            nQualities = _nQualities;
+            nQualities = _staticPredictionInformation.qualityNames?.Length ?? 1;
+            nTiles = _staticPredictionInformation.tileNames?.Length ?? 1;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
-            nTiles = _nTiles;
             TileOrientation = new Vector3[nTiles];
             for (int ti = 0; ti < nTiles; ti++)
             {
+#if notimplemented
+                TileOrientation[ti] = tilingConfig?.tiles[ti].orientation ?? new Vector3(0,0,0);
+#endif
                 double angle = ti * Math.PI / 2;
                 TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
             }
             LoadAdaptationSets();
+        }
+
+        public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
+        {
+ 
+            staticPredictionInformation = null;
+            pipeline = _prerecordedPointcloud;
+            nTiles = _tilingConfig.tiles.Length;
+            nQualities = _tilingConfig.tiles[0].qualities.Length;
+            Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            TileOrientation = new Vector3[nTiles];
+            for (int ti = 0; ti < nTiles; ti++)
+            {
+                TileOrientation[ti] = _tilingConfig.tiles[ti].orientation;
+            }
+            guessedBandwidthUsageMatrix = new float[nTiles][];
+            for (int ti=0; ti < nTiles; ti++)
+            {
+                guessedBandwidthUsageMatrix[ti] = new float[nQualities];
+                for (int qi=0; qi<nQualities; qi++)
+                {
+                    guessedBandwidthUsageMatrix[ti][qi] = _tilingConfig.tiles[ti].qualities[qi].bandwidthRequirement;
+                }
+            }
         }
 
         //
@@ -431,7 +466,7 @@ namespace VRT.UserRepresentation.PointCloud
         // per quality level.
         //
         // Note: The location of the files is obtained from the configfile instance (it would be better
-        // design to get this from our parent PrerecordedPointcloud, as this would allow for showing
+        // design to get this from our parent PointcloudPlayback, as this would allow for showing
         // multiple prerecorded pointclouds at the same time).
         //
         private void LoadAdaptationSets()
@@ -439,11 +474,14 @@ namespace VRT.UserRepresentation.PointCloud
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
 
             //xxxshishir load the tile description csv files
-            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
-            string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+            if (staticPredictionInformation == null) return;
             for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
             {
-                string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv");
+                string csvFilename = System.IO.Path.Combine(
+                    staticPredictionInformation.Value.baseDirectory,
+                    staticPredictionInformation.Value.tileNames[i],
+                    staticPredictionInformation.Value.predictionFilename
+                    );
                 prerecordedTileAdaptationSets[i] = new List<AdaptationSet>();
                 FileInfo tileDescFile = new FileInfo(csvFilename);
                 if (!tileDescFile.Exists)

@@ -9,12 +9,11 @@ namespace VRT.UserRepresentation.PointCloud
     {
         TileInfo[] tileInfo;
 
-        public PrerecordedLiveReader(string _dirname, bool _ply, TileInfo[] _tileInfo, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
-        : base(null, false)
+        public PrerecordedLiveReader(string _dirname, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        : base(_dirname, _voxelSize, _frameRate)
         {
         	newTimestamps = true;
-            tileInfo = _tileInfo;
-			Add(_dirname, _ply, true, _voxelSize, _frameRate, _outQueue, _out2Queue);
+            Add(null, _outQueue, _out2Queue);
             Start();
         }
         public override TileInfo[] getTiles()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 
@@ -16,40 +17,85 @@ namespace VRT.UserRepresentation.PointCloud
     // quality-assessment experiments.
     public class PrerecordedBaseReader : TiledWorker
     {
+        [Serializable]
+        public class _PrerecordedReaderConfig
+        {
+            public string[] tiles;  // Only for PrerecordedPlaybackReader: subdirectory names per tile
+            public string[] qualities; // Only for prerecordedPlaybackReader: subsubdirectory names per quality
+            public bool ply;    // True when using .ply files, false when using .cwipcdump files
+            public bool preferBest; // Start reading best (last) quality (default is first/worst) until instructed otherwise
+            public TiledWorker.TileInfo[] tileInfos; // Only for PrerecordedLiveReader: list of tile definitions
+        };
+        protected string baseDirectory;
         List<_SingleDirectoryReader> tileReaders = new List<_SingleDirectoryReader>();
         public SharedCounter sharedCounter = new SharedCounter();
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public int numberOfFilesPerReader = 0;
-        string[] qualitySubdirs;
+        protected string[] qualitySubdirs;
+        protected string[] tileSubdirs;
+        TiledWorker.TileInfo[] tileInfos;
         bool preferBest;
+        // Next variables are shared (readonly) among _SingleDirectoryReader children.
+        // I don't think C# has a way to say this without using public.
         public bool newTimestamps = false;
+        public bool readPlyFiles;
+        public float voxelSize;
+        public float frameRate;
+        public bool loop = true;
         
-        public PrerecordedBaseReader(string[] _qualities, bool _preferBest) : base(WorkerType.Init)
+        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base(WorkerType.Init)
         {
-            if (_qualities == null)
+            voxelSize = _voxelSize;
+            frameRate = _frameRate;
+
+            baseDirectory = directory;
+            _InitFromConfigFile(directory);
+        }
+
+        protected bool _InitFromConfigFile(string directory)
+        {
+            var configFilename = System.IO.Path.Combine(directory, ".cwipc_prerecorded_config.json");
+            if (!System.IO.File.Exists(configFilename))
             {
-                qualitySubdirs = new string[1] { "" };
-            } else
-            {
-                qualitySubdirs = _qualities;
+                Debug.LogWarning($"{Name()}: {configFilename} does not exist. Assuming defaults.");
+                return false;
             }
-            preferBest = _preferBest;
+            var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
+            _PrerecordedReaderConfig config = JsonUtility.FromJson<_PrerecordedReaderConfig>(file);
+            preferBest = config.preferBest;
+            qualitySubdirs = config.qualities ?? new string[1] { "" };
+            tileSubdirs = config.tiles; // can be null
+            tileInfos = config.tileInfos ?? new TiledWorker.TileInfo[1]
+            {
+                new TiledWorker.TileInfo {
+                    normal = new Vector3 {x=0, y=0, z=0},
+                    cameraName = "all",
+                    cameraMask = 0
+                }
+            };
+            readPlyFiles = config.ply;
+            return true;
         }
 
         public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
         }
-
-        public void Add(string dirname, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public override TileInfo[] getTiles()
         {
-            string subDir = qualitySubdirs[0];
+            return tileInfos;
+        }
+
+        public void Add(string tilename, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        {
+            string tileDirectory = tilename == null ? baseDirectory : System.IO.Path.Combine(baseDirectory, tilename);
+            string subDir = qualitySubdirs == null ? "" : qualitySubdirs[0];
             if (preferBest)
             {
                 subDir = qualitySubdirs[qualitySubdirs.Length - 1];
             }
-            _SingleDirectoryReader tileReader = new _SingleDirectoryReader(this, tileReaders.Count, dirname, subDir, _ply, _loop, _voxelSize, _frameRate, _outQueue, _out2Queue);
+            _SingleDirectoryReader tileReader = new _SingleDirectoryReader(this, tileReaders.Count, tileDirectory, subDir, _outQueue, _out2Queue);
             tileReaders.Add(tileReader);
         }
 
@@ -110,9 +156,6 @@ namespace VRT.UserRepresentation.PointCloud
         string subdir;
         string[] filenames; // All files in the sequence
         SharedCounter positionCounter;
-        bool ply;
-        bool loop;
-        float voxelSize = 0;
         System.TimeSpan frameInterval;  // Interval between frame grabs, if maximum framerate specified
         System.DateTime earliestNextCapture;    // Earliest time we want to do the next capture, if non-null.
         QueueThreadSafe outQueue;
@@ -120,7 +163,7 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedBaseReader parent;
 
-        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, bool _ply, bool _loop, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
         {
             dirname = _dirname;
             subdir = _subdir;
@@ -138,9 +181,7 @@ namespace VRT.UserRepresentation.PointCloud
             thread_index = _index;
             outQueue = _outQueue;
             out2Queue = _out2Queue;
-            voxelSize = _voxelSize;
-            ply = _ply;
-            string pattern = ply ? "*.ply" : "*.cwipcdump";
+            string pattern = parent.readPlyFiles ? "*.ply" : "*.cwipcdump";
             filenames = System.IO.Directory.GetFileSystemEntries(System.IO.Path.Combine(dirname, subdir), pattern);
             // Remove path, keep only filename 
             for(int i=0; i<filenames.Length; i++)
@@ -156,10 +197,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: inconsistent tiling. Some tiles have {parent.numberOfFilesPerReader} file but there are {filenames.Length} in {dirname}");
             }
-            loop = _loop && filenames.Length > 0;
-            if (_frameRate > 0)
+            if (parent.frameRate > 0)
             {
-                frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
+                frameInterval = System.TimeSpan.FromSeconds(1 / parent.frameRate);
             }
             else
             {
@@ -223,7 +263,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: xxxjack Update() called while already stopping");
                 return;
             }
-            if (!loop && curIndex >= filenames.Length) return;
+            if (!parent.loop && curIndex >= filenames.Length) return;
             curIndex = curIndex % filenames.Length;
             var nextFilename = System.IO.Path.Combine(dirname, subdir, filenames[curIndex]);
 
@@ -231,7 +271,7 @@ namespace VRT.UserRepresentation.PointCloud
             PrerecordedTileSelector.curIndex = curIndex;
 
             cwipc.pointcloud pc;
-            if (ply)
+            if (parent.readPlyFiles)
             {
                 System.UInt64 timestamp = 0;
                 pc = cwipc.read(nextFilename, timestamp);
@@ -246,12 +286,12 @@ namespace VRT.UserRepresentation.PointCloud
                 ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
                 pc._set_timestamp(timestamp);
             }
-            if (voxelSize != 0)
+            if (parent.voxelSize != 0)
             {
-                cwipc.pointcloud voxelizedPC = cwipc.downsample(pc, voxelSize);
+                cwipc.pointcloud voxelizedPC = cwipc.downsample(pc, parent.voxelSize);
                 if (voxelizedPC == null)
                 {
-                    Debug.LogError($"{Name()}: downsample({voxelSize}) failed to produce new pc");
+                    Debug.LogError($"{Name()}: downsample({parent.voxelSize}) failed to produce new pc");
                 } else
                 {
                     pc.free();

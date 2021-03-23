@@ -9,19 +9,11 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PrerecordedPointcloud : PointCloudPipeline
+    public class PointcloudPlayback : PointCloudPipeline
     {
         [Tooltip("Overrides PrerecordedReaderConfig setting: directory to read")]
         public string folder;
-        [Tooltip("Overrides PrerecordedReaderConfig setting: per-tile subfolders")]
-        public string[] tiles;
-        [Tooltip("Overrides PrerecordedReaderConfig setting: per-quality subfolders")]
-        public string[] qualities;
-        [Tooltip("Read .ply files in stead of .cwipcdump files")]
-        public bool ply;
-        [Tooltip("Prefer best quality in stead of worst quality")]
-        public bool preferBest;
-         User dummyUser;
+        User dummyUser;
         Config._User cfg;
 
         public void Awake()
@@ -40,17 +32,9 @@ namespace VRT.UserRepresentation.PointCloud
             if (folder == null || folder == "")
             {
                 folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
-                tiles = realUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
-                qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
-                ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
-                preferBest = realUser.PCSelfConfig.PrerecordedReaderConfig.preferBest;
-            }
-            Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities, preferBest={preferBest}");
+           }
+            Debug.Log($"{Name()}: folder={folder}");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
-            cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
-            cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
-            cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
-            cfg.PCSelfConfig.PrerecordedReaderConfig.preferBest = preferBest;
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             cfg.Render = realUser.Render;
             try
@@ -66,15 +50,12 @@ namespace VRT.UserRepresentation.PointCloud
         }
         protected override void _InitTileSelector()
         {
-            int nQualities = qualities.Length;
-            int nTiles = tiles.Length;
-            Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
-            if (nQualities <= 1) return;
-            if (tileSelector == null)
+            PrerecordedPlaybackReader playbackReader = (PrerecordedPlaybackReader)reader;
+            if (playbackReader == null)
             {
-                Debug.LogWarning($"{Name()}: no tileSelector");
+                throw new System.Exception($"{Name()}: not PrerecordedPlaybackReader");
             }
-            tileSelector?.Init(this, nQualities, nTiles, null);
+            tileSelector?.Init(this, playbackReader.GetStaticPredictionInformation());
         }
     }
 }
