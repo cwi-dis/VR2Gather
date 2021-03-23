@@ -14,7 +14,7 @@ namespace VRT.UserRepresentation.PointCloud
     public class PointCloudPipeline : BasePipeline
     {
         [Tooltip("Object responsible for tile quality adaptation algorithm")]
-        public PrerecordedTileSelector tileSelector = null;
+        public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
         protected BaseWorker reader;
@@ -512,7 +512,6 @@ namespace VRT.UserRepresentation.PointCloud
 
        protected virtual void _InitTileSelector()
         {
-            Debug.LogError($"{Name()}: _InitTileSelector not yet implemented");
             if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
             {
                 throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
@@ -532,8 +531,14 @@ namespace VRT.UserRepresentation.PointCloud
             if (tileSelector == null)
             {
                 Debug.LogWarning($"{Name()}: no tileSelector");
+                return;
             }
-            tileSelector?.Init(this, tilingConfig);
+            LiveTileSelector ts = (LiveTileSelector)tileSelector;
+            if (ts == null)
+            {
+                Debug.LogError($"{Name()}: tileSelector is not a LiveTileSelector");
+            }
+            ts?.Init(this, tilingConfig);
         }
 
         public void SelectTileQualities(int[] tileQualities)

@@ -53,9 +53,14 @@ namespace VRT.UserRepresentation.PointCloud
             PrerecordedPlaybackReader playbackReader = (PrerecordedPlaybackReader)reader;
             if (playbackReader == null)
             {
-                throw new System.Exception($"{Name()}: not PrerecordedPlaybackReader");
+                throw new System.Exception($"{Name()}: reader is not PrerecordedPlaybackReader");
             }
-            tileSelector?.Init(this, playbackReader.GetStaticPredictionInformation());
+            PrerecordedTileSelector ts = (PrerecordedTileSelector)tileSelector;
+            if (ts == null)
+            {
+                throw new System.Exception($"{Name()}: tileSelector is not PrerecordedTileSelector");
+            }
+            ts?.Init(this, playbackReader.GetStaticPredictionInformation());
         }
     }
 }
