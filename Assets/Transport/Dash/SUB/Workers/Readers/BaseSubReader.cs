@@ -191,11 +191,11 @@ namespace VRT.Transport.Dash
                 }
                 catch (System.Exception e)
                 {
+#if UNITY_EDITOR
+                    throw e;
+#else
                     Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
                     Debug.LogError("Error while receiving visual representation or audio from another participant");
-#if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in SubPullThread", "Stop", "Continue"))
-                        UnityEditor.EditorApplication.isPlaying = false;
 #endif
                 }
 
