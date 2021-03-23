@@ -54,7 +54,7 @@ namespace VRT.LivePresenter
             catch (System.Exception e)
             {
                 Debug.Log($"VideoDashReceiver.Init: Exception: {e.Message}");
-                throw e;
+                throw;
             }
         }
 

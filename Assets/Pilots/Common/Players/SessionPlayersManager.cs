@@ -215,6 +215,7 @@ namespace VRT.Pilots.Common
 						break;
 					case UserRepresentationType.__PCC_CERTH__:
 					case UserRepresentationType.__PCC_SYNTH__:
+					case UserRepresentationType.__PCC_PRERECORDED__:
 					case UserRepresentationType.__PCC_CWIK4A_:
 					case UserRepresentationType.__PCC_PROXY__:
 					case UserRepresentationType.__PCC_CWI_: // PC
@@ -271,6 +272,11 @@ namespace VRT.Pilots.Common
 
 		public void LoadAudio(PlayerManager player, User user)
 		{
+			if (user.userData.microphoneName == "None")
+            {
+				Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");
+				return;
+            }
 			if (user.userId == OrchestratorController.Instance.SelfUser.userId)
 			{ // Sender
 				var AudioBin2Dash = Config.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
@@ -462,7 +468,13 @@ namespace VRT.Pilots.Common
 							new PlayerLocationChangeRequest { LocationNetworkId = locationNetworkId }
 							);
 					}
+				} else
+				{
+					Debug.Log($"[SessionsPlayersManager] RequestLocationChange destination {locationNetworkId} is occupied");
 				}
+			} else
+			{
+				Debug.Log($"[SessionPlayersManager] could not TryGetPlayerLocationFromNetworkId for {locationNetworkId}");
 			}
 		}
 

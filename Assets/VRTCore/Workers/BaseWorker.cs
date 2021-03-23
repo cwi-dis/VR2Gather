@@ -40,6 +40,11 @@ namespace VRT.Core
 
         public virtual void StopAndWait()
         {
+            if (thread == null)
+            {
+                Debug.LogWarning($"{Name()}: No thread");
+                return;
+            }
             if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             Stop();
             if (debugThreading) Debug.Log($"{Name()}: joining thread");
@@ -48,7 +53,12 @@ namespace VRT.Core
                 Debug.LogWarning($"{Name()}: thread did not stop in {joinTimeout}ms. Aborting.");
                 thread.Abort();
             }
-            thread.Join();
+            if (!thread.Join(joinTimeout))
+            {
+                // xxxjack a stack trace would be nice, but apparently mono doesn't support GetStackTrace...
+                Debug.LogError($"{Name()}: thread did not stop and could not be aborted. Please restart application.");
+                return;
+            }
             if (debugThreading) Debug.Log($"{Name()}: thread joined");
         }
 
@@ -67,8 +77,12 @@ namespace VRT.Core
             }
             catch (System.Exception e)
             {
+#if UNITY_EDITOR
+                throw;
+#else
                 Debug.Log($"{Name()}: Update(): Exception: {e}\n{e.StackTrace}");
                 Debug.LogError("Error encountered for representation of some participant. This participant will probably seem frozen from now on.");
+#endif
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopping");
             try
@@ -77,8 +91,12 @@ namespace VRT.Core
             }
             catch (System.Exception e)
             {
+#if UNITY_EDITOR
+                throw;
+#else
                 Debug.Log($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
                 Debug.LogError($"Error encountered while cleaning up {Name()}");
+#endif
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }
