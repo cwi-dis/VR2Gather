@@ -125,6 +125,10 @@ namespace VRT.UserRepresentation.PointCloud
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
                     {
                         var prConfig = PCSelfConfig.PrerecordedReaderConfig;
+                        if (prConfig.folder == null || prConfig.folder == "")
+                        {
+                            throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
+                        }
                         pcReader = new PrerecordedLiveReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
