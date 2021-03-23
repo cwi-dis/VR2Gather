@@ -9,6 +9,9 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using System;
+using System.Linq;
+using VRT.Pilots.Common;
+using QualityAssesment;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -38,7 +41,16 @@ namespace VRT.UserRepresentation.PointCloud
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
         public bool debugDecisions = false;
+        //Keep track of stimuli being played back
+        public string currentStimuli;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
+        //Adaptation quality difference cap between tiles
+        public int maxAdaptation = 30;
 
+        public bool altHybridTileSelection = false;
         string Name()
         {
             return "BaseTileSelector";
@@ -107,29 +119,35 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                 }
             }
-            if (changed && selectedTileQualities != null)
+            if (changed && selectedTileQualities != null && debugDecisions)
             {
-                if (debugDecisions)
-                {
-                    // xxxjack: we could do this in stats: format too, may help analysis.
-                    Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
-                }
-                string statMsg = $"tile0={selectedTileQualities[0]}";
-                for(int i=1; i<selectedTileQualities.Length; i++)
-                {
-                    statMsg += $", tile{i}={selectedTileQualities[i]}";
-                }
-                BaseStats.Output(Name(), statMsg);
-
-                pipeline.SelectTileQualities(selectedTileQualities);
-                previousSelectedTileQualities = selectedTileQualities;
-            } else
-            {
-                // Debug.Log($"{Name()}: xxxjack Update(): no new selection decision");
+                // xxxjack: we could do this in stats: format too, may help analysis.
+                Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
             }
-         }
+            pipeline.SelectTileQualities(selectedTileQualities);
+            previousSelectedTileQualities = selectedTileQualities;
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]}";
+            for(int i=1; i<selectedTileQualities.Length; i++)
+            {
+                statMsg += $", tile{i}={selectedTileQualities[i]}";
+            }
+            BaseStats.Output(Name(), statMsg);
 
-        int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+            pipeline.SelectTileQualities(selectedTileQualities);
+            previousSelectedTileQualities = selectedTileQualities;
+            //
+            // Check whether the user wants to leave the scene (by pressing escape)
+            //
+            float rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
+            float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
+            if (Input.GetKeyDown(KeyCode.Escape) || leftTrigger >= 0.8f)
+            {
+                //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
+                SceneManager.LoadScene("QualityAssesmentRatingScene");
+            }
+        }
+
+        public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
         {
             int[] tileOrder = new int[nTiles];
             //Initialize index array
@@ -319,7 +337,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                     {
                         double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                        if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true)
+                        if ((spent + nextSpend) <= budget && tileVisibility[tileOrder[i]] == true && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                         {
                             selectedQualities[tileOrder[i]]++;
                             stepComplete = true;
@@ -336,7 +354,7 @@ namespace VRT.UserRepresentation.PointCloud
                         if (selectedQualities[tileOrder[i]] < (nQualities - 1))
                         {
                             double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
-                            if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false)
+                            if ((spent + nextSpend) < budget && tileVisibility[tileOrder[i]] == false && (selectedQualities[tileOrder[i]] - selectedQualities.Min()) < maxAdaptation)
                             {
                                 selectedQualities[tileOrder[i]]++;
                                 stepComplete = true;
@@ -358,11 +376,22 @@ namespace VRT.UserRepresentation.PointCloud
         {
             // xxxjack currently ignores pointcloud position, which is probably wrong...
             bool[] tileVisibility = new bool[nTiles];
+            float[] tileDirection = new float[nTiles];
             //Tiles with dot product > 0 have the tile cameras facing in the same direction as the current scene camera (Note: TileC1-C4 contain the orientation of tile cameras NOT tile surfaces)
             for (int i = 0; i < nTiles; i++)
             {
-                tileVisibility[i] = Vector3.Dot(cameraForward, TileOrientation[i]) > 0;
+                if (!altHybridTileSelection)
+                    tileVisibility[i] = Vector3.Dot(cameraForward, TileOrientation[i]) > 0;
+                else
+                {
+                    tileDirection[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+                    tileVisibility[i] = true;
+                }
             }
+            //xxxshishir the greedy prime bit, only the worst tile is set to not visible
+            if (altHybridTileSelection)
+                tileVisibility[Array.IndexOf(tileDirection, tileDirection.Min())] = false;
+
             return tileVisibility;
         }
 
@@ -380,9 +409,17 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public double bitRatebudget = 1000000;
         //
-        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //Datastructure that contains tile geometry data (per-tile, per-sequencenumber, per-frame tile geometry information)
         //
-        public static long curIndex;
+        List<TileGeometry>[] prerecordedTileGeometrySets = null;
+        //
+        // Randomized rotation angle used for each stimuli
+        //
+        private float yRotation;
+        //
+        // Transform for the prerecorded point cloud object (position,scale and rotation from this game object can be applied to other geometry metadata)
+        //
+        private Transform prerecordedPCTransform;
 
         string Name()
         {
@@ -405,6 +442,23 @@ namespace VRT.UserRepresentation.PointCloud
                     encodedSize[i] = a;
             }
         }
+        //xxxshishir Struct to store tile geometry information
+        public struct TileGeometry
+        {
+            public string PCframe;
+            public float PCCentroidX;
+            public float PCCentroidY;
+            public float PCCentroidZ;
+            public float PCBBXmin;
+            public float PCBBYmin;
+            public float PCBBZmin;
+            public float PCBBXmax;
+            public float PCBBYmax;
+            public float PCBBZmax;
+            public float PCBBXCentroid;
+            public float PCBBYCentroid;
+            public float PCBBZCentroid;
+        }
 
         public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
         {
@@ -412,6 +466,13 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
             }
+            //xxxshishir randomize initial orientation of prerecorded pointcloud
+            var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
+            yRotation = UnityEngine.Random.Range(0, 360);
+            prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
+            //xxxshishir we assume no more modifications are made to the game object transform after this point, we use this transform on all tile geometry meta data
+            prerecordedPCTransform = prerecordedGameObject.transform;
+
             pipeline = _prerecordedPointcloud;
             nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
@@ -420,7 +481,9 @@ namespace VRT.UserRepresentation.PointCloud
             for (int ti = 0; ti < nTiles; ti++)
             {
                 double angle = ti * Math.PI / 2;
-                TileOrientation[ti] = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
+                Vector3 InitalVector = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
+                TileOrientation[ti] = prerecordedPCTransform.TransformDirection(InitalVector);
+                TileOrientation[ti] = Vector3.Normalize(TileOrientation[ti]);
             }
             LoadAdaptationSets();
         }
@@ -437,7 +500,24 @@ namespace VRT.UserRepresentation.PointCloud
         private void LoadAdaptationSets()
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
-
+            prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
+            Config._User realUser = Config.Instance.LocalUser;
+            currentStimuli = StimuliController.getCurrentStimulus();
+            bitRatebudget = StimuliController.getBitrateBudget();
+            int codec = StimuliController.getCodec();
+            maxAdaptation = Config.Instance.maxAdaptation;
+            switch(codec)
+            {
+                case 3:
+                    algorithm = SelectionAlgorithm.greedy;
+                    break;
+                case 4:
+                    algorithm = SelectionAlgorithm.hybrid;
+                    break;
+                case 5:
+                    algorithm = SelectionAlgorithm.uniform;
+                    break;
+            }
             //xxxshishir load the tile description csv files
             string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
             string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
@@ -474,6 +554,42 @@ namespace VRT.UserRepresentation.PointCloud
                     aFrame = new AdaptationSet();
                 }
             }
+            //xxxshishir load the tile geometry csv files
+            for (int i = 0; i < prerecordedTileGeometrySets.Length; i++)
+            {
+                string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tilegeometry.csv");
+                prerecordedTileGeometrySets[i] = new List<TileGeometry>();
+                FileInfo tileDescFile = new FileInfo(csvFilename);
+                if (!tileDescFile.Exists)
+                {
+                    prerecordedTileGeometrySets = null; // Delete tile geometry datastructure to forestall further errors
+                    throw new System.Exception($"Tile geometry description not found for tile {i} at {csvFilename}");
+                }
+                StreamReader tileDescReader = tileDescFile.OpenText();
+                //Skip header
+                var gLine = tileDescReader.ReadLine();
+                TileGeometry gFrame = new TileGeometry();
+                while ((gLine = tileDescReader.ReadLine()) != null)
+                {
+                    var gLineValues = gLine.Split(',');
+                    gFrame.PCframe = gLineValues[0];
+                    gFrame.PCCentroidX = float.Parse(gLineValues[1]);
+                    gFrame.PCCentroidY = float.Parse(gLineValues[2]);
+                    gFrame.PCCentroidZ = float.Parse(gLineValues[3]);
+                    gFrame.PCBBXmin = float.Parse(gLineValues[4]);
+                    gFrame.PCBBYmin = float.Parse(gLineValues[5]);
+                    gFrame.PCBBZmin = float.Parse(gLineValues[6]);
+                    gFrame.PCBBXmax = float.Parse(gLineValues[7]);
+                    gFrame.PCBBYmax = float.Parse(gLineValues[8]);
+                    gFrame.PCBBZmax = float.Parse(gLineValues[9]);
+                    gFrame.PCBBXCentroid = float.Parse(gLineValues[10]);
+                    gFrame.PCBBYCentroid = float.Parse(gLineValues[11]);
+                    gFrame.PCBBZCentroid = float.Parse(gLineValues[12]);
+                    prerecordedTileGeometrySets[i].Add(gFrame);
+                    gFrame = new TileGeometry();
+                }
+            }
+
         }
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
@@ -497,8 +613,6 @@ namespace VRT.UserRepresentation.PointCloud
         {
             return curIndex;
         }
-
-
         protected override Vector3 getCameraForward()
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
@@ -512,11 +626,81 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
+        public Vector3 getCameraPosition()
+        {
+            // xxxjack currently returns camera viedw angle (as the name implies)
+            // but maybe camera position is better. Or both.
+            var cam = FindObjectOfType<Camera>().gameObject;
+            if (cam == null)
+                Debug.LogError("Camera not found!");
+            Transform cameraTransform = cam.transform;
+            return cameraTransform.position;
+
+        }
+
         protected override Vector3 getPointcloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }
 
+        public override int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
+        {
+            int[] tileOrder = new int[nTiles];
+            int[] tileOrderDistances = new int[nTiles];
+            //Initialize index array
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileOrder[i] = i;
+                tileOrderDistances[i] = i;
+            }
+            float[] tileUtilities = new float[nTiles];
+            for (int i = 0; i < nTiles; i++)
+            {
+                tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+            }
+            //Reassign the utility values based on distance to tiles
+            float[] tileDistances = new float[nTiles];
+            Vector3 camPosition = new Vector3();
+            camPosition = getCameraPosition();
+            Vector3[] tileLocations = new Vector3[nTiles];
+            for (int i =0;i < nTiles; i++)
+            {
+                var thisTile = prerecordedTileGeometrySets[i];
+                var thisFrame = thisTile[(int)curIndex];
+                Vector3 tilePosition = new Vector3(thisFrame.PCBBXCentroid, thisFrame.PCBBYCentroid, thisFrame.PCBBZCentroid);
+                //xxxshishir trying to apply the randomly generated initial rotation to the tile bounding box centroid to compute the correct distances from camera to tile centroid
+                tilePosition = prerecordedPCTransform.TransformPoint(tilePosition);
+                //xxxshishir drop all the points on the floor before measuring distances
+                tilePosition.y = 0;
+                camPosition.y = 0;
+                tileDistances[i] = Vector3.Distance(camPosition, tilePosition);
+                tileLocations[i] = tilePosition;
+            }
+            //Modify utility values so the sign is determined by the distance
+            float[] hybridTileUtilities = new float[nTiles];
+            for (int i=0;i<nTiles;i++)
+            {
+                hybridTileUtilities[i] = -1 * Math.Abs(tileUtilities[i]);
+            }
+            for(int i=0;i<nTiles;i++)
+            {
+                for(int j =0;j<nTiles;j++)
+                {
+                    if (i != j && hybridTileUtilities[i] == hybridTileUtilities[j] && tileDistances[i] < tileDistances[j])
+                        hybridTileUtilities[i] *= -1;
+                }
+            }
+            string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y}, cameraforwardz={cameraForward.z}, camerapositionx={camPosition.x}, camerapositiony={camPosition.y}, camerapositionz={camPosition.z}";
+            for (int i = 0; i < nTiles; i++)
+            {
+                statMsg += $", Tile{i}Orientationx={TileOrientation[i].x}, Tile{i}Orientationy={TileOrientation[i].y}, Tile{i}Orientationz={TileOrientation[i].z}, Tile{i}BBCentroidLocationx={tileLocations[i].x}, Tile{i}BBCentroidLocationy={tileLocations[i].y}, Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
+            }
+            BaseStats.Output(Name(), statMsg);
+            //Sort tile utilities and apply the same sort to tileOrder
+            Array.Sort(hybridTileUtilities, tileOrder);
+            Array.Reverse(tileOrder);
+            return tileOrder;
+        }
     }
     public class LiveTileSelector : BaseTileSelector
     {
