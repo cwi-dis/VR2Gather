@@ -44,7 +44,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception e)
             {
                 Debug.LogError($"{Name()}: initialize: Exception: {e.Message} Stack: {e.StackTrace}");
-                throw e;
+                throw;
             }
             _InitTileSelector();
         }

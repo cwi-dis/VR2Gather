@@ -75,7 +75,7 @@ namespace VRT.LivePresenter
             catch (System.Exception e)
             {
                 Debug.Log($"LivePresenter.Init: Exception: {e.Message}");
-                throw e;
+                throw;
             }
             ready = true;
         }

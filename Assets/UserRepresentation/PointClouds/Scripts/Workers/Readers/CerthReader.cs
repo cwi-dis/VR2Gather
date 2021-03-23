@@ -66,7 +66,7 @@ namespace VRT.UserRepresentation.PointCloud
                 catch (System.Exception exc)
                 {
                     Debug.Log($"PCCerthReader: set_number_wrappers: caught exception: {exc.Message}");
-                    throw exc;
+                    throw;
                 }
 
             }
@@ -136,7 +136,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewMetaData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
         }
 
@@ -262,7 +262,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
 
 

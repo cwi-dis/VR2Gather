@@ -73,7 +73,7 @@ namespace VRT.Core
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
-                throw e;
+                throw;
 #else
                 Debug.Log($"{Name()}: Update(): Exception: {e}\n{e.StackTrace}");
                 Debug.LogError("Error encountered for representation of some participant. This participant will probably seem frozen from now on.");
@@ -87,7 +87,7 @@ namespace VRT.Core
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
-                throw e;
+                throw;
 #else
                 Debug.Log($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
                 Debug.LogError($"Error encountered while cleaning up {Name()}");

@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.Voice
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
-                throw e;
+                throw;
 #else
                Debug.LogError($"[FPA] Error on decompressing {mcIn.length}");
 #endif

@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: Exception during constructor: {e.Message}");
-                throw e;
+                throw;
             }
             stats = new Stats(Name());
         }
@@ -160,7 +160,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
-                throw e;
+                throw;
 #else
                 Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
                 Debug.LogError("Error while sending your representation to other participants.");
