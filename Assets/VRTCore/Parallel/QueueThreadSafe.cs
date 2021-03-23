@@ -33,7 +33,11 @@ namespace VRT.Core
         // Close the queue for further pushes, signals to consumers that we are about to stop
         public void Close()
         {
-            if (isClosed.Token.IsCancellationRequested) throw new System.Exception($"QueueThreadSafe: operation on closed queue {name}");
+            if (isClosed.Token.IsCancellationRequested)
+            {
+                UnityEngine.Debug.LogWarning($"QueueThreadSafe: Close() on closed queue {name}");
+                return;
+            }
             UnityEngine.Debug.Log($"[FPA] Closing {name} queue.");
             isClosed.Cancel();
             while (true)

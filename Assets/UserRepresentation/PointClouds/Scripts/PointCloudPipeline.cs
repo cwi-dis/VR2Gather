@@ -13,9 +13,11 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PointCloudPipeline : BasePipeline
     {
+        [Tooltip("Object responsible for tile quality adaptation algorithm")]
+        public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        BaseWorker reader;
+        protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
         BaseWorker writer;
@@ -39,6 +41,7 @@ namespace VRT.UserRepresentation.PointCloud
             RegisterPipelineClass(UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
         }
 
@@ -117,6 +120,16 @@ namespace VRT.UserRepresentation.PointCloud
                         var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                         if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
                         pcReader = new PCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                        reader = pcReader;
+                    }
+					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
+                    {
+                        var prConfig = PCSelfConfig.PrerecordedReaderConfig;
+                        if (prConfig.folder == null || prConfig.folder == "")
+                        {
+                            throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
+                        }
+                        pcReader = new PrerecordedLiveReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else // sourcetype == pccerth: same as pcself but using Certh capturer
@@ -234,8 +247,68 @@ namespace VRT.UserRepresentation.PointCloud
                             Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
+                        BaseStats.Output(Name(), $"writer={writer.Name()}");
                     }
                     break;
+                case "prerecorded":
+                    var PrerecordedReaderConfig = cfg.PCSelfConfig.PrerecordedReaderConfig;
+                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
+                        throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
+                     var _reader = new PrerecordedPlaybackReader(PrerecordedReaderConfig.folder, 0, cfg.PCSelfConfig.frameRate);
+                    StaticPredictionInformation info = _reader.GetStaticPredictionInformation();
+                    string[] tileSubdirs = info.tileNames;
+                    int nTiles = tileSubdirs.Length;
+                    int nQualities = info.qualityNames.Length;
+                    if (tileSubdirs == null || tileSubdirs.Length == 0)
+                    {
+                        // Untiled. 
+                        var _prepQueue = _CreateRendererAndPreparer();
+                        _reader.Add(null, _prepQueue);
+                    } else
+                    {
+                        int curTile = 0;
+                        foreach (var tileFolder in tileSubdirs)
+                        {
+                            var _prepQueue = _CreateRendererAndPreparer(curTile);
+                            _reader.Add(tileFolder, _prepQueue);
+                            curTile++;
+                        }
+
+                    }
+                    reader = _reader;
+                    //
+                    // Initialize tiling configuration. We invent this, but it has the correct number of tiles
+                    // and the correct number of qualities, and the qualities are organized so that earlier
+                    // ones have lower utility and lower bandwidth than later ones.
+                    //
+                    TiledWorker.TileInfo[] tileInfos = _reader.getTiles();
+                    if (tileInfos.Length != nTiles)
+                    {
+                        Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
+                    }
+                    tilingConfig = new TilingConfig();
+                    tilingConfig.tiles = new TilingConfig.TileInformation[nTiles];
+                    for (int i=0; i<nTiles; i++)
+                    {
+                        // Initialize per-tile information
+                        var ti = new TilingConfig.TileInformation();
+                        tilingConfig.tiles[i] = ti;
+                        ti.orientation = tileInfos[i].normal;
+                        ti.qualities = new TilingConfig.TileInformation.QualityInformation[nQualities];
+                        for (int j=0; j<nQualities; j++)
+                        {
+                            ti.qualities[j] = new TilingConfig.TileInformation.QualityInformation();
+                            //
+                            // Insert bullshit numbers: every next quality takes twice as much bandwidth
+                            // and is more useful than the previous one
+                            //
+                            ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
+                            ti.qualities[j].representation = (float)j / (float)nQualities;
+                        }
+                    }
+
+                    break;
+
                 case "remote":
                     var SUBConfig = cfg.SUBConfig;
                     if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
@@ -284,7 +357,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create renderer
                 //
-                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer();
+                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer(i);
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
@@ -306,7 +379,7 @@ namespace VRT.UserRepresentation.PointCloud
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
-        public QueueThreadSafe _CreateRendererAndPreparer()
+        public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
             //
             // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
@@ -322,7 +395,12 @@ namespace VRT.UserRepresentation.PointCloud
                 preparers.Add(preparer);
                 // For meshes we use a single renderer and multiple preparers (one per tile).
                 PointMeshRenderer render = gameObject.AddComponent<PointMeshRenderer>();
-                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
+                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+                if (curTile >= 0)
+                {
+                    msg += $", tile={curTile}";
+                }
+                BaseStats.Output(Name(), msg);
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
@@ -333,7 +411,12 @@ namespace VRT.UserRepresentation.PointCloud
                 preparer.SetSynchronizer(synchronizer); 
                 preparers.Add(preparer);
                 PointBufferRenderer render = gameObject.AddComponent<PointBufferRenderer>();
-                BaseStats.Output(Name(), $"preparer={preparer.Name()}, renderer={render.Name()}");
+                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+                if (curTile >= 0)
+                {
+                    msg += $", tile={curTile}";
+                }
+                BaseStats.Output(Name(), msg);
                 renderers.Add(render);
                 render.SetPreparer(preparer);
             }
@@ -428,6 +511,53 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileIndex++;
             }
             _CreatePointcloudReader(tileNumbers, 0);
+            _InitTileSelector();
+        }
+
+       protected virtual void _InitTileSelector()
+        {
+            if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
+            {
+                throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
+            }
+            int nTiles = tilingConfig.tiles.Length;
+            int nQualities = tilingConfig.tiles[0].qualities.Length;
+            // Sanity check: all tiles should have the same number of qualities
+            foreach(var t in tilingConfig.tiles)
+            {
+                if (t.qualities.Length != nQualities)
+                {
+                    throw new System.Exception($"{Name()}: All tiles should have same number of qualities");
+                }
+            }
+            Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
+            if (nQualities <= 1) return;
+            if (tileSelector == null)
+            {
+                Debug.LogWarning($"{Name()}: no tileSelector");
+                return;
+            }
+            LiveTileSelector ts = (LiveTileSelector)tileSelector;
+            if (ts == null)
+            {
+                Debug.LogError($"{Name()}: tileSelector is not a LiveTileSelector");
+            }
+            ts?.Init(this, tilingConfig);
+        }
+
+        public void SelectTileQualities(int[] tileQualities)
+        {
+            if (tileQualities.Length != tilingConfig.tiles.Length)
+            {
+                Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
+            }
+            PrerecordedBaseReader _reader = (PrerecordedBaseReader)reader;
+            if (_reader == null)
+            {
+                Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");
+                return;
+            }
+            _reader.SelectTileQualities(tileQualities);
         }
 
         public new SyncConfig GetSyncConfig()

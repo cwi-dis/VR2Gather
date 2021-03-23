@@ -30,17 +30,18 @@ namespace VRT.Transport.Dash
         public class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
-            public int[] streamIndexes;
+            //public int[] streamIndexes;
+            public object tileDescriptor;
+            public int tileNumber = -1;
+            public int curStreamIndex = -1;
         }
         protected ReceiverInfo[] receivers;
         //        protected QueueThreadSafe[] outQueues;
         //        protected int[] streamIndexes;
 
-        // Mainly for debug messages:
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        // xxxjack
         public class SubPullThread
         {
             BaseSubReader parent;
@@ -88,7 +89,6 @@ namespace VRT.Transport.Dash
                 System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
                 stopWatch.Start();
                 System.TimeSpan oldElapsed = System.TimeSpan.Zero;
-                Debug.Log($"{Name()}: xxxjack thread started, looking at {receiverInfo.streamIndexes.Length} streams");
                 try
                 {
                     while (true)
@@ -110,28 +110,20 @@ namespace VRT.Transport.Dash
                             return;
                         }
 
-                        if (receiverInfo.streamIndexes.Length == 0)
+                        if (receiverInfo.curStreamIndex < 0)
                         {
                             continue;
                         }
                         //
-                        // We have work to do. Check which of our streamIndexes has data available.
+                        // We have work to do. 
                         //
                         FrameInfo frameInfo = new FrameInfo();
-
-                        int stream_index = -1;
+                        int stream_index = receiverInfo.curStreamIndex;
                         int bytesNeeded = 0;
-                        foreach (int si in receiverInfo.streamIndexes)
-                        {
-                            // See whether data is available on this stream, and how many bytes we need to allocate
-                            bytesNeeded = subHandle.grab_frame(si, System.IntPtr.Zero, 0, ref frameInfo);
-                            if (bytesNeeded > 0)
-                            {
-                                stream_index = si;
-                                break;
-                            }
-
-                        }
+                       
+                        // See whether data is available on this stream, and how many bytes we need to allocate
+                        bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
+  
 
                         // If no data is available we may want to close the subHandle, or sleep a bit
                         if (bytesNeeded == 0)
@@ -170,11 +162,12 @@ namespace VRT.Transport.Dash
                             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                             parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
                             parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                            BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime-parent.clockCorrespondence.streamClockTime}");
                         }
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                         mc.info = frameInfo;
-                        stats.statsUpdate(bytesRead, frameInfo.timestamp);
+                        stats.statsUpdate(bytesRead, frameInfo.timestamp, stream_index);
                         // xxxjack we should investigate the following code (and its history). It looks
                         // like some half-way attempt to lower latency, but unsure.
                         // Check if can start to enqueue
@@ -198,11 +191,11 @@ namespace VRT.Transport.Dash
                 }
                 catch (System.Exception e)
                 {
+#if UNITY_EDITOR
+                    throw;
+#else
                     Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
                     Debug.LogError("Error while receiving visual representation or audio from another participant");
-#if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in SubPullThread", "Stop", "Continue"))
-                        UnityEditor.EditorApplication.isPlaying = false;
 #endif
                 }
 
@@ -219,7 +212,7 @@ namespace VRT.Transport.Dash
                 double statsTotalLatency;
                 bool statsGotFirstReception;
 
-                public void statsUpdate(int nBytes, long timeStamp)
+                public void statsUpdate(int nBytes, long timeStamp, int stream_index)
                 {
                     if (!statsGotFirstReception)
                     {
@@ -242,7 +235,7 @@ namespace VRT.Transport.Dash
                     if (ShouldOutput())
                     {
                         int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
                      }
                     if (ShouldClear())
                     {
@@ -299,7 +292,7 @@ namespace VRT.Transport.Dash
                     new ReceiverInfo()
                     {
                         outQueue = outQueue,
-                        streamIndexes = new int[] { streamIndex}
+                        curStreamIndex = streamIndex
                     },
                 };
                 Start();
@@ -411,6 +404,12 @@ namespace VRT.Transport.Dash
                 for (int i = 0; i < threadCount; i++)
                 {
                     threads[i] = new SubPullThread(this, i, receivers[i], frequency);
+                    string msg = $"pull_thread={threads[i].Name()}";
+                    if (receivers[i].tileNumber >= 0)
+                    {
+                        msg += $", tile={receivers[i].tileNumber}";
+                    }
+                    BaseStats.Output(Name(), msg);
                 }
                 foreach (var t in threads)
                 {

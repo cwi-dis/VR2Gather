@@ -409,7 +409,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-            VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+            VRT.Core.BaseStats.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
@@ -816,6 +816,12 @@ namespace VRT.Orchestrator.Wrapping
 
         // Message from a user received spontaneously from the Orchestrator         
         public void OnUserMessageReceived(UserMessage userMessage) {
+            if (userMessage.message.Substring(0,6) == "START_")
+            {
+                // xxxjack this is gross. We have to print the stats line for "session started" , because
+                // in LoginController we don't know the session ID.
+                VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+            }
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 

@@ -79,6 +79,9 @@
         "localIP": "",
         "port": 9335
       },
+	  "PrerecordedReaderConfig" : {
+		"folder" : "../mmsys2021-loot-150K"
+	  },
       "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
         "PCLExchangeName": "VolumetricData",

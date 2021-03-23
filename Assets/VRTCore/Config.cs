@@ -110,7 +110,13 @@ namespace VRT.Core
                 }
                 public _SynthReaderConfig SynthReaderConfig;
                 [Serializable]
-                public class _CerthReaderConfig
+				public class _PrerecordedReaderConfig
+				{
+					public string folder;
+                };
+				public _PrerecordedReaderConfig PrerecordedReaderConfig;
+				[Serializable]
+				public class _CerthReaderConfig
                 {
                     public string ConnectionURI;
                     public string PCLExchangeName;

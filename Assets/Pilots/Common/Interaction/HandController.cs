@@ -137,6 +137,7 @@ namespace VRT.Pilots.Common
 					_SelectedLocation = null;
 					TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					TeleportLineRenderer.enabled = false;
+					_WasAButtonPressed = false;
 				}
 
 

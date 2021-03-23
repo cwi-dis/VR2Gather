@@ -10,6 +10,7 @@ namespace VRT.Core
         __PCC_CWIK4A_,
         __PCC_PROXY__,
         __PCC_SYNTH__,
+        __PCC_PRERECORDED__,
         __PCC_CERTH__,
         __SPECTATOR__,
         __CAMERAMAN__

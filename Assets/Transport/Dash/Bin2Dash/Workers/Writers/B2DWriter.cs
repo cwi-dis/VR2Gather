@@ -74,11 +74,11 @@ namespace VRT.Transport.Dash
                 }
                 catch (System.Exception e)
                 {
+#if UNITY_EDITOR
+                    throw;
+#else
                     Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
                     Debug.LogError("Error while sending visual representation or audio to other participants");
-#if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
-                        UnityEditor.EditorApplication.isPlaying = false;
 #endif
                 }
 
@@ -165,7 +165,7 @@ namespace VRT.Transport.Dash
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}({url}) Exception:{e.Message}");
-                throw e;
+                throw;
             }
         }
 
@@ -185,6 +185,7 @@ namespace VRT.Transport.Dash
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new B2DPushThread(this, i, descriptions[i]);
+                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, tile={descriptions[i].tileNumber}, quality={descriptions[i].quality}");
             }
             foreach (var t in pusherThreads)
             {

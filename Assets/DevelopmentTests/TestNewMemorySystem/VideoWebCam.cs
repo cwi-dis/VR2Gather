@@ -68,7 +68,7 @@ public class VideoWebCam : MonoBehaviour {
         }
         catch (System.Exception e) {
             Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");
-            throw e;
+            throw;
         }
         ready = true;
     }
