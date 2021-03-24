@@ -15,9 +15,9 @@ namespace VRT.Teleporter
 
         public float angle = 45f; // Arc take off angle
 
-        public float strength = 10f; // Increasing this value will increase overall arc length
+        public float strength = 10f; // Increasing this value will increase overall arc length, ORIGINAL IS 10
 
-        public int maxVertexcount = 100; // limitation of vertices for performance. 
+        public int maxVertexcount = 100; // limitation of vertices for performance.  ORIGINAL IS 100
 
         private float vertexDelta = 0.08f; // Delta between each Vertex on arc. Decresing this value may cause performance problem.
 

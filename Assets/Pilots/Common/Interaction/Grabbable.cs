@@ -115,8 +115,8 @@ namespace VRT.Pilots.Common
 
 				if (Rigidbody != null)
 				{
-					Rigidbody.isKinematic = false;
-					Rigidbody.useGravity = true;
+					//Rigidbody.isKinematic = false;
+					//Rigidbody.useGravity = true;
 					_IsSimulating = true;
 				}
 			}
