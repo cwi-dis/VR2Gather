@@ -113,11 +113,6 @@ namespace VRT.Core
 				public class _PrerecordedReaderConfig
 				{
 					public string folder;
-                    public string[] tiles;  // Only for PrerecordedReader: subdirectory names per tile
-					public string[] qualities; // Only for prerecordedReader: subsubdirectory names per quality
-                    public bool ply;
-                    public bool preferBest; // Start reading best (last) quality (default is first/worst) until instructed otherwise
-                    public TiledWorker.TileInfo[] tileInfos; // Only for PseudoLiveReader: list of tile definitions
                 };
 				public _PrerecordedReaderConfig PrerecordedReaderConfig;
 				[Serializable]

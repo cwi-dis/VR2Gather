@@ -74,11 +74,11 @@ namespace VRT.Transport.Dash
                 }
                 catch (System.Exception e)
                 {
+#if UNITY_EDITOR
+                    throw;
+#else
                     Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
                     Debug.LogError("Error while sending visual representation or audio to other participants");
-#if UNITY_EDITOR
-                    if (UnityEditor.EditorUtility.DisplayDialog("Exception", "Exception in PusherThread", "Stop", "Continue"))
-                        UnityEditor.EditorApplication.isPlaying = false;
 #endif
                 }
 
@@ -165,7 +165,7 @@ namespace VRT.Transport.Dash
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}({url}) Exception:{e.Message}");
-                throw e;
+                throw;
             }
         }
 

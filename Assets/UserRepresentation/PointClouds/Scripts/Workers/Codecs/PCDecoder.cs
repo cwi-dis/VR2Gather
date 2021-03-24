@@ -39,7 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: Exception: {e.Message}");
-                throw e;
+                throw;
             }
             stats = new Stats(Name());
         }

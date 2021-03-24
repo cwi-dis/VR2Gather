@@ -373,10 +373,13 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "Simple PointCloud (5G phone proxy)";
                     break;
                 case "__PCC_SYNTH__":
-                    enumName = "Synthetic PointCloud";
+                    enumName = "Synthetic PointCloud (development option)";
+                    break;
+                case "__PCC_PRERECORDED__":
+                    enumName = "Prerecorded PointCloud (development option)";
                     break;
                 case "__PCC_CERTH__":
-                    enumName = "Volumetric PointCloud";
+                    enumName = "Volumetric PointCloud (development option)";
                     break;
                 case "__SPECTATOR__":
                     enumName = "Spectator";

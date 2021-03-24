@@ -35,7 +35,7 @@ namespace VRT.Transport.SocketIO
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: Exception: {e.Message}");
-                throw e;
+                throw;
             }
         }
 

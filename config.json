@@ -1,19 +1,19 @@
 {
-	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
-	"orchestratorURL_": "http://vrtnuc.huiskamer.private:8080/socket.io/",
-	"orchestratorURL_": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
-	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
-	"orchestratorLogURL" : "https://192.16.197.145:8081/",
+	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
 	"openLogOnExit" : false,
 
-	"targetFrameRate": 30,
-	"memoryDamping": 1.2999999523162842,
-	"useAudio": true,
-	"nonHMDHeight": 1.5,
-	"pilot3NavigationLogs": false,
-	"statsInterval": 0,
-	"statsOutputFile":  "statistics.log",
-	"TVMs": {
+	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
+	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
+
+  "targetFrameRate": 30,
+  "memoryDamping": 1.2999999523162842,
+  "useAudio": true,
+  "nonHMDHeight": 1.5,
+  "pilot3NavigationLogs": true,
+  "statsInterval": 10,
+  "statsOutputFile":  "",
+  "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
 		"printMetrics": false,
@@ -29,7 +29,7 @@
             "z": 0.0
         }
     },
-	    "offsetRotation": {
+    "offsetRotation": {
       "x": 0.0,
       "y": 87.00109100341797,
       "z": 0.0
@@ -54,8 +54,8 @@
       "z": 0.0
     },
     "forceMesh": false,
-    "defaultCellSize": 0.0001,
-    "cellSizeFactor": 0.6
+    "defaultCellSize": 0.0024,
+    "cellSizeFactor": 1
   },
 
   "LocalUser": {
@@ -72,50 +72,17 @@
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.xml"
       },
-	    "SynthReaderConfig": {
+      "SynthReaderConfig": {
         "nPoints": 8000
       },
-	  "ProxyReaderConfig" : {
-				"localIP" : "",
-				"port" : 9335
-		},
-		"PrerecordedReaderConfig" : {
-				"folder" : "../mmsys2021-loot-150K",
-				"tiles" : [
-					],
-				"qualities" : [
-					],
-				"tileInfos" : [
-					{
-						"normal" : {"x":0, "y":0, "z":0},
-						"cameraName" : "all",
-						"cameraMask" : 0
-					},
-					{
-						"normal" : {"x":1, "y":0, "z":0},
-						"cameraName" : "front",
-						"cameraMask" : 1
-					},
-					{
-						"normal" : {"x":0, "y":0, "z":1},
-						"cameraName" : "left",
-						"cameraMask" : 2
-					},
-					{
-						"normal" : {"x":-1, "y":0, "z":0},
-						"cameraName" : "back",
-						"cameraMask" : 4
-					},
-					{
-						"normal" : {"x":0, "y":0, "z":-1},
-						"cameraName" : "right",
-						"cameraMask" : 8
-					}
-				],
-				"ply" : false,
-				"preferBest" : true
-			},
-            "CerthReaderConfig": {
+      "ProxyReaderConfig": {
+        "localIP": "",
+        "port": 9335
+      },
+	  "PrerecordedReaderConfig" : {
+		"folder" : "../mmsys2021-loot-150K"
+	  },
+      "CerthReaderConfig": {
         "ConnectionURI": "amqp://volumetric:capture@localhost:5672",
         "PCLExchangeName": "VolumetricData",
         "MetaExchangeName": "VolumetricMetaData",
@@ -135,7 +102,7 @@
           "z": 1
         }
       },
-      "voxelSize": 0.01,
+      "voxelSize": 0.005,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [
