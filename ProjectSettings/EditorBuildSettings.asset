@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/mediaScape/MediaScape/Scenes/MediaScape.unity
     guid: bdd42233db39aa742a6ec2eef1acc7e6
+  - enabled: 1
+    path: Assets/PilotsExternal/mediaScape/MediaScape/Scenes/MediaScape2.unity
+    guid: 2d448ced4796f6d4cb0323374b676cf8
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}
