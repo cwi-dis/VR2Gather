@@ -14,7 +14,7 @@ build_win:
   before_script:
    - mkdir deployment-helpers
    - cd deployment-helpers
-   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/VRT/deployment-group/Deployment
+   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/VRTogether_EU/Deployment/Deployment
    - python -m pip install -r Deployment/scripts/requirements.txt
    - cd ..
   script:
