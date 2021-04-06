@@ -63,7 +63,6 @@ namespace VRT.UserRepresentation.PointCloud
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             user = (User)_user;
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
@@ -237,10 +236,19 @@ namespace VRT.UserRepresentation.PointCloud
                             throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            if (useDash)
+                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                            {
                                 writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            }
                             else
+                            if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                            {
+                                throw new System.Exception($"{Name()}: TCP transport not yet implemented");
+                            }
+                            else
+                            {
                                 writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                            }
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -335,7 +343,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
             {
@@ -372,10 +379,18 @@ namespace VRT.UserRepresentation.PointCloud
                     tileNumber = tileNumbers[i]
                 };
             };
-            if (useDash)
+            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+            {
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+            } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+            {
+                throw new System.Exception($"{Name()}: TCP transport not yet implemented");
+            }
             else
+            {
                 reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
+            }
+            
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 

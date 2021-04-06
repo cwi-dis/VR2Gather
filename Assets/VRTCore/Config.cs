@@ -11,7 +11,8 @@ namespace VRT.Core
         {
             None,
             Dash,
-            SocketIO
+            SocketIO,
+            TCP
         };
 
         public enum UserRepresentation

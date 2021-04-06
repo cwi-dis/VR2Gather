@@ -111,6 +111,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Toggle liveToggle = null;
     [SerializeField] private Toggle socketAudioToggle = null;
     [SerializeField] private Toggle dashAudioToggle = null;
+    [SerializeField] private Toggle tcpAudioToggle = null;
 
     [Header("Join")]
     [SerializeField] private GameObject joinPanel = null;
@@ -584,6 +585,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
         socketAudioToggle.isOn = true;
         dashAudioToggle.isOn = false;
+        tcpAudioToggle.isOn = false;
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -1095,6 +1097,7 @@ public class OrchestratorLogin : MonoBehaviour {
     private void AudioToggle() {
         socketAudioToggle.interactable = !socketAudioToggle.isOn;
         dashAudioToggle.interactable = !dashAudioToggle.isOn;
+        tcpAudioToggle.interactable = !tcpAudioToggle.isOn;
     }
 
     public void SetAudio(int kind) {
@@ -1105,14 +1108,27 @@ public class OrchestratorLogin : MonoBehaviour {
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
                     dashAudioToggle.isOn = false;
+                    tcpAudioToggle.isOn = false;
                 }
                 break;
             case 2: // Dash
-                if (dashAudioToggle.isOn) {
+                if (dashAudioToggle.isOn)
+                {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
                     socketAudioToggle.isOn = false;
+                    tcpAudioToggle.isOn = false;
+                }
+                break;
+            case 3: // Dash
+                if (tcpAudioToggle.isOn)
+                {
+                    // Set AudioType
+                    Config.Instance.protocolType = Config.ProtocolType.TCP;
+                    // Set Toggles
+                    socketAudioToggle.isOn = false;
+                    dashAudioToggle.isOn = false;
                 }
                 break;
             default:
