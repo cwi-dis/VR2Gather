@@ -7,6 +7,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -243,7 +244,7 @@ namespace VRT.UserRepresentation.PointCloud
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                throw new System.Exception($"{Name()}: TCP transport not yet implemented");
+                                writer = new TCPWriter(user.userData.userPCurl);
                             }
                             else
                             {
@@ -384,7 +385,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
-                throw new System.Exception($"{Name()}: TCP transport not yet implemented");
+                reader = new PCTCPReader(user.userData.userPCurl);
             }
             else
             {

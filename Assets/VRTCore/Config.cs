@@ -42,6 +42,8 @@ namespace VRT.Core
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
 
+        public string audioServerURL = "";
+        public string pointcloudServerURL = "";
         [Serializable]
         public class _TVMs
         {
