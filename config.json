@@ -13,8 +13,6 @@
   "pilot3NavigationLogs": true,
   "statsInterval": 10,
   "statsOutputFile":  "",
-  "pointcloudServerURL" : "tcp://localhost:10301",
-  "audioServerURL" : "tcp://localhost:10300",
   "TVMs": {
         "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
         "exchangeName": "prod_test",
@@ -120,7 +118,9 @@
       "AudioBin2Dash": {
         "segmentSize": 2000,
         "segmentLife": 10000
-      }
+      },
+      "pointcloudServerURL" : "tcp://localhost:10301",
+      "audioServerURL" : "tcp://localhost:10300"
     },
     "Render": {
       "pointSize": 0,
