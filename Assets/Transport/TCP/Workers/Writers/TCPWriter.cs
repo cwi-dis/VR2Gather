@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine;
 using VRT.Core;
 using VRT.Transport.Dash;
@@ -10,15 +12,13 @@ namespace VRT.Transport.TCP
 
     public class TCPWriter : BaseWriter
     {
-#if xxxjack_disabled
-        public struct DashStreamDescription
+        public struct TCPStreamDescription
         {
-            public string name;
-            public uint tileNumber;
-            public uint quality;
+            public string host;
+            public int port;
+            public uint fourcc;
             public QueueThreadSafe inQueue;
         };
-#endif
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -26,32 +26,55 @@ namespace VRT.Transport.TCP
 #if xxxjack_disabled
         public bin2dash.connection uploader;
         public string url;
-        DashStreamDescription[] descriptions;
-        public class B2DPushThread
-        {
-            B2DWriter parent;
-            int stream_index;
-            DashStreamDescription description;
-            System.Threading.Thread myThread;
+#endif
+        TCPStreamDescription[] descriptions;
 
-            public B2DPushThread(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
+        public class TCPPushThread
+        {
+            TCPWriter parent;
+            TCPStreamDescription description;
+            System.Threading.Thread myThread;
+            Socket listenSocket = null;
+            Socket sendSocket = null;
+
+            public TCPPushThread(TCPWriter _parent, TCPStreamDescription _description)
             {
                 parent = _parent;
-                stream_index = _stream_index;
                 description = _description;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 stats = new Stats(Name());
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(description.host);
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint localEndpoint = new IPEndPoint(ipAddress, description.port);
+                listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                listenSocket.Bind(localEndpoint);
+                listenSocket.Listen(4);
+                Debug.Log($"{Name()}: xxxjack listen to port {description.port} endpoint {localEndpoint.ToString()}");
             }
 
             public string Name()
             {
-                return $"{parent.Name()}.{stream_index}";
+                return $"{parent.Name()}.{description.port}";
             }
 
             public void Start()
             {
                 myThread.Start();
+            }
+
+            public void Stop()
+            {
+                if (listenSocket != null)
+                {
+                    listenSocket.Close();
+                    listenSocket = null;
+                }
+                if (sendSocket != null)
+                {
+                    sendSocket.Close();
+                    sendSocket = null;
+                }
             }
 
             public void Join()
@@ -65,14 +88,43 @@ namespace VRT.Transport.TCP
                 {
                     Debug.Log($"{Name()}: thread started");
                     QueueThreadSafe queue = description.inQueue;
-                    while (!queue.IsClosed())
+                    while (!queue.IsClosed() && listenSocket != null)
                     {
+                        // Accept incoming connection
+                        if (sendSocket == null)
+                        {
+                            BaseStats.Output(Name(), $"open=0, listen=1");
+                            try
+                            {
+                                sendSocket = listenSocket.Accept();
+                                BaseStats.Output(Name(), $"open=1, remote={sendSocket.RemoteEndPoint.ToString()}");
+                            }
+                            catch(SocketException e)
+                            {
+                                Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
+                                continue;
+                            }
+                        }
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
-                        stats.statsUpdate(mc.length); // xxxjack needs to be changed to be per-stream
-                        if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                            Debug.Log($"{Name()}({parent.url}): ERROR sending data");
-                        mc.free();
+                        stats.statsUpdate(mc.length);
+                        var hdr1 = BitConverter.GetBytes((UInt32)description.fourcc);
+                        var hdr2 = BitConverter.GetBytes((Int32)mc.length);
+                        var buf = new byte[mc.length];
+                        System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
+                        try
+                        {
+                            sendSocket.Send(hdr1);
+                            sendSocket.Send(hdr2);
+                            sendSocket.Send(buf);
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            sendSocket = null;
+                            BaseStats.Output(Name(), $"open=0");
+                        }
+
+
                     }
                     Debug.Log($"{Name()}: thread stopped");
                 }
@@ -117,13 +169,10 @@ namespace VRT.Transport.TCP
             protected Stats stats;
         }
  
-        B2DPushThread[] pusherThreads;
+        TCPPushThread[] pusherThreads;
 
-#endif
-        public TCPWriter(string _url) : base(WorkerType.End)
+        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base(WorkerType.End)
         {
-            Debug.Log($"{Name()}: xxxjack url={_url}");
-#if xxxjack_disabled
             if (_descriptions == null || _descriptions.Length == 0)
             {
                 throw new System.Exception($"{Name()}: descriptions is null or empty");
@@ -133,7 +182,22 @@ namespace VRT.Transport.TCP
                 throw new System.Exception($"{Name()}: 4CC is \"{fourcc}\" which is not exactly 4 characters");
             }
             uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
-            descriptions = _descriptions;
+            Uri url = new Uri(_url);
+            TCPStreamDescription[] ourDescriptions = new TCPStreamDescription[_descriptions.Length];
+            for(int i=0; i<_descriptions.Length; i++)
+            {
+                ourDescriptions[i] = new TCPStreamDescription
+                {
+                    host = url.Host,
+                    port = url.Port + i,
+                    fourcc = fourccInt,
+                    inQueue = _descriptions[i].inQueue
+
+                };
+                Debug.Log($"{Name()}: xxxjack url={_url}, index={i}, host={ourDescriptions[i].host}, port={ourDescriptions[i].port}");
+            }
+            descriptions = ourDescriptions;
+#if xxxjack_disabled
             try
             {
                 //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
@@ -174,6 +238,7 @@ namespace VRT.Transport.TCP
                 throw;
             }
 #endif
+            Start();
         }
 
         public override string Name()
@@ -181,18 +246,17 @@ namespace VRT.Transport.TCP
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-#if xxxjack_disabled
         protected override void Start()
         {
             base.Start();
             int nThreads = descriptions.Length;
-            pusherThreads = new B2DPushThread[nThreads];
+            pusherThreads = new TCPPushThread[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new B2DPushThread(this, i, descriptions[i]);
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, tile={descriptions[i].tileNumber}, quality={descriptions[i].quality}");
+                pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
+                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, port={descriptions[i].port}");
             }
             foreach (var t in pusherThreads)
             {
@@ -214,14 +278,13 @@ namespace VRT.Transport.TCP
             }
             // Stop our thread
             base.OnStop();
-            uploader?.free();
-            uploader = null;
             // wait for pusherThreads to terminate
             foreach (var t in pusherThreads)
             {
+                t.Stop();
                 t.Join();
             }
-            Debug.Log($"{Name()} {url} Stopped");
+            Debug.Log($"{Name()} Stopped");
         }
 
         protected override void Update()
@@ -230,7 +293,7 @@ namespace VRT.Transport.TCP
             // xxxjack anything to do?
             System.Threading.Thread.Sleep(10);
         }
-
+#if xxxjack_disabled
         public override SyncConfig.ClockCorrespondence GetSyncInfo()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
