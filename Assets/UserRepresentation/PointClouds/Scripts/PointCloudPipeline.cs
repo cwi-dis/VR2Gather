@@ -385,7 +385,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
-                reader = new PCTCPReader(user.userData.userPCurl);
+                reader = new PCTCPReader(user.userData.userPCurl, tilesToReceive);
             }
             else
             {

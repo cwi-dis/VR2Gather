@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using UnityEngine;
 using VRT.Core;
 using VRT.Transport.Dash;
 
@@ -7,10 +10,9 @@ namespace VRT.Transport.TCP
 
     public class BaseTCPReader : BaseReader
     {
-#if xxxjack_disabled
-        public delegate bool NeedsSomething();
 
-        protected string url;
+        protected Uri url;
+#if xxxjack_disabled
         protected int streamCount;
         protected uint[] stream4CCs;
         protected sub.connection subHandle;
@@ -20,28 +22,29 @@ namespace VRT.Transport.TCP
         //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
         System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
-
+#endif
         public class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
-            //public int[] streamIndexes;
+            public string host;
+            public int port;
             public object tileDescriptor;
             public int tileNumber = -1;
-            public int curStreamIndex = -1;
         }
         protected ReceiverInfo[] receivers;
         //        protected QueueThreadSafe[] outQueues;
         //        protected int[] streamIndexes;
-#endif
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-#if xxxjack_disabled
-        public class SubPullThread
+
+        public class TCPPullThread
         {
-            BaseSubReader parent;
+            BaseTCPReader parent;
+            Socket socket = null;
             //            int stream_index;
             //            QueueThreadSafe outQueue;
+            bool stopping = false;
             int thread_index;
             ReceiverInfo receiverInfo;
             int frequency = 20;
@@ -50,12 +53,11 @@ namespace VRT.Transport.TCP
             System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(5);
             System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
 
-            public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo, int _frenquecy)
+            public TCPPullThread(BaseTCPReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
             {
                 parent = _parent;
                 thread_index = _thread_index;
                 receiverInfo = _receiverInfo;
-                frequency = _frenquecy;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 lastSuccessfulReceive = System.DateTime.Now;
@@ -72,6 +74,16 @@ namespace VRT.Transport.TCP
                 myThread.Start();
             }
 
+            public void Stop() {
+                stopping = true;
+                if (socket != null)
+                {
+                    socket.Close();
+                }
+                socket = null;
+
+            }
+
             public void Join()
             {
                 myThread.Join();
@@ -86,29 +98,58 @@ namespace VRT.Transport.TCP
                 System.TimeSpan oldElapsed = System.TimeSpan.Zero;
                 try
                 {
-                    while (true)
+                    while (!stopping)
                     {
-
-                        System.Threading.Thread.Sleep(1); // xxxjack Yield() may be better?
                         //
                         // First check whether we should terminate, and otherwise whether we have nay work to do currently.
                         //
-                        if (receiverInfo.outQueue.IsClosed())
+                        if (receiverInfo == null || receiverInfo.outQueue.IsClosed())
                         {
                             return;
                         }
-
-                        sub.connection subHandle = parent.getSubHandle();
-                        if (subHandle == null)
+                        if (socket == null)
                         {
-                            Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
-                            return;
+                            IPAddress[] all = Dns.GetHostAddresses(receiverInfo.host);
+                            all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
+                            IPAddress ipAddress = all[0];
+                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port);
+                            socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                            Debug.Log($"{Name()}: xxxjack connect to {remoteEndpoint.ToString()}");
+                            try
+                            {
+                                socket.Connect(remoteEndpoint);
+                            }
+                            catch(SocketException e)
+                            {
+                                Debug.Log($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}");
+                                socket = null;
+                                System.Threading.Thread.Sleep(1000);
+                                continue;
+                            }
+                            Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
+                        }
+                        byte[] hdr = new byte[8];
+                        int hdrSize = socket.Receive(hdr);
+                        if (hdrSize != 8)
+                        {
+                            Debug.Log($"{Name()}: short read, closing socket");
+                            break;
+                        }
+                        int dataSize = BitConverter.ToInt32(hdr, 4);
+                        byte[] data = new byte[dataSize];
+                        int actualDataSize = socket.Receive(data);
+                        if (actualDataSize != dataSize)
+                        {
+                            Debug.Log($"{Name()}: short read, closing socket");
+                            break;
                         }
 
-                        if (receiverInfo.curStreamIndex < 0)
-                        {
-                            continue;
-                        }
+                        NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
+                        System.Runtime.InteropServices.Marshal.Copy(data, 0, mc.pointer, dataSize);
+                        var buf = new byte[mc.length];
+                        System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
+                        receiverInfo.outQueue.Enqueue(mc);
+#if xxxjack_disabled
                         //
                         // We have work to do. 
                         //
@@ -151,6 +192,7 @@ namespace VRT.Transport.TCP
                             continue;
                         }
 
+
                         // If we have no clock correspondence yet we use the first received frame on any stream to set it
                         if (parent.clockCorrespondence.wallClockTime == 0)
                         {
@@ -182,6 +224,7 @@ namespace VRT.Transport.TCP
                                 mc.free();
                             }
                         }
+#endif
                     }
                 }
                 catch (System.Exception e)
@@ -245,45 +288,34 @@ namespace VRT.Transport.TCP
             protected Stats stats;
 
         }
-        SubPullThread[] threads;
+        TCPPullThread[] threads;
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
-#endif
+
         protected BaseTCPReader(string _url) : base(WorkerType.Init)
-        { // Orchestrator Based SUB
+        {
             Debug.Log($"{Name()}: xxxjack url={_url}");
-#if xxxjack_disabled
-            // closing the SUB may take long. Cater for that.
             lock (this)
             {
                 joinTimeout = 20000;
 
-                if (_url == "" || _url == null || _streamName == "")
+                if (_url == "" || _url == null)
                 {
-                    Debug.LogError($"{Name()}: configuration error: url or streamName not set");
-                    throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
+                    Debug.LogError($"{Name()}: configuration error: url not set");
+                    throw new System.Exception($"{Name()}: configuration error: url not set");
                 }
-                if (_streamName != null)
+                url = new Uri(_url);
+                if (url.Host == "" || url.Port == 0)
                 {
-                    if (!_streamName.Contains(".mpd")) _streamName += ".mpd";
-                    _url += _streamName;
+                    Debug.LogError($"{Name()}: configuration error: url misses host or port");
+                    throw new System.Exception($"{Name()}: configuration error: url misses host or port");
                 }
-                url = _url;
-                if (_initialDelay != 0)
-                {
-                    // We do not try to start play straight away, to work around bugs when creating the SUB before
-                    // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                    Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
-                }
-                frequency = _frequency;
+
             }
-#endif
         }
 
-        public BaseTCPReader(string _url, int streamIndex, QueueThreadSafe outQueue) : this(_url)
+        public BaseTCPReader(string _url, QueueThreadSafe outQueue) : this(_url)
         {
-#if xxxjack_disabled
             lock (this)
             {
                 receivers = new ReceiverInfo[]
@@ -291,13 +323,13 @@ namespace VRT.Transport.TCP
                     new ReceiverInfo()
                     {
                         outQueue = outQueue,
-                        curStreamIndex = streamIndex
+                        host = url.Host,
+                        port = url.Port
                     },
                 };
                 Start();
 
             }
-#endif
         }
 
         public override string Name()
@@ -312,31 +344,24 @@ namespace VRT.Transport.TCP
             _closeQueues();
         }
 
+        protected override void Start()
+        {
+            base.Start();
+            InitThreads();
+        }
+
         public override void OnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
-            // xxxjack _DeinitDash(true);
+            foreach(var t in threads)
+            {
+                t.Stop();
+                t.Join();
+            }
             base.OnStop();
             if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 #if xxxjack_disabled
-        protected sub.connection getSubHandle()
-        {
-            lock (this)
-            {
-                if (!isPlaying) return null;
-                return (sub.connection)subHandle.AddRef();
-            }
-        }
-
-
-        protected void playFailed()
-        {
-            lock (this)
-            {
-                isPlaying = false;
-            }
-        }
 
         protected virtual void _streamInfoAvailable()
         {
@@ -394,16 +419,16 @@ namespace VRT.Transport.TCP
                 return true;
             }
         }
-
+#endif
         protected void InitThreads()
         {
             lock (this)
             {
                 int threadCount = receivers.Length;
-                threads = new SubPullThread[threadCount];
+                threads = new TCPPullThread[threadCount];
                 for (int i = 0; i < threadCount; i++)
                 {
-                    threads[i] = new SubPullThread(this, i, receivers[i], frequency);
+                    threads[i] = new TCPPullThread(this, i, receivers[i]);
                     string msg = $"pull_thread={threads[i].Name()}";
                     if (receivers[i].tileNumber >= 0)
                     {
@@ -417,7 +442,7 @@ namespace VRT.Transport.TCP
                 }
             }
         }
-
+#if xxxjack_disabled
         private void _DeinitDash(bool closeQueues)
         {
             lock (this)
@@ -437,13 +462,11 @@ namespace VRT.Transport.TCP
 #endif
         private void _closeQueues()
         {
-#if xxxjack_disabled
             foreach (var r in receivers)
             {
                 var oq = r.outQueue;
                 if (!oq.IsClosed()) oq.Close();
             }
-#endif
         }
 
 #if xxxjack_disabled
