@@ -44,8 +44,9 @@ namespace VRT.Transport.TCP
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
                 stats = new Stats(Name());
-                IPHostEntry ipHostInfo = Dns.GetHostEntry(description.host);
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPAddress[] all = Dns.GetHostAddresses(description.host);
+                all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
+                IPAddress ipAddress = all[0];
                 IPEndPoint localEndpoint = new IPEndPoint(ipAddress, description.port);
                 listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 listenSocket.Bind(localEndpoint);
