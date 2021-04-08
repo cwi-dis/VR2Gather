@@ -121,11 +121,17 @@ namespace VRT.Transport.TCP
                         }
                         catch (ObjectDisposedException)
                         {
+                            Debug.Log($"{Name()}: socket was closed by another thread");
                             sendSocket = null;
                             BaseStats.Output(Name(), $"open=0");
                         }
-
-
+                        catch(SocketException e)
+                        {
+                            Debug.Log($"{Name()}: socket exception: {e.ToString()}");
+                            sendSocket.Close();
+                            sendSocket = null;
+                            BaseStats.Output(Name(), $"open=0");
+                        }
                     }
                     Debug.Log($"{Name()}: thread stopped");
                 }
