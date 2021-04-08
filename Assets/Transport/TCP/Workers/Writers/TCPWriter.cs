@@ -23,10 +23,6 @@ namespace VRT.Transport.TCP
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-#if xxxjack_disabled
-        public bin2dash.connection uploader;
-        public string url;
-#endif
         TCPStreamDescription[] descriptions;
 
         public class TCPPushThread
@@ -51,7 +47,6 @@ namespace VRT.Transport.TCP
                 listenSocket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 listenSocket.Bind(localEndpoint);
                 listenSocket.Listen(4);
-                Debug.Log($"{Name()}: xxxjack listen to port {description.port} endpoint {localEndpoint.ToString()}");
             }
 
             public string Name()
@@ -201,50 +196,8 @@ namespace VRT.Transport.TCP
                     inQueue = _descriptions[i].inQueue
 
                 };
-                Debug.Log($"{Name()}: xxxjack url={_url}, index={i}, host={ourDescriptions[i].host}, port={ourDescriptions[i].port}");
             }
             descriptions = ourDescriptions;
-#if xxxjack_disabled
-            try
-            {
-                //if (cfg.fileMirroring) bw = new BinaryWriter(new FileStream($"{Application.dataPath}/../{cfg.streamName}.dashdump", FileMode.Create));
-                url = _url;
-                if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(_streamName))
-                {
-                    Debug.LogError($"{Name()}: configuration error: url or streamName not set");
-                    throw new System.Exception($"{Name()}: configuration error: url or streamName not set");
-                }
-                // xxxjack Is this the correct way to initialize an array of structs?
-                Debug.Log($"xxxjack {Name()}: {descriptions.Length} output streams");
-                bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
-                for (int i = 0; i < descriptions.Length; i++)
-                {
-                    b2dDescriptors[i] = new bin2dash.StreamDesc
-                    {
-                        MP4_4CC = fourccInt,
-                        tileNumber = descriptions[i].tileNumber,
-                        quality = descriptions[i].quality
-                    };
-                    if (descriptions[i].inQueue == null)
-                    {
-                        throw new System.Exception($"{Name()}.{i}: inQueue");
-                    }
-                }
-                uploader = bin2dash.create(_streamName, b2dDescriptors, url, _segmentSize, _segmentLife);
-                if (uploader != null)
-                {
-                    Debug.Log($"{Name()}: started {url + _streamName}.mpd");
-                    Start();
-                }
-                else
-                    throw new System.Exception($"{Name()}: vrt_create: failed to create uploader {url + _streamName}.mpd");
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log($"{Name()}({url}) Exception:{e.Message}");
-                throw;
-            }
-#endif
             Start();
         }
 
@@ -294,13 +247,14 @@ namespace VRT.Transport.TCP
             Debug.Log($"{Name()} Stopped");
         }
 
+#if xxxjack_disabled
         protected override void Update()
         {
             base.Update();
             // xxxjack anything to do?
             System.Threading.Thread.Sleep(10);
         }
-#if xxxjack_disabled
+
         public override SyncConfig.ClockCorrespondence GetSyncInfo()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
