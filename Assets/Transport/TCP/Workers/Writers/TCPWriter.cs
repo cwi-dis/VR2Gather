@@ -104,14 +104,16 @@ namespace VRT.Transport.TCP
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
                         stats.statsUpdate(mc.length);
+                        byte[] hdr = new byte[8];
                         var hdr1 = BitConverter.GetBytes((UInt32)description.fourcc);
+                        hdr1.CopyTo(hdr, 0);
                         var hdr2 = BitConverter.GetBytes((Int32)mc.length);
+                        hdr2.CopyTo(hdr, 4);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         try
                         {
-                            sendSocket.Send(hdr1);
-                            sendSocket.Send(hdr2);
+                            sendSocket.Send(hdr);
                             sendSocket.Send(buf);
                         }
                         catch (ObjectDisposedException)
