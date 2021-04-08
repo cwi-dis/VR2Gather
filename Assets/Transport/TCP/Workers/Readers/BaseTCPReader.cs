@@ -113,6 +113,7 @@ namespace VRT.Transport.TCP
                             all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                             IPAddress ipAddress = all[0];
                             IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port);
+                            BaseStats.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
                             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                             Debug.Log($"{Name()}: xxxjack connect to {remoteEndpoint.ToString()}");
                             try
@@ -126,22 +127,31 @@ namespace VRT.Transport.TCP
                                 System.Threading.Thread.Sleep(1000);
                                 continue;
                             }
+                            BaseStats.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
                             Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
                         }
                         byte[] hdr = new byte[8];
+                        Debug.Log($"{Name()}: xxxjack  start receive header 8 bytes");
                         int hdrSize = socket.Receive(hdr);
+                        Debug.Log($"{Name()}: xxxjack receive header returned {hdrSize} bytes");
                         if (hdrSize != 8)
                         {
-                            Debug.Log($"{Name()}: short read, closing socket");
-                            break;
+                            Debug.Log($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
+                            socket.Close();
+                            socket = null;
+                            continue;
                         }
                         int dataSize = BitConverter.ToInt32(hdr, 4);
                         byte[] data = new byte[dataSize];
+                        Debug.Log($"{Name()}: xxxjack start receive data {dataSize} bytes");
                         int actualDataSize = socket.Receive(data);
+                        Debug.Log($"{Name()}: xxxjack receive data returned {actualDataSize} bytes");
                         if (actualDataSize != dataSize)
                         {
-                            Debug.Log($"{Name()}: short read, closing socket");
-                            break;
+                            Debug.Log($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
+                            socket.Close();
+                            socket = null;
+                            continue;
                         }
 
                         NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
