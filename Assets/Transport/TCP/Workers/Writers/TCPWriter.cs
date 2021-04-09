@@ -185,6 +185,10 @@ namespace VRT.Transport.TCP
             }
             uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             Uri url = new Uri(_url);
+            if (url.Scheme != "tcp" || url.Host == "" || url.Port <= 0)
+            {
+                throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, got \"{_url}\"");
+            }
             TCPStreamDescription[] ourDescriptions = new TCPStreamDescription[_descriptions.Length];
             for(int i=0; i<_descriptions.Length; i++)
             {

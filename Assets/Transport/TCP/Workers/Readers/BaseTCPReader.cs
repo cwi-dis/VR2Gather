@@ -199,10 +199,13 @@ namespace VRT.Transport.TCP
 
                 if (_url == "" || _url == null)
                 {
-                    Debug.LogError($"{Name()}: configuration error: url not set");
-                    throw new System.Exception($"{Name()}: configuration error: url not set");
+                    throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, but no URL specified");
                 }
                 url = new Uri(_url);
+                if (url.Scheme != "tcp" || url.Host == "" || url.Port <= 0)
+                {
+                    throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, got \"{_url}\"");
+                }
                 if (url.Host == "" || url.Port == 0)
                 {
                     Debug.LogError($"{Name()}: configuration error: url misses host or port");
