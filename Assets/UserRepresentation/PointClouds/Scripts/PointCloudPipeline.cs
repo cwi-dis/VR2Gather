@@ -220,14 +220,30 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // Create encoders for transmission
                         //
-                        try
+                        if (Config.Instance.protocolType != Config.ProtocolType.TCP)
                         {
-                            encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            try
+                            {
+                                encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
                         }
-                        catch (System.EntryPointNotFoundException)
+                        else
                         {
-                            Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                            throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            try
+                            {
+                                encoder = new NULLEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
+
                         }
                         //
                         // Create bin2dash writer for PC transmission
@@ -369,8 +385,16 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
-                decoders.Add(decoder);
+                if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                {
+                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
+                else
+                {
+                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
                 //
                 // And collect the relevant information for the Dash receiver
                 //
