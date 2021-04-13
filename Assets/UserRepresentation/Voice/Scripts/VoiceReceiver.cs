@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 
@@ -19,7 +20,7 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe preparerQueue;
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, bool UseDash)
+        public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
         {
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
@@ -32,10 +33,17 @@ namespace VRT.UserRepresentation.Voice
 
             preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
 
-            if (UseDash)
+            if (proto == Config.ProtocolType.Dash)
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
                 reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+            }
+            else
+            if (proto == Config.ProtocolType.TCP)
+            {
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
+                Debug.Log($"xxxjack VoiceReceiver TCP URL={user.userData.userAudioUrl}");
+                reader = new BaseTCPReader(user.userData.userAudioUrl, decoderQueue);
             }
             else
             {

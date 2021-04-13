@@ -71,8 +71,8 @@ public class NewMemorySystem : MonoBehaviour
                 Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OnConnectReady");
                 string uuid = System.Guid.NewGuid().ToString();
                 User user = OrchestratorController.Instance.SelfUser;
-                gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, false); //Audio Pipeline
-                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, false); //Audio Pipeline
+                gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
+                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, Config.ProtocolType.SocketIO); //Audio Pipeline
                 pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
                 pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
 
@@ -143,12 +143,12 @@ public class NewMemorySystem : MonoBehaviour
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
-            }, "audio", 2000, 10000, true); //Audio Pipeline
+            }, "audio", 2000, 10000, Config.ProtocolType.Dash); //Audio Pipeline
             gameObject.AddComponent<VoiceReceiver>().Init(new User() { 
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
-            }, "audio", 0, 1, true); //Audio Pipeline
+            }, "audio", 0, 1, Config.ProtocolType.Dash); //Audio Pipeline
         }
 
     }
