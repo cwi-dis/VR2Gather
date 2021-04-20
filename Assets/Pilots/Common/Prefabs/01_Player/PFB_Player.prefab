@@ -2644,7 +2644,7 @@ MonoBehaviour:
   webcam: {fileID: 4497088204552090385}
   pc: {fileID: 426937040433907628}
   audio: {fileID: 4012052827202430640}
-  teleporter: {fileID: 1160437321685233085}
+  teleporter: {fileID: 1874542409784781818}
 --- !u!114 &1101617796011613554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2710,7 +2710,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 1101617796011613554}
   BodyTransform: {fileID: 5131421326051842284}
-  HeadTransform: {fileID: 4311645287905124984}
+  HeadTransform: {fileID: 5120337489219806681}
   HeadScreenTransform: {fileID: 6115302363842516571}
   UpdateFrequency: 5
   InterpolateUpdates: 1
@@ -4551,6 +4551,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 170940818860420695}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1874542409784781818 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1755554650291586477, guid: 83e94137ec2c97e4bba09b62a296a03d,
+    type: 3}
+  m_PrefabInstance: {fileID: 170940818860420695}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &596243439135041552
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4630,12 +4636,6 @@ PrefabInstance:
       objectReference: {fileID: 5131421326051842284}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83e94137ec2c97e4bba09b62a296a03d, type: 3}
---- !u!1 &1160437321685233085 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1755554650291586477, guid: 83e94137ec2c97e4bba09b62a296a03d,
-    type: 3}
-  m_PrefabInstance: {fileID: 596243439135041552}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1160437321685233084 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1755554650291586476, guid: 83e94137ec2c97e4bba09b62a296a03d,
