@@ -1,11 +1,7 @@
 {
-	"orchestratorURL_": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
-	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
-	"openLogOnExit" : false,
-
-	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
-	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
 	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
+	"orchestratorLogURL" : "http://192.16.197.145:8081/",
+	"openLogOnExit" : false,
 
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
@@ -120,8 +116,13 @@
         "segmentSize": 2000,
         "segmentLife": 10000
       },
+<<<<<<< HEAD
       "pointcloudServerURL" : "tcp://vrtiny.local:10301",
       "audioServerURL" : "tcp://vrtiny.local:10300"
+=======
+      "pointcloudServerURL" : "tcp://vrsmall.huiskamer.private:10301",
+      "audioServerURL" : "tcp://vrsmall.huiskamer.private:10300"
+>>>>>>> be408371e85d943ce9dc37773e2fd8478f1cc88f
     },
     "Render": {
       "pointSize": 0,
