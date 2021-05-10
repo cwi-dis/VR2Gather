@@ -116,13 +116,8 @@
         "segmentSize": 2000,
         "segmentLife": 10000
       },
-<<<<<<< HEAD
       "pointcloudServerURL" : "tcp://vrtiny.local:10301",
       "audioServerURL" : "tcp://vrtiny.local:10300"
-=======
-      "pointcloudServerURL" : "tcp://vrsmall.huiskamer.private:10301",
-      "audioServerURL" : "tcp://vrsmall.huiskamer.private:10300"
->>>>>>> be408371e85d943ce9dc37773e2fd8478f1cc88f
     },
     "Render": {
       "pointSize": 0,
