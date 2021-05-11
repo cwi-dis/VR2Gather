@@ -1,5 +1,5 @@
 {
-	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
+	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
 	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
 	"openLogOnExit" : false,
 
