@@ -57,16 +57,20 @@ namespace VRT.UserRepresentation.Voice
             {
                 len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
-                Debug.Log($"[FPA] Error on decompressing {mcIn.length}");
+#if UNITY_EDITOR
+                throw;
+#else
+               Debug.LogError($"[FPA] Error on decompressing {mcIn.length}");
+#endif
             }
 #else
             int len = mcIn.length / 4;
             if (temporalBuffer == null) temporalBuffer = new float[len];
             System.Runtime.InteropServices.Marshal.Copy(mcIn.pointer, temporalBuffer, 0, len);
 #endif
-            FloatMemoryChunk mcOut = new FloatMemoryChunk(len * 6);
+                FloatMemoryChunk mcOut = new FloatMemoryChunk(len * 6);
             for (int i = 0; i < len; ++i)
             {
                 mcOut.buffer[i * 6 + 0] =

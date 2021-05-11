@@ -264,6 +264,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Synthetic PC)";
                 break;
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (Prerecorded PC)";
+                break;
             case UserRepresentationType.__PCC_CERTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric PC)";
@@ -369,10 +373,13 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "Simple PointCloud (5G phone proxy)";
                     break;
                 case "__PCC_SYNTH__":
-                    enumName = "Synthetic PointCloud";
+                    enumName = "Synthetic PointCloud (development option)";
+                    break;
+                case "__PCC_PRERECORDED__":
+                    enumName = "Prerecorded PointCloud (development option)";
                     break;
                 case "__PCC_CERTH__":
-                    enumName = "Volumetric PointCloud";
+                    enumName = "Volumetric PointCloud (development option)";
                     break;
                 case "__SPECTATOR__":
                     enumName = "Spectator";
@@ -447,6 +454,10 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "PRERECORDED PC";
+                break;
             case UserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC PC";
@@ -490,6 +501,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
+                break;
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
                 break;
             case UserRepresentationType.__PCC_CERTH__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";

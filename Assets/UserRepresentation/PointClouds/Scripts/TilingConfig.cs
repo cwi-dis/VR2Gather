@@ -21,4 +21,17 @@ namespace VRT.UserRepresentation.PointCloud
         };
         public TileInformation[] tiles;
     };
+
+    // Used only for Prerecorded: information allowing the tile selector to find
+    // the files with the bandwidth prediction information.
+    // 
+    public struct StaticPredictionInformation
+    {
+        public string baseDirectory;
+        public string[] tileNames;
+        public string[] qualityNames;
+        public string predictionFilename;
+    };
+   
+
 }

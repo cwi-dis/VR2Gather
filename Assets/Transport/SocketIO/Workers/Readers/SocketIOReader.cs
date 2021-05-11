@@ -38,7 +38,7 @@ namespace VRT.Transport.SocketIO
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: Exception: {e.Message}");
-                throw e;
+                throw;
             }
         }
 
@@ -86,8 +86,14 @@ namespace VRT.Transport.SocketIO
                     BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
                     // xxxjack note: this means we are _not_ distinghuising tiles for socketIO. Should be fixed, but difficult.
-                    stats.statsUpdate(chunk.length);
-                    descriptors[id].outQueue.Enqueue(chunk);
+                    stats.statsUpdate(chunk.length, id);
+                    if (id < descriptors.Length)
+                    {
+                        descriptors[id].outQueue.Enqueue(chunk);
+                    } else
+                    {
+                        Debug.LogWarning($"Name(): drop packet for unknown stream {id}");
+                    }
                 }
             }
             else
@@ -114,7 +120,7 @@ namespace VRT.Transport.SocketIO
             double statsTotalPackets;
             bool statsGotFirstReception;
 
-            public void statsUpdate(int nBytes)
+            public void statsUpdate(int nBytes, int streamId)
             {
                 if (!statsGotFirstReception)
                 {
@@ -128,7 +134,7 @@ namespace VRT.Transport.SocketIO
                 statsTotalPackets++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamId}");
                 }
                 if (ShouldClear())
                 {

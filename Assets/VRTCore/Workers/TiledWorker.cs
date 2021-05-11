@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 
 namespace VRT.Core
 {
     public class TiledWorker : BaseWorker
     {
+        [Serializable]
         public struct TileInfo
         {
             // xxxjack wrong: should be min and max angle in XZ plane

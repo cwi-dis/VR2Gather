@@ -107,6 +107,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
             case UserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
             case UserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
                 BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);
