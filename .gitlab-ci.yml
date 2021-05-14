@@ -10,14 +10,17 @@ build_win:
   - tags
   tags:
   - win10unity
+  - vrtogether
   before_script:
    - mkdir deployment-helpers
    - cd deployment-helpers
-   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@baltig.viaccess-orca.com:8443/VRT/deployment-group/Deployment
+   - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.com/VRTogether_EU/Deployment/Deployment
    - python -m pip install -r Deployment/scripts/requirements.txt
    - cd ..
   script:
     - bash build-VRTogether.sh --dest VRTogether
     - mkdir deliverables
     - "& \"C:/Program Files/7-Zip/7z.exe\" a -tzip -r deliverables/Unity_Player_$CI_COMMIT_TAG.zip VRTogether"
-    - python deployment-helpers/Deployment/scripts/addReleaseToGitLab --cicd --notag Unity_Player_$CI_COMMIT_TAG.zip
+    - $pver = & bash deployment-helpers/Deployment/scripts/mkpackageversion.sh
+    - echo "xxxjack package_version=$pver"
+    - python deployment-helpers/Deployment/scripts/addReleaseToGitLab --cicd --notag --package_version $pver Unity_Player_$CI_COMMIT_TAG.zip

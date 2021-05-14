@@ -1,10 +1,7 @@
 {
-	"orchestratorURL": "https://vrt-orch-sandbox.viaccess-orca.com/socket.io/",
-	"orchestratorLogURL" : "https://vrt-orch-sfu-logs.viaccess-orca.com/",
+	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
+	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
-
-	"orchestratorURL_": "https://vrt-orch-ms-vo.viaccess-orca.com/socket.io/",
-	"orchestratorURL_": "http://192.168.37.30:8080/socket.io/",
 
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
@@ -14,7 +11,7 @@
   "statsInterval": 10,
   "statsOutputFile":  "",
   "TVMs": {
-        "connectionURI": "amqp://volumetric:capture@195.251.117.104:5672",
+        "connectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
         "exchangeName": "prod_test",
 		"printMetrics": false,
 		"saveMetrics": false,
@@ -118,7 +115,9 @@
       "AudioBin2Dash": {
         "segmentSize": 2000,
         "segmentLife": 10000
-      }
+      },
+      "pointcloudServerURL" : "tcp://vrtiny.local:10301",
+      "audioServerURL" : "tcp://vrtiny.local:10300"
     },
     "Render": {
       "pointSize": 0,

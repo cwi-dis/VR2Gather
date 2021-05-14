@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 
@@ -19,7 +20,7 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe senderQueue = new QueueThreadSafe("VoiceSenderSender");
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _segmentSize, int _segmentLife, bool UseDash)
+        public void Init(User user, string _streamName, int _segmentSize, int _segmentLife, Config.ProtocolType proto)
         {
             string micro = null;
             if (user != null && user.userData != null)
@@ -35,8 +36,19 @@ namespace VRT.UserRepresentation.Voice
             B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
             // xxxjack invented VR2a 4CC here. Is there a correct one?
-            if (UseDash) writer = new B2DWriter(user.sfuData.url_audio, _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
-            else writer = new SocketIOWriter(user, _streamName, b2dStreams);
+            if (proto == Config.ProtocolType.Dash)
+            {
+                writer = new B2DWriter(user.sfuData.url_audio, _streamName, "VR2a", _segmentSize, _segmentLife, b2dStreams);
+            } 
+            else if (proto == Config.ProtocolType.TCP)
+            {
+                Debug.Log($"xxxjack VoiceSender TCP URL={user.userData.userAudioUrl}");
+                writer = new TCPWriter(user.userData.userAudioUrl, "VR2a", b2dStreams);
+            }
+            else
+            {
+                writer = new SocketIOWriter(user, _streamName, b2dStreams);
+            }
         }
 
         void OnDestroy()

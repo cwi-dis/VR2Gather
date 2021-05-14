@@ -7,6 +7,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -63,7 +64,6 @@ namespace VRT.UserRepresentation.PointCloud
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             user = (User)_user;
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
@@ -220,14 +220,30 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // Create encoders for transmission
                         //
-                        try
+                        if (Config.Instance.protocolType != Config.ProtocolType.TCP)
                         {
-                            encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            try
+                            {
+                                encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
                         }
-                        catch (System.EntryPointNotFoundException)
+                        else
                         {
-                            Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                            throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            try
+                            {
+                                encoder = new NULLEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
+
                         }
                         //
                         // Create bin2dash writer for PC transmission
@@ -237,10 +253,19 @@ namespace VRT.UserRepresentation.PointCloud
                             throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            if (useDash)
+                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                            {
                                 writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            }
                             else
+                            if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                            {
+                                writer = new TCPWriter(cfg.PCSelfConfig.pointcloudServerURL, "cwi1", dashStreamDescriptions);
+                            }
+                            else
+                            {
                                 writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                            }
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -335,7 +360,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
             {
@@ -361,8 +385,16 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
-                decoders.Add(decoder);
+                if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                {
+                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
+                else
+                {
+                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
                 //
                 // And collect the relevant information for the Dash receiver
                 //
@@ -372,10 +404,18 @@ namespace VRT.UserRepresentation.PointCloud
                     tileNumber = tileNumbers[i]
                 };
             };
-            if (useDash)
+            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+            {
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+            } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+            {
+                reader = new PCTCPReader(user.userData.userPCurl, tilesToReceive);
+            }
             else
+            {
                 reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
+            }
+            
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
