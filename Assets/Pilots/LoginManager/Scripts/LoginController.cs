@@ -59,6 +59,9 @@ public class LoginController : PilotController {
                 case "2": // Dash Audio
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     break;
+                case "3": // Raw TCP
+                    Config.Instance.protocolType = Config.ProtocolType.TCP;
+                    break;
                 default:
                     break;
             }

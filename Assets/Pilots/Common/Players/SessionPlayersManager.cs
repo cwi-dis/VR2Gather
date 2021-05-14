@@ -284,7 +284,7 @@ namespace VRT.Pilots.Common
 					throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
 				try
 				{
-					player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+					player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType); //Audio Pipeline
 				}
 				catch (EntryPointNotFoundException e)
 				{
@@ -297,7 +297,7 @@ namespace VRT.Pilots.Common
 				var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
 				if (AudioSUBConfig == null)
 					throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType); //Audio Pipeline
 			}
 		}
 

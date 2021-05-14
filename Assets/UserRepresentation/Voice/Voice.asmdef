@@ -4,7 +4,8 @@
         "VRTCore",
         "Dash",
         "Orchestrator",
-        "SocketIO"
+        "SocketIO",
+        "TCP"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
