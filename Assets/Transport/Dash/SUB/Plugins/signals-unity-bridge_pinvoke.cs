@@ -203,7 +203,7 @@ namespace VRT.Transport.Dash
             SetMSPaths();
             _API.MessageLogCallback errorCallback = (msg) =>
             {
-                string _pipeline = string.Copy(pipeline);
+                string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
                 UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
             };
             obj = _API.sub_create(pipeline, errorCallback);
