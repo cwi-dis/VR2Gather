@@ -8,6 +8,8 @@ namespace VRT.Core
     {
         [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame. Default: as fast as possible.")]
         public int catchUpMs = 0;
+        [Tooltip("Enable to get lots of log messages on Synchronizer use")]
+        public bool debugSynchronizer = false;
         long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
         int currentFrameCount = 0;  // Unity frame number we are currently working for
         ulong currentEarliestTimestamp = 0; // Earliest timestamp available for this frame, for all clients
@@ -31,10 +33,10 @@ namespace VRT.Core
                 bestTimestampForCurrentFrame = 0;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(ulong earliestTimestamp, ulong latestTimestamp)
+        public void SetTimestampRangeForCurrentFrame(string caller, ulong earliestTimestamp, ulong latestTimestamp)
         {
             _Reset();
-            //Debug.Log($"{Name()}: xxxjack SetTimestampRangeForCurrentFrame: frame={currentFrameCount}, earliest={earliestTimestamp}, latest={latestTimestamp}");
+            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={earliestTimestamp}, latest={latestTimestamp}");
             // Record (for current frame) earliest and latest timestamp available on all prepareres.
             // In other words: the maximum of all earliest timestamps and minimum of all latest reported.
             if (latestTimestamp == 0) latestTimestamp = earliestTimestamp;
@@ -88,7 +90,7 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
-            Debug.Log($"{Name()}: xxxjack synchronizer started");
+            if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
             stats = new Stats(Name());
         }
 

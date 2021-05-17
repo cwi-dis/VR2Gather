@@ -447,14 +447,19 @@ namespace VRT.Transport.Dash
         protected override void Update()
         {
             base.Update();
+            bool shouldStop = false;
             lock (this)
             {
                 // If we should stop playing we stop
 
-                if (!isPlaying)
-                {
-                    _DeinitDash(false);
-                }
+                shouldStop = !isPlaying;
+            }
+            if (shouldStop) {
+                _DeinitDash(false);
+            }
+
+            lock (this)
+            {
                 // If we are not playing we start
                 if (subHandle == null)
                 {

@@ -106,7 +106,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer)
             {
                 ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
-                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
             }
         }
 

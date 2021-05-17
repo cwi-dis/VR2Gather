@@ -42,19 +42,26 @@ namespace VRT.UserRepresentation.PointCloud
                 if (synchronizer != null)
                 {
                     ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
+                    if (bestTimestamp != 0 &&  bestTimestamp < currentTimestamp)
                     {
-                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
                         return;
                     }
-                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
-
+                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp-currentTimestamp} ms too late");
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (InQueue.IsClosed()) return; // Weare shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
-                if (pc == null) return;
+                if (pc == null)
+                {
+                    if (currentTimestamp != 0 && synchronizer != null && synchronizer.debugSynchronizer)
+                    {
+                        Debug.Log($"{Name()}: no pointcloud available");
+                    }
+                    currentTimestamp = 0;
+                    return;
+                }
                 unsafe
                 {
                     currentSize = pc.get_uncompressed_size();
@@ -91,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer)
             {
                 ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
-                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
