@@ -39,7 +39,7 @@ namespace VRT.UserRepresentation.Voice
             // Wipe out the inQueue for initial burst.
             NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
             if(inQueue._Count > 100){
-                Debug.Log($"[FPA] WIPE OUT!!! {inQueue._Count}");
+                Debug.Log($"{Name()}: flushing overfull inQueue, size={inQueue._Count}");
                 while(inQueue._Count > 1) {
                     mcIn.free();
                     mcIn = (NativeMemoryChunk)inQueue.Dequeue();
