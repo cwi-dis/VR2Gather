@@ -44,11 +44,10 @@ namespace VRT.UserRepresentation.PointCloud
                     ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
                     if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
-                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
+                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: bestTimestamp={bestTimestamp} but currentTimestamp={currentTimestamp}");
                         return;
                     }
                     //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
-
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
@@ -91,7 +90,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer)
             {
                 ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
-                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
