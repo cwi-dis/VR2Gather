@@ -57,7 +57,7 @@ namespace VRT.Transport.Dash
                 // Get stream information
                 //
                 streamCount = subHandle.get_stream_count();
-                Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
+                Debug.Log($"{Name()}: streamInfoAvailable: {streamCount} streams.");
                 //
                 // Get more stream information
                 //
