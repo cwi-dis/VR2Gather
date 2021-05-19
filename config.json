@@ -99,8 +99,8 @@
           "z": 1
         }
       },
-      "voxelSize": 0.005,
-      "frameRate": 15,
+      "voxelSize": 0.008,
+      "frameRate": 8,
       "tiled": true,
       "Encoders": [
         {
