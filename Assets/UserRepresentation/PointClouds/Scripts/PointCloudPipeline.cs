@@ -18,6 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
+        const int pcDecoderQueueSize = 25;  // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -377,7 +378,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Allocate queues we need for this pipeline
                 //
-                QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue", 2, true);
+                QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue", pcDecoderQueueSize, true);
                 //
                 // Create renderer
                 //
