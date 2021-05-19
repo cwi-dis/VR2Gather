@@ -42,7 +42,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (synchronizer != null)
                 {
                     ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp != 0 &&  bestTimestamp < currentTimestamp)
+                    if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
                         if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
                         return;
@@ -51,7 +51,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (InQueue.IsClosed()) return; // Weare shutting down
+                if (InQueue.IsClosed()) return; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null)
                 {
