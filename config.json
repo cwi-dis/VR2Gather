@@ -8,8 +8,9 @@
   "useAudio": true,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": true,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsInterval": 0.25,
+  "statsOutputFile":  "statistics.log",
+  "statsOutputFileAppend" : false,
   "TVMs": {
         "connectionURI": "amqp://volumetric:capture@vrtiny.local:5672",
         "exchangeName": "prod_test",
@@ -101,7 +102,7 @@
       },
       "voxelSize": 0.008,
       "frameRate": 8,
-      "tiled": true,
+      "tiled": false,
       "Encoders": [
         {
           "octreeBits": 9
