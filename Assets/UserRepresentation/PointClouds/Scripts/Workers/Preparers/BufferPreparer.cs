@@ -59,7 +59,6 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.Log($"{Name()}: no pointcloud available");
                     }
-                    currentTimestamp = 0;
                     return;
                 }
                 unsafe

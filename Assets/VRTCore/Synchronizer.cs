@@ -12,8 +12,8 @@ namespace VRT.Core
         public bool debugSynchronizer = false;
         long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        ulong currentEarliestTimestamp = 0; // Earliest timestamp available for this frame, for all clients
-        ulong currentLatestTimestamp = 0;   // Latest timestamp available for this frame, for all clients
+        ulong latestCurrentFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
+        ulong earliestNextFrameTimestamp = 0;   // Latest timestamp available for this frame, for all clients
         ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
         static int instanceCounter = 0;
@@ -28,27 +28,27 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
-                currentEarliestTimestamp = 0;
-                currentLatestTimestamp = 0;
+                latestCurrentFrameTimestamp = 0;
+                earliestNextFrameTimestamp = 0;
                 bestTimestampForCurrentFrame = 0;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(string caller, ulong earliestTimestamp, ulong latestTimestamp)
+        public void SetTimestampRangeForCurrentFrame(string caller, ulong currentFrameTimestamp, ulong nextFrameTimestamp)
         {
             _Reset();
-            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={earliestTimestamp}, latest={latestTimestamp}");
+            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={currentFrameTimestamp}, latest={nextFrameTimestamp}");
             // Record (for current frame) earliest and latest timestamp available on all prepareres.
             // In other words: the maximum of all earliest timestamps and minimum of all latest reported.
-            if (latestTimestamp == 0) latestTimestamp = earliestTimestamp;
-            if (earliestTimestamp == 0) earliestTimestamp = latestTimestamp;
-            if (earliestTimestamp == 0) return;
-            if (currentEarliestTimestamp == 0 || earliestTimestamp > currentEarliestTimestamp)
+            if (nextFrameTimestamp == 0) nextFrameTimestamp = currentFrameTimestamp;
+            if (currentFrameTimestamp == 0) currentFrameTimestamp = nextFrameTimestamp;
+            if (currentFrameTimestamp == 0) return;
+            if (this.latestCurrentFrameTimestamp == 0 || currentFrameTimestamp > this.latestCurrentFrameTimestamp)
             {
-                currentEarliestTimestamp = earliestTimestamp;
+                this.latestCurrentFrameTimestamp = currentFrameTimestamp;
             }
-            if (currentLatestTimestamp == 0 || latestTimestamp < currentLatestTimestamp)
+            if (this.earliestNextFrameTimestamp == 0 || nextFrameTimestamp < this.earliestNextFrameTimestamp)
             {
-                currentLatestTimestamp = latestTimestamp;
+                this.earliestNextFrameTimestamp = nextFrameTimestamp;
             }
         }
 
@@ -57,27 +57,28 @@ namespace VRT.Core
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
             // If there is no latest timestamp, or it is old anyway, we use the earliest timestamp for this frame.
-            if (currentLatestTimestamp <= currentEarliestTimestamp)
+            if (earliestNextFrameTimestamp <= latestCurrentFrameTimestamp)
             {
-                bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
                 stats.statsUpdate(false, true, false, workingEpoch, bestTimestampForCurrentFrame);
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
             if (catchUpMs != 0 && workingEpoch != 0)
             {
-                // currentLatestTimestamp may be too far in the future. 
-                long expectedNextTimestamp = utcMillisForCurrentFrame + workingEpoch + catchUpMs;
-                if (currentLatestTimestamp > (ulong)expectedNextTimestamp)
+                // earliestNextTimestamp may be too far in the future.
+                // In that case we stick with the latest current frame timestamp
+                long expectedNextTimestamp = utcMillisForCurrentFrame - workingEpoch + catchUpMs;
+                if (earliestNextFrameTimestamp > (ulong)expectedNextTimestamp)
                 {
-                    bestTimestampForCurrentFrame = currentEarliestTimestamp;
+                    bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
                     stats.statsUpdate(false, false, true, workingEpoch, bestTimestampForCurrentFrame);
                     return;
                 }
             }
             // We are going to show new data in the current frame. Update our epoch.
-            workingEpoch = utcMillisForCurrentFrame - (long)currentLatestTimestamp;
-            bestTimestampForCurrentFrame = currentLatestTimestamp;
+            bestTimestampForCurrentFrame = earliestNextFrameTimestamp;
+            workingEpoch = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
             stats.statsUpdate(true, false, false, workingEpoch, bestTimestampForCurrentFrame);
         }
         public ulong GetBestTimestampForCurrentFrame()
