@@ -33,6 +33,11 @@ namespace VRT.UserRepresentation.PointCloud
             var file = System.IO.File.ReadAllText(tileConfigFilename);
             _Config _config;
             _config = JsonUtility.FromJson<_Config>(file);
+            if (_config == null)
+            {
+                Debug.LogError($"{Name()}: Error reading {tileConfigFilename}");
+                return;
+            }
             tileInfo = _config.tileInfo;
             Debug.Log($"{Name()}: _initTileInfo: {tileInfo?.Length} tiles");
 
