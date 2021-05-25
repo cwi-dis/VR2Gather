@@ -18,7 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        const int pcDecoderQueueSize = 25;  // Was: 2.
+        const int pcDecoderQueueSize = 50;  // Was: 2.
+        const int pcPreparerQueueSize = 50; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -427,7 +428,7 @@ namespace VRT.UserRepresentation.PointCloud
             // We 
             Config._PCs PCs = Config.Instance.PCs;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", 2, false);
+            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
             if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
             { // Mesh
