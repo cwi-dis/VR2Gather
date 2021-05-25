@@ -73,7 +73,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPointcloudCount = 0;
             double statsTotalPointCount = 0;
             double statsTotalPointSize = 0;
-            double statsTotalQueueSize = 0;
+            int statsMaxQueueSize = 0;
 
             public void statsUpdate(int pointCount, float pointSize, ulong timestamp, int queueSize)
             {
@@ -81,12 +81,12 @@ namespace VRT.UserRepresentation.PointCloud
                 statsTotalPointCount += pointCount;
                 statsTotalPointcloudCount += 1;
                 statsTotalPointSize += pointSize;
-                statsTotalQueueSize += queueSize;
+                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
  
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, avg_queuesize={(statsTotalQueueSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, max_queuesize={statsMaxQueueSize}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                   }
                 if (ShouldClear())
                 {
@@ -94,7 +94,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPointcloudCount = 0;
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
-                    statsTotalQueueSize = 0;
+                    statsMaxQueueSize = 0;
                 }
             }
         }
