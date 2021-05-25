@@ -29,9 +29,9 @@ namespace VRT.Transport.Dash
                 for (int ti = 0; ti < nTiles; ti++)
                 {
                     ReceiverInfo ri = new ReceiverInfo();
-                    ri.tileNumber = ti;
                     TileDescriptor td = tileDescriptors[ti];
                     ri.tileDescriptor = td;
+                    ri.tileNumber = td.tileNumber;
                     ri.outQueue = tileDescriptors[ti].outQueue;
                     // Probably streamDescriptors will be received later,
                     // then we set the current streamIndex to -1 (nothing to receive yet)
@@ -81,12 +81,15 @@ namespace VRT.Transport.Dash
                 ReceiverInfo ri = null;
                 foreach (var _ri in receivers)
                 {
-                    Debug.Log($"{Name()}: setTileQuality: tileNumber={_ri.tileNumber} quality={quality}");
-                    if (_ri.tileNumber == tileNumber) ri = _ri;
+                    Debug.Log($"{Name()}: setTileQuality({tileNumber},{quality}): examine receiver: tileNumber={_ri.tileNumber} quality={quality}");
+                    if (_ri.tileNumber == tileNumber)
+                    {
+                        ri = _ri;
+                    }
                 }
                 if (ri == null)
                 {
-                    Debug.LogError($"{Name()}: setTileQuality: unknown tileNumber {tileNumber}");
+                    Debug.LogError($"{Name()}: setTileQuality({tileNumber},{quality}): unknown tileNumber");
                     return;
                 }
                 // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
@@ -143,7 +146,7 @@ namespace VRT.Transport.Dash
                 //
                 // We have both tile descriptions and stream descriptions. Match them up.
                 //
-                Debug.Log($"{Name()}: xxxjack _recomputeStreams: looking at {tileDescriptors.Length} tiles");
+                Debug.Log($"{Name()}: xxxjack _recomputeStreams: received tileDescriptors for {tileDescriptors.Length} tiles");
                 if (tileDescriptors.Length != receivers.Length)
                 {
                     Debug.LogError($"{Name()}: _recomputeStreams: {tileDescriptors.Length} tile descriptors but {receivers.Length} receivers");
@@ -154,11 +157,12 @@ namespace VRT.Transport.Dash
                     ReceiverInfo ri = receivers[i];
 
                     List<sub.StreamDescriptor> streamDescriptorsPerTile = new List<sub.StreamDescriptor>();
+                    Debug.Log($"{Name()}: _recomputeStreams: tile {i}: tileNumber={td.tileNumber}: examine streamDescriptors for {allStreamDescriptors.Length} streams");
                     foreach (var sd in allStreamDescriptors)
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
-                            Debug.Log($"{Name()}: xxxjack i={i} found tile={sd.tileNumber} quality={sd.quality} streamIndex={sd.streamIndex}");
+                            Debug.Log($"{Name()}: xxxjack tile {i}: found tile={sd.tileNumber} quality={sd.quality} streamIndex={sd.streamIndex}");
                             // If this stream is for this tile we remember the streamIndex.
                             streamDescriptorsPerTile.Add(sd);
                         }
