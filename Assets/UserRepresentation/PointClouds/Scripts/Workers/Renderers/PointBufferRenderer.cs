@@ -56,7 +56,7 @@ namespace VRT.UserRepresentation.PointCloud
             block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
-            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp);
+            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueSize());
         }
 
         public void OnDestroy()
@@ -73,18 +73,20 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPointcloudCount = 0;
             double statsTotalPointCount = 0;
             double statsTotalPointSize = 0;
+            double statsTotalQueueSize = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, ulong timestamp)
+            public void statsUpdate(int pointCount, float pointSize, ulong timestamp, int queueSize)
             {
     
                 statsTotalPointCount += pointCount;
                 statsTotalPointcloudCount += 1;
                 statsTotalPointSize += pointSize;
+                statsTotalQueueSize += queueSize;
  
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, avg_queuesize={(statsTotalQueueSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                   }
                 if (ShouldClear())
                 {
@@ -92,6 +94,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPointcloudCount = 0;
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
+                    statsTotalQueueSize = 0;
                 }
             }
         }

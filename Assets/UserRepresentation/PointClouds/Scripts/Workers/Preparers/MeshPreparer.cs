@@ -133,5 +133,10 @@ namespace VRT.UserRepresentation.PointCloud
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
             else return defaultCellSize * cellSizeFactor;
         }
+
+        public int getQueueSize()
+        {
+            return InQueue._Count;
+        }
     }
 }
