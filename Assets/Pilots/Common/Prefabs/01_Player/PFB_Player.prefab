@@ -2749,7 +2749,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee302642fd02ab43846844518a16bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  catchUpMs: 1
+  catchUpMs: 250
   debugSynchronizer: 0
 --- !u!1 &7759874434686086657
 GameObject:
