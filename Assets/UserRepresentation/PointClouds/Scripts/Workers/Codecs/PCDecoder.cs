@@ -74,15 +74,23 @@ namespace VRT.UserRepresentation.PointCloud
             lock (this)
             {
                 mc = (NativeMemoryChunk)inQueue.Dequeue();
-                if (mc == null)
-                {
-                    stats.statsUpdate(false, 0, 0, 0);
-                    return;
-                }
                 if (decoder == null) return;
+                if (mc != null)
+                {
+                    decoder.feed(mc.pointer, mc.length);
+                    mc.free();
+                } else
+                {
+                    // No pointcloud obtained.
+                    // If there's also no decoder output available
+                    // record this in the stats and return
+                    if (!decoder.available(false))
+                    {
+                        stats.statsUpdate(false, 0, 0, 0);
+                        return;
+                    }
+                }
             }
-            decoder.feed(mc.pointer, mc.length);
-            mc.free();
             while (decoder.available(false))
             {
                 cwipc.pointcloud pc = decoder.get();
