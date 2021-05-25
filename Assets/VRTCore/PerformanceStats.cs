@@ -28,7 +28,7 @@ namespace VRT.Core
             }
 
             Process myProcess;
-            double prevCpu = 0;
+            double prevCpu = -1;
 
             public void statsUpdate()
             {
@@ -36,6 +36,7 @@ namespace VRT.Core
                 {
                     myProcess.Refresh();
                     double cpu = myProcess.TotalProcessorTime.TotalSeconds;
+                    if (prevCpu < 0) prevCpu = cpu; // Stop-gap for extremely large value at beginning
                     long memory = myProcess.VirtualMemorySize64;
                     
                     Output($"cpu={(cpu-prevCpu)/Interval()}, memory={memory}");
