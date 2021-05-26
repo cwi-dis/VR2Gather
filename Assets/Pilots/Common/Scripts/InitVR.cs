@@ -38,8 +38,9 @@ namespace VRT.Pilots.Common
             yield return null;
             if (XRUtility.isPresent())
             {
-                if (XRSettings.loadedDeviceName == "Oculus")
-                    ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
+                //if (XRSettings.loadedDeviceName == "Oculus")
+                //    ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
+                Debug.Log("trial on the calibration");
             }
             else
             {
