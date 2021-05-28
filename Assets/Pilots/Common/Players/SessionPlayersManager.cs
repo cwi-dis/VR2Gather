@@ -265,7 +265,8 @@ namespace VRT.Pilots.Common
 				catch (Exception e)
 				{
 					Debug.Log($"[SessionPlayersManager] Exception occured when trying to load audio for user {user.userName} - {user.userId}: " + e);
-					Debug.LogError($"Cannot recieve audio from participant {user.userName}");
+					Debug.LogError($"Cannot receive audio from participant {user.userName}");
+					throw;
 				}
 			}
 		}
