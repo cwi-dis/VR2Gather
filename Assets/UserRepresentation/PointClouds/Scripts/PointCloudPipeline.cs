@@ -18,8 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        const int pcDecoderQueueSize = 50;  // Was: 2.
-        const int pcPreparerQueueSize = 50; // Was: 2.
+        const int pcDecoderQueueSize = 10;  // Was: 2.
+        const int pcPreparerQueueSize = 10; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
