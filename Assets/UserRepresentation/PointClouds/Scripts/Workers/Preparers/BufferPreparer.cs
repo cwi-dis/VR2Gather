@@ -35,7 +35,7 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log("BufferPreparer Stopped");
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
            lock (this)
             {
@@ -45,13 +45,13 @@ namespace VRT.UserRepresentation.PointCloud
                     if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
                         if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
-                        return;
+                        return false;
                     }
                     if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp-currentTimestamp} ms too late");
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (InQueue.IsClosed()) return; // We are shutting down
+                if (InQueue.IsClosed()) return false; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
                 if (pc == null)
                 {
@@ -59,7 +59,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.Log($"{Name()}: no pointcloud available");
                     }
-                    return;
+                    return false;
                 }
                 unsafe
                 {
@@ -69,7 +69,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         // This happens very often with tiled pointclouds.
                         //Debug.Log("BufferPreparer: pc.get_uncompressed_size is 0");
-                        return;
+                        return false;
                     }
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
@@ -89,6 +89,7 @@ namespace VRT.UserRepresentation.PointCloud
                     isReady = true;
                 }
             }
+            return true;
         }
 
         public override void Synchronize()

@@ -45,7 +45,7 @@ namespace VRT.UserRepresentation.PointCloud
             public Color32 color;
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
             lock (this)
             {
@@ -55,15 +55,15 @@ namespace VRT.UserRepresentation.PointCloud
                     if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
                     {
                         //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
-                        return;
+                        return false;
                     }
                     //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
 
                 }              // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (InQueue.IsClosed()) return; // We are shutting down
+                if (InQueue.IsClosed()) return false; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
-                if (pc == null) return;
+                if (pc == null) return false;
                 unsafe
                 {
                     int bufferSize = pc.get_uncompressed_size();
@@ -99,6 +99,7 @@ namespace VRT.UserRepresentation.PointCloud
                     isReady = true;
                 }
             }
+            return true;
         }
         public override void Synchronize()
         {
