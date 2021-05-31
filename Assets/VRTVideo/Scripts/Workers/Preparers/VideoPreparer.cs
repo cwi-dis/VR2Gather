@@ -59,12 +59,13 @@ namespace VRT.Video
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
+            bool didReadData = false;
             base.Update();
             if (inVideoQueue != null && inVideoQueue._CanDequeue())
             {
-
+                didReadData = true;
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
@@ -105,6 +106,7 @@ namespace VRT.Video
 
             if (inAudioQueue != null && inAudioQueue._CanDequeue())
             {
+                didReadData = true;
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
                 int len = mc.elements;
                 if (len < freeAudio)
@@ -127,6 +129,7 @@ namespace VRT.Video
                 }
 
             }
+            return didReadData;
         }
 
         public int availableAudio { get; private set; }

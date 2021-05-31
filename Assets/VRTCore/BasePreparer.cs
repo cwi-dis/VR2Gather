@@ -27,7 +27,7 @@ namespace VRT.Core
 
         public abstract void Synchronize();
 
-        public abstract void LatchFrame();
+        public abstract bool LatchFrame();
         // Start is called before the first frame update
         protected override void Start()
         {

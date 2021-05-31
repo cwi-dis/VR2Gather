@@ -74,11 +74,23 @@ namespace VRT.UserRepresentation.PointCloud
             lock (this)
             {
                 mc = (NativeMemoryChunk)inQueue.Dequeue();
-                if (mc == null) return;
                 if (decoder == null) return;
+                if (mc != null)
+                {
+                    decoder.feed(mc.pointer, mc.length);
+                    mc.free();
+                } else
+                {
+                    // No pointcloud obtained.
+                    // If there's also no decoder output available
+                    // record this in the stats and return
+                    if (!decoder.available(false))
+                    {
+                        stats.statsUpdate(false, 0, 0, 0);
+                        return;
+                    }
+                }
             }
-            decoder.feed(mc.pointer, mc.length);
-            mc.free();
             while (decoder.available(false))
             {
                 cwipc.pointcloud pc = decoder.get();
@@ -86,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                stats.statsUpdate(pc.count(), pc.timestamp());
+                stats.statsUpdate(true, pc.count(), pc.timestamp(), inQueue._Count);
                 outQueue.Enqueue(pc);
             }
         }
@@ -97,19 +109,24 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
             double statsTotalLatency = 0;
+            int statsMaxQueueSize = 0;
 
-            public void statsUpdate(int pointCount, ulong timeStamp)
+            public void statsUpdate(bool gotPC, int pointCount, ulong timeStamp, int queueSize)
             {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-                statsTotalPoints += pointCount;
-                statsTotalPointclouds++;
-                statsTotalLatency += latency;
+                if (gotPC)
+                {
+                    statsTotalPoints += pointCount;
+                    statsTotalPointclouds++;
+                    statsTotalLatency += latency;
+                }
+                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
 
                 if (ShouldOutput())
                 {
                     int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}, max_decoder_queuesize={statsMaxQueueSize}");
                  }
                 if (ShouldClear())
                 {
@@ -117,6 +134,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsTotalLatency = 0;
+                    statsMaxQueueSize = 0;
                 }
             }
         }

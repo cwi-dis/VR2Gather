@@ -35,7 +35,7 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log("BufferPreparer Stopped");
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
            lock (this)
             {
@@ -44,17 +44,23 @@ namespace VRT.UserRepresentation.PointCloud
                     ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
                     if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
-                        //Debug.Log($"{Name()}: xxxjack not getting frame {UnityEngine.Time.frameCount} {currentTimestamp}");
-                        return;
+                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
+                        return false;
                     }
-                    //Debug.Log($"{Name()}: xxxjack getting frame {UnityEngine.Time.frameCount} {bestTimestamp}");
-
+                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp-currentTimestamp} ms too late");
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (InQueue.IsClosed()) return; // Weare shutting down
+                if (InQueue.IsClosed()) return false; // We are shutting down
                 cwipc.pointcloud pc = (cwipc.pointcloud)InQueue.TryDequeue(0);
-                if (pc == null) return;
+                if (pc == null)
+                {
+                    if (currentTimestamp != 0 && synchronizer != null && synchronizer.debugSynchronizer)
+                    {
+                        Debug.Log($"{Name()}: no pointcloud available");
+                    }
+                    return false;
+                }
                 unsafe
                 {
                     currentSize = pc.get_uncompressed_size();
@@ -63,7 +69,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         // This happens very often with tiled pointclouds.
                         //Debug.Log("BufferPreparer: pc.get_uncompressed_size is 0");
-                        return;
+                        return false;
                     }
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
@@ -83,6 +89,7 @@ namespace VRT.UserRepresentation.PointCloud
                     isReady = true;
                 }
             }
+            return true;
         }
 
         public override void Synchronize()
@@ -91,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer)
             {
                 ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
-                synchronizer.SetTimestampRangeForCurrentFrame(currentTimestamp, nextTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
@@ -122,6 +129,11 @@ namespace VRT.UserRepresentation.PointCloud
         {
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
             else return defaultCellSize * cellSizeFactor;
+        }
+
+        public int getQueueSize()
+        {
+            return InQueue._Count;
         }
 
     }
