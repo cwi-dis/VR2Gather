@@ -38,19 +38,23 @@ namespace VRT.Pilots.Common
             yield return null;
             if (XRUtility.isPresent())
             {
-                //if (XRSettings.loadedDeviceName == "Oculus")
-                //    ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
+                if (XRSettings.loadedDeviceName == "Oculus")
+                    ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
                 Debug.Log("trial on the calibration");
             }
             else
             {
                 Debug.Log("pushing cameras");
-                Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
-                for (int i = 0; i < cameras.Length; ++i)
-                {
-                    if (cameras[i].gameObject.layer != 10) // 10: Spectator
-                        cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
-                }
+                //Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
+                //for (int i = 0; i < cameras.Length; ++i)
+                //{
+                //    if (cameras[i].gameObject.layer != 10) // 10: Spectator
+                //        cameras[i].transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+                //}
+
+                if (XRSettings.loadedDeviceName == "Oculus")
+                    ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
+
             }
 
         }
