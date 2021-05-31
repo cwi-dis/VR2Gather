@@ -81,7 +81,7 @@ namespace VRT.Transport.Dash
                 ReceiverInfo ri = null;
                 foreach (var _ri in receivers)
                 {
-                    Debug.Log($"{Name()}: setTileQuality({tileNumber},{quality}): examine receiver: tileNumber={_ri.tileNumber} quality={quality}");
+                    //Debug.Log($"{Name()}: setTileQuality({tileNumber},{quality}): examine receiver: tileNumber={_ri.tileNumber} quality={quality}");
                     if (_ri.tileNumber == tileNumber)
                     {
                         ri = _ri;
@@ -112,7 +112,7 @@ namespace VRT.Transport.Dash
                     }
                     // Found the right tile and the right quality, so now we have the streamIndex.
                     streamIndex = sd.Value.streamIndex;
-                    Debug.Log($"{Name()}: setTileQuality: found streamIndex={streamIndex} qualityIndex={qualityIndex}");
+                    Debug.Log($"{Name()}: setTileQuality({tileNumber}, {quality}): found streamIndex={streamIndex} qualityIndex={qualityIndex}");
                 }
                 // We can now tell the receiver to start receiving this stream (or stop receiving altogether)
                 ri.curStreamIndex = streamIndex;
@@ -162,7 +162,7 @@ namespace VRT.Transport.Dash
                     {
                         if (sd.tileNumber == td.tileNumber)
                         {
-                            Debug.Log($"{Name()}: xxxjack tile {i}: found tile={sd.tileNumber} quality={sd.quality} streamIndex={sd.streamIndex}");
+                            Debug.Log($"{Name()}: xxxjack tile {i}: tileNumber={td.tileNumber}: found quality={sd.quality} streamIndex={sd.streamIndex}");
                             // If this stream is for this tile we remember the streamIndex.
                             streamDescriptorsPerTile.Add(sd);
                         }
@@ -182,9 +182,11 @@ namespace VRT.Transport.Dash
                     }
                     else
                     {
-                        Debug.Log($"{Name()}:_recomputeStreams: tile {td.tileNumber}: looking at {td.streamDescriptors.Length} streams");
+                        int wantedIndex = 0;
+                        wantedIndex = td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
+                        Debug.Log($"{Name()}:_recomputeStreams: tileNumber={td.tileNumber}: {td.streamDescriptors.Length} streams, selecting {td.streamDescriptors[wantedIndex].quality}");
                         // And we can also tell the SUB which quality we want for this tile.
-                        setTileQuality(td.tileNumber, td.streamDescriptors[0].quality);
+                        setTileQuality(td.tileNumber, td.streamDescriptors[wantedIndex].quality);
                     }
                 }
             }

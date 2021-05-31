@@ -358,7 +358,6 @@ namespace VRT.Transport.Dash
                 {
                     stream4CCs[i] = subHandle.get_stream_4cc(i);
                 }
-                Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
