@@ -1,3 +1,3 @@
 [submodule "Assets/PilotsExternal/CWI_cake"]
 	path = Assets/PilotsExternal/CWI_cake
-	url = ssh://git@baltig.viaccess-orca.com:8022/VRT/tmp-group/vrtapp-cwi_cake.git
+	url = ../VRTApp-CWI_cake.git
