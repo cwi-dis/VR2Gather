@@ -35,9 +35,10 @@ namespace VRT.UserRepresentation.Voice
         {
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
             // xxxjack Not implemented yet for audio...
+            return true;
         }
 
         bool firstTime = true;

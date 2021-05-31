@@ -46,12 +46,12 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             if (preparer == null) return;
-            preparer.LatchFrame();
+            bool fresh = preparer.LatchFrame();
             float pointSize = preparer.GetPointSize();
             material.SetFloat("_PointSize", pointSize);
             if (mesh == null) return;
             preparer.GetMesh(ref mesh); // <- Bottleneck
-            stats.statsUpdate(mesh.vertexCount, pointSize, preparer.currentTimestamp);
+            stats.statsUpdate(mesh.vertexCount, pointSize, preparer.currentTimestamp, preparer.getQueueSize(), fresh);
         }
 
         public void OnRenderObject()
@@ -72,27 +72,33 @@ namespace VRT.UserRepresentation.PointCloud
             public Stats(string name) : base(name) { }
 
             double statsTotalPointcloudCount = 0;
+            double statsTotalDisplayCount = 0;
             double statsTotalVertexCount = 0;
             double statsTotalPointSize = 0;
+            double statsTotalQueueSize = 0;
 
-            public void statsUpdate(int vertexCount, float pointSize, ulong timestamp)
+            public void statsUpdate(int vertexCount, float pointSize, ulong timestamp, int queueSize, bool fresh)
             {
      
                 statsTotalVertexCount += vertexCount;
-                statsTotalPointcloudCount += 1;
+                statsTotalDisplayCount += 1;
+                if (fresh) statsTotalPointcloudCount += 1;
                 statsTotalPointSize += pointSize;
+                statsTotalQueueSize += queueSize;
 
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount}, pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, avg_quwuwsize={(statsTotalQueueSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount}, pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                  }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPointcloudCount = 0;
+                    statsTotalDisplayCount = 0;
                     statsTotalVertexCount = 0;
                     statsTotalPointSize = 0;
+                    statsTotalQueueSize = 0;
                 }
             }
 

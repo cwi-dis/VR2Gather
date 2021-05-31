@@ -17,7 +17,7 @@ namespace VRT.Core
             if (Config.Instance.statsOutputFile != "")
             {
                 string statsFilename = $"{Application.persistentDataPath}/{Config.Instance.statsOutputFile}";
-                statsStream = new System.IO.StreamWriter(statsFilename, true);
+                statsStream = new System.IO.StreamWriter(statsFilename, Config.Instance.statsOutputFileAppend);
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
                 //

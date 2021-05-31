@@ -52,7 +52,7 @@ namespace VRT.Transport.Dash
             int frequency = 20;
             System.Threading.Thread myThread;
             System.DateTime lastSuccessfulReceive;
-            System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(5);
+            System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
             System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
 
             public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo, int _frenquecy)
@@ -167,7 +167,7 @@ namespace VRT.Transport.Dash
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                         mc.info = frameInfo;
-                        stats.statsUpdate(bytesRead, frameInfo.timestamp, stream_index);
+#if xxxjack_removed_suspect_code
                         // xxxjack we should investigate the following code (and its history). It looks
                         // like some half-way attempt to lower latency, but unsure.
                         // Check if can start to enqueue
@@ -187,6 +187,10 @@ namespace VRT.Transport.Dash
                                 mc.free();
                             }
                         }
+#else
+                        bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
+#endif
+                        stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, stream_index);
                     }
                 }
                 catch (System.Exception e)
@@ -209,10 +213,11 @@ namespace VRT.Transport.Dash
                 System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
                 double statsTotalPackets;
+                double statsTotalDrops;
                 double statsTotalLatency;
                 bool statsGotFirstReception;
 
-                public void statsUpdate(int nBytes, long timeStamp, int stream_index)
+                public void statsUpdate(int nBytes, bool didDrop, long timeStamp, int stream_index)
                 {
                     if (!statsGotFirstReception)
                     {
@@ -232,16 +237,18 @@ namespace VRT.Transport.Dash
                     statsTotalLatency += latency;
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
                         int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
+                        Output($"fps_received={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
                      }
                     if (ShouldClear())
                     {
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
+                        statsTotalDrops = 0;
                         statsTotalLatency = 0;
                     }
                 }
@@ -351,7 +358,6 @@ namespace VRT.Transport.Dash
                 {
                     stream4CCs[i] = subHandle.get_stream_4cc(i);
                 }
-                Debug.Log($"{Name()}: sub.play({url}) successful, {streamCount} streams.");
             }
         }
 
