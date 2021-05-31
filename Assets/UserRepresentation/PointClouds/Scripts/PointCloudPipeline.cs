@@ -629,7 +629,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = (PCSubReader)reader;
+            PCSubReader pcReader = reader as PCSubReader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);
