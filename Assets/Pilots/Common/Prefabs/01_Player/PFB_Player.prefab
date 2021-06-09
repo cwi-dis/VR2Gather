@@ -3088,6 +3088,8 @@ MonoBehaviour:
   MaskBody: {fileID: 9010104110534211028}
   MaskLeftArm: {fileID: 6008850306009909340}
   MaskRightArm: {fileID: 7491481201867895526}
+  MaskLeftArm2: {fileID: 8594509391154584850}
+  MaskRightArm2: {fileID: 222483077833935042}
 --- !u!1 &5408734097564563202
 GameObject:
   m_ObjectHideFlags: 0
