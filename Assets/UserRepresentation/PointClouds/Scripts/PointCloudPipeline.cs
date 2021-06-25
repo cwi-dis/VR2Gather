@@ -211,7 +211,9 @@ namespace VRT.UserRepresentation.PointCloud
                                 dashStreamDescriptions[i] = new B2DWriter.DashStreamDescription
                                 {
                                     tileNumber = (uint)(it + minTileNum),
-                                    quality = (uint)(100 * octreeBits + 75),
+                                    // quality = (uint)(100 * octreeBits + 75),
+                                    qualityIndex = iq,
+                                    orientation = tileNormals[it],
                                     inQueue = thisQueue
                                 };
                                 tilingConfig.tiles[it].qualities[iq].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack

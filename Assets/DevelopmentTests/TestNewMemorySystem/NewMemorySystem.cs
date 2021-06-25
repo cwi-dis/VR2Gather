@@ -60,7 +60,7 @@ public class NewMemorySystem : MonoBehaviour
         B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
             new B2DWriter.DashStreamDescription(){
                 tileNumber = 0,
-                quality = 0,
+                qualityIndex = 0,
                 inQueue = writerQueue
             }
         };

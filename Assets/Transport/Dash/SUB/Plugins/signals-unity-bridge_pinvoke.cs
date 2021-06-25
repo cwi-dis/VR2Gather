@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using UnityEngine;
 using VRT.Core;
 
 namespace VRT.Transport.Dash
@@ -13,10 +14,10 @@ namespace VRT.Transport.Dash
         public struct DashStreamDescriptor
         {
             public uint MP4_4CC;
-            public uint objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
-            public uint objectY;    // In VRTogether, for pointclouds, we use this field for quality
-            public uint objectWidth;
-            public uint objectHeight;
+            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
+            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
+            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
+            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
             public uint totalWidth;
             public uint totalHeight;
         }
@@ -25,7 +26,7 @@ namespace VRT.Transport.Dash
         {
             public int streamIndex;
             public int tileNumber;
-            public int quality;
+            public Vector3 orientation;
         }
 
         protected class _API
@@ -154,8 +155,11 @@ namespace VRT.Transport.Dash
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();
                     _API.sub_get_stream_info(pointer, streamIndex, ref streamDesc);
                     rv[streamIndex].streamIndex = streamIndex;
-                    rv[streamIndex].tileNumber = (int)streamDesc.objectX;
-                    rv[streamIndex].quality = (int)streamDesc.objectY;
+                    rv[streamIndex].tileNumber = (int)streamDesc.tileNumber;
+                    float nx = ((float)streamDesc.nx) / 1000.0f;
+                    float ny = ((float)streamDesc.ny) / 1000.0f;
+                    float nz = ((float)streamDesc.nz) / 1000.0f;
+                    rv[streamIndex].orientation = new Vector3(nx, ny, nz);
                 }
                 return rv;
             }

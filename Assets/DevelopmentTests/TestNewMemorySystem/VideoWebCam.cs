@@ -53,7 +53,7 @@ public class VideoWebCam : MonoBehaviour {
             B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
                 new B2DWriter.DashStreamDescription() {
                     tileNumber = 0,
-                    quality = 0,
+                    qualityIndex = 0,
                     inQueue = writerQueue
                 }
             };

@@ -13,7 +13,8 @@ namespace VRT.Transport.Dash
         {
             public string name;
             public uint tileNumber;
-            public uint quality;
+            public int qualityIndex;
+            public Vector3 orientation;
             public QueueThreadSafe inQueue;
         };
 
@@ -142,11 +143,16 @@ namespace VRT.Transport.Dash
                 bin2dash.StreamDesc[] b2dDescriptors = new bin2dash.StreamDesc[descriptions.Length];
                 for (int i = 0; i < descriptions.Length; i++)
                 {
+                    int nx = (int)(descriptions[i].orientation.x * 1000);
+                    int ny = (int)(descriptions[i].orientation.y * 1000);
+                    int nz = (int)(descriptions[i].orientation.z * 1000);
                     b2dDescriptors[i] = new bin2dash.StreamDesc
                     {
                         MP4_4CC = fourccInt,
                         tileNumber = descriptions[i].tileNumber,
-                        quality = descriptions[i].quality
+                        nx = nx,
+                        ny = ny,
+                        nz = nz
                     };
                     if (descriptions[i].inQueue == null)
                     {
@@ -185,7 +191,7 @@ namespace VRT.Transport.Dash
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new B2DPushThread(this, i, descriptions[i]);
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, tile={descriptions[i].tileNumber}, quality={descriptions[i].quality}");
+                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
             }
             foreach (var t in pusherThreads)
             {
