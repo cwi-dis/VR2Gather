@@ -1,6 +1,6 @@
 using UnityEngine;
 using VRT.Core;
-
+using System.Collections.Generic;
 namespace VRT.Transport.Dash
 {
     public class AVSubReader : BaseSubReader
@@ -57,12 +57,12 @@ namespace VRT.Transport.Dash
                 new ReceiverInfo()
                 {
                     outQueue = _outQueue,
-                    curStreamIndex = videoStream
+                    streamIndexes = new List<int> {videoStream }
                 },
                 new ReceiverInfo()
                 {
                     outQueue = _out2Queue,
-                    curStreamIndex = audioStream
+                    streamIndexes = new List<int> {audioStream}
                 },
                 };
 

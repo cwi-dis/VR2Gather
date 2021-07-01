@@ -33,15 +33,12 @@ namespace VRT.Transport.Dash
                     ri.tileDescriptor = td;
                     ri.tileNumber = td.tileNumber;
                     ri.outQueue = tileDescriptors[ti].outQueue;
-                    // Probably streamDescriptors will be received later,
-                    // then we set the current streamIndex to -1 (nothing to receive yet)
-                    if (td.streamDescriptors == null || td.streamDescriptors.Length == 0)
-                    {
-                        ri.curStreamIndex = -1;
-                    } 
-                    else
-                    {
-                        ri.curStreamIndex = td.streamDescriptors[0].streamIndex;
+                    ri.streamIndexes = new List<int>();
+                    if (td.streamDescriptors != null) {
+                        foreach (var sd in td.streamDescriptors)
+                        {
+                            ri.streamIndexes.Add(sd.streamIndex);
+                        }
                     }
                     receivers[ti] = ri;
                 }
@@ -74,7 +71,6 @@ namespace VRT.Transport.Dash
         {
             lock (this)
             {
-                int streamIndex = -1;
                 int tileIndex = tileNumber; // xxxjack is this always correct?
                 // Find correct receiver for this tile
                 ReceiverInfo ri = null;
@@ -94,29 +90,11 @@ namespace VRT.Transport.Dash
                 // Now for this tile (and therefore receiver) find correct stream descriptor for this quality.
                 if (qualityIndex >= 0)
                 {
-                    TileDescriptor td = (TileDescriptor)ri.tileDescriptor;
-                    if (qualityIndex >= td.streamDescriptors.Length)
-                    {
-                        Debug.LogError($"{Name()}: setTileQualityIndex({tileNumber},{qualityIndex}): unknown qualityIndex");
-                        return;
-                    }
-                    sub.StreamDescriptor sd = td.streamDescriptors[qualityIndex];
-                 
-                    
-                    // Found the right tile and the right quality, so now we have the streamIndex.
-                    streamIndex = sd.streamIndex;
-                    Debug.Log($"{Name()}: setTileQualityIndex({tileNumber}, {qualityIndex}): found streamIndex={streamIndex}");
-                }
-                // We can now tell the receiver to start receiving this stream (or stop receiving altogether)
-                ri.curStreamIndex = streamIndex;
-                // And we tell the SUB to enable the stream for this tile/quality (or disable for this tile)
-                if (streamIndex >= 0)
-                {
-                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, streamIndex={streamIndex}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
+                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
                     bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
                     {
-                        Debug.LogError($"{Name()}: Could not enable quality {qualityIndex} for tile {tileNumber}, streamIndex={streamIndex}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
+                        Debug.LogError($"{Name()}: Could not enable quality {qualityIndex} for tile {tileNumber}, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
                     }
                     
                 }
@@ -175,8 +153,7 @@ namespace VRT.Transport.Dash
                     }
                     else
                     {
-                        int wantedIndex = 0;
-                        wantedIndex = td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
+                        int wantedIndex = td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
                         Debug.Log($"{Name()}:_recomputeStreams: tileNumber={td.tileNumber}: {td.streamDescriptors.Length} streams, selecting {wantedIndex}");
                         // And we can also tell the SUB which quality we want for this tile.
                         setTileQualityIndex(td.tileNumber, wantedIndex);
