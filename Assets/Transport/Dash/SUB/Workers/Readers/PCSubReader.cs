@@ -143,8 +143,16 @@ namespace VRT.Transport.Dash
                     // And update per-receiver tile information
                     tileDescriptors[i] = td;
                     ri.tileDescriptor = td;
+                    // Update streamIndexes
+                    ri.streamIndexes.Clear();
+                    foreach (var sd in td.streamDescriptors)
+                    {
+                        ri.streamIndexes.Add(sd.streamIndex);
+                    }
+
+
                 }
-                foreach(var td in tileDescriptors) 
+                foreach (var td in tileDescriptors) 
                 {
                     // We know all the streams that may be used for this tile. Remember for the puller thread.
                     if (td.streamDescriptors.Length == 0)
