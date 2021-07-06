@@ -142,8 +142,8 @@ namespace VRT.Transport.TCP
                         System.Runtime.InteropServices.Marshal.Copy(data, 0, mc.pointer, dataSize);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
-                        receiverInfo.outQueue.Enqueue(mc);
-                        stats.statsUpdate(dataSize);
+                        bool ok = receiverInfo.outQueue.Enqueue(mc);
+                        stats.statsUpdate(dataSize, !ok);
 
                     }
                 }
@@ -166,20 +166,23 @@ namespace VRT.Transport.TCP
                 System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
                 double statsTotalPackets;
+                double statsDroppedPackets;
                 
-                public void statsUpdate(int nBytes)
+                public void statsUpdate(int nBytes, bool dropped)
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    if (dropped) statsDroppedPackets++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsDroppedPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
                      }
                     if (ShouldClear())
                     {
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
+                        statsDroppedPackets = 0;
                     }
                 }
             }

@@ -18,6 +18,13 @@ namespace VRT.UserRepresentation.Voice
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+
+        public string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
 
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
@@ -54,6 +61,7 @@ namespace VRT.UserRepresentation.Voice
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
             // xxxjack should set Synchronizer here
+            stats = new Stats(Name());
         }
 
         void OnDestroy()
@@ -80,6 +88,10 @@ namespace VRT.UserRepresentation.Voice
                 {
                     data[cnt] += tmpBuffer[cnt];
                 } while (++cnt < data.Length);
+                stats.statsUpdate(true);
+            } else
+            {
+                stats.statsUpdate(false);
             }
         }
 
@@ -88,6 +100,37 @@ namespace VRT.UserRepresentation.Voice
             reader.SetSyncInfo(_clockCorrespondence);
         }
 
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
 
+            double statsTotalAudioframeCount = 0;
+            double statsTotalUnavailableCount = 0;
+
+            public void statsUpdate(bool fresh)
+            {
+                if (fresh)
+                {
+                    statsTotalAudioframeCount++;
+                } else
+                {
+                    statsTotalUnavailableCount++;
+                }
+ 
+                if (ShouldOutput())
+                {
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalAudioframeCount = 0;
+                    statsTotalUnavailableCount = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }
