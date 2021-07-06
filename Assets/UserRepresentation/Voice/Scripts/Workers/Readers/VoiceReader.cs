@@ -12,12 +12,12 @@ namespace VRT.UserRepresentation.Voice
 
         public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init)
         {
+            stats = new Stats(Name());
             outQueue = _outQueue;
             this.bufferLength = bufferLength;
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
-            stats = new Stats(Name());
             Start();
         }
 
