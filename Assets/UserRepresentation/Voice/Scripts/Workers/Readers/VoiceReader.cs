@@ -21,6 +21,13 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
+        long sampleTimestamp(int nSamplesInInputBuffer)
+        {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            double timestamp = sinceEpoch.TotalMilliseconds;
+            timestamp -= (1000 * nSamplesInInputBuffer / wantedOutputSampleRate);
+            return (long)timestamp;
+        }
         protected override void Update()
         {
             base.Update();
@@ -111,7 +118,7 @@ namespace VRT.UserRepresentation.Voice
                                 mc.info = new FrameInfo();
                                 // xxxjack need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
-                                mc.info.timestamp = 0;
+                                mc.info.timestamp = sampleTimestamp(available);
                                 bool ok = outQueue.Enqueue(mc);
                                 stats.statsUpdate(available, !ok);
                             }

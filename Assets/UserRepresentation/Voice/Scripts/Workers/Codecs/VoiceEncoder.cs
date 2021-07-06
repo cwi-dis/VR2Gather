@@ -60,6 +60,7 @@ namespace VRT.UserRepresentation.Voice
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
             Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
 #endif
+            mcOut.info.timestamp = mcIn.info.timestamp;
             if (!outQueue.IsClosed())
                 outQueue.Enqueue(mcOut);
             mcIn.free();
