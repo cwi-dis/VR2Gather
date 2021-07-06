@@ -1618,8 +1618,6 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = Config.Instance.TVMs.exchangeName,
             userMQurl = Config.Instance.TVMs.connectionURI,
-            //userPCurl = Config.Instance.LocalUser.PCSelfConfig.pointcloudServerURL,
-            //userAudioUrl = Config.Instance.LocalUser.PCSelfConfig.audioServerURL,
             userPCurl = tcpPointcloudURLConfigIF.text,
             userAudioUrl = tcpAudioURLConfigIF.text,
             userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
