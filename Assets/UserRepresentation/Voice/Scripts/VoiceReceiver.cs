@@ -29,6 +29,7 @@ namespace VRT.UserRepresentation.Voice
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
         {
+            stats = new Stats(Name());
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
@@ -61,7 +62,6 @@ namespace VRT.UserRepresentation.Voice
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
             preparer = new VoicePreparer(preparerQueue);//, optimalAudioBufferSize);
             // xxxjack should set Synchronizer here
-            stats = new Stats(Name());
         }
 
         void OnDestroy()
@@ -88,10 +88,10 @@ namespace VRT.UserRepresentation.Voice
                 {
                     data[cnt] += tmpBuffer[cnt];
                 } while (++cnt < data.Length);
-                stats.statsUpdate(true);
+                stats.statsUpdate(preparer.currentTimestamp, true);
             } else
             {
-                stats.statsUpdate(false);
+                stats.statsUpdate(0, false);
             }
         }
 
@@ -106,12 +106,17 @@ namespace VRT.UserRepresentation.Voice
 
             double statsTotalAudioframeCount = 0;
             double statsTotalUnavailableCount = 0;
+            double statsTotalLatency = 0;
 
-            public void statsUpdate(bool fresh)
+            public void statsUpdate(long timestamp, bool fresh)
             {
                 if (fresh)
                 {
                     statsTotalAudioframeCount++;
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    long now = (long)sinceEpoch.TotalMilliseconds;
+                    long latency = now - timestamp;
+                    statsTotalLatency += latency;
                 } else
                 {
                     statsTotalUnavailableCount++;
@@ -120,13 +125,14 @@ namespace VRT.UserRepresentation.Voice
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}");
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount)}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalAudioframeCount = 0;
                     statsTotalUnavailableCount = 0;
+                    statsTotalLatency = 0;
                 }
             }
         }
