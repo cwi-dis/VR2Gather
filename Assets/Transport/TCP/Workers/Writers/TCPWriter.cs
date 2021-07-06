@@ -104,11 +104,13 @@ namespace VRT.Transport.TCP
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
                         stats.statsUpdate(mc.length);
-                        byte[] hdr = new byte[8];
+                        byte[] hdr = new byte[16];
                         var hdr1 = BitConverter.GetBytes((UInt32)description.fourcc);
                         hdr1.CopyTo(hdr, 0);
                         var hdr2 = BitConverter.GetBytes((Int32)mc.length);
                         hdr2.CopyTo(hdr, 4);
+                        var hdr3 = BitConverter.GetBytes(mc.info.timestamp);
+                        hdr3.CopyTo(hdr, 8);
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         try
