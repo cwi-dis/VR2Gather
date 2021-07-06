@@ -74,11 +74,7 @@ namespace VRT.UserRepresentation.Voice
                     double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
                     double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
                     Output($"fps={statsTotalUpdates / Interval():F3}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops / Interval()}");
-                    if (statsDrops > 3 * Interval())
-                    {
-                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
-                    }
-                }
+                 }
                 if (ShouldClear())
                 {
                     Clear();

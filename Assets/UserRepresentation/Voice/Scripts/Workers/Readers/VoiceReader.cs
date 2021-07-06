@@ -17,6 +17,7 @@ namespace VRT.UserRepresentation.Voice
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
+            stats = new Stats(Name());
             Start();
         }
 
@@ -100,17 +101,19 @@ namespace VRT.UserRepresentation.Voice
                             // Write all data from microphone.
                             lock (outQueue)
                             {
-                                if (outQueue._CanEnqueue())
+                                FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
+                                float idx = 0;
+                                for (int i = 0; i < bufferLength; i++)
                                 {
-                                    FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
-                                    float idx = 0;
-                                    for (int i = 0; i < bufferLength; i++)
-                                    {
-                                        mc.buffer[i] = readBuffer[(int)idx];
-                                        idx += inc;
-                                    }
-                                    outQueue.Enqueue(mc);
+                                    mc.buffer[i] = readBuffer[(int)idx];
+                                    idx += inc;
                                 }
+                                mc.info = new FrameInfo();
+                                // xxxjack need to compute timestamp of this audio frame
+                                // by using system clock and adjusting with "available".
+                                mc.info.timestamp = 0;
+                                bool ok = outQueue.Enqueue(mc);
+                                stats.statsUpdate(available, !ok);
                             }
                             readPosition = (readPosition + neededBufferLength) % samples;
                             available -= neededBufferLength;
@@ -128,31 +131,37 @@ namespace VRT.UserRepresentation.Voice
             else
                 Debug.LogError("{Name()}: No Microphones detected.");
         }
-
-        System.DateTime statsLastTime;
-        double statsTotalUpdates = 0;
-        double statsTotalSamplesInInputBuffer = 0;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int samplesInInputBuffer)
+        protected class Stats : VRT.Core.BaseStats
         {
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalUpdates;
+            double statsTotalSamplesInInputBuffer;
+            double statsDrops;
+
+            public void statsUpdate(int samplesInInputBuffer, bool dropped)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalUpdates = 0;
-                statsTotalSamplesInInputBuffer = 0;
+
+                statsTotalUpdates += 1;
+                statsTotalSamplesInInputBuffer += samplesInInputBuffer;
+                if (dropped) statsDrops++;
+
+                if (ShouldOutput())
+                {
+                    double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
+                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_samples={(int)samplesInBufferAverage}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, fps_dropped={statsDrops / Interval()}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalUpdates = 0;
+                    statsTotalSamplesInInputBuffer = 0;
+                    statsDrops = 0;
+                }
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
-                double timeInBufferAverage = samplesInBufferAverage / samples;
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / statsInterval}, input_latency_samples={(int)samplesInBufferAverage}, input_latency_ms={(int)(timeInBufferAverage * 1000)}");
-                statsTotalUpdates = 0;
-                statsTotalSamplesInInputBuffer = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalUpdates += 1;
-            statsTotalSamplesInInputBuffer += samplesInInputBuffer;
         }
+
+        protected Stats stats;
     }
 }
