@@ -13,7 +13,7 @@ namespace VRT.UserRepresentation.Voice
     {
         BaseReader reader;
         BaseWorker codec;
-        AudioPreparer preparer;
+        VoicePreparer preparer;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
@@ -59,7 +59,7 @@ namespace VRT.UserRepresentation.Voice
             }
 
             codec = new VoiceDecoder(decoderQueue, preparerQueue);
-            preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+            preparer = new VoicePreparer(preparerQueue);//, optimalAudioBufferSize);
             // xxxjack should set Synchronizer here
             stats = new Stats(Name());
         }

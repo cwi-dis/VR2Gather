@@ -5,18 +5,18 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class AudioPreparer : BasePreparer
+    public class VoicePreparer : BasePreparer
     {
         int bufferSize;
 
         QueueThreadSafe inQueue;
 
-        public AudioPreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
+        public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
         {
             inQueue = _inQueue;
-            if (inQueue == null) Debug.LogError($"AudioPreparer: Programmer error: ERROR inQueue=NULL");
+            if (inQueue == null) Debug.LogError($"VoicePreparer: Programmer error: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
-            Debug.Log("AudioPreparer: Started.");
+            Debug.Log("VoicePreparer: Started.");
             // xxxjack stats not used? stats = new Stats(Name());
             Start();
         }
@@ -24,7 +24,7 @@ namespace VRT.UserRepresentation.Voice
         public override void OnStop()
         {
             base.OnStop();
-            Debug.Log("AudioPreparer: Stopped");
+            Debug.Log("VoicePreparer: Stopped");
         }
 
         protected override void Update()
