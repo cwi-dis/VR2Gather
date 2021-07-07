@@ -366,7 +366,9 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
-            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
+            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 

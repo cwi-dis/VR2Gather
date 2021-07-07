@@ -145,9 +145,7 @@ namespace VRT.Core
                 }
                 public _Bin2Dash Bin2Dash;
                 public _Bin2Dash AudioBin2Dash;
-                public string audioServerURL = "";
-                public string pointcloudServerURL = "";
-            }
+             }
             public _PCSelfConfig PCSelfConfig;
 
             [Serializable]
