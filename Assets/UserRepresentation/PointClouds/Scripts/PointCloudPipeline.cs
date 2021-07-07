@@ -262,7 +262,7 @@ namespace VRT.UserRepresentation.PointCloud
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(cfg.PCSelfConfig.pointcloudServerURL, "cwi1", dashStreamDescriptions);
+                                writer = new TCPWriter(user.userData.userPCurl, "cwi1", dashStreamDescriptions);
                             }
                             else
                             {
