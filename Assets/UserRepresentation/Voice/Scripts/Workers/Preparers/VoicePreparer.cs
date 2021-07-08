@@ -45,15 +45,20 @@ namespace VRT.UserRepresentation.Voice
         bool firstTime = true;
         public bool GetAudioBuffer(float[] dst, int len)
         {
-            if (!inQueue.IsClosed())
+            if (inQueue.IsClosed()) return false;
+            var mc = inQueue.TryDequeue(1);
+            if (mc == null) return false;
+            currentTimestamp = mc.info.timestamp;
+            currentQueueSize = inQueue._Count;
+            if (mc is FloatMemoryChunk)
             {
-                FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
-                if (mc == null) return false;
-                currentTimestamp = mc.info.timestamp;
-                currentQueueSize = inQueue._Count;
-                System.Array.Copy(mc.buffer, 0, dst, 0, len);
-                mc.free();
+                System.Array.Copy(((FloatMemoryChunk)mc).buffer, 0, dst, 0, len);
             }
+            else
+            {
+                System.Runtime.InteropServices.Marshal.Copy(mc.pointer, dst, 0, len);
+            }
+            mc.free();
             return true;
         }
 
