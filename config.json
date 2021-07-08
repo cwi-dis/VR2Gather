@@ -6,6 +6,7 @@
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
   "useAudio": true,
+  "ntpSyncThreshold": 0.033,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
