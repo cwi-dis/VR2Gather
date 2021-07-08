@@ -134,6 +134,7 @@ namespace VRT.UserRepresentation.Voice
                 } else
                 {
                     statsTotalUnavailableCount++;
+                    return; //backport candidate
                 }
                 statsTotalQueueSize += queueSize;
  
