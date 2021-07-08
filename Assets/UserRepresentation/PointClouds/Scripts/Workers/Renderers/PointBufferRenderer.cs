@@ -82,6 +82,7 @@ namespace VRT.UserRepresentation.PointCloud
     
                 statsTotalDisplayPointCount += pointCount;
                 statsTotalDisplayCount += 1;
+                if (!fresh) return; //remember to commit with this tag backport candidate
                 if (fresh)
                 {
                     statsTotalPointcloudCount += 1;
