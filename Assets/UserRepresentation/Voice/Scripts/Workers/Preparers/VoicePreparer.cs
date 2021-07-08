@@ -11,6 +11,7 @@ namespace VRT.UserRepresentation.Voice
 
         QueueThreadSafe inQueue;
         public long currentTimestamp;
+        public int currentQueueSize;
         public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
         {
             inQueue = _inQueue;
@@ -49,6 +50,7 @@ namespace VRT.UserRepresentation.Voice
                 FloatMemoryChunk mc = (FloatMemoryChunk)inQueue.TryDequeue(1);
                 if (mc == null) return false;
                 currentTimestamp = mc.info.timestamp;
+                currentQueueSize = inQueue._Count;
                 System.Array.Copy(mc.buffer, 0, dst, 0, len);
                 mc.free();
             }

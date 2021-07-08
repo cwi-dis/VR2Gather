@@ -88,10 +88,10 @@ namespace VRT.UserRepresentation.Voice
                 {
                     data[cnt] += tmpBuffer[cnt];
                 } while (++cnt < data.Length);
-                stats.statsUpdate(preparer.currentTimestamp, true);
+                stats.statsUpdate(preparer.currentTimestamp, preparer.currentQueueSize, true);
             } else
             {
-                stats.statsUpdate(0, false);
+                stats.statsUpdate(0, 0, false);
             }
         }
 
@@ -107,8 +107,9 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalAudioframeCount = 0;
             double statsTotalUnavailableCount = 0;
             double statsTotalLatency = 0;
+            double statsTotalQueueSize = 0;
 
-            public void statsUpdate(long timestamp, bool fresh)
+            public void statsUpdate(long timestamp, int queueSize, bool fresh)
             {
                 if (fresh)
                 {
@@ -121,11 +122,12 @@ namespace VRT.UserRepresentation.Voice
                 {
                     statsTotalUnavailableCount++;
                 }
+                statsTotalQueueSize += queueSize;
  
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount)}, timestamp={timestamp}");
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount)}, avg_queuesize={statsTotalQueueSize/(statsTotalAudioframeCount+statsTotalUnavailableCount):F2}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
@@ -133,6 +135,7 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalAudioframeCount = 0;
                     statsTotalUnavailableCount = 0;
                     statsTotalLatency = 0;
+                    statsTotalQueueSize = 0;
                 }
             }
         }
