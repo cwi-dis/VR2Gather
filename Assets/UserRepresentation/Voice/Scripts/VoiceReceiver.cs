@@ -15,6 +15,9 @@ namespace VRT.UserRepresentation.Voice
         BaseWorker codec;
         VoicePreparer preparer;
 
+        [Tooltip("Object responsible for synchronizing playout")]
+        public Synchronizer synchronizer = null;
+
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
@@ -30,6 +33,11 @@ namespace VRT.UserRepresentation.Voice
         public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
         {
             stats = new Stats(Name());
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<Synchronizer>();
+                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
+            }
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
@@ -39,28 +47,33 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+            
 
             if (proto == Config.ProtocolType.Dash)
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
                 reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+                codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 50, true);
                 Debug.Log($"xxxjack VoiceReceiver TCP URL={user.userData.userAudioUrl}");
-                reader = new BaseTCPReader(user.userData.userAudioUrl, decoderQueue);
+                reader = new BaseTCPReader(user.userData.userAudioUrl, preparerQueue);
             }
             else
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
                 reader = new SocketIOReader(user, _streamName, decoderQueue);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+                codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
 
-            codec = new VoiceDecoder(decoderQueue, preparerQueue);
+            
             preparer = new VoicePreparer(preparerQueue);//, optimalAudioBufferSize);
+            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
             // xxxjack should set Synchronizer here
         }
 
