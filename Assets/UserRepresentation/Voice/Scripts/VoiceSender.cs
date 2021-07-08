@@ -32,7 +32,7 @@ namespace VRT.UserRepresentation.Voice
             }
             if (proto == Config.ProtocolType.Dash)
             {
-                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder");
+                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
                 codec = new VoiceEncoder(encoderQueue, senderQueue);
                 reader = new VoiceReader(micro, this, ((VoiceEncoder)codec).bufferSize, encoderQueue);
@@ -43,7 +43,7 @@ namespace VRT.UserRepresentation.Voice
             } 
             else if (proto == Config.ProtocolType.TCP)
             {
-                senderQueue = new QueueThreadSafe("VoiceSenderSender");
+                senderQueue = new QueueThreadSafe("VoiceSenderSender", 4, true);
                 const int TCPAudioSamplesPerPacket = 960;
                 reader = new VoiceReader(micro, this, TCPAudioSamplesPerPacket, senderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
-                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder");
+                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
                 codec = new VoiceEncoder(encoderQueue, senderQueue);
                 reader = new VoiceReader(micro, this, ((VoiceEncoder)codec).bufferSize, encoderQueue);
