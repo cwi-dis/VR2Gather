@@ -93,14 +93,14 @@ namespace VRT.UserRepresentation.Voice
         float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (tmpBuffer == null) tmpBuffer = new float[data.Length];
+            if (tmpBuffer == null) tmpBuffer = new float[data.Length/channels];
             if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
             {
-                int cnt = 0;
-                do
+                for(int i=0; i<data.Length; i++)
                 {
-                    data[cnt] += tmpBuffer[cnt];
-                } while (++cnt < data.Length);
+                    data[i] += tmpBuffer[i / channels];
+                }
+                
                 stats.statsUpdate(preparer.currentTimestamp, preparer.currentQueueSize, true);
             } else
             {

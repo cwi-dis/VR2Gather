@@ -70,16 +70,11 @@ namespace VRT.UserRepresentation.Voice
             if (temporalBuffer == null) temporalBuffer = new float[len];
             System.Runtime.InteropServices.Marshal.Copy(mcIn.pointer, temporalBuffer, 0, len);
 #endif
-            FloatMemoryChunk mcOut = new FloatMemoryChunk(len * 6);
+            FloatMemoryChunk mcOut = new FloatMemoryChunk(len);
             mcOut.info.timestamp = mcIn.info.timestamp;
             for (int i = 0; i < len; ++i)
             {
-                mcOut.buffer[i * 6 + 0] =
-                mcOut.buffer[i * 6 + 1] =
-                mcOut.buffer[i * 6 + 2] =
-                mcOut.buffer[i * 6 + 3] =
-                mcOut.buffer[i * 6 + 4] =
-                mcOut.buffer[i * 6 + 5] = temporalBuffer[i];
+                mcOut.buffer[i] = temporalBuffer[i];
             }
             outQueue.Enqueue(mcOut);
             mcIn.free();
