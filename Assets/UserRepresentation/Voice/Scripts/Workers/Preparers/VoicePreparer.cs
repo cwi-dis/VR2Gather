@@ -10,10 +10,12 @@ namespace VRT.UserRepresentation.Voice
         int bufferSize;
 
         QueueThreadSafe inQueue;
-        public long currentTimestamp;
+        public ulong currentTimestamp;
         public int currentQueueSize;
+        BaseMemoryChunk currentAudioFrame;
         public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
         {
+            stats = new Stats(Name());
             inQueue = _inQueue;
             if (inQueue == null) Debug.LogError($"VoicePreparer: Programmer error: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
@@ -34,32 +36,98 @@ namespace VRT.UserRepresentation.Voice
         }
         public override void Synchronize()
         {
+            // Synchronize playout for the current frame with other preparers (if needed)
+            if (synchronizer)
+            {
+                ulong nextTimestamp = inQueue._PeekTimestamp(currentTimestamp + 1);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
+            }
         }
-
         public override bool LatchFrame()
         {
-            // xxxjack Not implemented yet for audio...
+            lock (this)
+            {
+                ulong bestTimestamp = 0;
+                if (synchronizer != null)
+                {
+                    bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
+                    {
+                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
+                        return false;
+                    }
+                    if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp - currentTimestamp} ms too late");
+                }
+                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
+                // xxxjack Also: the 0 timeout to TryDecode may need thought.
+                if (inQueue.IsClosed()) return false; // We are shutting down
+                if (currentAudioFrame != null)
+                {
+                    Debug.LogWarning($"{Name()}: previous audio frame not consumed");
+                    currentAudioFrame.free();
+                }
+                return _FillAudioFrame(bestTimestamp);
+            }
+         }
+
+        bool _FillAudioFrame(ulong minTimestamp)
+        {
+            while(true)
+            {
+                currentAudioFrame = inQueue.TryDequeue(0);
+                if (currentAudioFrame == null) {
+                    stats.statsUpdate(false, true);
+                    return false;
+                }
+                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+                bool trySkipForward = currentTimestamp < minTimestamp;
+                if (trySkipForward)
+                {
+                    if (inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp)
+                    {
+                        // There is another frame in the queue that is also earlier than minTimestamp.
+                        // Drop this one.
+                        stats.statsUpdate(true, false);
+                        currentAudioFrame.free();
+                        currentAudioFrame = null;
+                        continue;
+                    }
+                }
+                stats.statsUpdate(false, false);
+                break;
+            }
+            if (currentAudioFrame == null)
+            {
+                if (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0)
+                {
+                    Debug.Log($"{Name()}: no audio frame available");
+                }
+                return false;
+            }
             return true;
         }
 
-        bool firstTime = true;
         public bool GetAudioBuffer(float[] dst, int len)
         {
-            if (inQueue.IsClosed()) return false;
-            var mc = inQueue.TryDequeue(1);
-            if (mc == null) return false;
-            currentTimestamp = mc.info.timestamp;
-            currentQueueSize = inQueue._Count;
-            if (mc is FloatMemoryChunk)
+            lock(this)
             {
-                System.Array.Copy(((FloatMemoryChunk)mc).buffer, 0, dst, 0, len);
+                if (inQueue.IsClosed()) return false;
+                if (currentAudioFrame == null) _FillAudioFrame(0);
+                if (currentAudioFrame == null) return false;
+                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+                currentQueueSize = inQueue._Count;
+                if (currentAudioFrame is FloatMemoryChunk)
+                {
+                    System.Array.Copy(((FloatMemoryChunk)currentAudioFrame).buffer, 0, dst, 0, len);
+                }
+                else
+                {
+                    System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, dst, 0, len);
+                }
+                currentAudioFrame.free();
+                currentAudioFrame = null;
+                return true;
             }
-            else
-            {
-                System.Runtime.InteropServices.Marshal.Copy(mc.pointer, dst, 0, len);
-            }
-            mc.free();
-            return true;
         }
 
         protected class Stats : VRT.Core.BaseStats
@@ -67,28 +135,26 @@ namespace VRT.UserRepresentation.Voice
             public Stats(string name) : base(name) { }
 
             double statsTotalUpdates;
-            double statsTotalSamplesInOutputBuffer;
             double statsDrops;
+            double statsNoData;
 
-            public void statsUpdate(int samplesInOutputBuffer, bool dropped)
+            public void statsUpdate(bool dropped, bool noData)
             {
 
                 statsTotalUpdates += 1;
-                statsTotalSamplesInOutputBuffer += samplesInOutputBuffer;
                 if (dropped) statsDrops++;
+                if (noData) statsNoData++;
 
                 if (ShouldOutput())
                 {
-                    double samplesInBufferAverage = statsTotalSamplesInOutputBuffer / statsTotalUpdates;
-                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                    Output($"fps={statsTotalUpdates / Interval():F3}, playout_latency_samples={(int)samplesInBufferAverage}, playout_latency_ms={(int)(timeInBufferAverage * 1000)}, drops_per_second={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
                  }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalUpdates = 0;
-                    statsTotalSamplesInOutputBuffer = 0;
                     statsDrops = 0;
+                    statsNoData = 0;
                 }
             }
         }

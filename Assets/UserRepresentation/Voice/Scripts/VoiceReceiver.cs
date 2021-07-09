@@ -77,6 +77,15 @@ namespace VRT.UserRepresentation.Voice
             // xxxjack should set Synchronizer here
         }
 
+        private void Update()
+        {
+            preparer?.Synchronize();
+        }
+        private void LateUpdate()
+        {
+            preparer?.LatchFrame();
+        }
+
         void OnDestroy()
         {
             reader?.StopAndWait();
@@ -122,14 +131,14 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalLatency = 0;
             double statsTotalQueueSize = 0;
 
-            public void statsUpdate(long timestamp, int queueSize, bool fresh)
+            public void statsUpdate(ulong timestamp, int queueSize, bool fresh)
             {
                 if (fresh)
                 {
                     statsTotalAudioframeCount++;
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     long now = (long)sinceEpoch.TotalMilliseconds;
-                    long latency = now - timestamp;
+                    long latency = now - (long)timestamp;
                     statsTotalLatency += latency;
                 } else
                 {
@@ -140,7 +149,6 @@ namespace VRT.UserRepresentation.Voice
  
                 if (ShouldOutput())
                 {
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount)}, avg_queuesize={statsTotalQueueSize/(statsTotalAudioframeCount+statsTotalUnavailableCount):F2}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
