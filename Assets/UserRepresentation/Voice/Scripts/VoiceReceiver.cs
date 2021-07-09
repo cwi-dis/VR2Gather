@@ -129,7 +129,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalAudioframeCount = 0;
             double statsTotalUnavailableCount = 0;
             double statsTotalLatency = 0;
-            double statsTotalQueueSize = 0;
+            int maxQueueSize = 0;
 
             public void statsUpdate(ulong timestamp, int queueSize, bool fresh)
             {
@@ -145,11 +145,11 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalUnavailableCount++;
                     return; //backport candidate
                 }
-                statsTotalQueueSize += queueSize;
+                if (queueSize > maxQueueSize) maxQueueSize = queueSize;
  
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={(int)(statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount))}, avg_queuesize={statsTotalQueueSize/(statsTotalAudioframeCount+statsTotalUnavailableCount):F2}, timestamp={timestamp}");
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={(int)(statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount))}, max_queuesize={maxQueueSize}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
@@ -157,7 +157,7 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalAudioframeCount = 0;
                     statsTotalUnavailableCount = 0;
                     statsTotalLatency = 0;
-                    statsTotalQueueSize = 0;
+                    maxQueueSize = 0;
                 }
             }
         }

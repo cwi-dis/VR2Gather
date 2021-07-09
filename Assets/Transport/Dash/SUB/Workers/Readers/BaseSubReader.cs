@@ -162,7 +162,7 @@ namespace VRT.Transport.Dash
                             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                             parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
                             parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                            BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime-parent.clockCorrespondence.streamClockTime}");
+                            BaseStats.Output(parent.Name(), $"guessed=1, stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime-parent.clockCorrespondence.streamClockTime}");
                         }
                         // Convert clock values to wallclock
                         frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
@@ -480,6 +480,7 @@ namespace VRT.Transport.Dash
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
             clockCorrespondence = _clockCorrespondence;
+            BaseStats.Output(Name(), $"guessed=0, stream_timestamp={clockCorrespondence.streamClockTime}, timestamp={clockCorrespondence.wallClockTime}, delta={clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime}");
         }
     }
 }
