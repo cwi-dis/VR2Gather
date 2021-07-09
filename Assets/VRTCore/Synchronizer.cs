@@ -119,7 +119,7 @@ namespace VRT.Core
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / Interval())}, timestamp={timestamp}");
+                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / statsTotalCalls)}, timestamp={timestamp}");
 
                 }
                 if (ShouldClear())

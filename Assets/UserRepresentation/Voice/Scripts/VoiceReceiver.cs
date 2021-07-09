@@ -149,7 +149,7 @@ namespace VRT.UserRepresentation.Voice
  
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount)}, avg_queuesize={statsTotalQueueSize/(statsTotalAudioframeCount+statsTotalUnavailableCount):F2}, timestamp={timestamp}");
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={(int)(statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount))}, avg_queuesize={statsTotalQueueSize/(statsTotalAudioframeCount+statsTotalUnavailableCount):F2}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
