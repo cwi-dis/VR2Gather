@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceEncoder : BaseWorker
     {
-        public int bufferSize { get; private set; }
+        public int minSamplesPerFrame { get; private set; }
         int frames;
         NSpeex.SpeexEncoder encoder;
 
@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.Voice
             outQueue = _outQueue;
             this.frames = frames;
             encoder = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
-            bufferSize = encoder.FrameSize * frames;
+            minSamplesPerFrame = encoder.FrameSize * frames;
             encoder.Quality = 5;
             Debug.Log($"{Name()}: Started.");
             Start();

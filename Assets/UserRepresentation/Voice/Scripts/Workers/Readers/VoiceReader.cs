@@ -41,11 +41,12 @@ namespace VRT.UserRepresentation.Voice
         }
 
         string device;
-        int samples;
+        int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
-        public const int wantedOutputSampleRate = 16000 * 3;
-        public const int wantedOutputBufferSize = 320 * 3;
+        public const int wantedOutputSampleRate = 48000;
+        public const int wantedOutputFPS = 50;
+        public const int wantedOutputBufferSize = wantedOutputSampleRate / wantedOutputFPS;
 
         static bool DSPIsNotReady = true;
         public static void PrepareDSP()
@@ -79,14 +80,20 @@ namespace VRT.UserRepresentation.Voice
                 int currentMinFreq;
                 int currentMaxFreq;
                 Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
-
-                recorder = Microphone.Start(deviceName, true, 1, currentMaxFreq);
-                samples = recorder.samples;
-
-                float inc = samples / 16000f;
+                // We record a looping clip of 1 second.
+                const int recorderBufferDuration = 1; 
+                recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
+                recorderBufferSize = recorder.samples * recorder.channels;
+                // We expect the recorder clip to contain an integral number of
+                // buffers, because we are going to use it as a circular buffer.
+                if (recorderBufferSize % bufferLength != 0)
+                {
+                    Debug.LogError($"VoiceReader: Incorrect clip size {recorderBufferSize} for buffer size {bufferLength}");
+                }
+                float inc = 1; // was: recorderBufferSize / 16000f;
                 int neededBufferLength = (int)(bufferLength * inc);
                 float[] readBuffer = new float[neededBufferLength];
-                Debug.Log($"{Name()}: Using {deviceName}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
+                Debug.Log($"{Name()}: Using {deviceName}  Frequency {recorderBufferSize} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
 
                 int readPosition = 0;
 
@@ -96,7 +103,7 @@ namespace VRT.UserRepresentation.Voice
                     {
                         int writePosition = Microphone.GetPosition(deviceName);
                         int available;
-                        if (writePosition < readPosition) available = samples - readPosition + writePosition;
+                        if (writePosition < readPosition) available = recorderBufferSize - readPosition + writePosition;
                         else available = writePosition - readPosition;
                         while (available >= neededBufferLength)
                         {
@@ -116,20 +123,20 @@ namespace VRT.UserRepresentation.Voice
                                     idx += inc;
                                 }
                                 mc.info = new FrameInfo();
-                                // xxxjack need to compute timestamp of this audio frame
+                                // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
                                 bool ok = outQueue.Enqueue(mc);
                                 stats.statsUpdate(available, !ok);
                             }
-                            readPosition = (readPosition + neededBufferLength) % samples;
+                            readPosition = (readPosition + neededBufferLength) % recorderBufferSize;
                             available -= neededBufferLength;
                         }
                     }
                     else
                     {
                         Debug.LogWarning($"{Name()}: microphone {deviceName} stopped recording, starting again.");
-                        recorder = Microphone.Start(deviceName, true, 1, samples);
+                        recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
                         readPosition = 0;
                     }
                     yield return null;

@@ -30,12 +30,18 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
                 return;
             }
+            const int audioSamplesPerPacket = 960;
             if (proto == Config.ProtocolType.Dash)
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
-                reader = new VoiceReader(micro, this, ((VoiceEncoder)codec).bufferSize, encoderQueue);
+                var enc = new VoiceEncoder(encoderQueue, senderQueue);
+                if (audioSamplesPerPacket % enc.minSamplesPerFrame != 0)
+                {
+                    Debug.LogWarning($"VoiceSender: encoder wants {enc.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
+                }
+                codec = enc;
+                reader = new VoiceReader(micro, this, audioSamplesPerPacket, encoderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
                 // xxxjack invented VR2a 4CC here. Is there a correct one?
@@ -44,8 +50,7 @@ namespace VRT.UserRepresentation.Voice
             else if (proto == Config.ProtocolType.TCP)
             {
                 senderQueue = new QueueThreadSafe("VoiceSenderSender", 4, true);
-                const int TCPAudioSamplesPerPacket = 960;
-                reader = new VoiceReader(micro, this, TCPAudioSamplesPerPacket, senderQueue);
+                reader = new VoiceReader(micro, this, audioSamplesPerPacket, senderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
                 Debug.Log($"xxxjack VoiceSender TCP URL={user.userData.userAudioUrl}");
@@ -55,8 +60,13 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
-                reader = new VoiceReader(micro, this, ((VoiceEncoder)codec).bufferSize, encoderQueue);
+                var enc = new VoiceEncoder(encoderQueue, senderQueue);
+                if (audioSamplesPerPacket % enc.minSamplesPerFrame != 0)
+                {
+                    Debug.LogWarning($"VoiceSender: encoder wants {enc.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
+                }
+                codec = enc;
+                reader = new VoiceReader(micro, this, audioSamplesPerPacket, encoderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
                 writer = new SocketIOWriter(user, _streamName, b2dStreams);
