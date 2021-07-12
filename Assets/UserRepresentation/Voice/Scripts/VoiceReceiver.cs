@@ -58,7 +58,7 @@ namespace VRT.UserRepresentation.Voice
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 50, true);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, true);
                 reader = new BaseTCPReader(user.userData.userAudioUrl, preparerQueue);
             }
             else
