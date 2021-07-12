@@ -41,7 +41,8 @@ namespace VRT.UserRepresentation.Voice
             if (synchronizer)
             {
                 ulong nextTimestamp = inQueue._PeekTimestamp(currentTimestamp + 1);
-                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp);
+                ulong latestTimestamp = inQueue.LatestTimestamp();
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp, latestTimestamp);
             }
         }
         public override bool LatchFrame()
