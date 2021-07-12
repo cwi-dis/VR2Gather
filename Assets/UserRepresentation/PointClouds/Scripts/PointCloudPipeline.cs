@@ -610,15 +610,21 @@ namespace VRT.UserRepresentation.PointCloud
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            if (writer is B2DWriter pcWriter)
+            if (writer is BaseWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
             }
             else
             {
-                Debug.LogWarning($"{Name()}: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+                Debug.LogError($"{Name()}: GetSyncConfig: isSource, but writer is not a BaseWriter");
             }
-
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceSender voiceSender = gameObject.transform.parent.GetComponentInChildren<VoiceSender>();
+            if (voiceSender != null)
+            {
+                rv.audio = voiceSender.GetSyncInfo();
+            }
+            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
