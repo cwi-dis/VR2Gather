@@ -610,15 +610,21 @@ namespace VRT.UserRepresentation.PointCloud
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            if (writer is B2DWriter pcWriter)
+            if (writer is BaseWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
             }
             else
             {
-                Debug.LogWarning($"{Name()}: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+                Debug.LogError($"{Name()}: GetSyncConfig: isSource, but writer is not a BaseWriter");
             }
-
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceSender voiceSender = gameObject.transform.parent.GetComponentInChildren<VoiceSender>();
+            if (voiceSender != null)
+            {
+                rv.audio = voiceSender.GetSyncInfo();
+            }
+            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -629,15 +635,23 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = reader as PCSubReader;
+            BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);
             }
             else
             {
-                Debug.LogWarning($"{Name()}: SetSyncConfig: reader is not a PCSubReader");
+                Debug.LogError($"{Name()}: SetSyncConfig: reader is not a BaseReader");
             }
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceReceiver voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoiceReceiver>();
+            if (voiceReceiver != null)
+            {
+                voiceReceiver.SetSyncInfo(config.audio);
+            }
+            Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
+
         }
 
         public new Vector3 GetPosition()
