@@ -53,7 +53,6 @@ namespace VRT.UserRepresentation.Voice
                 reader = new VoiceReader(micro, this, audioSamplesPerPacket, senderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
-                Debug.Log($"xxxjack VoiceSender TCP URL={user.userData.userAudioUrl}");
                 writer = new TCPWriter(user.userData.userAudioUrl, "VR2A", b2dStreams);
             }
             else

@@ -36,7 +36,6 @@ namespace VRT.UserRepresentation.Voice
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
@@ -60,7 +59,6 @@ namespace VRT.UserRepresentation.Voice
             if (proto == Config.ProtocolType.TCP)
             {
                 preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 50, true);
-                Debug.Log($"xxxjack VoiceReceiver TCP URL={user.userData.userAudioUrl}");
                 reader = new BaseTCPReader(user.userData.userAudioUrl, preparerQueue);
             }
             else

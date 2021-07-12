@@ -69,7 +69,6 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             switch (cfg.sourceType)
             {
