@@ -75,6 +75,14 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 case "self": // old "rs2"
                     isSource = true;
+                    if (synchronizer != null)
+                    {
+                        // We disable the synchronizer for self. It serves
+                        // no practical purpose and emits confusing stats: lines.
+                        Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
+                        synchronizer.gameObject.SetActive(false);
+                        synchronizer = null;
+                    }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
