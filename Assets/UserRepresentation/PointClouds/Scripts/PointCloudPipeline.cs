@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
         const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 10; // Was: 2.
+        const int pcPreparerQueueSize = 50; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -69,12 +69,19 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
                     isSource = true;
+                    if (synchronizer != null)
+                    {
+                        // We disable the synchronizer for self. It serves
+                        // no practical purpose and emits confusing stats: lines.
+                        Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
+                        synchronizer.gameObject.SetActive(false);
+                        synchronizer = null;
+                    }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
@@ -642,13 +649,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
-                Debug.LogError($"{Name()}: SetSyncConfig: reader is not a BaseReader");
+                Debug.Log($"{Name()}: SetSyncConfig: reader is not a BaseReader");
             }
             // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
             VoiceReceiver voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoiceReceiver>();
             if (voiceReceiver != null)
             {
                 voiceReceiver.SetSyncInfo(config.audio);
+            } else
+            {
+                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
             }
             Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 

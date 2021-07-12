@@ -1623,7 +1623,6 @@ public class OrchestratorLogin : MonoBehaviour {
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
-        Debug.Log($"xxxjack OrchestratorLogin.UpdateUserData: userPCurl={lUserData.userPCurl}, userAudioUrl={lUserData.userAudioUrl}");
         OrchestratorController.Instance.UpdateFullUserData(lUserData);
     }
 

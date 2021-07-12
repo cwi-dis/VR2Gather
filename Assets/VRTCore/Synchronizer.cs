@@ -6,11 +6,14 @@ namespace VRT.Core
 {
     public class Synchronizer : MonoBehaviour
     {
-        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame. Default: as fast as possible.")]
-        public int catchUpMs = 0;
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool debugSynchronizer = false;
-        long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
+        [Tooltip("Current preferred playout latency")]
+        public long currentPreferredLatency = 0;  // now(ms) minus this value: optimal timestamp in buffer.
+        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame (if currentPreferredLatency > minPreferredLatency). Default: as fast as possible.")]
+        public int latencyCatchup = 0;
+        [Tooltip("Minimum preferred playout latency")]
+        public long minPreferredLatency = 0;  // Minimum value for latency (so we don't run out of data when DASH switches segments)
         int currentFrameCount = 0;  // Unity frame number we are currently working for
         ulong latestCurrentFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
         ulong earliestNextFrameTimestamp = 0;   // Latest timestamp available for this frame, for all clients
@@ -56,30 +59,37 @@ namespace VRT.Core
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+            // xxxjack update currentPreferredLatency, if earliestNextFrameTimestamp and catchup and minPreferredLatency allow it.
+            bestTimestampForCurrentFrame = (ulong)utcMillisForCurrentFrame;
             // If there is no latest timestamp, or it is old anyway, we use the earliest timestamp for this frame.
-            if (earliestNextFrameTimestamp <= latestCurrentFrameTimestamp)
+            if (bestTimestampForCurrentFrame < earliestNextFrameTimestamp)
             {
                 bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
-                stats.statsUpdate(false, true, false, workingEpoch, bestTimestampForCurrentFrame);
+                var currentLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
+                stats.statsUpdate(false, true, false, currentLatency, bestTimestampForCurrentFrame);
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
-            if (catchUpMs != 0 && workingEpoch != 0)
+            if (latencyCatchup != 0 && currentPreferredLatency != 0)
             {
                 // earliestNextTimestamp may be too far in the future.
                 // In that case we stick with the latest current frame timestamp
-                long expectedNextTimestamp = utcMillisForCurrentFrame - workingEpoch + catchUpMs;
+                long expectedNextTimestamp = utcMillisForCurrentFrame + currentPreferredLatency + latencyCatchup;
                 if (earliestNextFrameTimestamp > (ulong)expectedNextTimestamp)
                 {
                     bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
-                    stats.statsUpdate(false, false, true, workingEpoch, bestTimestampForCurrentFrame);
+                    stats.statsUpdate(false, false, true, currentPreferredLatency, bestTimestampForCurrentFrame);
                     return;
                 }
             }
+#if OLD_LATENCY_CODE
             // We are going to show new data in the current frame. Update our epoch.
             bestTimestampForCurrentFrame = earliestNextFrameTimestamp;
-            workingEpoch = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
-            stats.statsUpdate(true, false, false, workingEpoch, bestTimestampForCurrentFrame);
+            currentPreferredLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
+#else
+            bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
+#endif
+            stats.statsUpdate(true, false, false, currentPreferredLatency, bestTimestampForCurrentFrame);
         }
         public ulong GetBestTimestampForCurrentFrame()
         {
@@ -103,15 +113,15 @@ namespace VRT.Core
         {
             public Stats(string name) : base(name) { }
 
-            long statsTotalEpochOffset;
+            long statsTotalPreferredLatency;
             int statsTotalCalls = 0;
             int statsTotalFreshReturn = 0;
             int statsTotalStaleReturn = 0;
             int statsTotalHoldoffReturn = 0;
 
-            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset, ulong timestamp)
+            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long preferredLatency, ulong timestamp)
             {
-                statsTotalEpochOffset += epochOffset;
+                statsTotalPreferredLatency += preferredLatency;
                 statsTotalCalls++;
                 if (freshReturn) statsTotalFreshReturn++;
                 if (staleReturn) statsTotalStaleReturn++;
@@ -119,13 +129,13 @@ namespace VRT.Core
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / statsTotalCalls)}, timestamp={timestamp}");
+                    Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, timestamp={timestamp}");
 
                 }
                 if (ShouldClear())
                 {
                     Clear();
-                    statsTotalEpochOffset = 0;
+                    statsTotalPreferredLatency = 0;
                     statsTotalCalls = 0;
                     statsTotalFreshReturn = 0;
                     statsTotalHoldoffReturn = 0;

@@ -2749,8 +2749,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee302642fd02ab43846844518a16bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  catchUpMs: 0
   debugSynchronizer: 0
+  currentPreferredLatency: 1500
+  latencyCatchup: 0
+  minPreferredLatency: 0
 --- !u!1 &7759874434686086657
 GameObject:
   m_ObjectHideFlags: 0

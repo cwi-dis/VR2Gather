@@ -36,7 +36,6 @@ namespace VRT.UserRepresentation.Voice
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
@@ -59,8 +58,7 @@ namespace VRT.UserRepresentation.Voice
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 50, true);
-                Debug.Log($"xxxjack VoiceReceiver TCP URL={user.userData.userAudioUrl}");
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, true);
                 reader = new BaseTCPReader(user.userData.userAudioUrl, preparerQueue);
             }
             else
@@ -149,7 +147,7 @@ namespace VRT.UserRepresentation.Voice
  
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, latency_ms={(int)(statsTotalLatency/(statsTotalAudioframeCount==0?1:statsTotalAudioframeCount))}, max_queuesize={maxQueueSize}, timestamp={timestamp}");
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount))}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, max_queuesize={maxQueueSize}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
