@@ -77,7 +77,21 @@ namespace VRT.Core
             if (latencyCatchup > 0 && currentPreferredLatency > minPreferredLatency && earliestLatestFrameTimestamp > 0)
             {
                 long maxCatchup = utcMillisForCurrentFrame - (long)earliestLatestFrameTimestamp;
-
+                long curCatchup = maxCatchup;
+                if (curCatchup > latencyCatchup)
+                {
+                    curCatchup = latencyCatchup;
+                }
+                if (curCatchup > 0 && currentPreferredLatency - curCatchup >= minPreferredLatency)
+                {
+                    currentPreferredLatency -= curCatchup;
+                    Debug.Log($"{Name()}: xxxjack catching up {curCatchup} ms, currentPreferredLatency={currentPreferredLatency}, maxCatchup={maxCatchup}");
+                }
+            }
+            // Sanity check
+            if (currentPreferredLatency < minPreferredLatency)
+            {
+                currentPreferredLatency = minPreferredLatency;
             }
             //
             // We now know the preferred latency, so we can compute the
@@ -95,6 +109,15 @@ namespace VRT.Core
             {
                 bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
                 stats.statsUpdate(false, true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+                //
+                // If the current actual latency is bigger than the preferred latency we update the preferred latency
+                //
+                long currentLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
+                if (currentLatency > currentPreferredLatency && currentLatency < 10000 && latencyCatchup > 0)
+                {
+                    currentPreferredLatency = currentLatency;
+                    Debug.Log($"{Name()}: xxxjack increase currentPreferredLatency={currentPreferredLatency}");
+                }
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
