@@ -104,7 +104,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                         if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                        pcReader = new K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, PCSelfConfig.RS2ReaderConfig.wantedSkeleton, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PROXY__)

@@ -70,7 +70,8 @@
     },
     "PCSelfConfig": {
       "RS2ReaderConfig": {
-        "configFilename": "./cameraconfig.xml"
+        "configFilename": "./cameraconfig.xml",
+		"requestSkeleton": true
       },
       "SynthReaderConfig": {
         "nPoints": 8000
@@ -102,7 +103,7 @@
           "z": 1
         }
       },
-      "voxelSize": 0.005,
+      "voxelSize": 0,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [

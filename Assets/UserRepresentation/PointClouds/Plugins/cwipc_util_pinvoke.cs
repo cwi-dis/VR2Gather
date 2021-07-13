@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -47,6 +49,105 @@ namespace VRT.UserRepresentation.PointCloud
             public byte ncamera;
         };
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct _cwipc_skeleton_joint
+        {
+            public int confidence;
+            public float x;
+            public float y;
+            public float z;
+            public float q_w;
+            public float q_x;
+            public float q_y;
+            public float q_z;
+        };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct _cwipc_skeleton_collection
+        {
+            public int n_skeletons;
+            public int n_joints;
+            public _cwipc_skeleton_joint[] joints;
+        };
+
+        public class cwipc_skeleton_joint
+        {
+            public int confidence;      // 0=None, 1=Low, 2=Medium, 3=High
+            public float[] position;    // x, y, z
+            public float[] orientation; // q_w, q_x, q_y, q_z
+            public cwipc_skeleton_joint(int _confidence, float _x, float _y, float _z, float _q_w, float _q_x, float _q_y, float _q_z) 
+            {
+                confidence = _confidence;
+                position = new float[] { _x, _y, _z };
+                orientation = new float[] { _q_w, _q_x, _q_y, _q_z };
+            }
+        }
+
+        public class cwipc_skeleton
+        {
+            public ulong timestamp;
+            public List<cwipc_skeleton_joint> joints;
+            public cwipc_skeleton() { }
+            public cwipc_skeleton(IntPtr data_pointer, int data_size, ulong _timestamp)
+            {
+                timestamp = _timestamp;
+                joints = new List<cwipc_skeleton_joint>();
+                //int bytesize = (sizeof(int) + sizeof(float) * 7) * 32;
+                byte[] data = new byte[data_size];
+                Marshal.Copy(data_pointer, data, 0, data_size);
+                var reader = new BinaryReader(new MemoryStream(data), System.Text.Encoding.ASCII);
+                //_cwipc_skeleton_collection data = (_cwipc_skeleton_collection)Marshal.PtrToStructure(data_pointer, typeof(_cwipc_skeleton_collection));
+                int n_skeletons = reader.ReadInt32();
+                if (n_skeletons > 0)
+                {
+                    int n_joints = reader.ReadInt32();
+                    for (int i = 0; i < n_joints; i++)
+                    {
+                        joints.Add(new cwipc_skeleton_joint(reader.ReadInt32(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
+                    }
+                }
+            }
+
+            public bool fuse_skeletons(IntPtr data_pointer, int data_size) 
+            {
+                List<cwipc_skeleton_joint> new_joints = new List<cwipc_skeleton_joint>();
+                //int bytesize = (sizeof(int) + sizeof(float) * 7) * 32;
+                byte[] data = new byte[data_size];
+                Marshal.Copy(data_pointer, data, 0, data_size);
+                var reader = new BinaryReader(new MemoryStream(data), System.Text.Encoding.ASCII);
+                //_cwipc_skeleton_collection data = (_cwipc_skeleton_collection)Marshal.PtrToStructure(data_pointer, typeof(_cwipc_skeleton_collection));
+                int n_skeletons = reader.ReadInt32();
+                if (n_skeletons > 0)
+                {
+                    int n_joints = reader.ReadInt32();
+                    if (n_joints == joints.Count)
+                    {
+                        for (int i = 0; i < n_joints; i++)
+                        {
+                            cwipc_skeleton_joint new_joint = new cwipc_skeleton_joint(reader.ReadInt32(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                            if (joints[i].confidence == new_joint.confidence)  //average positions
+                            {
+                                float x = (joints[i].position[0] + new_joint.position[0]) / 2;
+                                float y = (joints[i].position[0] + new_joint.position[0]) / 2;
+                                float z = (joints[i].position[0] + new_joint.position[0]) / 2;
+                                joints[i].position = new float[] { x, y, z };
+                            }
+                            else if (joints[i].confidence < new_joint.confidence) //Use joint with higher coinfidence
+                            {
+                                joints[i] = new_joint; 
+                            } 
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        UnityEngine.Debug.LogError($"Error :different number of joints {n_joints}!={joints.Count}");
+                    }
+                }
+                return false;
+            }
+        }
+
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
@@ -74,6 +175,19 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, IntPtr size);
 
             [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_access_auxiliary_data(IntPtr pc);
+            [DllImport(myDllName)]
+            internal extern static int cwipc_auxiliary_data_count(IntPtr collection);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_name(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_description(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_auxiliary_data_pointer(IntPtr collection, int idx);
+            [DllImport(myDllName)]
+            internal extern static int cwipc_auxiliary_data_size(IntPtr collection, int idx);
+
+            [DllImport(myDllName)]
             internal extern static IntPtr cwipc_source_get(IntPtr src);
             [DllImport(myDllName)]
             internal extern static bool cwipc_source_eof(IntPtr src);
@@ -81,6 +195,10 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static bool cwipc_source_available(IntPtr src, bool available);
             [DllImport(myDllName)]
             internal extern static void cwipc_source_free(IntPtr src);
+            [DllImport(myDllName)]
+            internal extern static void cwipc_source_request_auxiliary_data(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
+            [DllImport(myDllName)]
+            internal extern static bool cwipc_source_auxiliary_data_requested(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
 
             [DllImport(myDllName)]
             internal extern static int cwipc_tiledsource_maxtile(IntPtr src);
@@ -184,6 +302,61 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
+        public class cwipc_auxiliary_data {
+            protected IntPtr _pointer;
+            internal cwipc_auxiliary_data(IntPtr pointer) {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata created with NULL pointer argument");
+                _pointer = pointer;
+            }
+            /*[StructLayout(LayoutKind.Sequential, Pack = 1)]
+            protected struct item
+            {
+                string name;
+                string description;
+                IntPtr pointer;
+                int size;
+            };
+            protected List<item> m_items = new List<item>();*/
+
+            public int count()
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.count called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_count(_pointer);
+            }
+
+            public string name(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.name called with NULL pointer argument");
+                IntPtr aux_name = _API_cwipc_util.cwipc_auxiliary_data_name(_pointer, idx);
+                return Marshal.PtrToStringAnsi(aux_name);
+            }
+
+            public string description(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.description called with NULL pointer argument");
+                IntPtr aux_description = _API_cwipc_util.cwipc_auxiliary_data_description(_pointer, idx);
+                return Marshal.PtrToStringAnsi(aux_description);
+            }
+
+            public IntPtr pointer(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.pointer called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_pointer(_pointer, idx);
+            }
+
+            public int size(int idx)
+            {
+                if (_pointer == IntPtr.Zero) throw new Exception("cwipc_auxdata.size called with NULL pointer argument");
+                return _API_cwipc_util.cwipc_auxiliary_data_size(_pointer, idx);
+            }
+
+            /*public cwipc_auxiliary_data data(int idx)
+            {
+
+            }*/
+
+        }
+
         public class pointcloud : BaseMemoryChunk
         {
             internal pointcloud(IntPtr _pointer) : base(_pointer)
@@ -248,6 +421,11 @@ namespace VRT.UserRepresentation.PointCloud
                 return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (IntPtr)size);
             }
 
+            public cwipc_auxiliary_data access_auxiliary_data() {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.access_auxiliary_data called with NULL pointer");
+                return new cwipc_auxiliary_data(_API_cwipc_util.cwipc_access_auxiliary_data(pointer));
+            }
+
             internal IntPtr _intptr()
             {
                 return pointer;
@@ -290,6 +468,18 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.available called with NULL pointer");
                 return _API_cwipc_util.cwipc_source_available(pointer, wait);
+            }
+
+            public void request_auxiliary_data(string name)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.request_auxiliary_data called with NULL pointer");
+                _API_cwipc_util.cwipc_source_request_auxiliary_data(pointer, name);
+            }
+            
+            public void auxiliary_data_requested(string name)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.auxiliary_data_requested called with NULL pointer");
+                _API_cwipc_util.cwipc_source_auxiliary_data_requested(pointer, name);
             }
 
             public tileinfo[] get_tileinfo()

@@ -106,6 +106,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
+            optionalProcessing(pc);
             if (voxelSize != 0)
             {
                 var newPc = cwipc.downsample(pc, voxelSize);
@@ -150,6 +151,8 @@ namespace VRT.UserRepresentation.PointCloud
             stats.statsUpdate(pc.count(), didDrop, didDropSelf);
             pc.free();
         }
+
+        protected virtual void optionalProcessing(cwipc.pointcloud pc) { }
 
         protected class Stats : VRT.Core.BaseStats
         {
