@@ -8,7 +8,7 @@ namespace VRT.UserRepresentation.PointCloud
     public class K4AReader : PCReader
     {
 
-        cwipc.cwipc_skeleton mostRecentSkeleton;
+        public cwipc.cwipc_skeleton mostRecentSkeleton;
         bool wantedSkeleton = false;
         int count = 0;
 
