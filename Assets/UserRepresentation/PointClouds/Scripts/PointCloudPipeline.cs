@@ -7,6 +7,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
+using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -17,6 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
+        const int pcDecoderQueueSize = 10;  // Was: 2.
+        const int pcPreparerQueueSize = 50; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -63,16 +66,22 @@ namespace VRT.UserRepresentation.PointCloud
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             user = (User)_user;
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
                     isSource = true;
+                    if (synchronizer != null)
+                    {
+                        // We disable the synchronizer for self. It serves
+                        // no practical purpose and emits confusing stats: lines.
+                        Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
+                        synchronizer.gameObject.SetActive(false);
+                        synchronizer = null;
+                    }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
@@ -220,14 +229,30 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // Create encoders for transmission
                         //
-                        try
+                        if (Config.Instance.protocolType != Config.ProtocolType.TCP)
                         {
-                            encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            try
+                            {
+                                encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
                         }
-                        catch (System.EntryPointNotFoundException)
+                        else
                         {
-                            Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                            throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            try
+                            {
+                                encoder = new NULLEncoder(encoderQueue, encoderStreamDescriptions);
+                            }
+                            catch (System.EntryPointNotFoundException)
+                            {
+                                Debug.Log($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                                throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                            }
+
                         }
                         //
                         // Create bin2dash writer for PC transmission
@@ -237,10 +262,19 @@ namespace VRT.UserRepresentation.PointCloud
                             throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            if (useDash)
+                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                            {
                                 writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                            }
                             else
+                            if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                            {
+                                writer = new TCPWriter(user.userData.userPCurl, "cwi1", dashStreamDescriptions);
+                            }
+                            else
+                            {
                                 writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                            }
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -335,7 +369,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
-            bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
             {
@@ -353,7 +386,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Allocate queues we need for this pipeline
                 //
-                QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue", 2, true);
+                QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue", pcDecoderQueueSize, true);
                 //
                 // Create renderer
                 //
@@ -361,8 +394,16 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
-                decoders.Add(decoder);
+                if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                {
+                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
+                else
+                {
+                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoders.Add(decoder);
+                }
                 //
                 // And collect the relevant information for the Dash receiver
                 //
@@ -372,10 +413,18 @@ namespace VRT.UserRepresentation.PointCloud
                     tileNumber = tileNumbers[i]
                 };
             };
-            if (useDash)
+            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+            {
                 reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+            } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+            {
+                reader = new PCTCPReader(user.userData.userPCurl, tilesToReceive);
+            }
             else
+            {
                 reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
+            }
+            
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
@@ -386,7 +435,7 @@ namespace VRT.UserRepresentation.PointCloud
             // We 
             Config._PCs PCs = Config.Instance.PCs;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", 2, false);
+            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
             if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
             { // Mesh
@@ -568,15 +617,21 @@ namespace VRT.UserRepresentation.PointCloud
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            if (writer is B2DWriter pcWriter)
+            if (writer is BaseWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
             }
             else
             {
-                Debug.LogWarning($"{Name()}: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+                Debug.LogError($"{Name()}: GetSyncConfig: isSource, but writer is not a BaseWriter");
             }
-
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceSender voiceSender = gameObject.transform.parent.GetComponentInChildren<VoiceSender>();
+            if (voiceSender != null)
+            {
+                rv.audio = voiceSender.GetSyncInfo();
+            }
+            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -587,15 +642,26 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = (PCSubReader)reader;
+            BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);
             }
             else
             {
-                Debug.LogWarning($"{Name()}: SetSyncConfig: reader is not a PCSubReader");
+                Debug.Log($"{Name()}: SetSyncConfig: reader is not a BaseReader");
             }
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceReceiver voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoiceReceiver>();
+            if (voiceReceiver != null)
+            {
+                voiceReceiver.SetSyncInfo(config.audio);
+            } else
+            {
+                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
+            }
+            Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
+
         }
 
         public new Vector3 GetPosition()

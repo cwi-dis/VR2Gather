@@ -22,6 +22,7 @@ namespace VRT.Pilots.Common
 		TID_KeywordsResponseData = 112,
 		TID_PlayerTransformSyncData = 113,
 		TID_AddPlayerToSequenceData = 114,
+		TID_SyncConfigMessage = 115,
 	};
 
 	/// <summary>

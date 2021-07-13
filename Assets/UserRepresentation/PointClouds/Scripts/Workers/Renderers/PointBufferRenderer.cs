@@ -47,7 +47,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         private void LateUpdate()
         {
-            preparer.LatchFrame();
+            bool fresh = preparer.LatchFrame();
             pointCount = preparer.GetComputeBuffer(ref pointBuffer);
             float pointSize = preparer.GetPointSize();
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
@@ -56,7 +56,7 @@ namespace VRT.UserRepresentation.PointCloud
             block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
-            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp);
+            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueSize(), fresh);
         }
 
         public void OnDestroy()
@@ -71,27 +71,40 @@ namespace VRT.UserRepresentation.PointCloud
             public Stats(string name) : base(name) { }
 
             double statsTotalPointcloudCount = 0;
+            double statsTotalDisplayCount = 0;
             double statsTotalPointCount = 0;
+            double statsTotalDisplayPointCount = 0;
             double statsTotalPointSize = 0;
+            int statsMaxQueueSize = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, ulong timestamp)
+            public void statsUpdate(int pointCount, float pointSize, ulong timestamp, int queueSize, bool fresh)
             {
     
-                statsTotalPointCount += pointCount;
-                statsTotalPointcloudCount += 1;
+                statsTotalDisplayPointCount += pointCount;
+                statsTotalDisplayCount += 1;
+                if (!fresh) return; //remember to commit with this tag backport candidate
+                if (fresh)
+                {
+                    statsTotalPointcloudCount += 1;
+                    statsTotalPointCount += pointCount;
+                }
                 statsTotalPointSize += pointSize;
+                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
  
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount},  pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, points_per_display={(int)(statsTotalDisplayPointCount / (statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, max_queuesize={statsMaxQueueSize}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
                   }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPointcloudCount = 0;
+                    statsTotalDisplayCount = 0;
+                    statsTotalDisplayPointCount = 0;
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
+                    statsMaxQueueSize = 0;
                 }
             }
         }

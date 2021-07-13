@@ -1,18 +1,12 @@
 {
-    "name": "PointClouds",
+    "name": "TCP",
     "references": [
-        "VRTCore",
-        "Dash",
-        "Orchestrator",
-        "Voice",
-        "RabbitMQ",
-        "SocketIO",
-        "Pilots",
-        "TCP"
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:30bd862cd7044fd4484784b07598041d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
+    "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,

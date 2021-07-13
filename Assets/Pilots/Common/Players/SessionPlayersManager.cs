@@ -112,12 +112,15 @@ namespace VRT.Pilots.Common
 			bool firstTVM = true;
 
 			// First tell the tilingConfigDistributor what our user ID is.
-			var anyConfigDistributor = FindObjectOfType<BaseConfigDistributor>();
-			if (anyConfigDistributor == null)
+			var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+			if (configDistributors == null || configDistributors.Length == 0)
 			{
 				Debug.LogWarning("No BaseConfigDistributor found");
 			}
-			anyConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
+			foreach(var cd in configDistributors) {
+				cd?.Init(OrchestratorController.Instance.SelfUser.userId);
+			}
+			
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -129,12 +132,12 @@ namespace VRT.Pilots.Common
 				var representationType = user.userData.userRepresentationType;
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
-					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
+					SetUpPlayerManager(playerManager, user, configDistributors, true);
 					firstTVM = false;
 				}
 				else
 				{
-					SetUpPlayerManager(playerManager, user, anyConfigDistributor);
+					SetUpPlayerManager(playerManager, user, configDistributors);
 				}
 
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
@@ -181,7 +184,7 @@ namespace VRT.Pilots.Common
 		}
 
 		//Looks like this could very well be internal to the PlayerManager? 
-		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor tilingConfigDistributor, bool firstTVM = false)
+		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor[] configDistributors, bool firstTVM = false)
 		{
 
 			playerManager.orchestratorId = user.userId;
@@ -228,12 +231,16 @@ namespace VRT.Pilots.Common
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
 						pcPipeline?.Init(user, userCfg);
-						if (tilingConfigDistributor == null)
+						if (configDistributors == null || configDistributors.Length == 0)
                         {
 							Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
                         }
-						// Register for distribution of tiling configurations
-						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
+						// Register for distribution of tiling and sync configurations
+						foreach(var cd in configDistributors)
+                        {
+							cd?.RegisterPipeline(user.userId, pcPipeline);
+						}
+						
 						break;
 					case UserRepresentationType.__TVM__: // TVM
 														 // xxxjack we should *really* create a dummy TVMPipeline object for this...
@@ -265,7 +272,8 @@ namespace VRT.Pilots.Common
 				catch (Exception e)
 				{
 					Debug.Log($"[SessionPlayersManager] Exception occured when trying to load audio for user {user.userName} - {user.userId}: " + e);
-					Debug.LogError($"Cannot recieve audio from participant {user.userName}");
+					Debug.LogError($"Cannot receive audio from participant {user.userName}");
+					throw;
 				}
 			}
 		}
@@ -284,7 +292,7 @@ namespace VRT.Pilots.Common
 					throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
 				try
 				{
-					player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+					player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType); //Audio Pipeline
 				}
 				catch (EntryPointNotFoundException e)
 				{
@@ -297,7 +305,7 @@ namespace VRT.Pilots.Common
 				var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
 				if (AudioSUBConfig == null)
 					throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType); //Audio Pipeline
 			}
 		}
 

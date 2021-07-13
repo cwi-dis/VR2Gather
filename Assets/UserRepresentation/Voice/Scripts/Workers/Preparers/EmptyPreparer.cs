@@ -24,8 +24,9 @@ namespace VRT.UserRepresentation.Voice
             //            if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("EmptyPreparer Sopped");
         }
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
+            return false;
         }
 
         public override void Synchronize()

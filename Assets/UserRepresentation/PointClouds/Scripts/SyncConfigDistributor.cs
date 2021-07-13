@@ -6,13 +6,13 @@ using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class TilingConfigDistributor : BaseConfigDistributor
+    public class SyncConfigDistributor : BaseConfigDistributor
     {
-        // Note there is an AddTypeIdMapping(420, typeof(TilingConfigDistributor.TilingConfigMessage))
+        // Note there is an AddTypeIdMapping(42X, typeof(SyncConfigDistributor.SyncConfigMessage))
         // in MessageForwarder that is part of the magic to make this work.
-        public class TilingConfigMessage : BaseMessage
+        public class SyncConfigMessage : BaseMessage
         {
-            public TilingConfig data;
+            public SyncConfig data;
         }
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Awake()
         {
-            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
+            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
         }
         public override BaseConfigDistributor Init(string _selfUserId)
         {
@@ -34,22 +34,22 @@ namespace VRT.UserRepresentation.PointCloud
 
             if (pipelines.ContainsKey(userId))
             {
-                Debug.LogError($"Programmer error: TilingConfigDistributor: registering duplicate userId {userId}");
+                Debug.LogError($"Programmer error: SyncConfigDistributor: registering duplicate userId {userId}");
             }
             pipelines[userId] = pipeline;
         }
 
         void Start()
         {
-            if (debug) Debug.Log($"TilingConfigDistributor: Started");
+            if (debug) Debug.Log($"SyncConfigDistributor: Started");
             //Subscribe to incoming data of the type we're interested in. 
-            OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
+            OrchestratorController.Instance.Subscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         private void OnDestroy()
         {
             //If we no longer exist, we should unsubscribe. 
-            OrchestratorController.Instance.Unsubscribe<TilingConfigMessage>(OnTilingConfig);
+            OrchestratorController.Instance.Unsubscribe<SyncConfigMessage>(OnSyncConfig);
         }
 
         void Update()
@@ -70,9 +70,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 return;
             }
-            TilingConfig tilingConfig = pipeline.GetTilingConfig();
-            if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
-            var data = new TilingConfigMessage { data = tilingConfig };
+            SyncConfig syncConfig = pipeline.GetSyncConfig();
+            if (debug) Debug.Log($"SyncConfigDistributor: sending sync information for user {selfUserId}");
+            var data = new SyncConfigMessage { data = syncConfig };
 
             if (OrchestratorController.Instance.UserIsMaster)
             {
@@ -88,7 +88,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
-        private void OnTilingConfig(TilingConfigMessage receivedData)
+        private void OnSyncConfig(SyncConfigMessage receivedData)
         {
 
             if (OrchestratorController.Instance.UserIsMaster)
@@ -103,7 +103,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Find PointCloudPipeline belonging to receivedData.SenderId.
             if (!pipelines.ContainsKey(receivedData.SenderId))
             {
-                Debug.LogWarning($"TilingConfigDistributor: received data for unknown userId {receivedData.SenderId}");
+                Debug.LogWarning($"SyncConfigDistributor: received data for unknown userId {receivedData.SenderId}");
                 return;
             }
             PointCloudPipeline pipeline = (PointCloudPipeline)pipelines[receivedData.SenderId];
@@ -112,9 +112,9 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             // Give reveicedData.data to that PointCloudPipeline.
-            TilingConfig tilingConfig = receivedData.data;
-            if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
-            pipeline.SetTilingConfig(tilingConfig);
+            SyncConfig syncConfig = receivedData.data;
+            if (debug) Debug.Log($"SyncConfigDistributor: received sync information from user {selfUserId}");
+            pipeline.SetSyncConfig(syncConfig);
         }
     }
 }

@@ -6,12 +6,19 @@ namespace VRT.Core
 {
     public class Synchronizer : MonoBehaviour
     {
-        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame. Default: as fast as possible.")]
-        public int catchUpMs = 0;
-        long workingEpoch;  // now(ms) + this value: optimal timestamp in buffer.
+        [Tooltip("Enable to get lots of log messages on Synchronizer use")]
+        public bool debugSynchronizer = false;
+        [Tooltip("Current preferred playout latency")]
+        public long currentPreferredLatency = 0;
+        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame (if currentPreferredLatency > minPreferredLatency). Default: as fast as possible.")]
+        public int latencyCatchup = 0;
+        [Tooltip("Minimum preferred playout latency")]
+        public long minPreferredLatency = 0;
+
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        ulong currentEarliestTimestamp = 0; // Earliest timestamp available for this frame, for all clients
-        ulong currentLatestTimestamp = 0;   // Latest timestamp available for this frame, for all clients
+        ulong latestCurrentFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
+        ulong earliestNextFrameTimestamp = 0;   // Latest timestamp available for this frame, for all clients
+        ulong earliestLatestFrameTimestamp = 0;   // earliest (over all clients) Latest timestamp available in the client queue
         ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
         static int instanceCounter = 0;
@@ -26,27 +33,34 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
-                currentEarliestTimestamp = 0;
-                currentLatestTimestamp = 0;
+                latestCurrentFrameTimestamp = 0;
+                earliestNextFrameTimestamp = 0;
+                earliestLatestFrameTimestamp = 0;
                 bestTimestampForCurrentFrame = 0;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(ulong earliestTimestamp, ulong latestTimestamp)
+        public void SetTimestampRangeForCurrentFrame(string caller, ulong currentFrameTimestamp, ulong nextFrameTimestamp, ulong latestFrameTimestamp)
         {
             _Reset();
-            //Debug.Log($"{Name()}: xxxjack SetTimestampRangeForCurrentFrame: frame={currentFrameCount}, earliest={earliestTimestamp}, latest={latestTimestamp}");
-            // Record (for current frame) earliest and latest timestamp available on all prepareres.
-            // In other words: the maximum of all earliest timestamps and minimum of all latest reported.
-            if (latestTimestamp == 0) latestTimestamp = earliestTimestamp;
-            if (earliestTimestamp == 0) earliestTimestamp = latestTimestamp;
-            if (earliestTimestamp == 0) return;
-            if (currentEarliestTimestamp == 0 || earliestTimestamp > currentEarliestTimestamp)
+            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={currentFrameTimestamp}, next={nextFrameTimestamp}, latest={latestFrameTimestamp}");
+            // First we record the minimum of the latest timestamp in the queue.
+            // This is only used for catch-up.
+            if (this.earliestLatestFrameTimestamp == 0 || earliestLatestFrameTimestamp >= latestFrameTimestamp)
             {
-                currentEarliestTimestamp = earliestTimestamp;
+                this.earliestLatestFrameTimestamp = latestFrameTimestamp;
             }
-            if (currentLatestTimestamp == 0 || latestTimestamp < currentLatestTimestamp)
+            // Record (for current frame) earliest and next timestamp available on all prepareres.
+            // In other words: the maximum of all earliest timestamps and minimum of all next reported.
+            if (nextFrameTimestamp == 0) nextFrameTimestamp = currentFrameTimestamp;
+            if (currentFrameTimestamp == 0) currentFrameTimestamp = nextFrameTimestamp;
+            if (currentFrameTimestamp == 0) return;
+            if (this.latestCurrentFrameTimestamp == 0 || currentFrameTimestamp > this.latestCurrentFrameTimestamp)
             {
-                currentLatestTimestamp = latestTimestamp;
+                this.latestCurrentFrameTimestamp = currentFrameTimestamp;
+            }
+            if (this.earliestNextFrameTimestamp == 0 || nextFrameTimestamp < this.earliestNextFrameTimestamp)
+            {
+                this.earliestNextFrameTimestamp = nextFrameTimestamp;
             }
         }
 
@@ -54,29 +68,50 @@ namespace VRT.Core
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
-            // If there is no latest timestamp, or it is old anyway, we use the earliest timestamp for this frame.
-            if (currentLatestTimestamp <= currentEarliestTimestamp)
+            //
+            // We can lower the current preferred latency iff
+            // - we are allowed to do catchup
+            // - it is lower than the minimum preferred latency,
+            // - there are ample entries in all the queues
+            //
+            if (latencyCatchup > 0 && currentPreferredLatency > minPreferredLatency && earliestLatestFrameTimestamp > 0)
             {
-                bestTimestampForCurrentFrame = currentEarliestTimestamp;
-                stats.statsUpdate(false, true, false, workingEpoch, bestTimestampForCurrentFrame);
+                long maxCatchup = utcMillisForCurrentFrame - (long)earliestLatestFrameTimestamp;
+
+            }
+            //
+            // We now know the preferred latency, so we can compute the
+            // best timestamp.
+            //
+            bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
+
+            //
+            // If there is no next timestamp that all source have,
+            // or if it is later than the best timestamp, 
+            // we use the best timestamp for the current frame.
+            // This may still result in some sources catching up.
+            //
+            if (earliestNextFrameTimestamp == 0 || bestTimestampForCurrentFrame < earliestNextFrameTimestamp)
+            {
+                bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
+                stats.statsUpdate(false, true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
                 return;
             }
             // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
-            if (catchUpMs != 0 && workingEpoch != 0)
+            if (latencyCatchup != 0 && currentPreferredLatency != 0)
             {
-                // currentLatestTimestamp may be too far in the future. 
-                long expectedNextTimestamp = utcMillisForCurrentFrame + workingEpoch + catchUpMs;
-                if (currentLatestTimestamp > (ulong)expectedNextTimestamp)
+                // earliestNextTimestamp may be too far in the future.
+                // In that case we stick with the latest current frame timestamp
+                long expectedNextTimestamp = utcMillisForCurrentFrame + currentPreferredLatency + latencyCatchup;
+                if (earliestNextFrameTimestamp > (ulong)expectedNextTimestamp)
                 {
-                    bestTimestampForCurrentFrame = currentEarliestTimestamp;
-                    stats.statsUpdate(false, false, true, workingEpoch, bestTimestampForCurrentFrame);
+                    bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
+                    stats.statsUpdate(false, false, true, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
                     return;
                 }
             }
-            // We are going to show new data in the current frame. Update our epoch.
-            workingEpoch = utcMillisForCurrentFrame - (long)currentLatestTimestamp;
-            bestTimestampForCurrentFrame = currentLatestTimestamp;
-            stats.statsUpdate(true, false, false, workingEpoch, bestTimestampForCurrentFrame);
+
+            stats.statsUpdate(true, false, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
         }
         public ulong GetBestTimestampForCurrentFrame()
         {
@@ -88,7 +123,7 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
-            Debug.Log($"{Name()}: xxxjack synchronizer started");
+            if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
             stats = new Stats(Name());
         }
 
@@ -100,15 +135,16 @@ namespace VRT.Core
         {
             public Stats(string name) : base(name) { }
 
-            long statsTotalEpochOffset;
+            long statsTotalPreferredLatency;
             int statsTotalCalls = 0;
             int statsTotalFreshReturn = 0;
             int statsTotalStaleReturn = 0;
             int statsTotalHoldoffReturn = 0;
 
-            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long epochOffset, ulong timestamp)
+            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long utcMillisForCurrentFrame, ulong timestamp)
             {
-                statsTotalEpochOffset += epochOffset;
+                long currentLatency = utcMillisForCurrentFrame - (long)timestamp;
+                statsTotalPreferredLatency += currentLatency;
                 statsTotalCalls++;
                 if (freshReturn) statsTotalFreshReturn++;
                 if (staleReturn) statsTotalStaleReturn++;
@@ -116,13 +152,13 @@ namespace VRT.Core
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, latency_ms={(int)(statsTotalEpochOffset / Interval())}, timestamp={timestamp}");
+                    Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, timestamp={timestamp}");
 
                 }
                 if (ShouldClear())
                 {
                     Clear();
-                    statsTotalEpochOffset = 0;
+                    statsTotalPreferredLatency = 0;
                     statsTotalCalls = 0;
                     statsTotalFreshReturn = 0;
                     statsTotalHoldoffReturn = 0;

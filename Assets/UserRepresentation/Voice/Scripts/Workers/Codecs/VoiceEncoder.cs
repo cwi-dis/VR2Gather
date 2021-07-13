@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceEncoder : BaseWorker
     {
-        public int bufferSize { get; private set; }
+        public int minSamplesPerFrame { get; private set; }
         int frames;
         NSpeex.SpeexEncoder encoder;
 
@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.Voice
             outQueue = _outQueue;
             this.frames = frames;
             encoder = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
-            bufferSize = encoder.FrameSize * frames;
+            minSamplesPerFrame = encoder.FrameSize * frames;
             encoder.Quality = 5;
             Debug.Log($"{Name()}: Started.");
             Start();
@@ -60,6 +60,7 @@ namespace VRT.UserRepresentation.Voice
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
             Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
 #endif
+            mcOut.info.timestamp = mcIn.info.timestamp;
             if (!outQueue.IsClosed())
                 outQueue.Enqueue(mcOut);
             mcIn.free();

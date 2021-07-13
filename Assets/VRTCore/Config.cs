@@ -11,7 +11,8 @@ namespace VRT.Core
         {
             None,
             Dash,
-            SocketIO
+            SocketIO,
+            TCP
         };
 
         public enum UserRepresentation
@@ -32,6 +33,7 @@ namespace VRT.Core
         public bool openLogOnExit = true;
         public int targetFrameRate = 90;
         public float memoryDamping = 1.3f;
+        public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public string videoCodec = "h264";
         public UserRepresentation userRepresentation = UserRepresentation.PC;
@@ -40,6 +42,7 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
+        public bool statsOutputFileAppend = true;
 
         [Serializable]
         public class _TVMs
@@ -144,7 +147,7 @@ namespace VRT.Core
                 }
                 public _Bin2Dash Bin2Dash;
                 public _Bin2Dash AudioBin2Dash;
-            }
+             }
             public _PCSelfConfig PCSelfConfig;
 
             [Serializable]

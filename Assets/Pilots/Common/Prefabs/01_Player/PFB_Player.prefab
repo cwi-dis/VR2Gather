@@ -3321,6 +3321,11 @@ MonoBehaviour:
   m_Weight: 1
   m_Effectors: []
 --- !u!1 &5704200592656136347
+  debugSynchronizer: 0
+  currentPreferredLatency: 300
+  latencyCatchup: 0
+  minPreferredLatency: 0
+--- !u!1 &7759874434686086657
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

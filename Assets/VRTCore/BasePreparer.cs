@@ -22,12 +22,11 @@ namespace VRT.Core
         public void SetSynchronizer(Synchronizer _synchronizer)
         {
             synchronizer = _synchronizer;
-            Debug.Log($"{Name()}: xxxjack SetSynchronizer({synchronizer}, {synchronizer?.Name()})");
-        }
+       }
 
         public abstract void Synchronize();
 
-        public abstract void LatchFrame();
+        public abstract bool LatchFrame();
         // Start is called before the first frame update
         protected override void Start()
         {

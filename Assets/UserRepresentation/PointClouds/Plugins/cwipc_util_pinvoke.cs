@@ -151,12 +151,14 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20210228;
+            public const ulong CWIPC_API_VERSION = 0x20210412;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 			[DllImport(myDllName)]
 			internal extern static IntPtr cwipc_read_debugdump([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_from_packet(IntPtr packet, IntPtr size, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
             internal extern static void cwipc_free(IntPtr pc);
             [DllImport(myDllName)]
@@ -173,6 +175,8 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static IntPtr cwipc_get_uncompressed_size(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, IntPtr size);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_copy_packet(IntPtr pc, IntPtr packet, IntPtr size);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_access_auxiliary_data(IntPtr pc);
@@ -421,7 +425,33 @@ namespace VRT.UserRepresentation.PointCloud
                 return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (IntPtr)size);
             }
 
-            public cwipc_auxiliary_data access_auxiliary_data() {
+            public int copy_packet(IntPtr data, int size)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
+                return (int)_API_cwipc_util.cwipc_copy_packet(pointer, data, (IntPtr)size);
+            }
+
+            public byte[] get_packet()
+            {
+                int size = copy_packet(IntPtr.Zero, 0);
+                byte[] rv = new byte[size];
+                int actualSize = 0;
+                unsafe
+                {
+                    fixed (byte* rvPtr = rv)
+                    {
+                        actualSize = copy_packet((IntPtr)rvPtr, size);
+                    }
+                }
+                if (actualSize != size)
+                {
+                    throw new System.Exception($"cwipc.get_packet: size={actualSize} after promising {size}");
+                }
+                return rv;
+            }
+
+            public cwipc_auxiliary_data access_auxiliary_data()
+            {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.access_auxiliary_data called with NULL pointer");
                 return new cwipc_auxiliary_data(_API_cwipc_util.cwipc_access_auxiliary_data(pointer));
             }
@@ -818,6 +848,35 @@ namespace VRT.UserRepresentation.PointCloud
                 throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
             }
             return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud from_packet(IntPtr packet, IntPtr size)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_packet(packet, size, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.from_packet: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_from_packet: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud from_packet(byte[] packet)
+        {
+            IntPtr size = (IntPtr)packet.Length;
+            pointcloud rv = null;
+            unsafe
+            {
+                fixed(byte *packetPtr = packet)
+                {
+                    rv = from_packet((IntPtr)packetPtr, size);
+                }
+            }
+            return rv;
         }
     }
 }
