@@ -87,5 +87,12 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
         }
+
+        public bool has_skeleton()
+        {
+            if (wantedSkeleton && mostRecentSkeleton != null)
+                return true;
+            return false;
+        }
     }
 }
