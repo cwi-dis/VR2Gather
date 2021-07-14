@@ -3242,6 +3242,7 @@ MonoBehaviour:
   MaskRightArm: {fileID: 7491481201867895526}
   MaskLeftArm2: {fileID: 8594509391154584850}
   MaskRightArm2: {fileID: 222483077833935042}
+  VRRig: {fileID: 5576284972112970487}
 --- !u!1 &5408734097564563202
 GameObject:
   m_ObjectHideFlags: 0
@@ -3663,7 +3664,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4255384847474175449
 Transform:
   m_ObjectHideFlags: 0
@@ -5181,7 +5182,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5427034594586230057
 Transform:
   m_ObjectHideFlags: 0
