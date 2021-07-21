@@ -58,6 +58,11 @@ namespace VRT.UserRepresentation.Voice
             {
                 readNextFrameWhenNeeded = true;
                 ulong bestTimestamp = 0;
+                if (currentAudioFrame != null)
+                {
+                    Debug.Log($"{Name()}: previous audio frame not consumed yet");
+                    return true;
+                }
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
@@ -72,12 +77,7 @@ namespace VRT.UserRepresentation.Voice
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (inQueue.IsClosed()) return false; // We are shutting down
-                if (currentAudioFrame != null)
-                {
-                    Debug.LogWarning($"{Name()}: previous audio frame not consumed");
-                    currentAudioFrame.free();
-                }
-                return _FillAudioFrame(bestTimestamp);
+                  return _FillAudioFrame(bestTimestamp);
             }
          }
 
