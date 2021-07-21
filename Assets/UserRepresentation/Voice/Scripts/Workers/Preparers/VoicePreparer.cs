@@ -14,6 +14,13 @@ namespace VRT.UserRepresentation.Voice
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         bool readNextFrameWhenNeeded = true;
+
+        // We should _not_ drop audio frames if they are in the past, but could still be
+        // considered part of the current visual frame. Otherwise, we may end up dropping one
+        // audio frame for every visual frame (because the visual clock jumps forward over the
+        // audio clock).
+        const int VISUAL_FRAME_DURATION_MS = 66;
+
         public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
         {
             stats = new Stats(Name());
@@ -84,10 +91,12 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-                bool trySkipForward = currentTimestamp < minTimestamp;
+                bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                 if (trySkipForward)
                 {
-                    if (inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp)
+                    bool canDrop = inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+                    Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                    if (canDrop)
                     {
                         // There is another frame in the queue that is also earlier than minTimestamp.
                         // Drop this one.
