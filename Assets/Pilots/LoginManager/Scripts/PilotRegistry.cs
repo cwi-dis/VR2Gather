@@ -45,8 +45,6 @@ public class PilotRegistry
                 return "MedicalExamination";
             case "Development":
                 return "MediaScape2";
-            case "Development2":
-                return "MediaScape";
             default:
                 throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
                 return null;
