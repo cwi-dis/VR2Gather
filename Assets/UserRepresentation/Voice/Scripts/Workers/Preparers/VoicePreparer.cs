@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.Voice
                 ulong bestTimestamp = 0;
                 if (currentAudioFrame != null)
                 {
-                    Debug.Log($"{Name()}: previous audio frame not consumed yet");
+                    // Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }
                 if (synchronizer != null)
@@ -95,7 +95,7 @@ namespace VRT.UserRepresentation.Voice
                 if (trySkipForward)
                 {
                     bool canDrop = inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
-                    Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                    // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
                     if (canDrop)
                     {
                         // There is another frame in the queue that is also earlier than minTimestamp.
