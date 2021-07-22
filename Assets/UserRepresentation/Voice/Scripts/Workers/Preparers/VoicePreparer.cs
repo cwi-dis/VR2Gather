@@ -14,6 +14,13 @@ namespace VRT.UserRepresentation.Voice
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         bool readNextFrameWhenNeeded = true;
+
+        // We should _not_ drop audio frames if they are in the past, but could still be
+        // considered part of the current visual frame. Otherwise, we may end up dropping one
+        // audio frame for every visual frame (because the visual clock jumps forward over the
+        // audio clock).
+        const int VISUAL_FRAME_DURATION_MS = 66;
+
         public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
         {
             stats = new Stats(Name());
@@ -51,6 +58,11 @@ namespace VRT.UserRepresentation.Voice
             {
                 readNextFrameWhenNeeded = true;
                 ulong bestTimestamp = 0;
+                if (currentAudioFrame != null)
+                {
+                    // Debug.Log($"{Name()}: previous audio frame not consumed yet");
+                    return true;
+                }
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
@@ -65,12 +77,7 @@ namespace VRT.UserRepresentation.Voice
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (inQueue.IsClosed()) return false; // We are shutting down
-                if (currentAudioFrame != null)
-                {
-                    Debug.LogWarning($"{Name()}: previous audio frame not consumed");
-                    currentAudioFrame.free();
-                }
-                return _FillAudioFrame(bestTimestamp);
+                  return _FillAudioFrame(bestTimestamp);
             }
          }
 
@@ -84,10 +91,12 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-                bool trySkipForward = currentTimestamp < minTimestamp;
+                bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                 if (trySkipForward)
                 {
-                    if (inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp)
+                    bool canDrop = inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+                    // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                    if (canDrop)
                     {
                         // There is another frame in the queue that is also earlier than minTimestamp.
                         // Drop this one.

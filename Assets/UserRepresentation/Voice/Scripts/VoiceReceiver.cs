@@ -50,9 +50,9 @@ namespace VRT.UserRepresentation.Voice
 
             if (proto == Config.ProtocolType.Dash)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
                 reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
                 codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
             else
@@ -63,9 +63,9 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
                 reader = new SocketIOReader(user, _streamName, decoderQueue);
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
                 codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
 

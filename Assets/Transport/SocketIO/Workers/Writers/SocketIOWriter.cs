@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using UnityEngine;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
@@ -71,9 +72,10 @@ namespace VRT.Transport.SocketIO
                 {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
                     if (chk == null) return; // xxxjack shouldn't this be continue?????
-
-                    var buf = new byte[chk.length];
-                    System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, 0, chk.length);
+                    var hdr_timestamp = BitConverter.GetBytes(chk.info.timestamp);
+                    var buf = new byte[chk.length+sizeof(long)];
+                    Array.Copy(hdr_timestamp, buf, sizeof(long));
+                    System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
                     stats.statsUpdate(chk.length, i);
                     chk.free();
