@@ -12,7 +12,7 @@ public class PilotRegistry
         switch (pilotName)
         {
             case "Pilot 0":
-                return "Pilot0";
+                return "MSTraining";
             case "Pilot 1":
                 return "Pilot1";
             case "Pilot 2":

@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
-    path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
+    path: Assets/PilotsExternal/mediaScape/MediaScape/Scenes/MSTraining.unity
     guid: 01e8d4050e184da48aba95c97a697601
   - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/mediaScape/MediaScape/Scenes/MediaScape.unity
     guid: bdd42233db39aa742a6ec2eef1acc7e6
+  - enabled: 1
+    path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
+    guid: b83f7d4dac6698d43b57ce2813ad9491
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}
