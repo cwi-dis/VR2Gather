@@ -13,15 +13,30 @@ namespace VRT.UserRepresentation.Voice
     {
         BaseReader reader;
         BaseWorker codec;
-        AudioPreparer preparer;
+        VoicePreparer preparer;
+
+        [Tooltip("Object responsible for synchronizing playout")]
+        public Synchronizer synchronizer = null;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
         QueueThreadSafe preparerQueue;
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+
+        public string Name()
+        {
+            return $"{GetType().Name}#{instanceNumber}";
+        }
 
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
         {
+            stats = new Stats(Name());
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<Synchronizer>();
+            }
             VoiceReader.PrepareDSP();
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
@@ -31,29 +46,42 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 4, false);
+            
 
             if (proto == Config.ProtocolType.Dash)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
                 reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
+                codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 200, true);
-                Debug.Log($"xxxjack VoiceReceiver TCP URL={user.userData.userAudioUrl}");
-                reader = new BaseTCPReader(user.userData.userAudioUrl, decoderQueue);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, true);
+                reader = new BaseTCPReader(user.userData.userAudioUrl, preparerQueue);
             }
             else
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 4, true);
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
                 reader = new SocketIOReader(user, _streamName, decoderQueue);
+                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
+                codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
 
-            codec = new VoiceDecoder(decoderQueue, preparerQueue);
-            preparer = new AudioPreparer(preparerQueue);//, optimalAudioBufferSize);
+            
+            preparer = new VoicePreparer(preparerQueue);//, optimalAudioBufferSize);
+            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
             // xxxjack should set Synchronizer here
+        }
+
+        private void Update()
+        {
+            preparer?.Synchronize();
+        }
+        private void LateUpdate()
+        {
+            preparer?.LatchFrame();
         }
 
         void OnDestroy()
@@ -72,14 +100,18 @@ namespace VRT.UserRepresentation.Voice
         float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (tmpBuffer == null) tmpBuffer = new float[data.Length];
+            if (tmpBuffer == null) tmpBuffer = new float[data.Length/channels];
             if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
             {
-                int cnt = 0;
-                do
+                for(int i=0; i<data.Length; i++)
                 {
-                    data[cnt] += tmpBuffer[cnt];
-                } while (++cnt < data.Length);
+                    data[i] += tmpBuffer[i / channels];
+                }
+                
+                stats.statsUpdate(preparer.currentTimestamp, preparer.currentQueueSize, true);
+            } else
+            {
+                stats.statsUpdate(0, 0, false);
             }
         }
 
@@ -88,6 +120,46 @@ namespace VRT.UserRepresentation.Voice
             reader.SetSyncInfo(_clockCorrespondence);
         }
 
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
 
+            double statsTotalAudioframeCount = 0;
+            double statsTotalUnavailableCount = 0;
+            double statsTotalLatency = 0;
+            int maxQueueSize = 0;
+
+            public void statsUpdate(ulong timestamp, int queueSize, bool fresh)
+            {
+                if (fresh)
+                {
+                    statsTotalAudioframeCount++;
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    long now = (long)sinceEpoch.TotalMilliseconds;
+                    long latency = now - (long)timestamp;
+                    statsTotalLatency += latency;
+                } else
+                {
+                    statsTotalUnavailableCount++;
+                    return; //backport candidate
+                }
+                if (queueSize > maxQueueSize) maxQueueSize = queueSize;
+ 
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount))}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, max_queuesize={maxQueueSize}, timestamp={timestamp}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalAudioframeCount = 0;
+                    statsTotalUnavailableCount = 0;
+                    statsTotalLatency = 0;
+                    maxQueueSize = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }

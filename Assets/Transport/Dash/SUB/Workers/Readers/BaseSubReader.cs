@@ -468,6 +468,7 @@ namespace VRT.Transport.Dash
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
             clockCorrespondence = _clockCorrespondence;
+            BaseStats.Output(Name(), $"guessed=0, stream_timestamp={clockCorrespondence.streamClockTime}, timestamp={clockCorrespondence.wallClockTime}, delta={clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime}");
         }
     }
 }

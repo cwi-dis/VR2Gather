@@ -12,6 +12,7 @@ namespace VRT.UserRepresentation.Voice
 
         public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init)
         {
+            stats = new Stats(Name());
             outQueue = _outQueue;
             this.bufferLength = bufferLength;
             device = deviceName;
@@ -20,6 +21,13 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
+        long sampleTimestamp(int nSamplesInInputBuffer)
+        {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            double timestamp = sinceEpoch.TotalMilliseconds;
+            timestamp -= (1000 * nSamplesInInputBuffer / wantedOutputSampleRate);
+            return (long)timestamp;
+        }
         protected override void Update()
         {
             base.Update();
@@ -33,11 +41,12 @@ namespace VRT.UserRepresentation.Voice
         }
 
         string device;
-        int samples;
+        int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
-        public const int wantedOutputSampleRate = 16000 * 3;
-        public const int wantedOutputBufferSize = 320 * 3;
+        public const int wantedOutputSampleRate = 48000;
+        public const int wantedOutputFPS = 50;
+        public const int wantedOutputBufferSize = wantedOutputSampleRate / wantedOutputFPS;
 
         static bool DSPIsNotReady = true;
         public static void PrepareDSP()
@@ -71,14 +80,20 @@ namespace VRT.UserRepresentation.Voice
                 int currentMinFreq;
                 int currentMaxFreq;
                 Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
-
-                recorder = Microphone.Start(deviceName, true, 1, currentMaxFreq);
-                samples = recorder.samples;
-
-                float inc = samples / 16000f;
+                // We record a looping clip of 1 second.
+                const int recorderBufferDuration = 1; 
+                recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
+                recorderBufferSize = recorder.samples * recorder.channels;
+                // We expect the recorder clip to contain an integral number of
+                // buffers, because we are going to use it as a circular buffer.
+                if (recorderBufferSize % bufferLength != 0)
+                {
+                    Debug.LogError($"VoiceReader: Incorrect clip size {recorderBufferSize} for buffer size {bufferLength}");
+                }
+                float inc = 1; // was: recorderBufferSize / 16000f;
                 int neededBufferLength = (int)(bufferLength * inc);
                 float[] readBuffer = new float[neededBufferLength];
-                Debug.Log($"{Name()}: Using {deviceName}  Frequency {samples} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
+                Debug.Log($"{Name()}: Using {deviceName}  Frequency {recorderBufferSize} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
 
                 int readPosition = 0;
 
@@ -88,7 +103,7 @@ namespace VRT.UserRepresentation.Voice
                     {
                         int writePosition = Microphone.GetPosition(deviceName);
                         int available;
-                        if (writePosition < readPosition) available = samples - readPosition + writePosition;
+                        if (writePosition < readPosition) available = recorderBufferSize - readPosition + writePosition;
                         else available = writePosition - readPosition;
                         while (available >= neededBufferLength)
                         {
@@ -100,26 +115,28 @@ namespace VRT.UserRepresentation.Voice
                             // Write all data from microphone.
                             lock (outQueue)
                             {
-                                if (outQueue._CanEnqueue())
+                                FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
+                                float idx = 0;
+                                for (int i = 0; i < bufferLength; i++)
                                 {
-                                    FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
-                                    float idx = 0;
-                                    for (int i = 0; i < bufferLength; i++)
-                                    {
-                                        mc.buffer[i] = readBuffer[(int)idx];
-                                        idx += inc;
-                                    }
-                                    outQueue.Enqueue(mc);
+                                    mc.buffer[i] = readBuffer[(int)idx];
+                                    idx += inc;
                                 }
+                                mc.info = new FrameInfo();
+                                // We need to compute timestamp of this audio frame
+                                // by using system clock and adjusting with "available".
+                                mc.info.timestamp = sampleTimestamp(available);
+                                bool ok = outQueue.Enqueue(mc);
+                                stats.statsUpdate(available, !ok);
                             }
-                            readPosition = (readPosition + neededBufferLength) % samples;
+                            readPosition = (readPosition + neededBufferLength) % recorderBufferSize;
                             available -= neededBufferLength;
                         }
                     }
                     else
                     {
                         Debug.LogWarning($"{Name()}: microphone {deviceName} stopped recording, starting again.");
-                        recorder = Microphone.Start(deviceName, true, 1, samples);
+                        recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
                         readPosition = 0;
                     }
                     yield return null;
@@ -128,31 +145,37 @@ namespace VRT.UserRepresentation.Voice
             else
                 Debug.LogError("{Name()}: No Microphones detected.");
         }
-
-        System.DateTime statsLastTime;
-        double statsTotalUpdates = 0;
-        double statsTotalSamplesInInputBuffer = 0;
-        const int statsInterval = 10;
-
-        public void statsUpdate(int samplesInInputBuffer)
+        protected class Stats : VRT.Core.BaseStats
         {
-            if (statsLastTime == null)
+            public Stats(string name) : base(name) { }
+
+            double statsTotalUpdates;
+            double statsTotalSamplesInInputBuffer;
+            double statsDrops;
+
+            public void statsUpdate(int samplesInInputBuffer, bool dropped)
             {
-                statsLastTime = System.DateTime.Now;
-                statsTotalUpdates = 0;
-                statsTotalSamplesInInputBuffer = 0;
+
+                statsTotalUpdates += 1;
+                statsTotalSamplesInInputBuffer += samplesInInputBuffer;
+                if (dropped) statsDrops++;
+
+                if (ShouldOutput())
+                {
+                    double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
+                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_samples={(int)samplesInBufferAverage}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, fps_dropped={statsDrops / Interval()}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalUpdates = 0;
+                    statsTotalSamplesInInputBuffer = 0;
+                    statsDrops = 0;
+                }
             }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
-                double timeInBufferAverage = samplesInBufferAverage / samples;
-                Debug.Log($"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component={Name()}, fps={statsTotalUpdates / statsInterval}, input_latency_samples={(int)samplesInBufferAverage}, input_latency_ms={(int)(timeInBufferAverage * 1000)}");
-                statsTotalUpdates = 0;
-                statsTotalSamplesInInputBuffer = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalUpdates += 1;
-            statsTotalSamplesInInputBuffer += samplesInInputBuffer;
         }
+
+        protected Stats stats;
     }
 }

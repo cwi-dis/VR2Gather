@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using UnityEngine;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
@@ -83,8 +84,12 @@ namespace VRT.Transport.SocketIO
             {
                 if (pPacket.dataStreamType == descriptors[id].name)
                 {
-                    BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length);
-                    System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, 0, chunk.pointer, chunk.length);
+                    byte[] hdr_timestamp = new byte[sizeof(long)];
+                    Array.Copy(pPacket.dataStreamPacket, hdr_timestamp, sizeof(long));
+                    long timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
+                    BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length-sizeof(long));
+                    chunk.info.timestamp = timestamp;
+                    System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
                     // xxxjack note: this means we are _not_ distinghuising tiles for socketIO. Should be fixed, but difficult.
                     stats.statsUpdate(chunk.length, id);
                     if (id < descriptors.Length)

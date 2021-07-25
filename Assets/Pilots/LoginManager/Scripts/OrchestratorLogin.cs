@@ -26,7 +26,6 @@ public class OrchestratorLogin : MonoBehaviour {
     public bool usePresenter = false;
     private int kindAudio = 2; // Set Dash as default
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 4; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
@@ -79,6 +78,8 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private GameObject webcamInfoGO = null;
     [SerializeField] private GameObject pccerthInfoGO = null;
+    [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
+    [SerializeField] private InputField tcpAudioURLConfigIF = null;
     [SerializeField] private InputField tvmConnectionURIConfigIF = null;
     [SerializeField] private InputField tvmExchangeNameConfigIF = null;
     [SerializeField] private InputField pccerthConnectionURIConfigIF = null;
@@ -641,6 +642,8 @@ public class OrchestratorLogin : MonoBehaviour {
         userNameVRTText.text = user.userName;
         // Config Info
         UserData userData = user.userData;
+        tcpPointcloudURLConfigIF.text = userData.userPCurl;
+        tcpAudioURLConfigIF.text = userData.userAudioUrl;
         tvmExchangeNameConfigIF.text = userData.userMQexchangeName;
         tvmConnectionURIConfigIF.text = userData.userMQurl;
         pccerthConnectionURIConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.ConnectionURI;
@@ -1390,9 +1393,9 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
-        int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
-        if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
-            ntpText.text = "You have a desynchronization of " + difference + " sec with the Orchestrator.\nYou may suffer some problems as a result.";
+        double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        if (Math.Abs(difference) >= Config.Instance.ntpSyncThreshold) {
+            ntpText.text = $"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {Config.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);
         }
@@ -1614,13 +1617,12 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = Config.Instance.TVMs.exchangeName,
             userMQurl = Config.Instance.TVMs.connectionURI,
-            userPCurl = Config.Instance.LocalUser.PCSelfConfig.pointcloudServerURL,
-            userAudioUrl = Config.Instance.LocalUser.PCSelfConfig.audioServerURL,
+            userPCurl = tcpPointcloudURLConfigIF.text,
+            userAudioUrl = tcpAudioURLConfigIF.text,
             userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
-        Debug.Log($"xxxjack OrchestratorLogin.UpdateUserData: userPCurl={lUserData.userPCurl}, userAudioUrl={lUserData.userAudioUrl}");
         OrchestratorController.Instance.UpdateFullUserData(lUserData);
     }
 
@@ -1638,6 +1640,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 userNameVRTText.text = user.userName;
 
                 //UserData
+                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
+                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
                 tvmExchangeNameConfigIF.text = user.userData.userMQexchangeName;
                 tvmConnectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;

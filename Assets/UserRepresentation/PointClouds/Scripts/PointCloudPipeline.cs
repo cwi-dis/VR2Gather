@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
         const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 10; // Was: 2.
+        const int pcPreparerQueueSize = 50; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -69,12 +69,19 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
-                Debug.Log($"{Name()}: xxxjack synchronizer {synchronizer}, {synchronizer?.Name()}");
             }
             switch (cfg.sourceType)
             {
                 case "self": // old "rs2"
                     isSource = true;
+                    if (synchronizer != null)
+                    {
+                        // We disable the synchronizer for self. It serves
+                        // no practical purpose and emits confusing stats: lines.
+                        Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
+                        synchronizer.gameObject.SetActive(false);
+                        synchronizer = null;
+                    }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
@@ -264,7 +271,7 @@ namespace VRT.UserRepresentation.PointCloud
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(cfg.PCSelfConfig.pointcloudServerURL, "cwi1", dashStreamDescriptions);
+                                writer = new TCPWriter(user.userData.userPCurl, "cwi1", dashStreamDescriptions);
                             }
                             else
                             {
@@ -612,15 +619,21 @@ namespace VRT.UserRepresentation.PointCloud
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            if (writer is B2DWriter pcWriter)
+            if (writer is BaseWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
             }
             else
             {
-                Debug.LogWarning($"{Name()}: GetSyncCOnfig: isSource, but writer is not a B2DWriter");
+                Debug.LogError($"{Name()}: GetSyncConfig: isSource, but writer is not a BaseWriter");
             }
-
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceSender voiceSender = gameObject.transform.parent.GetComponentInChildren<VoiceSender>();
+            if (voiceSender != null)
+            {
+                rv.audio = voiceSender.GetSyncInfo();
+            }
+            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -631,15 +644,26 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = reader as PCSubReader;
+            BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);
             }
             else
             {
-                Debug.LogWarning($"{Name()}: SetSyncConfig: reader is not a PCSubReader");
+                Debug.Log($"{Name()}: SetSyncConfig: reader is not a BaseReader");
             }
+            // The voice sender object is nested in another object on our parent object, so getting at it is difficult:
+            VoiceReceiver voiceReceiver = gameObject.transform.parent.GetComponentInChildren<VoiceReceiver>();
+            if (voiceReceiver != null)
+            {
+                voiceReceiver.SetSyncInfo(config.audio);
+            } else
+            {
+                Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
+            }
+            Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
+
         }
 
         public new Vector3 GetPosition()
