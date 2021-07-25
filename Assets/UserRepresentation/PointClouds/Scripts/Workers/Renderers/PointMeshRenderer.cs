@@ -75,7 +75,8 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDisplayCount = 0;
             double statsTotalVertexCount = 0;
             double statsTotalPointSize = 0;
-            double statsTotalQueueSize = 0;
+            int statsMaxQueueSize = 0;
+            int statsMinQueueSize = 0;
 
             public void statsUpdate(int vertexCount, float pointSize, ulong timestamp, int queueSize, bool fresh)
             {
@@ -84,12 +85,13 @@ namespace VRT.UserRepresentation.PointCloud
                 statsTotalDisplayCount += 1;
                 if (fresh) statsTotalPointcloudCount += 1;
                 statsTotalPointSize += pointSize;
-                statsTotalQueueSize += queueSize;
+                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
+                if (queueSize < statsMinQueueSize) statsMinQueueSize = queueSize;
 
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, avg_quwuwsize={(statsTotalQueueSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, framenumber={UnityEngine.Time.frameCount}, pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalVertexCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, max_queuesize={statsMaxQueueSize}, min_queuesize={statsMinQueueSize}, framenumber={UnityEngine.Time.frameCount}, pc_timestamp={timestamp}, pc_latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}");
                  }
                 if (ShouldClear())
                 {
@@ -98,7 +100,8 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalDisplayCount = 0;
                     statsTotalVertexCount = 0;
                     statsTotalPointSize = 0;
-                    statsTotalQueueSize = 0;
+                    statsMaxQueueSize = 0;
+                    statsMinQueueSize = 99999;
                 }
             }
 
