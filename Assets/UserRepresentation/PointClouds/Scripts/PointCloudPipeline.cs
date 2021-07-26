@@ -662,7 +662,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
             }
-            Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
+            //Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 
         }
 
