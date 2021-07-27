@@ -208,18 +208,19 @@ namespace VRT.Transport.Dash
             _API.MessageLogCallback errorCallback = (msg, level) =>
             {
                 string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
+                string _msg = string.Copy(msg);
                 if (level == 0)
                 {
-                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
+                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
                 }
                 else
                 if (level == 1)
                 {
-                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {msg}.");
+                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {_msg}.");
                 }
                 else
                 {
-                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {msg}.");
+                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
             obj = _API.sub_create(pipeline, errorCallback);
