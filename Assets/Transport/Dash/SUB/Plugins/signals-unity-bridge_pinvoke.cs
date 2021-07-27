@@ -39,10 +39,10 @@ namespace VRT.Transport.Dash
 #endif
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
-            const long SUB_API_VERSION = 0x20200420A;
+            const long SUB_API_VERSION = 0x20210726A;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline);
+            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline, int level);
 
             // Creates a new pipeline.
             // name: a display name for log messages. Can be NULL.
@@ -205,10 +205,22 @@ namespace VRT.Transport.Dash
         {
             IntPtr obj;
             SetMSPaths();
-            _API.MessageLogCallback errorCallback = (msg) =>
+            _API.MessageLogCallback errorCallback = (msg, level) =>
             {
                 string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
-                UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
+                if (level == 0)
+                {
+                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
+                }
+                else
+                if (level == 1)
+                {
+                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {msg}.");
+                }
+                else
+                {
+                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {msg}.");
+                }
             };
             obj = _API.sub_create(pipeline, errorCallback);
             if (obj == IntPtr.Zero)

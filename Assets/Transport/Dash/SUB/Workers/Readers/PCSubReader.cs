@@ -161,7 +161,7 @@ namespace VRT.Transport.Dash
                     }
                     else
                     {
-                        int wantedIndex = td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
+                        int wantedIndex = 0; // td.streamDescriptors.Length - 1; // xxxjack debug attempt: select last quality, not first
                         Debug.Log($"{Name()}:_recomputeStreams: tileNumber={td.tileNumber}: {td.streamDescriptors.Length} streams, selecting {wantedIndex}");
                         // And we can also tell the SUB which quality we want for this tile.
                         setTileQualityIndex(td.tileNumber, wantedIndex);
