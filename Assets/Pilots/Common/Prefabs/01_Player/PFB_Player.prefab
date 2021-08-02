@@ -2750,9 +2750,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugSynchronizer: 0
-  currentPreferredLatency: 300
-  latencyCatchup: 0
-  minPreferredLatency: 0
+  currentPreferredLatency: 600
+  latencyCatchup: 5
+  minPreferredLatency: 600
 --- !u!1 &7759874434686086657
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,10 +10,10 @@ namespace VRT.Transport.Dash
         public struct StreamDesc
         {
             public uint MP4_4CC;
-            public uint tileNumber;    // objectX, officially. In VRTogether, for pointclouds, we use this field for tileNumber
-            public uint quality;    // objectY, officially. In VRTogether, for pointclouds, we use this field for quality
-            public uint objectWidth;
-            public uint objectHeight;
+            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
+            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
+            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
+            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
             public uint totalWidth;
             public uint totalHeight;
         }

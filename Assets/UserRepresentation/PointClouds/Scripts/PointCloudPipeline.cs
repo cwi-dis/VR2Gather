@@ -218,7 +218,9 @@ namespace VRT.UserRepresentation.PointCloud
                                 dashStreamDescriptions[i] = new B2DWriter.DashStreamDescription
                                 {
                                     tileNumber = (uint)(it + minTileNum),
-                                    quality = (uint)(100 * octreeBits + 75),
+                                    // quality = (uint)(100 * octreeBits + 75),
+                                    qualityIndex = iq,
+                                    orientation = tileNormals[it],
                                     inQueue = thisQueue
                                 };
                                 tilingConfig.tiles[it].qualities[iq].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
@@ -660,7 +662,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.Log($"{Name()}: SetSyncConfig: no voiceReceiver");
             }
-            Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
+            //Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 
         }
 
