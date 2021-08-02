@@ -66,9 +66,16 @@ namespace VRT.UserRepresentation.PointCloud
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             user = (User)_user;
+            // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
+            }
+            // xxxjack this links tileSelector for all instances, including self. Is that correct?
+            // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
+            if (tileSelector == null)
+            {
+                tileSelector = FindObjectOfType<LiveTileSelector>();
             }
             switch (cfg.sourceType)
             {
@@ -602,7 +609,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
             }
-            PrerecordedBaseReader _reader = (PrerecordedBaseReader)reader;
+            PrerecordedBaseReader _reader = reader as PrerecordedBaseReader;
             if (_reader == null)
             {
                 Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");
