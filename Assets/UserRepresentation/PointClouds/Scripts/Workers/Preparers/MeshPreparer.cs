@@ -107,6 +107,16 @@ namespace VRT.UserRepresentation.PointCloud
             if (synchronizer)
             {
                 ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
+                while (nextTimestamp != 0 && nextTimestamp <= currentTimestamp)
+                {
+                    // This can happen when DASH switches streams: the newly selected stream produces
+                    // a packet from earlier than the last packet of the previous stream.
+                    // This looks very ugly, so we drop it.
+                    var frameToDrop = InQueue.TryDequeue(0);
+                    if (true) Debug.LogWarning($"{Name()}: Drop frame {nextTimestamp} <= previous {currentTimestamp}, {currentTimestamp - nextTimestamp}ms too late");
+                    frameToDrop.free();
+                    nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
+                }
                 ulong latestTimestamp = InQueue.LatestTimestamp();
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp, latestTimestamp);
             }
