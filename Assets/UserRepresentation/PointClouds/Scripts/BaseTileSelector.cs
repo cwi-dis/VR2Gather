@@ -23,7 +23,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Most-recently selected tile qualities (if non-null)
         protected int[] previousSelectedTileQualities;
 
-        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid };
+        public enum SelectionAlgorithm { interactive, alwaysBest, frontTileBest, greedy, uniform, hybrid, weightedHybrid };
         //
         // Set by overall controller (in production): which algorithm to use for this scene run.
         //
@@ -39,9 +39,16 @@ namespace VRT.UserRepresentation.PointCloud
         //
         public static long curIndex;
         //Adaptation quality difference cap between tiles
-        public int maxAdaptation = 30;
-
-        public bool altHybridTileSelection = false;
+        protected int maxAdaptation = 30;
+        //xxxshishir Debug flags
+        //greedy prime version of hybrid tile selsction
+        protected bool altHybridTileSelection = false;
+        //Disable randomized initial rotation 
+        public bool disableRotation = true;
+        //Tile utility weights, used only for weighted hybrid tile utility
+        protected float[] hybridTileWeights;
+        //Disable tile selection if current stimuli is not tiled
+        public bool isTiled;
         string Name()
         {
             return "BaseTileSelector";
@@ -80,12 +87,14 @@ namespace VRT.UserRepresentation.PointCloud
         private void Update()
         {
             // Debug.Log($"{Name()}: xxxjack update called");
-            if (pipeline == null)
+            if (pipeline == null && isTiled)
             {
                 // Not yet initialized
                 Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
                 return;
             }
+            if (!isTiled)
+                return;
             long currentFrameIndex = getCurrentFrameIndex();
             double[][] bandwidthUsageMatrix = getBandwidthUsageMatrix(currentFrameIndex);
             if (bandwidthUsageMatrix == null)
@@ -129,6 +138,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Check whether the user wants to leave the scene (by pressing escape)
             //
+#if XXXSHISHIR_REMOVED
             float rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
             float leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
             if (Input.GetKeyDown(KeyCode.Escape) || leftTrigger >= 0.8f)
@@ -136,6 +146,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //SceneManager.LoadScene("QualityAssesmentRatingScene", LoadSceneMode.Additive);
                 SceneManager.LoadScene("QualityAssesmentRatingScene");
             }
+#endif
         }
 
         public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
@@ -176,6 +187,8 @@ namespace VRT.UserRepresentation.PointCloud
                     return getTileQualities_Uniform(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 case SelectionAlgorithm.hybrid:
                     return getTileQualities_Hybrid(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
+                case SelectionAlgorithm.weightedHybrid:
+                    return getTileQualities_WeightedHybrid(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
                 default:
                     Debug.LogError($"{Name()}: Unknown algorithm");
                     return null;
@@ -360,6 +373,76 @@ namespace VRT.UserRepresentation.PointCloud
                     representationSet = true;
                     double savings = budget - spent;
                 }
+            }
+            return selectedQualities;
+        }
+        //xxxshishir new weighted hybrid utility calculation
+        int [] getTileQualities_WeightedHybrid(double[][] bandwidthUsageMatrix, double budget, Vector3 cameraForward, Vector3 pointcloudPosition)
+        {
+            double spent = 0;
+            double[] tileSpent = new double[nTiles];
+            int[] tileOrder = getTileOrder(cameraForward, pointcloudPosition);
+            // Start by selecting minimal quality for each tile
+            int[] selectedQualities = new int[nTiles];
+            // Assume we spend at least minimal quality badnwidth requirements for each tile
+            for (int i = 0; i < nTiles; i++)
+            {
+                spent += bandwidthUsageMatrix[i][0];
+                tileSpent[i] = bandwidthUsageMatrix[i][0];
+                hybridTileWeights[i] += 1; 
+            }
+            //Weighted sbudget split
+            double[] weightedTileBudgets = new double[nTiles];
+            float wsum = hybridTileWeights.Sum();
+            for (int i = 0; i < nTiles; i++)
+            {
+                hybridTileWeights[i] = hybridTileWeights[i] / wsum;
+                weightedTileBudgets[i] = budget * hybridTileWeights[i];
+            }
+            //UnityEngine.Debug.Log("Weighted budgets: " + weightedTileBudgets[0] + ", " + weightedTileBudgets[1] + ", " + weightedTileBudgets[2] + ", " + weightedTileBudgets[3] + ", Total: " + weightedTileBudgets.Sum());
+            //UnityEngine.Debug.Log("Weights: " + hybridTileWeights[0] + ", " + hybridTileWeights[1] + ", " + hybridTileWeights[2] + ", " + hybridTileWeights[3] + ", Total: " + hybridTileWeights.Sum());
+            bool representationSet = false;
+            bool stepComplete = false;
+            while (!representationSet)
+            {
+                stepComplete = false;
+                for (int i = 0; i < nTiles; i++)
+                {
+                    if (selectedQualities[tileOrder[i]] < nQualities - 1)
+                    {
+                        double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                        if ((tileSpent[tileOrder[i]] + nextSpend) <= weightedTileBudgets[tileOrder[i]])
+                        {
+                            selectedQualities[tileOrder[i]]++;
+                            stepComplete = true;
+                            spent += nextSpend;
+                            tileSpent[tileOrder[i]] += nextSpend;
+                            break;
+                        }
+                    }
+                }
+                if (!stepComplete)
+                {
+                    double savings = budget - spent;
+                    UnityEngine.Debug.Log("Savings " + savings + " Budget:" + budget + "Spent: " + spent);
+                    //xxx shsihir greedily spend the remaining budget
+                    for(int i=0; i < nTiles; i++)
+                    {
+                        if(selectedQualities[tileOrder[i]] < nQualities -1)
+                        {
+                            double nextSpend = bandwidthUsageMatrix[tileOrder[i]][(selectedQualities[tileOrder[i]] + 1)] - bandwidthUsageMatrix[tileOrder[i]][selectedQualities[tileOrder[i]]];
+                            if(nextSpend <= savings)
+                            {
+                                selectedQualities[tileOrder[i]]++;
+                                stepComplete = true;
+                                savings -= nextSpend;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (!stepComplete)
+                    representationSet = true;
             }
             return selectedQualities;
         }
