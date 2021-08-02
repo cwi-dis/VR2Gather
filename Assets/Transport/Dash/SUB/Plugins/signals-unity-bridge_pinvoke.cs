@@ -9,6 +9,7 @@ namespace VRT.Transport.Dash
 {
     public class sub
     {
+        const int MAX_SUB_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct DashStreamDescriptor
@@ -39,7 +40,7 @@ namespace VRT.Transport.Dash
 #endif
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
-            const long SUB_API_VERSION = 0x20210726A;
+            const long SUB_API_VERSION = 0x20210729A;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
             public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline, int level);
@@ -49,7 +50,7 @@ namespace VRT.Transport.Dash
             // The returned pipeline must be freed using 'sub_destroy'.
             // SUB_EXPORT sub_handle* sub_create(const char* name, void (* onError) (const char* msg), uint64_t api_version = SUB_API_VERSION);
             [DllImport(myDllName)]
-            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, long api_version = SUB_API_VERSION);
+            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, int maxLevel, long api_version = SUB_API_VERSION);
 
             // Destroys a pipeline. This frees all the resources.
             // SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -223,7 +224,7 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
-            obj = _API.sub_create(pipeline, errorCallback);
+            obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);
