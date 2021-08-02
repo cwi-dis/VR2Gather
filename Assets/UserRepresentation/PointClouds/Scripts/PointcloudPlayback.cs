@@ -13,7 +13,15 @@ namespace VRT.UserRepresentation.PointCloud
     {
         [Tooltip("Overrides PrerecordedReaderConfig setting: directory to read")]
         public string folder;
-        User dummyUser;
+        [Tooltip("Overrides PrerecordedReaderConfig setting: per-tile subfolders")]
+        public string[] tiles;
+        [Tooltip("Overrides PrerecordedReaderConfig setting: per-quality subfolders")]
+        public string[] qualities;
+        [Tooltip("Read .ply files in stead of .cwipcdump files")]
+        public bool ply;
+        [Tooltip("Prefer best quality in stead of worst quality")]
+        public bool preferBest;
+         User dummyUser;
         Config._User cfg;
 
         public void Awake()
@@ -32,9 +40,17 @@ namespace VRT.UserRepresentation.PointCloud
             if (folder == null || folder == "")
             {
                 folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
-           }
-            Debug.Log($"{Name()}: folder={folder}");
+                tiles = realUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
+                qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
+                ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
+                preferBest = realUser.PCSelfConfig.PrerecordedReaderConfig.preferBest;
+            }
+            //Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities, preferBest={preferBest}");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
+            cfg.PCSelfConfig.PrerecordedReaderConfig.preferBest = preferBest;
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             cfg.Render = realUser.Render;
             try
@@ -46,21 +62,22 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"{Name()}: initialize: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw;
             }
-            _InitTileSelector();
+            if (tiles != null)
+                _InitTileSelector();
+            else
+                tileSelector.isTiled = false;
         }
         protected override void _InitTileSelector()
         {
-            PrerecordedPlaybackReader playbackReader = (PrerecordedPlaybackReader)reader;
-            if (playbackReader == null)
+            int nQualities = qualities.Length;
+            int nTiles = tiles.Length;
+            Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
+            if (nQualities <= 1) return;
+            if (tileSelector == null)
             {
-                throw new System.Exception($"{Name()}: reader is not PrerecordedPlaybackReader");
+                Debug.LogWarning($"{Name()}: no tileSelector");
             }
-            PrerecordedTileSelector ts = (PrerecordedTileSelector)tileSelector;
-            if (ts == null)
-            {
-                throw new System.Exception($"{Name()}: tileSelector is not PrerecordedTileSelector");
-            }
-            ts?.Init(this, playbackReader.GetStaticPredictionInformation());
+            tileSelector?.Init(this, nQualities, nTiles, null);
         }
     }
 }
