@@ -40,17 +40,21 @@ namespace VRT.UserRepresentation.PointCloud
             if (folder == null || folder == "")
             {
                 folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+#if WITH_QUALITY_ASSESMENT
                 tiles = realUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
                 qualities = realUser.PCSelfConfig.PrerecordedReaderConfig.qualities;
                 ply = realUser.PCSelfConfig.PrerecordedReaderConfig.ply;
                 preferBest = realUser.PCSelfConfig.PrerecordedReaderConfig.preferBest;
+#endif
             }
             //Debug.Log($"{Name()}: folder={folder} ply={ply} {tiles.Length} tiles, {qualities.Length} qualities, preferBest={preferBest}");
             cfg.PCSelfConfig.PrerecordedReaderConfig.folder = folder;
+#if WITH_QUALITY_ASSESMENT
             cfg.PCSelfConfig.PrerecordedReaderConfig.tiles = tiles;
             cfg.PCSelfConfig.PrerecordedReaderConfig.qualities = qualities;
             cfg.PCSelfConfig.PrerecordedReaderConfig.ply = ply;
             cfg.PCSelfConfig.PrerecordedReaderConfig.preferBest = preferBest;
+#endif
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             cfg.Render = realUser.Render;
             try
@@ -77,7 +81,8 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogWarning($"{Name()}: no tileSelector");
             }
-            tileSelector?.Init(this, nQualities, nTiles, null);
+            var ts = tileSelector as PrerecordedTileSelector;
+            ts?.Init(this, nQualities, nTiles, null);
         }
     }
 }
