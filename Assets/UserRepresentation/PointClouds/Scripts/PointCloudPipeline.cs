@@ -609,13 +609,23 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
             }
-            PrerecordedBaseReader _reader = reader as PrerecordedBaseReader;
-            if (_reader == null)
+            PrerecordedBaseReader _prreader = reader as PrerecordedBaseReader;
+            if (_prreader != null)
             {
-                Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");
+                _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            _reader.SelectTileQualities(tileQualities);
+            PCSubReader _subreader = reader as PCSubReader;
+            if (_subreader != null)
+            {
+                for(int tileIndex=0; tileIndex < decoders.Count; tileIndex++)
+                {
+                    int qualIndex = tileQualities[tileIndex];
+                    Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
+                    _subreader.setTileQualityIndex(tileIndex, qualIndex);
+                }
+            }
+            Debug.LogError($"{Name()}: SelectTileQualities not implemented for reader {reader.Name()}");
         }
 
         public new SyncConfig GetSyncConfig()
