@@ -22,6 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception("PCDecoder: outQueue is null");
             }
+            stats = new Stats(Name());
             try
             {
                 inQueue = _inQueue;
@@ -41,7 +42,6 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            stats = new Stats(Name());
         }
 
         public override string Name()
@@ -67,25 +67,29 @@ namespace VRT.UserRepresentation.PointCloud
             if (debugThreading) Debug.Log($"{Name()} Stopped");
         }
 
+        bool _FeedDecoder() {
+            NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.TryDequeue(0);
+            if (mc == null) return false;
+            decoder.feed(mc.pointer, mc.length);
+            mc.free();
+            return true;
+        }
+
         protected override void Update()
         {
-            base.Update();
-            NativeMemoryChunk mc;
+            base.Update(); 
             lock (this)
             {
-                mc = (NativeMemoryChunk)inQueue.Dequeue();
+                // Feed data into the decoder, unless it already
+                // has a pointcloud available.
                 if (decoder == null) return;
-                if (mc != null)
+                if (!decoder.available(false))
                 {
-                    decoder.feed(mc.pointer, mc.length);
-                    mc.free();
-                } else
-                {
-                    // No pointcloud obtained.
-                    // If there's also no decoder output available
-                    // record this in the stats and return
-                    if (!decoder.available(false))
+                    if (!_FeedDecoder())
                     {
+                        // No pointcloud obtained.
+                        // There's also no decoder output available
+                        // record this in the stats and return
                         stats.statsUpdate(false, 0, 0, 0);
                         return;
                     }
@@ -93,6 +97,10 @@ namespace VRT.UserRepresentation.PointCloud
             }
             while (decoder.available(false))
             {
+                // While the decoder has pointclouds available
+                // push them into the output queue, and if there
+                // are more input packets available feed the decoder
+                // again.
                 cwipc.pointcloud pc = decoder.get();
                 if (pc == null)
                 {
@@ -100,6 +108,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 stats.statsUpdate(true, pc.count(), pc.timestamp(), inQueue._Count);
                 outQueue.Enqueue(pc);
+                _FeedDecoder();
             }
         }
         protected class Stats : VRT.Core.BaseStats
@@ -113,10 +122,10 @@ namespace VRT.UserRepresentation.PointCloud
 
             public void statsUpdate(bool gotPC, int pointCount, ulong timeStamp, int queueSize)
             {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                 if (gotPC)
                 {
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                     statsTotalPoints += pointCount;
                     statsTotalPointclouds++;
                     statsTotalLatency += latency;
