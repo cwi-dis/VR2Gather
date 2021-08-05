@@ -66,9 +66,16 @@ namespace VRT.UserRepresentation.PointCloud
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             user = (User)_user;
+            // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
+            }
+            // xxxjack this links tileSelector for all instances, including self. Is that correct?
+            // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
+            if (tileSelector == null)
+            {
+                tileSelector = FindObjectOfType<LiveTileSelector>();
             }
             switch (cfg.sourceType)
             {
@@ -81,6 +88,14 @@ namespace VRT.UserRepresentation.PointCloud
                         Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
                         synchronizer.gameObject.SetActive(false);
                         synchronizer = null;
+                    }
+                    if (tileSelector != null)
+                    {
+                        // We disable the tileSelector for self. It serves
+                        // no practical purpose.
+                        Debug.Log($"{Name()}: disabling {tileSelector.Name()} for self-view");
+                        tileSelector.gameObject.SetActive(false);
+                        tileSelector = null;
                     }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
@@ -567,14 +582,27 @@ namespace VRT.UserRepresentation.PointCloud
 
        protected virtual void _InitTileSelector()
         {
+            if (tileSelector == null)
+            {
+                //Debug.LogWarning($"{Name()}: no tileSelector");
+                return;
+            }
             if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
             {
                 throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
             }
             int nTiles = tilingConfig.tiles.Length;
             int nQualities = tilingConfig.tiles[0].qualities.Length;
+            if (nTiles <= 1 && nQualities <= 1)
+            {
+                // Only single quality, single tile. Nothing to
+                // do for the tile selector, so disable it.
+                Debug.Log($"{Name()}: single-tile single-quality, disabling {tileSelector.Name()}");
+                tileSelector.gameObject.SetActive(false);
+                tileSelector = null;
+            }
             // Sanity check: all tiles should have the same number of qualities
-            foreach(var t in tilingConfig.tiles)
+            foreach (var t in tilingConfig.tiles)
             {
                 if (t.qualities.Length != nQualities)
                 {
@@ -583,11 +611,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
             if (nQualities <= 1) return;
-            if (tileSelector == null)
-            {
-                Debug.LogWarning($"{Name()}: no tileSelector");
-                return;
-            }
             LiveTileSelector ts = (LiveTileSelector)tileSelector;
             if (ts == null)
             {
@@ -602,13 +625,24 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
             }
-            PrerecordedBaseReader _reader = (PrerecordedBaseReader)reader;
-            if (_reader == null)
+            PrerecordedBaseReader _prreader = reader as PrerecordedBaseReader;
+            if (_prreader != null)
             {
-                Debug.LogError($"{Name()}: programmer error: SelectTileQualities only implemented for PrerecordedReader");
+                _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            _reader.SelectTileQualities(tileQualities);
+            PCSubReader _subreader = reader as PCSubReader;
+            if (_subreader != null)
+            {
+                for(int tileIndex=0; tileIndex < decoders.Count; tileIndex++)
+                {
+                    int qualIndex = tileQualities[tileIndex];
+                    Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
+                    _subreader.setTileQualityIndex(tileIndex, qualIndex);
+                }
+                return;
+            }
+            Debug.LogError($"{Name()}: SelectTileQualities not implemented for reader {reader.Name()}");
         }
 
         public new SyncConfig GetSyncConfig()
@@ -644,6 +678,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
+            if (reader == null) return; // Too early
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
