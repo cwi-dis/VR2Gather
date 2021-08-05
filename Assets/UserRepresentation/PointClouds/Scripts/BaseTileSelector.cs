@@ -90,7 +90,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (pipeline == null && isTiled)
             {
                 // Not yet initialized
-                Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
+                //Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
                 return;
             }
             if (!isTiled)
@@ -122,7 +122,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (changed && selectedTileQualities != null && debugDecisions)
             {
                 // xxxjack: we could do this in stats: format too, may help analysis.
-                Debug.Log($"Name(): tileQualities: {String.Join(", ", selectedTileQualities)}");
+                Debug.Log($"{Name()}: tileQualities: {String.Join(", ", selectedTileQualities)}");
             }
             pipeline.SelectTileQualities(selectedTileQualities);
             previousSelectedTileQualities = selectedTileQualities;
