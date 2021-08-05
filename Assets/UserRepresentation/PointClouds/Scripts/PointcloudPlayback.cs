@@ -66,13 +66,24 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"{Name()}: initialize: Exception: {e.Message} Stack: {e.StackTrace}");
                 throw;
             }
-            if (tiles != null)
-                _InitTileSelector();
-            else
-                tileSelector.isTiled = false;
+            _InitTileSelector();
+            
         }
         protected override void _InitTileSelector()
         {
+            if (tileSelector == null)
+            {
+                Debug.LogWarning($"{Name()}: no tileSelector");
+                return;
+            }
+            if (tiles == null)
+            {
+                // Untiled: disable tile selector
+                Debug.Log($"{Name()}: untiled, disabling {tileSelector.Name()}");
+                tileSelector.gameObject.SetActive(false);
+                tileSelector = null;
+                return;
+            }
             int nQualities = qualities.Length;
             int nTiles = tiles.Length;
             Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
