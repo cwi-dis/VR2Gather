@@ -42,11 +42,6 @@ namespace VRT.UserRepresentation.PointCloud
         //
         private Transform prerecordedPCTransform;
 
-        string Name()
-        {
-            return "PrerecordedTileSelector";
-        }
-
         //xxxshishir adaptation set struct
         public struct AdaptationSet
         {

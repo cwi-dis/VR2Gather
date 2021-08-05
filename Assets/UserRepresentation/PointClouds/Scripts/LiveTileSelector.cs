@@ -18,11 +18,6 @@ namespace VRT.UserRepresentation.PointCloud
         double[][] guessedBandwidthUsageMatrix;
         TilingConfig tilingConfig;
 
-        string Name()
-        {
-            return "LiveTileSelector";
-        }
-
         public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
         {
 

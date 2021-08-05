@@ -49,9 +49,12 @@ namespace VRT.UserRepresentation.PointCloud
         protected float[] hybridTileWeights;
         //Disable tile selection if current stimuli is not tiled
         public bool isTiled;
-        string Name()
+        static int instanceCounter = 0;
+        int instanceNumber = instanceCounter++;
+        
+        public string Name()
         {
-            return "BaseTileSelector";
+            return $"{GetType().Name}#{instanceNumber}";
         }
 
         //
