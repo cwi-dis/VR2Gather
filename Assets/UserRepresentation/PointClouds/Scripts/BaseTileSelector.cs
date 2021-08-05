@@ -32,24 +32,14 @@ namespace VRT.UserRepresentation.PointCloud
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
         public bool debugDecisions = false;
-        //Keep track of stimuli being played back
-        public string currentStimuli;
-        //
-        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
-        //
-        public static long curIndex;
         //Adaptation quality difference cap between tiles
         protected int maxAdaptation = 30;
         //xxxshishir Debug flags
         //greedy prime version of hybrid tile selsction
         protected bool altHybridTileSelection = false;
-        //Disable randomized initial rotation 
-        public bool disableRotation = true;
         //Tile utility weights, used only for weighted hybrid tile utility
         protected float[] hybridTileWeights;
-        //Disable tile selection if current stimuli is not tiled
-        public bool isTiled;
-        static int instanceCounter = 0;
+         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         
         public string Name()
@@ -90,14 +80,13 @@ namespace VRT.UserRepresentation.PointCloud
         private void Update()
         {
             // Debug.Log($"{Name()}: xxxjack update called");
-            if (pipeline == null && isTiled)
+            if (pipeline == null)
             {
                 // Not yet initialized
                 //Debug.LogWarning($"{Name()}: Update() called, but no pipeline set yet");
                 return;
             }
-            if (!isTiled)
-                return;
+            
             long currentFrameIndex = getCurrentFrameIndex();
             double[][] bandwidthUsageMatrix = getBandwidthUsageMatrix(currentFrameIndex);
             if (bandwidthUsageMatrix == null)
@@ -128,7 +117,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: tileQualities: {String.Join(", ", selectedTileQualities)}");
                 pipeline.SelectTileQualities(selectedTileQualities);
                 previousSelectedTileQualities = selectedTileQualities;
-                string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, tile0={selectedTileQualities[0]}";
+                string statMsg = $"tile0={selectedTileQualities[0]}";
                 for (int i = 1; i < selectedTileQualities.Length; i++)
                 {
                     statMsg += $", tile{i}={selectedTileQualities[i]}";

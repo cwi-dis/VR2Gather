@@ -21,6 +21,14 @@ namespace VRT.UserRepresentation.PointCloud
     public class PrerecordedTileSelector : BaseTileSelector
     {
 
+        //Keep track of stimuli being played back
+        public string currentStimuli;
+        //Disable randomized initial rotation 
+        public bool disableRotation = true;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
         //
         // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
         //
@@ -82,7 +90,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
             }
-            isTiled = true;
             //xxxshishir randomize initial orientation of prerecorded pointcloud
             var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
             if (!disableRotation)

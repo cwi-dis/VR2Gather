@@ -16,8 +16,7 @@ namespace VRT.UserRepresentation.PointCloud
         // figures in the tiling configuration. It's all guesswork for now.
         //
         double[][] guessedBandwidthUsageMatrix;
-        TilingConfig tilingConfig;
-
+        
         public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
         {
 
