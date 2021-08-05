@@ -89,6 +89,14 @@ namespace VRT.UserRepresentation.PointCloud
                         synchronizer.gameObject.SetActive(false);
                         synchronizer = null;
                     }
+                    if (tileSelector != null)
+                    {
+                        // We disable the tileSelector for self. It serves
+                        // no practical purpose.
+                        Debug.Log($"{Name()}: disabling {tileSelector.Name()} for self-view");
+                        tileSelector.gameObject.SetActive(false);
+                        tileSelector = null;
+                    }
                     TiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
@@ -574,14 +582,27 @@ namespace VRT.UserRepresentation.PointCloud
 
        protected virtual void _InitTileSelector()
         {
+            if (tileSelector == null)
+            {
+                //Debug.LogWarning($"{Name()}: no tileSelector");
+                return;
+            }
             if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
             {
                 throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
             }
             int nTiles = tilingConfig.tiles.Length;
             int nQualities = tilingConfig.tiles[0].qualities.Length;
+            if (nTiles <= 1 && nQualities <= 1)
+            {
+                // Only single quality, single tile. Nothing to
+                // do for the tile selector, so disable it.
+                Debug.Log($"{Name()}: single-tile single-quality, disabling {tileSelector.Name()}");
+                tileSelector.gameObject.SetActive(false);
+                tileSelector = null;
+            }
             // Sanity check: all tiles should have the same number of qualities
-            foreach(var t in tilingConfig.tiles)
+            foreach (var t in tilingConfig.tiles)
             {
                 if (t.qualities.Length != nQualities)
                 {
@@ -590,11 +611,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Debug.Log($"{Name()}: nTiles={nTiles} nQualities={nQualities}");
             if (nQualities <= 1) return;
-            if (tileSelector == null)
-            {
-                Debug.LogWarning($"{Name()}: no tileSelector");
-                return;
-            }
             LiveTileSelector ts = (LiveTileSelector)tileSelector;
             if (ts == null)
             {
