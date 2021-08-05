@@ -624,6 +624,7 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
                     _subreader.setTileQualityIndex(tileIndex, qualIndex);
                 }
+                return;
             }
             Debug.LogError($"{Name()}: SelectTileQualities not implemented for reader {reader.Name()}");
         }
@@ -661,6 +662,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetSyncConfig called for pipeline that is a source");
                 return;
             }
+            if (reader == null) return; // Too early
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
