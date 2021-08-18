@@ -9,8 +9,9 @@
   "ntpSyncThreshold": 0.033,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsInterval": 0,
+  "statsOutputFile":  "statistics.log",
+  "statsOutputFileAppend": false,
  
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
