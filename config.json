@@ -44,7 +44,7 @@
         "configFilename": "./cameraconfig.xml"
       },
       "SynthReaderConfig": {
-        "nPoints": 8000
+        "nPoints": 160000
       },
       "ProxyReaderConfig": {
         "localIP": "",
@@ -53,10 +53,13 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../mmsys2021-loot-150K"
 	  },
-      "voxelSize": 0.005,
-      "frameRate": 15,
-      "tiled": false,
+      "voxelSize": 0.0,
+      "frameRate": 10,
+      "tiled": true,
       "Encoders": [
+        {
+          "octreeBits": 6
+        },
         {
           "octreeBits": 9
         }
