@@ -81,10 +81,15 @@ namespace VRT.Pilots.Common
 			{
 				HeadPosition = HeadTransform.parent.localPosition,
 				HeadOrientation = HeadTransform.parent.localRotation,
-				LeftHandPosition = LeftHandTransform.localPosition,
-				LeftHandOrientation = LeftHandTransform.localRotation,
-				RightHandPosition = RightHandTransform.localPosition,
-				RightHandOrientation = RightHandTransform.localRotation
+				//LeftHandPosition = LeftHandTransform.localPosition,
+				//LeftHandOrientation = LeftHandTransform.localRotation,
+				//RightHandPosition = RightHandTransform.localPosition,
+				//RightHandOrientation = RightHandTransform.localRotation
+
+				LeftHandPosition = LeftHandTransform.position,
+				LeftHandOrientation = LeftHandTransform.rotation,
+				RightHandPosition = RightHandTransform.position,
+				RightHandOrientation = RightHandTransform.rotation
 			};
 
 			if (OrchestratorController.Instance.UserIsMaster)
@@ -119,12 +124,16 @@ namespace VRT.Pilots.Common
 					float t = Mathf.Clamp01((Time.realtimeSinceStartup - _LastReceiveTime) / (1.0f / SendRate));
 
 					HeadTransform.localPosition = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
-					LeftHandTransform.localPosition = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
-					RightHandTransform.localPosition = Vector3.Lerp(_PreviousReceivedData.RightHandPosition, _LastReceivedData.RightHandPosition, t);
+					//LeftHandTransform.localPosition = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
+					//RightHandTransform.localPosition = Vector3.Lerp(_PreviousReceivedData.RightHandPosition, _LastReceivedData.RightHandPosition, t);
+					LeftHandTransform.position = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
+					RightHandTransform.position = Vector3.Lerp(_PreviousReceivedData.RightHandPosition, _LastReceivedData.RightHandPosition, t);
 
 					HeadTransform.localRotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
-					LeftHandTransform.localRotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
-					RightHandTransform.localRotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
+					//LeftHandTransform.localRotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
+					//RightHandTransform.localRotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
+					LeftHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
+					RightHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
 				}
 			}
 		}
