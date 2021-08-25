@@ -34,10 +34,13 @@ public class KeyboardVRTeleporterController : MonoBehaviour
     void Update() {
 
         rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
-        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0);
+        
         leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
         rightVertical = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
         rightHorizontal = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
+
+        // try to enable both 'A' button and joystick for teleporation and to see which one is better
+        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0) || Input.GetKey(KeyCode.JoystickButton9) || rightVertical!=0 ||rightHorizontal !=0;
 
         /*if (IsDownRightTrigger || IsDownLeftTrigger)
         {
