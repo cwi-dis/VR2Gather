@@ -3512,13 +3512,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5704200592656136347}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ee302642fd02ab43846844518a16bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   debugSynchronizer: 0
-  currentPreferredLatency: 0
+  currentPreferredLatency: 300
   latencyCatchup: 0
   minPreferredLatency: 0
 --- !u!1 &5975576897296657123
@@ -6314,6 +6314,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: rigging_0512_hifi_cloth_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654530284738921681, guid: 7fea04ad1f256594993b92ed55b912e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fea04ad1f256594993b92ed55b912e6, type: 3}
