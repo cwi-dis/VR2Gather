@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using VRT.Teleporter;
 
-public class R_KeyboardVRTeleporterController : MonoBehaviour
+public class RightHandVRTeleporterController : MonoBehaviour
 {
     
 
