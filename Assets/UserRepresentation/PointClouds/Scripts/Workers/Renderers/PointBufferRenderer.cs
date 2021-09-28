@@ -8,6 +8,7 @@ namespace VRT.UserRepresentation.PointCloud
     {
         ComputeBuffer pointBuffer;
         int pointCount = 0;
+        static Material baseMaterial;
         public Material material;
         MaterialPropertyBlock block;
         BufferPreparer preparer;
@@ -19,19 +20,22 @@ namespace VRT.UserRepresentation.PointCloud
             return $"{GetType().Name}#{instanceNumber}";
         }
 
+        public static bool isSupported()
+        {
+            if (baseMaterial != null) return true;
+            baseMaterial = Resources.Load<Material>("PointCloudsBuffer");
+            if (baseMaterial == null) return false;
+            return baseMaterial.shader.isSupported;
+        }
 
         // Start is called before the first frame update
         void Start()
         {
-            if (material == null)
+            if (!isSupported())
             {
-                var _material = Resources.Load<Material>("PointCloudsBuffer");
-                material = new Material(_material);
+                Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
             }
-            if (!material.shader.isSupported)
-            {
-                Debug.LogError($"{Name()}: Material PointCloudsBuffer uses shader that is not supported on this graphics card");
-            }
+            material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
         }

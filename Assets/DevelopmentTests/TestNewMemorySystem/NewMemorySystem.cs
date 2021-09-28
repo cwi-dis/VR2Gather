@@ -80,7 +80,8 @@ public class NewMemorySystem : MonoBehaviour
         }
 
         Config config = Config.Instance;
-        if (forceMesh) {
+        bool useMeshRenderer = forceMesh || !PointBufferRenderer.isSupported();
+        if (useMeshRenderer) {
             preparer = new MeshPreparer(preparerQueue);
             render = gameObject.AddComponent<PointMeshRenderer>();
             ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);

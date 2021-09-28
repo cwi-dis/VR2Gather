@@ -6,22 +6,26 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PointMeshRenderer : MonoBehaviour
     {
+        static Material baseMaterial;
         public Material material;
         Mesh mesh;
         MeshPreparer preparer;
 
+        public static bool isSupported()
+        {
+            if (baseMaterial != null) return true;
+            baseMaterial = Resources.Load<Material>("PointCloudsMesh");
+            if (baseMaterial == null) return false;
+            return baseMaterial.shader.isSupported;
+        }
         // Start is called before the first frame update
         void Start()
         {
-            if (material == null)
+            if (!isSupported())
             {
-                var _material = Resources.Load<Material>("PointCloudsMesh");
-                material = new Material(_material);
-                if (!material.shader.isSupported)
-                {
-                    Debug.LogError($"{Name()}: Material PointCloudsBuffer uses shader that is not supported on this graphics card");
-                }
+                Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
             }
+            material = new Material(baseMaterial);
             mesh = new Mesh();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             stats = new Stats(Name());

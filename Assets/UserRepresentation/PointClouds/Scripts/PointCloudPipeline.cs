@@ -454,7 +454,12 @@ namespace VRT.UserRepresentation.PointCloud
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
-            if (PCs.forceMesh || SystemInfo.graphicsShaderLevel < 50)
+            bool useMeshRenderer = PCs.forceMesh || !PointBufferRenderer.isSupported();
+            if (useMeshRenderer)
+            {
+                Debug.Log($"{Name()}: using mesh renderer");
+            }
+            if (useMeshRenderer || SystemInfo.graphicsShaderLevel < 50)
             { // Mesh
                 MeshPreparer preparer = new MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
                 preparer.SetSynchronizer(synchronizer);
