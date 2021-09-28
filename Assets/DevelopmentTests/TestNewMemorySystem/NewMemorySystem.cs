@@ -40,12 +40,12 @@ public class NewMemorySystem : MonoBehaviour
     BaseWorker pointcloudsWriter;
     BaseWorker pointcloudsReader;
 
-    BaseWorker preparer;
+    public BaseWorker preparer;
     QueueThreadSafe preparerQueue = new QueueThreadSafe("PreparerQueue", 10,true);
     QueueThreadSafe encoderQueue = new QueueThreadSafe("EncoderQueue", 10,true);
     QueueThreadSafe writerQueue = new QueueThreadSafe("WriterQueue", 10,true);
     QueueThreadSafe decoderQueue = new QueueThreadSafe("DecoderQueue", 10, true);
-    MonoBehaviour render;
+    public MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
