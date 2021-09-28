@@ -17,6 +17,10 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 var _material = Resources.Load<Material>("PointCloudsMesh");
                 material = new Material(_material);
+                if (!material.shader.isSupported)
+                {
+                    Debug.LogError($"{Name()}: Material PointCloudsBuffer uses shader that is not supported on this graphics card");
+                }
             }
             mesh = new Mesh();
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;

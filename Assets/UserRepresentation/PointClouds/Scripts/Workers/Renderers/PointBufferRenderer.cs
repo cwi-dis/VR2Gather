@@ -28,6 +28,10 @@ namespace VRT.UserRepresentation.PointCloud
                 var _material = Resources.Load<Material>("PointCloudsBuffer");
                 material = new Material(_material);
             }
+            if (!material.shader.isSupported)
+            {
+                Debug.LogError($"{Name()}: Material PointCloudsBuffer uses shader that is not supported on this graphics card");
+            }
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
         }
