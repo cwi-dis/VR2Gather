@@ -31,7 +31,7 @@
       "y": 0.0,
       "z": 0.0
     },
-    "forceMesh": true,
+    "forceMesh": false,
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1
   },

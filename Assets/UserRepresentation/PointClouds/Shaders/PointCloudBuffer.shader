@@ -2,19 +2,27 @@
 Shader "Entropy/PointCloud"{
 	Properties{
 		_Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
-		_Exposure("Exposure", Range(0.1,2)) = 1.0
 		_PointSize("Point Size", Float) = 0.05
+		_PointSizeFactor("Point Size multiply", Float) = 1.0
 		_MainTex("Texture", 2D) = "white" {}
 		_Cutoff("Alpha cutoff", Range(0,1)) = 0.7
 	}
-		SubShader{
+		SubShader {
 			Lighting Off
 			LOD 100
 			Cull Off
-			Tags {"Queue" = "AlphaTest" "IgnoreProjector" = "True" "RenderType" = "TransparentCutout"}
+			Blend SrcAlpha OneMinusSrcAlpha
+			BlendOp Add
+			Tags {
+				"Queue" = "AlphaTest" 
+				"IgnoreProjector" = "True" 
+				"RenderType" = "Transparent"
+			}
 
 			Pass {
-				Tags { "LightMode" = "ForwardBase" }
+				Tags { 
+					"LightMode" = "ForwardBase" 
+				}
 				CGPROGRAM
 
 				#pragma target 5.0
@@ -23,8 +31,6 @@ Shader "Entropy/PointCloud"{
 				#pragma fragment Fragment
 
 				#include "UnityCG.cginc"
-
-				#define PCX_MAX_BRIGHTNESS 16
 
 				half3 PcxDecodeColor(uint data) {
 					half r = (data >> 0) & 0xff;
@@ -35,15 +41,15 @@ Shader "Entropy/PointCloud"{
 
 				struct Varyings {
 					float4	position : SV_Position;
-					half3	color : COLOR;
+					half4	color : COLOR;
 					half2	uv : TEXCOORD0;
 //					UNITY_FOG_COORDS(0)
 				};
 
 				half4		_Tint;
-				half		_Exposure;
 				float4x4	_Transform;
 				half		_PointSize;
+				half		_PointSizeFactor;
 				sampler2D	_MainTex;
 				fixed		_Cutoff;
 
@@ -52,17 +58,19 @@ Shader "Entropy/PointCloud"{
 				Varyings Vertex(uint vid : SV_VertexID) {
 					float4 pt = _PointBuffer[vid];
 					float4 pos = mul(_Transform, float4(pt.xyz, 1));
-					half3  col = PcxDecodeColor(asuint(pt.w));
+					half4  col = half4(PcxDecodeColor(asuint(pt.w)), _Tint.a);
 
-#if !UNITY_COLORSPACE_GAMMA
-					col = GammaToLinearSpace(col);
+#if UNITY_COLORSPACE_GAMMA
+					col.rgb *= _Tint.rgb * 2;
+#else
+					col.rgb *= LinearToGammaSpace(_Tint) * 2;
+					col.rgb = GammaToLinearSpace(col);
 #endif
-					// xxxjack removed: col *= _Tint.rgb * 2;
-					col *= _Exposure;
-
+					
 					Varyings o;
 					o.position = UnityObjectToClipPos(pos);
 					o.color = col;
+					o.uv = half2(0.5, 0.5);
 //					UNITY_TRANSFER_FOG(o, o.position);
 					return o;
 				}
@@ -70,7 +78,7 @@ Shader "Entropy/PointCloud"{
 				[maxvertexcount(4)]
 				void Geometry(point Varyings input[1], inout TriangleStream<Varyings> outStream) {
 					float4 origin = input[0].position;
-					float2 extent = abs(UNITY_MATRIX_P._11_22  * _PointSize);
+					float2 extent = abs(UNITY_MATRIX_P._11_22  * _PointSize * _PointSizeFactor);
 #if SHADER_API_GLCORE || SHADER_API_METAL
 					extent.x *= -1;
 #endif
@@ -106,13 +114,10 @@ Shader "Entropy/PointCloud"{
 				}
 
 				half4 Fragment(Varyings input) : SV_Target{
-					half a = tex2D(_MainTex, input.uv).a;
-					clip(a - _Cutoff);
-					half4 c = half4(input.color, _Tint.a)/* * a */;
-					// Erase black points
-					if (c.x <= 0.0f && c.y <= 0.0f && c.z <= 0.0f)
-						clip(c.x - _Cutoff);
-//					UNITY_APPLY_FOG(input.fogCoord, c);
+					half4 tc = tex2D(_MainTex, input.uv);
+					half4 c = input.color;
+					c.a *= tc.a;
+					clip(tc.a < _Cutoff ? -1 : 1);
 					return c;
 				}
 
@@ -121,75 +126,3 @@ Shader "Entropy/PointCloud"{
 			}
 	}
 }
-/*
-Shader "Entropy/PointCloud"{
-	Properties {
-		_Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
-		_PointSize("Point Size", Float) = 0.05
-	}
-	SubShader {
-		Tags { "RenderType" = "Opaque" }
-		Pass {
-			CGPROGRAM
-
-			#pragma target 4.5
-			#pragma vertex Vertex
-			#pragma fragment Fragment
-
-			#pragma multi_compile_fog
-			#pragma multi_compile _ UNITY_COLORSPACE_GAMMA
-
-			#include "UnityCG.cginc"
-
-			#define PCX_MAX_BRIGHTNESS 16
-
-			half3 PcxDecodeColor(uint data) {
-				half r = (data >>  0) & 0xff;
-				half g = (data >>  8) & 0xff;
-				half b = (data >> 16) & 0xff;
-				return half3(r, g, b) / 255;
-			}
-
-			struct Varyings {
-				float4 position : SV_Position;
-				half3 color : COLOR;
-				UNITY_FOG_COORDS(0)
-			};
-
-			half4		_Tint;
-			float4x4	_Transform;
-			half		_PointSize;
-
-			StructuredBuffer<float4> _PointBuffer;
-
-			Varyings Vertex(uint vid : SV_VertexID) {
-			float4 pt = _PointBuffer[vid];
-			float4 pos = mul(_Transform, float4(pt.xyz, 1));
-			half3  col = PcxDecodeColor(asuint(pt.w));
-
-			#ifdef UNITY_COLORSPACE_GAMMA
-				col *= _Tint.rgb * 2;
-			#else
-				col *= LinearToGammaSpace(_Tint.rgb) * 2;
-				col = GammaToLinearSpace(col);
-			#endif
-
-				Varyings o;
-				o.position = UnityObjectToClipPos(pos);
-				o.color = col;
-				UNITY_TRANSFER_FOG(o, o.position);
-				return o;
-			}
-
-			half4 Fragment(Varyings input) : SV_Target {
-				half4 c = half4(input.color, _Tint.a);
-				UNITY_APPLY_FOG(input.fogCoord, c);
-				return c;
-			}
-
-
-			ENDCG
-		}
-	}
-}
-*/
