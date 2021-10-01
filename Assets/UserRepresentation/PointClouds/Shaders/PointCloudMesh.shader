@@ -6,7 +6,10 @@
         _MainTex("Texture", 2D) = "white" {}
         _Cutoff("Alpha cutoff", Range(0,1)) = 0.5
     }
+
     SubShader {
+        // This subshader needs geometry, converts points to quads which are then sampled
+        // off a texture. Works on recent OpenGL and DX GPUs.
         Lighting Off
         LOD 100
         Cull Off
@@ -108,6 +111,76 @@
                     half4 c = input.color;
                     c.a *= tc.a;
                     clip(tc.a < _Cutoff ? -1 : 1);
+                    return c;
+                }
+                ENDCG
+            }
+    }
+
+    SubShader {
+        // This subshader does not use geometry processing, but renders square points. Therefore
+        // it works on older OpenGL and DX GPUs, but most importantly it works on Metal (which does
+        // not support geometry processing)
+        Lighting Off
+        LOD 100
+        Cull Off
+        Blend SrcAlpha OneMinusSrcAlpha
+        Tags {
+            "Queue" = "AlphaTest" 
+            "IgnoreProjector" = "True" 
+            "RenderType" = "Transparent"
+        }
+
+        Pass {
+        CGPROGRAM
+                #pragma vertex Vertex
+                #pragma fragment Fragment
+                #pragma multi_compile _UNITY_COLORSPACE_GAMMA
+
+                #include "UnityCG.cginc"
+                
+
+                half4       _Tint;
+                half        _PointSize;
+                half        _PointSizeFactor;
+                fixed       _Cutoff;
+
+                struct appdata
+                {
+                    float4  vertex : POSITION;
+                    half3   color : COLOR;
+                };
+
+                struct v2f {
+                    float4  position : SV_Position;
+                    half4   color : COLOR;
+                    float    size : PSIZE;
+                };
+
+                v2f Vertex(appdata v) {
+                    v2f o;
+                    o.position = UnityObjectToClipPos(v.vertex);
+
+                    half4 col = half4(v.color.rgb, _Tint.a);
+#if UNITY_COLORSPACE_GAMMA
+                    col.rgb *= _Tint.rgb * 2;
+#else
+                    col.rgb *= LinearToGammaSpace(_Tint) * 2;
+                    col.rgb = GammaToLinearSpace(col);
+#endif
+                    o.color = col;
+                    //
+                    // xxxjack I think this computation is wrong. Undoutedly I can get the
+                    // correct information from the various matrices but I don't know how.
+                    //
+                    float pixelsPerMeter = _ScreenParams.y / o.position.w;
+                    o.size = _PointSize * _PointSizeFactor * pixelsPerMeter;
+                    return o;
+                }
+      
+                half4 Fragment(v2f input) : SV_Target {
+                    half4 c = input.color;
+                    clip(c.a < _Cutoff ? -1 : 1);
                     return c;
                 }
                 ENDCG
