@@ -8,6 +8,7 @@ Shader "Entropy/PointCloud"{
 		_Cutoff("Alpha cutoff", Range(0,1)) = 0.7
 	}
 	SubShader {
+		// This shader uses the geometry engine, and samples off a texture.
 		Lighting Off
 		LOD 100
 		Cull Off
@@ -126,6 +127,7 @@ Shader "Entropy/PointCloud"{
 		}
 	}
 	SubShader {
+		// This shader does not use the geometry engine, but does two passes.
 		Lighting Off
 		LOD 100
 		Cull Off
@@ -138,6 +140,7 @@ Shader "Entropy/PointCloud"{
 		}
 
 		Pass {
+			// Pass two: normal sized points with no transparency
 			Tags { 
 				"LightMode" = "ForwardBase" 
 			}
@@ -182,7 +185,6 @@ Shader "Entropy/PointCloud"{
 				col.rgb *= LinearToGammaSpace(_Tint) * 2;
 				col.rgb = GammaToLinearSpace(col);
 #endif
-					
 				Varyings o;
 				o.position = UnityObjectToClipPos(pos);
 				o.color = col;
@@ -198,10 +200,76 @@ Shader "Entropy/PointCloud"{
 
 			half4 Fragment(Varyings input) : SV_Target{
                 half4 c = input.color;
-                clip(c.a < _Cutoff ? -1 : 1);
                 return c;
 			}
 			ENDCG
 		}
+/* Second pass does not improve quality. Need to investigate. xxxjack
+		Pass {
+			// Pass two: double-sized points with transparency
+			Tags { 
+				"LightMode" = "ForwardBase" 
+			}
+			CGPROGRAM
+
+			#pragma vertex Vertex
+			#pragma fragment Fragment
+
+			#include "UnityCG.cginc"
+
+			half3 PcxDecodeColor(uint data) {
+				half r = (data >> 0) & 0xff;
+				half g = (data >> 8) & 0xff;
+				half b = (data >> 16) & 0xff;
+				return half3(r, g, b) / 255;
+			}
+
+			struct Varyings {
+				float4	position : SV_Position;
+				half4	color : COLOR;
+				float  size : PSIZE;
+//					UNITY_FOG_COORDS(0)
+			};
+
+			half4		_Tint;
+			float4x4	_Transform;
+			half		_PointSize;
+			half		_PointSizeFactor;
+			sampler2D	_MainTex;
+			fixed		_Cutoff;
+
+			StructuredBuffer<float4> _PointBuffer;
+
+			Varyings Vertex(uint vid : SV_VertexID) {
+				float4 pt = _PointBuffer[vid];
+				float4 pos = mul(_Transform, float4(pt.xyz, 1));
+				half4  col = half4(PcxDecodeColor(asuint(pt.w)), _Tint.a*0.5);
+
+#if UNITY_COLORSPACE_GAMMA
+				col.rgb *= _Tint.rgb * 2;
+#else
+				col.rgb *= LinearToGammaSpace(_Tint) * 2;
+				col.rgb = GammaToLinearSpace(col);
+#endif
+				Varyings o;
+				o.position = UnityObjectToClipPos(pos);
+				o.color = col;
+                //
+                // xxxjack I think this computation is wrong. Undoutedly I can get the
+                // correct information from the various matrices but I don't know how.
+                //
+                float pixelsPerMeter = _ScreenParams.y / o.position.w;
+                o.size = _PointSize * _PointSizeFactor * pixelsPerMeter * 3;
+//					UNITY_TRANSFER_FOG(o, o.position);
+				return o;
+			}
+
+			half4 Fragment(Varyings input) : SV_Target{
+                half4 c = input.color;
+                return c;
+			}
+			ENDCG
+		}
+*/
 	}
 }
