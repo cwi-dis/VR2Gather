@@ -56,11 +56,16 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
-            pointCount = preparer.GetComputeBuffer(ref pointBuffer);
-            float pointSize = preparer.GetPointSize();
+            float pointSize = 0;
+            if (fresh)
+            {
+                pointCount = preparer.GetComputeBuffer(ref pointBuffer);
+                pointSize = preparer.GetPointSize();
+                if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+                block.SetBuffer("_PointBuffer", pointBuffer);
+                block.SetFloat("_PointSize", pointSize);
+            }
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
-            block.SetBuffer("_PointBuffer", pointBuffer);
-            block.SetFloat("_PointSize", pointSize);
             block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
