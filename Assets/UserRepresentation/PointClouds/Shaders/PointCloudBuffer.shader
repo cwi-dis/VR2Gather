@@ -12,6 +12,7 @@ Shader "Entropy/PointCloud"{
 		Lighting Off
 		LOD 100
 		Cull Off
+		// xxxjack We could try enabling/disabling alpha blending to see whether it afects performance.
 		Blend SrcAlpha OneMinusSrcAlpha
 		BlendOp Add
 		Tags {
@@ -21,6 +22,7 @@ Shader "Entropy/PointCloud"{
 		}
 
 		Pass {
+			Name "PointCloudBufferAsTexture"
 			Tags { 
 				"LightMode" = "ForwardBase" 
 			}
@@ -67,7 +69,6 @@ Shader "Entropy/PointCloud"{
 				col.rgb *= LinearToGammaSpace(_Tint) * 2;
 				col.rgb = GammaToLinearSpace(col);
 #endif
-					
 				Varyings o;
 				o.position = UnityObjectToClipPos(pos);
 				o.color = col;
@@ -131,8 +132,6 @@ Shader "Entropy/PointCloud"{
 		Lighting Off
 		LOD 100
 		Cull Off
-		Blend SrcAlpha OneMinusSrcAlpha
-		BlendOp Add
 		Tags {
 			"Queue" = "AlphaTest" 
 			"IgnoreProjector" = "True" 
@@ -141,6 +140,7 @@ Shader "Entropy/PointCloud"{
 
 		Pass {
 			// Pass two: normal sized points with no transparency
+			Name "PointCloudBufferAsPoints"
 			Tags { 
 				"LightMode" = "ForwardBase" 
 			}
@@ -161,7 +161,7 @@ Shader "Entropy/PointCloud"{
 			struct Varyings {
 				float4	position : SV_Position;
 				half4	color : COLOR;
-				float  size : PSIZE;
+				half  size : PSIZE;
 //					UNITY_FOG_COORDS(0)
 			};
 
@@ -188,10 +188,6 @@ Shader "Entropy/PointCloud"{
 				Varyings o;
 				o.position = UnityObjectToClipPos(pos);
 				o.color = col;
-                //
-                // xxxjack I think this computation is wrong. Undoutedly I can get the
-                // correct information from the various matrices but I don't know how.
-                //
                 float pixelsPerMeter = _ScreenParams.y / o.position.w;
                 o.size = _PointSize * _PointSizeFactor * pixelsPerMeter;
 //					UNITY_TRANSFER_FOG(o, o.position);
