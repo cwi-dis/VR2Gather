@@ -22,6 +22,7 @@ public class NewMemorySystem : MonoBehaviour
     public bool useDashVoice = false;
     public bool usePointClouds = false;
     public bool useSocketIO = true;
+    public bool dropQueuesWhenFull = true;
     public float targetFPS = 20f;
     public int numPoints = 1000;
 
@@ -41,15 +42,19 @@ public class NewMemorySystem : MonoBehaviour
     BaseWorker pointcloudsReader;
 
     public BaseWorker preparer;
-    QueueThreadSafe preparerQueue = new QueueThreadSafe("PreparerQueue", 10,true);
-    QueueThreadSafe encoderQueue = new QueueThreadSafe("EncoderQueue", 10,true);
-    QueueThreadSafe writerQueue = new QueueThreadSafe("WriterQueue", 10,true);
-    QueueThreadSafe decoderQueue = new QueueThreadSafe("DecoderQueue", 10, true);
+    QueueThreadSafe preparerQueue;
+    QueueThreadSafe encoderQueue;
+    QueueThreadSafe writerQueue;
+    QueueThreadSafe decoderQueue;
     public MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
+        preparerQueue = new QueueThreadSafe("PreparerQueue", 10, dropQueuesWhenFull);
+        encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
+        writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
+        decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
         PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
             new PCSubReader.TileDescriptor() {
                 outQueue = decoderQueue,
