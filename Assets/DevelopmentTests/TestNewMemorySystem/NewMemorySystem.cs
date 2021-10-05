@@ -18,6 +18,7 @@ public class NewMemorySystem : MonoBehaviour
 
     public bool forceMesh = false;
     public bool localPCs = false;
+    public string prerecordedPointclouds = "";
     public bool useCompression = true;
     public bool useDashVoice = false;
     public bool usePointClouds = false;
@@ -98,10 +99,17 @@ public class NewMemorySystem : MonoBehaviour
 
         if (usePointClouds) {
 			if (localPCs) {
-				if (!useCompression)
-					reader = new PCReader(targetFPS, numPoints, preparerQueue);
-				else {
-					reader = new PCReader(targetFPS, numPoints, encoderQueue);
+                var pcQueue = preparerQueue;
+                if (useCompression) pcQueue = encoderQueue;
+                if (prerecordedPointclouds != "")
+                {
+                    reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
+                }
+                else
+                {
+                    reader = new PCReader(targetFPS, numPoints, pcQueue);
+                }
+                if (useCompression) {
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;
