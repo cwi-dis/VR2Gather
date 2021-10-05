@@ -14,12 +14,14 @@ Shader "Entropy/PointCloud"{
 		LOD 100
 		Cull Off
 		// xxxjack We could try enabling/disabling alpha blending to see whether it afects performance.
+		// xxxjack It doesn't affect performance (at least not on a RTX2080), but enabling alpha blending does
+		// make things more ugly.
 		//Blend SrcAlpha OneMinusSrcAlpha
 		//BlendOp Add
 		Tags {
 			"Queue" = "AlphaTest" 
 			"IgnoreProjector" = "True" 
-			"RenderType" = "Transparent"
+			"RenderType" = "TransparentCutout"
 		}
 
 		Pass {
@@ -117,10 +119,10 @@ Shader "Entropy/PointCloud"{
 			}
 
 			half4 Fragment(Varyings input) : SV_Target{
-				half4 tc = tex2D(_MainTex, input.uv);
 				half4 c = input.color;
+				half4 tc = tex2D(_MainTex, input.uv);
 				c.a *= tc.a;
-				clip(tc.a < _Cutoff ? -1 : 1);
+				clip(c.a - _Cutoff);
 				return c;
 			}
 
