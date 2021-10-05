@@ -13,7 +13,7 @@
         Lighting Off
         LOD 100
         Cull Off
-        Blend SrcAlpha OneMinusSrcAlpha
+        //Blend SrcAlpha OneMinusSrcAlpha
         Tags {
             "Queue" = "AlphaTest" 
             "IgnoreProjector" = "True" 
@@ -110,13 +110,13 @@
                     half4 tc = tex2D(_MainTex, input.uv);
                     half4 c = input.color;
                     c.a *= tc.a;
-                    clip(tc.a < _Cutoff ? -1 : 1);
+                    clip(c.a < _Cutoff ? -1 : 1);
                     return c;
                 }
                 ENDCG
             }
     }
-
+    
     SubShader {
         // This subshader does not use geometry processing, but renders square points. Therefore
         // it works on older OpenGL and DX GPUs, but most importantly it works on Metal (which does
@@ -124,7 +124,7 @@
         Lighting Off
         LOD 100
         Cull Off
-        Blend SrcAlpha OneMinusSrcAlpha
+        //Blend SrcAlpha OneMinusSrcAlpha
         Tags {
             "Queue" = "AlphaTest" 
             "IgnoreProjector" = "True" 

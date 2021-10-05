@@ -5,16 +5,17 @@ Shader "Entropy/PointCloud"{
 		_PointSize("Point Size", Float) = 0.05
 		_PointSizeFactor("Point Size multiply", Float) = 1.0
 		_MainTex("Texture", 2D) = "white" {}
-		_Cutoff("Alpha cutoff", Range(0,1)) = 0.7
+		_Cutoff("Alpha cutoff", Range(0,1)) = 0.5
 	}
+	
 	SubShader {
 		// This shader uses the geometry engine, and samples off a texture.
 		Lighting Off
 		LOD 100
 		Cull Off
 		// xxxjack We could try enabling/disabling alpha blending to see whether it afects performance.
-		Blend SrcAlpha OneMinusSrcAlpha
-		BlendOp Add
+		//Blend SrcAlpha OneMinusSrcAlpha
+		//BlendOp Add
 		Tags {
 			"Queue" = "AlphaTest" 
 			"IgnoreProjector" = "True" 
@@ -127,6 +128,7 @@ Shader "Entropy/PointCloud"{
 			ENDCG
 		}
 	}
+	
 	SubShader {
 		// This shader does not use the geometry engine, but does two passes.
 		Lighting Off
