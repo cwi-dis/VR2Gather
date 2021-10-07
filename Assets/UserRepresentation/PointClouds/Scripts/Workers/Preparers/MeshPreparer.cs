@@ -6,7 +6,7 @@ namespace VRT.UserRepresentation.PointCloud
     public class MeshPreparer : BasePreparer
     {
         bool isReady = false;
-        Unity.Collections.NativeArray<PointCouldVertex> vertexArray;
+        Unity.Collections.NativeArray<PointCloudVertex> vertexArray;
         System.IntPtr currentBuffer;
         int PointCouldVertexSize;
         public ulong currentTimestamp;
@@ -27,7 +27,7 @@ namespace VRT.UserRepresentation.PointCloud
                 throw new System.Exception("MeshPreparer: InQueue is null");
             }
             InQueue = _InQueue;
-            PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCouldVertex));
+            PointCouldVertexSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(PointCloudVertex));
             Start();
         }
 
@@ -39,7 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)] // Also tried with Pack=1
-        public struct PointCouldVertex
+        public struct PointCloudVertex
         {
             public Vector3 vertex;
             public Color32 color;
@@ -75,7 +75,7 @@ namespace VRT.UserRepresentation.PointCloud
                     int dampedSize = (int)(size * Config.Instance.memoryDamping);
                     if (vertexArray.Length < dampedSize)
                     {
-                        vertexArray = new Unity.Collections.NativeArray<PointCouldVertex>(dampedSize, Unity.Collections.Allocator.Persistent);
+                        vertexArray = new Unity.Collections.NativeArray<PointCloudVertex>(dampedSize, Unity.Collections.Allocator.Persistent);
                         currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(vertexArray);
                     }
                     int ret = pc.copy_uncompressed(currentBuffer, bufferSize);
