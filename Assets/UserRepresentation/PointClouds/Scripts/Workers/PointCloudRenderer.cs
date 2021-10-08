@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PointBufferRenderer : MonoBehaviour
+    public class PointCloudRenderer : MonoBehaviour
     {
         ComputeBuffer pointBuffer;
         int pointCount = 0;
         static Material baseMaterial;
         public Material material;
         MaterialPropertyBlock block;
-        BufferPreparer preparer;
+        PointCloudPreparer preparer;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -40,7 +40,7 @@ namespace VRT.UserRepresentation.PointCloud
             stats = new Stats(Name());
         }
 
-        public void SetPreparer(BufferPreparer _preparer)
+        public void SetPreparer(PointCloudPreparer _preparer)
         {
             if (preparer != null)
             {
