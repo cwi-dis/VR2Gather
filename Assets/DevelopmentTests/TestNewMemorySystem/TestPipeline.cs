@@ -12,7 +12,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 
-public class NewMemorySystem : MonoBehaviour
+public class TestPipeline : MonoBehaviour
 {
 
 
