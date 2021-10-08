@@ -16,7 +16,6 @@ public class TestPipeline : MonoBehaviour
 {
 
 
-    public bool forceMesh = false;
     public bool localPCs = false;
     public string prerecordedPointclouds = "";
     public bool useCompression = true;
@@ -86,16 +85,9 @@ public class TestPipeline : MonoBehaviour
         }
 
         Config config = Config.Instance;
-        bool useMeshRenderer = forceMesh || !PointBufferRenderer.isSupported();
-        if (useMeshRenderer) {
-            preparer = new MeshPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointMeshRenderer>();
-            ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);
-        } else {
-            preparer = new BufferPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointBufferRenderer>();
-            ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
-        }
+        preparer = new BufferPreparer(preparerQueue);
+        render = gameObject.AddComponent<PointBufferRenderer>();
+        ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
 
         if (usePointClouds) {
 			if (localPCs) {
