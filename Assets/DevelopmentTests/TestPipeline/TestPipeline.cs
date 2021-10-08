@@ -12,11 +12,10 @@ using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 
-public class NewMemorySystem : MonoBehaviour
+public class TestPipeline : MonoBehaviour
 {
 
 
-    public bool forceMesh = false;
     public bool localPCs = false;
     public string prerecordedPointclouds = "";
     public bool useCompression = true;
@@ -86,16 +85,9 @@ public class NewMemorySystem : MonoBehaviour
         }
 
         Config config = Config.Instance;
-        bool useMeshRenderer = forceMesh || !PointBufferRenderer.isSupported();
-        if (useMeshRenderer) {
-            preparer = new MeshPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointMeshRenderer>();
-            ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);
-        } else {
-            preparer = new BufferPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointBufferRenderer>();
-            ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
-        }
+        preparer = new PointCloudPreparer(preparerQueue);
+        render = gameObject.AddComponent<PointCloudRenderer>();
+        ((PointCloudRenderer)render).SetPreparer((PointCloudPreparer)preparer);
 
         if (usePointClouds) {
 			if (localPCs) {

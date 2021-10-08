@@ -454,43 +454,18 @@ namespace VRT.UserRepresentation.PointCloud
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
-            bool useMeshRenderer = PCs.forceMesh || !PointBufferRenderer.isSupported();
-            if (useMeshRenderer)
+            PointCloudPreparer preparer = new PointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            preparer.SetSynchronizer(synchronizer); 
+            preparers.Add(preparer);
+            PointCloudRenderer render = gameObject.AddComponent<PointCloudRenderer>();
+            string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+            if (curTile >= 0)
             {
-                Debug.Log($"{Name()}: using mesh renderer");
+                msg += $", tile={curTile}";
             }
-            if (useMeshRenderer || SystemInfo.graphicsShaderLevel < 50)
-            { // Mesh
-                MeshPreparer preparer = new MeshPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
-                preparer.SetSynchronizer(synchronizer);
-                preparers.Add(preparer);
-                // For meshes we use a single renderer and multiple preparers (one per tile).
-                PointMeshRenderer render = gameObject.AddComponent<PointMeshRenderer>();
-                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
-                if (curTile >= 0)
-                {
-                    msg += $", tile={curTile}";
-                }
-                BaseStats.Output(Name(), msg);
-                renderers.Add(render);
-                render.SetPreparer(preparer);
-            }
-            else
-            { // Buffer
-              // For buffers we use a renderer/preparer for each tile
-                BufferPreparer preparer = new BufferPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
-                preparer.SetSynchronizer(synchronizer); 
-                preparers.Add(preparer);
-                PointBufferRenderer render = gameObject.AddComponent<PointBufferRenderer>();
-                string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
-                if (curTile >= 0)
-                {
-                    msg += $", tile={curTile}";
-                }
-                BaseStats.Output(Name(), msg);
-                renderers.Add(render);
-                render.SetPreparer(preparer);
-            }
+            BaseStats.Output(Name(), msg);
+            renderers.Add(render);
+            render.SetPreparer(preparer);
             return preparerQueue;
         }
 
