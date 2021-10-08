@@ -23,7 +23,7 @@ namespace VRT.UserRepresentation.PointCloud
         public static bool isSupported()
         {
             if (baseMaterial != null) return true;
-            baseMaterial = Resources.Load<Material>("PointCloudsBuffer");
+            baseMaterial = Resources.Load<Material>("PointCloud");
             if (baseMaterial == null) return false;
             return baseMaterial.shader.isSupported;
         }
