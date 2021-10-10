@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PointBufferRenderer : MonoBehaviour
+    public class PointCloudRenderer : MonoBehaviour
     {
         ComputeBuffer pointBuffer;
         int pointCount = 0;
+        static Material baseMaterial;
         public Material material;
         MaterialPropertyBlock block;
-        BufferPreparer preparer;
+        PointCloudPreparer preparer;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -19,20 +20,27 @@ namespace VRT.UserRepresentation.PointCloud
             return $"{GetType().Name}#{instanceNumber}";
         }
 
+        public static bool isSupported()
+        {
+            if (baseMaterial != null) return true;
+            baseMaterial = Resources.Load<Material>("PointCloud");
+            if (baseMaterial == null) return false;
+            return baseMaterial.shader.isSupported;
+        }
 
         // Start is called before the first frame update
         void Start()
         {
-            if (material == null)
+            if (!isSupported())
             {
-                var _material = Resources.Load<Material>("PointCloudsBuffer");
-                material = new Material(_material);
+                Debug.LogError($"{Name()}: uses shader that is not supported on this graphics card");
             }
+            material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
         }
 
-        public void SetPreparer(BufferPreparer _preparer)
+        public void SetPreparer(PointCloudPreparer _preparer)
         {
             if (preparer != null)
             {
@@ -48,11 +56,16 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
-            pointCount = preparer.GetComputeBuffer(ref pointBuffer);
-            float pointSize = preparer.GetPointSize();
+            float pointSize = 0;
+            if (fresh)
+            {
+                pointCount = preparer.GetComputeBuffer(ref pointBuffer);
+                pointSize = preparer.GetPointSize();
+                if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+                block.SetBuffer("_PointBuffer", pointBuffer);
+                block.SetFloat("_PointSize", pointSize);
+            }
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
-            block.SetBuffer("_PointBuffer", pointBuffer);
-            block.SetFloat("_PointSize", pointSize);
             block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);

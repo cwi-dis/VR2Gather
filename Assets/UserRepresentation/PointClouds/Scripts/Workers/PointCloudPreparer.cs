@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class BufferPreparer : BasePreparer
+    public class PointCloudPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
@@ -16,13 +16,13 @@ namespace VRT.UserRepresentation.PointCloud
         float defaultCellSize;
         float cellSizeFactor;
         QueueThreadSafe InQueue;
-        public BufferPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
+        public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
         {
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.008f;
             cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 0.71f;
             if (_InQueue == null)
             {
-                throw new System.Exception("BufferPreparer: InQueue is null");
+                throw new System.Exception("PointCloudPreparer: InQueue is null");
             }
             InQueue = _InQueue;
             Start();
@@ -32,7 +32,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.OnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
-            Debug.Log("BufferPreparer Stopped");
+            Debug.Log("PointCloudPreparer Stopped");
         }
 
         public override bool LatchFrame()
@@ -68,7 +68,7 @@ namespace VRT.UserRepresentation.PointCloud
                     if (currentSize <= 0)
                     {
                         // This happens very often with tiled pointclouds.
-                        //Debug.Log("BufferPreparer: pc.get_uncompressed_size is 0");
+                        //Debug.Log("PointCloudPreparer: pc.get_uncompressed_size is 0");
                         return false;
                     }
                     currentCellSize = pc.cellsize();
@@ -83,7 +83,7 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     if (ret * 16 != currentSize)
                     {
-                        Debug.Log($"BufferPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                        Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
                         Debug.LogError("Programmer error while rendering a participant.");
                     }
                     isReady = true;
