@@ -199,6 +199,7 @@ namespace VRT.Pilots.Common
 			else
 			{
 				playerManager.teleporter.SetActive(false);
+				playerManager.teleporterLeft.SetActive(false);
 			}
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 

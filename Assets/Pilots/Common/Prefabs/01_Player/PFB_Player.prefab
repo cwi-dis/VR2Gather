@@ -3201,6 +3201,7 @@ MonoBehaviour:
   pc: {fileID: 426937040433907628}
   audio: {fileID: 4012052827202430640}
   teleporter: {fileID: 1874542409784781818}
+  teleporterLeft: {fileID: 6188044507243342117}
 --- !u!114 &1101617796011613554
 MonoBehaviour:
   m_ObjectHideFlags: 0
