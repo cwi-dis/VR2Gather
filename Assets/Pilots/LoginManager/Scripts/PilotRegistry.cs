@@ -12,7 +12,7 @@ public class PilotRegistry
         switch (pilotName)
         {
             case "Pilot 0":
-                return "MSTraining";
+                return "MediaScape_Training";
             case "Pilot 1":
                 return "Pilot1";
             case "Pilot 2":
@@ -44,7 +44,7 @@ public class PilotRegistry
             case "MedicalExamination":
                 return "MedicalExamination";
             case "Development":
-                return "MediaScape2";
+                return "MediaScape_Museum";
             default:
                 throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
                 return null;
