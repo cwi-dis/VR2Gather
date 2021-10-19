@@ -40,7 +40,7 @@ public class RightHandVRTeleporterController : MonoBehaviour
         rightHorizontal = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
 
         // try to enable both 'A' button and joystick for teleporation and to see which one is better
-        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton1);
+        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0);
 
         /*if (IsDownRightTrigger || IsDownLeftTrigger)
         {
