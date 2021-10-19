@@ -97,7 +97,7 @@ namespace VRT.Core
                 public class _RS2ReaderConfig
                 {
                     public string configFilename;
-                    public bool wantedSkeleton = true;
+                    public bool wantedSkeleton = false;
                 }
                 public _RS2ReaderConfig RS2ReaderConfig;
                 [Serializable]
