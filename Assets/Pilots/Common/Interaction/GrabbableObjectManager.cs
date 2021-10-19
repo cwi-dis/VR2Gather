@@ -45,6 +45,7 @@ namespace VRT.Pilots.Common
 
 		public static void UnregisterGrabbable(Grabbable grabbable)
 		{
+			if (_Instance == null) return;
 			Instance.UnregisterGrabbableInternal(grabbable);
 		}
 
