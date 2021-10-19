@@ -25,10 +25,24 @@ public class RightHandVRTeleporterController : MonoBehaviour
     float rightVertical = 0.0f;
 
     private float previousRightTrigger = 0.0f;
+    string headsedType = "Oculus";
 
     private void Awake()
     {
         //if (SceneManager.GetActiveScene().name != "Museum") gameObject.SetActive(false);
+    }
+
+    private void Start()
+    {
+        var inputDevices = new List<UnityEngine.XR.InputDevice>();
+        UnityEngine.XR.InputDevices.GetDevices(inputDevices);
+        foreach (var device in inputDevices)
+        {
+            if (device.manufacturer == "HTC")
+            {
+                headsedType = "HTC";
+            }
+        }// if not HTC then we assume Oculus
     }
 
     void Update() {
@@ -39,13 +53,14 @@ public class RightHandVRTeleporterController : MonoBehaviour
         rightVertical = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
         rightHorizontal = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
 
-        // try to enable both 'A' button and joystick for teleporation and to see which one is better
-        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0);
-
-        /*if (IsDownRightTrigger || IsDownLeftTrigger)
+        if (headsedType == "HTC")
         {
-            Debug.Log("TRIGGER!");
-        }*/
+            rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0);
+        }
+        else //assuming Oculus
+        {
+            rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton1);
+        }      
 
 
         if (teleporter.displayActive) {
