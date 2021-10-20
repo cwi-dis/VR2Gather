@@ -25,9 +25,9 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = cwipc.kinect(_configFilename);
                 if (wantedSkeleton)
                 {
-                    reader.request_auxiliary_data("skeleton");
+                    bool result = reader.request_auxiliary_data("skeleton");
+                    if (!result) throw new System.Exception($"{Name()}: cwipc_kinect skeleton tracker could not be initialized");
                     Debug.Log($"{Name()}: Requested Skeleton.");
-
                 }
                 if (reader != null)
                 {

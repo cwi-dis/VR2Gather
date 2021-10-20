@@ -200,7 +200,7 @@ namespace VRT.UserRepresentation.PointCloud
             [DllImport(myDllName)]
             internal extern static void cwipc_source_free(IntPtr src);
             [DllImport(myDllName)]
-            internal extern static void cwipc_source_request_auxiliary_data(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
+            internal extern static bool cwipc_source_request_auxiliary_data(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
             [DllImport(myDllName)]
             internal extern static bool cwipc_source_auxiliary_data_requested(IntPtr src, [MarshalAs(UnmanagedType.LPStr)] string name);
 
@@ -500,10 +500,10 @@ namespace VRT.UserRepresentation.PointCloud
                 return _API_cwipc_util.cwipc_source_available(pointer, wait);
             }
 
-            public void request_auxiliary_data(string name)
+            public bool request_auxiliary_data(string name)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.source.request_auxiliary_data called with NULL pointer");
-                _API_cwipc_util.cwipc_source_request_auxiliary_data(pointer, name);
+                return _API_cwipc_util.cwipc_source_request_auxiliary_data(pointer, name);
             }
             
             public void auxiliary_data_requested(string name)
