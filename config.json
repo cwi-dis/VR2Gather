@@ -12,6 +12,15 @@
   "statsInterval": 10,
   "statsOutputFile":  "",
  
+  "AutoStart" : {
+  	"autoLogin" : true,
+  	"sessionName" : "autojack",
+  	"sessionScenario" : 0,
+  	"sessionTransportProtocol" : 1,
+  	"autoCreate" : true,
+  	"autoJoin" : false,
+  	"autoStart" : true
+  },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
