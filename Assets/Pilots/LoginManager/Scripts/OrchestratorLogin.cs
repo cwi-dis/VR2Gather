@@ -1518,6 +1518,9 @@ public class OrchestratorLogin : MonoBehaviour {
         if (sessions != null) {
             // update the list of available sessions
             UpdateSessions(orchestratorSessions, sessionIdDrop);
+            // We may be able to advance auto-connection
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
     }
 
