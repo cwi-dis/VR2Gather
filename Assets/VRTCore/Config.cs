@@ -47,6 +47,11 @@ namespace VRT.Core
         [Serializable]
         public class _AutoStart
         {
+            // This class allows to setup a machine (through config.json) to
+            // - automatically login,
+            // - automatically create a session with a given name and parameters
+            // - automatically join a session of a given name
+            // - automatically start a session when enough people have joined
             public bool autoLogin = false;
             public string sessionName = "";
             public int sessionScenario = -1;
