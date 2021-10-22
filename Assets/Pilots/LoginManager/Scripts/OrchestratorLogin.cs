@@ -670,9 +670,18 @@ public class OrchestratorLogin : MonoBehaviour {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                 // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                 // on and then simulating a button callback works.
-                socketAudioToggle.isOn = true;
-                dashAudioToggle.isOn = true;
-                tcpAudioToggle.isOn = true;
+                switch(config.sessionTransportProtocol)
+                {
+                    case 1:
+                        socketAudioToggle.isOn = true;
+                        break;
+                    case 2:
+                        dashAudioToggle.isOn = true;
+                        break;
+                    case 3:
+                        tcpAudioToggle.isOn = true;
+                        break;
+                }
                 SetAudio(config.sessionTransportProtocol);
             }
             autoState = AutoState.DidPartialCreation;
