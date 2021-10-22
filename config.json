@@ -19,7 +19,8 @@
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStart" : true
+  	"autoStartWith" : 2,
+  	"autoDelay" : 1
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"

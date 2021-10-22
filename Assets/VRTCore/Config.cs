@@ -53,7 +53,8 @@ namespace VRT.Core
             public int sessionTransportProtocol = -1;
             public bool autoCreate = false;
             public bool autoJoin = true;
-            public bool autoStart = false;
+            public int autoStartWith = -1;
+            public float autoDelay = 0.2f;
         };
         public _AutoStart AutoStart;
 

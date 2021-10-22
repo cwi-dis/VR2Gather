@@ -309,6 +309,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 AddUserComponentOnContent(container.transform, u);
             }
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
+            // We may be able to continue auto-starting
+            if (Config.Instance.AutoStart != null)
+            Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
         else {
             Debug.Log("[OrchestratorLogin][UpdateUsersSession] ConnectedUsers was null");
@@ -683,16 +686,19 @@ public class OrchestratorLogin : MonoBehaviour {
             if (config.autoCreate)
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: creating");
-                Invoke("AddSession", 0.2f);
+                Invoke("AddSession", config.autoDelay);
             }
             autoState = AutoState.DidCompleteCreation;
 
         }
-        if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStart)
+        if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStartWith >= 1)
         {
-            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting");
-            Invoke("ReadyButton", 0.2f);
-            autoState = AutoState.Done;
+            if (sessionNumUsersText.text == config.autoStartWith.ToString())
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting with {config.autoStartWith} users");
+                Invoke("ReadyButton", config.autoDelay);
+                autoState = AutoState.Done;
+            }
         }
     }
 
@@ -1449,7 +1455,7 @@ public class OrchestratorLogin : MonoBehaviour {
             Debug.Log($"[OrchestratorLogin][AutoStart] autoPlay");
             autoState = AutoState.DidPlay;
             StateButton(State.Play);
-            Invoke("AutoStateUpdate", 0.2f);
+            Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
     }
 
@@ -1524,7 +1530,8 @@ public class OrchestratorLogin : MonoBehaviour {
             state = State.Lobby;
             PanelChanger();
             // We may be able to advance auto-connection
-            Invoke("AutoStateUpdate", 0.2f);
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
         else {
             isMaster = false;
@@ -1649,7 +1656,8 @@ public class OrchestratorLogin : MonoBehaviour {
             //update the data in the dropdown
             UpdateScenarios(scenarioIdDrop);
             // We may be able to advance auto-connection
-            Invoke("AutoStateUpdate", 0.2f);
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
     }
 
