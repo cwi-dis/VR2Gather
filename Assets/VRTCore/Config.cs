@@ -42,6 +42,7 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
+        public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
 
         [Serializable]
