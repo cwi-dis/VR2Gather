@@ -48,8 +48,12 @@ namespace VRT.Core
         public class _AutoStart
         {
             public bool autoLogin = false;
-            public string createSession = "";
-            public string joinSession = "";
+            public string sessionName = "";
+            public int sessionScenario = -1;
+            public int sessionTransportProtocol = -1;
+            public bool autoCreate = false;
+            public bool autoJoin = true;
+            public bool autoStart = false;
         };
         public _AutoStart AutoStart;
 

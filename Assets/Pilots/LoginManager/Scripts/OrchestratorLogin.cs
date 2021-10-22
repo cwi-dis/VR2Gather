@@ -16,7 +16,7 @@ public enum State {
 
 public enum AutoState
 {
-    DidNone, DidLogIn, DidPlay, DidCreate, DidJoin, DidStart
+    DidNone, DidLogIn, DidPlay, DidCreate, DidPartialCreation, DidCompleteCreation, DidJoin, DidStart, Done
 };
 
 public class OrchestratorLogin : MonoBehaviour {
@@ -640,27 +640,59 @@ public class OrchestratorLogin : MonoBehaviour {
 
     void AutoStateUpdate()
     {
-        if (state == State.Play && autoState == AutoState.DidPlay && Config.Instance.AutoStart != null)
+        Config._AutoStart config = Config.Instance.AutoStart;
+        if (config == null) return;
+        if (state == State.Play && autoState == AutoState.DidPlay)
         {
-            if (Config.Instance.AutoStart.createSession != "")
+            if (config.autoCreate)
             {
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate");
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting");
                 autoState = AutoState.DidCreate;
                 StateButton(State.Create);
 
             }
-            if (Config.Instance.AutoStart.joinSession != "")
+            if (config.autoJoin)
             {
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoJoin");
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoJoin: starting");
                 autoState = AutoState.DidJoin;
                 StateButton(State.Join);
             }
         }
-        if (state == State.Create && autoState == AutoState.DidCreate && Config.Instance.AutoStart != null)
+        if (state == State.Create && autoState == AutoState.DidCreate)
         {
-            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate step 2");
-            sessionNameIF.text = Config.Instance.AutoStart.createSession;
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionName={config.sessionName}");
+            sessionNameIF.text = config.sessionName;
+            if (config.sessionTransportProtocol >= 0)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
+                // xxxjack I don't understand the intended logic behind the toggles. But turning everything
+                // on and then simulating a button callback works.
+                socketAudioToggle.isOn = true;
+                dashAudioToggle.isOn = true;
+                tcpAudioToggle.isOn = true;
+                SetAudio(config.sessionTransportProtocol);
+            }
+            autoState = AutoState.DidPartialCreation;
+        }
+        if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0) {
+            if (config.sessionScenario >= 0)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionScenario={config.sessionScenario}");
+                scenarioIdDrop.value = config.sessionScenario;
+            }
+            if (config.autoCreate)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: creating");
+                Invoke("AddSession", 0.2f);
+            }
+            autoState = AutoState.DidCompleteCreation;
 
+        }
+        if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStart)
+        {
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting");
+            Invoke("ReadyButton", 0.2f);
+            autoState = AutoState.Done;
         }
     }
 
@@ -1411,7 +1443,7 @@ public class OrchestratorLogin : MonoBehaviour {
         if (userLoggedSucessfully
             && autoState == AutoState.DidLogIn
             && Config.Instance.AutoStart != null
-            && (Config.Instance.AutoStart.createSession != "" || Config.Instance.AutoStart.joinSession != "")
+            && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
             )
         {
             Debug.Log($"[OrchestratorLogin][AutoStart] autoPlay");
@@ -1491,6 +1523,8 @@ public class OrchestratorLogin : MonoBehaviour {
 
             state = State.Lobby;
             PanelChanger();
+            // We may be able to advance auto-connection
+            Invoke("AutoStateUpdate", 0.2f);
         }
         else {
             isMaster = false;
@@ -1614,6 +1648,8 @@ public class OrchestratorLogin : MonoBehaviour {
         if (scenarios != null && scenarios.Length > 0) {
             //update the data in the dropdown
             UpdateScenarios(scenarioIdDrop);
+            // We may be able to advance auto-connection
+            Invoke("AutoStateUpdate", 0.2f);
         }
     }
 
