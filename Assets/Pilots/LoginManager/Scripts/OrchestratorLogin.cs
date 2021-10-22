@@ -14,6 +14,11 @@ public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
 }
 
+public enum AutoState
+{
+    DidNone, DidLogIn, DidPlay, DidCreate, DidJoin, DidStart
+};
+
 public class OrchestratorLogin : MonoBehaviour {
 
     private static OrchestratorLogin instance;
@@ -31,6 +36,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
+    private AutoState autoState = AutoState.DidNone;
 
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
@@ -632,6 +638,32 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
+    void AutoStateUpdate()
+    {
+        if (state == State.Play && autoState == AutoState.DidPlay && Config.Instance.AutoStart != null)
+        {
+            if (Config.Instance.AutoStart.createSession != "")
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate");
+                autoState = AutoState.DidCreate;
+                StateButton(State.Create);
+
+            }
+            if (Config.Instance.AutoStart.joinSession != "")
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoJoin");
+                autoState = AutoState.DidJoin;
+                StateButton(State.Join);
+            }
+        }
+        if (state == State.Create && autoState == AutoState.DidCreate && Config.Instance.AutoStart != null)
+        {
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate step 2");
+            sessionNameIF.text = Config.Instance.AutoStart.createSession;
+
+        }
+    }
+
     public void FillSelfUserData() {
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
         User user = OrchestratorController.Instance.SelfUser;
@@ -998,7 +1030,9 @@ public class OrchestratorLogin : MonoBehaviour {
         state = _state;
         PanelChanger();
         if (state == State.Config)
+        {
             UpdateUserData();
+        }
     }
 
     public void ReadyButton() {
@@ -1141,7 +1175,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void PresenterToggles() {
-        if (OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (OrchestratorController.Instance.AvailableScenarios?[scenarioIdDrop.value].scenarioName == "Pilot 2") {
             presenterPanel.SetActive(true);
             // Check if presenter is active to show live option
             if (presenterToggle.isOn) {
@@ -1264,6 +1298,12 @@ public class OrchestratorLogin : MonoBehaviour {
             state = State.Online;
         }
         PanelChanger();
+        if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
+        {
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
+            autoState = AutoState.DidLogIn;
+            Login();
+        }
     }
 
     private void OnConnecting() {
@@ -1368,8 +1408,19 @@ public class OrchestratorLogin : MonoBehaviour {
         }
 
         PanelChanger();
+        if (userLoggedSucessfully
+            && autoState == AutoState.DidLogIn
+            && Config.Instance.AutoStart != null
+            && (Config.Instance.AutoStart.createSession != "" || Config.Instance.AutoStart.joinSession != "")
+            )
+        {
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoPlay");
+            autoState = AutoState.DidPlay;
+            StateButton(State.Play);
+            Invoke("AutoStateUpdate", 0.2f);
+        }
     }
-    
+
     private void Logout() {
         OrchestratorController.Instance.Logout();
     }

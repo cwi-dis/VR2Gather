@@ -45,6 +45,15 @@ namespace VRT.Core
         public bool statsOutputFileAppend = true;
 
         [Serializable]
+        public class _AutoStart
+        {
+            public bool autoLogin = false;
+            public string createSession = "";
+            public string joinSession = "";
+        };
+        public _AutoStart AutoStart;
+
+        [Serializable]
         public class _TVMs
         {
             public string connectionURI;
