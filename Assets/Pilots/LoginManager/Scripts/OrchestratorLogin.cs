@@ -700,6 +700,21 @@ public class OrchestratorLogin : MonoBehaviour {
                 autoState = AutoState.Done;
             }
         }
+        if (state == State.Join && autoState == AutoState.DidJoin)
+        {
+            var options = sessionIdDrop.options;
+            Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: look for {config.sessionName}");
+            for(int i=0; i<options.Count; i++)
+            {
+                if (options[i].text.StartsWith(config.sessionName + " "))
+                {
+                    Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: entry {i} is {config.sessionName}, joining");
+                    sessionIdDrop.value = i;
+                    autoState = AutoState.Done;
+                    Invoke("JoinSession", config.autoDelay);
+                }
+            }
+        }
     }
 
     public void FillSelfUserData() {
