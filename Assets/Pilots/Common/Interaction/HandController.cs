@@ -98,8 +98,8 @@ namespace VRT.Pilots.Common
 					Vector3[] points = new Vector3[2];
 					points[0] = touchTransform.position;
 					points[1] = touchTransform.position + 25.0f * touchTransform.forward;
-
-					if (Physics.Raycast(teleportRay, out hit))
+					LayerMask uimask = LayerMask.NameToLayer("UI");
+					if (Physics.Raycast(teleportRay, out hit,uimask))
 					{
 						points[1] = hit.point;
 						if (hit.collider.tag == "PlayerLocation")
@@ -120,6 +120,7 @@ namespace VRT.Pilots.Common
 						{
 							TeleportLineRenderer.material = TeleportImpossibleMaterial;
 							_SelectedLocation = null;
+							UnityEngine.Debug.Log(" <color = green> Hit some random object:  </ color > " + hit.collider.gameObject.name);
 						}
 					}
 					else
