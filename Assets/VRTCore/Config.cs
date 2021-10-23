@@ -42,7 +42,27 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
+        public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+
+        [Serializable]
+        public class _AutoStart
+        {
+            // This class allows to setup a machine (through config.json) to
+            // - automatically login,
+            // - automatically create a session with a given name and parameters
+            // - automatically join a session of a given name
+            // - automatically start a session when enough people have joined
+            public bool autoLogin = false;
+            public string sessionName = "";
+            public int sessionScenario = -1;
+            public int sessionTransportProtocol = -1;
+            public bool autoCreate = false;
+            public bool autoJoin = true;
+            public int autoStartWith = -1;
+            public float autoDelay = 0.2f;
+        };
+        public _AutoStart AutoStart;
 
         [Serializable]
         public class _TVMs

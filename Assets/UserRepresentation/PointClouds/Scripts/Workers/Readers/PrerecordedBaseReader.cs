@@ -55,13 +55,13 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected bool _InitFromConfigFile(string directory)
         {
-            var configFilename = System.IO.Path.Combine(directory, ".cwipc_prerecorded_config.json");
+            var configFilename = System.IO.Path.Combine(directory, "tileconfig.json");
             if (!System.IO.File.Exists(configFilename))
             {
                 Debug.LogWarning($"{Name()}: {configFilename} does not exist. Assuming defaults.");
                 return false;
             }
-            var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
+            var file = System.IO.File.ReadAllText(configFilename);
             _PrerecordedReaderConfig config = JsonUtility.FromJson<_PrerecordedReaderConfig>(file);
             preferBest = config.preferBest;
             qualitySubdirs = config.qualities ?? new string[1] { "" };
