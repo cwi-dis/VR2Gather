@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
+using VRT.Core;
 
 public class PlayerMovement : MonoBehaviour {
 
@@ -19,7 +20,7 @@ public class PlayerMovement : MonoBehaviour {
         float z = Input.GetAxis("Vertical");
 
         Vector3 move = transform.right * x + transform.forward * z;
-
-        controller.Move(move * speed * Time.deltaTime);
+        if(Config.Instance.allowControllerMovement)
+            controller.Move(move * speed * Time.deltaTime);
     }
 }
