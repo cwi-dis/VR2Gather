@@ -212,14 +212,17 @@ namespace VRT.Core
                 // In the editor the config file is at the toplevel, above the Assets folder
                 dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             }
-            else
+            else if (Application.platform == RuntimePlatform.OSXPlayer)
             {
-                // For the Mac player, the config file is in the Contents directory
+                // For the Mac player, the config file is in the Contents directory, which is dataPath
+                dataPath = Application.dataPath;
+            } else
+            {
                 // For Windos/Linux player, the config file is in the same directory as the executable
-                // For both cases, this is the Appllication.dataPath.
+                // For both cases, this is the parent of Application.dataPath.
                 // For future reference: this scheme will not work for iOS and Windows Store (which will need to use
                 // something based on persistentDataPath)
-                dataPath = Application.dataPath;
+                dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
             }
             return System.IO.Path.Combine(dataPath, filename);
         }
