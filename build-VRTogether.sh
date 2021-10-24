@@ -21,7 +21,7 @@ Darwin)
 	unityflag=-buildOSXUniversalPlayer
 	output=VRTogether.app
 	;;
-WIN*)
+MINGW64*)
 	win=true
 	unitycmd=Unity
 	unityflag=-buildWindows64Player
