@@ -1,7 +1,6 @@
 #!/bin/bash
 # Ensure the correct version of Unity is on PATH (for example C:\Program Files\Unity\Hub\Editor\2019.3.15f1\Editor\Unity.exe)
 # Ensure the installed folder (on the same level as Testbed) has the DLLs and executables and such
-set -e
 dirname=`dirname $0`
 dirname=`cd $dirname ; pwd`
 INSTALL_PCL=false
