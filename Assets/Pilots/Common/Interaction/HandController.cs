@@ -85,60 +85,61 @@ namespace VRT.Pilots.Common
 				bool hand_trigger_pressed = ControllerInput.Instance.SecondaryTrigger(XRNode);
 				bool a_button_held_down = ControllerInput.Instance.ButtonA();
 
-				//if (HandHandedness == Handedness.Right && a_button_held_down)
-				//{
-				//	_WasAButtonPressed = true;
-				//	var touchTransform = TouchCollider.transform;
-				//	Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
-				//	Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
-				//	RaycastHit hit = new RaycastHit();
+				/* if (HandHandedness == Handedness.Right && a_button_held_down)
+				{
+					_WasAButtonPressed = true;
+					var touchTransform = TouchCollider.transform;
+					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
+					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
+					RaycastHit hit = new RaycastHit();
 
-				//	TeleportLineRenderer.enabled = true;
+					TeleportLineRenderer.enabled = true;
 
-				//	Vector3[] points = new Vector3[2];
-				//	points[0] = touchTransform.position;
-				//	points[1] = touchTransform.position + 25.0f * touchTransform.forward;
-
-				//	if (Physics.Raycast(teleportRay, out hit))
-				//	{
-				//		points[1] = hit.point;
-				//		if (hit.collider.tag == "PlayerLocation")
-				//		{
-				//			var location = hit.collider.GetComponent<PlayerLocation>();
-				//			if (location.IsEmpty)
-				//			{
-				//				TeleportLineRenderer.material = TeleportPossibleMaterial;
-				//				_SelectedLocation = location;
-				//			}
-				//			else
-				//			{
-				//				TeleportLineRenderer.material = TeleportImpossibleMaterial;
-				//				_SelectedLocation = null;
-				//			}
-				//		}
-				//		else
-				//		{
-				//			TeleportLineRenderer.material = TeleportImpossibleMaterial;
-				//			_SelectedLocation = null;
-				//		}
-				//	}
-				//	else
-				//	{
-				//		TeleportLineRenderer.material = TeleportImpossibleMaterial;
-				//	}
-				//	TeleportLineRenderer.SetPositions(points);
-				//}
-				//else if (_WasAButtonPressed)
-				//{
-				//	if (_SelectedLocation != null)
-				//	{
-				//		SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
-				//	}
-				//	_SelectedLocation = null;
-				//	TeleportLineRenderer.material = TeleportImpossibleMaterial;
-				//	TeleportLineRenderer.enabled = false;
-				//}
-
+					Vector3[] points = new Vector3[2];
+					points[0] = touchTransform.position;
+					points[1] = touchTransform.position + 25.0f * touchTransform.forward;
+					LayerMask uimask = LayerMask.NameToLayer("UI");
+					if (Physics.Raycast(teleportRay, out hit,uimask))
+					{
+						points[1] = hit.point;
+						if (hit.collider.tag == "PlayerLocation")
+						{
+							var location = hit.collider.GetComponent<PlayerLocation>();
+							if (location.IsEmpty)
+							{
+								TeleportLineRenderer.material = TeleportPossibleMaterial;
+								_SelectedLocation = location;
+							}
+							else
+							{
+								TeleportLineRenderer.material = TeleportImpossibleMaterial;
+								_SelectedLocation = null;
+							}
+						}
+						else
+						{
+							TeleportLineRenderer.material = TeleportImpossibleMaterial;
+							_SelectedLocation = null;
+							UnityEngine.Debug.Log(" <color = green> Hit some random object:  </ color > " + hit.collider.gameObject.name);
+						}
+					}
+					else
+					{
+						TeleportLineRenderer.material = TeleportImpossibleMaterial;
+					}
+					TeleportLineRenderer.SetPositions(points);
+				}
+				else if (_WasAButtonPressed)
+				{
+					if (_SelectedLocation != null)
+					{
+						SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
+					}
+					_SelectedLocation = null;
+					TeleportLineRenderer.material = TeleportImpossibleMaterial;
+					TeleportLineRenderer.enabled = false;
+					_WasAButtonPressed = false;
+				} */
 
 
 				if (hand_trigger_pressed)

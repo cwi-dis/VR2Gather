@@ -25,7 +25,7 @@ namespace VRT.Transport.SocketIO
             {
                 streams[i].name = $"{user.userId}{remoteStream}#{i}";
                 Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
-                BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, quality={streams[i].quality}");
+                BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try

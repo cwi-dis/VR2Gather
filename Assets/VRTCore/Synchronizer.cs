@@ -85,7 +85,7 @@ namespace VRT.Core
                 if (curCatchup > 0 && currentPreferredLatency - curCatchup >= minPreferredLatency)
                 {
                     currentPreferredLatency -= curCatchup;
-                    Debug.Log($"{Name()}: xxxjack catching up {curCatchup} ms, currentPreferredLatency={currentPreferredLatency}, maxCatchup={maxCatchup}");
+                    if (debugSynchronizer) Debug.Log($"{Name()}: catching up {curCatchup} ms, currentPreferredLatency={currentPreferredLatency}, maxCatchup={maxCatchup}");
                 }
             }
             // Sanity check
@@ -116,7 +116,7 @@ namespace VRT.Core
                 if (currentLatency > currentPreferredLatency && currentLatency < 10000 && latencyCatchup > 0)
                 {
                     currentPreferredLatency = currentLatency;
-                    Debug.Log($"{Name()}: xxxjack increase currentPreferredLatency={currentPreferredLatency}");
+                    if (debugSynchronizer) Debug.Log($"{Name()}: xxxjack increase currentPreferredLatency={currentPreferredLatency}");
                 }
                 return;
             }

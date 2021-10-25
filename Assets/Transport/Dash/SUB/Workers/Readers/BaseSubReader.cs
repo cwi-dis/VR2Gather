@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using VRT.Core;
+using System.Collections.Generic;
 
 namespace VRT.Transport.Dash
 {
@@ -30,10 +31,10 @@ namespace VRT.Transport.Dash
         public class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
-            //public int[] streamIndexes;
+            public List<int> streamIndexes;
             public object tileDescriptor;
             public int tileNumber = -1;
-            public int curStreamIndex = -1;
+            //public int curStreamIndex = -1;
         }
         protected ReceiverInfo[] receivers;
         //        protected QueueThreadSafe[] outQueues;
@@ -110,25 +111,64 @@ namespace VRT.Transport.Dash
                             return;
                         }
 
-                        if (receiverInfo.curStreamIndex < 0)
+                        if (receiverInfo.streamIndexes == null)
                         {
                             continue;
                         }
                         //
                         // We have work to do. 
                         //
-                        FrameInfo frameInfo = new FrameInfo();
-                        int stream_index = receiverInfo.curStreamIndex;
-                        int bytesNeeded = 0;
-                       
-                        // See whether data is available on this stream, and how many bytes we need to allocate
-                        bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-  
+                        bool received_anything = false;
+                        foreach(int stream_index in receiverInfo.streamIndexes) {
+                            FrameInfo frameInfo = new FrameInfo();
+                            int bytesNeeded = 0;
 
-                        // If no data is available we may want to close the subHandle, or sleep a bit
-                        if (bytesNeeded == 0)
+                            // See whether data is available on this stream, and how many bytes we need to allocate
+                            bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
+
+
+                            // If no data is available on this stream we try the next
+                            if (bytesNeeded == 0)
+                            {
+                                continue;
+                            }
+                            received_anything = true;
+                            lastSuccessfulReceive = System.DateTime.Now;
+
+                            // Allocate and read.
+                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                            int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+         
+                            if (bytesRead != bytesNeeded)
+                            {
+                                Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                                mc.free();
+                                continue;
+                            }
+
+                            // If we have no clock correspondence yet we use the first received frame on any stream to set it
+                            if (parent.clockCorrespondence.wallClockTime == 0)
+                            {
+                                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                                parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
+                                parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                                BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}");
+                            }
+                            // Convert clock values to wallclock
+                            frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
+                            mc.info = frameInfo;
+
+                            bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
+                            stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, stream_index);
+
+                        }
+
+                        // We no longer need subHandle
+                        subHandle.free();
+
+                        // If no data was available on any stream we may want to close the subHandle, or sleep a bit
+                        if (!received_anything)
                         {
-                            subHandle.free();
                             System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
                             if (noReceives > maxNoReceives)
                             {
@@ -139,58 +179,6 @@ namespace VRT.Transport.Dash
                             System.Threading.Thread.Sleep(receiveInterval);
                             continue;
                         }
-
-                        lastSuccessfulReceive = System.DateTime.Now;
-
-                        // Allocate and read.
-                        NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                        int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
-
-                        // We no longer need subHandle
-                        subHandle.free();
-
-                        if (bytesRead != bytesNeeded)
-                        {
-                            Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                            mc.free();
-                            continue;
-                        }
-
-                        // If we have no clock correspondence yet we use the first received frame on any stream to set it
-                        if (parent.clockCorrespondence.wallClockTime == 0)
-                        {
-                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                            parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
-                            parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                            BaseStats.Output(parent.Name(), $"guessed=1, stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime-parent.clockCorrespondence.streamClockTime}");
-                        }
-                        // Convert clock values to wallclock
-                        frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
-                        mc.info = frameInfo;
-#if xxxjack_removed_suspect_code
-                        // xxxjack we should investigate the following code (and its history). It looks
-                        // like some half-way attempt to lower latency, but unsure.
-                        // Check if can start to enqueue
-                        if (!bCanQueue) {
-                            receiverInfo.outQueue.Enqueue(mc);
-                        } else { 
-                            // Check time btween last package.
-                            System.TimeSpan newElapsed = stopWatch.Elapsed;
-                            // If is not the first and the time is greater or igual than frequency start to enqueue
-                            if (oldElapsed != System.TimeSpan.Zero && (newElapsed - oldElapsed).TotalMilliseconds >= frequency) {
-                                bCanQueue = true;
-                                // Enqueue the first chunk
-                                receiverInfo.outQueue.Enqueue(mc);
-                            } else {
-                                // if not, release data an save the elapsed time.
-                                oldElapsed = newElapsed;
-                                mc.free();
-                            }
-                        }
-#else
-                        bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-#endif
-                        stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, stream_index);
                     }
                 }
                 catch (System.Exception e)
@@ -299,7 +287,7 @@ namespace VRT.Transport.Dash
                     new ReceiverInfo()
                     {
                         outQueue = outQueue,
-                        curStreamIndex = streamIndex
+                        streamIndexes = new List<int> {streamIndex}
                     },
                 };
                 Start();

@@ -2,21 +2,23 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using UnityEngine;
 using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
     public class sub
     {
+        const int MAX_SUB_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct DashStreamDescriptor
         {
             public uint MP4_4CC;
-            public uint objectX;    // In VRTogether, for pointclouds, we use this field for tileNumber
-            public uint objectY;    // In VRTogether, for pointclouds, we use this field for quality
-            public uint objectWidth;
-            public uint objectHeight;
+            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
+            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
+            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
+            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
             public uint totalWidth;
             public uint totalHeight;
         }
@@ -25,7 +27,7 @@ namespace VRT.Transport.Dash
         {
             public int streamIndex;
             public int tileNumber;
-            public int quality;
+            public Vector3 orientation;
         }
 
         protected class _API
@@ -38,17 +40,17 @@ namespace VRT.Transport.Dash
 #endif
             // The SUB_API_VERSION must match with the DLL version. Copy from signals_unity_bridge.h
             // after matching the API used here with that in the C++ code.
-            const long SUB_API_VERSION = 0x20200420A;
+            const long SUB_API_VERSION = 0x20210729A;
 
             [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline);
+            public delegate void MessageLogCallback([MarshalAs(UnmanagedType.LPStr)]string pipeline, int level);
 
             // Creates a new pipeline.
             // name: a display name for log messages. Can be NULL.
             // The returned pipeline must be freed using 'sub_destroy'.
             // SUB_EXPORT sub_handle* sub_create(const char* name, void (* onError) (const char* msg), uint64_t api_version = SUB_API_VERSION);
             [DllImport(myDllName)]
-            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, long api_version = SUB_API_VERSION);
+            extern static public IntPtr sub_create([MarshalAs(UnmanagedType.LPStr)]string pipeline, MessageLogCallback callback, int maxLevel, long api_version = SUB_API_VERSION);
 
             // Destroys a pipeline. This frees all the resources.
             // SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -154,8 +156,11 @@ namespace VRT.Transport.Dash
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();
                     _API.sub_get_stream_info(pointer, streamIndex, ref streamDesc);
                     rv[streamIndex].streamIndex = streamIndex;
-                    rv[streamIndex].tileNumber = (int)streamDesc.objectX;
-                    rv[streamIndex].quality = (int)streamDesc.objectY;
+                    rv[streamIndex].tileNumber = (int)streamDesc.tileNumber;
+                    float nx = ((float)streamDesc.nx) / 1000.0f;
+                    float ny = ((float)streamDesc.ny) / 1000.0f;
+                    float nz = ((float)streamDesc.nz) / 1000.0f;
+                    rv[streamIndex].orientation = new Vector3(nx, ny, nz);
                 }
                 return rv;
             }
@@ -201,12 +206,25 @@ namespace VRT.Transport.Dash
         {
             IntPtr obj;
             SetMSPaths();
-            _API.MessageLogCallback errorCallback = (msg) =>
+            _API.MessageLogCallback errorCallback = (msg, level) =>
             {
                 string _pipeline = pipeline == null ? "unknown pipeline" : string.Copy(pipeline);
-                UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {msg}. Attempting to continue.");
+                string _msg = string.Copy(msg);
+                if (level == 0)
+                {
+                    UnityEngine.Debug.LogError($"{_pipeline}: asynchronous error: {_msg}. Attempting to continue.");
+                }
+                else
+                if (level == 1)
+                {
+                    UnityEngine.Debug.LogWarning($"{_pipeline}: asynchronous warning: {_msg}.");
+                }
+                else
+                {
+                    UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
+                }
             };
-            obj = _API.sub_create(pipeline, errorCallback);
+            obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);

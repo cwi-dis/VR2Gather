@@ -16,20 +16,14 @@ namespace VRT.UserRepresentation.PointCloud
         // figures in the tiling configuration. It's all guesswork for now.
         //
         double[][] guessedBandwidthUsageMatrix;
-        TilingConfig tilingConfig;
-
-        string Name()
-        {
-            return "LiveTileSelector";
-        }
-
+        
         public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
         {
 
             pipeline = _prerecordedPointcloud;
             nTiles = _tilingConfig.tiles.Length;
             nQualities = _tilingConfig.tiles[0].qualities.Length;
-            Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            Debug.Log($"{Name()}: nQualities={nQualities}, nTiles={nTiles}");
             TileOrientation = new Vector3[nTiles];
             for (int ti = 0; ti < nTiles; ti++)
             {
@@ -57,7 +51,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         protected override long getCurrentFrameIndex()
         {
-            Debug.LogError($"{Name()}: getCurrentFrameIndex not yet implemented");
+            //Debug.LogError($"{Name()}: getCurrentFrameIndex not yet implemented");
             return 0; // xxxjack
         }
 

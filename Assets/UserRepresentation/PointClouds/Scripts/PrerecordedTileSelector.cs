@@ -1,18 +1,34 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using VRT.UserRepresentation.Voice;
 using VRT.Core;
+using VRT.Transport.SocketIO;
+using VRT.Transport.Dash;
+using VRT.Orchestrator.Wrapping;
 using System;
-#if WITH_QUALITY_ASSSESMENT
+using System.Linq;
+using VRT.Pilots.Common;
+#if WITH_QUALITY_ASSESSMENT
 using QualityAssesment;
 #endif
 
 namespace VRT.UserRepresentation.PointCloud
 {
-  
+
     public class PrerecordedTileSelector : BaseTileSelector
     {
 
+        //Keep track of stimuli being played back
+        public string currentStimuli;
+        //Disable randomized initial rotation 
+        public bool disableRotation = true;
+        //
+        // Temporary public variable, set by PrerecordedReader: next pointcloud we are expecting to show.
+        //
+        public static long curIndex;
         //
         // Datastructure that contains all bandwidth data (per-tile, per-sequencenumber, per-quality bitrate usage)
         //
@@ -33,18 +49,6 @@ namespace VRT.UserRepresentation.PointCloud
         // Transform for the prerecorded point cloud object (position,scale and rotation from this game object can be applied to other geometry metadata)
         //
         private Transform prerecordedPCTransform;
-
-        //
-        // For quality assessment experiment: information on tile directory names
-        // and quality directory names to allow obtaining the filenames for the
-        // prediction matrices.
-        //
-        StaticPredictionInformation? staticPredictionInformation;
- 
-        string Name()
-        {
-            return "PrerecordedTileSelector";
-        }
 
         //xxxshishir adaptation set struct
         public struct AdaptationSet
@@ -80,26 +84,29 @@ namespace VRT.UserRepresentation.PointCloud
             public float PCBBZCentroid;
         }
 
-        public void Init(PointCloudPipeline _prerecordedPointcloud, StaticPredictionInformation _staticPredictionInformation)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
         {
-            staticPredictionInformation = _staticPredictionInformation;
+            if (tilingConfig != null)
+            {
+                throw new System.Exception($"{Name()}: Cannot handle tilingConfig argument");
+            }
             //xxxshishir randomize initial orientation of prerecorded pointcloud
             var prerecordedGameObject = GameObject.Find("PrerecordedPosition");
-            yRotation = UnityEngine.Random.Range(0, 360);
+            if (!disableRotation)
+                yRotation = UnityEngine.Random.Range(0, 360);
+            else
+                yRotation = 90.0f;
             prerecordedGameObject.transform.Rotate(0.0f, yRotation, 0.0f, Space.World);
             //xxxshishir we assume no more modifications are made to the game object transform after this point, we use this transform on all tile geometry meta data
             prerecordedPCTransform = prerecordedGameObject.transform;
 
             pipeline = _prerecordedPointcloud;
-            nQualities = _staticPredictionInformation.qualityNames?.Length ?? 1;
-            nTiles = _staticPredictionInformation.tileNames?.Length ?? 1;
+            nQualities = _nQualities;
             Debug.Log($"{Name()}: PrerecordedTileSelector nQualities={nQualities}, nTiles={nTiles}");
+            nTiles = _nTiles;
             TileOrientation = new Vector3[nTiles];
             for (int ti = 0; ti < nTiles; ti++)
             {
-#if notimplemented
-                TileOrientation[ti] = tilingConfig?.tiles[ti].orientation ?? new Vector3(0,0,0);
-#endif
                 double angle = ti * Math.PI / 2;
                 Vector3 InitalVector = new Vector3((float)Math.Sin(angle), 0, (float)-Math.Cos(angle));
                 TileOrientation[ti] = prerecordedPCTransform.TransformDirection(InitalVector);
@@ -108,22 +115,21 @@ namespace VRT.UserRepresentation.PointCloud
             LoadAdaptationSets();
         }
 
- 
         //
         // Load the adaptationSet data: per-frame, per-tile, per-quality bandwidth usage.
         // This data is read from (per-tile) CSV files, which have a row per frame and a column
         // per quality level.
         //
         // Note: The location of the files is obtained from the configfile instance (it would be better
-        // design to get this from our parent PointcloudPlayback, as this would allow for showing
+        // design to get this from our parent PrerecordedPointcloud, as this would allow for showing
         // multiple prerecorded pointclouds at the same time).
         //
         private void LoadAdaptationSets()
         {
-#if WITH_QUALITY_ASSSESMENT
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
             Config._User realUser = Config.Instance.LocalUser;
+#if WITH_QUALITY_ASSESSMENT
             currentStimuli = StimuliController.getCurrentStimulus();
             bitRatebudget = StimuliController.getBitrateBudget();
             int codec = StimuliController.getCodec();
@@ -135,20 +141,30 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
                 case 4:
                     algorithm = SelectionAlgorithm.hybrid;
+                    altHybridTileSelection = false;
                     break;
                 case 5:
                     algorithm = SelectionAlgorithm.uniform;
                     break;
+                case 6:
+                    algorithm = SelectionAlgorithm.hybrid;
+                    altHybridTileSelection = true;
+                    break;
+                case 7:
+                    algorithm = SelectionAlgorithm.weightedHybrid;
+                    break;
+                    //xxxshishir ToDo: Refactor to gracefully handle tiled playback of reference content
+                default:
+                    algorithm = SelectionAlgorithm.alwaysBest;
+                    break;
             }
+
             //xxxshishir load the tile description csv files
-            if (staticPredictionInformation == null) return;
+            string rootFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.folder;
+            string[] tileFolder = Config.Instance.LocalUser.PCSelfConfig.PrerecordedReaderConfig.tiles;
             for (int i = 0; i < prerecordedTileAdaptationSets.Length; i++)
             {
-                string csvFilename = System.IO.Path.Combine(
-                    staticPredictionInformation.Value.baseDirectory,
-                    staticPredictionInformation.Value.tileNames[i],
-                    staticPredictionInformation.Value.predictionFilename
-                    );
+                string csvFilename = System.IO.Path.Combine(rootFolder, tileFolder[i], "tiledescription.csv");
                 prerecordedTileAdaptationSets[i] = new List<AdaptationSet>();
                 FileInfo tileDescFile = new FileInfo(csvFilename);
                 if (!tileDescFile.Exists)
@@ -215,6 +231,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
 #endif
+
         }
 
         protected override double[][] getBandwidthUsageMatrix(long currentFrameNumber)
@@ -281,7 +298,7 @@ namespace VRT.UserRepresentation.PointCloud
             float[] tileUtilities = new float[nTiles];
             for (int i = 0; i < nTiles; i++)
             {
-                tileUtilities[i] = Vector3.Dot(cameraForward, TileOrientation[i]);
+                tileUtilities[i] = Vector3.Dot(cameraForward.normalized, TileOrientation[i].normalized);
             }
             //Reassign the utility values based on distance to tiles
             float[] tileDistances = new float[nTiles];
@@ -315,17 +332,21 @@ namespace VRT.UserRepresentation.PointCloud
                         hybridTileUtilities[i] *= -1;
                 }
             }
+            hybridTileUtilities[0] *= -1;
+            hybridTileUtilities[2] *= -1;
             string statMsg = $"currentstimuli={currentStimuli}, currentFrame={curIndex}, initialrotation={yRotation}, bitratebudget={bitRatebudget}, cameraforwardx={cameraForward.x}, cameraforwardy={cameraForward.y}, cameraforwardz={cameraForward.z}, camerapositionx={camPosition.x}, camerapositiony={camPosition.y}, camerapositionz={camPosition.z}";
             for (int i = 0; i < nTiles; i++)
             {
                 statMsg += $", Tile{i}Orientationx={TileOrientation[i].x}, Tile{i}Orientationy={TileOrientation[i].y}, Tile{i}Orientationz={TileOrientation[i].z}, Tile{i}BBCentroidLocationx={tileLocations[i].x}, Tile{i}BBCentroidLocationy={tileLocations[i].y}, Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
             BaseStats.Output(Name(), statMsg);
+            //xxxshishir modified here for weighted hybrid tile selction
+            hybridTileWeights = new float[nTiles];
+            Array.Copy(hybridTileUtilities, hybridTileWeights, nTiles);
             //Sort tile utilities and apply the same sort to tileOrder
             Array.Sort(hybridTileUtilities, tileOrder);
             Array.Reverse(tileOrder);
             return tileOrder;
         }
     }
-  
 }

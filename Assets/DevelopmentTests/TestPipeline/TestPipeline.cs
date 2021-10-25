@@ -12,16 +12,17 @@ using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 
-public class NewMemorySystem : MonoBehaviour
+public class TestPipeline : MonoBehaviour
 {
 
 
-    public bool forceMesh = false;
     public bool localPCs = false;
+    public string prerecordedPointclouds = "";
     public bool useCompression = true;
     public bool useDashVoice = false;
     public bool usePointClouds = false;
     public bool useSocketIO = true;
+    public bool dropQueuesWhenFull = true;
     public float targetFPS = 20f;
     public int numPoints = 1000;
 
@@ -40,16 +41,20 @@ public class NewMemorySystem : MonoBehaviour
     BaseWorker pointcloudsWriter;
     BaseWorker pointcloudsReader;
 
-    BaseWorker preparer;
-    QueueThreadSafe preparerQueue = new QueueThreadSafe("PreparerQueue", 10,true);
-    QueueThreadSafe encoderQueue = new QueueThreadSafe("EncoderQueue", 10,true);
-    QueueThreadSafe writerQueue = new QueueThreadSafe("WriterQueue", 10,true);
-    QueueThreadSafe decoderQueue = new QueueThreadSafe("DecoderQueue", 10, true);
-    MonoBehaviour render;
+    public BaseWorker preparer;
+    QueueThreadSafe preparerQueue;
+    QueueThreadSafe encoderQueue;
+    QueueThreadSafe writerQueue;
+    QueueThreadSafe decoderQueue;
+    public MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
     // Start is called before the first frame update
     void Start() {
+        preparerQueue = new QueueThreadSafe("PreparerQueue", 10, dropQueuesWhenFull);
+        encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
+        writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
+        decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
         PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
             new PCSubReader.TileDescriptor() {
                 outQueue = decoderQueue,
@@ -60,7 +65,7 @@ public class NewMemorySystem : MonoBehaviour
         B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
             new B2DWriter.DashStreamDescription(){
                 tileNumber = 0,
-                quality = 0,
+                qualityIndex = 0,
                 inQueue = writerQueue
             }
         };
@@ -80,22 +85,23 @@ public class NewMemorySystem : MonoBehaviour
         }
 
         Config config = Config.Instance;
-        if (forceMesh) {
-            preparer = new MeshPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointMeshRenderer>();
-            ((PointMeshRenderer)render).SetPreparer((MeshPreparer)preparer);
-        } else {
-            preparer = new BufferPreparer(preparerQueue);
-            render = gameObject.AddComponent<PointBufferRenderer>();
-            ((PointBufferRenderer)render).SetPreparer((BufferPreparer)preparer);
-        }
+        preparer = new PointCloudPreparer(preparerQueue);
+        render = gameObject.AddComponent<PointCloudRenderer>();
+        ((PointCloudRenderer)render).SetPreparer((PointCloudPreparer)preparer);
 
         if (usePointClouds) {
 			if (localPCs) {
-				if (!useCompression)
-					reader = new PCReader(targetFPS, numPoints, preparerQueue);
-				else {
-					reader = new PCReader(targetFPS, numPoints, encoderQueue);
+                var pcQueue = preparerQueue;
+                if (useCompression) pcQueue = encoderQueue;
+                if (prerecordedPointclouds != "")
+                {
+                    reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
+                }
+                else
+                {
+                    reader = new PCReader(targetFPS, numPoints, pcQueue);
+                }
+                if (useCompression) {
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = 10;
 					encStreams[0].tileNumber = 0;
