@@ -105,12 +105,12 @@ namespace VRT.UserRepresentation.PointCloud
                     // a packet from earlier than the last packet of the previous stream.
                     // This looks very ugly, so we drop it.
                     var frameToDrop = InQueue.TryDequeue(0);
-                    if (true) Debug.LogWarning($"{Name()}: Drop frame {earliestTimestamp} <= previous {currentTimestamp}, {currentTimestamp-nextTimestamp}ms too late");
+                    if (true) Debug.LogWarning($"{Name()}: Drop frame {earliestTimestamp} <= previous {currentTimestamp}, {currentTimestamp- earliestTimestamp}ms too late");
                     frameToDrop.free();
                     earliestTimestamp = InQueue._PeekTimestamp(currentTimestamp);
                 }
                 ulong latestTimestamp = InQueue.LatestTimestamp();
-                synchronizer.SetTimestampRangeForCurrentFrame(earliestTimestamp, latestTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
