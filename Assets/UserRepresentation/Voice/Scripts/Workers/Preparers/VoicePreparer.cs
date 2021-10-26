@@ -47,9 +47,10 @@ namespace VRT.UserRepresentation.Voice
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong nextTimestamp = inQueue._PeekTimestamp(currentTimestamp + 1);
+                ulong earliestTimestamp = currentTimestamp;
+                if (earliestTimestamp == 0) earliestTimestamp = inQueue._PeekTimestamp();
                 ulong latestTimestamp = inQueue.LatestTimestamp();
-                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp, latestTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
         public override bool LatchFrame()

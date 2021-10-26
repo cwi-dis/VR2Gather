@@ -97,19 +97,20 @@ namespace VRT.UserRepresentation.PointCloud
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
-                while (nextTimestamp != 0 && nextTimestamp <= currentTimestamp)
+                ulong earliestTimestamp = currentTimestamp;
+                if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
+                while (earliestTimestamp != 0 && earliestTimestamp < currentTimestamp)
                 {
                     // This can happen when DASH switches streams: the newly selected stream produces
                     // a packet from earlier than the last packet of the previous stream.
                     // This looks very ugly, so we drop it.
                     var frameToDrop = InQueue.TryDequeue(0);
-                    if (true) Debug.LogWarning($"{Name()}: Drop frame {nextTimestamp} <= previous {currentTimestamp}, {currentTimestamp-nextTimestamp}ms too late");
+                    if (true) Debug.LogWarning($"{Name()}: Drop frame {earliestTimestamp} <= previous {currentTimestamp}, {currentTimestamp-nextTimestamp}ms too late");
                     frameToDrop.free();
-                    nextTimestamp = InQueue._PeekTimestamp(currentTimestamp + 1);
+                    earliestTimestamp = InQueue._PeekTimestamp(currentTimestamp);
                 }
                 ulong latestTimestamp = InQueue.LatestTimestamp();
-                synchronizer.SetTimestampRangeForCurrentFrame(Name(), currentTimestamp, nextTimestamp, latestTimestamp);
+                synchronizer.SetTimestampRangeForCurrentFrame(earliestTimestamp, latestTimestamp);
             }
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)

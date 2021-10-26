@@ -16,8 +16,7 @@ namespace VRT.Core
         public long minPreferredLatency = 0;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        ulong latestCurrentFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
-        ulong earliestNextFrameTimestamp = 0;   // Latest timestamp available for this frame, for all clients
+        ulong latestEarliestFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
         ulong earliestLatestFrameTimestamp = 0;   // earliest (over all clients) Latest timestamp available in the client queue
         ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
@@ -33,35 +32,57 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
-                latestCurrentFrameTimestamp = 0;
-                earliestNextFrameTimestamp = 0;
+                latestEarliestFrameTimestamp = 0;
                 earliestLatestFrameTimestamp = 0;
                 bestTimestampForCurrentFrame = 0;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(string caller, ulong currentFrameTimestamp, ulong nextFrameTimestamp, ulong latestFrameTimestamp)
+        public void SetTimestampRangeForCurrentFrame(string caller, ulong earliestFrameTimestamp, ulong latestFrameTimestamp)
         {
             _Reset();
-            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={currentFrameTimestamp}, next={nextFrameTimestamp}, latest={latestFrameTimestamp}");
-            // First we record the minimum of the latest timestamp in the queue.
-            // This is only used for catch-up.
-            if (this.earliestLatestFrameTimestamp == 0 || earliestLatestFrameTimestamp >= latestFrameTimestamp)
+            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={earliestFrameTimestamp}, latest={latestFrameTimestamp}");
+            //
+            // If there is nothing in the queue (for our caller) the latest is the earliest. Which may be 0, if there is nothing.
+            // If there is no earliest then the lastest is used as the earliest.
+            //
+            if (latestFrameTimestamp == 0) latestFrameTimestamp = earliestFrameTimestamp;
+            if (earliestFrameTimestamp == 0) earliestFrameTimestamp = latestFrameTimestamp;
+            //
+            // Now either both are zero or both are non-zero
+            //
+            if (latestFrameTimestamp == 0 || earliestFrameTimestamp == 0)
             {
-                this.earliestLatestFrameTimestamp = latestFrameTimestamp;
+                if (latestFrameTimestamp != 0 || earliestFrameTimestamp != 0) Debug.LogError($"{Name()}: programmer error in timestamp range [{earliestFrameTimestamp}..{latestFrameTimestamp}]");
+                return;
             }
-            // Record (for current frame) earliest and next timestamp available on all prepareres.
-            // In other words: the maximum of all earliest timestamps and minimum of all next reported.
-            if (nextFrameTimestamp == 0) nextFrameTimestamp = currentFrameTimestamp;
-            if (currentFrameTimestamp == 0) currentFrameTimestamp = nextFrameTimestamp;
-            if (currentFrameTimestamp == 0) return;
-            if (this.latestCurrentFrameTimestamp == 0 || currentFrameTimestamp > this.latestCurrentFrameTimestamp)
+            //
+            // If we have no interval yet we use this one.
+            //
+            if (latestEarliestFrameTimestamp == 0 || earliestLatestFrameTimestamp == 0)
             {
-                this.latestCurrentFrameTimestamp = currentFrameTimestamp;
+                if (latestEarliestFrameTimestamp != 0 || earliestLatestFrameTimestamp != 0) Debug.LogError($"{Name()}: programmer Error in previous timestamp range");
+                latestEarliestFrameTimestamp = earliestFrameTimestamp;
+                earliestLatestFrameTimestamp = latestFrameTimestamp;
+                return;
             }
-            if (this.earliestNextFrameTimestamp == 0 || nextFrameTimestamp < this.earliestNextFrameTimestamp)
+            //
+            // Check whether the ranges are disjunct.
+            //
+            if (earliestFrameTimestamp > earliestLatestFrameTimestamp ||
+                latestFrameTimestamp < latestEarliestFrameTimestamp)
             {
-                this.earliestNextFrameTimestamp = nextFrameTimestamp;
+                Debug.Log($"{Name()}: disjunct timestamp ranges [{earliestFrameTimestamp}..{latestFrameTimestamp}] had [{latestEarliestFrameTimestamp}..{earliestLatestFrameTimestamp}]");
+                // xxxjack decide which one to keep: the earliest or the latest range....
+                // keeping the latest range should cause "best progress".
+                // keeping the earliest should cause "quickest sync".
+                // For now we do nothing, just keeping the old one, which is random.
+                return;
             }
+            //
+            // There is overlap. Update the range.
+            //
+            if (earliestFrameTimestamp > latestEarliestFrameTimestamp) latestEarliestFrameTimestamp = earliestFrameTimestamp;
+            if (latestFrameTimestamp < earliestLatestFrameTimestamp) earliestLatestFrameTimestamp = latestFrameTimestamp;
         }
 
         void _ComputeTimestampForCurrentFrame()
@@ -107,7 +128,7 @@ namespace VRT.Core
             //
             if (earliestNextFrameTimestamp == 0 || bestTimestampForCurrentFrame < earliestNextFrameTimestamp)
             {
-                bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
+                bestTimestampForCurrentFrame = latestEarliestFrameTimestamp;
                 stats.statsUpdate(false, true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
                 //
                 // If the current actual latency is bigger than the preferred latency we update the preferred latency
@@ -128,7 +149,7 @@ namespace VRT.Core
                 long expectedNextTimestamp = utcMillisForCurrentFrame + currentPreferredLatency + latencyCatchup;
                 if (earliestNextFrameTimestamp > (ulong)expectedNextTimestamp)
                 {
-                    bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
+                    bestTimestampForCurrentFrame = latestEarliestFrameTimestamp;
                     stats.statsUpdate(false, false, true, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
                     return;
                 }
