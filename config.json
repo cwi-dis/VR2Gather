@@ -9,8 +9,8 @@
   "ntpSyncThreshold": 0.033,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
-  "statsInterval": 0,
-  "statsOutputFile":  "statistics.log",
+  "statsInterval": 10,
+  "statsOutputFile":  "",
   "statsOutputFileAppend": false,
  
   "AutoStart" : {
