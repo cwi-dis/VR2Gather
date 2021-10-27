@@ -42,7 +42,27 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
+        public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+
+        [Serializable]
+        public class _AutoStart
+        {
+            // This class allows to setup a machine (through config.json) to
+            // - automatically login,
+            // - automatically create a session with a given name and parameters
+            // - automatically join a session of a given name
+            // - automatically start a session when enough people have joined
+            public bool autoLogin = false;
+            public string sessionName = "";
+            public int sessionScenario = -1;
+            public int sessionTransportProtocol = -1;
+            public bool autoCreate = false;
+            public bool autoJoin = true;
+            public int autoStartWith = -1;
+            public float autoDelay = 0.2f;
+        };
+        public _AutoStart AutoStart;
 
         [Serializable]
         public class _TVMs
@@ -65,7 +85,6 @@ namespace VRT.Core
         public class _PCs
         {
             public Vector3 scale;
-            public bool forceMesh;
             public float defaultCellSize;
             public float cellSizeFactor;
         };
@@ -169,8 +188,8 @@ namespace VRT.Core
             {
                 if (_Instance == null)
                 {
-                    var file = System.IO.File.ReadAllText(Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json");
-                    _Instance = JsonUtility.FromJson<Config>(file);
+                    string file = ConfigFilename();
+                    _Instance = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(file));
                     Application.targetFrameRate = _Instance.targetFrameRate;
                 }
                 return _Instance;
@@ -179,10 +198,33 @@ namespace VRT.Core
 
         public void WriteConfig(object toJson)
         {
-            var path = Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/config.json";
-            System.IO.File.WriteAllText(path, JsonUtility.ToJson(toJson, true));
+            string file = ConfigFilename();
+            System.IO.File.WriteAllText(file, JsonUtility.ToJson(toJson, true));
 
             //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
+        }
+
+        public static string ConfigFilename(string filename="config.json")
+        {
+            string dataPath;
+            if (Application.isEditor)
+            {
+                // In the editor the config file is at the toplevel, above the Assets folder
+                dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
+            }
+            else if (Application.platform == RuntimePlatform.OSXPlayer)
+            {
+                // For the Mac player, the config file is in the Contents directory, which is dataPath
+                dataPath = Application.dataPath;
+            } else
+            {
+                // For Windos/Linux player, the config file is in the same directory as the executable
+                // For both cases, this is the parent of Application.dataPath.
+                // For future reference: this scheme will not work for iOS and Windows Store (which will need to use
+                // something based on persistentDataPath)
+                dataPath = System.IO.Path.GetDirectoryName(Application.dataPath);
+            }
+            return System.IO.Path.Combine(dataPath, filename);
         }
     }
 }

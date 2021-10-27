@@ -53,7 +53,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         player.webcam.SetActive(false);
         if (player.pc.TryGetComponent(out PointCloudPipeline pointcloud))
             Destroy(pointcloud);
-        if (player.pc.TryGetComponent(out PointBufferRenderer renderer))
+        if (player.pc.TryGetComponent(out PointCloudRenderer renderer))
             Destroy(renderer);
         player.pc.SetActive(false);
         NetworkDataProvider tvm = (NetworkDataProvider)player.tvm;
