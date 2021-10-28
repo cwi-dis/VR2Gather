@@ -28,6 +28,7 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
+			DontDestroyOnLoad(this);
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
 			OrchestratorController.Instance.Subscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
 		}
