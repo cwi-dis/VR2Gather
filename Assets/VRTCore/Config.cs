@@ -84,7 +84,6 @@ namespace VRT.Core
         [Serializable]
         public class _PCs
         {
-            public Vector3 scale;
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
@@ -98,15 +97,12 @@ namespace VRT.Core
             [Serializable]
             public class _PCSUBConfig
             {
-                public int[] tileNumbers;
-                public int initialDelay;
             }
-            public _PCSUBConfig SUBConfig;
+            public _PCSUBConfig PCSUBConfig;
             [Serializable]
             public class _AudioSUBConfig
             {
                 public int streamNumber;
-                public int initialDelay;
             }
             public _AudioSUBConfig AudioSUBConfig;
 

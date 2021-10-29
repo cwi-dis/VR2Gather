@@ -82,7 +82,7 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
+            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, videoCodecQueue);
             else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
         }

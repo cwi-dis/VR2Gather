@@ -77,7 +77,7 @@ public class TestPipeline : MonoBehaviour
                 string uuid = System.Guid.NewGuid().ToString();
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
-                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, Config.ProtocolType.SocketIO); //Audio Pipeline
+                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
                 pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
                 pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
 
@@ -154,7 +154,7 @@ public class TestPipeline : MonoBehaviour
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
-            }, "audio", 0, 1, Config.ProtocolType.Dash); //Audio Pipeline
+            }, "audio", 0, Config.ProtocolType.Dash); //Audio Pipeline
         }
 
     }
