@@ -62,7 +62,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2402987996770468725
 Transform:
   m_ObjectHideFlags: 0
@@ -3516,6 +3516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MediaScape_extras: {fileID: 7796478513649732472}
+  PointcloudGO: {fileID: 426937040433907628}
   avatarHead1: {fileID: 1870894974891098046}
   avatarHead2: {fileID: 1468967873555617005}
 --- !u!1 &5408734097564563202
@@ -3845,7 +3846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &401628328610728040
 Transform:
   m_ObjectHideFlags: 0
@@ -4077,7 +4078,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5613347852346304456
 Transform:
   m_ObjectHideFlags: 0
@@ -5720,7 +5721,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2793951010991798964
 Transform:
   m_ObjectHideFlags: 0
@@ -6141,7 +6142,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &852236347136014639
 Transform:
   m_ObjectHideFlags: 0
