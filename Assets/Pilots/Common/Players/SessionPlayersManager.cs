@@ -130,6 +130,7 @@ namespace VRT.Pilots.Common
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
+				playerManager.userRepresentationType = representationType;
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
 					SetUpPlayerManager(playerManager, user, configDistributors, true);
