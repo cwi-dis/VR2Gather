@@ -87,6 +87,7 @@ namespace VRT.Core
             public Vector3 scale;
             public float defaultCellSize;
             public float cellSizeFactor;
+            public bool debugColorize;
         };
         public _PCs PCs;
 

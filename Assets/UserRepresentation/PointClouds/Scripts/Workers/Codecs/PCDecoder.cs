@@ -12,6 +12,8 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
+        bool debugColorize = true;
+
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(WorkerType.Run)
         {
             if (_inQueue == null)
@@ -42,6 +44,7 @@ namespace VRT.UserRepresentation.PointCloud
                 throw;
             }
             stats = new Stats(Name());
+            debugColorize = Config.Instance.PCs.debugColorize;
         }
 
         public override string Name()
@@ -99,6 +102,17 @@ namespace VRT.UserRepresentation.PointCloud
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
                 stats.statsUpdate(true, pc.count(), pc.timestamp(), inQueue._Count);
+                if (debugColorize)
+                {
+                    int cnum = (instanceNumber % 6) + 1;
+                    uint cmask = 0;
+                    if ((cnum & 1) != 0) cmask |= 0x800000;
+                    if ((cnum & 2) != 0) cmask |= 0x008000;
+                    if ((cnum & 4) != 0) cmask |= 0x000080;
+                    cwipc.pointcloud newpc = cwipc.colormap(pc, 0, cmask);
+                    pc.free();
+                    pc = newpc;
+                }
                 outQueue.Enqueue(pc);
             }
         }
