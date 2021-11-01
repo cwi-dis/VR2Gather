@@ -54,7 +54,7 @@ public class LeftHandVRTeleporterController : MonoBehaviour
 
         if (headsedType == "HTC")
         {
-            rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton2);
+            rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton8);
         }
         else //assuming Oculus
         {
