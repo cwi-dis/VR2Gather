@@ -120,8 +120,8 @@ namespace VRT.Pilots.Common
 			foreach(var cd in configDistributors) {
 				cd?.Init(OrchestratorController.Instance.SelfUser.userId);
 			}
-			
 
+            int i = 0;
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
 				var player = Instantiate(PlayerPrefab);
@@ -129,6 +129,8 @@ namespace VRT.Pilots.Common
 				player.name = $"Player_{user.userId}";
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
+                playerManager.id = i;
+                i++;
 				var representationType = user.userData.userRepresentationType;
 				playerManager.userRepresentationType = representationType;
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
