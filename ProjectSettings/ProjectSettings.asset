@@ -357,6 +357,7 @@ PlayerSettings:
     m_Devices:
     - OpenVR
     - Oculus
+    - OpenVR
   - m_BuildTarget: Standalone
     m_Enabled: 1
     m_Devices:

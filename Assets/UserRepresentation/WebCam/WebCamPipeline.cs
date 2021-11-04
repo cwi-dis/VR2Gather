@@ -153,7 +153,7 @@ namespace VRT.UserRepresentation.WebCam
                     }
                     break;
                 case "remote": // Remoto
-                    if (useDash) reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, 0, videoCodecQueue);
+                    if (useDash) reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, videoCodecQueue);
                     else reader = new SocketIOReader(user, "webcam", videoCodecQueue);
 
                     //

@@ -5,7 +5,6 @@
 
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
-  "useAudio": true,
   "ntpSyncThreshold": 0.033,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
@@ -26,22 +25,6 @@
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
   "PCs": {
-    "offsetPosition": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "offsetRotation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "scale": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "forceMesh": false,
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1
   },
@@ -62,7 +45,7 @@
         "port": 9335
       },
 	  "PrerecordedReaderConfig" : {
-		"folder" : "../mmsys2021-loot-150K"
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
     
       "voxelSize": 0,
@@ -104,12 +87,8 @@
   },
   "RemoteUser": {
     "sourceType": "remote",
-    "SUBConfig": {
-      "initialDelay": 0
-    },
     "AudioSUBConfig": {
-      "streamNumber": 0,
-      "initialDelay": 0
+      "streamNumber": 0
     },
     "Render": {
       "pointSize": 0,

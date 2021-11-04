@@ -361,8 +361,6 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
 
                 case "remote":
-                    var SUBConfig = cfg.SUBConfig;
-                    if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
                     BaseStats.Output(Name(), $"self=0, userid={user.userId}");
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need

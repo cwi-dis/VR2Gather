@@ -309,7 +309,7 @@ namespace VRT.Pilots.Common
 				var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
 				if (AudioSUBConfig == null)
 					throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType); //Audio Pipeline
+				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
 			}
 		}
 
