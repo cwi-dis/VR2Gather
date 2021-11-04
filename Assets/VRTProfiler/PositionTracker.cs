@@ -6,6 +6,7 @@ namespace VRT.Core
 {
     public class PositionTracker : MonoBehaviour
     {
+        public double interval = 0;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -17,7 +18,7 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
-            stats = new Stats(Name());
+            stats = new Stats(Name(), interval);
         }
 
         // Update is called once per frame
@@ -28,7 +29,7 @@ namespace VRT.Core
 
         protected class Stats : BaseStats
         {
-            public Stats(string name) : base(name)
+            public Stats(string name, double interval) : base(name, interval)
             {
             }
 
@@ -47,7 +48,7 @@ namespace VRT.Core
                 count++;
                 if (ShouldOutput())
                 {
-                    Output($"px={px/count}, py={py/count}, pz={pz/count}, rx={rx/count}, ry={ry/count}, rz={rz/count}, count={count}");
+                    Output($"px={px/count:f2}, py={py/count:f2}, pz={pz/count:f2}, rx={rx/count:f0}, ry={ry/count:f0}, rz={rz/count:f0}, count={count}");
                 }
                 if (ShouldClear())
                 {
