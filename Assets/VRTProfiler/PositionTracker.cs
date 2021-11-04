@@ -12,7 +12,7 @@ namespace VRT.Core
 
         public string Name()
         {
-            return $"{GetType().Name}#{instanceNumber}";
+            return $"{GetType().Name}#{transform.parent.gameObject.name}.{instanceNumber}";
         }
 
         // Start is called before the first frame update
