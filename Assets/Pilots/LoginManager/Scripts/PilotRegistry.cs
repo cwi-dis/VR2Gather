@@ -12,9 +12,9 @@ public class PilotRegistry
         switch (pilotName)
         {
             case "Pilot 0":
-                return "MediaScape_Training";
+                return "Pilot0";
             case "Pilot 1":
-                return "Pilot1";
+                return "MediaScape_Training";
             case "Pilot 2":
                 switch (pilotVariant)
                 {
