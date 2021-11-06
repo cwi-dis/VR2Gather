@@ -6,7 +6,10 @@ using UnityEngine;
 // This script emulates HandController for use when you have no HMD or controllers,
 // only keyboard and mouse.
 // When you press shift you will see an indication whether the object under the mouse is
-// pressable or grabbable. If so you can press with left-click and grab with right-click.
+// touchable. If so you can press left-click and touch it.
+//
+// Grabbing not implemented, because it doesn't seem to useful (without hands). But doable
+// if we want to.
 //
 public class HandEmulationController : MonoBehaviour
 {
@@ -85,12 +88,12 @@ public class HandEmulationController : MonoBehaviour
         //
         // Now check whether the left mouse is clicked and perform the action.
         //
-        if (Input.GetKeyDown(touchKey))
+        if (Input.GetKey(touchKey))
         {
             GameObject objHit = hit.collider.gameObject;
-            Debug.Log($"xxxjack Should do something to {objHit.name} at {objHit.transform.position}");
+            Debug.Log($"xxxjack Moving touchCollider to {objHit.name} at {objHit.transform.position}");
             touchCollider.enabled = true;
-            touchCollider.transform.position = objHit.transform.position;
+            touchCollider.transform.position = hit.collider.transform.position;
         }
         if (Input.GetKeyUp(touchKey))
         {
