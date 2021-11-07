@@ -2605,7 +2605,10 @@ MonoBehaviour:
   webcam: {fileID: 4497088204552090385}
   pc: {fileID: 426937040433907628}
   audio: {fileID: 4012052827202430640}
-  teleporter: {fileID: 1160437321685233085}
+  localPlayerOnlyObjects:
+  - {fileID: 2114984558157333379}
+  - {fileID: 3959666175123653081}
+  - {fileID: 1160437321685233085}
 --- !u!114 &1101617796011613554
 MonoBehaviour:
   m_ObjectHideFlags: 0
