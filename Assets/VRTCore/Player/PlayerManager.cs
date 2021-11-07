@@ -5,6 +5,7 @@ using VRT.Core;
 public class PlayerManager : MonoBehaviour {
     public int      id;
     public string   orchestratorId;
+    public UserRepresentationType userRepresentationType;
     public TMPro.TextMeshProUGUI userName;
     public Camera   cam;
     public ITVMHookUp tvm;
