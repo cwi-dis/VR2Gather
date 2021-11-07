@@ -10,9 +10,18 @@ using UnityEngine;
 //
 public class HandEmulationController : MonoBehaviour
 {
+    [Tooltip("Mouse cursor to use while looking for touchable items")]
     public Texture2D castingCursorTexture;
+    [Tooltip("Mouse cursor to use when over a touchable item")]
     public Texture2D castingCursorHitTexture;
+    [Tooltip("Maximum distance of touchable objects")]
     public float maxDistance = Mathf.Infinity;
+    [Tooltip("Key to press to start looking for touchable items")]
+    public KeyCode castKey = KeyCode.LeftShift;
+    [Tooltip("Key to press to touch an item")]
+    public KeyCode touchKey = KeyCode.Mouse0;
+    [Tooltip("Collider that actually presses the button")]
+    public Collider touchCollider = new SphereCollider();
     protected bool isCasting;
     protected bool isHitting;
     // Start is called before the first frame update
@@ -27,17 +36,19 @@ public class HandEmulationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isCastingNow = Input.GetKey(KeyCode.LeftShift);
+        bool isCastingNow = Input.GetKey(castKey);
         if (isCasting != isCastingNow)
         {
             isCasting = isCastingNow;
             if (isCasting)
             {
                 Cursor.SetCursor(castingCursorTexture, Vector2.zero, CursorMode.Auto);
+                touchCollider.enabled = false;
                 isHitting = false;
             } else
             {
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                touchCollider.enabled = false;
             }
         }
         if (!isCasting) return;
@@ -46,13 +57,12 @@ public class HandEmulationController : MonoBehaviour
         // Check whether we are hitting any elegible object
         //
         bool isHittingNow = false;
-        int layerMask = LayerMask.GetMask("TouchableObject") ^ Physics.DefaultRaycastLayers;
+        int layerMask = LayerMask.GetMask("TouchableObject");
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit = new RaycastHit();
-        // xxxjack Unfortunately passing maxDistance seems to work more like minDistance?
         if (Physics.Raycast(ray, out hit, maxDistance, layerMask))
         {
-            Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
+            //Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
             isHittingNow = true;
         }
         if (isHitting != isHittingNow)
@@ -67,9 +77,24 @@ public class HandEmulationController : MonoBehaviour
                 Cursor.SetCursor(castingCursorTexture, Vector2.zero, CursorMode.Auto);
             }
         }
-        if (!isHitting) return;
+        if (!isHitting)
+        {
+            touchCollider.enabled = false;
+            return;
+        }
         //
         // Now check whether the left mouse is clicked and perform the action.
         //
+        if (Input.GetKeyDown(touchKey))
+        {
+            GameObject objHit = hit.collider.gameObject;
+            Debug.Log($"xxxjack Should do something to {objHit.name} at {objHit.transform.position}");
+            touchCollider.enabled = true;
+            touchCollider.transform.position = objHit.transform.position;
+        }
+        if (Input.GetKeyUp(touchKey))
+        {
+            touchCollider.enabled = false;
+        }
     }
 }
