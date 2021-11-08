@@ -5,6 +5,7 @@ using VRT.Core;
 public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;
     public float joystickSensitivity = 100.0f;
+    public GameObject camera;
     public float wheelSlope = 0.05f; // 5 Centimeters
     public bool spectator = false;
     float xRotation = 0f;
@@ -20,7 +21,7 @@ public class MoveCamera : MonoBehaviour {
             enabled = false;
         }
         else {
-            transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+            camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
         }
     }
 
@@ -37,7 +38,7 @@ public class MoveCamera : MonoBehaviour {
         if (deltaHeight != 0) {
             //Debug.Log($"MoveCamera: xxxjack deltaHeight={deltaHeight}");
             // Do Camera movement
-            transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y + deltaHeight * wheelSlope, transform.localPosition.z);
+            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y + deltaHeight * wheelSlope, camera.transform.localPosition.z);
         }
 
 
@@ -49,7 +50,7 @@ public class MoveCamera : MonoBehaviour {
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             if (!spectator) {
                 playerBody.Rotate(Vector3.up, mouseX);
@@ -64,7 +65,7 @@ public class MoveCamera : MonoBehaviour {
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             if (!spectator)
             {
@@ -85,7 +86,7 @@ public class MoveCamera : MonoBehaviour {
                 xRotation += vAngle;
                 xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
                 if (!spectator)
                 {
