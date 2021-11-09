@@ -16,8 +16,8 @@
   	"sessionName" : "vrdays2021",
   	"sessionScenario" : 7,
   	"sessionTransportProtocol" : 1,
-  	"autoCreate" : true,
-  	"autoJoin" : false,
+  	"autoCreate" : false,
+  	"autoJoin" : true,
   	"autoStartWith" : 2,
   	"autoDelay" : 0.5
   },
