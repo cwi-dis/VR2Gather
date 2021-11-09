@@ -645,6 +645,7 @@ public class OrchestratorLogin : MonoBehaviour {
     {
         Config._AutoStart config = Config.Instance.AutoStart;
         if (config == null) return;
+        if (Input.GetKey(KeyCode.LeftShift)) return;
         if (state == State.Play && autoState == AutoState.DidPlay)
         {
             if (config.autoCreate)
@@ -1362,6 +1363,7 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
         if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
         {
+            if (Input.GetKey(KeyCode.LeftShift)) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
             autoState = AutoState.DidLogIn;
             Login();
@@ -1476,6 +1478,7 @@ public class OrchestratorLogin : MonoBehaviour {
             && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
             )
         {
+            if (Input.GetKey(KeyCode.LeftShift)) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoPlay");
             autoState = AutoState.DidPlay;
             StateButton(State.Play);
