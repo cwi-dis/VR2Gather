@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Core;
 
 //
 // This script emulates HandController for use when you have no HMD or controllers,
@@ -30,7 +31,7 @@ public class HandEmulationController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (XRUtility.isPresent())
+        if (XRUtility.isPresent() || Config.Instance.VR.disableKeyboardMouse)
         {
             enabled = false;
         }

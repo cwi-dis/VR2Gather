@@ -46,6 +46,13 @@ namespace VRT.Core
         public bool statsOutputFileAppend = true;
 
         [Serializable]
+        public class _VR
+        {
+            public bool disableKeyboardMouse = false;
+        }
+        public _VR VR;
+
+        [Serializable]
         public class _AutoStart
         {
             // This class allows to setup a machine (through config.json) to

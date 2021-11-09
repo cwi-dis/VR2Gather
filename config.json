@@ -21,6 +21,9 @@
   	"autoStartWith" : 2,
   	"autoDelay" : 0.5
   },
+  "VR" : {
+	"disableKeyboardMouse" : true
+	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
