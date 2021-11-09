@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour {
     public CharacterController controller;
 
     void Awake() {
-        if (XRUtility.isPresent())
+        if (XRUtility.isPresent() || Config.Instance.VR.disableKeyboardMouse)
             enabled = false; // Check if you're wearing an HMD
     }
 

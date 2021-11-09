@@ -13,6 +13,5 @@ public class PlayerManager : MonoBehaviour {
     public GameObject webcam;
     public GameObject pc;
     public GameObject audio;
-    public GameObject teleporter;
-    public GameObject teleporterLeft;
+    public GameObject[] localPlayerOnlyObjects;
 }
