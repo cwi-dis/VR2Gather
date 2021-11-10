@@ -192,6 +192,7 @@ namespace VRT.Pilots.Common
 
 			playerManager.orchestratorId = user.userId;
 			playerManager.userName.text = user.userName;
+			playerManager.userNameStr = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
 			playerManager.cam.gameObject.SetActive(isLocalPlayer);
