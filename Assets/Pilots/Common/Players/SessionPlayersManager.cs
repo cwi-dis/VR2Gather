@@ -130,6 +130,7 @@ namespace VRT.Pilots.Common
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
+				playerManager.userRepresentationType = representationType;
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
 					SetUpPlayerManager(playerManager, user, configDistributors, true);
@@ -190,16 +191,11 @@ namespace VRT.Pilots.Common
 			playerManager.orchestratorId = user.userId;
 			playerManager.userName.text = user.userName;
 
-			bool isLocalPlayer = false;
-			if (user.userId == OrchestratorController.Instance.SelfUser.userId)
-			{
-				isLocalPlayer = true;
-				playerManager.cam.gameObject.SetActive(true);
-			}
-			else
-			{
-				playerManager.teleporter.SetActive(false);
-			}
+			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
+			playerManager.cam.gameObject.SetActive(isLocalPlayer);
+			foreach(var obj in playerManager.localPlayerOnlyObjects) {
+				obj.SetActive(isLocalPlayer);
+            }
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)

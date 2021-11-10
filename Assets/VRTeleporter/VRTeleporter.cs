@@ -44,7 +44,12 @@ namespace VRT.Teleporter
         {
             if (groundDetected)
             {
-                bodyTransforn.position = groundPos + lastNormal * 0.1f;
+                Vector3 playerWorldPosition = bodyTransforn.position;
+                Vector3 cameraWorldPosition = transform.parent.parent.parent.Find("Camera").position;
+                Vector3 cameraOffset = new Vector3(cameraWorldPosition.x - playerWorldPosition.x, 0.0f, cameraWorldPosition.z - playerWorldPosition.z);
+                Vector3 newPosition = groundPos + (lastNormal * 0.1f);
+                newPosition -= cameraOffset;
+                bodyTransforn.position = newPosition;// - cameraOffset;
                 ToggleDisplay(false);
             }
             else
