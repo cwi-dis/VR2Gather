@@ -9,7 +9,7 @@
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsOutputFile":  "vrdays-{host}-{ts}.txt",
  
   "AutoStart" : {
   	"autoLogin" : true,
