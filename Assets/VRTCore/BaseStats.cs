@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace VRT.Core
 {
@@ -17,7 +18,13 @@ namespace VRT.Core
             defaultStatsInterval = Config.Instance.statsInterval;
             if (Config.Instance.statsOutputFile != "")
             {
-                string statsFilename = $"{Application.persistentDataPath}/{Config.Instance.statsOutputFile}";
+                string sfn = Config.Instance.statsOutputFile;
+                string host = Environment.MachineName;
+                DateTime now = DateTime.Now;
+                string ts = now.ToString("yyyyMMdd-HHmm");
+                sfn = sfn.Replace("{host}", host);
+                sfn = sfn.Replace("{ts}", ts);
+                string statsFilename = $"{Application.persistentDataPath}/{sfn}";
                 statsStream = new System.IO.StreamWriter(statsFilename, Config.Instance.statsOutputFileAppend);
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
