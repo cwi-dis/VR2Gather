@@ -3571,6 +3571,7 @@ MonoBehaviour:
   orchestratorId: 
   userRepresentationType: 0
   userName: {fileID: 5037811773562763412}
+  userNameStr: 
   cam: {fileID: 291867005512789998}
   avatar: {fileID: 4037853332143369839}
   webcam: {fileID: 4497088204552090385}
@@ -3649,8 +3650,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MediaScape_extras: {fileID: 7796478513649732472}
   PointcloudGO: {fileID: 426937040433907628}
-  avatarHead1: {fileID: 6225805450574191462}
-  avatarHead2: {fileID: 1962950360016585685}
+  avatarHeadLondon: {fileID: 6225805450574191462}
+  avatarHeadParis: {fileID: 1962950360016585685}
 --- !u!1 &5408734097564563202
 GameObject:
   m_ObjectHideFlags: 0
