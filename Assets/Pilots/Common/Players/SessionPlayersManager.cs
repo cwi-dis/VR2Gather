@@ -194,13 +194,13 @@ namespace VRT.Pilots.Common
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
 			if (VRConfig.Instance.useHoloDisplay())
             {
-				playerManager.cam.gameObject.SetActive(false);
-				playerManager.holoDisplay.SetActive(isLocalPlayer);
+				playerManager.cameraTransform.gameObject.SetActive(false);
+				playerManager.holoDisplayTransform.gameObject.SetActive(isLocalPlayer);
 			}
 			else
             {
-				playerManager.cam.gameObject.SetActive(isLocalPlayer);
-				playerManager.holoDisplay?.SetActive(false);
+				playerManager.cameraTransform.gameObject.SetActive(isLocalPlayer);
+				playerManager.holoDisplayTransform?.gameObject.SetActive(false);
 			}
 			foreach (var obj in playerManager.localPlayerOnlyObjects) {
 				obj.SetActive(isLocalPlayer);
@@ -211,10 +211,10 @@ namespace VRT.Pilots.Common
             {
 				if (VRConfig.Instance.useHoloDisplay())
                 {
-					cameraTransform = playerManager.holoDisplay?.transform.parent;
+					cameraTransform = playerManager.holoDisplayTransform?.transform.parent;
 				} else
                 {
-					cameraTransform = playerManager.cam.gameObject.transform.parent;
+					cameraTransform = playerManager.cameraTransform.gameObject.transform.parent;
 				}
 			}
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");

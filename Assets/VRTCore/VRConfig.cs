@@ -23,12 +23,16 @@ namespace VRT.Core
 
         public string[] preferredDevices()
         {
+            if (Config.Instance.VR.useLookingGlass)
+            {
+                return new string[] { "" };
+            }
             return Config.Instance.VR.preferredDevices;
         }
 
         public string outputDeviceName()
         {
-            // xxxjack should be check XRSettings.isDeviceActive?
+             // xxxjack should be check XRSettings.isDeviceActive?
             return XRSettings.loadedDeviceName;
         }
 
@@ -49,7 +53,7 @@ namespace VRT.Core
 
         public bool useHoloDisplay()
         {
-            return false;
+            return Config.Instance.VR.useLookingGlass;
         }
 
         public bool useControllerEmulation()

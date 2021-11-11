@@ -51,6 +51,7 @@ namespace VRT.Core
             public bool disableKeyboardMouse = false; // This is a workaround because useHMD doesn't always work.
             public string[] preferredDevices = { "Oculus", "OPenVR", "" };
             public string preferredController = "";
+            public bool useLookingGlass = false;
         }
         public _VR VR;
 

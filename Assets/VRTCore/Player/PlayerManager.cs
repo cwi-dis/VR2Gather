@@ -7,8 +7,8 @@ public class PlayerManager : MonoBehaviour {
     public string   orchestratorId;
     public UserRepresentationType userRepresentationType;
     public TMPro.TextMeshProUGUI userName;
-    public Camera   cam;
-    public GameObject holoDisplay;
+    public Transform   cameraTransform;
+    public Transform holoDisplayTransform;
     public ITVMHookUp tvm;
     public GameObject avatar;
     public GameObject webcam;
