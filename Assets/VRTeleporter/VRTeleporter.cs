@@ -65,7 +65,6 @@ namespace VRT.Teleporter
             arcRenderer.enabled = active;
             positionMarker.SetActive(active);
             displayActive = active;
-            arcRenderer.sharedMaterial = lineNotTeleportableMat;
         }
 
 
