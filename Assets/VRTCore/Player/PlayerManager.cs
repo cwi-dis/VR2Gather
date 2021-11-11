@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour {
     public UserRepresentationType userRepresentationType;
     public TMPro.TextMeshProUGUI userName;
     public Camera   cam;
+    public GameObject holoDisplay;
     public ITVMHookUp tvm;
     public GameObject avatar;
     public GameObject webcam;

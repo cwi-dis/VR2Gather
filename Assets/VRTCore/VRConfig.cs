@@ -47,6 +47,11 @@ namespace VRT.Core
             return false;
         }
 
+        public bool useHoloDisplay()
+        {
+            return false;
+        }
+
         public bool useControllerEmulation()
         {
             if (Config.Instance.VR.preferredController == "emulation" || Config.Instance.VR.preferredController == "gamepad") return true;
