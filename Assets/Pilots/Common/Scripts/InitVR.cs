@@ -31,18 +31,22 @@ namespace VRT.Pilots.Common
         IEnumerator Start()
         {
             RenderSettings.fog = false;
-            // Load XR Device
-            XRSettings.LoadDeviceByName(new string[] { "Oculus", "OPenVR" });
+            // Load XR Device.
+            // xxxjack The logic here is slightly different from what is suggested by
+            // https://docs.unity3d.com/2019.4/Documentation/ScriptReference/XR.XRSettings.LoadDeviceByName.html
+            //
+            XRSettings.LoadDeviceByName(VRConfig.Instance.preferredDevices());
             yield return null;
             XRSettings.enabled = true;
             yield return null;
-            if (XRUtility.isPresent())
+            if (VRConfig.Instance.useHMD())
             {
-                if (XRSettings.loadedDeviceName == "Oculus")
+                if (VRConfig.Instance.outputDeviceName() == "Oculus")
                     ovrp_SetTrackingOriginType(TrackingOrigin.FloorLevel);
             }
             else
             {
+                // xxxjack I don't understand why this functionality is here... Should it be?
                 Debug.Log("pushing cameras");
                 Camera[] cameras = Resources.FindObjectsOfTypeAll<Camera>();
                 for (int i = 0; i < cameras.Length; ++i)

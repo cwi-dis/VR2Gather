@@ -8,8 +8,10 @@ public class PlayerMovement : MonoBehaviour {
     public CharacterController controller;
 
     void Awake() {
-        if (XRUtility.isPresent() || Config.Instance.VR.disableKeyboardMouse)
-            enabled = false; // Check if you're wearing an HMD
+        if (!VRConfig.Instance.useControllerEmulation())
+        {
+            enabled = false;
+        }
     }
 
     // Update is called once per frame

@@ -31,7 +31,7 @@ public class HandEmulationController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (XRUtility.isPresent() || Config.Instance.VR.disableKeyboardMouse)
+        if (!VRConfig.Instance.useControllerEmulation())
         {
             enabled = false;
         }

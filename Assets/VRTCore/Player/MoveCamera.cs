@@ -14,15 +14,10 @@ public class MoveCamera : MonoBehaviour {
     public Transform avatarHead;
 
     void Awake() {
-        if (XRUtility.isPresent() ) {
-            enabled = false;
-            return;
+        if (!VRConfig.Instance.useHMD()) {
+            camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
         }
-        // xxxjack this is a strange location to initialize non-HMD camera height.
-        // Because it really depends on hmd/non HMD, not on which input device is used for
-        // navigation.
-        camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
-        if (Config.Instance.VR.disableKeyboardMouse)
+        if (!VRConfig.Instance.useControllerEmulation())
         {
             enabled = false;
         }
