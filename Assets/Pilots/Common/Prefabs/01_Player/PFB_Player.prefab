@@ -2651,8 +2651,8 @@ MonoBehaviour:
   orchestratorId: 
   userRepresentationType: 0
   userName: {fileID: 5037811773562763412}
-  cam: {fileID: 5120337489219806681}
-  holoDisplay: {fileID: 1384504672683162128}
+  cameraTransform: {fileID: 5120337489219806681}
+  holoDisplayTransform: {fileID: 1384504672683162128}
   avatar: {fileID: 4037853332143369839}
   webcam: {fileID: 4497088204552090385}
   pc: {fileID: 426937040433907628}
@@ -4530,6 +4530,10 @@ PrefabInstance:
     - target: {fileID: 1770150239514932, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
       propertyPath: m_Name
       value: Holoplay Capture
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770150239514932, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4858807375538342, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
       propertyPath: m_RootOrder
