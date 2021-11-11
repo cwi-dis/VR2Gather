@@ -166,7 +166,7 @@ namespace VRT.Pilots.Common
 #if UNITY_EDITOR
 						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
 							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
-							playerManager.cam.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+							playerManager.cameraTransform.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
 						}
 #endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
