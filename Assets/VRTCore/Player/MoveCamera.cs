@@ -14,14 +14,17 @@ public class MoveCamera : MonoBehaviour {
     public Transform avatarHead;
 
     void Awake() {
-        if (XRUtility.isPresent() || Config.Instance.VR.disableKeyboardMouse) {
-            // Note by Jack: there is something to be said for allowing this behaviour also for HMD
-            // users, *for some scenarios*. It may be useful (even though the usual caveats about
-            // motion sickness when forcibly moving HMD users' viewpoint apply).
+        if (XRUtility.isPresent() ) {
             enabled = false;
+            return;
         }
-        else {
-            camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+        // xxxjack this is a strange location to initialize non-HMD camera height.
+        // Because it really depends on hmd/non HMD, not on which input device is used for
+        // navigation.
+        camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+        if (Config.Instance.VR.disableKeyboardMouse)
+        {
+            enabled = false;
         }
     }
 
