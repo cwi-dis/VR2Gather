@@ -54,7 +54,8 @@ namespace VRT.Teleporter
             }
             else
             {
-                Debug.Log("Ground wasn't detected");
+                //Debug.Log("Ground wasn't detected");
+                ToggleDisplay(false);
             }
         }
 
