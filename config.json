@@ -22,7 +22,7 @@
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"disableKeyboardMouse" : true
+	"disableKeyboardMouse" : false
 	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
