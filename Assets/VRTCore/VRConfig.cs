@@ -23,7 +23,7 @@ namespace VRT.Core
 
         public string[] preferredDevices()
         {
-            return new string[] { "Oculus", "OPenVR" };
+            return Config.Instance.VR.preferredDevices;
         }
 
         public string outputDeviceName()
@@ -34,6 +34,7 @@ namespace VRT.Core
 
         public bool useHMD()
         {
+            // xxxjack for some reason this doesn't always work, it returns false when using the Vive...
             var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
             SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
             foreach (var xrDisplay in xrDisplaySubsystems)
@@ -48,9 +49,16 @@ namespace VRT.Core
 
         public bool useControllerEmulation()
         {
+            if (Config.Instance.VR.preferredController == "emulation" || Config.Instance.VR.preferredController == "gamepad") return true;
             if (useHMD()) return false;
             if (Config.Instance.VR.disableKeyboardMouse) return false;
             return true;
+        }
+
+        public bool useControllerGamepad()
+        {
+            // xxxjack should we check that we are _actually_ using a gamepad?
+            return Config.Instance.VR.preferredController == "gamepad";
         }
 
         public void initScreen()

@@ -56,7 +56,7 @@ public class MoveCamera : MonoBehaviour {
             }
         }
         // Joystick Camera Rotation
-        if(Config.Instance.allowControllerMovement)
+        if(VRConfig.Instance.useControllerGamepad())
         {
             float mouseX = Input.GetAxis("JoystickRightThumbstickLeftRight") * joystickSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("JoystickRightThumbstickUpDown") * joystickSensitivity * Time.deltaTime;

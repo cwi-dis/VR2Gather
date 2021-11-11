@@ -48,7 +48,9 @@ namespace VRT.Core
         [Serializable]
         public class _VR
         {
-            public bool disableKeyboardMouse = false;
+            public bool disableKeyboardMouse = false; // This is a workaround because useHMD doesn't always work.
+            public string[] preferredDevices = { "Oculus", "OPenVR", "" };
+            public string preferredController = "";
         }
         public _VR VR;
 
