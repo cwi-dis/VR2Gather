@@ -2585,7 +2585,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   joystickSensitivity: 100
-  camera: {fileID: 8989305335192017463}
+  player: {fileID: 7044479312909899358}
   wheelSlope: 0.05
   spectator: 0
   playerBody: {fileID: 5131421326051842284}

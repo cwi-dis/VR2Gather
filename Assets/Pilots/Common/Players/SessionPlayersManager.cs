@@ -192,15 +192,20 @@ namespace VRT.Pilots.Common
 			playerManager.userName.text = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
+			// We set either the camera or holodisplay transform to active and the other to passive.
+			// Then we assign the active one to cameraTransform, so the rest of the code is agnostic about which we use.
 			if (VRConfig.Instance.useHoloDisplay())
             {
 				playerManager.cameraTransform.gameObject.SetActive(false);
 				playerManager.holoDisplayTransform.gameObject.SetActive(isLocalPlayer);
+				playerManager.cameraTransform = playerManager.holoDisplayTransform;
+				playerManager.holoDisplayTransform = null;
 			}
 			else
             {
 				playerManager.cameraTransform.gameObject.SetActive(isLocalPlayer);
 				playerManager.holoDisplayTransform?.gameObject.SetActive(false);
+				playerManager.holoDisplayTransform = null;
 			}
 			foreach (var obj in playerManager.localPlayerOnlyObjects) {
 				obj.SetActive(isLocalPlayer);

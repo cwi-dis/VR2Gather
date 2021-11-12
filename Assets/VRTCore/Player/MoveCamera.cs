@@ -5,7 +5,7 @@ using VRT.Core;
 public class MoveCamera : MonoBehaviour {
     public float mouseSensitivity = 100.0f;
     public float joystickSensitivity = 100.0f;
-    public GameObject camera;
+    public PlayerManager player;
     public float wheelSlope = 0.05f; // 5 Centimeters
     public bool spectator = false;
     float xRotation = 0f;
@@ -15,7 +15,8 @@ public class MoveCamera : MonoBehaviour {
 
     void Awake() {
         if (!VRConfig.Instance.useHMD()) {
-            camera.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+            Transform cameraTransform = player.cameraTransform;
+            cameraTransform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
         }
         if (!VRConfig.Instance.useControllerEmulation())
         {
@@ -30,13 +31,13 @@ public class MoveCamera : MonoBehaviour {
     void Update() {
         // UpDown Movement
         float deltaHeight = Input.mouseScrollDelta.y;
-
+        Transform cameraTransform = player.cameraTransform;
         // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
         // with the current implementation all users have this ability, which may or may not be a good idea.
         if (deltaHeight != 0) {
             //Debug.Log($"MoveCamera: xxxjack deltaHeight={deltaHeight}");
             // Do Camera movement
-            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y + deltaHeight * wheelSlope, camera.transform.localPosition.z);
+            cameraTransform.localPosition = new Vector3(cameraTransform.localPosition.x, cameraTransform.localPosition.y + deltaHeight * wheelSlope, cameraTransform.localPosition.z);
         }
 
 
@@ -48,7 +49,7 @@ public class MoveCamera : MonoBehaviour {
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             if (!spectator) {
                 playerBody.Rotate(Vector3.up, mouseX);
@@ -63,7 +64,7 @@ public class MoveCamera : MonoBehaviour {
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             if (!spectator)
             {
@@ -84,7 +85,7 @@ public class MoveCamera : MonoBehaviour {
                 xRotation += vAngle;
                 xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
                 if (!spectator)
                 {

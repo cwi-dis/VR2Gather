@@ -34,7 +34,15 @@ public class HandEmulationController : MonoBehaviour
         if (!VRConfig.Instance.useControllerEmulation())
         {
             enabled = false;
+            return;
         }
+        if (VRConfig.Instance.useHoloDisplay())
+        {
+            Debug.LogWarning("Mouse controller emulation not yet implemented for holographic display");
+            enabled = false;
+            return;
+        }
+
     }
 
     // Update is called once per frame
