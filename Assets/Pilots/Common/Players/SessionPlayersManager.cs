@@ -192,10 +192,25 @@ namespace VRT.Pilots.Common
 			playerManager.userName.text = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
+			// Enable the camera only for the local user
 			playerManager.cam.gameObject.SetActive(isLocalPlayer);
+			// Enable various other objects only for the local user
 			foreach(var obj in playerManager.localPlayerOnlyObjects) {
 				obj.SetActive(isLocalPlayer);
             }
+			// Enable controller emulation (keyboard/mouse) objects only for the local user when using emulation
+			bool isLocalEmulationPlayer = isLocalPlayer && VRConfig.Instance.useControllerEmulation();
+			foreach (var obj in playerManager.inputEmulationOnlyObjects)
+			{
+				obj.SetActive(isLocalEmulationPlayer);
+			}
+			// Enable gamepad objects only for the local user when using gamepad
+			bool isLocalGamepadPlayer = isLocalPlayer && VRConfig.Instance.useControllerGamepad();
+			foreach (var obj in playerManager.inputGamepadOnlyObjects)
+			{
+				obj.SetActive(isLocalGamepadPlayer);
+			}
+
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
