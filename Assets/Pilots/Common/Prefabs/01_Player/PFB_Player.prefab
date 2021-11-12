@@ -381,10 +381,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 100
-  joystickSensitivity: 100
-  camera: {fileID: 8989305335192017463}
-  wheelSlope: 0.05
+  xAxisName: Mouse X
+  yAxisName: Mouse Y
+  heightAxisName: Mouse ScrollWheel
+  xySensitivity: 100
+  heightSensitivity: 0.05
+  allowHJKLforMouse: 1
+  cameraToControl: {fileID: 0}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
@@ -2678,10 +2681,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 100
-  joystickSensitivity: 100
-  camera: {fileID: 8989305335192017463}
-  wheelSlope: 0.05
+  xAxisName: 
+  yAxisName: 
+  heightAxisName: 
+  xySensitivity: 100
+  heightSensitivity: 0.05
+  allowHJKLforMouse: 1
+  cameraToControl: {fileID: 8989305335192017463}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
