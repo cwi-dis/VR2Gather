@@ -22,7 +22,8 @@
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"disableKeyboardMouse" : false
+	"disableKeyboardMouse" : false,
+	"useLookingGlass" : true
 	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
