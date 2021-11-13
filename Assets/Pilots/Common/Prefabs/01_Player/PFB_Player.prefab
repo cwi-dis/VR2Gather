@@ -347,7 +347,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6323211897013407460}
-  - component: {fileID: 7296903453046520675}
+  - component: {fileID: 5252894607578830425}
   m_Layer: 0
   m_Name: HeadMovement
   m_TagString: Untagged
@@ -369,7 +369,7 @@ Transform:
   m_Father: {fileID: 6195526648355536999}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7296903453046520675
+--- !u!114 &5252894607578830425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -378,19 +378,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1063767371457575197}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
+  m_Script: {fileID: 11500000, guid: 1214c1344f998410c9b8aa62da25d437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xAxisName: Mouse X
-  yAxisName: Mouse Y
-  heightAxisName: Mouse ScrollWheel
   xySensitivity: 100
   heightSensitivity: 0.05
   allowHJKLforMouse: 1
-  cameraToControl: {fileID: 0}
+  cameraToControl: {fileID: 8989305335192017463}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
+  xAxisName: Mouse X
+  yAxisName: Mouse Y
+  heightAxisName: Mouse ScrollWheel
 --- !u!1 &1663129390789642957
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,9 +2681,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xAxisName: 
-  yAxisName: 
-  heightAxisName: 
   xySensitivity: 100
   heightSensitivity: 0.05
   allowHJKLforMouse: 1
