@@ -388,8 +388,8 @@ MonoBehaviour:
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
-  xAxisName: Mouse X
-  yAxisName: Mouse Y
+  xAxisName: Gamepad_Left_X
+  yAxisName: Gamepad_Left_Y
   heightAxisName: Mouse ScrollWheel
 --- !u!1 &1663129390789642957
 GameObject:
