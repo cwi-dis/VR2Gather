@@ -806,39 +806,7 @@ InputManager:
     axis: 5
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Right_X
-    descriptiveName: 
-    descriptiveNegativeName: 
-    negativeButton: 
-    positiveButton: 
-    altNegativeButton: 
-    altPositiveButton: 
-    gravity: 0.3
-    dead: 0.05
-    sensitivity: 0.3
-    snap: 0
-    invert: 1
-    type: 2
-    axis: 3
-    joyNum: 0
-  - serializedVersion: 3
-    m_Name: Gamepad_Right_Y
-    descriptiveName: 
-    descriptiveNegativeName: 
-    negativeButton: left
-    positiveButton: right
-    altNegativeButton: 
-    altPositiveButton: 
-    gravity: 0.3
-    dead: 0.05
-    sensitivity: 0.3
-    snap: 1
-    invert: 0
-    type: 2
-    axis: 4
-    joyNum: 0
-  - serializedVersion: 3
-    m_Name: Gamepad_Left_X
+    m_Name: Gamepad_Axis_1
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -854,7 +822,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Left_Y
+    m_Name: Gamepad_Axis_2
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -864,13 +832,13 @@ InputManager:
     gravity: 0.3
     dead: 0.05
     sensitivity: 0.3
-    snap: 1
-    invert: 0
+    snap: 0
+    invert: 1
     type: 2
     axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Dpad_X
+    m_Name: Gamepad_Axis_3
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -880,13 +848,13 @@ InputManager:
     gravity: 0.3
     dead: 0.05
     sensitivity: 0.3
-    snap: 1
-    invert: 0
+    snap: 0
+    invert: 1
     type: 2
-    axis: 5
+    axis: 2
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Dpad_Y
+    m_Name: Gamepad_Axis_4
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -896,8 +864,40 @@ InputManager:
     gravity: 0.3
     dead: 0.05
     sensitivity: 0.3
-    snap: 1
-    invert: 0
+    snap: 0
+    invert: 1
     type: 2
-    axis: 6
+    axis: 3
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_5
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 1
+    type: 2
+    axis: 4
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_6
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 1
+    type: 2
+    axis: 5
     joyNum: 0
