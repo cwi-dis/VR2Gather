@@ -13,7 +13,7 @@ public class GamePadDiscover : MonoBehaviour
         var names = Input.GetJoystickNames();
         foreach(var name in names)
         {
-            Debug.Log($"Joystick name: {name}");
+            Debug.Log($"Joystick or gamepad name: {name}");
         }
     }
 
