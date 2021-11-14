@@ -336,6 +336,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftRightAxis: Gamepad_Axis_5
+  forwardAxis: Gamepad_Axis_6
   speed: 5
   controller: {fileID: 3076079762117982612}
 --- !u!1 &1063767371457575197
@@ -3063,6 +3065,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  leftRightAxis: Horizontal
+  forwardAxis: Vertical
   speed: 5
   controller: {fileID: 3076079762117982612}
 --- !u!1 &6616697951003645928

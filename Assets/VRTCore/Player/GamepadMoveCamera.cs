@@ -8,7 +8,8 @@ public class GamepadMoveCamera : MoveCamera
     public string xAxisName = "Gamepad_Axis_1";
     public string yAxisName = "Gamepad_Axis_2";
     public string heightAxisName = "Mouse ScrollWheel";
-    
+    public new const bool allowHJKLforMouse = false;
+
     // Update is called once per frame
     void Update()
     {

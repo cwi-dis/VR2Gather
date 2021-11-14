@@ -12,17 +12,18 @@
   "statsOutputFile":  "",
  
   "AutoStart" : {
-  	"autoLogin" : false,
-  	"sessionName" : "",
-  	"sessionScenario" : -1,
-  	"sessionTransportProtocol" : -1,
-  	"autoCreate" : false,
+  	"autoLogin" : true,
+  	"sessionName" : "jj",
+  	"sessionScenario" : 0,
+  	"sessionTransportProtocol" : 1,
+  	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : -1,
+  	"autoStartWith" : 1,
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"disableKeyboardMouse" : false
+	"disableKeyboardMouse" : false,
+	"preferredController" : "gamepad"
 	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
