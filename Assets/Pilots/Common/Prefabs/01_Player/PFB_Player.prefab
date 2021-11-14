@@ -336,9 +336,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftRightAxis: Gamepad_Axis_5
-  forwardAxis: Gamepad_Axis_6
-  speed: 5
+  leftRightAxis: Gamepad_Axis_3
+  forwardAxis: Gamepad_Axis_4
+  invertForwardAxis: 1
+  speed: 10
   controller: {fileID: 3076079762117982612}
 --- !u!1 &1063767371457575197
 GameObject:
@@ -383,16 +384,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1214c1344f998410c9b8aa62da25d437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xySensitivity: 100
-  heightSensitivity: 0.05
+  xySensitivity: 50
+  heightSensitivity: 0.1
   allowHJKLforMouse: 1
   cameraToControl: {fileID: 8989305335192017463}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
-  xAxisName: Gamepad_Axis_1
-  yAxisName: Gamepad_Axis_2
-  heightAxisName: Gamepad_Axis_3
+  leftRightAxisName: Gamepad_Axis_1
+  upDownAxisName: Gamepad_Axis_2
+  heightAxisName: Gamepad_Axis_6
 --- !u!1 &1663129390789642957
 GameObject:
   m_ObjectHideFlags: 0
@@ -3067,6 +3068,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leftRightAxis: Horizontal
   forwardAxis: Vertical
+  invertForwardAxis: 0
   speed: 5
   controller: {fileID: 3076079762117982612}
 --- !u!1 &6616697951003645928
