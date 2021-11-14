@@ -806,11 +806,11 @@ InputManager:
     axis: 5
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Right_Y
+    m_Name: Gamepad_Right_X
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: down
-    positiveButton: up
+    negativeButton: 
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0.3
@@ -819,10 +819,10 @@ InputManager:
     snap: 0
     invert: 1
     type: 2
-    axis: 4
+    axis: 3
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Gamepad_Right_X
+    m_Name: Gamepad_Right_Y
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: left
@@ -835,7 +835,7 @@ InputManager:
     snap: 1
     invert: 0
     type: 2
-    axis: 3
+    axis: 4
     joyNum: 0
   - serializedVersion: 3
     m_Name: Gamepad_Left_X
@@ -851,7 +851,7 @@ InputManager:
     snap: 0
     invert: 1
     type: 2
-    axis: 2
+    axis: 0
     joyNum: 0
   - serializedVersion: 3
     m_Name: Gamepad_Left_Y
@@ -867,21 +867,37 @@ InputManager:
     snap: 1
     invert: 0
     type: 2
-    axis: 3
+    axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: JoystickTriggers
+    m_Name: Gamepad_Dpad_X
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: down
-    positiveButton: up
+    negativeButton: 
+    positiveButton: 
     altNegativeButton: 
     altPositiveButton: 
-    gravity: 1000
-    dead: 0.001
-    sensitivity: 1000
-    snap: 0
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 1
     invert: 0
     type: 2
-    axis: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Dpad_Y
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 1
+    invert: 0
+    type: 2
+    axis: 6
     joyNum: 0
