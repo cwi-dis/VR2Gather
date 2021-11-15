@@ -24,6 +24,8 @@ public class HandEmulationController : MonoBehaviour
     public KeyCode castKey = KeyCode.LeftShift;
     [Tooltip("Key to press to touch an item")]
     public KeyCode touchKey = KeyCode.Mouse0;
+    [Tooltip("Auto-center mouse, to allow use with gamepads")]
+    public bool autoCenterMouse = false;
     [Tooltip("Collider that actually presses the button")]
     public Collider touchCollider = new SphereCollider();
     protected bool isCasting;
@@ -43,14 +45,26 @@ public class HandEmulationController : MonoBehaviour
         bool isCastingNow = Input.GetKey(castKey);
         if (isCasting != isCastingNow)
         {
+            if (autoCenterMouse)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
             isCasting = isCastingNow;
             if (isCasting)
             {
+                if (autoCenterMouse)
+                {
+                    Cursor.lockState = CursorLockMode.Locked;
+                }
                 Cursor.SetCursor(castingCursorTexture, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
                 isHitting = false;
             } else
             {
+                if (autoCenterMouse)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                }
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
             }
