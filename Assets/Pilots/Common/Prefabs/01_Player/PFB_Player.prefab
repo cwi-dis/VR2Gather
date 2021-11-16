@@ -4673,14 +4673,29 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: gropeKey
+      value: 354
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: touchKey
-      value: 336
+      value: 355
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: autoCenterMouse
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: gropingCursorTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87, type: 3}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchingCursorTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: e476c99fe4722419fa64226e8f4453e4, type: 3}
     - target: {fileID: 3185680175615349953, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: m_Name
@@ -4761,6 +4776,11 @@ PrefabInstance:
       propertyPath: autoCenterMouse
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: gropingCursorTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87, type: 3}
     - target: {fileID: 3185680175615349953, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: m_Name

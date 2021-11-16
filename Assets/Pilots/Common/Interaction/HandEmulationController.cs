@@ -15,21 +15,21 @@ using VRT.Core;
 public class HandEmulationController : MonoBehaviour
 {
     [Tooltip("Mouse cursor to use while looking for touchable items")]
-    public Texture2D castingCursorTexture;
+    public Texture2D gropingCursorTexture;
     [Tooltip("Mouse cursor to use when over a touchable item")]
-    public Texture2D castingCursorHitTexture;
+    public Texture2D touchingCursorTexture;
     [Tooltip("Maximum distance of touchable objects")]
     public float maxDistance = Mathf.Infinity;
     [Tooltip("Key to press to start looking for touchable items")]
-    public KeyCode castKey = KeyCode.LeftShift;
+    public KeyCode gropeKey = KeyCode.LeftShift;
     [Tooltip("Key to press to touch an item")]
     public KeyCode touchKey = KeyCode.Mouse0;
     [Tooltip("Auto-center mouse, to allow use with gamepads")]
     public bool autoCenterMouse = false;
     [Tooltip("Collider that actually presses the button")]
     public Collider touchCollider = new SphereCollider();
-    protected bool isCasting;
-    protected bool isHitting;
+    protected bool isGroping;
+    protected bool isTouching;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,23 +42,23 @@ public class HandEmulationController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isCastingNow = Input.GetKey(castKey);
-        if (isCasting != isCastingNow)
+        bool isGropingingNow = Input.GetKey(gropeKey);
+        if (isGroping != isGropingingNow)
         {
             if (autoCenterMouse)
             {
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            isCasting = isCastingNow;
-            if (isCasting)
+            isGroping = isGropingingNow;
+            if (isGroping)
             {
                 if (autoCenterMouse)
                 {
                     Cursor.lockState = CursorLockMode.Locked;
                 }
-                Cursor.SetCursor(castingCursorTexture, Vector2.zero, CursorMode.Auto);
+                Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
-                isHitting = false;
+                isTouching = false;
             } else
             {
                 if (autoCenterMouse)
@@ -69,7 +69,7 @@ public class HandEmulationController : MonoBehaviour
                 touchCollider.enabled = false;
             }
         }
-        if (!isCasting) return;
+        if (!isGroping) return;
 
         //
         // Check whether we are hitting any elegible object
@@ -83,19 +83,19 @@ public class HandEmulationController : MonoBehaviour
             //Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
             isHittingNow = true;
         }
-        if (isHitting != isHittingNow)
+        if (isTouching != isHittingNow)
         {
-            isHitting = isHittingNow;
-            if (isHitting)
+            isTouching = isHittingNow;
+            if (isTouching)
             {
-                Cursor.SetCursor(castingCursorHitTexture, Vector2.zero, CursorMode.Auto);
+                Cursor.SetCursor(touchingCursorTexture, Vector2.zero, CursorMode.Auto);
             }
             else
             {
-                Cursor.SetCursor(castingCursorTexture, Vector2.zero, CursorMode.Auto);
+                Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
             }
         }
-        if (!isHitting)
+        if (!isTouching)
         {
             touchCollider.enabled = false;
             return;
