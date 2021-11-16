@@ -30,14 +30,6 @@ public class HandEmulationController : MonoBehaviour
     public Collider touchCollider = new SphereCollider();
     protected bool isGroping;
     protected bool isTouching;
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (!VRConfig.Instance.useControllerEmulation())
-        {
-            enabled = false;
-        }
-    }
 
     // Update is called once per frame
     void Update()
