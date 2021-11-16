@@ -23,7 +23,7 @@
   },
   "VR" : {
 	"disableKeyboardMouse" : false,
-	"preferredController" : "gamepad"
+	"preferredController" : "emulation"
 	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
