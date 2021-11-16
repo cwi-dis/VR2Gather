@@ -24,7 +24,7 @@ public class HandEmulationController : MonoBehaviour
     public KeyCode gropeKey = KeyCode.LeftShift;
     [Tooltip("Key to press to touch an item")]
     public KeyCode touchKey = KeyCode.Mouse0;
-    [Tooltip("Auto-center mouse, to allow use with gamepads")]
+    [Tooltip("Auto-center mouse, to allow use with gamepads. Not implemented.")]
     public bool autoCenterMouse = false;
     [Tooltip("Collider that actually presses the button")]
     public Collider touchCollider = new SphereCollider();
@@ -37,15 +37,10 @@ public class HandEmulationController : MonoBehaviour
         bool isGropingingNow = Input.GetKey(gropeKey);
         if (isGroping != isGropingingNow)
         {
-            if (autoCenterMouse)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.lockState = CursorLockMode.None;
-            }
             isGroping = isGropingingNow;
             if (isGroping)
             {
-                Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
+                 Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
                 isTouching = false;
             } else
