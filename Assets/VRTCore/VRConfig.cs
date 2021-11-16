@@ -58,7 +58,11 @@ namespace VRT.Core
 
         public bool useControllerEmulation()
         {
-            if (Config.Instance.VR.preferredController == "emulation" || Config.Instance.VR.preferredController == "gamepad") return true;
+            // If emulation has specifically been asked for we return true
+            if (Config.Instance.VR.preferredController == "emulation") return true;
+            // If something else has specifically been asked for we return false
+            if (Config.Instance.VR.preferredController != "") return false;
+            // If the default has been asked for we make a best guess.
             if (useHMD()) return false;
             if (Config.Instance.VR.disableKeyboardMouse) return false;
             return true;

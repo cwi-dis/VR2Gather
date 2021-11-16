@@ -15,4 +15,6 @@ public class PlayerManager : MonoBehaviour {
     public GameObject pc;
     public GameObject audio;
     public GameObject[] localPlayerOnlyObjects;
+    public GameObject[] inputEmulationOnlyObjects;
+    public GameObject[] inputGamepadOnlyObjects;
 }

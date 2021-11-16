@@ -3,90 +3,69 @@ using UnityEngine.XR;
 using VRT.Core;
 
 public class MoveCamera : MonoBehaviour {
-    public float mouseSensitivity = 100.0f;
-    public float joystickSensitivity = 100.0f;
-    public PlayerManager player;
-    public float wheelSlope = 0.05f; // 5 Centimeters
+    public float xySensitivity = 100.0f;
+    public float heightSensitivity = 0.05f; // 5 Centimeters
+    public bool allowHJKLforMouse = true;
+    public GameObject cameraToControl = null;
     public bool spectator = false;
-    float xRotation = 0f;
+
+    protected float xRotation = 0f;
 
     public Transform playerBody;
     public Transform avatarHead;
 
     void Awake() {
         if (!VRConfig.Instance.useHMD()) {
-            Transform cameraTransform = player.cameraTransform;
-            cameraTransform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
+            cameraToControl.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
         }
-        if (!VRConfig.Instance.useControllerEmulation())
-        {
-            enabled = false;
-        }
-    }
-
-    void Start() {
-        //Cursor.lockState = CursorLockMode.Confined;
     }
 
     void Update() {
-        // UpDown Movement
         float deltaHeight = Input.mouseScrollDelta.y;
-        Transform cameraTransform = player.cameraTransform;
+
         // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
         // with the current implementation all users have this ability, which may or may not be a good idea.
-        if (deltaHeight != 0) {
-            //Debug.Log($"MoveCamera: xxxjack deltaHeight={deltaHeight}");
-            // Do Camera movement
-            cameraTransform.localPosition = new Vector3(cameraTransform.localPosition.x, cameraTransform.localPosition.y + deltaHeight * wheelSlope, cameraTransform.localPosition.z);
+        if (deltaHeight != 0)
+        {
+            // Do Camera movement for up/down.
+            cameraToControl.transform.localPosition = new Vector3(
+                cameraToControl.transform.localPosition.x,
+                cameraToControl.transform.localPosition.y + deltaHeight * heightSensitivity,
+                cameraToControl.transform.localPosition.z);
         }
 
 
-        // Camera Rotation
-        if (Input.GetKey(KeyCode.Mouse0)) {
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        // Camera Rotation when primary mouse button is pressed
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            float mouseX = Input.GetAxis("Mouse X") * xySensitivity * Time.deltaTime;
+            float mouseY = Input.GetAxis("Mouse Y") * xySensitivity * Time.deltaTime;
 
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-
-            if (!spectator) {
-                playerBody.Rotate(Vector3.up, mouseX);
-                avatarHead.Rotate(Vector3.right, -mouseY);
-            }
+            cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            adjustBodyHead(mouseX, -mouseY);
         }
-        // Joystick Camera Rotation
-        if(VRConfig.Instance.useControllerGamepad())
-        {
-            float mouseX = Input.GetAxis("JoystickRightThumbstickLeftRight") * joystickSensitivity * Time.deltaTime;
-            float mouseY = Input.GetAxis("JoystickRightThumbstickUpDown") * joystickSensitivity * Time.deltaTime;
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-
-            if (!spectator)
-            {
-                playerBody.Rotate(Vector3.up, mouseX);
-                avatarHead.Rotate(Vector3.right, -mouseY);
-            }
-            
-        }
-        // Keyboard Camera rotation
+        if (allowHJKLforMouse)
         {
+            // Use HJKL keys to simulate mouse movement, mainly for debugging
+            // because mouse doesn't work over screen sharing connections.
             float hAngle = 0;
             float vAngle = 0;
             if (Input.GetKey(KeyCode.J)) hAngle = 5;
             if (Input.GetKey(KeyCode.L)) hAngle = -5;
             if (Input.GetKey(KeyCode.I)) vAngle = -5;
             if (Input.GetKey(KeyCode.K)) vAngle = 5;
-            if (hAngle != 0 || vAngle != 0) {
+            if (hAngle != 0 || vAngle != 0)
+            {
                 xRotation += vAngle;
                 xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
+                adjustBodyHead(hAngle, vAngle);
                 if (!spectator)
                 {
                     playerBody.Rotate(Vector3.up, -hAngle);
@@ -94,6 +73,15 @@ public class MoveCamera : MonoBehaviour {
                 }
 
             }
+        }
+    }
+
+    protected void adjustBodyHead(float hAngle, float vAngle)
+    {
+        if (!spectator)
+        {
+            playerBody.Rotate(Vector3.up, hAngle);
+            avatarHead.Rotate(Vector3.right, vAngle);
         }
 
     }
