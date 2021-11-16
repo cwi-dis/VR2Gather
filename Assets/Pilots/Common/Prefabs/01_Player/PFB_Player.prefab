@@ -387,7 +387,7 @@ MonoBehaviour:
   xySensitivity: 50
   heightSensitivity: 0.1
   allowHJKLforMouse: 1
-  cameraToControl: {fileID: 8989305335192017463}
+  cameraToControl: {fileID: 8879463442661444025}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
@@ -2687,7 +2687,7 @@ MonoBehaviour:
   xySensitivity: 100
   heightSensitivity: 0.05
   allowHJKLforMouse: 1
-  cameraToControl: {fileID: 8989305335192017463}
+  cameraToControl: {fileID: 8879463442661444025}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
@@ -2753,12 +2753,13 @@ MonoBehaviour:
   orchestratorId: 
   userRepresentationType: 0
   userName: {fileID: 5037811773562763412}
-  cameraTransform: {fileID: 5120337489219806681}
-  holoDisplayTransform: {fileID: 0}
+  cameraReference: {fileID: 8879463442661444025}
   avatar: {fileID: 4037853332143369839}
   webcam: {fileID: 4497088204552090385}
   pc: {fileID: 426937040433907628}
   audio: {fileID: 4012052827202430640}
+  normalCamera: {fileID: 8989305335192017463}
+  holoDisplayCamera: {fileID: 6129277062501141146}
   localPlayerOnlyObjects:
   - {fileID: 2114984558157333379}
   - {fileID: 3959666175123653081}
@@ -2780,7 +2781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UserId: 
-  HeadTransform: {fileID: 5120337489219806681}
+  HeadTransform: {fileID: 2476733253101752967}
   LeftHandTransform: {fileID: 6115756144114402309}
   RightHandTransform: {fileID: 9184501658298451551}
   LeftHandPoseDriver: {fileID: 9172998219078694891}
@@ -4301,7 +4302,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5120337489219806681
 Transform:
   m_ObjectHideFlags: 0
@@ -4342,7 +4343,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.15
-  far clip plane: 200
+  far clip plane: 20
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -4872,11 +4873,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4858807375538342, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4858807375538342, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4858807375538342, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4919,7 +4920,7 @@ PrefabInstance:
     - target: {fileID: 20959260662082832, guid: 3019d4eebe2593e428d7b9ccb096ceda,
         type: 3}
       propertyPath: near clip plane
-      value: 16.160254
+      value: 18.610254
       objectReference: {fileID: 0}
     - target: {fileID: 114865344359803568, guid: 3019d4eebe2593e428d7b9ccb096ceda,
         type: 3}
@@ -4931,8 +4932,19 @@ PrefabInstance:
       propertyPath: quiltRT
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 114865344359803568, guid: 3019d4eebe2593e428d7b9ccb096ceda,
+        type: 3}
+      propertyPath: nearClipFactor
+      value: 0.01
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3019d4eebe2593e428d7b9ccb096ceda, type: 3}
+--- !u!1 &6129277062501141146 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1770150239514932, guid: 3019d4eebe2593e428d7b9ccb096ceda,
+    type: 3}
+  m_PrefabInstance: {fileID: 6127667304599468974}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6131822406274880264 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4858807375538342, guid: 3019d4eebe2593e428d7b9ccb096ceda,

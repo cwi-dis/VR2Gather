@@ -270,14 +270,15 @@ namespace VRT.UserRepresentation.PointCloud
 
         public Vector3 getCameraPosition()
         {
-            // xxxjack currently returns camera viedw angle (as the name implies)
-            // but maybe camera position is better. Or both.
-            var cam = FindObjectOfType<Camera>().gameObject;
-            if (cam == null)
-                Debug.LogError("Camera not found!");
-            Transform cameraTransform = cam.transform;
+            // The camera object is nested in another object on our parent object, so getting at it is difficult:
+            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            Transform cameraTransform = player?.getCameraTransform();
+            if (cameraTransform == null)
+            {
+                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
+                return new Vector3();
+            }
             return cameraTransform.position;
-
         }
 
         protected override Vector3 getPointcloudPosition(long currentFrameNumber)

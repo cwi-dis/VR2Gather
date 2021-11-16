@@ -166,7 +166,7 @@ namespace VRT.Pilots.Common
 #if UNITY_EDITOR
 						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
 							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
-							playerManager.cameraTransform.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+							playerManager.getCameraTransform().GetComponent<VRTCore.UnityRecorderController>().enabled = true;
 						}
 #endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
@@ -192,24 +192,14 @@ namespace VRT.Pilots.Common
 			playerManager.userName.text = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
-			// We set either the camera or holodisplay transform to active and the other to passive.
-			// Then we assign the active one to cameraTransform, so the rest of the code is agnostic about which we use.
-			if (VRConfig.Instance.useHoloDisplay())
+			// Enable either the normal camera or the holodisplay camera for the local user.
+			bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
+			bool useLocalHoloDisplay = isLocalPlayer && VRConfig.Instance.useHoloDisplay();
+			playerManager.normalCamera.SetActive(useLocalNormalCam);
+			if (playerManager.holoDisplayCamera != null)
             {
-				playerManager.cameraTransform.gameObject.SetActive(false);
-				playerManager.holoDisplayTransform.gameObject.SetActive(isLocalPlayer);
-				playerManager.cameraTransform = playerManager.holoDisplayTransform;
-				playerManager.holoDisplayTransform = null;
-			}
-			else
-            {
-				playerManager.cameraTransform.gameObject.SetActive(isLocalPlayer);
-				if (playerManager.holoDisplayTransform != null)
-                {
-					playerManager.holoDisplayTransform.gameObject.SetActive(false);
-				}
-				playerManager.holoDisplayTransform = null;
-			}
+				playerManager.holoDisplayCamera.SetActive(useLocalHoloDisplay);
+            }
 			// Enable various other objects only for the local user
 			foreach(var obj in playerManager.localPlayerOnlyObjects) {
 				obj.SetActive(isLocalPlayer);
@@ -230,13 +220,7 @@ namespace VRT.Pilots.Common
 			Transform cameraTransform = null;
 			if (isLocalPlayer)
             {
-				if (VRConfig.Instance.useHoloDisplay())
-                {
-					cameraTransform = playerManager.holoDisplayTransform?.transform.parent;
-				} else
-                {
-					cameraTransform = playerManager.cameraTransform.gameObject.transform.parent;
-				}
+				cameraTransform = playerManager.getCameraTransform();
 			}
 
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
