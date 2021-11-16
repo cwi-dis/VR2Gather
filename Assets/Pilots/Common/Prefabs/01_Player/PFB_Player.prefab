@@ -2753,7 +2753,8 @@ MonoBehaviour:
   orchestratorId: 
   userRepresentationType: 0
   userName: {fileID: 5037811773562763412}
-  cam: {fileID: 291867005512789998}
+  cameraTransform: {fileID: 5120337489219806681}
+  holoDisplayTransform: {fileID: 0}
   avatar: {fileID: 4037853332143369839}
   webcam: {fileID: 4497088204552090385}
   pc: {fileID: 426937040433907628}

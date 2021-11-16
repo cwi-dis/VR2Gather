@@ -204,7 +204,10 @@ namespace VRT.Pilots.Common
 			else
             {
 				playerManager.cameraTransform.gameObject.SetActive(isLocalPlayer);
-				playerManager.holoDisplayTransform?.gameObject.SetActive(false);
+				if (playerManager.holoDisplayTransform != null)
+                {
+					playerManager.holoDisplayTransform.gameObject.SetActive(false);
+				}
 				playerManager.holoDisplayTransform = null;
 			}
 			// Enable various other objects only for the local user
