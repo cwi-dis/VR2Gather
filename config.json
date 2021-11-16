@@ -23,7 +23,8 @@
   },
   "VR" : {
 	"disableKeyboardMouse" : false,
-	"preferredController" : "emulation"
+	"preferredController" : "emulation",
+	"useLookingGlass" : true
 	},
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
