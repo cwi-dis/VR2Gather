@@ -40,23 +40,16 @@ public class HandEmulationController : MonoBehaviour
             if (autoCenterMouse)
             {
                 Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.None;
             }
             isGroping = isGropingingNow;
             if (isGroping)
             {
-                if (autoCenterMouse)
-                {
-                    Cursor.lockState = CursorLockMode.Locked;
-                }
                 Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
                 isTouching = false;
             } else
             {
-                if (autoCenterMouse)
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                }
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
                 touchCollider.enabled = false;
             }
