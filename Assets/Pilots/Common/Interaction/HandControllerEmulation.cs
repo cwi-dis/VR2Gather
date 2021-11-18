@@ -12,7 +12,7 @@ using VRT.Core;
 // Grabbing not implemented, because it doesn't seem to useful (without hands). But doable
 // if we want to.
 //
-public class HandEmulationController : MonoBehaviour
+public class HandControllerEmulation : MonoBehaviour
 {
     [Tooltip("Mouse cursor to use while looking for touchable items")]
     public Texture2D gropingCursorTexture;
