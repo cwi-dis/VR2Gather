@@ -12,3 +12,4 @@
 *.jpg filter=lfs diff=lfs merge=lfs -text
 .ftracelog.txt filter=lfs diff=lfs merge=lfs -text
 .uvgblog.txt filter=lfs diff=lfs merge=lfs -text
+*.cs text=auto
