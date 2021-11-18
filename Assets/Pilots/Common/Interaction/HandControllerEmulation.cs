@@ -42,13 +42,13 @@ namespace VRT.Pilots.Common
                 isGroping = isGropingingNow;
                 if (isGroping)
                 {
-                    Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
+                    showGropeNotTouching();
                     touchCollider.enabled = false;
                     isTouching = false;
                 }
                 else
                 {
-                    Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+                    showGropeNone();
                     touchCollider.enabled = false;
                 }
             }
@@ -59,7 +59,7 @@ namespace VRT.Pilots.Common
             //
             bool isHittingNow = false;
             int layerMask = LayerMask.GetMask("TouchableObject");
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
             RaycastHit hit = new RaycastHit();
             if (Physics.Raycast(ray, out hit, maxDistance, layerMask))
             {
@@ -71,11 +71,11 @@ namespace VRT.Pilots.Common
                 isTouching = isHittingNow;
                 if (isTouching)
                 {
-                    Cursor.SetCursor(touchingCursorTexture, Vector2.zero, CursorMode.Auto);
+                    showGropeTouching();
                 }
                 else
                 {
-                    Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
+                    showGropeNotTouching();
                 }
             }
             if (!isTouching)
@@ -97,6 +97,26 @@ namespace VRT.Pilots.Common
             {
                 touchCollider.enabled = false;
             }
+        }
+
+        protected void showGropeNotTouching()
+        {
+            Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
+        }
+
+        protected void showGropeTouching()
+        {
+            Cursor.SetCursor(touchingCursorTexture, Vector2.zero, CursorMode.Auto);
+        }
+
+        protected void showGropeNone()
+        {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+        }
+
+        protected Vector3 getRayDestination()
+        {
+            return Input.mousePosition;
         }
     }
 }
