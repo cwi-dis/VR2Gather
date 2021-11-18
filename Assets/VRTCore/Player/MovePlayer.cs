@@ -2,7 +2,7 @@
 using UnityEngine.XR;
 using VRT.Core;
 
-public class PlayerMovement : MonoBehaviour {
+public class MovePlayer : MonoBehaviour {
     public string leftRightAxis = "Horizontal";
     public string forwardAxis = "Vertical";
     public bool invertForwardAxis = false;

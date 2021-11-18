@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 
-public class GamepadMoveCamera : MoveCamera
+public class MoveCameraGamepad : MoveCamera
 {
     public string leftRightAxisName = "Gamepad_Axis_1";
     public string upDownAxisName = "Gamepad_Axis_2";
