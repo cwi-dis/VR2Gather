@@ -26,23 +26,27 @@ namespace VRT.Pilots.Common
         public KeyCode gropeKey = KeyCode.LeftShift;
         [Tooltip("Key to press to touch an item")]
         public KeyCode touchKey = KeyCode.Mouse0;
-        [Tooltip("Auto-center mouse, to allow use with gamepads. Not implemented.")]
-        public bool autoCenterMouse = false;
         [Tooltip("Collider that actually presses the button")]
         public Collider touchCollider = new SphereCollider();
         protected bool isGroping;
         protected bool isTouching;
 
+        void OnDestroy()
+        {
+            showGropeNone();
+        }
+
         // Update is called once per frame
         void Update()
         {
+            bool mustShow = false;
             bool isGropingingNow = Input.GetKey(gropeKey);
             if (isGroping != isGropingingNow)
             {
                 isGroping = isGropingingNow;
                 if (isGroping)
                 {
-                    showGropeNotTouching();
+                    mustShow = true;
                     touchCollider.enabled = false;
                     isTouching = false;
                 }
@@ -57,25 +61,36 @@ namespace VRT.Pilots.Common
             //
             // Check whether we are hitting any elegible object
             //
-            bool isHittingNow = false;
+            bool isTouchingNow = false;
+            // xxxjack using the layerMask here allows users to touch objects behind other objects.
+            // It may be better to do a two-step raycast, one with and one without layerMask, and only
+            // touch if they both return the same object.
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
-            RaycastHit hit = new RaycastHit();
-            if (Physics.Raycast(ray, out hit, maxDistance, layerMask))
+            RaycastHit firstHit = new RaycastHit();
+            RaycastHit correctHit = new RaycastHit();
+            float handDistance = maxDistance;
+            bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance);
+            bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
+            if (gotFirstHit)
+            {
+                handDistance = firstHit.distance;
+            }
+            if (gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance)
             {
                 //Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
-                isHittingNow = true;
+                isTouchingNow = true;
             }
-            if (isTouching != isHittingNow)
+            if (mustShow || isTouching != isTouchingNow)
             {
-                isTouching = isHittingNow;
+                isTouching = isTouchingNow;
                 if (isTouching)
                 {
-                    showGropeTouching();
+                    showGropeTouching(ray, handDistance);
                 }
                 else
                 {
-                    showGropeNotTouching();
+                    showGropeNotTouching(ray, handDistance);
                 }
             }
             if (!isTouching)
@@ -88,10 +103,10 @@ namespace VRT.Pilots.Common
             //
             if (Input.GetKey(touchKey))
             {
-                GameObject objHit = hit.collider.gameObject;
+                GameObject objHit = correctHit.collider.gameObject;
                 Debug.Log($"xxxjack Moving touchCollider to {objHit.name} at {objHit.transform.position}");
                 touchCollider.enabled = true;
-                touchCollider.transform.position = hit.collider.transform.position;
+                touchCollider.transform.position = correctHit.collider.transform.position;
             }
             if (Input.GetKeyUp(touchKey))
             {
@@ -99,22 +114,22 @@ namespace VRT.Pilots.Common
             }
         }
 
-        protected void showGropeNotTouching()
+        protected virtual void showGropeNotTouching(Ray ray, float distance)
         {
             Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
         }
 
-        protected void showGropeTouching()
+        protected virtual void showGropeTouching(Ray ray, float distance)
         {
             Cursor.SetCursor(touchingCursorTexture, Vector2.zero, CursorMode.Auto);
         }
 
-        protected void showGropeNone()
+        protected virtual void showGropeNone()
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
 
-        protected Vector3 getRayDestination()
+        protected virtual Vector3 getRayDestination()
         {
             return Input.mousePosition;
         }

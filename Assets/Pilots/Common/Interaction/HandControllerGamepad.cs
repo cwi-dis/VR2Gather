@@ -16,6 +16,32 @@ namespace VRT.Pilots.Common
     //
     public class HandControllerGamepad : HandControllerEmulation
     {
-        
+        new const Texture2D gropingCursorTexture = null;
+        new const Texture2D touchingCursorTexture = null;
+        public GameObject hand;
+
+        protected override void showGropeNotTouching(Ray ray, float distance)
+        {
+            var point = ray.GetPoint(distance);
+            hand.transform.position = point;
+            hand.SetActive(true);
+        }
+
+        protected override void showGropeTouching(Ray ray, float distance)
+        {
+            var point = ray.GetPoint(distance);
+            hand.transform.position = point;
+            hand.SetActive(true);
+        }
+
+        protected override void showGropeNone()
+        {
+            hand.SetActive(false);
+        }
+
+        protected override Vector3 getRayDestination()
+        {
+            return Input.mousePosition; //  new Vector3(Camera.main.pixelWidth/2, Camera.main.pixelHeight/2, 0);
+        }
     }
 }
