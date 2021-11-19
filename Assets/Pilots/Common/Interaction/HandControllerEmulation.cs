@@ -30,6 +30,7 @@ namespace VRT.Pilots.Common
         public Collider touchCollider = new SphereCollider();
         protected bool isGroping;
         protected bool isTouching;
+        protected virtual bool alwaysShowGrope { get { return false; } }
 
         void OnDestroy()
         {
@@ -81,7 +82,7 @@ namespace VRT.Pilots.Common
                 //Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
                 isTouchingNow = true;
             }
-            if (mustShow || isTouching != isTouchingNow)
+            if (mustShow || alwaysShowGrope || isTouching != isTouchingNow)
             {
                 isTouching = isTouchingNow;
                 if (isTouching)

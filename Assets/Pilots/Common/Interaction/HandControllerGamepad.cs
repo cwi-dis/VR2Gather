@@ -19,9 +19,13 @@ namespace VRT.Pilots.Common
         new const Texture2D gropingCursorTexture = null;
         new const Texture2D touchingCursorTexture = null;
         public GameObject hand;
+        protected override bool alwaysShowGrope { get { return true; } }
+
 
         protected override void showGropeNotTouching(Ray ray, float distance)
         {
+            Debug.Log($"showGropeNotTouching {ray.origin} to {ray.direction}");
+            Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1f);
             var point = ray.GetPoint(distance);
             hand.transform.position = point;
             hand.SetActive(true);
@@ -29,6 +33,8 @@ namespace VRT.Pilots.Common
 
         protected override void showGropeTouching(Ray ray, float distance)
         {
+            Debug.Log($"showGropeTouching {ray.origin} to {ray.direction}");
+            Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 1f);
             var point = ray.GetPoint(distance);
             hand.transform.position = point;
             hand.SetActive(true);
@@ -41,7 +47,7 @@ namespace VRT.Pilots.Common
 
         protected override Vector3 getRayDestination()
         {
-            return Input.mousePosition; //  new Vector3(Camera.main.pixelWidth/2, Camera.main.pixelHeight/2, 0);
+            return new Vector3(Camera.main.pixelWidth/2, Camera.main.pixelHeight/2, 0);
         }
     }
 }
