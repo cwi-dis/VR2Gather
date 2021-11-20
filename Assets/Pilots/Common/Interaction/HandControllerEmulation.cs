@@ -50,6 +50,7 @@ namespace VRT.Pilots.Common
                     mustShow = true;
                     touchCollider.enabled = false;
                     isTouching = false;
+                    startGroping();
                 }
                 else
                 {
@@ -113,6 +114,11 @@ namespace VRT.Pilots.Common
             {
                 touchCollider.enabled = false;
             }
+        }
+
+        protected virtual void startGroping()
+        {
+
         }
 
         protected virtual void showGropeNotTouching(Ray ray, float distance)

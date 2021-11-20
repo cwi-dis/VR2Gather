@@ -384,9 +384,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1214c1344f998410c9b8aa62da25d437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xySensitivity: 50
+  xySensitivity: 250
   heightSensitivity: 0.1
-  allowHJKLforMouse: 1
+  allowHJKLforMouse: 0
   cameraToControl: {fileID: 8989305335192017463}
   spectator: 0
   playerBody: {fileID: 5131421326051842284}

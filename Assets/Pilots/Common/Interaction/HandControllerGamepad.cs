@@ -18,13 +18,23 @@ namespace VRT.Pilots.Common
     {
         new const Texture2D gropingCursorTexture = null;
         new const Texture2D touchingCursorTexture = null;
+        public string leftRightAxisName = "Gamepad_Axis_1";
+        public string upDownAxisName = "Gamepad_Axis_2";
+        public bool invertUpDown = true;
+        public float sensitivity = 0.1f;
         public GameObject hand;
         protected override bool alwaysShowGrope { get { return true; } }
         private Animator _Animator = null;
+        protected float xHand, yHand;
 
         void Start()
         {
             _Animator = GetComponentInChildren<Animator>();
+        }
+
+        protected override void startGroping()
+        {
+            xHand = yHand = 0f;
         }
 
         protected override void showGropeNotTouching(Ray ray, float distance)
@@ -49,13 +59,29 @@ namespace VRT.Pilots.Common
 
         protected override void showGropeNone()
         {
-            hand.SetActive(false);
             UpdateAnimation("");
+            Invoke("hideHand", 0.5f);
+        }
+
+        private void hideHand()
+        {
+            hand.SetActive(false);
         }
 
         protected override Vector3 getRayDestination()
         {
-            return new Vector3(Camera.main.pixelWidth/2, Camera.main.pixelHeight/2, 0);
+            float x = Input.GetAxis(leftRightAxisName);
+            float y = Input.GetAxis(upDownAxisName);
+            if (invertUpDown) y = -y;
+            xHand += x * sensitivity;
+            yHand += y * sensitivity;
+            if (xHand < -1) xHand = -1;
+            if (xHand > 1) xHand = 1;
+            if (yHand < -1) yHand = -1;
+            if (yHand > 1) yHand = 1;
+            float xPos = (xHand + 1.0f) * Camera.main.pixelWidth / 2;
+            float yPos = (yHand + 1.0f) * Camera.main.pixelHeight / 2;
+            return new Vector3(xPos, yPos, 0);
         }
 
         private void UpdateAnimation(string state)
