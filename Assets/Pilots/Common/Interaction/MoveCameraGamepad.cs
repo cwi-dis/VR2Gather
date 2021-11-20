@@ -10,11 +10,17 @@ namespace VRT.Pilots.Common
         public string leftRightAxisName = "Gamepad_Axis_1";
         public string upDownAxisName = "Gamepad_Axis_2";
         public string heightAxisName = "Gamepad_Axis_6";
+        [Tooltip("Key that disables ")]
+        public KeyCode inhibitKey = KeyCode.None;
         public new const bool allowHJKLforMouse = false;
 
         // Update is called once per frame
         void Update()
         {
+            if (inhibitKey != KeyCode.None && Input.GetKey(inhibitKey))
+            {
+                return;
+            }
             if (heightAxisName != "")
             {
                 float deltaHeight = Input.GetAxis(heightAxisName);

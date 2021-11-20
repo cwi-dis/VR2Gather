@@ -394,6 +394,7 @@ MonoBehaviour:
   leftRightAxisName: Gamepad_Axis_1
   upDownAxisName: Gamepad_Axis_2
   heightAxisName: Gamepad_Axis_6
+  inhibitKey: 334
 --- !u!1 &1663129390789642957
 GameObject:
   m_ObjectHideFlags: 0

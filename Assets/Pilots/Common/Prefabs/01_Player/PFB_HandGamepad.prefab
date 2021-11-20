@@ -94,8 +94,8 @@ MonoBehaviour:
   gropingCursorTexture: {fileID: 0}
   touchingCursorTexture: {fileID: 0}
   maxDistance: 3
-  gropeKey: 354
-  touchKey: 355
+  gropeKey: 334
+  touchKey: 335
   touchCollider: {fileID: 5325479344539973577}
   hand: {fileID: 5027370993768935376}
 --- !u!1001 &1843694398596229101
