@@ -69,10 +69,5 @@ namespace VRT.Pilots.Common
 			}
 			return false;
 		}
-
-		public bool ButtonA()
-		{
-			return Input.GetKey(KeyCode.JoystickButton0);
-		}
 	}
 }

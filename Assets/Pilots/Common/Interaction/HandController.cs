@@ -26,6 +26,7 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
+		public KeyCode teleportModeKey = KeyCode.None;
 		public XRNode XRNode;
 		public State HandState;
 		public Handedness HandHandedness;
@@ -43,7 +44,7 @@ namespace VRT.Pilots.Common
 
 		private List<XRNodeState> _NodeStates = new List<XRNodeState>();
 
-		private bool _WasAButtonPressed = false;
+		private bool inTeleportMode = false;
 		private PlayerLocation _SelectedLocation;
 
 		public void Awake()
@@ -83,11 +84,11 @@ namespace VRT.Pilots.Common
 
 				bool index_trigger_pressed = ControllerInput.Instance.PrimaryTrigger(XRNode);
 				bool hand_trigger_pressed = ControllerInput.Instance.SecondaryTrigger(XRNode);
-				bool a_button_held_down = ControllerInput.Instance.ButtonA();
+				bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
 
-				if (HandHandedness == Handedness.Right && a_button_held_down)
+				if (teleportModeKeyIsPressed)
 				{
-					_WasAButtonPressed = true;
+					inTeleportMode = true;
 					var touchTransform = TouchCollider.transform;
 					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
 					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
@@ -129,7 +130,7 @@ namespace VRT.Pilots.Common
 					}
 					TeleportLineRenderer.SetPositions(points);
 				}
-				else if (_WasAButtonPressed)
+				else if (inTeleportMode)
 				{
 					if (_SelectedLocation != null)
 					{
@@ -138,7 +139,7 @@ namespace VRT.Pilots.Common
 					_SelectedLocation = null;
 					TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					TeleportLineRenderer.enabled = false;
-					_WasAButtonPressed = false;
+					inTeleportMode = false;
 				}
 
 

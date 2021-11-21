@@ -137,6 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b5a4aff330e924da0f9226906a30eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teleportModeKey: 331
   XRNode: 5
   HandState: 0
   HandHandedness: 1
