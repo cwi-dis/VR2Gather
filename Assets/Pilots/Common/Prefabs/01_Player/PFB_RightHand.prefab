@@ -101,6 +101,8 @@ GameObject:
   - component: {fileID: 8329836872111453749}
   - component: {fileID: 1775352735639643329}
   - component: {fileID: 3378288652183412154}
+  - component: {fileID: 3914505421289163132}
+  - component: {fileID: 8540287806463370437}
   m_Layer: 0
   m_Name: PFB_RightHand
   m_TagString: Untagged
@@ -138,6 +140,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 331
+  grabbingModeAxis: 
+  grabbingModeAxisInvert: 0
+  pointingModeAxisInvert: 0
+  pointingModeAxis: 
   XRNode: 5
   HandState: 0
   HandHandedness: 1
@@ -284,6 +290,39 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &3914505421289163132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6652609405479520317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Device: 1
+  m_PoseSource: 5
+  m_PoseProviderComponent: {fileID: 0}
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_UseRelativeTransform: 0
+--- !u!114 &8540287806463370437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6652609405479520317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c7685ce3374dbc46b3caf881339bce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferenceTransform: {fileID: 1573086616002105275}
+  RendererToDisable: {fileID: 77056827047438991}
+  TimeOut: 1
 --- !u!1001 &77056827044356399
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -364,6 +403,12 @@ PrefabInstance:
 --- !u!4 &77056827043969945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24,
+    type: 3}
+  m_PrefabInstance: {fileID: 77056827044356399}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &77056827047438991 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: 401ae649b1eada944aec72c57ba14a24,
     type: 3}
   m_PrefabInstance: {fileID: 77056827044356399}
   m_PrefabAsset: {fileID: 0}
