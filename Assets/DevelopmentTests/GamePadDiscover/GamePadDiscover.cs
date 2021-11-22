@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class GamePadDiscover : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class GamePadDiscover : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log($"XRSettings.enabled={XRSettings.enabled}");
+        Debug.Log($"XRSettings.isDeviceActive={XRSettings.isDeviceActive}");
+        Debug.Log($"XRSettings.loadedDeviceName={XRSettings.loadedDeviceName}");
         var names = Input.GetJoystickNames();
         foreach(var name in names)
         {
