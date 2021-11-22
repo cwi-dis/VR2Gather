@@ -41,8 +41,9 @@ namespace VRT.Pilots.Common
         {
             //Debug.Log($"showGropeNotTouching {ray.origin} to {ray.direction}");
             //Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1f);
-            var point = ray.GetPoint(distance-0.1f);
+            var point = ray.GetPoint(distance-0.01f);
             hand.transform.position = point;
+            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
             hand.SetActive(true);
             UpdateAnimation("");
         }
@@ -51,8 +52,9 @@ namespace VRT.Pilots.Common
         {
             //Debug.Log($"showGropeTouching {ray.origin} to {ray.direction}");
             //Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 1f);
-            var point = ray.GetPoint(distance-0.1f);
+            var point = ray.GetPoint(distance-0.01f);
             hand.transform.position = point;
+            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
             hand.SetActive(true);
             UpdateAnimation("IsPointing");
         }
@@ -60,6 +62,8 @@ namespace VRT.Pilots.Common
         protected override void showGropeNone()
         {
             UpdateAnimation("");
+            hand.transform.localPosition = Vector3.zero;
+            hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
             Invoke("hideHand", 0.5f);
         }
 
