@@ -16,4 +16,6 @@ public class PlayerManager : MonoBehaviour {
     public GameObject[] localPlayerOnlyObjects;
     public GameObject[] inputEmulationOnlyObjects;
     public GameObject[] inputGamepadOnlyObjects;
+    public GameObject[] inputOculusOnlyObjects;
+    public GameObject[] inputOpenVROnlyObjects;
 }

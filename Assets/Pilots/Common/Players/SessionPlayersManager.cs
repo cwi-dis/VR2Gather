@@ -210,6 +210,18 @@ namespace VRT.Pilots.Common
 			{
 				obj.SetActive(isLocalGamepadPlayer);
 			}
+			// Enable oculus objects only for the local user when using oculus
+			bool isLocalOculusPlayer = isLocalPlayer && VRConfig.Instance.useControllerOculus();
+			foreach (var obj in playerManager.inputOculusOnlyObjects)
+			{
+				obj.SetActive(isLocalOculusPlayer);
+			}
+			// Enable gamepad objects only for the local user when using gamepad
+			bool isLocalOpenVRPlayer = isLocalPlayer && VRConfig.Instance.useControllerOpenVR();
+			foreach (var obj in playerManager.inputOpenVROnlyObjects)
+			{
+				obj.SetActive(isLocalOpenVRPlayer);
+			}
 
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 

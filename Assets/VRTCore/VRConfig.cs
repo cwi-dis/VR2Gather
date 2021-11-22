@@ -29,22 +29,29 @@ namespace VRT.Core
         public string outputDeviceName()
         {
             // xxxjack should be check XRSettings.isDeviceActive?
-            return XRSettings.loadedDeviceName;
+            var rv = XRSettings.loadedDeviceName;
+            return rv;
         }
 
         public bool useHMD()
         {
+            bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
+            return rv;
+#if xxxjack_removed
             // xxxjack for some reason this doesn't always work, it returns false when using the Vive...
             var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
             SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
+            int nEnabled = 0;
+            Debug.Log($"VRConfig: {xrDisplaySubsystems.Count} subsystems");
             foreach (var xrDisplay in xrDisplaySubsystems)
             {
                 if (xrDisplay.running)
                 {
-                    return true;
+                    nEnabled += 1;
                 }
             }
-            return false;
+            return nEnabled >= 1;
+#endif
         }
 
         public bool useControllerEmulation()
@@ -63,6 +70,24 @@ namespace VRT.Core
         {
             // xxxjack should we check that we are _actually_ using a gamepad?
             return Config.Instance.VR.preferredController == "gamepad";
+        }
+
+        public bool useControllerOpenVR()
+        {
+            return useControllerXR("OpenVR");
+        }
+
+        public bool useControllerOculus()
+        {
+            return useControllerXR("Oculus");
+        }
+
+        private bool useControllerXR(string name)
+        {
+            if (!useHMD()) return false;
+            string preferred = Config.Instance.VR.preferredController;
+            if (preferred != "" && preferred != name) return false;
+            return XRSettings.loadedDeviceName == name;
         }
 
         public void initScreen()
