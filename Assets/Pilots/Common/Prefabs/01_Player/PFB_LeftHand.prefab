@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3028879094170554323}
   - component: {fileID: 8361246497982820557}
   m_Layer: 31
-  m_Name: GrabCollider
+  m_Name: LeftGrabCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 5823192305598419950}
   - component: {fileID: 3269169586784529651}
   m_Layer: 30
-  m_Name: TouchCollider
+  m_Name: LeftTouchCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,10 +140,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 0
-  grabbingModeAxis: 
-  grabbingModeAxisInvert: 0
+  pointingModeAxis: PrimaryTriggerLeft
   pointingModeAxisInvert: 0
-  pointingModeAxis: 
+  grabbingModeAxis: SecondaryTriggerLeft
+  grabbingModeAxisInvert: 0
   XRNode: 4
   HandState: 0
   HandHandedness: 0
