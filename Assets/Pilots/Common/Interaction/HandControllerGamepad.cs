@@ -16,60 +16,28 @@ namespace VRT.Pilots.Common
     //
     public class HandControllerGamepad : HandControllerEmulation
     {
-        new const Texture2D gropingCursorTexture = null;
-        new const Texture2D touchingCursorTexture = null;
+        [Tooltip("Axis that controls 2D horizontal position of hand")]
         public string leftRightAxisName = "Gamepad_Axis_1";
+        [Tooltip("Axis that controls 2D vertical position of hand")]
         public string upDownAxisName = "Gamepad_Axis_2";
+        [Tooltip("Use inverted upDownAxis value")]
         public bool invertUpDown = true;
+        [Tooltip("How fast hand moves with axis values")]
         public float sensitivity = 0.1f;
-        public GameObject hand;
-        protected override bool alwaysShowGrope { get { return true; } }
-        private Animator _Animator = null;
-        protected float xHand, yHand;
 
-        void Start()
-        {
-            _Animator = GetComponentInChildren<Animator>();
-        }
+        protected float xHand, yHand;
 
         protected override void startGroping()
         {
             xHand = yHand = 0f;
         }
 
-        protected override void showGropeNotTouching(Ray ray, float distance)
+        protected override void showCursor()
         {
-            //Debug.Log($"showGropeNotTouching {ray.origin} to {ray.direction}");
-            //Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1f);
-            var point = ray.GetPoint(distance-0.01f);
-            hand.transform.position = point;
-            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
-            hand.SetActive(true);
-            UpdateAnimation("");
         }
 
-        protected override void showGropeTouching(Ray ray, float distance)
+        protected override void hideCursor()
         {
-            //Debug.Log($"showGropeTouching {ray.origin} to {ray.direction}");
-            //Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 1f);
-            var point = ray.GetPoint(distance-0.01f);
-            hand.transform.position = point;
-            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
-            hand.SetActive(true);
-            UpdateAnimation("IsPointing");
-        }
-
-        protected override void showGropeNone()
-        {
-            UpdateAnimation("");
-            hand.transform.localPosition = Vector3.zero;
-            hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
-            Invoke("hideHand", 0.5f);
-        }
-
-        private void hideHand()
-        {
-            hand.SetActive(false);
         }
 
         protected override Vector3 getRayDestination()
@@ -88,11 +56,5 @@ namespace VRT.Pilots.Common
             return new Vector3(xPos, yPos, 0);
         }
 
-        private void UpdateAnimation(string state)
-        {
-            if (_Animator == null) return;
-            _Animator.SetBool("IsGrabbing", state == "IsGrabbing");
-            _Animator.SetBool("IsPointing", state == "IsPointing");
-        }
     }
 }

@@ -9,28 +9,31 @@ namespace VRT.Pilots.Common
     // This script emulates HandController for use when you have no HMD or controllers,
     // only keyboard and mouse.
     // When you press shift you will see an indication whether the object under the mouse is
-    // touchable. If so you can press left-click and touch it.
+    // touchable. If so you can press left-click and touch it. 
     //
     // Grabbing not implemented, because it doesn't seem to useful (without hands). But doable
     // if we want to.
     //
     public class HandControllerEmulation : MonoBehaviour
     {
-        [Tooltip("Mouse cursor to use while looking for touchable items")]
-        public Texture2D gropingCursorTexture;
-        [Tooltip("Mouse cursor to use when over a touchable item")]
-        public Texture2D touchingCursorTexture;
         [Tooltip("Maximum distance of touchable objects")]
         public float maxDistance = Mathf.Infinity;
         [Tooltip("Key to press to start looking for touchable items")]
         public KeyCode gropeKey = KeyCode.LeftShift;
         [Tooltip("Key to press to touch an item")]
         public KeyCode touchKey = KeyCode.Mouse0;
+        [Tooltip("The virtual hand that is used to touch objects")]
+        public GameObject hand;
         [Tooltip("Collider that actually presses the button")]
         public Collider touchCollider = new SphereCollider();
         protected bool isGroping;
         protected bool isTouching;
-        protected virtual bool alwaysShowGrope { get { return false; } }
+        protected Animator _Animator = null;
+
+        void Start()
+        {
+            _Animator = GetComponentInChildren<Animator>();
+        }
 
         void OnDestroy()
         {
@@ -40,14 +43,12 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
-            bool mustShow = false;
             bool isGropingingNow = Input.GetKey(gropeKey);
             if (isGroping != isGropingingNow)
             {
                 isGroping = isGropingingNow;
                 if (isGroping)
                 {
-                    mustShow = true;
                     touchCollider.enabled = false;
                     isTouching = false;
                     startGroping();
@@ -61,12 +62,11 @@ namespace VRT.Pilots.Common
             if (!isGroping) return;
 
             //
-            // Check whether we are hitting any elegible object
+            // Check whether we are hitting any elegible object.
+            // We look both for the first hit (where we show the hand) and
+            // the first touchable hit.
             //
             bool isTouchingNow = false;
-            // xxxjack using the layerMask here allows users to touch objects behind other objects.
-            // It may be better to do a two-step raycast, one with and one without layerMask, and only
-            // touch if they both return the same object.
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
             RaycastHit firstHit = new RaycastHit();
@@ -80,28 +80,25 @@ namespace VRT.Pilots.Common
             }
             if (gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance)
             {
-                //Debug.Log($"xxxjack mouse-hit {hit.collider.gameObject.name}");
                 isTouchingNow = true;
             }
-            if (mustShow || alwaysShowGrope || isTouching != isTouchingNow)
+            //
+            // Show that hand, either touching or not touching.
+            // If not touching we are done.
+            //
+            isTouching = isTouchingNow;
+            if (isTouching)
             {
-                isTouching = isTouchingNow;
-                if (isTouching)
-                {
-                    showGropeTouching(ray, handDistance);
-                }
-                else
-                {
-                    showGropeNotTouching(ray, handDistance);
-                }
+                showGropeTouching(ray, handDistance);
             }
-            if (!isTouching)
+            else
             {
+                showGropeNotTouching(ray, handDistance);
                 touchCollider.enabled = false;
                 return;
             }
             //
-            // Now check whether the left mouse is clicked and perform the action.
+            // Hand is touching something. Check whether the left mouse is clicked and perform the action.
             //
             if (Input.GetKey(touchKey))
             {
@@ -118,22 +115,60 @@ namespace VRT.Pilots.Common
 
         protected virtual void startGroping()
         {
-
+            hideCursor();
         }
 
-        protected virtual void showGropeNotTouching(Ray ray, float distance)
+        protected void showGropeNotTouching(Ray ray, float distance)
         {
-            Cursor.SetCursor(gropingCursorTexture, Vector2.zero, CursorMode.Auto);
+            //Debug.Log($"showGropeNotTouching {ray.origin} to {ray.direction}");
+            //Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1f);
+            var point = ray.GetPoint(distance - 0.01f);
+            hand.transform.position = point;
+            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
+            hand.SetActive(true);
+            UpdateAnimation("");
         }
 
-        protected virtual void showGropeTouching(Ray ray, float distance)
+        protected void showGropeTouching(Ray ray, float distance)
         {
-            Cursor.SetCursor(touchingCursorTexture, Vector2.zero, CursorMode.Auto);
+            //Debug.Log($"showGropeTouching {ray.origin} to {ray.direction}");
+            //Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 1f);
+            var point = ray.GetPoint(distance - 0.01f);
+            hand.transform.position = point;
+            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
+            hand.SetActive(true);
+            UpdateAnimation("IsPointing");
         }
 
-        protected virtual void showGropeNone()
+        protected void showGropeNone()
         {
-            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+            UpdateAnimation("");
+            hand.transform.localPosition = Vector3.zero;
+            hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+            Invoke("hideHand", 0.5f);
+            showCursor();
+        }
+
+        private void hideHand()
+        {
+            hand.SetActive(false);
+        }
+
+        protected virtual void showCursor()
+        {
+            Cursor.visible = true;
+        }
+
+        protected virtual void hideCursor()
+        {
+            Cursor.visible = false;
+        }
+
+        protected void UpdateAnimation(string state)
+        {
+            if (_Animator == null) return;
+            _Animator.SetBool("IsGrabbing", state == "IsGrabbing");
+            _Animator.SetBool("IsPointing", state == "IsPointing");
         }
 
         protected virtual Vector3 getRayDestination()
