@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VRT.Core;
 
 public class Calibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }
@@ -12,6 +13,14 @@ public class Calibration : MonoBehaviour {
     public float        _rotationSlightStep = 1f;
     public float        _translationSlightStep = 0.01f;
     public string        prefix = "pcs";
+
+    [Header("Input controller support")]
+    public CalibrationControls emulation;
+    public CalibrationControls gamepad;
+    public CalibrationControls oculus;
+    public CalibrationControls openvr;
+    private CalibrationControls controls = null;
+    [Header("UI Panel references")]
     public GameObject   ComfortUI;
     public GameObject   CalibrationModeUI;
     public GameObject   TransalationUI;
@@ -26,6 +35,16 @@ public class Calibration : MonoBehaviour {
     bool IsDownLeftTrigger { get { return leftTrigger && !oldLeftTrigger; } }
 
     private void Start() {
+        // Enable the correct set of controls (and only the correct set)
+        if (VRConfig.Instance.useControllerEmulation()) controls = emulation;
+        if (VRConfig.Instance.useControllerGamepad()) controls = gamepad;
+        if (VRConfig.Instance.useControllerOculus()) controls = oculus;
+        if (VRConfig.Instance.useControllerOpenVR()) controls = openvr;
+        emulation.enabled = emulation == controls;
+        gamepad.enabled = gamepad == controls;
+        oculus.enabled = oculus == controls;
+        openvr.enabled = openvr == controls;
+        // Get initial position/orientation from the preferences
         cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         cameraReference.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
     }
@@ -36,38 +55,29 @@ public class Calibration : MonoBehaviour {
         oldLeftTrigger = leftTrigger;
         rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight") >= 0.9;
         leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft") >= 0.9;
-        
+        //
+        // Enable current UI
+        //
+        ComfortUI.SetActive(state == State.Comfort);
+        CalibrationModeUI.SetActive(state == State.Mode);
+        TransalationUI.SetActive(state == State.Translation);
+        RotationUI.SetActive(state == State.Rotation);
+
         switch (state) {
             case State.Comfort:
-                #region UI
-                ComfortUI.SetActive(true);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
-                // I'm Comfortabler
-                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || Input.GetKeyDown(KeyCode.Y)) {
+                // I'm Comfortable
+                if (controls.yes.get()) {
                     Debug.Log("Calibration: User is happy, return to LoginManager");
                     //Application.Quit();
                     SceneManager.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
-                if (Input.GetKeyDown(KeyCode.Keypad0) || IsDownLeftTrigger || Input.GetKeyDown(KeyCode.N)) {
+                if (controls.no.get()) {
                     Debug.Log("Calibration: Starting calibration process");
                     state = State.Mode;
                 }
-                // ResetAxisTrigger
-                #endregion
                 break;
             case State.Mode:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(true);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
                 //Activate Translation
                 if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKeyDown(KeyCode.T)) {
                     Debug.Log("Calibration: Translation Mode");
@@ -82,16 +92,8 @@ public class Calibration : MonoBehaviour {
                     Debug.Log("Calibration: User is done");
                     state = State.Comfort;
                 }
-                #endregion
                 break;
             case State.Translation:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(true);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
                 // Movement
                 float zAxis = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
                 if (Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.F)) zAxis = 1;
@@ -129,16 +131,8 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Translation Reset to: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
-                #endregion
                 break;
             case State.Rotation:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(true);
-                #endregion
-                #region INPUT
                 // Rotation
                 float yAxisR = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
                 if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.L)) yAxisR = -1;
@@ -171,7 +165,6 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Rotation Reset to: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
-                #endregion
                 break;
             default:
                 break;
