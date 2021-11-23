@@ -200,42 +200,47 @@ PrefabInstance:
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.01
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.08
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.21
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.92387956
+      value: 0.9330127
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.38268343
+      value: -0.24999997
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.24999997
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.06698728
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -45
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
