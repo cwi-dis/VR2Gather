@@ -22,8 +22,37 @@ public class CalibrationControls : MonoBehaviour
             return rv;
         }
     }
+    [System.Serializable]
+    public class AxisOrTwoKeys
+    {
+        public string axis = "";
+        public bool invertAxis = false;
+        public KeyCode keyDecrease = KeyCode.None;
+        public KeyCode keyIncrease = KeyCode.None;
+        public float get()
+        {
+            if (axis != "")
+            {
+                var rv = Input.GetAxis(axis);
+                if (invertAxis) rv = -rv;
+                return rv;
+            }
+            if (Input.GetKeyDown(keyDecrease)) return -1;
+            if (Input.GetKeyDown(keyIncrease)) return 1;
+            return 0;
+        }
+    }
     public KeyOrAxis yes;
     public KeyOrAxis no;
+    public KeyOrAxis translate;
+    public KeyOrAxis rotate;
+    public KeyOrAxis done;
+    public KeyOrAxis reset;
+
+    public AxisOrTwoKeys backwardForward;
+    public AxisOrTwoKeys leftRight;
+    public AxisOrTwoKeys downUp;
+
     // Start is called before the first frame update
     void Start()
     {
