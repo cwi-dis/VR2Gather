@@ -222,6 +222,14 @@ namespace VRT.Pilots.Common
 			{
 				obj.SetActive(isLocalOpenVRPlayer);
 			}
+			// Disable objects that should not be used with an HMD (to forestall motion sickness)
+			if (VRConfig.Instance.useHMD())
+            {
+				foreach(var obj in playerManager.inputNonHMDObjects)
+                {
+					obj.SetActive(false);
+                }
+            }
 
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
