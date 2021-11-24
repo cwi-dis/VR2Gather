@@ -139,10 +139,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b5a4aff330e924da0f9226906a30eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 0
-  pointingModeAxis: PrimaryTriggerLeft
+  teleportModeKey: 338
+  pointingModeAxis: 
+  pointingModeKey: 344
   pointingModeAxisInvert: 0
-  grabbingModeAxis: SecondaryTriggerLeft
+  grabbingModeAxis: 
+  grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   XRNode: 4
   HandState: 0
@@ -297,7 +299,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5862755559334039368}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
   m_Name: 
