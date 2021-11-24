@@ -39,7 +39,7 @@ public class GamePadDiscover : MonoBehaviour
                 float newValue = Input.GetAxis(a.axisName);
                 if (newValue != a.axisValue)
                 {
-                    Debug.Log($"Axis {a.axisName} = {newValue}");
+                    //Debug.Log($"Axis {a.axisName} = {newValue}");
                     a.axisValue = newValue;
                 }
             }
