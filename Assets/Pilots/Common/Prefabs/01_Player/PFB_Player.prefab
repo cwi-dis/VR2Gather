@@ -2377,6 +2377,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: pointingModeKey
+      value: 344
+      objectReference: {fileID: 0}
+    - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: pointingModeAxis
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: pointingModeAxisInvert
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5862755559334039368, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_Name
@@ -2548,6 +2563,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: pointingModeKey
+      value: 345
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: pointingModeAxis
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: pointingModeAxisInvert
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6652609405479520317, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}

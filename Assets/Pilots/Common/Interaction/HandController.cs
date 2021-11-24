@@ -31,11 +31,15 @@ namespace VRT.Pilots.Common
 
 		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
 		public string pointingModeAxis = "";
-		[Tooltip("Invert meaning of PointingModeAxis")]
+		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
+		public KeyCode pointingModeKey = KeyCode.None;
+		[Tooltip("Invert meaning of PointingModeAxis or Key")]
 		public bool pointingModeAxisInvert = false;
 
 		[Tooltip("When this axis is active (or inactive depending on invert) we are in grabbing mode")]
 		public string grabbingModeAxis = "";
+		[Tooltip("When this Key is active (or inactive depending on invert) we are in grabbing mode")]
+		public KeyCode grabbingModeKey = KeyCode.None;
 		[Tooltip("Invert meaning of grabbingModeAxis")]
 		public bool grabbingModeAxisInvert = false;
 		
@@ -100,9 +104,29 @@ namespace VRT.Pilots.Common
 				//
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
-				bool pointingModeAxisIsPressed = Input.GetAxis(pointingModeAxis) >= 0.01f;
+
+				bool pointingModeAxisIsPressed = false;
+				if (pointingModeKey != KeyCode.None)
+				{
+					pointingModeAxisIsPressed = Input.GetKey(pointingModeKey);
+				}
+				if (pointingModeAxis != "")
+				{
+					pointingModeAxisIsPressed = Input.GetAxis(pointingModeAxis) >= 0.5f;
+				}
 				if (pointingModeAxisInvert) pointingModeAxisIsPressed = !pointingModeAxisIsPressed;
-				bool grabbingModeAxisIsPressed = Input.GetAxis(grabbingModeAxis) >= 0.01f;
+
+				bool grabbingModeAxisIsPressed = false;
+				if (pointingModeKey != KeyCode.None)
+				{
+					grabbingModeAxisIsPressed = Input.GetKey(grabbingModeKey);
+				}
+				if (grabbingModeAxis != "")
+				{
+					grabbingModeAxisIsPressed = Input.GetAxis(grabbingModeAxis) >= 0.5f;
+				}
+				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
+
 				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
 				bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
 
