@@ -76,7 +76,7 @@ public class Calibration : MonoBehaviour {
                     Debug.Log("Calibration: Rotation Mode");
                     state = State.Rotation;
                 }
-                if (controls.done.get()) {
+                if (controls.yes.get()) {
                     Debug.Log("Calibration: User is done");
                     state = State.Comfort;
                 }

@@ -46,7 +46,6 @@ public class CalibrationControls : MonoBehaviour
     public KeyOrAxis no;
     public KeyOrAxis translate;
     public KeyOrAxis rotate;
-    public KeyOrAxis done;
     public KeyOrAxis reset;
 
     public AxisOrTwoKeys backwardForward;
