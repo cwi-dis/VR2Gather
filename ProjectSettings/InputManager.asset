@@ -302,7 +302,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.001
+    dead: 0.3
     sensitivity: 1
     snap: 0
     invert: 0
@@ -318,7 +318,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.001
+    dead: 0.3
     sensitivity: 1
     snap: 0
     invert: 1
@@ -334,7 +334,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.001
+    dead: 0.3
     sensitivity: 1
     snap: 0
     invert: 0
@@ -350,7 +350,7 @@ InputManager:
     altNegativeButton: 
     altPositiveButton: 
     gravity: 0
-    dead: 0.001
+    dead: 0.3
     sensitivity: 1
     snap: 0
     invert: 1
@@ -358,7 +358,7 @@ InputManager:
     axis: 4
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_GearVR_DpadX
+    m_Name: unused_Oculus_GearVR_DpadX
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -374,7 +374,7 @@ InputManager:
     axis: 4
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_GearVR_DpadY
+    m_Name: unused_Oculus_GearVR_DpadY
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -390,7 +390,7 @@ InputManager:
     axis: 5
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_GearVR_LIndexTrigger
+    m_Name: unused_Oculus_GearVR_LIndexTrigger
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -403,10 +403,10 @@ InputManager:
     snap: 0
     invert: 0
     type: 2
-    axis: 12
+    axis: 8
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_GearVR_RIndexTrigger
+    m_Name: unused_Oculus_GearVR_RIndexTrigger
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -419,10 +419,10 @@ InputManager:
     snap: 0
     invert: 0
     type: 2
-    axis: 11
+    axis: 9
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_Button2
+    m_Name: unused_Oculus_CrossPlatform_Button2
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -438,7 +438,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_Button4
+    m_Name: unused_Oculus_CrossPlatform_Button4
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -454,7 +454,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_PrimaryThumbstick
+    m_Name: unused_Oculus_CrossPlatform_PrimaryThumbstick
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -470,7 +470,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_SecondaryThumbstick
+    m_Name: unused_Oculus_CrossPlatform_SecondaryThumbstick
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -550,7 +550,7 @@ InputManager:
     axis: 11
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_PrimaryThumbstickHorizontal
+    m_Name: unused_Oculus_CrossPlatform_PrimaryThumbstickHorizontal
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -566,7 +566,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_PrimaryThumbstickVertical
+    m_Name: unused_Oculus_CrossPlatform_PrimaryThumbstickVertical
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -582,7 +582,7 @@ InputManager:
     axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_SecondaryThumbstickHorizontal
+    m_Name: unused_Oculus_CrossPlatform_SecondaryThumbstickHorizontal
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -598,7 +598,7 @@ InputManager:
     axis: 3
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Oculus_CrossPlatform_SecondaryThumbstickVertical
+    m_Name: unused_Oculus_CrossPlatform_SecondaryThumbstickVertical
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
@@ -887,6 +887,230 @@ InputManager:
     joyNum: 0
   - serializedVersion: 3
     m_Name: Gamepad_Axis_6
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_7
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_8
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_9
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_10
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_11
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_12
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_13
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_14
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_15
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_16
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_17
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_18
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_19
+    descriptiveName: 
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: 
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 0.3
+    dead: 0.05
+    sensitivity: 0.3
+    snap: 0
+    invert: 0
+    type: 2
+    axis: 5
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: Gamepad_Axis_20
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
