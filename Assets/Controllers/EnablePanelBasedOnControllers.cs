@@ -18,8 +18,8 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        bool isOculus = false;
-        bool isVive = false;
+        bool isOculus = VRConfig.Instance.useControllerOculus();
+        bool isVive = VRConfig.Instance.useControllerOpenVR();
         bool isEmulation = VRConfig.Instance.useControllerEmulation();
         bool isGamepad = VRConfig.Instance.useControllerGamepad();
 
