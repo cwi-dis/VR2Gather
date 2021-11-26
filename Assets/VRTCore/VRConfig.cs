@@ -174,6 +174,12 @@ namespace VRT.Core
             return currentInputDevice == "Oculus";
         }
 
+        public float cameraDefaultHeight()
+        {
+            if (useHMD()) return 0;
+            return 1.7f;    // Default camera height for non-HMD users.
+        }
+
         public void initScreen()
         {
             Resolution[] resolutions = Screen.resolutions;

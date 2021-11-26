@@ -26,6 +26,16 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
+    public static void ResetFactorySettings()
+    {
+        PlayerPrefs.SetFloat("pcs_pos_x", 0);
+        PlayerPrefs.SetFloat("pcs_pos_y", VRConfig.Instance.cameraDefaultHeight());
+        PlayerPrefs.SetFloat("pcs_pos_z", 0);
+        PlayerPrefs.SetFloat("tvm_pos_x", 0);
+        PlayerPrefs.SetFloat("tvm_pos_y", VRConfig.Instance.cameraDefaultHeight());
+        PlayerPrefs.SetFloat("tvm_pos_z", 0);
+    }
+
     private void Start() {
         // Enable the correct set of controls (and only the correct set)
         if (VRConfig.Instance.useControllerEmulation()) controls = emulation;
@@ -37,7 +47,7 @@ public class Calibration : MonoBehaviour {
         oculus.enabled = oculus == controls;
         openvr.enabled = openvr == controls;
         // Get initial position/orientation from the preferences
-        cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
+        cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", VRConfig.Instance.cameraDefaultHeight()), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         cameraReference.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
     }
 
@@ -54,30 +64,42 @@ public class Calibration : MonoBehaviour {
         switch (state) {
             case State.Comfort:
                 // I'm Comfortable
-                if (controls.yes.get()) {
-                    Debug.Log("Calibration: User is happy, return to LoginManager");
+                if (controls.yes.get())
+                {
+                    Debug.Log("Calibration: Comfort: User is happy, return to LoginManager");
                     //Application.Quit();
                     SceneManager.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
-                if (controls.no.get()) {
-                    Debug.Log("Calibration: Starting calibration process");
+                if (controls.no.get())
+                {
+                    Debug.Log("Calibration: Comfort: Starting calibration process");
                     state = State.Mode;
                 }
                 break;
             case State.Mode:
                 //Activate Translation
-                if (controls.translate.get()) {
-                    Debug.Log("Calibration: Translation Mode");
+                if (controls.translate.get())
+                {
+                    Debug.Log("Calibration: Mode: Selected Translation Mode");
                     state = State.Translation;
                 }
                 //Activate Rotation (UpAxis)
-                if (controls.rotate.get()) {
-                    Debug.Log("Calibration: Rotation Mode");
+                if (controls.rotate.get())
+                {
+                    Debug.Log("Calibration: Mode: Selected Rotation Mode");
                     state = State.Rotation;
                 }
-                if (controls.yes.get()) {
-                    Debug.Log("Calibration: User is done");
+                // Reset everything to factory settings
+                if (controls.reset.get())
+                {
+                    Debug.Log("Calibration: Mode: Reset factory settings");
+                    ResetFactorySettings();
+                    cameraReference.transform.localPosition = Vector3.zero;
+                    cameraReference.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                }
+                if (controls.yes.get() || controls.no.get() || controls.done.get()) {
+                    Debug.Log("Calibration: Mode: User is done");
                     state = State.Comfort;
                 }
                 break;
@@ -91,8 +113,8 @@ public class Calibration : MonoBehaviour {
                 if (yAxis != 0) Debug.Log($"xxxjack rotation {yAxis}");
                 if (controls.reset.get())
                 {
-                    cameraReference.transform.localPosition = new Vector3(0, 0, 0);
-                    Debug.Log("Calibration: Try translation 0,0,0");
+                    cameraReference.transform.localPosition = new Vector3(0, VRConfig.Instance.cameraDefaultHeight(), 0);
+                    Debug.Log($"Calibration: Translation: reset to 0,{VRConfig.Instance.cameraDefaultHeight()},0");
                 }
                 cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
@@ -101,18 +123,18 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
-                    Debug.Log($"Calibration: Translation Saved: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Saved: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
                 // Back
                 if (controls.no.get()) {
                     cameraReference.transform.localPosition = new Vector3 ( 
                         PlayerPrefs.GetFloat(prefix+"_pos_x", 0), 
-                        PlayerPrefs.GetFloat(prefix+"_pos_y", 0), 
+                        PlayerPrefs.GetFloat(prefix+"_pos_y", VRConfig.Instance.cameraDefaultHeight()), 
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
                     var pos = cameraReference.transform.localPosition;
-                    Debug.Log($"Calibration: Translation Reset to: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Reset to: {pos.x},{pos.y},{pos.z}");
                     state = State.Mode;
                 }
                 break;
@@ -122,7 +144,7 @@ public class Calibration : MonoBehaviour {
                 if (yAxisR != 0) Debug.Log($"xxxjack rotation {yAxisR}");
                 if (controls.reset.get())
                 {
-                    Debug.Log("Calibration: Try rotation 0,0,0");
+                    Debug.Log("Calibration: Rotation: Reset to 0,0,0");
                     cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);
                 }
                 cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
@@ -133,7 +155,7 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
 
-                    Debug.Log($"Calibration: Rotation Saved: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Saved: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
                 // Back
@@ -144,7 +166,7 @@ public class Calibration : MonoBehaviour {
                         PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
                     );
                     var rot = cameraReference.transform.localRotation;
-                    Debug.Log($"Calibration: Rotation Reset to: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Reset to: {rot.x},{rot.y},{rot.z}");
                     state = State.Mode;
                 }
                 break;
