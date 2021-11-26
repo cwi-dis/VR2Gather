@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.XR;
 
 namespace VRT.Core
 {
-    public class VRConfig
+    public class VRConfig : MonoBehaviour
     {
-
+        private string currentOutputDevice = null;
+        private string currentInputDevice = null;
+        private bool initializing = false;
+        private bool initialized = false;
+       
         static VRConfig _Instance;
         public static VRConfig Instance
         {
@@ -21,6 +27,78 @@ namespace VRT.Core
             }
         }
 
+        private void Awake()
+        {
+            if (_Instance != null && _Instance != this)
+            {
+                Debug.LogWarning("VRConfig: duplicate instance");
+            }
+            _Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+            _InitVR();
+        }
+
+        public static void InitVR()
+        {
+            Instance._InitVR();
+        }
+
+        public void _InitVR()
+        {
+            if (initialized || initializing) return;
+            Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
+            foreach(var d in XRSettings.supportedDevices)
+            {
+                Debug.Log($"VRConfig: device={d}");
+            }
+            StartCoroutine(_LoadVR());
+            initializing = true;
+        }
+
+        private IEnumerator _LoadVR()
+        {
+            string[] preferredDevices = VRConfig.Instance.preferredDevices();
+            Debug.Log($"xxxjack loadDeviceByName {preferredDevices}");
+            XRSettings.LoadDeviceByName(preferredDevices);
+            yield return null;
+            currentOutputDevice = XRSettings.loadedDeviceName;
+            Debug.Log($"xxxjack loadedDevice={currentOutputDevice}");
+            XRSettings.enabled = true;
+            yield return null;
+            Debug.Log($"xxxjack isDeviceActive {XRSettings.isDeviceActive}");
+            if (!XRSettings.isDeviceActive && XRSettings.enabled) {
+                Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
+                currentOutputDevice = "";
+                XRSettings.enabled = false;
+            }
+            if (Config.Instance.VR.preferredController != "")
+            {
+                currentInputDevice = Config.Instance.VR.preferredController;
+            }
+            else
+            {
+                // if no controller override was specified
+                // we use the controller corresponding to the output
+                // device
+                currentInputDevice = currentOutputDevice;
+                if (currentInputDevice == "") currentInputDevice = "emulation";
+            }
+            string prInputName = currentInputDevice.Replace(' ', '_');
+            string prOutputName = currentOutputDevice.Replace(' ', '_');
+            if (prOutputName == "") prOutputName = "none";
+            BaseStats.Output("VRConfig", $"xrInput={prInputName}, xrOutput={prOutputName}");
+            // Do device-dependent initializations
+            if (currentOutputDevice == "")
+            {
+                initScreen();
+            }
+            else if (currentOutputDevice == "Oculus")
+            {
+                initOculus();
+            }
+            initialized = true;
+        }
+
         public string[] preferredDevices()
         {
             return Config.Instance.VR.preferredDevices;
@@ -28,9 +106,11 @@ namespace VRT.Core
 
         public string outputDeviceName()
         {
-            // xxxjack should be check XRSettings.isDeviceActive?
-            var rv = XRSettings.loadedDeviceName;
-            return rv;
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+            }
+            return currentOutputDevice;
         }
 
         public bool useHMD()
@@ -56,38 +136,40 @@ namespace VRT.Core
 
         public bool useControllerEmulation()
         {
-            // If emulation has specifically been asked for we return true
-            if (Config.Instance.VR.preferredController == "emulation") return true;
-            // If something else has specifically been asked for we return false
-            if (Config.Instance.VR.preferredController != "") return false;
-            // If the default has been asked for we make a best guess.
-            if (useHMD()) return false;
-            if (Config.Instance.VR.disableKeyboardMouse) return false;
-            return true;
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: useControllerEmulation() called too early");
+            }
+            return currentInputDevice == "emulation";
         }
 
         public bool useControllerGamepad()
         {
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: useControllerGamepad() called too early");
+            }
             // xxxjack should we check that we are _actually_ using a gamepad?
-            return Config.Instance.VR.preferredController == "gamepad";
+            return currentInputDevice == "gamepad";
         }
 
         public bool useControllerOpenVR()
         {
-            return useControllerXR("OpenVR");
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: useControllerOpenVR() called too early");
+            }
+            return currentInputDevice == "OpenVR";
         }
 
         public bool useControllerOculus()
         {
-            return useControllerXR("Oculus");
-        }
-
-        private bool useControllerXR(string name)
-        {
-            if (!useHMD()) return false;
-            string preferred = Config.Instance.VR.preferredController;
-            if (preferred != "" && preferred != name) return false;
-            return XRSettings.loadedDeviceName == name;
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: useControllerOculus() called too early");
+            }
+            // xxxjack should we check that we are _actually_ using a gamepad?
+            return currentInputDevice == "Oculus";
         }
 
         public void initScreen()
@@ -101,6 +183,27 @@ namespace VRT.Core
             if (fullRes) Screen.SetResolution(1920, 1080, false, 30);
             else Screen.SetResolution(1280, 720, false, 30);
             Debug.Log("Resolution: " + Screen.width + "x" + Screen.height);
+        }
+
+        private const string oculusPluginName = "OVRPlugin";
+        public enum OculusBool
+        {
+            False = 0,
+            True
+        }
+        public enum OculusTrackingOrigin
+        {
+            EyeLevel = 0,
+            FloorLevel = 1,
+            Stage = 2,
+            Count,
+        }
+        [DllImport(oculusPluginName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern OculusBool ovrp_SetTrackingOriginType(OculusTrackingOrigin originType);
+
+        private void initOculus()
+        {
+            ovrp_SetTrackingOriginType(OculusTrackingOrigin.FloorLevel);
         }
     }
 }

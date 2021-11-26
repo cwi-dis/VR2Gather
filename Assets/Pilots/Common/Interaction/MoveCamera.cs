@@ -17,14 +17,7 @@ namespace VRT.Pilots.Common
         public Transform playerBody;
         public Transform avatarHead;
 
-        void Awake()
-        {
-            if (!VRConfig.Instance.useHMD())
-            {
-                cameraToControl.transform.localPosition = Vector3.up * Config.Instance.nonHMDHeight;
-            }
-        }
-
+        
         void Update()
         {
             float deltaHeight = Input.mouseScrollDelta.y;
