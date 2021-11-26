@@ -65,24 +65,14 @@ namespace VRT.Pilots.Common
                     cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
                     adjustBodyHead(hAngle, vAngle);
-                    if (!spectator)
-                    {
-                        playerBody.Rotate(Vector3.up, -hAngle);
-                        avatarHead.Rotate(Vector3.right, vAngle);
-                    }
-
                 }
             }
         }
 
         protected void adjustBodyHead(float hAngle, float vAngle)
         {
-            if (!spectator)
-            {
-                playerBody.Rotate(Vector3.up, hAngle);
-                avatarHead.Rotate(Vector3.right, vAngle);
-            }
-
+            playerBody.Rotate(Vector3.up, hAngle);
+            avatarHead.Rotate(Vector3.right, vAngle);
         }
     }
 }
