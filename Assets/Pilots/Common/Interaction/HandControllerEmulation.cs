@@ -67,15 +67,23 @@ namespace VRT.Pilots.Common
             // the first touchable hit.
             //
             bool isTouchingNow = false;
+            int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
             RaycastHit firstHit = new RaycastHit();
             RaycastHit correctHit = new RaycastHit();
             float handDistance = maxDistance;
-            bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance);
+            bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance, firstLayerMask);
             bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
             if (gotFirstHit)
             {
+                if (firstHit.rigidbody)
+                {
+                    Debug.Log($"xxxjack firstHit gameObject {firstHit.rigidbody.gameObject.name} layer {firstHit.rigidbody.gameObject.layer} distance {firstHit.distance} name {firstHit.rigidbody.gameObject.name}");
+                } else
+                {
+                    if (firstHit.collider) Debug.Log($"xxxjack firsthit collider {firstHit.collider.name} on {firstHit.collider.gameObject.name} distance {firstHit.distance}");
+                }
                 handDistance = firstHit.distance;
             }
             if (gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance)
