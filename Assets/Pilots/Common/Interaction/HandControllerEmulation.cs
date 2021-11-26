@@ -77,6 +77,8 @@ namespace VRT.Pilots.Common
             bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
             if (gotFirstHit)
             {
+#if XXXJACK_DEBUG_RAYCAST
+                // There is an issue with the raycast sometimes hitting the 3D avatar head. Need to investigate.
                 if (firstHit.rigidbody)
                 {
                     Debug.Log($"xxxjack firstHit gameObject {firstHit.rigidbody.gameObject.name} layer {firstHit.rigidbody.gameObject.layer} distance {firstHit.distance} name {firstHit.rigidbody.gameObject.name}");
@@ -84,6 +86,7 @@ namespace VRT.Pilots.Common
                 {
                     if (firstHit.collider) Debug.Log($"xxxjack firsthit collider {firstHit.collider.name} on {firstHit.collider.gameObject.name} distance {firstHit.distance}");
                 }
+#endif
                 handDistance = firstHit.distance;
             }
             if (gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance)
