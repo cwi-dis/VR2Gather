@@ -177,7 +177,8 @@ namespace VRT.Core
         public float cameraDefaultHeight()
         {
             if (useHMD()) return 0;
-            return 1.7f;    // Default camera height for non-HMD users.
+            return 1.7f;    // Default camera height for non-HMD users
+
         }
 
         public void initScreen()
