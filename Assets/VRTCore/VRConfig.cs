@@ -31,7 +31,9 @@ namespace VRT.Core
         {
             if (_Instance != null && _Instance != this)
             {
-                Debug.LogWarning("VRConfig: duplicate instance");
+                Debug.LogWarning("VRConfig: duplicate instance, destroying this (new) instance");
+                Destroy(gameObject);
+                return;
             }
             _Instance = this;
             DontDestroyOnLoad(this.gameObject);
