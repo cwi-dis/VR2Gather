@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3132224710745871621}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: PC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 2457643486222566787}
   - component: {fileID: 215507500619760812}
   - component: {fileID: 1282176638671828019}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: PlayerHeadScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 1250233302079127091}
   - component: {fileID: 1616238488529610785}
   - component: {fileID: 3802382678795773923}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: HeadMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -392,7 +392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4311645287905124984}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: PlayerHead
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -483,7 +483,7 @@ GameObject:
   - component: {fileID: 956932598572021276}
   - component: {fileID: 9068566958255410220}
   - component: {fileID: 2696692319251491663}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: RightEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -738,7 +738,7 @@ GameObject:
   - component: {fileID: 2741502682548984467}
   - component: {fileID: 2741502682548984464}
   - component: {fileID: 2741502682548984465}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: TVMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -847,7 +847,7 @@ GameObject:
   - component: {fileID: 7643689091625227533}
   - component: {fileID: 8967520018541450500}
   - component: {fileID: 7788686206406644652}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: PlayerBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1014,7 +1014,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4819340566540360522}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: Avatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1049,7 +1049,7 @@ GameObject:
   - component: {fileID: 825082369260447710}
   - component: {fileID: 4293752222343649785}
   - component: {fileID: 8245581725178993000}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: LeftEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1139,7 +1139,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2124842772864739334}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: WebCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1992,7 +1992,7 @@ GameObject:
   - component: {fileID: 8766873042038186155}
   - component: {fileID: 4591474694413260904}
   - component: {fileID: 4516682574634535057}
-  m_Layer: 0
+  m_Layer: 26
   m_Name: PlayerBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
