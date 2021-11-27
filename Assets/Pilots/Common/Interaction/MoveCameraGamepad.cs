@@ -23,7 +23,8 @@ namespace VRT.Pilots.Common
             }
             if (heightAxisName != "")
             {
-                float deltaHeight = Input.GetAxis(heightAxisName);
+                float deltaHeight = 0;
+                if (heightAxisName != "") deltaHeight = Input.GetAxis(heightAxisName);
                 if (deltaHeight != 0)
                 {
                     // Do Camera movement for up/down.
@@ -33,8 +34,10 @@ namespace VRT.Pilots.Common
                         cameraToControl.transform.localPosition.z);
                 }
             }
-            float x = Input.GetAxis(leftRightAxisName) * xySensitivity * Time.deltaTime;
-            float y = -1 * Input.GetAxis(upDownAxisName) * xySensitivity * Time.deltaTime;
+            float x = 0;
+            if (leftRightAxisName != "") x = Input.GetAxis(leftRightAxisName) * xySensitivity * Time.deltaTime;
+            float y = 0;
+            if (upDownAxisName != "") y = -1 * Input.GetAxis(upDownAxisName) * xySensitivity * Time.deltaTime;
             xRotation += y;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
