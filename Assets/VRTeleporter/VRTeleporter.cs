@@ -6,22 +6,36 @@ namespace VRT.Teleporter
 {
     public class VRTeleporter : MonoBehaviour
     {
+        [Tooltip("Marker for display ground position")]
+        public GameObject positionMarker;
 
-        public GameObject positionMarker; // marker for display ground position
+        [Tooltip("Target transferred by teleport")]
+        public Transform bodyTransforn;
 
-        public Transform bodyTransforn; // target transferred by teleport
+        [Tooltip("Adjust teleport destination for camera position within body")]
+        public Transform adjustForPositionOfCamera = null;
 
-        public LayerMask excludeLayers; // excluding for performance
+        [Tooltip("Ignore these layers (for performance)")]
+        public LayerMask excludeLayers;
 
-        public float angle = 45f; // Arc take off angle
+        [Tooltip("If not empty, only objects with this tag are acceptable as teleport target")]
+        public string onlyTagged = "Teleportable";
 
-        public float strength = 10f; // Increasing this value will increase overall arc length
+        [Tooltip("Ignore untagged objects (otherwise they block the teleport line)")]
+        public bool ignoreUntagged = true;
 
-        public int maxVertexcount = 100; // limitation of vertices for performance. 
+        [Tooltip("Arc take off angle")]
+        public float angle = 45f;
+
+        [Tooltip("Increasing this value will increase overall arc length")]
+        public float strength = 10f;
+
+        [Tooltip("limitation of vertices for performance")]
+        public int maxVertexcount = 100; 
 
         private float vertexDelta = 0.08f; // Delta between each Vertex on arc. Decresing this value may cause performance problem.
 
-        private LineRenderer arcRenderer;
+        private LineRenderer arcRenderer; // The renderer for the teleport arc
 
         private Vector3 velocity; // Velocity of latest vertex
 
@@ -33,9 +47,12 @@ namespace VRT.Teleporter
 
         private List<Vector3> vertexList = new List<Vector3>(); // vertex on arc
 
-        public bool displayActive = false; // don't update path when it's false.
+        [Tooltip("don't update path when it's false.")]
+        public bool displayActive = false;
 
+        [Tooltip("Material for teleport arc")]
         public Material lineTeleportableMat;
+        [Tooltip("Material for Teleport arc")]
         public Material lineNotTeleportableMat;
 
 
@@ -45,20 +62,23 @@ namespace VRT.Teleporter
             if (groundDetected)
             {
                 Vector3 playerWorldPosition = bodyTransforn.position;
-                Vector3 cameraWorldPosition = transform.parent.parent.parent.Find("Camera").position;
-                Vector3 cameraOffset = new Vector3(cameraWorldPosition.x - playerWorldPosition.x, 0.0f, cameraWorldPosition.z - playerWorldPosition.z);
                 Vector3 newPosition = groundPos + (lastNormal * 0.1f);
-                newPosition -= cameraOffset;
-                bodyTransforn.position = newPosition;// - cameraOffset;
+                if (adjustForPositionOfCamera != null)
+                {
+                    Vector3 cameraWorldPosition = adjustForPositionOfCamera.position;
+                    Vector3 cameraOffset = new Vector3(cameraWorldPosition.x - playerWorldPosition.x, 0.0f, cameraWorldPosition.z - playerWorldPosition.z);
+                    newPosition -= cameraOffset;
+                }
+                bodyTransforn.position = newPosition;
                 ToggleDisplay(false);
             }
             else
             {
-                Debug.Log("Ground wasn't detected");
+                Debug.LogError("VRTeleporter: Teleport() called but ground wasn't detected");
             }
         }
 
-        // Active Teleporter Arc Path
+        // Enable (or disable) the teleport ray
         public void ToggleDisplay(bool active)
         {
             arcRenderer.enabled = active;
@@ -66,10 +86,6 @@ namespace VRT.Teleporter
             displayActive = active;
             arcRenderer.sharedMaterial = lineNotTeleportableMat;
         }
-
-
-
-
 
         private void Awake()
         {
@@ -79,6 +95,7 @@ namespace VRT.Teleporter
             positionMarker.SetActive(false);
         }
 
+#if XXXJACK_UNUSED
         private void FixedUpdate()
         {
             //if (displayActive)
@@ -136,6 +153,7 @@ namespace VRT.Teleporter
             arcRenderer.positionCount = vertexList.Count;
             arcRenderer.SetPositions(vertexList.ToArray());
         }
+#endif
 
         public void CustomUpdatePath(Vector3 _pos, float _str)
         {
@@ -164,17 +182,20 @@ namespace VRT.Teleporter
                 // linecast between last vertex and current vertex
                 if (Physics.Linecast(pos, newPos, out hit, ~excludeLayers))
                 {
-                    if (hit.collider.gameObject.tag == "Teleportable")
+                    if (onlyTagged == "" || hit.collider.gameObject.tag == onlyTagged)
                     {
                         groundDetected = true;
                         groundPos = hit.point;
                         lastNormal = hit.normal;
                         arcRenderer.sharedMaterial = lineTeleportableMat;
                     }
+                    // We stop at the first hit, whether or not we reached a teleportable
+                    // destination, unless we ignore untagged objects (basically resulting
+                    // in other objects being transparent to our teleport ray)
+                    if (!ignoreUntagged) break;
                 }
                 pos = newPos; // update current vertex as last vertex
             }
-
 
             positionMarker.SetActive(groundDetected);
 

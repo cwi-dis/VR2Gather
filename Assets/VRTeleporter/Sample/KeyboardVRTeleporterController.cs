@@ -9,6 +9,12 @@ public class KeyboardVRTeleporterController : MonoBehaviour
     
 
     public VRTeleporter teleporter;
+    public string rightTriggerName = "PrimaryTriggerRight";
+    public string leftTriggerName = "PrimaryTriggerLeft";
+    public string rightVerticalName = "Oculus_GearVR_RThumbstickY";
+    public string rightHorizontalName = "Oculus_GearVR_RThumbstickX";
+    public bool allowNVGBkeys = true;
+
     private Vector3 dir;
     private float str = 7.0f;
     private float dirMul = 0.01f;
@@ -22,15 +28,14 @@ public class KeyboardVRTeleporterController : MonoBehaviour
 
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name != "Museum") gameObject.SetActive(false);
     }
 
     void Update() {
 
-        rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
-        leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
-        rightVertical = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
-        rightHorizontal = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
+        rightTrigger = Input.GetAxisRaw(rightTriggerName);
+        leftTrigger = Input.GetAxisRaw(leftTriggerName);
+        rightVertical = Input.GetAxis(rightVerticalName);
+        rightHorizontal = Input.GetAxis(rightHorizontalName);
 
         /*if (IsDownRightTrigger || IsDownLeftTrigger)
         {
@@ -63,9 +68,9 @@ public class KeyboardVRTeleporterController : MonoBehaviour
         str += strMul * rightVertical;
         // Move the target location to teleport
        
-        if (Input.GetKey(KeyCode.N)) dir += transform.right * dirMul;   // Right
-        if (Input.GetKey(KeyCode.V)) dir -= transform.right * dirMul;   // Left
-        if (Input.GetKey(KeyCode.G)) str += strMul;                     // Forward
-        if (Input.GetKey(KeyCode.B)) str -= strMul;                     // Backward
+        if (allowNVGBkeys && Input.GetKey(KeyCode.N)) dir += transform.right * dirMul;   // Right
+        if (allowNVGBkeys && Input.GetKey(KeyCode.V)) dir -= transform.right * dirMul;   // Left
+        if (allowNVGBkeys && Input.GetKey(KeyCode.G)) str += strMul;                     // Forward
+        if (allowNVGBkeys && Input.GetKey(KeyCode.B)) str -= strMul;                     // Backward
     }
 }

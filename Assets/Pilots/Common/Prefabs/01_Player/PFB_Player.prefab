@@ -2219,13 +2219,28 @@ PrefabInstance:
     - target: {fileID: 1755554650291586477, guid: 83e94137ec2c97e4bba09b62a296a03d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1858784627361089732, guid: 83e94137ec2c97e4bba09b62a296a03d,
         type: 3}
       propertyPath: bodyTransforn
       value: 
       objectReference: {fileID: 5131421326051842284}
+    - target: {fileID: 1858784627361089732, guid: 83e94137ec2c97e4bba09b62a296a03d,
+        type: 3}
+      propertyPath: ignoreUntagged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858784627361089732, guid: 83e94137ec2c97e4bba09b62a296a03d,
+        type: 3}
+      propertyPath: excludeLayers.m_Bits
+      value: 4227858470
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858784627361089732, guid: 83e94137ec2c97e4bba09b62a296a03d,
+        type: 3}
+      propertyPath: adjustForPositionOfCamera
+      value: 
+      objectReference: {fileID: 5120337489219806681}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83e94137ec2c97e4bba09b62a296a03d, type: 3}
 --- !u!1 &1160437321685233085 stripped
