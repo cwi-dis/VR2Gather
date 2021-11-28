@@ -1292,6 +1292,8 @@ MonoBehaviour:
   inputNonHMDObjects:
   - {fileID: 1063767371457575197}
   - {fileID: 4901211312643056833}
+  - {fileID: 1008292572980766016}
+  - {fileID: 6401055282619165495}
 --- !u!114 &1101617796011613554
 MonoBehaviour:
   m_ObjectHideFlags: 0
