@@ -47,7 +47,7 @@ namespace VRT.Core
         [Serializable]
         public class _VR
         {
-            public string[] preferredDevices = { "Oculus", "OPenVR", "" };
+            public string[] preferredDevices = { "Oculus", "OpenVR", "" };
             public string preferredController = "";
         }
         public _VR VR;
