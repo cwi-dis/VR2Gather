@@ -139,12 +139,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b5a4aff330e924da0f9226906a30eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 338
+  teleportModeKey: 0
   pointingModeAxis: 
-  pointingModeKey: 344
+  pointingModeKey: 0
   pointingModeAxisInvert: 0
   grabbingModeAxis: 
-  grabbingModeKey: 334
+  grabbingModeKey: 0
   grabbingModeAxisInvert: 0
   XRNode: 4
   HandState: 0

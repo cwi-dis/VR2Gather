@@ -2289,8 +2289,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
+      propertyPath: grabbingModeKey
+      value: 334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
       propertyPath: pointingModeKey
       value: 344
+      objectReference: {fileID: 0}
+    - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: teleportModeKey
+      value: 333
       objectReference: {fileID: 0}
     - target: {fileID: 1792861230934706336, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -2476,8 +2486,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
+      propertyPath: grabbingModeKey
+      value: 335
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
       propertyPath: pointingModeKey
       value: 345
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: teleportModeKey
+      value: 331
       objectReference: {fileID: 0}
     - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
