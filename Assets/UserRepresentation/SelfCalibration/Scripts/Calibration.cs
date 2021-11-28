@@ -31,9 +31,15 @@ public class Calibration : MonoBehaviour {
         PlayerPrefs.SetFloat("pcs_pos_x", 0);
         PlayerPrefs.SetFloat("pcs_pos_y", 0);
         PlayerPrefs.SetFloat("pcs_pos_z", 0);
+        PlayerPrefs.SetFloat("pcs_rot_x", 0);
+        PlayerPrefs.SetFloat("pcs_rot_y", 0);
+        PlayerPrefs.SetFloat("pcs_rot_z", 0);
         PlayerPrefs.SetFloat("tvm_pos_x", 0);
         PlayerPrefs.SetFloat("tvm_pos_y", 0);
         PlayerPrefs.SetFloat("tvm_pos_z", 0);
+        PlayerPrefs.SetFloat("tvm_rot_x", 0);
+        PlayerPrefs.SetFloat("tvm_rot_y", 0);
+        PlayerPrefs.SetFloat("tvm_rot_z", 0);
     }
 
     private void Start() {
