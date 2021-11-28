@@ -29,10 +29,10 @@ public class Calibration : MonoBehaviour {
     public static void ResetFactorySettings()
     {
         PlayerPrefs.SetFloat("pcs_pos_x", 0);
-        PlayerPrefs.SetFloat("pcs_pos_y", VRConfig.Instance.cameraDefaultHeight());
+        PlayerPrefs.SetFloat("pcs_pos_y", 0);
         PlayerPrefs.SetFloat("pcs_pos_z", 0);
         PlayerPrefs.SetFloat("tvm_pos_x", 0);
-        PlayerPrefs.SetFloat("tvm_pos_y", VRConfig.Instance.cameraDefaultHeight());
+        PlayerPrefs.SetFloat("tvm_pos_y", 0);
         PlayerPrefs.SetFloat("tvm_pos_z", 0);
     }
 
@@ -47,8 +47,11 @@ public class Calibration : MonoBehaviour {
         oculus.enabled = oculus == controls;
         openvr.enabled = openvr == controls;
         // Get initial position/orientation from the preferences
-        cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", VRConfig.Instance.cameraDefaultHeight()), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
-        cameraReference.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
+        Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
+        Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
+        Debug.Log($"Calibration: initial pos={pos}, rot={rot}");
+        cameraReference.transform.localPosition = pos;
+        cameraReference.transform.localRotation = Quaternion.Euler(rot);
     }
 
     // Update is called once per frame
@@ -113,8 +116,8 @@ public class Calibration : MonoBehaviour {
                 if (yAxis != 0) Debug.Log($"xxxjack rotation {yAxis}");
                 if (controls.reset.get())
                 {
-                    cameraReference.transform.localPosition = new Vector3(0, VRConfig.Instance.cameraDefaultHeight(), 0);
-                    Debug.Log($"Calibration: Translation: reset to 0,{VRConfig.Instance.cameraDefaultHeight()},0");
+                    cameraReference.transform.localPosition = new Vector3(0, 0, 0);
+                    Debug.Log($"Calibration: Translation: reset to 0,0,0");
                 }
                 cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
@@ -130,7 +133,7 @@ public class Calibration : MonoBehaviour {
                 if (controls.no.get()) {
                     cameraReference.transform.localPosition = new Vector3 ( 
                         PlayerPrefs.GetFloat(prefix+"_pos_x", 0), 
-                        PlayerPrefs.GetFloat(prefix+"_pos_y", VRConfig.Instance.cameraDefaultHeight()), 
+                        PlayerPrefs.GetFloat(prefix+"_pos_y", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
                     var pos = cameraReference.transform.localPosition;

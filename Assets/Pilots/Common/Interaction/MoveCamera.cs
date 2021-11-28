@@ -19,11 +19,6 @@ namespace VRT.Pilots.Common
 
         private void Awake()
         {
-            // xxxjack this is a strange location to initialize non-HMD camera height.
-            // Because it really depends on hmd/non HMD, not on which input device is used for
-            // navigation.
-            cameraToControl.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
-
         }
 
         void Update()

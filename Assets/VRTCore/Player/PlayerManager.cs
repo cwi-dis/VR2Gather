@@ -24,6 +24,12 @@ public class PlayerManager : MonoBehaviour {
     {
 		// Enable the camera only for the local user
 		cam.gameObject.SetActive(isLocalPlayer);
+		// Set camera height to 1.7m if not using an HMD.
+		// Further calibration results will be applied to the
+		// cameraReference parent, so this will be in addition to
+		// whatever the calibration results are.
+		cam.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
+
 		// Enable various other objects only for the local user
 		foreach (var obj in localPlayerOnlyObjects)
 		{
