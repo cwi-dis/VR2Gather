@@ -59,15 +59,15 @@ namespace VRT.Core
 
         private IEnumerator _LoadVR()
         {
-            string[] preferredDevices = VRConfig.Instance.preferredDevices();
-            Debug.Log($"xxxjack loadDeviceByName {preferredDevices}");
-            XRSettings.LoadDeviceByName(preferredDevices);
+            string[] devices = preferredDevices();
+            XRSettings.LoadDeviceByName(devices);
             yield return null;
             currentOutputDevice = XRSettings.loadedDeviceName;
-            Debug.Log($"xxxjack loadedDevice={currentOutputDevice}");
-            XRSettings.enabled = true;
+            if (currentOutputDevice != "")
+            {
+                XRSettings.enabled = true;
+            }
             yield return null;
-            Debug.Log($"xxxjack isDeviceActive {XRSettings.isDeviceActive}");
             if (!XRSettings.isDeviceActive && XRSettings.enabled) {
                 Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
                 currentOutputDevice = "";
@@ -85,6 +85,7 @@ namespace VRT.Core
                 currentInputDevice = currentOutputDevice;
                 if (currentInputDevice == "") currentInputDevice = "emulation";
             }
+            // xxxjack should we check that the selected input device is actually available?
             string prInputName = currentInputDevice.Replace(' ', '_');
             string prOutputName = currentOutputDevice.Replace(' ', '_');
             if (prOutputName == "") prOutputName = "none";
@@ -119,21 +120,6 @@ namespace VRT.Core
         {
             bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
             return rv;
-#if xxxjack_removed
-            // xxxjack for some reason this doesn't always work, it returns false when using the Vive...
-            var xrDisplaySubsystems = new List<XRDisplaySubsystem>();
-            SubsystemManager.GetInstances<XRDisplaySubsystem>(xrDisplaySubsystems);
-            int nEnabled = 0;
-            Debug.Log($"VRConfig: {xrDisplaySubsystems.Count} subsystems");
-            foreach (var xrDisplay in xrDisplaySubsystems)
-            {
-                if (xrDisplay.running)
-                {
-                    nEnabled += 1;
-                }
-            }
-            return nEnabled >= 1;
-#endif
         }
 
         public bool useControllerEmulation()
@@ -151,7 +137,6 @@ namespace VRT.Core
             {
                 Debug.LogWarning("VRConfig: useControllerGamepad() called too early");
             }
-            // xxxjack should we check that we are _actually_ using a gamepad?
             return currentInputDevice == "gamepad";
         }
 
@@ -170,7 +155,6 @@ namespace VRT.Core
             {
                 Debug.LogWarning("VRConfig: useControllerOculus() called too early");
             }
-            // xxxjack should we check that we are _actually_ using a gamepad?
             return currentInputDevice == "Oculus";
         }
 
