@@ -11,6 +11,8 @@ namespace VRT.Pilots.Common
         public bool allowHJKLforMouse = true;
         public GameObject cameraToControl = null;
         public bool spectator = false;
+        [Tooltip("Key that disables head movement (because they use these axes for pointing or teleporting)")]
+        public KeyCode[] inhibitKeys;
 
         protected float xRotation = 0f;
 
@@ -23,6 +25,14 @@ namespace VRT.Pilots.Common
 
         void Update()
         {
+            foreach(var inhibitKey in inhibitKeys)
+            {
+                if (inhibitKey != KeyCode.None && Input.GetKey(inhibitKey))
+                {
+                    return;
+                }
+            }
+
             float deltaHeight = Input.mouseScrollDelta.y;
 
             // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
