@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
+using VRT.Teleporter;
 
 namespace VRT.Pilots.Common
 {
@@ -22,6 +23,12 @@ namespace VRT.Pilots.Common
         public KeyCode gropeKey = KeyCode.LeftShift;
         [Tooltip("Key to press to touch an item")]
         public KeyCode touchKey = KeyCode.Mouse0;
+        [Tooltip("Key to press to start looking for teleportable locations")]
+        public KeyCode teleportGropeKey = KeyCode.LeftControl;
+        [Tooltip("Key to press to teleport")]
+        public KeyCode teleportKey = KeyCode.Mouse0;
+        [Tooltip("Teleporter to use")]
+        public BaseTeleporter teleporter;
         [Tooltip("The virtual hand that is used to touch objects")]
         public GameObject hand;
         [Tooltip("Collider that actually presses the button")]
@@ -43,6 +50,30 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
+            // First check teleporter, if enabled
+            if (teleporter != null && teleportGropeKey != KeyCode.None)
+            {
+                bool isTeleportingNow = Input.GetKey(teleportGropeKey);
+                teleporter.SetActive(isTeleportingNow);
+                if (teleporter.teleporterActive)
+                {
+                    Ray teleportRay = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+                    // We have the ray starting at our "hand" going in the direction
+                    // of our gaze.
+                    Vector3 pos = transform.position;
+                    Vector3 dir = teleportRay.direction;
+                    teleporter.CustomUpdatePath(pos, dir, 10f);
+                    if (Input.GetKeyDown(teleportKey))
+                    {
+                        if (teleporter.canTeleport())
+                        {
+                            teleporter.Teleport();
+                        }
+                        teleporter.SetActive(false);
+                    }
+                    return;
+                }
+            }
             bool isGropingingNow = Input.GetKey(gropeKey);
             if (isGroping != isGropingingNow)
             {
@@ -70,6 +101,7 @@ namespace VRT.Pilots.Common
             int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+            Debug.DrawRay(ray.origin, ray.direction, Color.green);
             RaycastHit firstHit = new RaycastHit();
             RaycastHit correctHit = new RaycastHit();
             float handDistance = maxDistance;

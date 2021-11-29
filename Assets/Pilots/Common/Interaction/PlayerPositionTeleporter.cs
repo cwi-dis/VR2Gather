@@ -94,7 +94,8 @@ namespace VRT.Pilots.Common
 				{
 					TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					_SelectedLocation = null;
-					UnityEngine.Debug.Log(" <color = green> Hit some random object:  </ color > " + hit.collider.gameObject.name);
+					Debug.Log($"PlayerPositionTeleporter: Hit unteleportable object: {hit.collider.gameObject.name}");
+
 				}
 			}
 			else
