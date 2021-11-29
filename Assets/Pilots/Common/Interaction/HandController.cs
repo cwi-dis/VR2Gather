@@ -29,6 +29,12 @@ namespace VRT.Pilots.Common
 		[Tooltip("When this key is pressed we are in teleporting mode")]
 		public KeyCode teleportModeKey = KeyCode.None;
 
+		[Tooltip("Teleporter to use")]
+		public VRT.Teleporter.BaseTeleporter teleporter;
+
+		[Tooltip("Arc length for curving teleporters")]
+		public float teleportStrength = 10.0f;
+
 		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
 		public string pointingModeAxis = "";
 		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
@@ -62,9 +68,7 @@ namespace VRT.Pilots.Common
 		private List<XRNodeState> _NodeStates = new List<XRNodeState>();
 #endif
 
-		private bool inTeleportMode = false;
-		private PlayerLocation _SelectedLocation;
-
+		
 		public void Awake()
 		{
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
@@ -128,12 +132,16 @@ namespace VRT.Pilots.Common
 				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
 
 				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
-				bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
-
-				if (teleportModeKeyIsPressed)
+				if (teleportModeKey != KeyCode.None && teleporter != null)
 				{
-					inTeleportMode = true;
-					var touchTransform = TouchCollider.transform;
+					bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
+
+					if (teleportModeKeyIsPressed)
+					{
+						teleporter.SetActive(true);
+						var touchTransform = TouchCollider.transform;
+						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+#if toremove
 					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
 					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
 					RaycastHit hit = new RaycastHit();
@@ -173,12 +181,20 @@ namespace VRT.Pilots.Common
 						TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					}
 					TeleportLineRenderer.SetPositions(points);
-				}
-				else if (inTeleportMode)
-				{
-					//
-					// Teleport key was released. See if we should teleport.
-					//
+#endif
+					}
+					else if (teleporter.teleporterActive)
+					{
+						//
+						// Teleport key was released. See if we should teleport.
+						//
+						if (teleporter.canTeleport())
+						{
+							teleporter.Teleport();
+						}
+						teleporter.SetActive(false);
+					}
+#if toremove
 					if (_SelectedLocation != null)
 					{
 						SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
@@ -186,9 +202,9 @@ namespace VRT.Pilots.Common
 					_SelectedLocation = null;
 					TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					TeleportLineRenderer.enabled = false;
-					inTeleportMode = false;
+#endif
 				}
-				
+
 				if (grabbingModeAxisIsPressed)
 				{
 					SetHandState(State.Grabbing);

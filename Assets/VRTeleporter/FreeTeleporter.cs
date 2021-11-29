@@ -122,21 +122,22 @@ namespace VRT.Teleporter
 
         public override void UpdatePath()
         {
-            CustomUpdatePath(transform.forward, strength);
+            CustomUpdatePath(null, null, strength);
         }
 
-        public override void CustomUpdatePath(Vector3 _direction, float _strength)
+        public override void CustomUpdatePath(Vector3? _origin, Vector3? _direction, float _strength)
         {
             groundDetected = false;
 
             vertexList.Clear(); // delete all previouse vertices
 
+            Vector3 dir = _direction ?? transform.forward;
 
-            velocity = Quaternion.AngleAxis(-angle, transform.right) * _direction * _strength;
+            velocity = Quaternion.AngleAxis(-angle, transform.right) * dir * _strength;
 
             RaycastHit hit;
 
-            Vector3 pos = transform.position; // take off position
+            Vector3 pos = _origin ?? transform.position; // take off position
 
             vertexList.Add(pos);
 

@@ -22,6 +22,6 @@ namespace VRT.Teleporter
         public abstract void UpdatePath();
 
         // Change direction and strength of teleport ray and draw it
-        public abstract void CustomUpdatePath(Vector3 _direction, float _strength);
+        public abstract void CustomUpdatePath(Vector3? _origin, Vector3? _direction, float _strength);
     }
 }

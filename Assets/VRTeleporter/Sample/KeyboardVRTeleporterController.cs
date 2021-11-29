@@ -44,7 +44,7 @@ public class KeyboardVRTeleporterController : MonoBehaviour
 
 
         if (teleporter.teleporterActive) {
-            teleporter.CustomUpdatePath(dir, str);
+            teleporter.CustomUpdatePath(null, dir, str);
         }
         
 
