@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3028879094170554323}
   - component: {fileID: 8361246497982820557}
   m_Layer: 31
-  m_Name: GrabCollider
+  m_Name: LeftGrabCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 5823192305598419950}
   - component: {fileID: 3269169586784529651}
   m_Layer: 30
-  m_Name: TouchCollider
+  m_Name: LeftTouchCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -101,6 +101,8 @@ GameObject:
   - component: {fileID: 7603936952119059507}
   - component: {fileID: 5178083233287168371}
   - component: {fileID: -7898301617142432336}
+  - component: {fileID: -1979629423615949359}
+  - component: {fileID: 5049709656428843189}
   m_Layer: 0
   m_Name: PFB_LeftHand
   m_TagString: Untagged
@@ -137,6 +139,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b5a4aff330e924da0f9226906a30eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teleportModeKey: 0
+  pointingModeAxis: 
+  pointingModeKey: 0
+  pointingModeAxisInvert: 0
+  grabbingModeAxis: 
+  grabbingModeKey: 0
+  grabbingModeAxisInvert: 0
   XRNode: 4
   HandState: 0
   HandHandedness: 0
@@ -283,6 +292,39 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
+--- !u!114 &-1979629423615949359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862755559334039368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Device: 1
+  m_PoseSource: 4
+  m_PoseProviderComponent: {fileID: 0}
+  m_TrackingType: 0
+  m_UpdateType: 0
+  m_UseRelativeTransform: 0
+--- !u!114 &5049709656428843189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862755559334039368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c7685ce3374dbc46b3caf881339bce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ReferenceTransform: {fileID: 1790983422348413134}
+  RendererToDisable: {fileID: 873595905887219194}
+  TimeOut: 1
 --- !u!1001 &873595905884137050
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -293,6 +335,10 @@ PrefabInstance:
     - target: {fileID: 100054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
       propertyPath: m_Name
       value: LeftHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
       propertyPath: m_LocalPosition.x
@@ -307,6 +353,10 @@ PrefabInstance:
       value: -0.04
       objectReference: {fileID: 0}
     - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -317,14 +367,6 @@ PrefabInstance:
     - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -351,6 +393,12 @@ PrefabInstance:
 --- !u!4 &873595905884011756 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400054, guid: 401ae649b1eada944aec72c57ba14a24,
+    type: 3}
+  m_PrefabInstance: {fileID: 873595905884137050}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &873595905887219194 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: 401ae649b1eada944aec72c57ba14a24,
     type: 3}
   m_PrefabInstance: {fileID: 873595905884137050}
   m_PrefabAsset: {fileID: 0}

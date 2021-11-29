@@ -192,10 +192,8 @@ namespace VRT.Pilots.Common
 			playerManager.userName.text = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
-			playerManager.cam.gameObject.SetActive(isLocalPlayer);
-			foreach(var obj in playerManager.localPlayerOnlyObjects) {
-				obj.SetActive(isLocalPlayer);
-            }
+			playerManager.setupInputOutput(isLocalPlayer);
+
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
@@ -221,8 +219,11 @@ namespace VRT.Pilots.Common
 						playerManager.pc.SetActive(true);
 						if (isLocalPlayer)
 						{
-							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+							Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Debug.Log($"SessionPlayersManager: self-camera pos={pos}, rot={rot}");
+							playerManager.cam.gameObject.transform.parent.localPosition = pos;
+							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
 						}
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
