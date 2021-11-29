@@ -8,7 +8,7 @@ public class KeyboardVRTeleporterController : MonoBehaviour
 {
     
 
-    public VRTeleporter teleporter;
+    public BaseTeleporter teleporter;
     public string rightTriggerName = "PrimaryTriggerRight";
     public string leftTriggerName = "PrimaryTriggerLeft";
     public string rightVerticalName = "Oculus_GearVR_RThumbstickY";
@@ -43,7 +43,7 @@ public class KeyboardVRTeleporterController : MonoBehaviour
         }*/
 
 
-        if (teleporter.displayActive) {
+        if (teleporter.teleporterActive) {
             teleporter.CustomUpdatePath(dir, str);
         }
         
@@ -51,13 +51,17 @@ public class KeyboardVRTeleporterController : MonoBehaviour
         // Start TeleportProcess
         if (Input.GetMouseButtonDown(0) || rightTrigger >= 0.8f)
         {
-            teleporter.ToggleDisplay(true);
+            teleporter.SetActive(true);
             dir = transform.forward;
             str = 7.0f;
         }
         // Confirm TeleportProcess
         if (Input.GetMouseButtonDown(1) || leftTrigger >= 0.8f) {
-            if (teleporter.displayActive) teleporter.Teleport();
+            if (teleporter.teleporterActive)
+            {
+                teleporter.Teleport();
+            }
+            teleporter.SetActive(false);
         }
         // Cancel TeleportProcess
         //if (Input.GetMouseButtonUp(0)) {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRT.Teleporter
 {
-    public class VRTeleporter : MonoBehaviour
+    public class FreeTeleporter : BaseTeleporter
     {
         [Tooltip("Marker for display ground position")]
         public GameObject positionMarker;
@@ -50,6 +50,10 @@ namespace VRT.Teleporter
         [Tooltip("don't update path when it's false.")]
         public bool displayActive = false;
 
+        public override bool teleporterActive { 
+            get { return displayActive; } 
+        } 
+
         [Tooltip("Material for teleport arc")]
         public Material lineTeleportableMat;
         [Tooltip("Material for Teleport arc")]
@@ -57,7 +61,7 @@ namespace VRT.Teleporter
 
 
         // Teleport target transform to ground position
-        public void Teleport()
+        public override void Teleport()
         {
             if (groundDetected)
             {
@@ -70,7 +74,7 @@ namespace VRT.Teleporter
                     newPosition -= cameraOffset;
                 }
                 bodyTransforn.position = newPosition;
-                ToggleDisplay(false);
+                SetActive(false);
             }
             else
             {
@@ -78,13 +82,23 @@ namespace VRT.Teleporter
             }
         }
 
+        public override bool canTeleport()
+        {
+            return groundDetected;
+        }
+
         // Enable (or disable) the teleport ray
-        public void ToggleDisplay(bool active)
+        public override void SetActive(bool active)
         {
             arcRenderer.enabled = active;
             positionMarker.SetActive(active);
+            if (active && !displayActive)
+            {
+                // Becoming active. Reset.
+                arcRenderer.sharedMaterial = lineNotTeleportableMat;
+                groundDetected = false;
+            }
             displayActive = active;
-            arcRenderer.sharedMaterial = lineNotTeleportableMat;
         }
 
         private void Awake()
@@ -103,66 +117,22 @@ namespace VRT.Teleporter
             //    UpdatePath();
             //}
         }
-
-
-        private void UpdatePath()
-        {
-            groundDetected = false;
-
-            vertexList.Clear(); // delete all previouse vertices
-
-
-            velocity = Quaternion.AngleAxis(-angle, transform.right) * transform.forward * strength;
-
-            RaycastHit hit;
-
-            Vector3 pos = transform.position; // take off position
-
-            vertexList.Add(pos);
-
-            while (!groundDetected && vertexList.Count < maxVertexcount)
-            {
-                Vector3 newPos = pos + velocity * vertexDelta
-                    + 0.5f * Physics.gravity * vertexDelta * vertexDelta;
-
-                velocity += Physics.gravity * vertexDelta;
-
-                vertexList.Add(newPos); // add new calculated vertex
-
-                // linecast between last vertex and current vertex
-                if (Physics.Linecast(pos, newPos, out hit, ~excludeLayers))
-                {
-                    groundDetected = true;
-                    groundPos = hit.point;
-                    lastNormal = hit.normal;
-                }
-                pos = newPos; // update current vertex as last vertex
-            }
-
-
-            positionMarker.SetActive(groundDetected);
-
-            if (groundDetected)
-            {
-                positionMarker.transform.position = groundPos + lastNormal * 0.1f;
-                positionMarker.transform.LookAt(groundPos);
-            }
-
-            // Update Line Renderer
-
-            arcRenderer.positionCount = vertexList.Count;
-            arcRenderer.SetPositions(vertexList.ToArray());
-        }
 #endif
 
-        public void CustomUpdatePath(Vector3 _pos, float _str)
+
+        public override void UpdatePath()
+        {
+            CustomUpdatePath(transform.forward, strength);
+        }
+
+        public override void CustomUpdatePath(Vector3 _direction, float _strength)
         {
             groundDetected = false;
 
             vertexList.Clear(); // delete all previouse vertices
 
 
-            velocity = Quaternion.AngleAxis(-angle, transform.right) * _pos * _str;
+            velocity = Quaternion.AngleAxis(-angle, transform.right) * _direction * _strength;
 
             RaycastHit hit;
 
@@ -210,7 +180,5 @@ namespace VRT.Teleporter
             arcRenderer.positionCount = vertexList.Count;
             arcRenderer.SetPositions(vertexList.ToArray());
         }
-
-
     }
 }
