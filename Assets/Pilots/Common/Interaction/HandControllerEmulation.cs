@@ -25,8 +25,10 @@ namespace VRT.Pilots.Common
         public KeyCode touchKey = KeyCode.Mouse0;
         [Tooltip("Key to press to start looking for teleportable locations")]
         public KeyCode teleportGropeKey = KeyCode.LeftControl;
-        [Tooltip("Key to press to teleport")]
+        [Tooltip("Key to press to teleport (with teleportGropeKey also pressed)")]
         public KeyCode teleportKey = KeyCode.Mouse0;
+        [Tooltip("Key to press to teleport home (with teleportGropeKey also pressed)")]
+        public KeyCode teleportHomeKey = KeyCode.Alpha0;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
         [Tooltip("The virtual hand that is used to touch objects")]
@@ -70,6 +72,10 @@ namespace VRT.Pilots.Common
                             teleporter.Teleport();
                         }
                         teleporter.SetActive(false);
+                    }
+                    if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
+                    {
+                        teleporter.TeleportHome();
                     }
                     return;
                 }

@@ -35,6 +35,24 @@ namespace VRT.Pilots.Common
 
 		}
 
+		public override void TeleportHome()
+		{
+			Vector3 newPosition = Vector3.zero;
+			// We search for our player by finding the PlayerManager
+			var playerManager = GetComponentInParent<PlayerManager>();
+			var player = playerManager?.gameObject;
+			if (player != null)
+            {
+				player.transform.localPosition = newPosition;
+				Debug.Log("xxxjack PlayerPositionTeleporter: teleported home");
+
+			} else
+            {
+				Debug.LogWarning("PlayerPositionTeleporter: cannot teleportHome() because I cannot find my player");
+            }
+			SetActive(false);
+		}
+
 		public override bool canTeleport()
         {
             return _SelectedLocation != null;
