@@ -26,8 +26,11 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
-		[Tooltip("When this key is pressed we are in teleporting mode")]
+		[Tooltip("When this key is pressed we are in teleporting mode, using a ray from this hand")]
 		public KeyCode teleportModeKey = KeyCode.None;
+
+		[Tooltip("When this key is pressed while in teleporting mode we teleport home")]
+		public KeyCode teleportHomeKey = KeyCode.None;
 
 		[Tooltip("Teleporter to use")]
 		public VRT.Teleporter.BaseTeleporter teleporter;
@@ -127,6 +130,11 @@ namespace VRT.Pilots.Common
 						teleporter.SetActive(true);
 						var touchTransform = TouchCollider.transform;
 						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+						// See if user wants to go to the home position
+						if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
+                        {
+							teleporter.TeleportHome();
+                        }
 					}
 					else if (teleporter.teleporterActive)
 					{

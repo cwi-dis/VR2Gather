@@ -82,6 +82,13 @@ namespace VRT.Teleporter
             }
         }
 
+        public override void TeleportHome()
+        {
+            Vector3 newPosition = Vector3.zero;
+            bodyTransforn.localPosition = newPosition;
+            SetActive(false);
+        }
+
         public override bool canTeleport()
         {
             return groundDetected;

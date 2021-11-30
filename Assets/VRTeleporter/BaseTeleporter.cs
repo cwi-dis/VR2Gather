@@ -15,6 +15,9 @@ namespace VRT.Teleporter
         // Teleport target transform to ground position
         public abstract void Teleport();
 
+        // Teleport to the "home location" (0, 0, 0) independent of the ray
+        public abstract void TeleportHome();
+
         // Return true if the current destination of the ray can be teleported to.
         public abstract bool canTeleport();
 
