@@ -41,7 +41,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1755554650291586477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e57e0d4782faec4dbfeeffa146deece, type: 3}
+  m_Script: {fileID: 11500000, guid: 9372b400835e2da4fbf5a21190cf7192, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   teleporter: {fileID: 1858784627361089732}
