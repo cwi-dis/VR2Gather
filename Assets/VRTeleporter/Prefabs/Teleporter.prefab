@@ -128,9 +128,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   positionMarker: {fileID: 1589036259176580}
   bodyTransforn: {fileID: 0}
+  adjustForPositionOfCamera: {fileID: 0}
   excludeLayers:
     serializedVersion: 2
     m_Bits: 38
+  onlyTagged: Teleportable
+  ignoreUntagged: 1
   angle: 45
   strength: 7
   maxVertexcount: 50
@@ -250,7 +253,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5606565236701775319
 Transform:
   m_ObjectHideFlags: 0
