@@ -82,6 +82,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
+        player.setupInputOutput(true); // xxxjack needed for preview?
         Stop();
 
         switch (representation) {

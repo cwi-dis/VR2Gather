@@ -26,6 +26,29 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
+		[Tooltip("When this key is pressed we are in teleporting mode")]
+		public KeyCode teleportModeKey = KeyCode.None;
+
+		[Tooltip("Teleporter to use")]
+		public VRT.Teleporter.BaseTeleporter teleporter;
+
+		[Tooltip("Arc length for curving teleporters")]
+		public float teleportStrength = 10.0f;
+
+		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
+		public string pointingModeAxis = "";
+		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
+		public KeyCode pointingModeKey = KeyCode.None;
+		[Tooltip("Invert meaning of PointingModeAxis or Key")]
+		public bool pointingModeAxisInvert = false;
+
+		[Tooltip("When this axis is active (or inactive depending on invert) we are in grabbing mode")]
+		public string grabbingModeAxis = "";
+		[Tooltip("When this Key is active (or inactive depending on invert) we are in grabbing mode")]
+		public KeyCode grabbingModeKey = KeyCode.None;
+		[Tooltip("Invert meaning of grabbingModeAxis")]
+		public bool grabbingModeAxisInvert = false;
+		
 		public XRNode XRNode;
 		public State HandState;
 		public Handedness HandHandedness;
@@ -41,11 +64,11 @@ namespace VRT.Pilots.Common
 		private Animator _Animator;
 		private NetworkPlayer _Player;
 
+#if xxxjack_removed
 		private List<XRNodeState> _NodeStates = new List<XRNodeState>();
+#endif
 
-		private bool _WasAButtonPressed = false;
-		private PlayerLocation _SelectedLocation;
-
+		
 		public void Awake()
 		{
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
@@ -71,7 +94,9 @@ namespace VRT.Pilots.Common
 		{
 			if (_Player.IsLocalPlayer)
 			{
+#if xxxjack_removed
 				InputTracking.GetNodeStates(_NodeStates);
+#endif
 
 				//Prevent floor clipping when input tracking provides glitched results
 				//This could on occasion cause released grabbables to go throught he floor
@@ -80,15 +105,43 @@ namespace VRT.Pilots.Common
 					transform.position = new Vector3(transform.position.x, 0.05f, transform.position.z);
 				}
 
+				//
+				// See whether we are pointing, grabbing, teleporting or idle
+				//
 
-				bool index_trigger_pressed = ControllerInput.Instance.PrimaryTrigger(XRNode);
-				bool hand_trigger_pressed = ControllerInput.Instance.SecondaryTrigger(XRNode);
-				bool a_button_held_down = ControllerInput.Instance.ButtonA();
-
-				/* if (HandHandedness == Handedness.Right && a_button_held_down)
+				bool pointingModeAxisIsPressed = false;
+				if (pointingModeKey != KeyCode.None)
 				{
-					_WasAButtonPressed = true;
-					var touchTransform = TouchCollider.transform;
+					pointingModeAxisIsPressed = Input.GetKey(pointingModeKey);
+				}
+				if (pointingModeAxis != "")
+				{
+					pointingModeAxisIsPressed = Input.GetAxis(pointingModeAxis) >= 0.5f;
+				}
+				if (pointingModeAxisInvert) pointingModeAxisIsPressed = !pointingModeAxisIsPressed;
+
+				bool grabbingModeAxisIsPressed = false;
+				if (pointingModeKey != KeyCode.None)
+				{
+					grabbingModeAxisIsPressed = Input.GetKey(grabbingModeKey);
+				}
+				if (grabbingModeAxis != "")
+				{
+					grabbingModeAxisIsPressed = Input.GetAxis(grabbingModeAxis) >= 0.5f;
+				}
+				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
+
+				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
+				if (teleportModeKey != KeyCode.None && teleporter != null)
+				{
+					bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
+
+					if (teleportModeKeyIsPressed)
+					{
+						teleporter.SetActive(true);
+						var touchTransform = TouchCollider.transform;
+						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+#if toremove
 					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
 					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
 					RaycastHit hit = new RaycastHit();
@@ -128,9 +181,20 @@ namespace VRT.Pilots.Common
 						TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					}
 					TeleportLineRenderer.SetPositions(points);
-				}
-				else if (_WasAButtonPressed)
-				{
+#endif
+					}
+					else if (teleporter.teleporterActive)
+					{
+						//
+						// Teleport key was released. See if we should teleport.
+						//
+						if (teleporter.canTeleport())
+						{
+							teleporter.Teleport();
+						}
+						teleporter.SetActive(false);
+					}
+#if toremove
 					if (_SelectedLocation != null)
 					{
 						SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
@@ -138,17 +202,16 @@ namespace VRT.Pilots.Common
 					_SelectedLocation = null;
 					TeleportLineRenderer.material = TeleportImpossibleMaterial;
 					TeleportLineRenderer.enabled = false;
-					_WasAButtonPressed = false;
-				} */
+#endif
+				}
 
-
-				if (hand_trigger_pressed)
+				if (grabbingModeAxisIsPressed)
 				{
 					SetHandState(State.Grabbing);
 					GrabCollider.SetActive(true);
 					TouchCollider.SetActive(false);
 				}
-				else if (index_trigger_pressed)
+				else if (pointingModeAxisIsPressed)
 				{
 					SetHandState(State.Pointing);
 					GrabCollider.SetActive(false);
@@ -165,6 +228,10 @@ namespace VRT.Pilots.Common
 
 		void OnHandControllerData(HandControllerData data)
 		{
+			//
+			// For incoming hand data, see if this is for a remote player hand and we
+			// are that player and that hand. If so: Update our visual representation/animation.
+			//
 			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
 			{
 				if (OrchestratorController.Instance.UserIsMaster)
@@ -185,7 +252,10 @@ namespace VRT.Pilots.Common
 			{
 				HandState = handState;
 				UpdateAnimation();
-
+				//
+				// If we are a hand of the local player we forward the state change,
+				// so other players can see it too.
+				//
 				if (_Player.IsLocalPlayer)
 				{
 					var data = new HandControllerData

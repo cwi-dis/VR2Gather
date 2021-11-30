@@ -8,7 +8,13 @@ public class KeyboardVRTeleporterController : MonoBehaviour
 {
     
 
-    public VRTeleporter teleporter;
+    public BaseTeleporter teleporter;
+    public string rightTriggerName = "PrimaryTriggerRight";
+    public string leftTriggerName = "PrimaryTriggerLeft";
+    public string rightVerticalName = "Oculus_GearVR_RThumbstickY";
+    public string rightHorizontalName = "Oculus_GearVR_RThumbstickX";
+    public bool allowNVGBkeys = true;
+
     private Vector3 dir;
     private float str = 7.0f;
     private float dirMul = 0.01f;
@@ -16,31 +22,20 @@ public class KeyboardVRTeleporterController : MonoBehaviour
 
 
     float rightTrigger = 0.0f;
-
-    bool rightTriggerTwo = false;
-    bool previousRightTriggerTwo = false;
-
     float leftTrigger = 0.0f;
     float rightHorizontal = 0.0f;
     float rightVertical = 0.0f;
 
-    private float previousRightTrigger = 0.0f;
-
     private void Awake()
     {
-        //if (SceneManager.GetActiveScene().name != "Museum") gameObject.SetActive(false);
     }
 
     void Update() {
 
-        rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight");
-        
-        leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft");
-        rightVertical = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
-        rightHorizontal = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
-
-        // try to enable both 'A' button and joystick for teleporation and to see which one is better
-        rightTriggerTwo = Input.GetKey(KeyCode.JoystickButton0) || Input.GetKey(KeyCode.JoystickButton9) || rightVertical!=0 ||rightHorizontal !=0;
+        rightTrigger = Input.GetAxisRaw(rightTriggerName);
+        leftTrigger = Input.GetAxisRaw(leftTriggerName);
+        rightVertical = Input.GetAxis(rightVerticalName);
+        rightHorizontal = Input.GetAxis(rightHorizontalName);
 
         /*if (IsDownRightTrigger || IsDownLeftTrigger)
         {
@@ -48,57 +43,38 @@ public class KeyboardVRTeleporterController : MonoBehaviour
         }*/
 
 
-        if (teleporter.displayActive) {
-            teleporter.CustomUpdatePath(dir, str);
+        if (teleporter.teleporterActive) {
+            teleporter.CustomUpdatePath(null, dir, str);
         }
-
+        
 
         // Start TeleportProcess
-
-        //if (Input.GetMouseButtonDown(0) || rightTrigger >= 0.8f)
-        //if (rightTrigger >= 0.8f)
-
-        if (rightTriggerTwo)
+        if (Input.GetMouseButtonDown(0) || rightTrigger >= 0.8f)
         {
-            teleporter.ToggleDisplay(true);
+            teleporter.SetActive(true);
             dir = transform.forward;
             str = 7.0f;
-            //previousRightTrigger = rightTrigger;
-            previousRightTriggerTwo = rightTriggerTwo;
         }
-
-
-
-
-
         // Confirm TeleportProcess
-
-        //if (Input.GetMouseButtonDown(1) || leftTrigger >= 0.8f)
-        //if (previousRightTrigger>0.0f && rightTrigger<=0.0f) {
-
-        if (previousRightTriggerTwo && !rightTriggerTwo) { 
-            if (teleporter.displayActive) teleporter.Teleport();
+        if (Input.GetMouseButtonDown(1) || leftTrigger >= 0.8f) {
+            if (teleporter.teleporterActive)
+            {
+                teleporter.Teleport();
+            }
+            teleporter.SetActive(false);
         }
-
-        //previousRightTrigger = 0.0f;
-
-
-
-
         // Cancel TeleportProcess
-        //if (leftTrigger >= 0.3f)
-        //{
+        //if (Input.GetMouseButtonUp(0)) {
         //    teleporter.ToggleDisplay(false);
         //}
-
         dir += transform.right * (dirMul * rightHorizontal);
-
+       
         str += strMul * rightVertical;
         // Move the target location to teleport
-
-        if (Input.GetKey(KeyCode.N)) dir += transform.right * dirMul;   // Right
-        if (Input.GetKey(KeyCode.V)) dir -= transform.right * dirMul;   // Left
-        if (Input.GetKey(KeyCode.G)) str += strMul;                     // Forward
-        if (Input.GetKey(KeyCode.B)) str -= strMul;                     // Backward
+       
+        if (allowNVGBkeys && Input.GetKey(KeyCode.N)) dir += transform.right * dirMul;   // Right
+        if (allowNVGBkeys && Input.GetKey(KeyCode.V)) dir -= transform.right * dirMul;   // Left
+        if (allowNVGBkeys && Input.GetKey(KeyCode.G)) str += strMul;                     // Forward
+        if (allowNVGBkeys && Input.GetKey(KeyCode.B)) str -= strMul;                     // Backward
     }
 }

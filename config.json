@@ -9,21 +9,22 @@
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
-  "statsOutputFile":  "vrdays-{host}-{ts}.txt",
+  "statsOutputFile":  "",
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "vrdays2021",
-  	"sessionScenario" : 7,
+  	"sessionName" : "jj",
+  	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
-  	"autoCreate" : false,
-  	"autoJoin" : true,
-  	"autoStartWith" : 2,
+  	"autoCreate" : true,
+  	"autoJoin" : false,
+  	"autoStartWith" : 1,
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"disableKeyboardMouse" : true
-	},
+	"_preferredDevices" : ["", "Oculus", "OpenVR"],
+	"_preferredController" : "gamepad"
+  },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
@@ -37,8 +38,7 @@
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
-        "configFilename": "./cameraconfig.xml",
-		"wantedSkeleton": false
+        "configFilename": "./cameraconfig.xml"
       },
       "SynthReaderConfig": {
         "nPoints": 8000
@@ -50,8 +50,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-    
-      "voxelSize": 0,
+      "voxelSize": 0.005,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [

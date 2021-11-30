@@ -36,7 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - SelfView
   - PlayerLocation
   - TouchableObject
   - GrabbableObject
