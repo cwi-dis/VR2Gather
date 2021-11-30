@@ -56,18 +56,8 @@ namespace VRT.Pilots.Common
 		public GameObject GrabCollider;
 		public GameObject TouchCollider;
 
-		public LineRenderer TeleportLineRenderer;
-		public Material TeleportPossibleMaterial;
-		public Material TeleportImpossibleMaterial;
-
-
 		private Animator _Animator;
 		private NetworkPlayer _Player;
-
-#if xxxjack_removed
-		private List<XRNodeState> _NodeStates = new List<XRNodeState>();
-#endif
-
 		
 		public void Awake()
 		{
@@ -94,10 +84,6 @@ namespace VRT.Pilots.Common
 		{
 			if (_Player.IsLocalPlayer)
 			{
-#if xxxjack_removed
-				InputTracking.GetNodeStates(_NodeStates);
-#endif
-
 				//Prevent floor clipping when input tracking provides glitched results
 				//This could on occasion cause released grabbables to go throught he floor
 				if (transform.position.y <= 0.05f)
@@ -141,47 +127,6 @@ namespace VRT.Pilots.Common
 						teleporter.SetActive(true);
 						var touchTransform = TouchCollider.transform;
 						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
-#if toremove
-					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
-					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
-					RaycastHit hit = new RaycastHit();
-
-					TeleportLineRenderer.enabled = true;
-
-					Vector3[] points = new Vector3[2];
-					points[0] = touchTransform.position;
-					points[1] = touchTransform.position + 25.0f * touchTransform.forward;
-					LayerMask uimask = LayerMask.NameToLayer("UI");
-					if (Physics.Raycast(teleportRay, out hit,uimask))
-					{
-						points[1] = hit.point;
-						if (hit.collider.tag == "PlayerLocation")
-						{
-							var location = hit.collider.GetComponent<PlayerLocation>();
-							if (location.IsEmpty)
-							{
-								TeleportLineRenderer.material = TeleportPossibleMaterial;
-								_SelectedLocation = location;
-							}
-							else
-							{
-								TeleportLineRenderer.material = TeleportImpossibleMaterial;
-								_SelectedLocation = null;
-							}
-						}
-						else
-						{
-							TeleportLineRenderer.material = TeleportImpossibleMaterial;
-							_SelectedLocation = null;
-							UnityEngine.Debug.Log(" <color = green> Hit some random object:  </ color > " + hit.collider.gameObject.name);
-						}
-					}
-					else
-					{
-						TeleportLineRenderer.material = TeleportImpossibleMaterial;
-					}
-					TeleportLineRenderer.SetPositions(points);
-#endif
 					}
 					else if (teleporter.teleporterActive)
 					{
@@ -194,15 +139,6 @@ namespace VRT.Pilots.Common
 						}
 						teleporter.SetActive(false);
 					}
-#if toremove
-					if (_SelectedLocation != null)
-					{
-						SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
-					}
-					_SelectedLocation = null;
-					TeleportLineRenderer.material = TeleportImpossibleMaterial;
-					TeleportLineRenderer.enabled = false;
-#endif
 				}
 
 				if (grabbingModeAxisIsPressed)
