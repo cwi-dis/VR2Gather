@@ -34,6 +34,7 @@ namespace VRT.Pilots.Common
 
 		public void OnDisable()
 		{
+            if(!this.gameObject.scene.isLoaded) return;
 			OrchestratorController.Instance.Unsubscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
 		}
 
