@@ -170,7 +170,10 @@ namespace VRT.Teleporter
                     // We stop at the first hit, whether or not we reached a teleportable
                     // destination, unless we ignore untagged objects (basically resulting
                     // in other objects being transparent to our teleport ray)
-                    if (!ignoreUntagged) break;
+                    if (!ignoreUntagged)
+                    {
+                        break;
+                    }
                 }
                 pos = newPos; // update current vertex as last vertex
             }
