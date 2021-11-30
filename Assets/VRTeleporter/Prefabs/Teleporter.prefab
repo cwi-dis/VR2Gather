@@ -133,7 +133,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 38
   onlyTagged: Teleportable
-  ignoreUntagged: 1
+  ignoreUntagged: 0
   angle: 45
   strength: 7
   maxVertexcount: 50
