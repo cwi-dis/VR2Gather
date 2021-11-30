@@ -8,7 +8,7 @@ public class LeftHandVRTeleporterController : MonoBehaviour
 {
     
 
-    public VRTeleporter teleporter;
+    public FreeTeleporter teleporter;
     private Vector3 dir;
     private float str = 7.0f;
     private float dirMul = 0.01f;
@@ -62,7 +62,7 @@ public class LeftHandVRTeleporterController : MonoBehaviour
         }
 
         if (teleporter.displayActive) {
-            teleporter.CustomUpdatePath(dir, str);
+            teleporter.CustomUpdatePath(null, dir, str);
         }
 
 
@@ -73,7 +73,7 @@ public class LeftHandVRTeleporterController : MonoBehaviour
 
         if (rightTriggerTwo)
         {
-            teleporter.ToggleDisplay(true);
+            teleporter.SetActive(true);
             dir = transform.forward;
             str = 7.0f;
             //previousRightTrigger = rightTrigger;
