@@ -1,5 +1,5 @@
 {
-	"orchestratorURL": "http://10.42.0.1:8080/socket.io/",
+	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
 	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
 
