@@ -14,7 +14,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jj",
-  	"sessionScenario" : 0,
+  	"sessionScenario" : 7,
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : true,
   	"autoJoin" : false,
