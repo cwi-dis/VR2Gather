@@ -3034,6 +3034,11 @@ PrefabInstance:
       objectReference: {fileID: 8901856568580383293}
     - target: {fileID: 1602928185896423273, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
+      propertyPath: ignoreUntagged
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1602928185896423273, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
       propertyPath: adjustForPositionOfCamera
       value: 
       objectReference: {fileID: 8912852575474605832}
@@ -3187,6 +3192,11 @@ PrefabInstance:
       propertyPath: bodyTransforn
       value: 
       objectReference: {fileID: 8901856568580383293}
+    - target: {fileID: 6690124169422001050, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: ignoreUntagged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6690124169422001050, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: adjustForPositionOfCamera
