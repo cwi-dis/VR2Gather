@@ -3167,6 +3167,11 @@ PrefabInstance:
       propertyPath: adjustForPositionOfCamera
       value: 
       objectReference: {fileID: 8912852575474605832}
+    - target: {fileID: 5923474124524051186, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5946102976361052530, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: teleporter
