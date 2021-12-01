@@ -22,8 +22,8 @@
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"_preferredDevices" : ["", "Oculus", "OpenVR"],
-	"_preferredController" : "gamepad"
+	"preferredController" : "gamepad",
+	"useLookingGlass" : true
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
