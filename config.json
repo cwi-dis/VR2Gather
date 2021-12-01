@@ -24,7 +24,7 @@
   "VR" : {
 	"_preferredDevices" : ["", "Oculus", "OpenVR"],
 	"_preferredController" : "gamepad",
-	"useLookingGlass" : false
+	"useLookingGlass" : true
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
