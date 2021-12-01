@@ -51,8 +51,8 @@ namespace VRT.Pilots.Common
             if (xHand > 1) xHand = 1;
             if (yHand < -1) yHand = -1;
             if (yHand > 1) yHand = 1;
-            float xPos = (xHand + 1.0f) * Camera.main.pixelWidth / 2;
-            float yPos = (yHand + 1.0f) * Camera.main.pixelHeight / 2;
+            float xPos = (xHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelWidth / 2;
+            float yPos = (yHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelHeight / 2;
             return new Vector3(xPos, yPos, 0);
         }
 

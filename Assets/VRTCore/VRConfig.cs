@@ -221,5 +221,20 @@ namespace VRT.Core
             // We don't initialize the Looking Glass Portrait here, it would
             // require a code reference to the HoloPlay plugin which we don't want here.
         }
+
+        public Camera getMainCamera()
+        {
+            return Camera.main;
+        }
+
+        public GameObject getMainCameraGameObject()
+        {
+            return Camera.main.gameObject;
+        }
+
+        public Transform getMainCameraTransform()
+        {
+            return Camera.main.transform;
+        }
     }
 }
