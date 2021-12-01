@@ -319,14 +319,15 @@ namespace VRT.UserRepresentation.WebCam
                 return new ViewerInformation();
             }
             // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
-            if (_camera == null)
+            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            Transform cameraTransform = player?.getCameraTransform();
+            if (cameraTransform == null)
             {
                 Debug.LogError("Programmer error: WebCamPipeline: no Camera object for self user");
                 return new ViewerInformation();
             }
-            Vector3 position = _camera.transform.position;
-            Vector3 forward = _camera.transform.rotation * Vector3.forward;
+            Vector3 position = cameraTransform.position;
+            Vector3 forward = cameraTransform.rotation * Vector3.forward;
             return new ViewerInformation()
             {
                 position = position,

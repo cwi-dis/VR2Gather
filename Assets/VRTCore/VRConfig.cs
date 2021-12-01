@@ -85,6 +85,11 @@ namespace VRT.Core
                 currentInputDevice = currentOutputDevice;
                 if (currentInputDevice == "") currentInputDevice = "emulation";
             }
+            // Cater for holographic displays
+            if (currentOutputDevice == "" && Config.Instance.VR.useLookingGlass)
+            {
+                currentOutputDevice = "lookingglass";
+            }
             // xxxjack should we check that the selected input device is actually available?
             string prInputName = currentInputDevice.Replace(' ', '_');
             string prOutputName = currentOutputDevice.Replace(' ', '_');
@@ -98,12 +103,19 @@ namespace VRT.Core
             else if (currentOutputDevice == "Oculus")
             {
                 initOculus();
+            } else if (currentOutputDevice == "lookingglass")
+            {
+                initLookingGlass();
             }
             initialized = true;
         }
 
         public string[] preferredDevices()
         {
+            if (Config.Instance.VR.useLookingGlass)
+            {
+                return new string[] { "" };
+            }
             return Config.Instance.VR.preferredDevices;
         }
 
@@ -120,6 +132,11 @@ namespace VRT.Core
         {
             bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
             return rv;
+        }
+
+        public bool useHoloDisplay()
+        {
+            return Config.Instance.VR.useLookingGlass;
         }
 
         public bool useControllerEmulation()
@@ -197,6 +214,27 @@ namespace VRT.Core
         private void initOculus()
         {
             ovrp_SetTrackingOriginType(OculusTrackingOrigin.FloorLevel);
+        }
+
+        private void initLookingGlass()
+        {
+            // We don't initialize the Looking Glass Portrait here, it would
+            // require a code reference to the HoloPlay plugin which we don't want here.
+        }
+
+        public Camera getMainCamera()
+        {
+            return Camera.main;
+        }
+
+        public GameObject getMainCameraGameObject()
+        {
+            return Camera.main.gameObject;
+        }
+
+        public Transform getMainCameraTransform()
+        {
+            return Camera.main.transform;
         }
     }
 }
