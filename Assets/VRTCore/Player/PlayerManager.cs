@@ -8,6 +8,7 @@ public class PlayerManager : MonoBehaviour {
     public UserRepresentationType userRepresentationType;
     public TMPro.TextMeshProUGUI userName;
     public Camera   cam;
+	public GameObject holoCamera;
     public ITVMHookUp tvm;
     public GameObject avatar;
     public GameObject webcam;
@@ -22,13 +23,29 @@ public class PlayerManager : MonoBehaviour {
 
     public void setupInputOutput(bool isLocalPlayer)
     {
-		// Enable the camera only for the local user
-		cam.gameObject.SetActive(isLocalPlayer);
-		// Set camera height to 1.7m if not using an HMD.
-		// Further calibration results will be applied to the
-		// cameraReference parent, so this will be in addition to
-		// whatever the calibration results are.
-		cam.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
+		// Unity has two types of null. We need the C# null.
+		if (holoCamera == null) holoCamera = null;
+		// Enable either the normal camera or the holodisplay camera for the local user.
+		// Enable various other objects only for the local user
+		bool useLocalHoloDisplay = isLocalPlayer && VRConfig.Instance.useHoloDisplay();
+		bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
+		if (useLocalNormalCam)
+        {
+			cam.gameObject.SetActive(true);
+			cam.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
+			holoCamera?.SetActive(false);
+		}
+		else if (useLocalHoloDisplay)
+        {
+			cam.gameObject.SetActive(false);
+			holoCamera.SetActive(true);
+			holoCamera.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
+		}
+		else
+        {
+			cam.gameObject.SetActive(false);
+			holoCamera?.SetActive(false);
+        }
 
 		// Enable various other objects only for the local user
 		foreach (var obj in localPlayerOnlyObjects)
@@ -66,6 +83,18 @@ public class PlayerManager : MonoBehaviour {
 			{
 				obj.SetActive(false);
 			}
+		}
+	}
+
+	public Transform getCameraTransform()
+    {
+		if (VRConfig.Instance.useHoloDisplay())
+        {
+			return holoCamera.transform;
+		}
+		else
+        {
+			return cam.transform;
 		}
 	}
 }

@@ -9,11 +9,11 @@ namespace VRT.Pilots.Common
         public float xySensitivity = 100.0f;
         public float heightSensitivity = 0.05f; // 5 Centimeters
         public bool allowHJKLforMouse = true;
-        public GameObject cameraToControl = null;
         public bool spectator = false;
         [Tooltip("Key that disables head movement (because they use these axes for pointing or teleporting)")]
         public KeyCode[] inhibitKeys;
 
+        protected Transform cameraTransformToControl = null;
         protected float xRotation = 0f;
 
         public Transform playerBody;
@@ -21,6 +21,8 @@ namespace VRT.Pilots.Common
 
         private void Awake()
         {
+            PlayerManager player = GetComponentInParent<PlayerManager>();
+            cameraTransformToControl = player.getCameraTransform();
         }
 
         void Update()
@@ -40,10 +42,10 @@ namespace VRT.Pilots.Common
             if (deltaHeight != 0)
             {
                 // Do Camera movement for up/down.
-                cameraToControl.transform.localPosition = new Vector3(
-                    cameraToControl.transform.localPosition.x,
-                    cameraToControl.transform.localPosition.y + deltaHeight * heightSensitivity,
-                    cameraToControl.transform.localPosition.z);
+                cameraTransformToControl.localPosition = new Vector3(
+                    cameraTransformToControl.localPosition.x,
+                    cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
+                    cameraTransformToControl.localPosition.z);
             }
 
 
@@ -56,7 +58,7 @@ namespace VRT.Pilots.Common
                 xRotation -= mouseY;
                 xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
                 adjustBodyHead(mouseX, -mouseY);
             }
 
@@ -75,7 +77,7 @@ namespace VRT.Pilots.Common
                     xRotation += vAngle;
                     xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                    cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                    cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
                     adjustBodyHead(hAngle, vAngle);
                 }

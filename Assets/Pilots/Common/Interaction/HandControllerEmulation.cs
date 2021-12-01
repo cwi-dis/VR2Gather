@@ -59,7 +59,7 @@ namespace VRT.Pilots.Common
                 teleporter.SetActive(isTeleportingNow);
                 if (teleporter.teleporterActive)
                 {
-                    Ray teleportRay = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+                    Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
                     // We have the ray starting at our "hand" going in the direction
                     // of our gaze.
                     Vector3 pos = transform.position;
@@ -106,7 +106,7 @@ namespace VRT.Pilots.Common
             bool isTouchingNow = false;
             int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
             int layerMask = LayerMask.GetMask("TouchableObject");
-            Ray ray = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+            Ray ray = getRay();
             Debug.DrawRay(ray.origin, ray.direction, Color.green);
             RaycastHit firstHit = new RaycastHit();
             RaycastHit correctHit = new RaycastHit();
@@ -223,6 +223,11 @@ namespace VRT.Pilots.Common
         protected virtual Vector3 getRayDestination()
         {
             return Input.mousePosition;
+        }
+
+        protected virtual Ray getRay()
+        {
+            return VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
         }
     }
 }
