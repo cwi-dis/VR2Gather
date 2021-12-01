@@ -193,17 +193,6 @@ namespace VRT.Pilots.Common
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
 			playerManager.setupInputOutput(isLocalPlayer);
-#ifdef xxxjack_move_this
-			// Enable either the normal camera or the holodisplay camera for the local user.
-			// Enable various other objects only for the local user
-			bool useLocalHoloDisplay = isLocalPlayer && VRConfig.Instance.useHoloDisplay();
-			bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
-			playerManager.normalCamera.SetActive(useLocalNormalCam);
-			if (playerManager.holoDisplayCamera != null)
-            {
-				playerManager.holoDisplayCamera.SetActive(useLocalHoloDisplay);
-            }
-#endif
 			Transform cameraTransform = null;
 			if (isLocalPlayer)
             {
