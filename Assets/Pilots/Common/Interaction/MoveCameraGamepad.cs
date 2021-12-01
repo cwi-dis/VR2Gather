@@ -29,10 +29,10 @@ namespace VRT.Pilots.Common
                 if (deltaHeight != 0)
                 {
                     // Do Camera movement for up/down.
-                    cameraToControl.transform.localPosition = new Vector3(
-                        cameraToControl.transform.localPosition.x,
-                        cameraToControl.transform.localPosition.y - deltaHeight * heightSensitivity,
-                        cameraToControl.transform.localPosition.z);
+                    cameraTransformToControl.localPosition = new Vector3(
+                        cameraTransformToControl.localPosition.x,
+                        cameraTransformToControl.localPosition.y - deltaHeight * heightSensitivity,
+                        cameraTransformToControl.localPosition.z);
                 }
             }
             float x = 0;
@@ -42,7 +42,7 @@ namespace VRT.Pilots.Common
             xRotation += y;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            cameraToControl.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             adjustBodyHead(x, y);
 
