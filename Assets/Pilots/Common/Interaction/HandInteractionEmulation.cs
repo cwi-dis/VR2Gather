@@ -7,7 +7,7 @@ using VRT.Teleporter;
 namespace VRT.Pilots.Common
 {
     //
-    // This script emulates HandController for use when you have no HMD or controllers,
+    // This script emulates HandInteraction for use when you have no HMD or controllers,
     // only keyboard and mouse.
     // When you press shift you will see an indication whether the object under the mouse is
     // touchable. If so you can press left-click and touch it. 
@@ -15,7 +15,7 @@ namespace VRT.Pilots.Common
     // Grabbing not implemented, because it doesn't seem to useful (without hands). But doable
     // if we want to.
     //
-    public class HandControllerEmulation : MonoBehaviour
+    public class HandInteractionEmulation : MonoBehaviour
     {
         [Tooltip("Maximum distance of touchable objects")]
         public float maxDistance = Mathf.Infinity;

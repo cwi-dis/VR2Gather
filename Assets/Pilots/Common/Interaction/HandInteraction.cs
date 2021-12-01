@@ -5,26 +5,8 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class HandController : MonoBehaviour
+	public class HandInteraction : MonoBehaviour
 	{
-		public class HandControllerData : BaseMessage
-		{
-			public Handedness HandHandedness;
-			public State HandState;
-		}
-
-		public enum State
-		{
-			Idle,
-			Pointing,
-			Grabbing
-		}
-
-		public enum Handedness
-		{
-			Left,
-			Right
-		}
 
 		[Tooltip("When this key is pressed we are in teleporting mode, using a ray from this hand")]
 		public KeyCode teleportModeKey = KeyCode.None;
@@ -53,34 +35,25 @@ namespace VRT.Pilots.Common
 		public bool grabbingModeAxisInvert = false;
 		
 		public XRNode XRNode;
-		public State HandState;
-		public Handedness HandHandedness;
 
 		public GameObject GrabCollider;
 		public GameObject TouchCollider;
 
-		private Animator _Animator;
 		private NetworkPlayer _Player;
+		private HandController _Controller;
 		
 		public void Awake()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
 		}
 
 		void Start()
 		{
-			_Animator = GetComponentInChildren<Animator>();
 			_Player = GetComponentInParent<NetworkPlayer>();
+			_Controller = GetComponent<HandController>();
 
 			GrabCollider.SetActive(false);
 			TouchCollider.SetActive(false);
 
-			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
-		}
-
-		private void OnDestroy()
-		{
-			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		void Update()
@@ -151,98 +124,26 @@ namespace VRT.Pilots.Common
 
 				if (grabbingModeAxisIsPressed)
 				{
-					SetHandState(State.Grabbing);
+					_Controller.SetHandState(HandController.State.Grabbing);
 					GrabCollider.SetActive(true);
 					TouchCollider.SetActive(false);
 				}
 				else if (pointingModeAxisIsPressed)
 				{
-					SetHandState(State.Pointing);
+					_Controller.SetHandState(HandController.State.Pointing);
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 				}
 				else
 				{
-					SetHandState(State.Idle);
+					_Controller.SetHandState(HandController.State.Idle);
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 				}
 			}
 		}
 
-		void OnHandControllerData(HandControllerData data)
-		{
-			//
-			// For incoming hand data, see if this is for a remote player hand and we
-			// are that player and that hand. If so: Update our visual representation/animation.
-			//
-			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
-			{
-				if (OrchestratorController.Instance.UserIsMaster)
-				{
-					OrchestratorController.Instance.SendTypeEventToAll(data, true);
-				}
 
-				if (data.HandHandedness == HandHandedness)
-				{
-					SetHandState(data.HandState);
-				}
-			}
-		}
 
-		void SetHandState(State handState)
-		{
-			if (HandState != handState)
-			{
-				HandState = handState;
-				UpdateAnimation();
-				//
-				// If we are a hand of the local player we forward the state change,
-				// so other players can see it too.
-				//
-				if (_Player.IsLocalPlayer)
-				{
-					var data = new HandControllerData
-					{
-						HandHandedness = HandHandedness,
-						HandState = HandState
-					};
-
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-						OrchestratorController.Instance.SendTypeEventToAll(data);
-					}
-					else
-					{
-						OrchestratorController.Instance.SendTypeEventToMaster(data);
-					}
-				}
-			}
-		}
-
-		private void UpdateAnimation()
-		{
-			if (HandState == State.Grabbing)
-			{
-				if (!_Animator.GetBool("IsGrabbing"))
-				{
-					_Animator.SetBool("IsGrabbing", true);
-				}
-				_Animator.SetBool("IsPointing", false);
-			}
-			else if (HandState == State.Pointing)
-			{
-				if (!_Animator.GetBool("IsPointing"))
-				{
-					_Animator.SetBool("IsPointing", true);
-				}
-				_Animator.SetBool("IsGrabbing", false);
-			}
-			else
-			{
-				_Animator.SetBool("IsGrabbing", false);
-				_Animator.SetBool("IsPointing", false);
-			}
-		}
 	}
 }

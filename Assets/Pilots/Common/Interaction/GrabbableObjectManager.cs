@@ -29,14 +29,14 @@ namespace VRT.Pilots.Common
 		public void Awake()
 		{
 			DontDestroyOnLoad(this);
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
-			OrchestratorController.Instance.Subscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandController.HandGrabEvent));
+			OrchestratorController.Instance.Subscribe<HandController.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public void OnDisable()
 		{
             if(!this.gameObject.scene.isLoaded) return;
-			OrchestratorController.Instance.Unsubscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.Unsubscribe<HandController.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public static void RegisterGrabbable(Grabbable grabbable)
@@ -60,24 +60,24 @@ namespace VRT.Pilots.Common
 			_GrabbableObjects.Remove(grabbable.NetworkId);
 		}
 
-		private void OnHandGrabEvent(HandInteractionManager.HandGrabEvent handGrabEvent)
+		private void OnHandGrabEvent(HandController.HandGrabEvent handGrabEvent)
 		{
 			HandleHandGrabEvent(handGrabEvent);
 		}
 
-		public void HandleHandGrabEvent(HandInteractionManager.HandGrabEvent handGrabEvent)
+		public void HandleHandGrabEvent(HandController.HandGrabEvent handGrabEvent)
 		{
 			Grabbable grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
 			NetworkPlayer player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
-			HandInteractionManager handInteractionManager = player.GetHandInteractionManager(handGrabEvent.Handedness);
+			HandController handController = player.GetHandController(handGrabEvent.Handedness);
 
-			if (handGrabEvent.EventType == HandInteractionManager.HandInteractionEventType.Grab)
+			if (handGrabEvent.EventType == HandController.HandInteractionEventType.Grab)
 			{
-				grabbable.OnGrab(handInteractionManager);
+				grabbable.OnGrab(handController);
 			}
 			else
 			{
-				grabbable.OnRelease(handInteractionManager);
+				grabbable.OnRelease(handController);
 			}
 
 			if (OrchestratorController.Instance.UserIsMaster)
