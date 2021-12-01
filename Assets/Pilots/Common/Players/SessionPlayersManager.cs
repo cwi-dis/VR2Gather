@@ -192,31 +192,18 @@ namespace VRT.Pilots.Common
 			playerManager.userName.text = user.userName;
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
+			playerManager.setupInputOutput(isLocalPlayer);
+#ifdef xxxjack_move_this
 			// Enable either the normal camera or the holodisplay camera for the local user.
-			bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
+			// Enable various other objects only for the local user
 			bool useLocalHoloDisplay = isLocalPlayer && VRConfig.Instance.useHoloDisplay();
+			bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
 			playerManager.normalCamera.SetActive(useLocalNormalCam);
 			if (playerManager.holoDisplayCamera != null)
             {
 				playerManager.holoDisplayCamera.SetActive(useLocalHoloDisplay);
             }
-			// Enable various other objects only for the local user
-			foreach(var obj in playerManager.localPlayerOnlyObjects) {
-				obj.SetActive(isLocalPlayer);
-            }
-			// Enable controller emulation (keyboard/mouse) objects only for the local user when using emulation
-			bool isLocalEmulationPlayer = isLocalPlayer && VRConfig.Instance.useControllerEmulation();
-			foreach (var obj in playerManager.inputEmulationOnlyObjects)
-			{
-				obj.SetActive(isLocalEmulationPlayer);
-			}
-			// Enable gamepad objects only for the local user when using gamepad
-			bool isLocalGamepadPlayer = isLocalPlayer && VRConfig.Instance.useControllerGamepad();
-			foreach (var obj in playerManager.inputGamepadOnlyObjects)
-			{
-				obj.SetActive(isLocalGamepadPlayer);
-			}
-
+#endif
 			Transform cameraTransform = null;
 			if (isLocalPlayer)
             {
@@ -248,8 +235,11 @@ namespace VRT.Pilots.Common
 						playerManager.pc.SetActive(true);
 						if (cameraTransform)
 						{
-							cameraTransform.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-							cameraTransform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+							Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Debug.Log($"SessionPlayersManager: self-camera pos={pos}, rot={rot}");
+							playerManager.cam.gameObject.transform.parent.localPosition = pos;
+							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
 						}
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);

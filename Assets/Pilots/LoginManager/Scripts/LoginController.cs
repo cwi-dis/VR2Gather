@@ -17,12 +17,7 @@ public class LoginController : PilotController {
     //AsyncOperation async;
     Coroutine loadCoroutine = null;
 
-    void Awake() {
-        if (!VRConfig.Instance.useHMD()) {
-            VRConfig.Instance.initScreen();
-        }
-    }
-
+   
     public override void Start() {
         base.Start();
         if (instance == null) {

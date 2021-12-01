@@ -28,12 +28,14 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
+			DontDestroyOnLoad(this);
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
 			OrchestratorController.Instance.Subscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public void OnDisable()
 		{
+            if(!this.gameObject.scene.isLoaded) return;
 			OrchestratorController.Instance.Unsubscribe<HandInteractionManager.HandGrabEvent>(OnHandGrabEvent);
 		}
 
@@ -44,6 +46,7 @@ namespace VRT.Pilots.Common
 
 		public static void UnregisterGrabbable(Grabbable grabbable)
 		{
+			if (_Instance == null) return;
 			Instance.UnregisterGrabbableInternal(grabbable);
 		}
 

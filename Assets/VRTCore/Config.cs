@@ -38,7 +38,6 @@ namespace VRT.Core
         public string videoCodec = "h264";
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
-        public float nonHMDHeight = 1.8f;
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
@@ -48,8 +47,7 @@ namespace VRT.Core
         [Serializable]
         public class _VR
         {
-            public bool disableKeyboardMouse = false; // This is a workaround because useHMD doesn't always work.
-            public string[] preferredDevices = { "Oculus", "OPenVR", "" };
+            public string[] preferredDevices = { "Oculus", "OpenVR", "" };
             public string preferredController = "";
             public bool useLookingGlass = false;
         }

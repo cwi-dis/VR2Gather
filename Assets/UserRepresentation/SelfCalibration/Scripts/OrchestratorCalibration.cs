@@ -29,6 +29,9 @@ public class OrchestratorCalibration : MonoBehaviour {
         if (instance == null) {
             instance = this;
         }
+        // Enable correct input and output devices
+        player.setupInputOutput(true);
+
         // Buttons listeners
         exitButton.onClick.AddListener(delegate { LeaveButton(); });
 

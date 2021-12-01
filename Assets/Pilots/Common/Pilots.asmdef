@@ -2,6 +2,7 @@
     "name": "Pilots",
     "references": [
         "VRTCore",
+        "VRTeleporter",
         "Dash",
         "Orchestrator",
         "Voice",

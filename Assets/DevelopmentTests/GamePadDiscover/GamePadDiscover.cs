@@ -2,14 +2,26 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class GamePadDiscover : MonoBehaviour
 {
-    public string axisName = "";
-    public float axisValue = 0;
+    [System.Serializable]
+    public class axisInfo
+    {
+        [Tooltip("Name of axis")]
+        public string axisName;
+        [Tooltip("Current axis value")]
+        public float axisValue;
+    };
+    [Tooltip("Axes to monitor")]
+    public axisInfo[] axes;
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log($"XRSettings.enabled={XRSettings.enabled}");
+        Debug.Log($"XRSettings.isDeviceActive={XRSettings.isDeviceActive}");
+        Debug.Log($"XRSettings.loadedDeviceName={XRSettings.loadedDeviceName}");
         var names = Input.GetJoystickNames();
         foreach(var name in names)
         {
@@ -20,19 +32,25 @@ public class GamePadDiscover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (axisName != "")
+        foreach(var a in axes)
         {
-            float newValue = Input.GetAxis(axisName);
-            if (newValue != axisValue)
+            if (a.axisName != "")
             {
-                Debug.Log($"Axis {axisName} = {newValue}");
-                axisValue = newValue;
+                float newValue = Input.GetAxis(a.axisName);
+                if (newValue != a.axisValue)
+                {
+                    //Debug.Log($"Axis {a.axisName} = {newValue}");
+                    a.axisValue = newValue;
+                }
             }
         }
+     
         foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
         {
             if (Input.GetKeyDown(kcode))
+            {
                 Debug.Log("KeyCode down: " + kcode);
+            }
         }
     }
 }
