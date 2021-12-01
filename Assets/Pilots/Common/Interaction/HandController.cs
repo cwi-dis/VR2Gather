@@ -3,7 +3,6 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	[RequireComponent(typeof(HandInteraction))]
 	public class HandController : MonoBehaviour
 	{
 		public class HandControllerData : BaseMessage
@@ -42,7 +41,6 @@ namespace VRT.Pilots.Common
 			public HandInteractionEventType EventType;
 		}
 
-		public HandInteraction HandInteraction;
 		public Grabbable HeldGrabbable;
 
 		private bool _CanGrabAgain = true;
@@ -53,7 +51,6 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
-			HandInteraction = GetComponent<HandInteraction>();
 			_Player = GetComponentInParent<NetworkPlayer>();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
 		}

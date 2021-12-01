@@ -34,8 +34,6 @@ namespace VRT.Pilots.Common
 		[Tooltip("Invert meaning of grabbingModeAxis")]
 		public bool grabbingModeAxisInvert = false;
 		
-		public XRNode XRNode;
-
 		public GameObject GrabCollider;
 		public GameObject TouchCollider;
 

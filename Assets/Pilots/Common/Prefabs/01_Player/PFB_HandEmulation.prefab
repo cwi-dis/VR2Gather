@@ -127,6 +127,10 @@ MonoBehaviour:
   maxDistance: 3
   gropeKey: 304
   touchKey: 323
+  teleportGropeKey: 306
+  teleportKey: 323
+  teleportHomeKey: 48
+  teleporter: {fileID: 0}
   hand: {fileID: 5974465910746501560}
   touchCollider: {fileID: 1738884385946719942}
 --- !u!1 &3686827164157351982
@@ -392,6 +396,11 @@ PrefabInstance:
       propertyPath: m_CullingMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 725904473855101166, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1573086616002105275, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_RootOrder
@@ -452,10 +461,20 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: HandHandedness
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1775352735639643329, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1775352735639643329, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: HandHandedness
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2136182370408221969, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
@@ -466,6 +485,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4873871588971481969, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5939396353449226076, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
@@ -487,7 +511,8 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1580734700667015125, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5, type: 3}
 --- !u!1 &5974465910746501560 stripped
 GameObject:

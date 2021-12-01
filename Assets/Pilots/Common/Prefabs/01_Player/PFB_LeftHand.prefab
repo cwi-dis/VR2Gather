@@ -293,10 +293,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5862755559334039368}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d6b5a4aff330e924da0f9226906a30eb, type: 3}
+  m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 0
+  teleportHomeKey: 0
   teleporter: {fileID: 0}
   teleportStrength: 10
   pointingModeAxis: 
@@ -305,9 +306,6 @@ MonoBehaviour:
   grabbingModeAxis: 
   grabbingModeKey: 0
   grabbingModeAxisInvert: 0
-  XRNode: 4
-  HandState: 0
-  HandHandedness: 0
   GrabCollider: {fileID: 89065278950997346}
   TouchCollider: {fileID: 5672356542551957762}
 --- !u!54 &7603936952119059507
@@ -338,7 +336,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63978be25add9845bb1e7098673d796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HandController: {fileID: 1792861230934706336}
+  HandState: 0
+  HandHandedness: 0
   HeldGrabbable: {fileID: 0}
 --- !u!114 &-1979629423615949359
 MonoBehaviour:
