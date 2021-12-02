@@ -253,7 +253,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1790983422348413134}
-  - component: {fileID: 1792861230934706336}
   - component: {fileID: 7603936952119059507}
   - component: {fileID: 5178083233287168371}
   - component: {fileID: -1979629423615949359}
@@ -284,30 +283,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1792861230934706336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5862755559334039368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  teleportModeKey: 0
-  teleportHomeKey: 0
-  teleporter: {fileID: 0}
-  teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 0
-  pointingModeAxisInvert: 0
-  grabbingModeAxis: 
-  grabbingModeKey: 0
-  grabbingModeAxisInvert: 0
-  GrabCollider: {fileID: 89065278950997346}
-  TouchCollider: {fileID: 5672356542551957762}
 --- !u!54 &7603936952119059507
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -33,7 +33,8 @@ namespace VRT.Pilots.Common
 		public KeyCode grabbingModeKey = KeyCode.None;
 		[Tooltip("Invert meaning of grabbingModeAxis")]
 		public bool grabbingModeAxisInvert = false;
-		
+
+		public GameObject Hand;
 		public GameObject GrabCollider;
 		public GameObject TouchCollider;
 
@@ -47,7 +48,12 @@ namespace VRT.Pilots.Common
 		void Start()
 		{
 			_Player = GetComponentInParent<NetworkPlayer>();
-			_Controller = GetComponent<HandController>();
+			if (Hand == null) Hand = gameObject;
+			_Controller = Hand.GetComponent<HandController>();
+			if (_Controller == null)
+            {
+				Debug.LogError("HandInteraction: cannot find HandController");
+            }
 
 			GrabCollider.SetActive(false);
 			TouchCollider.SetActive(false);
