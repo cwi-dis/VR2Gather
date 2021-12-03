@@ -31,6 +31,8 @@ namespace VRT.Pilots.Common
         public KeyCode teleportHomeKey = KeyCode.Alpha0;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
+        [Tooltip("Where the hitpoint is in 3D space")]
+        public GameObject hotspot;
         [Tooltip("The hand that is used to touch objects")]
         public GameObject hand;
         [Tooltip("The unused hand, which is hidden")]
@@ -40,12 +42,18 @@ namespace VRT.Pilots.Common
         [Tooltip("Collider that actually presses the button")]
         public Collider touchCollider = new SphereCollider();
         protected bool isGroping;
-        protected bool isTouching;
+        protected bool isTouchable;
         protected Animator _Animator = null;
+        private LineRenderer _Line;
+
+        const float handLineDelta = 0.3f;     // Hand line stops 20cm before touching point
+        const float handGropingDelta = 0.2f;  // Groping hand position is 20cm before touching point
+        const float handTouchingDelta = 0.1f; // Touching hand position is 10cm before touching point
 
         void Start()
         {
             _Animator = GetComponentInChildren<Animator>();
+            _Line = GetComponent<LineRenderer>();
             showGropeNone();
             if (unusedHand != null)
             {
@@ -96,7 +104,7 @@ namespace VRT.Pilots.Common
                 if (isGroping)
                 {
                     touchCollider.enabled = false;
-                    isTouching = false;
+                    isTouchable = false;
                     startGroping();
                 }
                 else
@@ -112,7 +120,6 @@ namespace VRT.Pilots.Common
             // We look both for the first hit (where we show the hand) and
             // the first touchable hit.
             //
-            bool isTouchingNow = false;
             int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = getRay();
@@ -136,16 +143,14 @@ namespace VRT.Pilots.Common
 #endif
                 handDistance = firstHit.distance;
             }
-            if (gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance)
-            {
-                isTouchingNow = true;
-            }
+            isTouchable = gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance;
             //
             // Show that hand, either touching or not touching.
             // If not touching we are done.
             //
-            isTouching = isTouchingNow;
-            if (isTouching)
+
+#if xxx
+            if (isTouchable)
             {
                 showGropeTouching(ray, handDistance);
             }
@@ -155,10 +160,13 @@ namespace VRT.Pilots.Common
                 touchCollider.enabled = false;
                 return;
             }
+#endif
             //
-            // Hand is touching something. Check whether the left mouse is clicked and perform the action.
+            // If hand is touching something check whether the left mouse is clicked and perform the action.
             //
-            if (Input.GetKey(touchKey))
+            bool isTouching = isTouchable && Input.GetKey(touchKey);
+            showGrope(ray, handDistance, isTouchable, isTouching);
+            if (isTouching)
             {
                 GameObject objHit = correctHit.collider.gameObject;
                 Debug.Log($"xxxjack Moving touchCollider to {objHit.name} at {objHit.transform.position}");
@@ -176,42 +184,55 @@ namespace VRT.Pilots.Common
             hideCursor();
         }
 
-        protected void showGropeNotTouching(Ray ray, float distance)
+        protected void showGrope(Ray ray, float distance, bool isTouchable, bool isTouching)
         {
-            //Debug.Log($"showGropeNotTouching {ray.origin} to {ray.direction}");
-            //Debug.DrawRay(ray.origin, ray.direction, Color.cyan, 1f);
-            var point = ray.GetPoint(distance - 0.01f);
-            hand.transform.position = point;
-            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
-            hand.SetActive(true);
-            UpdateAnimation("");
-        }
-
-        protected void showGropeTouching(Ray ray, float distance)
-        {
-            //Debug.Log($"showGropeTouching {ray.origin} to {ray.direction}");
-            //Debug.DrawRay(ray.origin, ray.direction, Color.magenta, 1f);
-            var point = ray.GetPoint(distance - 0.01f);
-            hand.transform.position = point;
-            hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
-            hand.SetActive(true);
-            UpdateAnimation("IsPointing");
+            if (hotspot != null)
+            {
+                var hotSpotPoint = ray.GetPoint(distance);
+                hotspot.transform.position = hotSpotPoint;
+                hotspot.SetActive(true);
+            }
+            if (hand != null)
+            {
+                var handPoint = ray.GetPoint(distance - (isTouching ? handTouchingDelta : handGropingDelta));
+                hand.transform.position = handPoint;
+                hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
+                hand.SetActive(true);
+                UpdateAnimation(isTouchable ? "IsPointing" : "");
+            }
+            if (_Line != null && handHomeTransform != null)
+            {
+                var linePoint = ray.GetPoint(distance - handLineDelta);
+                var points = new Vector3[2] { handHomeTransform.position, linePoint };
+                _Line.SetPositions(points);
+                _Line.enabled = true;
+            }
         }
 
         protected void showGropeNone()
         {
-            UpdateAnimation("");
-            if (handHomeTransform == null)
+            if (hotspot != null)
             {
-                hand.transform.localPosition = Vector3.zero;
-                hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+                hotspot.SetActive(false);
             }
-            else
+            if (hand != null)
             {
-                hand.transform.position = handHomeTransform.position;
-                hand.transform.rotation = handHomeTransform.rotation;
+                UpdateAnimation("");
+                if (handHomeTransform == null)
+                {
+                    hand.transform.localPosition = Vector3.zero;
+                    hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+                }
+                else
+                {
+                    hand.transform.position = handHomeTransform.position;
+                    hand.transform.rotation = handHomeTransform.rotation;
+                }
             }
-            //Invoke("hideHand", 0.5f);
+            if (_Line != null)
+            {
+                _Line.enabled = false;
+            }
             showCursor();
         }
 
