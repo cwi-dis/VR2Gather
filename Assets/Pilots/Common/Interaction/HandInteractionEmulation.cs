@@ -40,7 +40,7 @@ namespace VRT.Pilots.Common
         [Tooltip("The transform that governs the hand's idle position")]
         public Transform handHomeTransform;
         [Tooltip("Collider that actually presses the button")]
-        public Collider touchCollider = new SphereCollider();
+        public GameObject touchCollider = null;
         protected bool isGroping;
         protected bool isTouchable;
         protected Animator _Animator = null;
@@ -48,13 +48,13 @@ namespace VRT.Pilots.Common
 
         const float handLineDelta = 0.3f;     // Hand line stops 20cm before touching point
         const float handGropingDelta = 0.2f;  // Groping hand position is 20cm before touching point
-        const float handTouchingDelta = 0.1f; // Touching hand position is 10cm before touching point
+        const float handTouchingDelta = 0f; // Touching hand position is 10cm before touching point
 
         void Start()
         {
-            _Animator = GetComponentInChildren<Animator>();
+            _Animator = hand.GetComponentInChildren<Animator>();
             _Line = GetComponent<LineRenderer>();
-            showGropeNone();
+            stopGroping();
             if (unusedHand != null)
             {
                 unusedHand.SetActive(false);
@@ -63,7 +63,7 @@ namespace VRT.Pilots.Common
 
         void OnDestroy()
         {
-            showGropeNone();
+            stopGroping();
         }
 
         // Update is called once per frame
@@ -103,14 +103,14 @@ namespace VRT.Pilots.Common
                 isGroping = isGropingingNow;
                 if (isGroping)
                 {
-                    touchCollider.enabled = false;
+                    touchCollider.SetActive(true);
                     isTouchable = false;
                     startGroping();
                 }
                 else
                 {
-                    showGropeNone();
-                    touchCollider.enabled = false;
+                    stopGroping();
+                    touchCollider.SetActive(false);
                 }
             }
             if (!isGroping) return;
@@ -126,57 +126,27 @@ namespace VRT.Pilots.Common
             Debug.DrawRay(ray.origin, ray.direction, Color.green);
             RaycastHit firstHit = new RaycastHit();
             RaycastHit correctHit = new RaycastHit();
+            Vector3 hitPoint;
             float handDistance = maxDistance;
             bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance, firstLayerMask);
             bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
             if (gotFirstHit)
             {
-#if XXXJACK_DEBUG_RAYCAST
-                // There is an issue with the raycast sometimes hitting the 3D avatar head. Need to investigate.
-                if (firstHit.rigidbody)
-                {
-                    Debug.Log($"xxxjack firstHit gameObject {firstHit.rigidbody.gameObject.name} layer {firstHit.rigidbody.gameObject.layer} distance {firstHit.distance} name {firstHit.rigidbody.gameObject.name}");
-                } else
-                {
-                    if (firstHit.collider) Debug.Log($"xxxjack firsthit collider {firstHit.collider.name} on {firstHit.collider.gameObject.name} distance {firstHit.distance}");
-                }
-#endif
                 handDistance = firstHit.distance;
+                hitPoint = firstHit.point;
+            } else
+            {
+                hitPoint = ray.GetPoint(maxDistance);
             }
             isTouchable = gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance;
             //
-            // Show that hand, either touching or not touching.
-            // If not touching we are done.
-            //
-
-#if xxx
-            if (isTouchable)
-            {
-                showGropeTouching(ray, handDistance);
-            }
-            else
-            {
-                showGropeNotTouching(ray, handDistance);
-                touchCollider.enabled = false;
-                return;
-            }
-#endif
-            //
             // If hand is touching something check whether the left mouse is clicked and perform the action.
+            // Note that when isTouching is set the hand is moved so the TouchCollider (or grabcollider, when implemented)
+            // should do the touch magic.
             //
             bool isTouching = isTouchable && Input.GetKey(touchKey);
-            showGrope(ray, handDistance, isTouchable, isTouching);
-            if (isTouching)
-            {
-                GameObject objHit = correctHit.collider.gameObject;
-                Debug.Log($"xxxjack Moving touchCollider to {objHit.name} at {objHit.transform.position}");
-                touchCollider.enabled = true;
-                touchCollider.transform.position = correctHit.collider.transform.position;
-            }
-            if (Input.GetKeyUp(touchKey))
-            {
-                touchCollider.enabled = false;
-            }
+            showGrope(hitPoint, isTouchable, isTouching);
+            
         }
 
         protected virtual void startGroping()
@@ -184,32 +154,36 @@ namespace VRT.Pilots.Common
             hideCursor();
         }
 
-        protected void showGrope(Ray ray, float distance, bool isTouchable, bool isTouching)
+        protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
         {
+            Vector3 homePoint = handHomeTransform.position;
+            Vector3 distance3 = touchPoint - homePoint;
+            float distance = distance3.magnitude;
+            Vector3 direction = distance3 / distance;
+
             if (hotspot != null)
             {
-                var hotSpotPoint = ray.GetPoint(distance);
-                hotspot.transform.position = hotSpotPoint;
+                hotspot.transform.position = touchPoint;
                 hotspot.SetActive(true);
             }
             if (hand != null)
             {
-                var handPoint = ray.GetPoint(distance - (isTouching ? handTouchingDelta : handGropingDelta));
+                var handPoint = homePoint + direction * (distance - (isTouching ? handTouchingDelta : handGropingDelta));
                 hand.transform.position = handPoint;
-                hand.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
+                hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 hand.SetActive(true);
                 UpdateAnimation(isTouchable ? "IsPointing" : "");
             }
-            if (_Line != null && handHomeTransform != null)
+            if (_Line != null)
             {
-                var linePoint = ray.GetPoint(distance - handLineDelta);
+                var linePoint = homePoint + direction * (distance - handLineDelta);
                 var points = new Vector3[2] { handHomeTransform.position, linePoint };
                 _Line.SetPositions(points);
                 _Line.enabled = true;
             }
         }
 
-        protected void showGropeNone()
+        protected void stopGroping()
         {
             if (hotspot != null)
             {

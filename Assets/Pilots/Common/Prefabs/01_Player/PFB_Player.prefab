@@ -2816,9 +2816,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: hand
+      value: 
+      objectReference: {fileID: 792856020353786571}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: teleporter
       value: 
       objectReference: {fileID: 136980260111034875}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchCollider
+      value: 
+      objectReference: {fileID: 5401827870845855719}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: autoCenterMouse

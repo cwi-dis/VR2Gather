@@ -75,29 +75,28 @@ namespace VRT.Pilots.Common
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
 
-				bool pointingModeAxisIsPressed = false;
+				bool inPointingMode = false;
 				if (pointingModeKey != KeyCode.None)
 				{
-					pointingModeAxisIsPressed = Input.GetKey(pointingModeKey);
+					inPointingMode = Input.GetKey(pointingModeKey);
 				}
 				if (pointingModeAxis != "")
 				{
-					pointingModeAxisIsPressed = Input.GetAxis(pointingModeAxis) >= 0.5f;
+					inPointingMode = Input.GetAxis(pointingModeAxis) >= 0.5f;
 				}
-				if (pointingModeAxisInvert) pointingModeAxisIsPressed = !pointingModeAxisIsPressed;
+				if (pointingModeAxisInvert) inPointingMode = !inPointingMode;
 
-				bool grabbingModeAxisIsPressed = false;
+				bool inGrabbingMode = false;
 				if (pointingModeKey != KeyCode.None)
 				{
-					grabbingModeAxisIsPressed = Input.GetKey(grabbingModeKey);
+					inGrabbingMode = Input.GetKey(grabbingModeKey);
 				}
 				if (grabbingModeAxis != "")
 				{
-					grabbingModeAxisIsPressed = Input.GetAxis(grabbingModeAxis) >= 0.5f;
+					inGrabbingMode = Input.GetAxis(grabbingModeAxis) >= 0.5f;
 				}
-				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
+				if (grabbingModeAxisInvert) inGrabbingMode = !inGrabbingMode;
 
-				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
 				if (teleportModeKey != KeyCode.None && teleporter != null)
 				{
 					bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
@@ -126,13 +125,13 @@ namespace VRT.Pilots.Common
 					}
 				}
 
-				if (grabbingModeAxisIsPressed)
+				if (inGrabbingMode)
 				{
 					_Controller.SetHandState(HandController.State.Grabbing);
 					GrabCollider.SetActive(true);
 					TouchCollider.SetActive(false);
 				}
-				else if (pointingModeAxisIsPressed)
+				else if (inPointingMode)
 				{
 					_Controller.SetHandState(HandController.State.Pointing);
 					GrabCollider.SetActive(false);
