@@ -46,8 +46,8 @@ namespace VRT.Pilots.Common
         protected Animator _Animator = null;
         private LineRenderer _Line;
 
-        const float handLineDelta = 0.3f;     // Hand line stops 20cm before touching point
-        const float handGropingDelta = 0.2f;  // Groping hand position is 20cm before touching point
+        const float handLineDelta = 0.25f;     // Hand line stops 20cm before touching point
+        const float handGropingDelta = 0.1f;  // Groping hand position is 20cm before touching point
         const float handTouchingDelta = 0f; // Touching hand position is 10cm before touching point
 
         void Start()
@@ -146,6 +146,10 @@ namespace VRT.Pilots.Common
             //
             bool isTouching = isTouchable && Input.GetKey(touchKey);
             showGrope(hitPoint, isTouchable, isTouching);
+            if (isTouching)
+            {
+                touchCollider.transform.position = hitPoint;
+            }
             
         }
 
