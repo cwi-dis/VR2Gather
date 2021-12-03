@@ -103,7 +103,7 @@ namespace VRT.Pilots.Common
                 isGroping = isGropingingNow;
                 if (isGroping)
                 {
-                    touchCollider.SetActive(true);
+                    touchCollider.SetActive(false);
                     isTouchable = false;
                     startGroping();
                 }
@@ -150,7 +150,7 @@ namespace VRT.Pilots.Common
             {
                 touchCollider.transform.position = hitPoint;
             }
-            
+            touchCollider.SetActive(isTouching);
         }
 
         protected virtual void startGroping()
