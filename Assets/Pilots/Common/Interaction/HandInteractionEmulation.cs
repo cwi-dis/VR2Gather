@@ -31,8 +31,12 @@ namespace VRT.Pilots.Common
         public KeyCode teleportHomeKey = KeyCode.Alpha0;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
-        [Tooltip("The virtual hand that is used to touch objects")]
+        [Tooltip("The hand that is used to touch objects")]
         public GameObject hand;
+        [Tooltip("The unused hand, which is hidden")]
+        public GameObject unusedHand;
+        [Tooltip("The transform that governs the hand's idle position")]
+        public Transform handHomeTransform;
         [Tooltip("Collider that actually presses the button")]
         public Collider touchCollider = new SphereCollider();
         protected bool isGroping;
@@ -42,6 +46,11 @@ namespace VRT.Pilots.Common
         void Start()
         {
             _Animator = GetComponentInChildren<Animator>();
+            showGropeNone();
+            if (unusedHand != null)
+            {
+                unusedHand.SetActive(false);
+            }
         }
 
         void OnDestroy()
@@ -192,9 +201,17 @@ namespace VRT.Pilots.Common
         protected void showGropeNone()
         {
             UpdateAnimation("");
-            hand.transform.localPosition = Vector3.zero;
-            hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
-            Invoke("hideHand", 0.5f);
+            if (handHomeTransform == null)
+            {
+                hand.transform.localPosition = Vector3.zero;
+                hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+            }
+            else
+            {
+                hand.transform.position = handHomeTransform.position;
+                hand.transform.rotation = handHomeTransform.rotation;
+            }
+            //Invoke("hideHand", 0.5f);
             showCursor();
         }
 
