@@ -15,8 +15,15 @@ MonoBehaviour:
   maxDistance: 3
   gropeKey: 334
   touchKey: 335
-  hand: {fileID: 229600061608571063}
-  touchCollider: {fileID: 5325479344539973577}
+  teleportGropeKey: 306
+  teleportKey: 323
+  teleportHomeKey: 48
+  teleporter: {fileID: 0}
+  hotspot: {fileID: 6632964694281847516}
+  hand: {fileID: 0}
+  unusedHand: {fileID: 0}
+  handHomeTransform: {fileID: 5508476326111428677}
+  touchCollider: {fileID: 0}
   leftRightAxisName: Gamepad_Axis_1
   upDownAxisName: Gamepad_Axis_2
   invertUpDown: 1
@@ -90,6 +97,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161, type: 3}
+    - {fileID: 1490387017036205987, guid: 945598f36f3144eadbcad70ad090c161, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 945598f36f3144eadbcad70ad090c161, type: 3}
 --- !u!1 &9075855099919693262 stripped
 GameObject:
@@ -97,15 +105,15 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5892437970491793679}
   m_PrefabAsset: {fileID: 0}
---- !u!135 &5325479344539973577 stripped
-SphereCollider:
-  m_CorrespondingSourceObject: {fileID: 1738884385946719942, guid: 945598f36f3144eadbcad70ad090c161,
+--- !u!4 &5508476326111428677 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2140387493699821898, guid: 945598f36f3144eadbcad70ad090c161,
     type: 3}
   m_PrefabInstance: {fileID: 5892437970491793679}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &229600061608571063 stripped
+--- !u!1 &6632964694281847516 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 5974465910746501560, guid: 945598f36f3144eadbcad70ad090c161,
+  m_CorrespondingSourceObject: {fileID: 993926772880794579, guid: 945598f36f3144eadbcad70ad090c161,
     type: 3}
   m_PrefabInstance: {fileID: 5892437970491793679}
   m_PrefabAsset: {fileID: 0}

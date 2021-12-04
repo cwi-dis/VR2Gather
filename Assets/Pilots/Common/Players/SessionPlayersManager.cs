@@ -168,7 +168,7 @@ namespace VRT.Pilots.Common
 #if UNITY_EDITOR
 						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
 							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
-							playerManager.cam.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+							playerManager.getCameraTransform().GetComponent<VRTCore.UnityRecorderController>().enabled = true;
 						}
 #endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
@@ -196,6 +196,11 @@ namespace VRT.Pilots.Common
 
 			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
 			playerManager.setupInputOutput(isLocalPlayer);
+			Transform cameraTransform = null;
+			if (isLocalPlayer)
+            {
+				cameraTransform = playerManager.getCameraTransform();
+			}
 
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
@@ -220,7 +225,7 @@ namespace VRT.Pilots.Common
 					case UserRepresentationType.__PCC_PROXY__:
 					case UserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
-						if (isLocalPlayer)
+						if (cameraTransform)
 						{
 							Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
 							Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
@@ -244,10 +249,10 @@ namespace VRT.Pilots.Common
 						break;
 					case UserRepresentationType.__TVM__: // TVM
 														 // xxxjack we should *really* create a dummy TVMPipeline object for this...
-						if (isLocalPlayer)
+						if (cameraTransform)
 						{
-							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+							cameraTransform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+							cameraTransform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
 						}
 						ITVMHookUp tvm = playerManager.tvm;
 						if (tvm != null)

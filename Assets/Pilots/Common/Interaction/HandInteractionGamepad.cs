@@ -6,7 +6,7 @@ using VRT.Core;
 namespace VRT.Pilots.Common
 {
     //
-    // This script emulates HandController for use when you have a gamepad controller.
+    // This script emulates HandInteraction for use when you have a gamepad input device.
     //
     // When you press the grope key you will see an indication whether the object in the center of the screen is
     // touchable. If so you can press touchKey and touch it.
@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
     // Grabbing not implemented, because it doesn't seem to useful (without hands). But doable
     // if we want to.
     //
-    public class HandControllerGamepad : HandControllerEmulation
+    public class HandInteractionGamepad : HandInteractionEmulation
     {
         [Tooltip("Axis that controls 2D horizontal position of hand")]
         public string leftRightAxisName = "Gamepad_Axis_1";
@@ -51,8 +51,8 @@ namespace VRT.Pilots.Common
             if (xHand > 1) xHand = 1;
             if (yHand < -1) yHand = -1;
             if (yHand > 1) yHand = 1;
-            float xPos = (xHand + 1.0f) * Camera.main.pixelWidth / 2;
-            float yPos = (yHand + 1.0f) * Camera.main.pixelHeight / 2;
+            float xPos = (xHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelWidth / 2;
+            float yPos = (yHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelHeight / 2;
             return new Vector3(xPos, yPos, 0);
         }
 

@@ -49,6 +49,7 @@ namespace VRT.Core
         {
             public string[] preferredDevices = { "Oculus", "OpenVR", "" };
             public string preferredController = "";
+            public bool useLookingGlass = false;
         }
         public _VR VR;
 
