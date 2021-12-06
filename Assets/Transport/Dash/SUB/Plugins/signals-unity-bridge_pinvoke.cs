@@ -255,6 +255,24 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
                 }
                 Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
+#if DOES_NOT_WORK
+                // Sigh: since MacOS 12 ~/lib is no longer on the default search path. So we have to add
+                // symlinks in our toplevel project directory.
+                // That is because setting DYLD_LIBRARY_PATH here doesn't work (only read by dyld upon process start)
+                // And setting it globally also doesn't work (SIP clears it when a child process is executed)
+                // But unfortunately creating symlinks doesn't work either...
+
+                string top_dir_path = Path.GetDirectoryName(Application.dataPath);
+                string orig_dll_path = Path.Combine(path, "pcl2dash.so");
+                string wanted_dll_path = Path.Combine(top_dir_path, "pcl2dash.so");
+                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
+                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
+
+                orig_dll_path = Path.Combine(path, "signals-unity-bridge.so");
+                wanted_dll_path = Path.Combine(top_dir_path, "signals-unity-bridge.so");
+                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
+                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
+#endif
                 return;
             }
             if (lastMSpathInstalled == module_base) return;
