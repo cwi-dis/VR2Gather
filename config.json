@@ -13,10 +13,10 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "jj",
+  	"sessionName" : "testsession",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
-  	"autoCreate" : true,
+  	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 1,
   	"autoDelay" : 0.5
