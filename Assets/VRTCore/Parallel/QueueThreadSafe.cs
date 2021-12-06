@@ -13,6 +13,7 @@ namespace VRT.Core
         CancellationTokenSource isClosed;
         Queue<BaseMemoryChunk> queue;
         ulong latestTimestamp = 0;
+        ulong latestTimestampReturned = 0;
         SemaphoreSlim empty;
         SemaphoreSlim full;
 
@@ -141,6 +142,13 @@ namespace VRT.Core
             return latestTimestamp;
         }
 
+        // Return the time span of the queue (difference of timestamps of earliest and latest timestamps)
+        public ulong QueuedDuration()
+        {
+            if (latestTimestampReturned == 0 || latestTimestamp == 0 || latestTimestampReturned > latestTimestamp) return 0;
+            return latestTimestamp - latestTimestampReturned;
+        }
+
         // Get the next item from the queue.
         // Wait semantics: waits until something is available.
         // The caller gets ownership of the returned object.
@@ -154,6 +162,7 @@ namespace VRT.Core
                 lock (queue)
                 {
                     item = queue.Dequeue();
+                    latestTimestampReturned = (ulong)item.info.timestamp;
                 }
                 empty.Release();
                 return item;
@@ -179,6 +188,7 @@ namespace VRT.Core
                     lock (queue)
                     {
                         item = queue.Dequeue();
+                        latestTimestampReturned = (ulong)item.info.timestamp;
                     }
                     empty.Release();
                     return item;

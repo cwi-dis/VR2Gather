@@ -143,9 +143,9 @@ namespace VRT.UserRepresentation.PointCloud
             else return defaultCellSize * cellSizeFactor;
         }
 
-        public int getQueueSize()
+        public ulong getQueueDuration()
         {
-            return InQueue._Count;
+            return InQueue.QueuedDuration();
         }
 
     }
