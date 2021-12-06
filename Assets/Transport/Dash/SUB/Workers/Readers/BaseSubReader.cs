@@ -249,7 +249,7 @@ namespace VRT.Transport.Dash
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseSubReader(string _url, string _streamName, int _initialDelay, int _frequency=0) : base(WorkerType.Init)
+        protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base(WorkerType.Init)
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -267,18 +267,12 @@ namespace VRT.Transport.Dash
                     _url += _streamName;
                 }
                 url = _url;
-                if (_initialDelay != 0)
-                {
-                    // We do not try to start play straight away, to work around bugs when creating the SUB before
-                    // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                    Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
-                }
+               
                 frequency = _frequency;
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _initialDelay, _frenquecy)
+        public BaseSubReader(string _url, string _streamName, int streamIndex, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _frenquecy)
         {
             lock (this)
             {

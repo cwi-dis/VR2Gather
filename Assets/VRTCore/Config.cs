@@ -38,12 +38,20 @@ namespace VRT.Core
         public string videoCodec = "h264";
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
-        public float nonHMDHeight = 1.8f;
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+
+        [Serializable]
+        public class _VR
+        {
+            public string[] preferredDevices = { "Oculus", "OpenVR", "" };
+            public string preferredController = "";
+            public bool useLookingGlass = false;
+        }
+        public _VR VR;
 
         [Serializable]
         public class _AutoStart
@@ -84,9 +92,9 @@ namespace VRT.Core
         [Serializable]
         public class _PCs
         {
-            public Vector3 scale;
             public float defaultCellSize;
             public float cellSizeFactor;
+            public bool debugColorize;
         };
         public _PCs PCs;
 
@@ -97,15 +105,12 @@ namespace VRT.Core
             [Serializable]
             public class _PCSUBConfig
             {
-                public int[] tileNumbers;
-                public int initialDelay;
             }
-            public _PCSUBConfig SUBConfig;
+            public _PCSUBConfig PCSUBConfig;
             [Serializable]
             public class _AudioSUBConfig
             {
                 public int streamNumber;
-                public int initialDelay;
             }
             public _AudioSUBConfig AudioSUBConfig;
 

@@ -5,8 +5,7 @@
 
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
-  "useAudio": true,
-  "ntpSyncThreshold": 0.033,
+  "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
@@ -14,35 +13,23 @@
   "statsOutputFileAppend": false,
  
   "AutoStart" : {
-  	"autoLogin" : false,
-  	"sessionName" : "",
-  	"sessionScenario" : -1,
-  	"sessionTransportProtocol" : -1,
+  	"autoLogin" : true,
+  	"sessionName" : "testsession",
+  	"sessionScenario" : 0,
+  	"sessionTransportProtocol" : 1,
   	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : -1,
+  	"autoStartWith" : 1,
   	"autoDelay" : 0.5
+  },
+  "VR" : {
+	"_preferredDevices" : ["", "Oculus", "OpenVR"],
+	"_preferredController" : "gamepad"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
   "PCs": {
-    "offsetPosition": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "offsetRotation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "scale": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "forceMesh": false,
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1
   },
@@ -62,7 +49,7 @@
         "port": 9335
       },
 	  "PrerecordedReaderConfig" : {
-		"folder" : "../mmsys2021-loot-150K"
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0.0,
       "frameRate": 10,
@@ -106,12 +93,8 @@
   },
   "RemoteUser": {
     "sourceType": "remote",
-    "SUBConfig": {
-      "initialDelay": 0
-    },
     "AudioSUBConfig": {
-      "streamNumber": 0,
-      "initialDelay": 0
+      "streamNumber": 0
     },
     "Render": {
       "pointSize": 0,

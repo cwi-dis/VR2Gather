@@ -116,6 +116,15 @@ namespace VRT.UserRepresentation.PointCloud
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_tilefilter(IntPtr pc, int tilenum);
 
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_tilemap(IntPtr pc, byte[] map);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_colormap(IntPtr pc, UInt32 clearBits, UInt32 setBits);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_join(IntPtr pc1, IntPtr pc2);
+
         }
         private class _API_cwipc_realsense2
         {
@@ -606,6 +615,31 @@ namespace VRT.UserRepresentation.PointCloud
         {
             IntPtr pcPtr = pc._intptr();
             IntPtr rvPtr = _API_cwipc_util.cwipc_tilefilter(pcPtr, tileNum);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud tilemap(pointcloud pc, byte[] map)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_tilemap(pcPtr, map);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud colormap(pointcloud pc, uint clearMask, uint setMask)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_colormap(pcPtr, clearMask, setMask);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud join(pointcloud pc1, pointcloud pc2)
+        {
+            IntPtr pc1Ptr = pc1._intptr();
+            IntPtr pc2Ptr = pc2._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_join(pc1Ptr, pc2Ptr);
             if (rvPtr == IntPtr.Zero) return null;
             return new pointcloud(rvPtr);
         }
