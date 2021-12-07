@@ -91,14 +91,16 @@ namespace VRT.Transport.SocketIO
                     chunk.info.timestamp = timestamp;
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
                     // xxxjack note: this means we are _not_ distinghuising tiles for socketIO. Should be fixed, but difficult.
-                    stats.statsUpdate(chunk.length, id);
+                    bool didDrop = true;
                     if (id < descriptors.Length)
                     {
-                        descriptors[id].outQueue.Enqueue(chunk);
+                        didDrop = !descriptors[id].outQueue.Enqueue(chunk);
                     } else
                     {
                         Debug.LogWarning($"Name(): drop packet for unknown stream {id}");
                     }
+                    stats.statsUpdate(chunk.length, didDrop, timestamp, id);
+
                 }
             }
             else
@@ -120,32 +122,25 @@ namespace VRT.Transport.SocketIO
         {
             public Stats(string name) : base(name) { }
 
-            System.DateTime statsConnectionStartTime;
-            double statsTotalBytes;
-            double statsTotalPackets;
-            bool statsGotFirstReception;
-
-            public void statsUpdate(int nBytes, int streamId)
+            double statsTotalBytes = 0;
+            double statsTotalPackets = 0;
+            double statsTotalDrops = 0;
+            
+            public void statsUpdate(int nBytes, bool dropped, long timestamp, int streamId)
             {
-                if (!statsGotFirstReception)
-                {
-                    statsConnectionStartTime = System.DateTime.Now;
-                    statsGotFirstReception = true;
-                }
-
-                System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
-             
                 statsTotalBytes += nBytes;
                 statsTotalPackets++;
+                if (dropped) statsTotalDrops++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamId}");
+                    Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
+                    statsTotalDrops = 0;
                 }
             }
         }

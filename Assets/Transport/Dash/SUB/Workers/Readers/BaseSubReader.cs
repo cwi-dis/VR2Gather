@@ -86,9 +86,6 @@ namespace VRT.Transport.Dash
             protected void run()
             {
                 bool bCanQueue = (frequency==0); // If frequency is 0 enqueue at the very begining
-                // Create a stopwatch to measure the time.
-                System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-                stopWatch.Start();
                 System.TimeSpan oldElapsed = System.TimeSpan.Zero;
                 try
                 {
@@ -190,46 +187,24 @@ namespace VRT.Transport.Dash
                     Debug.LogError("Error while receiving visual representation or audio from another participant");
 #endif
                 }
-
-                stopWatch.Stop();
-            }
+           }
 
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
 
-                System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
                 double statsTotalPackets;
                 double statsTotalDrops;
-                double statsTotalLatency;
-                bool statsGotFirstReception;
-
+                
                 public void statsUpdate(int nBytes, bool didDrop, long timeStamp, int stream_index)
                 {
-                    if (!statsGotFirstReception)
-                    {
-                        statsConnectionStartTime = System.DateTime.Now;
-                        statsGotFirstReception = true;
-                    }
-      
-                    System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
-                    double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-                    // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
-                    // if we appear to be ahead we adjust connection start time.
-                    if (latency < 0)
-                    {
-                        statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
-                        latency = 0;
-                    }
-                    statsTotalLatency += latency;
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps_received={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
                      }
                     if (ShouldClear())
                     {
@@ -237,7 +212,6 @@ namespace VRT.Transport.Dash
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
                         statsTotalDrops = 0;
-                        statsTotalLatency = 0;
                     }
                 }
             }
