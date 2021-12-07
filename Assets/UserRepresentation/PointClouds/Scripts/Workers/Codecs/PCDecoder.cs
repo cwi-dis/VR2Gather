@@ -91,10 +91,6 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     if (!_FeedDecoder())
                     {
-                        // No pointcloud obtained.
-                        // There's also no decoder output available
-                        // record this in the stats and return
-                        stats.statsUpdate(false, 0, 0);
                         return;
                     }
                 }
@@ -110,7 +106,6 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                stats.statsUpdate(true, pc.count(), inQueue.QueuedDuration());
                 if (debugColorize)
                 {
                     int cnum = (instanceNumber % 6) + 1;
@@ -122,7 +117,8 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     pc = newpc;
                 }
-                outQueue.Enqueue(pc);
+                bool dropped = !outQueue.Enqueue(pc);
+                stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration());
                 _FeedDecoder();
             }
         }
@@ -132,27 +128,27 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
-            ulong statsTotalQueuedDuration = 0;
+            double statsTotalDropped = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(bool gotPC, int pointCount, ulong queuedDuration)
+            public void statsUpdate(int pointCount, bool dropped, ulong queuedDuration)
             {
-                if (gotPC)
-                {
-                    statsTotalPoints += pointCount;
-                    statsTotalPointclouds++;
-                    statsTotalQueuedDuration += queuedDuration;
-                }
+                statsTotalPoints += pointCount;
+                statsTotalPointclouds++;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
                 
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={statsTotalQueuedDuration / factor}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={statsTotalQueuedDuration / factor}");
                  }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
                     statsTotalQueuedDuration = 0;
                 }
             }

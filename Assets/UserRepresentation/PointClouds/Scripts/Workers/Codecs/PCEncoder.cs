@@ -141,8 +141,8 @@ namespace VRT.UserRepresentation.PointCloud
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            stats.statsUpdate();
-                            outQueue.Enqueue(mc);
+                            bool dropped = !outQueue.Enqueue(mc);
+                            stats.statsUpdate(dropped, outQueue.QueuedDuration());
                         }
                         else
                         {
@@ -172,13 +172,16 @@ namespace VRT.UserRepresentation.PointCloud
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;
+            double statsTotalDropped = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate() {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            public void statsUpdate(bool dropped, ulong queuedDuration) {
                 statsTotalPointclouds++;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, dropped_fps={statsTotalDropped / Interval():F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
                 }
                 if (ShouldClear()) {
                     Clear();

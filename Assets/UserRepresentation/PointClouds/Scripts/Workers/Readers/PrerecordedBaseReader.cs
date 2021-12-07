@@ -300,6 +300,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
+            ulong encoderQueuedDuration = 0;
             if (outQueue == null || outQueue.IsClosed())
             {
                 Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
@@ -324,9 +325,10 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     didDropEncoder = true;
                 }
+                encoderQueuedDuration = out2Queue.QueuedDuration();
             }
           
-            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp(), subdir);
+            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
             pc.free();
         }
 
@@ -338,18 +340,20 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPointclouds = 0;
             double statsDrops = 0;
             double statsSelfDrops = 0;
+            double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong timestamp, string subdir)
+            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp, string subdir)
             {
                 
                 statsTotalPoints += pointCount;
-                statsTotalPointclouds += 1;
+                statsTotalPointclouds++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
+                statsQueuedDuration += queuedDuration;
 
                 if (ShouldOutput())
                 {
-                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}";
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, dropped_fps={statsDrops / Interval():F2}, dropped_self_fps={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
                     if (subdir != null && subdir != "")
                     {
                         msg += $", quality={subdir}";
@@ -357,9 +361,10 @@ namespace VRT.UserRepresentation.PointCloud
                     Output(msg);
                     if (statsDrops > 3 * Interval())
                     {
-                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                        double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
+                        Debug.LogWarning($"{name}: excessive dropped frames. Set LocalUser.PCSelfConfig.frameRate <= {ok_fps:F2}  in config.json.");
                     }
-                 }
+                }
                 if (ShouldClear())
                 {
                     Clear();
@@ -367,6 +372,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPointclouds = 0;
                     statsDrops = 0;
                     statsSelfDrops = 0;
+                    statsQueuedDuration = 0;
                 }
             }
         }
