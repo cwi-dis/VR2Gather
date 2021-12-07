@@ -21,7 +21,7 @@
   	"autoCreate" : false,
   	"autoJoin" : true,
   	"autoStartWith" : 2,
-  	"autoDelay" : 0.5
+  	"autoDelay" : 1.5
   },
   "VR" : {
 	"_preferredDevices" : ["", "Oculus", "OpenVR"],
