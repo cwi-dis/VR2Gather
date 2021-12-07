@@ -359,7 +359,7 @@ namespace VRT.UserRepresentation.PointCloud
                         msg += $", quality={subdir}";
                     }
                     Output(msg);
-                    if (statsDrops > 3 * Interval())
+                    if (statsDrops > 1 + 3 * Interval())
                     {
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
                         Debug.LogWarning($"{name}: excessive dropped frames. Set LocalUser.PCSelfConfig.frameRate <= {ok_fps:F2}  in config.json.");
