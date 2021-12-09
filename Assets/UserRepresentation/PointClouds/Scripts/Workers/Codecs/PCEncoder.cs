@@ -116,13 +116,16 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Update();
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            if (pc == null) return; // Terminating
-            if (encoderGroup != null)
+            while (pc != null)
             {
-                // Not terminating yet
-                encoderGroup.feed(pc);
+                if (encoderGroup != null)
+                {
+                    // Not terminating yet
+                    encoderGroup.feed(pc);
+                }
+                pc.free();
+                pc = (cwipc.pointcloud)inQueue.Dequeue();
             }
-            pc.free();
         }
 
         protected void PusherThread(int stream_number)
