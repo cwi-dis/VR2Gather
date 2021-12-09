@@ -353,7 +353,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, dropped_fps={statsDrops / Interval():F2}, dropped_self_fps={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
                     if (subdir != null && subdir != "")
                     {
                         msg += $", quality={subdir}";

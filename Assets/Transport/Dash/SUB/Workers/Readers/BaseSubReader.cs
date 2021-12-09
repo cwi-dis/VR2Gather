@@ -204,7 +204,7 @@ namespace VRT.Transport.Dash
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
                      }
                     if (ShouldClear())
                     {

@@ -133,7 +133,7 @@ namespace VRT.Transport.SocketIO
                 if (dropped) statsTotalDrops++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}");
+                    Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
