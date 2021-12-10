@@ -1000,7 +1000,7 @@ namespace VRT.Orchestrator.Wrapping
             {
                 if (orchestratorCommands[i].SocketEventName == commandName)
                 {
-                    return orchestratorCommands[i];
+                    return new OrchestratorCommand(orchestratorCommands[i]);
                 }
             }
             return null;

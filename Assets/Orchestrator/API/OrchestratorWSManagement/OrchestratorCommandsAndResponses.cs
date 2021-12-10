@@ -47,6 +47,13 @@ namespace VRT.Orchestrator.WSManagement
         public Object ParamValue;
 
         // Constructor
+        public Parameter(Parameter old)
+        {
+            ParamName = old.ParamName;
+            type = old.type;
+            ParamValue = old.ParamValue;
+        }
+
         public Parameter(string paramName, Type type, Object paramValue)
         {
             ParamName = paramName;
@@ -73,6 +80,22 @@ namespace VRT.Orchestrator.WSManagement
 
 
         // Constructors
+        public OrchestratorCommand(OrchestratorCommand old)
+        {
+            SocketEventName = old.SocketEventName;
+            commandID = old.commandID;
+            if (old.Parameters != null)
+            {
+                Parameters = new List<Parameter>();
+                foreach (var p in old.Parameters)
+                {
+                    Parameters.Add(new Parameter(p));
+                }
+            }
+           
+            ResponseCallback = old.ResponseCallback;
+        }
+
         public OrchestratorCommand(string socketEventName,
             List<Parameter> parameters,
             ResponseCallbackManager responseCallback)
