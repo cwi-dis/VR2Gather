@@ -117,13 +117,13 @@ public class Calibration : MonoBehaviour {
                 float zAxis = controls.backwardForward.get();
                 float xAxis = controls.leftRight.get();
                 float yAxis = controls.downUp.get();
-                if (zAxis != 0) Debug.Log($"xxxjack rotation {zAxis}");
-                if (xAxis != 0) Debug.Log($"xxxjack rotation {xAxis}");
-                if (yAxis != 0) Debug.Log($"xxxjack rotation {yAxis}");
+                if (zAxis != 0) Debug.Log($"xxxjack translation z={zAxis}");
+                if (xAxis != 0) Debug.Log($"xxxjack translation x={xAxis}");
+                if (yAxis != 0) Debug.Log($"xxxjack translation y={yAxis}");
                 if (controls.reset.get())
                 {
                     cameraReference.transform.localPosition = new Vector3(0, 0, 0);
-                    Debug.Log($"Calibration: Translation: reset to 0,0,0");
+                    Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
                 }
                 cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
@@ -132,7 +132,7 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
-                    Debug.Log($"Calibration: Translation: Saved: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
                     state = State.Mode;
                 }
                 // Back
@@ -143,14 +143,14 @@ public class Calibration : MonoBehaviour {
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
                     var pos = cameraReference.transform.localPosition;
-                    Debug.Log($"Calibration: Translation: Reset to: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Reloaded to: {pos.x}, {pos.y}, {pos.z}");
                     state = State.Mode;
                 }
                 break;
             case State.Rotation:
                 // Rotation
                 float yAxisR = controls.leftRight.get();
-                if (yAxisR != 0) Debug.Log($"xxxjack rotation {yAxisR}");
+                if (yAxisR != 0) Debug.Log($"xxxjack rotation y={yAxisR}");
                 if (controls.reset.get())
                 {
                     Debug.Log("Calibration: Rotation: Reset to 0,0,0");
@@ -164,7 +164,7 @@ public class Calibration : MonoBehaviour {
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
 
-                    Debug.Log($"Calibration: Rotation: Saved: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
                     state = State.Mode;
                 }
                 // Back
@@ -175,7 +175,7 @@ public class Calibration : MonoBehaviour {
                         PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
                     );
                     var rot = cameraReference.transform.localRotation;
-                    Debug.Log($"Calibration: Rotation: Reset to: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Reloaded to: {rot.x}, {rot.y}, {rot.z}");
                     state = State.Mode;
                 }
                 break;
