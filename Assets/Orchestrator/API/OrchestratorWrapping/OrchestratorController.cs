@@ -369,6 +369,7 @@ namespace VRT.Orchestrator.Wrapping
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}");
+            if (OnGetNTPTimeEvent == null) Debug.LogWarning("OrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
