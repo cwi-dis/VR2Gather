@@ -3124,6 +3124,11 @@ PrefabInstance:
       propertyPath: teleporter
       value: 
       objectReference: {fileID: 3062862614268245432}
+    - target: {fileID: 3181784303578220650, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: teleporter
+      value: 
+      objectReference: {fileID: 6946766815011694923}
     - target: {fileID: 3706514450264703476, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_Name
@@ -3259,6 +3264,11 @@ PrefabInstance:
       propertyPath: TeleportLineRenderer
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6250457016238168488, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: teleporter
+      value: 
+      objectReference: {fileID: 3062862614268245432}
     - target: {fileID: 6690124169422001050, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: bodyTransforn
