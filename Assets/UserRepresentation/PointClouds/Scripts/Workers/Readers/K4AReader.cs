@@ -25,6 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = cwipc.kinect(_configFilename);
                 if (wantedSkeleton)
                 {
+                    BaseStats.Output(Name(), "skeleton=1");
                     bool result = reader.request_auxiliary_data("skeleton");
                     if (!result) throw new System.Exception($"{Name()}: cwipc_kinect skeleton tracker could not be initialized");
                     Debug.Log($"{Name()}: Requested Skeleton.");
@@ -73,13 +74,13 @@ namespace VRT.UserRepresentation.PointCloud
                                 if (new_skeleton.joints.Count > 0)
                                 {
                                     found_skeleton = true;
-                                    //Debug.Log($"xxxnacho found_skeleton");
+                                    Debug.Log($"xxxnacho found_skeleton, {new_skeleton.joints.Count}");
                                 }
                             }
                             else
                             {
                                 bool ok = new_skeleton.fuse_skeletons(pc_aux_data.pointer(i), pc_aux_data.size(i));
-                                //Debug.Log($"xxxnacho fused_skeleton = {ok}");
+                                Debug.Log($"xxxnacho fused_skeleton = {ok}, {new_skeleton.joints.Count} joints");
                             }
                         }
                     }

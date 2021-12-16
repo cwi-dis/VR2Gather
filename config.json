@@ -22,8 +22,8 @@
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"_preferredDevices" : ["", "Oculus", "OpenVR"],
-	"_preferredController" : "gamepad"
+	"preferredDevices" : [""],
+	"preferredController" : "gamepad"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
@@ -38,7 +38,8 @@
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
-        "configFilename": "./cameraconfig.xml"
+        "configFilename": "./cameraconfig.xml",
+		"wantedSkeleton" : true
       },
       "SynthReaderConfig": {
         "nPoints": 8000
