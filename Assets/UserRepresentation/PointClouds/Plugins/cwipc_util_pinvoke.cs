@@ -85,6 +85,42 @@ namespace VRT.UserRepresentation.PointCloud
 
         public class cwipc_skeleton
         {
+            public enum JointIndex
+            {
+                PELVIS = 0,
+                SPINE_NAVEL,
+                SPINE_CHEST,
+                NECK,
+                CLAVICLE_LEFT,
+                SHOULDER_LEFT,
+                ELBOW_LEFT,
+                WRIST_LEFT,
+                HAND_LEFT,
+                HANDTIP_LEFT,
+                THUMB_LEFT,
+                CLAVICLE_RIGHT,
+                SHOULDER_RIGHT,
+                ELBOW_RIGHT,
+                WRIST_RIGHT,
+                HAND_RIGHT,
+                HANDTIP_RIGHT,
+                THUMB_RIGHT,
+                HIP_LEFT,
+                KNEE_LEFT,
+                ANKLE_LEFT,
+                FOOT_LEFT,
+                HIP_RIGHT,
+                KNEE_RIGHT,
+                ANKLE_RIGHT,
+                FOOT_RIGHT,
+                HEAD,
+                NOSE,
+                EYE_LEFT,
+                EAR_LEFT,
+                EYE_RIGHT,
+                EAR_RIGHT
+            };
+
             public ulong timestamp;
             public List<cwipc_skeleton_joint> joints;
             public cwipc_skeleton() { }
