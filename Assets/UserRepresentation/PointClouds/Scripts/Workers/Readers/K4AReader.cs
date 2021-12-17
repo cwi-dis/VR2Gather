@@ -95,5 +95,10 @@ namespace VRT.UserRepresentation.PointCloud
                 return true;
             return false;
         }
+
+        public bool supports_skeleton()
+        {
+            return wantedSkeleton;
+        }
     }
 }
