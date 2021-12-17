@@ -22,10 +22,14 @@ namespace VRT.UserRepresentation.PointCloud
         const int pcPreparerQueueSize = 50; // Was: 2.
         public BaseWorker reader;
         BaseWorker encoder;
-        List<BaseWorker> decoders = new List<BaseWorker>();
-        BaseWorker writer;
-        List<BaseWorker> preparers = new List<BaseWorker>();
-        List<MonoBehaviour> renderers = new List<MonoBehaviour>();
+        [Tooltip("Debugging: current decoders")]
+        public List<BaseWorker> decoders = new List<BaseWorker>();
+        [Tooltip("Debugging: current writer")]
+        public BaseWorker writer;
+        [Tooltip("Debugging: current preparers")]
+        public List<BaseWorker> preparers = new List<BaseWorker>();
+        [Tooltip("Debugging: current renderers")]
+        public List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
@@ -508,6 +512,14 @@ namespace VRT.UserRepresentation.PointCloud
             BaseStats.Output(Name(), $"finished=1");
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
             BaseMemoryChunkReferences.ShowTotalRefCount();
+        }
+
+        public void PausePlayback(bool paused)
+        {
+            foreach(var r in renderers)
+            {
+                r.PausePlayback(paused);
+            }
         }
 
         public TilingConfig GetTilingConfig()

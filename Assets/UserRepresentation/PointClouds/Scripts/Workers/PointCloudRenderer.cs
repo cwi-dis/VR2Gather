@@ -10,6 +10,7 @@ namespace VRT.UserRepresentation.PointCloud
         int pointCount = 0;
         static Material baseMaterial;
         public Material material;
+        public bool paused = false;
         MaterialPropertyBlock block;
         PointCloudPreparer preparer;
         static int instanceCounter = 0;
@@ -40,6 +41,11 @@ namespace VRT.UserRepresentation.PointCloud
             stats = new Stats(Name());
         }
 
+        public void PausePlayback(bool _paused)
+        {
+            paused = _paused;
+        }
+
         public void SetPreparer(PointCloudPreparer _preparer)
         {
             if (preparer != null)
@@ -56,6 +62,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
+            if (paused) return;
             float pointSize = 0;
             if (fresh)
             {
