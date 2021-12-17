@@ -9,6 +9,10 @@ TagManager:
   - Spectator
   - Plants
   - Teleportable
+  - SensorButton
+  - SensorLight
+  - Card
+  - CardDeck
   layers:
   - Default
   - TransparentFX

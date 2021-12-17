@@ -559,7 +559,38 @@ MonoBehaviour:
   - Assets/Pilots/Common/Prefabs/04_Props/PhoneFinder/Models/Phone Finder.fbx
   - Assets/Pilots/Common/Prefabs/02_Objects/Models/sphere.fbx
   - Assets/Pilots/Common/Props/Base_users.fbx
-  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000010100000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000000000000000000000000000001010000
+  - Assets/PilotsExternal/Traction/Traction/Resources/model/model.dae
+  - Assets/PilotsExternal/Traction/Traction/Resources/model/TV.dae
+  - Assets/PilotsExternal/Traction/Traction/Resources/Piano/model.dae
+  - Assets/PilotsExternal/Traction/Traction/Resources/Piano/Piano.dae
+  - Assets/PilotsExternal/Traction/Traction/Resources/umbrella/umbrella_sketchfab.obj
+  - Assets/Stylized Nature Environment/Nature/tree_c.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_a.fbx
+  - Assets/Stylized Nature Environment/Terrain/mountain.FBX
+  - Assets/Stylized Nature Environment/Nature/tree_g.fbx
+  - Assets/Stylized Nature Environment/Terrain/sky.FBX
+  - Assets/Stylized Nature Environment/Nature/tree_f.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_i.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_e.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_k.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_d.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_j.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_b.fbx
+  - Assets/Stylized Nature Environment/Nature/tree_h.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/bycicle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/bycicle 1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Bench.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Side chair by Vitra_more detailed
+    mesh.3DS
+  - Assets/PilotsExternal/Traction/Traction/Resources/the-sofa-the-chair-and-the-table/source/Sofa.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/some-furniture/source/chairsscene.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/maple_leaf_red/maple_leaf_red.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/dublin-chair/source/dublinChairs.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/round-table/source/low.obj
+  - Assets/PilotsExternal/Traction/Traction/Resources/Scene_OBJ.obj
+  - Assets/PilotsExternal/Traction/Traction/Resources/day-2-bar/source/Day2_Bar.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/sports-bar/source/Scene_OBJ/Scene_OBJ.obj
+  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000010100000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000000000000000000000000000001010000000000000000000001010000010100000101000001010000010100000101000001010000000000000101000001010000010100000101000001010000010100000101000001010000010100000101000000000000010100000101000001010000010100000101000000000000010100000101000001010000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0
