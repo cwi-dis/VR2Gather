@@ -14,7 +14,8 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jj",
-  	"sessionScenario" : 7,
+  	"_sessionScenario" : 7,
+  	"sessionScenario" : 1,
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : true,
   	"autoJoin" : false,
@@ -23,7 +24,7 @@
   },
   "VR" : {
 	"preferredDevices" : [""],
-	"preferredController" : "gamepad"
+	"_preferredController" : "gamepad"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
