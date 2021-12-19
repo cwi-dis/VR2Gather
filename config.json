@@ -14,8 +14,8 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jj",
-  	"_sessionScenario" : 7,
-  	"sessionScenario" : 1,
+  	"sessionScenario" : 7,
+  	"_sessionScenario" : 1,
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : true,
   	"autoJoin" : false,
@@ -23,7 +23,7 @@
   	"autoDelay" : 0.5
   },
   "VR" : {
-	"preferredDevices" : [""],
+	"_preferredDevices" : [""],
 	"_preferredController" : "gamepad"
   },
   "Macintosh": {
