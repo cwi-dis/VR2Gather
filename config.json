@@ -40,7 +40,7 @@
     "PCSelfConfig": {
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.xml",
-		"wantedSkeleton" : true
+		"wantedSkeleton" : false
       },
       "SynthReaderConfig": {
         "nPoints": 8000
