@@ -58,7 +58,7 @@ public class VideoWebCam : MonoBehaviour {
                 }
             };
             if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, b2dStreams);
+            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, "wcss", b2dStreams);
 
 //            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
@@ -82,8 +82,8 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, videoCodecQueue);
-            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
+            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, "wcwc", videoCodecQueue);
+            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, "wcwc", videoCodecQueue);
 
         }
 

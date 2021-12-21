@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.Voice
                 reader = new VoiceReader(micro, this, audioSamplesPerPacket, senderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
-                writer = new TCPWriter(user.userData.userAudioUrl, "VR2A", b2dStreams);
+                writer = new TCPWriter(user.userData.userAudioUrl, "VR2a", b2dStreams);
             }
             else
             {
@@ -68,7 +68,7 @@ namespace VRT.UserRepresentation.Voice
                 reader = new VoiceReader(micro, this, audioSamplesPerPacket, encoderQueue);
                 B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
                 b2dStreams[0].inQueue = senderQueue;
-                writer = new SocketIOWriter(user, _streamName, b2dStreams);
+                writer = new SocketIOWriter(user, _streamName, "VR2a", b2dStreams);
             }
         }
 

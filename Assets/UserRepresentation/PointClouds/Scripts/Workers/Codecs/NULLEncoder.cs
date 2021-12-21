@@ -10,7 +10,6 @@ namespace VRT.UserRepresentation.PointCloud
         cwipc.encodergroup encoderGroup;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
-        QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -24,13 +23,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             inQueue = _inQueue;
             outputs = _outputs;
-            int nOutputs = outputs.Length;
-            if (nOutputs != 1)
-            {
-                throw new System.Exception($"{Name()}: only single output supported");
-            }
-            outQueue = _outputs[0].outQueue;
-
             Start();
             Debug.Log($"{Name()}: Inited");
             stats = new Stats(Name());
@@ -42,10 +34,9 @@ namespace VRT.UserRepresentation.PointCloud
 
         public override void OnStop()
         {
-            if (outQueue != null)
-            {
-                outQueue.Close();
-                outQueue = null;
+            for (int i=0; i<outputs.Length; i++) {
+                outputs[i].outQueue.Close();
+                outputs[i].outQueue = null;
             }
             base.OnStop();
         }
@@ -53,13 +44,29 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
-            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            if (pc == null) return; // Terminating
-            int size = pc.copy_packet(System.IntPtr.Zero, 0);
-            NativeMemoryChunk mc = new NativeMemoryChunk(size);
-            pc.copy_packet(mc.pointer, mc.length);
-            stats.statsUpdate();
-            outputs[0].outQueue.Enqueue(mc);    
+            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.TryDequeue(0);
+            if (pc == null) return; // Terminating, or no pointcloud currently available
+            for (int i=0; i<outputs.Length; i++)
+            {
+                NativeMemoryChunk mc = null;
+                if (outputs[i].tileNumber == 0)
+                {
+                    int size = pc.copy_packet(System.IntPtr.Zero, 0);
+                    mc = new NativeMemoryChunk(size);
+                    pc.copy_packet(mc.pointer, mc.length);
+                }
+                else
+                {
+                    cwipc.pointcloud pcTile = cwipc.tilefilter(pc, outputs[i].tileNumber);
+                    int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
+                    mc = new NativeMemoryChunk(size);
+                    pcTile.copy_packet(mc.pointer, mc.length);
+                    pcTile.free();
+
+                }
+                stats.statsUpdate();
+                outputs[i].outQueue.Enqueue(mc);
+            }
             pc.free();
         }
 

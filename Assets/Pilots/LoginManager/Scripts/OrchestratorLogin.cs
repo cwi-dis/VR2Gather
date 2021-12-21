@@ -116,9 +116,10 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject presenterPanel = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle socketAudioToggle = null;
-    [SerializeField] private Toggle dashAudioToggle = null;
-    [SerializeField] private Toggle tcpAudioToggle = null;
+    [SerializeField] private Toggle socketProtocolToggle = null;
+    [SerializeField] private Toggle dashProtocolToggle = null;
+    [SerializeField] private Toggle tcpProtocolToggle = null;
+    [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
 
     [Header("Join")]
     [SerializeField] private GameObject joinPanel = null;
@@ -593,9 +594,10 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        socketAudioToggle.isOn = true;
-        dashAudioToggle.isOn = false;
-        tcpAudioToggle.isOn = false;
+        socketProtocolToggle.isOn = true;
+        dashProtocolToggle.isOn = false;
+        tcpProtocolToggle.isOn = false;
+        uncompressedPointcloudsToggle.isOn = Config.Instance.pointcloudCodec == "cwi0";
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -674,13 +676,13 @@ public class OrchestratorLogin : MonoBehaviour {
                 switch(config.sessionTransportProtocol)
                 {
                     case 1:
-                        socketAudioToggle.isOn = true;
+                        socketProtocolToggle.isOn = true;
                         break;
                     case 2:
-                        dashAudioToggle.isOn = true;
+                        dashProtocolToggle.isOn = true;
                         break;
                     case 3:
-                        tcpAudioToggle.isOn = true;
+                        tcpProtocolToggle.isOn = true;
                         break;
                 }
                 SetAudio(config.sessionTransportProtocol);
@@ -1099,10 +1101,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void ReadyButton() {
-        if (OrchestratorController.Instance.MyScenario.scenarioName == "Pilot 2")
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter);
-        else 
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio);
+        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.pointcloudCodec);
     }
 
     public void GoToCalibration() {
@@ -1195,46 +1194,58 @@ public class OrchestratorLogin : MonoBehaviour {
 #region Toggles 
 
     private void AudioToggle() {
-        socketAudioToggle.interactable = !socketAudioToggle.isOn;
-        dashAudioToggle.interactable = !dashAudioToggle.isOn;
-        tcpAudioToggle.interactable = !tcpAudioToggle.isOn;
+        socketProtocolToggle.interactable = !socketProtocolToggle.isOn;
+        dashProtocolToggle.interactable = !dashProtocolToggle.isOn;
+        tcpProtocolToggle.interactable = !tcpProtocolToggle.isOn;
+    }
+
+    public void SetCompression()
+    {
+        if (uncompressedPointcloudsToggle.isOn)
+        {
+            Config.Instance.pointcloudCodec = "cwi0";
+        }
+        else
+        {
+            Config.Instance.pointcloudCodec = "cwi1";
+        }
     }
 
     public void SetAudio(int kind) {
         switch (kind) {
             case 1: // Socket
-                if (socketAudioToggle.isOn) {
+                if (socketProtocolToggle.isOn) {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
-                    dashAudioToggle.isOn = false;
-                    tcpAudioToggle.isOn = false;
+                    dashProtocolToggle.isOn = false;
+                    tcpProtocolToggle.isOn = false;
                 }
                 break;
             case 2: // Dash
-                if (dashAudioToggle.isOn)
+                if (dashProtocolToggle.isOn)
                 {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
-                    socketAudioToggle.isOn = false;
-                    tcpAudioToggle.isOn = false;
+                    socketProtocolToggle.isOn = false;
+                    tcpProtocolToggle.isOn = false;
                 }
                 break;
             case 3: // Dash
-                if (tcpAudioToggle.isOn)
+                if (tcpProtocolToggle.isOn)
                 {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.TCP;
                     // Set Toggles
-                    socketAudioToggle.isOn = false;
-                    dashAudioToggle.isOn = false;
+                    socketProtocolToggle.isOn = false;
+                    dashProtocolToggle.isOn = false;
                 }
                 break;
             default:
                 break;
         }
-        kindAudio = kind;
+        kindAudio = (int)Config.Instance.protocolType;
     }
 
     private void PresenterToggles() {

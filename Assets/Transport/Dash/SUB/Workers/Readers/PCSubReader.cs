@@ -17,7 +17,7 @@ namespace VRT.Transport.Dash
         protected TileDescriptor[] tileDescriptors;
         protected sub.StreamDescriptor[] allStreamDescriptors;
 
-        public PCSubReader(string _url, string _streamName, int _initialDelay, TileDescriptor[] _tileDescriptors)
+        public PCSubReader(string _url, string _streamName, string fourcc, int _initialDelay, TileDescriptor[] _tileDescriptors)
         : base(_url, _streamName, _initialDelay)
         {
             lock (this)
