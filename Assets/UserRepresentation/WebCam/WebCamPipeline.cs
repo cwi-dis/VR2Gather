@@ -114,7 +114,7 @@ namespace VRT.UserRepresentation.WebCam
                             if (useDash)
                                 writer = new B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, b2dStreams);
                             else
-                                writer = new SocketIOWriter(user, "webcam", b2dStreams);
+                                writer = new SocketIOWriter(user, "webcam", "wcwc", b2dStreams);
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -153,8 +153,8 @@ namespace VRT.UserRepresentation.WebCam
                     }
                     break;
                 case "remote": // Remoto
-                    if (useDash) reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, videoCodecQueue);
-                    else reader = new SocketIOReader(user, "webcam", videoCodecQueue);
+                    if (useDash) reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, "wcwc", videoCodecQueue);
+                    else reader = new SocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
 
                     //
                     // Create video decoder.

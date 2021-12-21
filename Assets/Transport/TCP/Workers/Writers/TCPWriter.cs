@@ -199,7 +199,7 @@ namespace VRT.Transport.TCP
                 ourDescriptions[i] = new TCPStreamDescription
                 {
                     host = url.Host,
-                    port = url.Port + i,
+                    port = url.Port + (int)_descriptions[i].tileNumber,
                     fourcc = fourccInt,
                     inQueue = _descriptions[i].inQueue
 
@@ -224,7 +224,7 @@ namespace VRT.Transport.TCP
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, port={descriptions[i].port}");
+                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
             }
             foreach (var t in pusherThreads)
             {

@@ -7,12 +7,12 @@ namespace VRT.Core
     [Serializable]
     public class Config
     {
-        public enum ProtocolType
+        [Flags] public enum ProtocolType
         {
-            None,
-            Dash,
-            SocketIO,
-            TCP
+            None = 0,
+            SocketIO = 1,
+            Dash = 2,
+            TCP = 3,
         };
 
         public enum UserRepresentation
@@ -36,6 +36,7 @@ namespace VRT.Core
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public string videoCodec = "h264";
+        public string pointcloudCodec = "cwi1";
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;

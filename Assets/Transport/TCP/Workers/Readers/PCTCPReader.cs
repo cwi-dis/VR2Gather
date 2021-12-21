@@ -7,7 +7,7 @@ namespace VRT.Transport.TCP
 {
     public class PCTCPReader : BaseTCPReader
     {
-        public PCTCPReader(string _url, PCSubReader.TileDescriptor[] _tileDescriptors)
+        public PCTCPReader(string _url, string fourcc, PCSubReader.TileDescriptor[] _tileDescriptors)
         : base(_url)
         {
             lock (this)
