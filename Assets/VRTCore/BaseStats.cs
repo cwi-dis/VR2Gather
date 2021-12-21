@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 namespace VRT.Core
 {
@@ -7,16 +8,23 @@ namespace VRT.Core
         protected string name;
         private System.DateTime statsLastTime;
         private static bool initialized = false;
-        private static double statsInterval = 10;
+        private static double defaultStatsInterval = 10;
+        private double statsInterval = 10;
         private static System.IO.StreamWriter statsStream;
 
         private static void Init()
         {
             if (initialized) return;
-            statsInterval = Config.Instance.statsInterval;
+            defaultStatsInterval = Config.Instance.statsInterval;
             if (Config.Instance.statsOutputFile != "")
             {
-                string statsFilename = $"{Application.persistentDataPath}/{Config.Instance.statsOutputFile}";
+                string sfn = Config.Instance.statsOutputFile;
+                string host = Environment.MachineName;
+                DateTime now = DateTime.Now;
+                string ts = now.ToString("yyyyMMdd-HHmm");
+                sfn = sfn.Replace("{host}", host);
+                sfn = sfn.Replace("{ts}", ts);
+                string statsFilename = $"{Application.persistentDataPath}/{sfn}";
                 statsStream = new System.IO.StreamWriter(statsFilename, Config.Instance.statsOutputFileAppend);
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
@@ -40,10 +48,11 @@ namespace VRT.Core
         {
             if (statsStream != null) statsStream.Flush();
         }
-        protected BaseStats(string _name)
+        protected BaseStats(string _name, double interval=0)
         {
             if (!initialized) Init();
             name = _name;
+            statsInterval = interval > 0 ? interval : defaultStatsInterval;
             statsLastTime = System.DateTime.Now;
         }
 

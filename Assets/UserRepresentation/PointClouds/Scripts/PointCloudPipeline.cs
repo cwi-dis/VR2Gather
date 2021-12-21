@@ -361,8 +361,6 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
 
                 case "remote":
-                    var SUBConfig = cfg.SUBConfig;
-                    if (SUBConfig == null) throw new System.Exception($"{Name()}: missing other-user SUBConfig config");
                     BaseStats.Output(Name(), $"self=0, userid={user.userId}");
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need
@@ -704,29 +702,6 @@ namespace VRT.UserRepresentation.PointCloud
         public new float GetBandwidthBudget()
         {
             return 999999.0f;
-        }
-
-        public new ViewerInformation GetViewerInformation()
-        {
-            if (!isSource)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
-                return new ViewerInformation();
-            }
-            // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            Camera _camera = gameObject.transform.parent.GetComponentInChildren<Camera>();
-            if (_camera == null)
-            {
-                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
-                return new ViewerInformation();
-            }
-            Vector3 position = _camera.transform.position;
-            Vector3 forward = _camera.transform.rotation * Vector3.forward;
-            return new ViewerInformation()
-            {
-                position = position,
-                gazeForwardDirection = forward
-            };
         }
     }
 }

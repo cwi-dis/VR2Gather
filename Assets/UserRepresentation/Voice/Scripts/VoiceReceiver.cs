@@ -30,7 +30,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _streamNumber, int _initialDelay, Config.ProtocolType proto)
+        public void Init(User user, string _streamName, int _streamNumber, Config.ProtocolType proto)
         {
             stats = new Stats(Name());
             if (synchronizer == null)
@@ -51,7 +51,7 @@ namespace VRT.UserRepresentation.Voice
             if (proto == Config.ProtocolType.Dash)
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
-                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _initialDelay, 0, decoderQueue);
+                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _streamNumber, decoderQueue);
                 preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
                 codec = new VoiceDecoder(decoderQueue, preparerQueue);
             }
