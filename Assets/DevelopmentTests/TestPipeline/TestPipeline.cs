@@ -78,8 +78,8 @@ public class TestPipeline : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
-                pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
-                pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
+                pointcloudsReader = new SocketIOReader(user, remoteStream, "cwi1", tiles);
+                pointcloudsWriter = new SocketIOWriter(user, remoteStream, "cwi1", streams);
 
             };
         }
@@ -133,7 +133,7 @@ public class TestPipeline : MonoBehaviour
 					URL = remoteURL;
 
 				if (!useSocketIO)
-					pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
+					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", 1, tiles);
 
 				decoder = new PCDecoder[decoders];
 				for (int i = 0; i < decoders; ++i)

@@ -272,7 +272,7 @@ namespace VRT.Transport.Dash
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int streamIndex, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _frenquecy)
+        public BaseSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _frenquecy)
         {
             lock (this)
             {

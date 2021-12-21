@@ -151,12 +151,15 @@ namespace VRT.Transport.TCP
                 }
                 catch (System.Exception e)
                 {
+                    if (!stopping)
+                    {
 #if UNITY_EDITOR
-                    throw;
+                        throw;
 #else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while receiving visual representation or audio from another participant");
+                        Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+                        Debug.LogError("Error while receiving visual representation or audio from another participant");
 #endif
+                    }
                 }
 
             }
@@ -220,7 +223,7 @@ namespace VRT.Transport.TCP
             }
         }
 
-        public BaseTCPReader(string _url, QueueThreadSafe outQueue) : this(_url)
+        public BaseTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
         {
             lock (this)
             {
@@ -231,7 +234,7 @@ namespace VRT.Transport.TCP
                         outQueue = outQueue,
                         host = url.Host,
                         port = url.Port
-            },
+                    },
                 };
                 Start();
 

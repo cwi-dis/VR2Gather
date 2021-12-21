@@ -178,6 +178,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // allocate and initialize per-stream outgoing stream datastructures
                         //
+                        string pointcloudCodec = Config.Instance.pointcloudCodec;
                         var Encoders = PCSelfConfig.Encoders;
                         int minTileNum = 0;
                         int nTileToTransmit = 1;
@@ -246,7 +247,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // Create encoders for transmission
                         //
-                        if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                        if (pointcloudCodec == "cwi1")
                         {
                             try
                             {
@@ -258,7 +259,7 @@ namespace VRT.UserRepresentation.PointCloud
                                 throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                             }
                         }
-                        else
+                        else if (pointcloudCodec == "cwi0")
                         {
                             try
                             {
@@ -270,6 +271,10 @@ namespace VRT.UserRepresentation.PointCloud
                                 throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                             }
 
+                        } else
+                        {
+                            Debug.Log($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
+                            throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
                         }
                         //
                         // Create bin2dash writer for PC transmission
@@ -281,16 +286,16 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(user.userData.userPCurl, "cwi1", dashStreamDescriptions);
+                                writer = new TCPWriter(user.userData.userPCurl, pointcloudCodec, dashStreamDescriptions);
                             }
                             else
                             {
-                                writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                                writer = new SocketIOWriter(user, "pointcloud", pointcloudCodec, dashStreamDescriptions);
                             }
                         }
                         catch (System.EntryPointNotFoundException e)
@@ -384,6 +389,8 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
+            string pointcloudCodec = Config.Instance.pointcloudCodec;
+
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
             {
@@ -409,15 +416,18 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                if (pointcloudCodec == "cwi1")
                 {
                     BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 }
-                else
+                else if (pointcloudCodec == "cwi0")
                 {
                     BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
+                } else
+                {
+                    Debug.LogError($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
                 }
                 //
                 // And collect the relevant information for the Dash receiver
@@ -430,14 +440,14 @@ namespace VRT.UserRepresentation.PointCloud
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
-                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, initialDelay, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
-                reader = new PCTCPReader(user.userData.userPCurl, tilesToReceive);
+                reader = new PCTCPReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
             }
             else
             {
-                reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
+                reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
             
             BaseStats.Output(Name(), $"reader={reader.Name()}");
