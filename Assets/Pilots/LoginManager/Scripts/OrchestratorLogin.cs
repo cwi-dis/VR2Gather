@@ -668,6 +668,7 @@ public class OrchestratorLogin : MonoBehaviour {
         {
             Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionName={config.sessionName}");
             sessionNameIF.text = config.sessionName;
+            uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
             if (config.sessionTransportProtocol >= 0)
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
