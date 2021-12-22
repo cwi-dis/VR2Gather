@@ -15,12 +15,12 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "jj-jittertest",
+  	"sessionName" : "test",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : false,
-  	"autoJoin" : true,
-  	"autoStartWith" : 2,
+  	"autoJoin" : false,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5
   },
   "VR" : {
