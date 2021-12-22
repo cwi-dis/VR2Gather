@@ -14,7 +14,8 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        System.DateTime mostRecentFeed = System.DateTime.MinValue;
+        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
+        ulong mostRecentTimestampFed = 0;
         
         public struct EncoderStreamDescription
         {
@@ -122,7 +123,8 @@ namespace VRT.UserRepresentation.PointCloud
                 if (encoderGroup != null)
                 {
                     // Not terminating yet
-                    mostRecentFeed = System.DateTime.Now;
+                    mostRecentFeedTime = System.DateTime.Now;
+                    mostRecentTimestampFed = pc.timestamp();
                     encoderGroup.feed(pc);
                 }
                 pc.free();
@@ -144,9 +146,10 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoder.available(true))
                     {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                        mc.info.timestamp = (long)mostRecentTimestampFed;
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            ulong encodeDuration = (ulong)(System.DateTime.Now - mostRecentFeed).TotalMilliseconds;
+                            ulong encodeDuration = (ulong)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
                             bool dropped = !outQueue.Enqueue(mc);
                             stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
                         }
@@ -201,6 +204,5 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
-
     }
 }
