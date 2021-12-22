@@ -103,7 +103,7 @@ namespace VRT.Transport.SocketIO
                 statsTotalPackets++;
                 if (ShouldOutput())
                 {
-                    Output($"packets_per_second={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
                 }
                 if (ShouldClear())
                 {

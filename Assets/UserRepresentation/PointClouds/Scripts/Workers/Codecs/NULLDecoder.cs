@@ -63,40 +63,41 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: from_packet did not return a pointcloud");
             }
-            stats.statsUpdate(pc.count(), pc.timestamp());
-            outQueue.Enqueue(pc);
+            bool dropped = !outQueue.Enqueue(pc);
+            stats.statsUpdate(pc.count(), dropped, outQueue.QueuedDuration());
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
-            double statsTotalLatency = 0;
+            double statsTotalDropped = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, ulong timeStamp)
+            public void statsUpdate(int pointCount, bool dropped, ulong queuedDuration)
             {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;
-                statsTotalLatency += latency;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput())
                 {
-                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
-                 }
+                    double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={statsTotalQueuedDuration / factor}");
+                }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
-                    statsTotalLatency = 0;
+                    statsTotalDropped = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }
-
         protected Stats stats;
 
     }

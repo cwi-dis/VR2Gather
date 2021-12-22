@@ -64,25 +64,33 @@ namespace VRT.UserRepresentation.PointCloud
                     pcTile.free();
 
                 }
-                stats.statsUpdate();
-                outputs[i].outQueue.Enqueue(mc);
+                bool dropped = !outputs[i].outQueue.Enqueue(mc); ;
+                stats.statsUpdate(dropped, outputs[i].outQueue.QueuedDuration());
+                
             }
             pc.free();
         }
 
-        protected class Stats : VRT.Core.BaseStats {
+        protected class Stats : VRT.Core.BaseStats
+        {
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;
+            double statsTotalDropped = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate() {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            public void statsUpdate(bool dropped, ulong queuedDuration)
+            {
                 statsTotalPointclouds++;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
-                if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}");
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
                 }
-                if (ShouldClear()) {
+                if (ShouldClear())
+                {
                     Clear();
                     statsTotalPointclouds = 0;
                 }
