@@ -63,8 +63,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception($"{Name()}: from_packet did not return a pointcloud");
             }
+            ulong queuedDuration = outQueue.QueuedDuration();
             bool dropped = !outQueue.Enqueue(pc);
-            stats.statsUpdate(pc.count(), dropped, outQueue.QueuedDuration());
+            stats.statsUpdate(pc.count(), dropped, queuedDuration);
         }
 
         protected class Stats : VRT.Core.BaseStats
