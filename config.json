@@ -9,18 +9,18 @@
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsInterval": 0,
+  "statsOutputFile":  "statistics.log",
   "statsOutputFileAppend": false,
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
+  	"sessionName" : "jj-jittertest",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
   	"autoCreate" : false,
-  	"autoJoin" : false,
+  	"autoJoin" : true,
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5
   },
