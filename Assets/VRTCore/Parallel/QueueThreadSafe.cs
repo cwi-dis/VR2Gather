@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using UnityEngine;
 
 namespace VRT.Core
 {
@@ -145,7 +146,11 @@ namespace VRT.Core
         // Return the time span of the queue (difference of timestamps of earliest and latest timestamps)
         public ulong QueuedDuration()
         {
-            if (latestTimestampReturned == 0 || latestTimestamp == 0 || latestTimestampReturned > latestTimestamp) return 0;
+            if (latestTimestampReturned == 0 || latestTimestamp == 0 || latestTimestampReturned > latestTimestamp)
+            {
+                //UnityEngine.Debug.Log($"xxxjack Queue not fully operational yet: latestTimestampReturned={latestTimestampReturned}, latestTimestamp={latestTimestamp}");
+                return 0;
+            }
             return latestTimestamp - latestTimestampReturned;
         }
 
@@ -216,8 +221,12 @@ namespace VRT.Core
                 empty.Wait(isClosed.Token);
                 lock (queue)
                 {
-                    queue.Enqueue(item);
                     latestTimestamp = (ulong)item.info.timestamp;
+                    if (latestTimestamp == 0)
+                    {
+                        UnityEngine.Debug.Log("Warning: Enqueue() got item with timestamp=0");
+                    }
+                    queue.Enqueue(item);
                 }
                 full.Release();
                 return true;
@@ -245,8 +254,12 @@ namespace VRT.Core
                 {
                     lock (queue)
                     {
-                        queue.Enqueue(item);
                         latestTimestamp = (ulong)item.info.timestamp;
+                        if (latestTimestamp == 0)
+                        {
+                            UnityEngine.Debug.Log("Warning: TryEnqueue() got item with timestamp=0");
+                        }
+                        queue.Enqueue(item);
                     }
                     full.Release();
                     return true;
