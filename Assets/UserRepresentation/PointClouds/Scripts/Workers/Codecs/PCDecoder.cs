@@ -123,10 +123,11 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 ulong queuedDuration = outQueue.QueuedDuration();
                 bool dropped = !outQueue.Enqueue(pc);
-                stats.statsUpdate(pc.count(), dropped, decodeDuration, queuedDuration);
+                stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
                 _FeedDecoder();
             }
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -134,28 +135,31 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
             double statsTotalDropped = 0;
+            double statsTotalInQueueDuration = 0;
             double statsTotalDecodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, ulong decodeDuration, ulong queuedDuration)
+            public void statsUpdate(int pointCount, bool dropped, ulong inQueueDuration, ulong decodeDuration, ulong queuedDuration)
             {
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;
-                statsTotalQueuedDuration += queuedDuration;
+                statsTotalInQueueDuration += inQueueDuration;
                 statsTotalDecodeDuration += decodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
                 
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_ms={statsTotalDecodeDuration / factor}, decoder_queue_ms={statsTotalQueuedDuration / factor}");
-                 }
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={statsTotalInQueueDuration / factor}, decoder_ms={statsTotalDecodeDuration / factor}, decoded_queue_ms={statsTotalQueuedDuration / factor}");
+                }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsTotalDropped = 0;
+                    statsTotalInQueueDuration = 0;
                     statsTotalQueuedDuration = 0;
                     statsTotalDecodeDuration = 0;
                 }

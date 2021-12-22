@@ -48,25 +48,30 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return; // Terminating, or no pointcloud currently available
             for (int i=0; i<outputs.Length; i++)
             {
+                ulong encodeDuration = 0;
                 NativeMemoryChunk mc = null;
                 if (outputs[i].tileNumber == 0)
                 {
+                    System.DateTime encodeStartTime = System.DateTime.Now;
                     int size = pc.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pc.copy_packet(mc.pointer, mc.length);
+                    System.DateTime encodeStopTime = System.DateTime.Now;
+                    encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
                 else
                 {
+                    System.DateTime encodeStartTime = System.DateTime.Now;
                     cwipc.pointcloud pcTile = cwipc.tilefilter(pc, outputs[i].tileNumber);
                     int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pcTile.copy_packet(mc.pointer, mc.length);
                     pcTile.free();
-
+                    System.DateTime encodeStopTime = System.DateTime.Now;
+                    encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
                 bool dropped = !outputs[i].outQueue.Enqueue(mc); ;
-                stats.statsUpdate(dropped, outputs[i].outQueue.QueuedDuration());
-                
+                stats.statsUpdate(dropped, encodeDuration, outputs[i].outQueue.QueuedDuration());
             }
             pc.free();
         }
@@ -77,22 +82,26 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPointclouds = 0;
             double statsTotalDropped = 0;
+            double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(bool dropped, ulong queuedDuration)
+            public void statsUpdate(bool dropped, ulong encodeDuration, ulong queuedDuration)
             {
                 statsTotalPointclouds++;
+                statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }
