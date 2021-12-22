@@ -56,6 +56,7 @@ namespace VRT.UserRepresentation.PointCloud
                     int size = pc.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pc.copy_packet(mc.pointer, mc.length);
+                    mc.info.timestamp = (long)pc.timestamp();
                     System.DateTime encodeStopTime = System.DateTime.Now;
                     encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
@@ -66,11 +67,12 @@ namespace VRT.UserRepresentation.PointCloud
                     int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pcTile.copy_packet(mc.pointer, mc.length);
+                    mc.info.timestamp = (long)pc.timestamp();
                     pcTile.free();
                     System.DateTime encodeStopTime = System.DateTime.Now;
                     encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
-                bool dropped = !outputs[i].outQueue.Enqueue(mc); ;
+                bool dropped = !outputs[i].outQueue.Enqueue(mc);
                 stats.statsUpdate(dropped, encodeDuration, outputs[i].outQueue.QueuedDuration());
             }
             pc.free();
