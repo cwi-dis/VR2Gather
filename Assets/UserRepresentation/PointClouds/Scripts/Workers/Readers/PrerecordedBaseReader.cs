@@ -320,12 +320,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
+                encoderQueuedDuration = out2Queue.QueuedDuration();
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
                     didDropEncoder = true;
                 }
-                encoderQueuedDuration = out2Queue.QueuedDuration();
             }
           
             stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
