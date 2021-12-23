@@ -154,6 +154,11 @@ namespace VRT.Core
             return latestTimestamp - latestTimestampReturned;
         }
 
+        public int Count()
+        {
+            return queue.Count;
+        }
+
         // Get the next item from the queue.
         // Wait semantics: waits until something is available.
         // The caller gets ownership of the returned object.
