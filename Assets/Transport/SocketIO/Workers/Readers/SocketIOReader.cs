@@ -93,8 +93,13 @@ namespace VRT.Transport.SocketIO
                     BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length - sizeof(long));
                     chunk.info.timestamp = timestamp;
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
-                    bool didDrop = descriptors[i].outQueue.Enqueue(chunk);
+                    bool didDrop = !descriptors[i].outQueue.Enqueue(chunk);
+                    if (didDrop)
+                    {
+                        // Debug.Log($"{Name()}: dropped packet, queuelength is {descriptors[i].outQueue.Count()}");
+                    }
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
+                    return;
                 }
             }
            
