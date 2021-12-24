@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using VRT.Core;
 using System;
 using System.Linq;
+using System.Collections;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -27,11 +28,19 @@ namespace VRT.UserRepresentation.PointCloud
         //
         // Set by overall controller (in production): which algorithm to use for this scene run.
         //
+        [Tooltip("The algorithm to use to do tile selection")]
         public SelectionAlgorithm algorithm = SelectionAlgorithm.interactive;
         //
         // Can be set (in scene editor) to print all decision made by the algorithms.
         //
+        [Tooltip("Set to true to print decisions")]
         public bool debugDecisions = false;
+        //
+        // For quality measurement purposes this can be set to delay the implementation of the decision
+        //
+        [Tooltip("Delay before implementing decisions (for quality measurement purposes)")]
+        public float delayDecisions = 0;
+
         //Adaptation quality difference cap between tiles
         protected int maxAdaptation = 30;
         //xxxshishir Debug flags
@@ -111,11 +120,11 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                 }
             }
-            if (changed && selectedTileQualities != null && debugDecisions)
+            if (changed && selectedTileQualities != null)
             {
                 // xxxjack: we could do this in stats: format too, may help analysis.
-                Debug.Log($"{Name()}: tileQualities: {String.Join(", ", selectedTileQualities)}");
-                pipeline.SelectTileQualities(selectedTileQualities);
+                if (debugDecisions) Debug.Log($"{Name()}: tileQualities: {String.Join(", ", selectedTileQualities)}");
+                StartCoroutine(_doSelectTileQualities(selectedTileQualities));
                 previousSelectedTileQualities = selectedTileQualities;
                 string statMsg = $"tile0={selectedTileQualities[0]}";
                 for (int i = 1; i < selectedTileQualities.Length; i++)
@@ -136,6 +145,16 @@ namespace VRT.UserRepresentation.PointCloud
                 SceneManager.LoadScene("QualityAssesmentRatingScene");
             }
 #endif
+        }
+
+        IEnumerator _doSelectTileQualities(int[] selectedTileQualities)
+        {
+            if (delayDecisions > 0)
+            {
+                yield return new WaitForSeconds(delayDecisions);
+            }
+            pipeline.SelectTileQualities(selectedTileQualities);
+            yield return null;
         }
 
         public virtual int[] getTileOrder(Vector3 cameraForward, Vector3 pointcloudPosition)
