@@ -16,14 +16,14 @@
   	"sessionName" : "traction",
   	"sessionScenario" : 7,
   	"sessionTransportProtocol" : 1,
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
   	"autoStartWith" : 1,
   	"autoDelay" : 0.5
   },
-  "VR" : {
-	"_preferredDevices" : ["", "Oculus", "OpenVR"],
-	"_preferredController" : ""
+  "VR": {
+    "preferredDevices": [ "", "Oculus", "OpenVR" ],
+    "_preferredController": ""
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
