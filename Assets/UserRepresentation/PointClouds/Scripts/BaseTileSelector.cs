@@ -190,35 +190,55 @@ namespace VRT.UserRepresentation.PointCloud
             if (Input.GetKeyDown(KeyCode.Alpha0))
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                Debug.Log($"{Name()}: lowest quality for all tiles");
                 return selectedQualities;
             }
             if (Input.GetKeyDown(KeyCode.Alpha9))
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = nQualities - 1;
+                Debug.Log($"{Name()}: highest quality for all tiles");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyDown(KeyCode.Alpha1) && nTiles > 0)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[0] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 0");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
+            if (Input.GetKeyDown(KeyCode.Alpha2) && nTiles > 1)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[1] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 1");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha3))
+            if (Input.GetKeyDown(KeyCode.Alpha3) && nTiles > 2)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[2] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 2");
                 return selectedQualities;
             }
-            if (Input.GetKeyDown(KeyCode.Alpha4))
+            if (Input.GetKeyDown(KeyCode.Alpha4) && nTiles > 3)
             {
                 for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
                 selectedQualities[3] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 3");
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5) && nTiles > 4)
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[4] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 4");
+                return selectedQualities;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6) && nTiles > 5)
+            {
+                for (int i = 0; i < nTiles; i++) selectedQualities[i] = 0;
+                selectedQualities[5] = nQualities - 1;
+                Debug.Log($"{Name()}: high quality for tile 5");
                 return selectedQualities;
             }
             return null;
