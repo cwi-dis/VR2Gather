@@ -17,6 +17,7 @@ namespace VRT.Transport.TCP
             public QueueThreadSafe outQueue;
             public string host;
             public int port;
+            public int portOffset = 0;
             public object tileDescriptor;
             public int tileNumber = -1;
         }
@@ -85,6 +86,7 @@ namespace VRT.Transport.TCP
 
             protected void run()
             {
+                int portOffset = 0;
                 try
                 {
                     while (!stopping)
@@ -96,12 +98,14 @@ namespace VRT.Transport.TCP
                         {
                             return;
                         }
+
                         if (socket == null)
                         {
                             IPAddress[] all = Dns.GetHostAddresses(receiverInfo.host);
                             all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                             IPAddress ipAddress = all[0];
-                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port);
+                            portOffset = receiverInfo.portOffset;
+                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port + portOffset);
                             BaseStats.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
                             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                             try
@@ -146,7 +150,13 @@ namespace VRT.Transport.TCP
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         bool ok = receiverInfo.outQueue.Enqueue(mc);
                         stats.statsUpdate(dataSize, !ok);
-
+                        // Close the socket if the portOffset (the quality index) has been changed in the mean time
+                        if (socket != null && receiverInfo.portOffset != portOffset)
+                        {
+                            Debug.Log($"{Name()}: closing socket for quality switch");
+                            socket.Close();
+                            socket = null;
+                        }
                     }
                 }
                 catch (System.Exception e)

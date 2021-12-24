@@ -622,11 +622,22 @@ namespace VRT.UserRepresentation.PointCloud
             PCSubReader _subreader = reader as PCSubReader;
             if (_subreader != null)
             {
-                for(int tileIndex=0; tileIndex < decoders.Count; tileIndex++)
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
                 {
                     int qualIndex = tileQualities[tileIndex];
                     Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
                     _subreader.setTileQualityIndex(tileIndex, qualIndex);
+                }
+                return;
+            }
+            PCTCPReader _tcpreader = reader as PCTCPReader;
+            if (_tcpreader != null)
+            {
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
+                {
+                    int qualIndex = tileQualities[tileIndex];
+                    Debug.Log($"{Name()}: xxxjack +tcpreader.setTileQualityIndex({tileIndex}, {qualIndex})");
+                    _tcpreader.setTileQualityIndex(tileIndex, qualIndex);
                 }
                 return;
             }

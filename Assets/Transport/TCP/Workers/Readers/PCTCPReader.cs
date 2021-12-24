@@ -28,5 +28,12 @@ namespace VRT.Transport.TCP
                 Start();
             }
         }
+
+        public void setTileQualityIndex(int tileIndex, int qualityIndex)
+        {
+            Debug.Log($"{Name()}: setTileQualityIndex({tileIndex},{qualityIndex})");
+            int portOffset = qualityIndex * receivers.Length;
+            receivers[tileIndex].portOffset = portOffset;
+        }
     }
 }
