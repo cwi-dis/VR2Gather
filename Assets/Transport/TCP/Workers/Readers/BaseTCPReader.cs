@@ -114,7 +114,7 @@ namespace VRT.Transport.TCP
                             }
                             catch(SocketException e)
                             {
-                                Debug.Log($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}");
+                                Debug.LogWarning($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}. Sleep 1 second.");
                                 socket = null;
                                 System.Threading.Thread.Sleep(1000);
                                 continue;
@@ -126,7 +126,7 @@ namespace VRT.Transport.TCP
                         int hdrSize = _ReceiveAll(socket, hdr);
                         if (hdrSize != 16)
                         {
-                            Debug.Log($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
+                            Debug.LogWarning($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
                             socket.Close();
                             socket = null;
                             continue;
@@ -137,7 +137,7 @@ namespace VRT.Transport.TCP
                         int actualDataSize = _ReceiveAll(socket, data);
                         if (actualDataSize != dataSize)
                         {
-                            Debug.Log($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
+                            Debug.LogWarning($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
                             socket.Close();
                             socket = null;
                             continue;
