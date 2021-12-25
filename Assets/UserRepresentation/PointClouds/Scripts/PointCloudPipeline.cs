@@ -216,6 +216,15 @@ namespace VRT.UserRepresentation.PointCloud
                         dashStreamDescriptions = new B2DWriter.DashStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
+                        // For the TCP connections we want legth 1 leaky queues. For
+                        // DASH we want length 2 non-leaky queues.
+                        bool e2tQueueDrop = false;
+                        int e2tQueueSize = 2;
+                        if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                        {
+                            e2tQueueDrop = true;
+                            e2tQueueSize = 1;
+                        }
                         for (int it = 0; it < nTileToTransmit; it++)
                         {
                             tilingConfig.tiles[it].orientation = tileNormals[it];
@@ -223,7 +232,7 @@ namespace VRT.UserRepresentation.PointCloud
                             for (int iq = 0; iq < nQuality; iq++)
                             {
                                 int i = it * nQuality + iq;
-                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}");
+                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
                                 int octreeBits = Encoders[iq].octreeBits;
                                 encoderStreamDescriptions[i] = new PCEncoder.EncoderStreamDescription
                                 {
