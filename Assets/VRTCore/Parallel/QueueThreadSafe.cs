@@ -259,6 +259,7 @@ namespace VRT.Core
                         // Note that the lock() in Dequeue doesn't bother us because we are in the same thread.
                         BaseMemoryChunk oldItem = Dequeue();
                         oldItem.free();
+                        empty.Wait(isClosed.Token);
                     }
                     latestTimestamp = (ulong)item.info.timestamp;
                     if (latestTimestamp == 0)
