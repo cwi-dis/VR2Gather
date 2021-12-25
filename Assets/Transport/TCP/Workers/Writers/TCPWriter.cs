@@ -63,13 +63,15 @@ namespace VRT.Transport.TCP
             {
                 if (listenSocket != null)
                 {
-                    listenSocket.Close();
+                    Socket tmp = listenSocket;
                     listenSocket = null;
+                    tmp.Close();
                 }
                 if (sendSocket != null)
                 {
-                    sendSocket.Close();
+                    Socket tmp = sendSocket;
                     sendSocket = null;
+                    tmp.Close();
                 }
             }
 
@@ -97,7 +99,10 @@ namespace VRT.Transport.TCP
                             }
                             catch(SocketException e)
                             {
-                                Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
+                                if (listenSocket != null)
+                                {
+                                    Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
+                                }
                                 continue;
                             }
                         }
@@ -120,15 +125,21 @@ namespace VRT.Transport.TCP
                         }
                         catch (ObjectDisposedException)
                         {
-                            Debug.Log($"{Name()}: socket was closed by another thread");
+                            if (sendSocket != null)
+                            {
+                                Debug.Log($"{Name()}: socket was closed by another thread");
+                            }
                             sendSocket = null;
                             BaseStats.Output(Name(), $"open=0");
                         }
                         catch(SocketException e)
                         {
-                            Debug.Log($"{Name()}: socket exception: {e.ToString()}");
-                            sendSocket.Close();
-                            sendSocket = null;
+                            if (sendSocket != null)
+                            {
+                                Debug.Log($"{Name()}: socket exception: {e.ToString()}");
+                                sendSocket.Close();
+                                sendSocket = null;
+                            }
                             BaseStats.Output(Name(), $"open=0");
                         }
                     }
@@ -201,7 +212,8 @@ namespace VRT.Transport.TCP
             {
                 if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
             }
-            int portsPerQuality = maxTileNumber + 1;
+            int portsPerQuality = maxTileNumber;
+            if (portsPerQuality == 0) portsPerQuality = 1;
             for(int i=0; i<_descriptions.Length; i++)
             {
                 ourDescriptions[i] = new TCPStreamDescription
