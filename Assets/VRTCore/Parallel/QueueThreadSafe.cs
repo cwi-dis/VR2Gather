@@ -212,14 +212,14 @@ namespace VRT.Core
 
         // Put an item in the queue.
         // If there is no space this call waits until there is space available.
-        // The ownership of the item is transferred to the queue (so it will be freed
-        // if there is no space and the caller should not reuse or free this item
-        // unless it has done ann AddRef()).
+        // The ownership of the item is transferred to the queue. If the item cannot be
+        // put in the queue (if the queue is leaky, or if the queue has been closed) the item will be
+        // freed.
         public virtual bool Enqueue(BaseMemoryChunk item)
         {
             if (dropWhenFull)
             {
-                return TryEnqueue(0, item);
+                return EnqueueWithDrop(item);
             }
             try
             {
@@ -244,30 +244,30 @@ namespace VRT.Core
             return false;
         }
 
-        // Put an item in the queue.
-        // If there is no space this call waits for at most millisecondsTimeout until there 
-        // is space available.
-        // The ownership of the item is transferred to the queue (so it will be freed
-        // if there is no space and the caller should not reuse or free this item
-        // unless it has done ann AddRef()).
-        public virtual bool TryEnqueue(int millisecondsTimeout, BaseMemoryChunk item)
+        // Put an item in the queue, make room if there isn't.
+        // If an item is dropped free it.
+        bool EnqueueWithDrop(BaseMemoryChunk item)
         {
             try
             {
-                bool gotSlot = empty.Wait(millisecondsTimeout, isClosed.Token);
-                if (gotSlot)
+                lock(queue)
                 {
-                    lock (queue)
+                    bool gotSlot = empty.Wait(0, isClosed.Token);
+                    if (!gotSlot)
                     {
-                        latestTimestamp = (ulong)item.info.timestamp;
-                        if (latestTimestamp == 0)
-                        {
-                            UnityEngine.Debug.Log("Warning: TryEnqueue() got item with timestamp=0");
-                        }
-                        queue.Enqueue(item);
+                        // No room. Get oldest item and free it.
+                        // Note that the lock() in Dequeue doesn't bother us because we are in the same thread.
+                        BaseMemoryChunk oldItem = Dequeue();
+                        oldItem.free();
                     }
+                    latestTimestamp = (ulong)item.info.timestamp;
+                    if (latestTimestamp == 0)
+                    {
+                        UnityEngine.Debug.Log("Warning: TryEnqueue() got item with timestamp=0");
+                    }
+                    queue.Enqueue(item);
                     full.Release();
-                    return true;
+                    return gotSlot;
                 }
             }
             catch (System.OperationCanceledException)
