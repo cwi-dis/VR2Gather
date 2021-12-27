@@ -328,7 +328,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
           
-            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
+            stats.statsUpdate(pc.count(), pc.cellsize(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
             pc.free();
         }
 
@@ -338,14 +338,16 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
+            double statsTotalPointSize = 0;
             double statsDrops = 0;
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp, string subdir)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp, string subdir)
             {
                 
                 statsTotalPoints += pointCount;
+                statsTotalPointSize += pointSize;
                 statsTotalPointclouds++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
@@ -353,7 +355,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
                     if (subdir != null && subdir != "")
                     {
                         msg += $", quality={subdir}";
@@ -370,6 +372,7 @@ namespace VRT.UserRepresentation.PointCloud
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
+                    statsTotalPointSize = 0;
                     statsDrops = 0;
                     statsSelfDrops = 0;
                     statsQueuedDuration = 0;

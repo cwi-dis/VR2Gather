@@ -149,7 +149,7 @@ namespace VRT.UserRepresentation.PointCloud
                     didDrop = true;
                 }
             }
-            stats.statsUpdate(pc.count(), didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
+            stats.statsUpdate(pc.count(), pc.cellsize(), didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
             pc.free();
         }
 
@@ -159,14 +159,16 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
+            double statsTotalPointSize = 0;
             double statsDrops = 0;
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp)
             {
                 
                 statsTotalPoints += pointCount;
+                statsTotalPointSize += pointSize;
                 statsTotalPointclouds++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
@@ -174,7 +176,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}");
                     if (statsDrops > 1 + 3 * Interval())
                     {
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
@@ -186,6 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
+                    statsTotalPointSize = 0;
                     statsDrops = 0;
                     statsSelfDrops = 0;
                     statsQueuedDuration = 0;
