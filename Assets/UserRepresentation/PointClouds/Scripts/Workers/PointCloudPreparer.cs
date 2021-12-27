@@ -18,8 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe InQueue;
         public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
         {
-            defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.008f;
-            cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 0.71f;
+            defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;
+            cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 1.0f;
             if (_InQueue == null)
             {
                 throw new System.Exception("PointCloudPreparer: InQueue is null");
