@@ -60,8 +60,8 @@ namespace VRT.UserRepresentation.PointCloud
             for (int i = 0; i < nTile; i++)
             {
                 rv[i].normal = new Vector3((float)origTileInfo[i].normal.x, (float)origTileInfo[i].normal.y, (float)origTileInfo[i].normal.z);
-                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
-                rv[i].cameraMask = origTileInfo[i].ncamera;
+                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].cameraName);
+                rv[i].cameraMask = origTileInfo[i].cameraMask;
             }
             return rv;
         }

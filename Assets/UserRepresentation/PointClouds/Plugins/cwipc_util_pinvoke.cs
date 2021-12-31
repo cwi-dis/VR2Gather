@@ -43,14 +43,15 @@ namespace VRT.UserRepresentation.PointCloud
         public struct tileinfo
         {
             public vector normal;
-            public IntPtr camera;
+            public IntPtr cameraName;
             public byte ncamera;
+            public byte cameraMask;
         };
 
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20210412;
+            public const ulong CWIPC_API_VERSION = 0x20211230;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
