@@ -54,17 +54,21 @@
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0.0,
-      "frameRate": 15,
-      "tiled": false,
+      "frameRate": 10,
+      "tiled": true,
       "Encoders": [
-       {
-          "octreeBits": 9
+		
+		{
+          "octreeBits": 8
+        },
+		{
+          "octreeBits": 7
         }
 
       ],
       "Bin2Dash": {
-        "segmentSize": 2000,
-        "segmentLife": 10000
+        "segmentSize": 100,
+        "segmentLife": 16000
       },
       "AudioBin2Dash": {
         "segmentSize": 2000,
