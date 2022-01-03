@@ -1163,6 +1163,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   algorithm: 0
   debugDecisions: 1
+  delayDecisions: 0
   bitRatebudget: 1000000
 --- !u!1 &4012052827202430640
 GameObject:
@@ -1743,7 +1744,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4326305017399503632
 Transform:
   m_ObjectHideFlags: 0
@@ -1773,7 +1774,7 @@ MonoBehaviour:
   debugSynchronizer: 0
   currentPreferredLatency: 600
   latencyCatchup: 5
-  minPreferredLatency: 600
+  minPreferredLatency: 100
 --- !u!1 &5737502413439571115
 GameObject:
   m_ObjectHideFlags: 0
