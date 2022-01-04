@@ -175,15 +175,6 @@ namespace VRT.Core
              }
             public _PCSelfConfig PCSelfConfig;
 
-            [Serializable]
-            public class _Render
-            {
-                public float pointSize = 0.008f;
-                public Vector3 position;
-                public Vector3 rotation;
-                public Vector3 scale = Vector3.one;
-            }
-            public _Render Render;
         };
         public _User LocalUser;
         public _User RemoteUser;
