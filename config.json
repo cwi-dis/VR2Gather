@@ -55,14 +55,11 @@
 	  },
       "voxelSize": 0.0,
       "frameRate": 10,
-      "tiled": true,
+      "tiled": false,
       "Encoders": [
 		
 		{
-          "octreeBits": 8
-        },
-		{
-          "octreeBits": 7
+          "octreeBits": 9
         }
 
       ],
@@ -74,48 +71,12 @@
         "segmentSize": 2000,
         "segmentLife": 10000
       }
-    },
-    "Render": {
-      "pointSize": 0,
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": -1.0
-      }
     }
   },
   "RemoteUser": {
     "sourceType": "remote",
     "AudioSUBConfig": {
       "streamNumber": 0
-    },
-    "Render": {
-      "pointSize": 0,
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": -1.0
-      }
     }
   }
 }

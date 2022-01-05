@@ -385,6 +385,8 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
                     break;
             }
+#if XXXJACK_REMOVED
+            // Jack thinks this should go, and we use the transform supplied in the PFB_Player (or whereever)
             //
             // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
             // in the scene.
@@ -392,7 +394,7 @@ namespace VRT.UserRepresentation.PointCloud
             //Position in the center
             transform.localPosition = new Vector3(0, 0, 0);
             transform.localRotation = Quaternion.Euler(0, 0, 0);
-            transform.localScale = cfg.Render.scale;
+#endif
             return this;
         }
 
