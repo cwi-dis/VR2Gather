@@ -64,12 +64,12 @@
 
       ],
       "Bin2Dash": {
-        "segmentSize": 100,
+        "segmentSize": 1000,
         "segmentLife": 16000
       },
       "AudioBin2Dash": {
-        "segmentSize": 2000,
-        "segmentLife": 10000
+        "segmentSize": 1000,
+        "segmentLife": 16000
       }
     }
   },
