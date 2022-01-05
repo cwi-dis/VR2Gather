@@ -153,12 +153,13 @@ namespace VRT.Transport.Dash
                                 BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
                             }
                             // Convert clock values to wallclock
+                            long dashTimestamp = frameInfo.timestamp;
                             frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                             mc.info = frameInfo;
                             long network_latency_ms = now - frameInfo.timestamp;
 
                             bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                            stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, network_latency_ms, stream_index);
+                            stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
 
                         }
 
