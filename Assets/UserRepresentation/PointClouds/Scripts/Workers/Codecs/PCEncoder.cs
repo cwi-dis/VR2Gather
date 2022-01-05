@@ -14,7 +14,9 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-
+        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
+        ulong mostRecentTimestampFed = 0;
+        
         public struct EncoderStreamDescription
         {
             public int octreeBits;
@@ -121,6 +123,8 @@ namespace VRT.UserRepresentation.PointCloud
                 if (encoderGroup != null)
                 {
                     // Not terminating yet
+                    mostRecentFeedTime = System.DateTime.Now;
+                    mostRecentTimestampFed = pc.timestamp();
                     encoderGroup.feed(pc);
                 }
                 pc.free();
@@ -142,10 +146,12 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoder.available(true))
                     {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                        mc.info.timestamp = (long)mostRecentTimestampFed;
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
+                            ulong encodeDuration = (ulong)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
                             bool dropped = !outQueue.Enqueue(mc);
-                            stats.statsUpdate(dropped, outQueue.QueuedDuration());
+                            stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
                         }
                         else
                         {
@@ -176,24 +182,27 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPointclouds = 0;
             double statsTotalDropped = 0;
+            double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(bool dropped, ulong queuedDuration) {
+            public void statsUpdate(bool dropped, ulong encodeDuration, ulong queuedDuration) {
                 statsTotalPointclouds++;
+                statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
                 }
                 if (ShouldClear()) {
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }
 
         protected Stats stats;
-
     }
 }

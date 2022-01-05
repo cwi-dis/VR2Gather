@@ -13,6 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         bool debugColorize = true;
+        System.DateTime mostRecentFeed = System.DateTime.MinValue;
 
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(WorkerType.Run)
         {
@@ -74,6 +75,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool _FeedDecoder() {
             NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.TryDequeue(0);
             if (mc == null) return false;
+            mostRecentFeed = System.DateTime.Now;
             decoder.feed(mc.pointer, mc.length);
             mc.free();
             return true;
@@ -85,9 +87,9 @@ namespace VRT.UserRepresentation.PointCloud
             lock (this)
             {
                 // Feed data into the decoder, unless it already
-                // has a pointcloud available.
+                // has a pointcloud available, or a previously fed buffer hasn't been decoded yet.
                 if (decoder == null) return;
-                if (!decoder.available(false))
+                if (mostRecentFeed == System.DateTime.MinValue)
                 {
                     if (!_FeedDecoder())
                     {
@@ -102,6 +104,8 @@ namespace VRT.UserRepresentation.PointCloud
                 // are more input packets available feed the decoder
                 // again.
                 cwipc.pointcloud pc = decoder.get();
+                ulong decodeDuration = (ulong)(System.DateTime.Now - mostRecentFeed).TotalMilliseconds;
+                mostRecentFeed = System.DateTime.MinValue;
                 if (pc == null)
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
@@ -117,11 +121,13 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     pc = newpc;
                 }
+                ulong queuedDuration = outQueue.QueuedDuration();
                 bool dropped = !outQueue.Enqueue(pc);
-                stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration());
+                stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
                 _FeedDecoder();
             }
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -129,27 +135,33 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
             double statsTotalDropped = 0;
+            double statsTotalInQueueDuration = 0;
+            double statsTotalDecodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, ulong queuedDuration)
+            public void statsUpdate(int pointCount, bool dropped, ulong inQueueDuration, ulong decodeDuration, ulong queuedDuration)
             {
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;
+                statsTotalInQueueDuration += inQueueDuration;
+                statsTotalDecodeDuration += decodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
                 
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={statsTotalQueuedDuration / factor}");
-                 }
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={(int)(statsTotalInQueueDuration / factor)}, decoder_ms={(int)(statsTotalDecodeDuration / factor)}, decoded_queue_ms={(int)(statsTotalQueuedDuration / factor)}");
+                }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
                     statsTotalDropped = 0;
+                    statsTotalInQueueDuration = 0;
                     statsTotalQueuedDuration = 0;
+                    statsTotalDecodeDuration = 0;
                 }
             }
         }

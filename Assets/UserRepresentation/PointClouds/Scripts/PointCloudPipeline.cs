@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
         const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 50; // Was: 2.
+        const int pcPreparerQueueSize = 15; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -216,6 +216,15 @@ namespace VRT.UserRepresentation.PointCloud
                         dashStreamDescriptions = new B2DWriter.DashStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
+                        // For the TCP connections we want legth 1 leaky queues. For
+                        // DASH we want length 2 non-leaky queues.
+                        bool e2tQueueDrop = false;
+                        int e2tQueueSize = 2;
+                        if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                        {
+                            e2tQueueDrop = true;
+                            e2tQueueSize = 1;
+                        }
                         for (int it = 0; it < nTileToTransmit; it++)
                         {
                             tilingConfig.tiles[it].orientation = tileNormals[it];
@@ -223,7 +232,7 @@ namespace VRT.UserRepresentation.PointCloud
                             for (int iq = 0; iq < nQuality; iq++)
                             {
                                 int i = it * nQuality + iq;
-                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}");
+                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
                                 int octreeBits = Encoders[iq].octreeBits;
                                 encoderStreamDescriptions[i] = new PCEncoder.EncoderStreamDescription
                                 {
@@ -624,11 +633,22 @@ namespace VRT.UserRepresentation.PointCloud
             PCSubReader _subreader = reader as PCSubReader;
             if (_subreader != null)
             {
-                for(int tileIndex=0; tileIndex < decoders.Count; tileIndex++)
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
                 {
                     int qualIndex = tileQualities[tileIndex];
                     Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
                     _subreader.setTileQualityIndex(tileIndex, qualIndex);
+                }
+                return;
+            }
+            PCTCPReader _tcpreader = reader as PCTCPReader;
+            if (_tcpreader != null)
+            {
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
+                {
+                    int qualIndex = tileQualities[tileIndex];
+                    Debug.Log($"{Name()}: xxxjack +tcpreader.setTileQualityIndex({tileIndex}, {qualIndex})");
+                    _tcpreader.setTileQualityIndex(tileIndex, qualIndex);
                 }
                 return;
             }

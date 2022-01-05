@@ -320,12 +320,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
+                encoderQueuedDuration = out2Queue.QueuedDuration();
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
                     didDropEncoder = true;
                 }
-                encoderQueuedDuration = out2Queue.QueuedDuration();
             }
           
             stats.statsUpdate(pc.count(), pc.cellsize(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
@@ -355,7 +355,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}";
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, pc_timestamp={timestamp}";
                     if (subdir != null && subdir != "")
                     {
                         msg += $", quality={subdir}";

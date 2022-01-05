@@ -57,42 +57,54 @@ namespace VRT.UserRepresentation.PointCloud
                 mc = (NativeMemoryChunk)inQueue.Dequeue();
                 if (mc == null) return;
             }
+            System.DateTime decodeStartTime = System.DateTime.Now;
             cwipc.pointcloud pc = cwipc.from_packet(mc.pointer, (System.IntPtr)mc.length);
+            System.DateTime decodeStopTime = System.DateTime.Now;
+            ulong decodeDuration = (ulong)(decodeStopTime - decodeStartTime).TotalMilliseconds;
             mc.free();
             if (pc == null)
             {
                 throw new System.Exception($"{Name()}: from_packet did not return a pointcloud");
             }
-            stats.statsUpdate(pc.count(), pc.timestamp());
-            outQueue.Enqueue(pc);
+            ulong queuedDuration = outQueue.QueuedDuration();
+            bool dropped = !outQueue.Enqueue(pc);
+            stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
-            double statsTotalLatency = 0;
+            double statsTotalDropped = 0;
+            double statsTotalInQueueDuration = 0;
+            double statsTotalDecodeDuration = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, ulong timeStamp)
+            public void statsUpdate(int pointCount, bool dropped, ulong inQueueDuration, ulong decodeDuration, ulong queuedDuration)
             {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;
-                statsTotalLatency += latency;
+                statsTotalInQueueDuration += inQueueDuration;
+                statsTotalDecodeDuration += decodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput())
                 {
-                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}");
-                 }
+                    double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={(int)(statsTotalInQueueDuration / factor)}, decoder_ms={(int)(statsTotalDecodeDuration / factor)}, decoded_queue_ms={(int)(statsTotalQueuedDuration / factor)}");
+                }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
-                    statsTotalLatency = 0;
+                    statsTotalDropped = 0;
+                    statsTotalInQueueDuration = 0;
+                    statsTotalQueuedDuration = 0;
+                    statsTotalDecodeDuration = 0;
                 }
             }
         }

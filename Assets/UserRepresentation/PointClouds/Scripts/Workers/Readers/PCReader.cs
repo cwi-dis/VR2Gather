@@ -142,12 +142,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
+                encoderQueuedDuration = out2Queue.QueuedDuration();
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
                     didDrop = true;
                 }
-                encoderQueuedDuration = out2Queue.QueuedDuration();
             }
             stats.statsUpdate(pc.count(), pc.cellsize(), didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
             pc.free();
@@ -176,7 +176,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={statsQueuedDuration / statsTotalPointclouds}, pc_timestamp={timestamp}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, pc_timestamp={timestamp}");
                     if (statsDrops > 1 + 3 * Interval())
                     {
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
