@@ -142,21 +142,23 @@ namespace VRT.Transport.Dash
                                 mc.free();
                                 continue;
                             }
+                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                            long now = (long)sinceEpoch.TotalMilliseconds;
 
                             // If we have no clock correspondence yet we use the first received frame on any stream to set it
                             if (parent.clockCorrespondence.wallClockTime == 0)
                             {
-                                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                                parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
+                                parent.clockCorrespondence.wallClockTime = now;
                                 parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                                BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}");
+                                BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
                             }
                             // Convert clock values to wallclock
                             frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                             mc.info = frameInfo;
+                            long network_latency_ms = now - frameInfo.timestamp;
 
                             bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                            stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, stream_index);
+                            stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, network_latency_ms, stream_index);
 
                         }
 
@@ -196,15 +198,17 @@ namespace VRT.Transport.Dash
                 double statsTotalBytes;
                 double statsTotalPackets;
                 double statsTotalDrops;
+                double statsTotalLatency;
                 
-                public void statsUpdate(int nBytes, bool didDrop, long timeStamp, int stream_index)
+                public void statsUpdate(int nBytes, bool didDrop, long timeStamp, long latency, int stream_index)
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
                      }
                     if (ShouldClear())
                     {
@@ -212,6 +216,7 @@ namespace VRT.Transport.Dash
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
                         statsTotalDrops = 0;
+                        statsTotalLatency = 0;
                     }
                 }
             }
@@ -435,8 +440,19 @@ namespace VRT.Transport.Dash
 
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
+            long oldEpoch = 0;
+            if (clockCorrespondence.wallClockTime != 0)
+            {
+                oldEpoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
+            }
             clockCorrespondence = _clockCorrespondence;
-            BaseStats.Output(Name(), $"guessed=0, stream_timestamp={clockCorrespondence.streamClockTime}, timestamp={clockCorrespondence.wallClockTime}, delta={clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime}");
+            long epoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
+            long delta = 0;
+            if (oldEpoch != 0)
+            {
+                delta = epoch - oldEpoch;
+            }
+            BaseStats.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
         }
     }
 }
