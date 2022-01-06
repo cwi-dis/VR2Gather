@@ -55,6 +55,14 @@ namespace VRT.Core
         public _VR VR;
 
         [Serializable]
+        public class _ScreenshotTool
+        {
+            public bool takeScreenshot = false;
+            public string screenshotTargetDirectory = "";
+        }
+        public _ScreenshotTool ScreenshotTool;
+
+        [Serializable]
         public class _AutoStart
         {
             // This class allows to setup a machine (through config.json) to

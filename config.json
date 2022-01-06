@@ -28,6 +28,10 @@
 	"_preferredDevices" : ["", "Oculus", "OpenVR"],
 	"_preferredController" : "gamepad"
   },
+  "ScreenshotTool" : {
+	  "takeScreenshot" : true,
+	  "screenshotTargetDirectory" : "../Screenshots"
+  },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
