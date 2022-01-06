@@ -69,6 +69,7 @@ namespace VRT.Core
             public bool sessionUncompressed = false;
             public bool autoCreate = false;
             public bool autoJoin = true;
+            public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
         };

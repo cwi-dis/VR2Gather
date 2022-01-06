@@ -1449,6 +1449,13 @@ public class OrchestratorLogin : MonoBehaviour {
             PlayerPrefs.DeleteKey("userNameLoginIF");
             PlayerPrefs.DeleteKey("userPasswordLoginIF");
         }
+        // If we want to autoCreate or autoStart depending on username set the right config flags.
+        if (Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoCreateForUser != "")
+        {
+            bool isThisUser = Config.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
+            Config.Instance.AutoStart.autoCreate = isThisUser;
+            Config.Instance.AutoStart.autoJoin = !isThisUser;
+        }
         OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
     }
 

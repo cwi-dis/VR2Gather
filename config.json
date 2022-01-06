@@ -19,6 +19,7 @@
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
+  	"autoCreateForUser" : "",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
