@@ -27,7 +27,7 @@ namespace VRT.Transport.Dash
         B2DPusher[] streamPushers;
 
 
-        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base(WorkerType.End)
+        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {

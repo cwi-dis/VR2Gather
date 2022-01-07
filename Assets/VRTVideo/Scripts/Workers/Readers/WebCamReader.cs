@@ -28,7 +28,7 @@ namespace VRT.Video
         public int fps;
 
 
-        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init)
+        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
 
             if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;

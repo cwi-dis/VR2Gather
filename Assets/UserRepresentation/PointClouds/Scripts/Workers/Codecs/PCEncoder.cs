@@ -25,7 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
         };
         EncoderStreamDescription[] outputs;
 
-        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {

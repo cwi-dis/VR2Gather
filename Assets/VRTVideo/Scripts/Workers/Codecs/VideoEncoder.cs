@@ -41,7 +41,7 @@ namespace VRT.Video
         VideoFilter RGB2YUV420PFilter;
         Setup setup;
 
-        public VideoEncoder(Setup setup, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run)
+        public VideoEncoder(Setup setup, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
         {
             this.setup = setup;
             inVideoQueue = _inVideoQueue;

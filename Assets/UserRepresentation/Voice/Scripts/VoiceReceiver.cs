@@ -108,7 +108,7 @@ namespace VRT.UserRepresentation.Voice
                     data[i] += tmpBuffer[i / channels];
                 }
                 
-                stats.statsUpdate(preparer.currentTimestamp, preparer.currentQueueSize, true);
+                stats.statsUpdate(preparer.currentTimestamp, preparer.getQueueDuration(), true);
             } else
             {
                 stats.statsUpdate(0, 0, false);
@@ -127,10 +127,9 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalAudioframeCount = 0;
             double statsTotalUnavailableCount = 0;
             double statsTotalLatency = 0;
-            int maxQueueSize = 0;
-            int minQueueSize = 99999;
+            double statsTotalQueueDuration = 0;
 
-            public void statsUpdate(ulong timestamp, int queueSize, bool fresh)
+            public void statsUpdate(ulong timestamp, ulong queueDuration, bool fresh)
             {
                 if (fresh)
                 {
@@ -142,14 +141,14 @@ namespace VRT.UserRepresentation.Voice
                 } else
                 {
                     statsTotalUnavailableCount++;
-                    return; //backport candidate
+                    // return; //backport candidate
                 }
-                if (queueSize > maxQueueSize) maxQueueSize = queueSize;
-                if (queueSize < minQueueSize) minQueueSize = queueSize;
-
+                statsTotalQueueDuration += queueDuration;
+            
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount))}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, max_queuesize={maxQueueSize}, min_queuesize={minQueueSize}, timestamp={timestamp}");
+                    double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / factor)}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
@@ -157,8 +156,7 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalAudioframeCount = 0;
                     statsTotalUnavailableCount = 0;
                     statsTotalLatency = 0;
-                    maxQueueSize = 0;
-                    minQueueSize = 99999;
+                    statsTotalQueueDuration = 0;
                 }
             }
         }

@@ -13,7 +13,7 @@ namespace VRT.Transport.SocketIO
     {
         B2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(User user, string remoteStream, string fourcc, B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End)
+        public SocketIOWriter(User user, string remoteStream, string fourcc, B2DWriter.DashStreamDescription[] streams) : base()
         {
             if (streams == null)
             {

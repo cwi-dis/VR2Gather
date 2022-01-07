@@ -45,7 +45,7 @@ namespace VRT.Video
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run)
+        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
         {
             this.codec = codec;
             inVideoQueue = _inVideoQueue;

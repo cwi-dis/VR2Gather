@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.Voice
 
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
-        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base(WorkerType.Run)
+        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
         {
             inQueue = _inQueue;
             outQueue = _outQueue;

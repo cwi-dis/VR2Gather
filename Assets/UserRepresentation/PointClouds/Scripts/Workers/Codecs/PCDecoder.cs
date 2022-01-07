@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool debugColorize = true;
         System.DateTime mostRecentFeed = System.DateTime.MinValue;
 
-        public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(WorkerType.Run)
+        public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             if (_inQueue == null)
             {

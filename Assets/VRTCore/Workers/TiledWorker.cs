@@ -14,7 +14,7 @@ namespace VRT.Core
             public int cameraMask;
         }
 
-        public TiledWorker(WorkerType _type = WorkerType.Run) : base(_type)
+        public TiledWorker() : base()
         {
         }
 

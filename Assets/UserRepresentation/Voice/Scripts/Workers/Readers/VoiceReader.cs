@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.Voice
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
-        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init)
+        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base()
         {
             stats = new Stats(Name());
             outQueue = _outQueue;

@@ -209,7 +209,7 @@ namespace VRT.Transport.TCP
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseTCPReader(string _url) : base(WorkerType.Init)
+        protected BaseTCPReader(string _url) : base()
         {
             lock (this)
             {

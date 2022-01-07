@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe outQueue;
 
         NSpeex.SpeexDecoder decoder;
-        public VoiceDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(WorkerType.Run)
+        public VoiceDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             inQueue = _inQueue;
             outQueue = _outQueue;

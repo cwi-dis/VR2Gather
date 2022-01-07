@@ -44,7 +44,7 @@ namespace VRT.UserRepresentation.PointCloud
         public float frameRate;
         public bool loop = true;
         
-        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base(WorkerType.Init)
+        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
         {
             voxelSize = _voxelSize;
             frameRate = _frameRate;
@@ -163,7 +163,7 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedBaseReader parent;
 
-        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             dirname = _dirname;
             subdir = _subdir;
