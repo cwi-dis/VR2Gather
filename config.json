@@ -15,18 +15,18 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
+  	"sessionName" : "jj-jittertest",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
-  	"autoCreateForUser" : "",
+  	"autoCreateForUser" : "Jack@CWI",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5
   },
   "VR" : {
-	"_preferredDevices" : ["", "Oculus", "OpenVR"],
+	"preferredDevices" : [""],
 	"_preferredController" : "gamepad"
   },
   "Macintosh": {
