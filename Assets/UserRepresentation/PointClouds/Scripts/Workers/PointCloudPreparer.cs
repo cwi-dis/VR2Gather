@@ -15,16 +15,10 @@ namespace VRT.UserRepresentation.PointCloud
         float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
-        QueueThreadSafe InQueue;
-        public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(WorkerType.End)
+        public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(_InQueue)
         {
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;
             cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 1.0f;
-            if (_InQueue == null)
-            {
-                throw new System.Exception("PointCloudPreparer: InQueue is null");
-            }
-            InQueue = _InQueue;
             Start();
         }
 
@@ -141,11 +135,6 @@ namespace VRT.UserRepresentation.PointCloud
         {
             if (currentCellSize > 0.0000f) return currentCellSize * cellSizeFactor;
             else return defaultCellSize * cellSizeFactor;
-        }
-
-        public ulong getQueueDuration()
-        {
-            return InQueue.QueuedDuration();
         }
 
     }

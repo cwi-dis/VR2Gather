@@ -9,7 +9,6 @@ namespace VRT.UserRepresentation.Voice
     {
         int bufferSize;
 
-        QueueThreadSafe inQueue;
         public ulong currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
@@ -21,14 +20,11 @@ namespace VRT.UserRepresentation.Voice
         // audio clock).
         const int VISUAL_FRAME_DURATION_MS = 66;
 
-        public VoicePreparer(QueueThreadSafe _inQueue) : base(WorkerType.End)
+        public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             stats = new Stats(Name());
-            inQueue = _inQueue;
-            if (inQueue == null) Debug.LogError($"VoicePreparer: Programmer error: ERROR inQueue=NULL");
             bufferSize = 320 * 6 * 100;
             Debug.Log("VoicePreparer: Started.");
-            // xxxjack stats not used? stats = new Stats(Name());
             Start();
         }
 
@@ -38,18 +34,14 @@ namespace VRT.UserRepresentation.Voice
             Debug.Log("VoicePreparer: Stopped");
         }
 
-        protected override void Update()
-        {
-            base.Update();
-        }
         public override void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
                 ulong earliestTimestamp = currentTimestamp;
-                if (earliestTimestamp == 0) earliestTimestamp = inQueue._PeekTimestamp();
-                ulong latestTimestamp = inQueue.LatestTimestamp();
+                if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
+                ulong latestTimestamp = InQueue.LatestTimestamp();
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
@@ -77,7 +69,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
-                if (inQueue.IsClosed()) return false; // We are shutting down
+                if (InQueue.IsClosed()) return false; // We are shutting down
                   return _FillAudioFrame(bestTimestamp);
             }
          }
@@ -86,7 +78,7 @@ namespace VRT.UserRepresentation.Voice
         {
             while(true)
             {
-                currentAudioFrame = inQueue.TryDequeue(0);
+                currentAudioFrame = InQueue.TryDequeue(0);
                 if (currentAudioFrame == null) {
                     stats.statsUpdate(false, true);
                     return false;
@@ -95,7 +87,7 @@ namespace VRT.UserRepresentation.Voice
                 bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                 if (trySkipForward)
                 {
-                    bool canDrop = inQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+                    bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
                     // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
                     if (canDrop)
                     {
@@ -125,11 +117,11 @@ namespace VRT.UserRepresentation.Voice
         {
             lock(this)
             {
-                if (inQueue.IsClosed()) return false;
+                if (InQueue.IsClosed()) return false;
                 if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
                 if (currentAudioFrame == null) return false;
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-                currentQueueSize = inQueue._Count;
+                currentQueueSize = InQueue._Count;
                 if (currentAudioFrame is FloatMemoryChunk)
                 {
                     System.Array.Copy(((FloatMemoryChunk)currentAudioFrame).buffer, 0, dst, 0, len);
