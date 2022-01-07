@@ -74,7 +74,7 @@ namespace VRT.Core
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
 
-                Debug.Log($"{Name()}: caller: timestamp range [{(long)earliestFrameTimestamp-utcMillisForCurrentFrame}..{(long)latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{(long)availableIntervalBegin - utcMillisForCurrentFrame}..{(long)availableIntervalEnd - utcMillisForCurrentFrame}]");
+                Debug.Log($"{Name()}: {caller}: timestamp range [{(long)earliestFrameTimestamp-utcMillisForCurrentFrame}..{(long)latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{(long)availableIntervalBegin - utcMillisForCurrentFrame}..{(long)availableIntervalEnd - utcMillisForCurrentFrame}]");
                 // xxxjack decide which one to keep: the earliest or the latest range....
                 // keeping the latest range should cause "best progress".
                 // keeping the earliest should cause "quickest sync".
