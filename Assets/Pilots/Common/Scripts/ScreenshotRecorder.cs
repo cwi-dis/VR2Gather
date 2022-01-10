@@ -20,11 +20,16 @@ namespace VRT.Pilots.Common
             screenshotTargetDirectory = Config.Instance.ScreenshotTool.screenshotTargetDirectory;
             width = Screen.width;
             height = Screen.height;
+            if (!Directory.Exists(screenshotTargetDirectory))
+            {
+                Directory.CreateDirectory(screenshotTargetDirectory);
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
+            StartCoroutine(captureScreenshot());
 
         }
         IEnumerator captureScreenshot()
@@ -36,11 +41,6 @@ namespace VRT.Pilots.Common
             screenshot.Apply();
             byte[] screenshotBytes = screenshot.EncodeToPNG();
             Destroy(screenshot);
-
-            if(!Directory.Exists(screenshotTargetDirectory))
-            {
-                Directory.CreateDirectory(screenshotTargetDirectory);
-            }
 
             File.WriteAllBytes(screenshotTargetDirectory + "/Frame" + Time.frameCount + ".png",screenshotBytes);
 
