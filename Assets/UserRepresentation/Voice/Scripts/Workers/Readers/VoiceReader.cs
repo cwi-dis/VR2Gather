@@ -127,7 +127,7 @@ namespace VRT.UserRepresentation.Voice
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
                                 bool ok = outQueue.Enqueue(mc);
-                                stats.statsUpdate(available, !ok);
+                                stats.statsUpdate(available, !ok, outQueue.QueuedDuration());
                             }
                             readPosition = (readPosition + neededBufferLength) % recorderBufferSize;
                             available -= neededBufferLength;
@@ -151,26 +151,29 @@ namespace VRT.UserRepresentation.Voice
 
             double statsTotalUpdates;
             double statsTotalSamplesInInputBuffer;
+            double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(int samplesInInputBuffer, bool dropped)
+            public void statsUpdate(int samplesInInputBuffer, bool dropped, ulong queuedDuration)
             {
 
                 statsTotalUpdates += 1;
                 statsTotalSamplesInInputBuffer += samplesInInputBuffer;
+                statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsDrops++;
 
                 if (ShouldOutput())
                 {
                     double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
                     double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_samples={(int)samplesInBufferAverage}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamplesInInputBuffer = 0;
+                    statsTotalQueuedDuration = 0;
                     statsDrops = 0;
                 }
             }
