@@ -13,12 +13,13 @@ namespace VRT.UserRepresentation.Voice
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         bool readNextFrameWhenNeeded = true;
-
+#if LEGACY_DROP_FRAME
         // We should _not_ drop audio frames if they are in the past, but could still be
         // considered part of the current visual frame. Otherwise, we may end up dropping one
         // audio frame for every visual frame (because the visual clock jumps forward over the
         // audio clock).
         const int VISUAL_FRAME_DURATION_MS = 66;
+#endif
 
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
@@ -84,6 +85,7 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+#if LEGACY_DROP_FRAME
                 bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                 if (trySkipForward)
                 {
@@ -99,6 +101,7 @@ namespace VRT.UserRepresentation.Voice
                         continue;
                     }
                 }
+#endif
                 stats.statsUpdate(false, false);
                 break;
             }
