@@ -13,13 +13,11 @@ namespace VRT.UserRepresentation.Voice
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         bool readNextFrameWhenNeeded = true;
-#if LEGACY_DROP_FRAME
         // We should _not_ drop audio frames if they are in the past, but could still be
         // considered part of the current visual frame. Otherwise, we may end up dropping one
         // audio frame for every visual frame (because the visual clock jumps forward over the
         // audio clock).
         const int VISUAL_FRAME_DURATION_MS = 66;
-#endif
 
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
@@ -77,32 +75,35 @@ namespace VRT.UserRepresentation.Voice
 
         bool _FillAudioFrame(ulong minTimestamp)
         {
+            int dropCount = 0;
             while(true)
             {
                 currentAudioFrame = InQueue.TryDequeue(0);
                 if (currentAudioFrame == null) {
-                    stats.statsUpdate(false, true);
+                    stats.statsUpdate(dropCount, true);
                     return false;
                 }
-                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-#if LEGACY_DROP_FRAME
-                bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
-                if (trySkipForward)
+                if (minTimestamp > 0)
                 {
-                    bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
-                    // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
-                    if (canDrop)
+                    currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+                    bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
+                    if (trySkipForward)
                     {
-                        // There is another frame in the queue that is also earlier than minTimestamp.
-                        // Drop this one.
-                        stats.statsUpdate(true, false);
-                        currentAudioFrame.free();
-                        currentAudioFrame = null;
-                        continue;
+                        bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+                        // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                        if (canDrop)
+                        {
+                            // There is another frame in the queue that is also earlier than minTimestamp.
+                            // Drop this one.
+                            dropCount++;
+                            currentAudioFrame.free();
+                            currentAudioFrame = null;
+                            continue;
+                        }
                     }
+
                 }
-#endif
-                stats.statsUpdate(false, false);
+                stats.statsUpdate(dropCount, false);
                 break;
             }
             if (currentAudioFrame == null)
@@ -147,11 +148,11 @@ namespace VRT.UserRepresentation.Voice
             double statsDrops;
             double statsNoData;
 
-            public void statsUpdate(bool dropped, bool noData)
+            public void statsUpdate(int dropCount, bool noData)
             {
 
                 statsTotalUpdates += 1;
-                if (dropped) statsDrops++;
+                statsDrops += dropCount;
                 if (noData) statsNoData++;
 
                 if (ShouldOutput())
