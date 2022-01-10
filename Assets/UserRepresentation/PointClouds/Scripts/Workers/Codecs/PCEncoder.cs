@@ -192,7 +192,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, avg_transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
                 }
                 if (ShouldClear()) {
                     Clear();
