@@ -97,11 +97,16 @@ namespace VRT.Video
                                 videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                 NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
                                 System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
+                                videoData.info.timestamp = videoFrame->pts;
                                 outVideoQueue.Enqueue(videoData);
                             }
                             else
-                                if (ret2 != -11)
-                                Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+                            {
+                                if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF)
+                                {
+                                    Debug.LogError($"VideoDecoder: avcodec_receive_frame returned {ret2}");
+                                }
+                            }
                         }
                     }
                 }
