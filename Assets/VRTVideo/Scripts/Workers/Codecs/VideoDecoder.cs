@@ -52,7 +52,10 @@ namespace VRT.Video
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
             outAudioQueue = _outAudioQueue;
-
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             videoPacket = ffmpeg.av_packet_alloc();
             audioPacket = ffmpeg.av_packet_alloc();
             Start();
@@ -94,11 +97,16 @@ namespace VRT.Video
                                 videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                 NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
                                 System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
+                                videoData.info.timestamp = videoFrame->pts;
                                 outVideoQueue.Enqueue(videoData);
                             }
                             else
-                                if (ret2 != -11)
-                                Debug.Log($"ret2 {ffmpeg.AVERROR(ffmpeg.EAGAIN)}");
+                            {
+                                if (ret2 != ffmpeg.AVERROR(ffmpeg.EAGAIN) && ret2 != ffmpeg.AVERROR_EOF)
+                                {
+                                    Debug.LogError($"VideoDecoder: avcodec_receive_frame returned {ret2}");
+                                }
+                            }
                         }
                     }
                 }
@@ -205,9 +213,10 @@ namespace VRT.Video
                 int_array4 srcTable, dstTable;
                 srcTable[0] = 104597; srcTable[1] = 132201; srcTable[2] = 25675; srcTable[3] = 53279;  // { 104597, 132201, 25675, 53279 }, /* ITU-R Rec. 624-4 System B, G
                 dstTable[0] = 117489; dstTable[1] = 138438; dstTable[2] = 13975; dstTable[3] = 34925; // { 117489, 138438, 13975, 34925 }, /* ITU-R Rec. 709 (1990)
-
+#if !(UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX)
+                // xxxjack this is probably needed for good color quality, but it seems to crash on the mac...
                 int ret = ffmpeg.sws_setColorspaceDetails(swsYUV2RGBCtx, srcTable, srcRange, dstTable, dstRange, brightness, contrast, saturation);
-
+#endif
                 Width = videoFrame->width;
                 Height = videoFrame->height;
             }
