@@ -105,7 +105,7 @@ namespace VRT.Video
 
         void Init(string deviceName)
         {
-            /*
+#if WEBCAM_DEBUG_PRINT_RESOLUTIONS
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
@@ -116,19 +116,24 @@ namespace VRT.Video
                     }
                 }
             }
-            */
+#endif
             webcamTexture = new WebCamTexture(deviceName, width, height, fps);
             webcamTexture.Play();
-
+#if WEBCAM_AUTO_RESOLUTION
             width = webcamTexture.width;
             height = webcamTexture.height;
 
-            if (webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
+            if (webcamTexture.isPlaying)
+            {
+                webcamColors = webcamTexture.GetPixels32(webcamColors);
+                UnityEngine.Debug.Log($"[FPA] Webcam initialized, got {webcamColors.Length} pixel buffer");
+            }
             else
             {
                 webcamColors = new Color32[width * height];
-                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized");
+                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized, allocated {webcamColors.Length} pixel buffer");
             }
+#endif
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
@@ -152,6 +157,12 @@ namespace VRT.Video
                         if (webcamTexture.isPlaying)
                         {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
+                            if (webcamColors.Length < width*height)
+                            {
+                                UnityEngine.Debug.Log($"xxxjack WebCamReader: drop short videoframe of length {webcamColors.Length}");
+                                webcamColors = null;
+                                yield return null;
+                            }
                             isFrameReady = true;
                         }
                         //                        frameReady.Release();
