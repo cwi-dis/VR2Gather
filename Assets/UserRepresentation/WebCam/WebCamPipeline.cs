@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.WebCam
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
             User user = (User)_user;
-            if (user == null)
+            if (user == null || user.userData == null)
             {
                 Debug.LogError($"WebCamPipeline: programmer error: incorrect user parameter");
                 return null;
@@ -68,11 +68,11 @@ namespace VRT.UserRepresentation.WebCam
             {
                 Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.videoCodec}");
             }
-            if (user != null && user.userData != null && user.userData.webcamName == "None") return this;
+            isSource = (cfg.sourceType == "self");
+            if (user.userData.webcamName == "None") return this;
             switch (cfg.sourceType)
             {
                 case "self": // Local
-                    isSource = true;
                     //
                     // Allocate queues we need for this sourceType
                     //
@@ -186,10 +186,13 @@ namespace VRT.UserRepresentation.WebCam
 
         private void Update()
         {
+            if (preparer == null) return;
             preparer.Synchronize();
         }
+
         private void LateUpdate()
         {
+            if (preparer == null) return;
             if (ready)
             {
                 lock (preparer)
