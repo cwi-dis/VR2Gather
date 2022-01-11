@@ -89,6 +89,9 @@ namespace VRT.Video
             {
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long now = (long)sinceEpoch.TotalMilliseconds;
+                chunk.info.timestamp = now;
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;
                 outQueue.Enqueue(chunk);
