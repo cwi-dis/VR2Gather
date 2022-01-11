@@ -204,7 +204,6 @@ namespace VRT.UserRepresentation.WebCam
                     preparer.LatchFrame();
                     if (preparer.availableVideo > 0)
                     {
-                        Debug.Log($"WebCamPipeline.Update ");
                         if (texture == null)
                         {
                             texture = new Texture2D(decoder != null ? decoder.Width : width, decoder != null ? decoder.Height : height, TextureFormat.RGB24, false, true);
@@ -223,10 +222,8 @@ namespace VRT.UserRepresentation.WebCam
                         }
                         catch
                         {
-                            Debug.Log($"WebCamPipeline.Update ERR");
-                            Debug.Log("[FPA] ERROR on LoadRawTextureData.");
+                            Debug.LogError("[FPA] ERROR on LoadRawTextureData.");
                         }
-                        Debug.Log($"WebCamPipeline.Update OK");
                     }
                 }
             }
