@@ -30,7 +30,7 @@
 	"_preferredController" : "gamepad"
   },
   "ScreenshotTool" : {
-	  "takeScreenshot" : true,
+	  "takeScreenshot" : false,
 	  "screenshotTargetDirectory" : "../Screenshots"
   },
   "Macintosh": {
