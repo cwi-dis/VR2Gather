@@ -155,7 +155,7 @@ namespace VRT.UserRepresentation.WebCam
                     
                     if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                     {
-                        reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 1, "wcwc", videoCodecQueue);
+                        reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                     }
                     else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                     {
