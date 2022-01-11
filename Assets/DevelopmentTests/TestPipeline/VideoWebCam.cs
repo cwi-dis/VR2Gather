@@ -36,6 +36,10 @@ public class VideoWebCam : MonoBehaviour {
         ready = false;
         while (OrchestratorController.Instance==null || OrchestratorController.Instance.MySession==null) yield return null;
 
+        if (Config.Instance.ffmpegDLLDir != "")
+        {
+            FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+        }
         WebCamDevice[] devices = WebCamTexture.devices;
         Init(FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264, devices[0].name);
 

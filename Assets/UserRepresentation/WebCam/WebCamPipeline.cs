@@ -38,6 +38,10 @@ namespace VRT.UserRepresentation.WebCam
 
         public static void Register()
         {
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             RegisterPipelineClass(UserRepresentationType.__2D__, AddWebCamPipelineComponent);
         }
 

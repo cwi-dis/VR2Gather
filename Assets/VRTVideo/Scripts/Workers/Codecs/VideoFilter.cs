@@ -18,6 +18,10 @@ namespace VRT.Video
 
         public VideoFilter(int width, int height, AVPixelFormat source, AVPixelFormat target)
         {
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             srcStride = new int[] { ffmpeg.av_image_get_buffer_size(source, width, 1, 1) };
             int num_bytes = ffmpeg.av_image_get_buffer_size(target, width, height, 1);
             pictureFrameData = (byte*)ffmpeg.av_malloc((ulong)num_bytes);

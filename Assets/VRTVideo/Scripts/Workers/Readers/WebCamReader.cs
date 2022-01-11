@@ -31,6 +31,10 @@ namespace VRT.Video
         public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init)
         {
 
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;
 
             this.width = width;
