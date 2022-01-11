@@ -13,6 +13,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
+        "FFmpeg.AutoGen.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
