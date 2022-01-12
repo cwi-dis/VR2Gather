@@ -44,6 +44,7 @@ namespace VRT.Core
         public string statsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+        public string ffmpegDLLDir = "";
 
         [Serializable]
         public class _VR
