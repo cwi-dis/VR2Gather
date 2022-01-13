@@ -15,8 +15,10 @@ namespace VRT.UserRepresentation.PointCloud
         float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
+
         public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(_InQueue)
         {
+            stats = new Stats(Name());
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;
             cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 1.0f;
             Start();
@@ -33,9 +35,11 @@ namespace VRT.UserRepresentation.PointCloud
         {
            lock (this)
             {
+                int dropCount = 0;
+                ulong bestTimestamp = 0;
                 if (synchronizer != null)
                 {
-                    ulong bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
+                    bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
                     if (bestTimestamp != 0 &&  bestTimestamp <= currentTimestamp)
                     {
                         if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp-bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
@@ -53,7 +57,19 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.Log($"{Name()}: no pointcloud available");
                     }
+                    stats.statsUpdate(0, true);
                     return false;
+                }
+                // See if there are more pointclouds in the queue that are no later than bestTimestamp
+                while (pc.timestamp() < bestTimestamp)
+                {
+                    ulong nextTimestamp = InQueue._PeekTimestamp();
+                    // If there is no next queue entry, or it has no timestamp, or it is after bestTimestamp we break out of the loop
+                    if (nextTimestamp == 0 || nextTimestamp > bestTimestamp) break;
+                    // We know there is another pointcloud in the queue, and we know it is better than what we have now. Replace it.
+                    dropCount++;
+                    pc.free();
+                    pc = (cwipc.pointcloud)InQueue.Dequeue();
                 }
                 unsafe
                 {
@@ -82,6 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                     isReady = true;
                 }
+                stats.statsUpdate(dropCount, false);
             }
             return true;
         }
@@ -137,5 +154,35 @@ namespace VRT.UserRepresentation.PointCloud
             else return defaultCellSize * cellSizeFactor;
         }
 
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalUpdates;
+            double statsDrops;
+            double statsNoData;
+
+            public void statsUpdate(int dropCount, bool noData)
+            {
+
+                statsTotalUpdates += 1;
+                statsDrops += dropCount;
+                if (noData) statsNoData++;
+
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalUpdates = 0;
+                    statsDrops = 0;
+                    statsNoData = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }
