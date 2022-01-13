@@ -122,15 +122,16 @@ namespace VRT.UserRepresentation.Voice
                                     mc.buffer[i] = readBuffer[(int)idx];
                                     idx += inc;
                                 }
+                                readPosition = (readPosition + bufferLength) % recorderBufferSize;
+                                available -= bufferLength;
                                 mc.info = new FrameInfo();
                                 // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
+                                double timeRemainingInBuffer = (double)available / wantedOutputSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
-                                stats.statsUpdate(available, !ok, outQueue.QueuedDuration());
+                                stats.statsUpdate(timeRemainingInBuffer, !ok, outQueue.QueuedDuration());
                             }
-                            readPosition = (readPosition + neededBufferLength) % recorderBufferSize;
-                            available -= neededBufferLength;
                         }
                     }
                     else
@@ -150,29 +151,27 @@ namespace VRT.UserRepresentation.Voice
             public Stats(string name) : base(name) { }
 
             double statsTotalUpdates;
-            double statsTotalSamplesInInputBuffer;
+            double statsTotalTimeInInputBuffer;
             double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(int samplesInInputBuffer, bool dropped, ulong queuedDuration)
+            public void statsUpdate(double timeInInputBuffer, bool dropped, ulong queuedDuration)
             {
 
                 statsTotalUpdates += 1;
-                statsTotalSamplesInInputBuffer += samplesInInputBuffer;
+                statsTotalTimeInInputBuffer += timeInInputBuffer;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsDrops++;
 
                 if (ShouldOutput())
                 {
-                    double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
-                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalUpdates = 0;
-                    statsTotalSamplesInInputBuffer = 0;
+                    statsTotalTimeInInputBuffer = 0;
                     statsTotalQueuedDuration = 0;
                     statsDrops = 0;
                 }
