@@ -80,6 +80,10 @@ namespace VRT.UserRepresentation.Voice
             {
                 currentAudioFrame = InQueue.TryDequeue(0);
                 if (currentAudioFrame == null) {
+                    if (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0)
+                    {
+                        Debug.Log($"{Name()}: no audio frame available");
+                    }
                     stats.statsUpdate(dropCount, true);
                     return false;
                 }
@@ -105,14 +109,6 @@ namespace VRT.UserRepresentation.Voice
                 }
                 stats.statsUpdate(dropCount, false);
                 break;
-            }
-            if (currentAudioFrame == null)
-            {
-                if (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0)
-                {
-                    Debug.Log($"{Name()}: no audio frame available");
-                }
-                return false;
             }
             return true;
         }
