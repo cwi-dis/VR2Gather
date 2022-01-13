@@ -21,7 +21,7 @@ namespace VRT.Transport.TCP
             public int portOffset = 0;
             public object tileDescriptor;
             public int tileNumber = -1;
-            public int fourcc;
+            public uint fourcc;
         }
         protected ReceiverInfo[] receivers;
    
@@ -252,7 +252,7 @@ namespace VRT.Transport.TCP
                         outQueue = outQueue,
                         host = url.Host,
                         port = url.Port,
-                        fourcc = BitConverter.ToInt32(Encoding.ASCII.GetBytes(fourcc), 0)
+                        fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
                     },
                 };
                 Start();

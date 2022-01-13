@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Text;
 using System.Collections.Generic;
 using VRT.Core;
 using VRT.Transport.Dash;
@@ -23,6 +25,7 @@ namespace VRT.Transport.TCP
                     PCSubReader.TileDescriptor td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
+                    ri.fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
                     receivers[ti] = ri;
                 }
                 Start();
