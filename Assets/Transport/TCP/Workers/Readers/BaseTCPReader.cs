@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
 using VRT.Core;
 using VRT.Transport.Dash;
@@ -20,6 +21,7 @@ namespace VRT.Transport.TCP
             public int portOffset = 0;
             public object tileDescriptor;
             public int tileNumber = -1;
+            public int fourcc;
         }
         protected ReceiverInfo[] receivers;
    
@@ -131,6 +133,12 @@ namespace VRT.Transport.TCP
                             socket = null;
                             continue;
                         }
+                        // Check fourcc
+                        int fourccReceived = BitConverter.ToInt32(hdr, 0);
+                        if (fourccReceived != receiverInfo.fourcc)
+                        {
+                            Debug.LogWarning($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
+                        } 
                         int dataSize = BitConverter.ToInt32(hdr, 4);
                         long timestamp = BitConverter.ToInt64(hdr, 8);
                         byte[] data = new byte[dataSize];
@@ -243,7 +251,8 @@ namespace VRT.Transport.TCP
                     {
                         outQueue = outQueue,
                         host = url.Host,
-                        port = url.Port
+                        port = url.Port,
+                        fourcc = BitConverter.ToInt32(Encoding.ASCII.GetBytes(fourcc), 0)
                     },
                 };
                 Start();
