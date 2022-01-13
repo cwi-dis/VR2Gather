@@ -45,7 +45,7 @@ namespace VRT.UserRepresentation.Voice
         int bufferLength;
         AudioClip recorder;
         public const int wantedOutputSampleRate = 48000;
-        public const int wantedOutputFPS = 50;
+        public const int wantedOutputFPS = 100;
         public const int wantedOutputBufferSize = wantedOutputSampleRate / wantedOutputFPS;
 
         static bool DSPIsNotReady = true;

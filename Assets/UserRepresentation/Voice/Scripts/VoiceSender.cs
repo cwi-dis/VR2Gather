@@ -30,7 +30,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
                 return;
             }
-            const int audioSamplesPerPacket = 960;
+            const int audioSamplesPerPacket = 480;
             if (proto == Config.ProtocolType.Dash)
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
