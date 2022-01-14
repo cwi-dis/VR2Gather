@@ -50,7 +50,7 @@ namespace VRT.UserRepresentation.Voice
         int bufferLength;
         AudioClip recorder;
         const int wantedSampleRate = 48000;
-        const int wantedFPS = 100;
+        const int wantedFPS = 50;
         const int wantedBufferSize = wantedSampleRate / wantedFPS;
 
         static bool DSPIsNotReady = true;
@@ -151,6 +151,7 @@ namespace VRT.UserRepresentation.Voice
             else
                 Debug.LogError("{Name()}: No Microphones detected.");
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -170,7 +171,7 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
