@@ -7,8 +7,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoicePreparer : BasePreparer
     {
-        int bufferSize;
-
+        
         public ulong currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
@@ -22,7 +21,6 @@ namespace VRT.UserRepresentation.Voice
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             stats = new Stats(Name());
-            bufferSize = 320 * 6 * 100;
             Debug.Log("VoicePreparer: Started.");
             Start();
         }
