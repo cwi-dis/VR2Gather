@@ -37,7 +37,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
             }
-            VoiceReader.PrepareDSP();
+            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;

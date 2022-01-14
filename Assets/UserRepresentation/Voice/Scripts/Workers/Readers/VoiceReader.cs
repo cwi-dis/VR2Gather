@@ -10,20 +10,19 @@ namespace VRT.UserRepresentation.Voice
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
-        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
+        public VoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
             stats = new Stats(Name());
             outQueue = _outQueue;
-            this.bufferLength = wantedBufferSize;
             device = deviceName;
-            coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
+            coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName, sampleRate, fps, minBufferSize));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
             Start();
         }
 
         public int getBufferSize()
         {
-            return wantedBufferSize;
+            return bufferLength;
         }
 
         long sampleTimestamp(int nSamplesInInputBuffer)
@@ -49,36 +48,55 @@ namespace VRT.UserRepresentation.Voice
         int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
-        const int wantedSampleRate = 48000;
-        const int wantedFPS = 50;
-        const int wantedBufferSize = wantedSampleRate / wantedFPS;
 
+        int wantedSampleRate;
+        
         static bool DSPIsNotReady = true;
-        public static void PrepareDSP()
+        public static void PrepareDSP(int _sampleRate, int _bufferSize)
         {
             if (DSPIsNotReady)
             {
                 DSPIsNotReady = false;
                 var ac = AudioSettings.GetConfiguration();
-                ac.sampleRate = wantedSampleRate;
-                ac.dspBufferSize = wantedBufferSize;
-                AudioSettings.Reset(ac);
-                ac = AudioSettings.GetConfiguration();
-                if (ac.sampleRate != wantedSampleRate)
+                if (_sampleRate == 0) _sampleRate = ac.sampleRate;
+                if (_bufferSize != 0) _bufferSize = ac.dspBufferSize;
+
+                if (_sampleRate != ac.sampleRate || _bufferSize != ac.dspBufferSize)
                 {
-                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {wantedSampleRate}. Other participants may sound funny.");
+                    ac.sampleRate = _sampleRate;
+                    ac.dspBufferSize = _bufferSize;
+                    AudioSettings.Reset(ac);
+                    ac = AudioSettings.GetConfiguration();
+                    if (ac.sampleRate != _sampleRate)
+                    {
+                        Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
+                    }
+                    if (ac.dspBufferSize != _bufferSize)
+                    {
+                        Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {_bufferSize}");
+                    }
                 }
-                if (ac.dspBufferSize != wantedBufferSize)
-                {
-                    Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {wantedBufferSize}");
-                }
+              
             }
 
         }
 
-        IEnumerator MicroRecorder(string deviceName)
+        IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
-            PrepareDSP();
+            wantedSampleRate = _sampleRate;
+            bufferLength = wantedSampleRate / _fps;
+            if (_minBufferSize > 0 && bufferLength % _minBufferSize != 0)
+            {
+                // Round up to a multiple of _minBufferSize
+                bufferLength = ((bufferLength + _minBufferSize - 1) / _minBufferSize) * _minBufferSize;
+                float actualFps = (float)wantedSampleRate / bufferLength;
+                Debug.LogWarning($"{Name()}: adapted bufferSize={bufferLength}, fps={actualFps}");
+            }
+            if (wantedSampleRate % bufferLength != 0)
+            {
+                Debug.LogWarning($"{Name()}: non-integral number of buffers per second. This may not work.");
+            }
+            PrepareDSP(wantedSampleRate, bufferLength);
             if (Microphone.devices.Length > 0)
             {
                 if (deviceName == null) deviceName = Microphone.devices[0];

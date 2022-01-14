@@ -25,6 +25,7 @@ namespace VRT.UserRepresentation.Voice
             string micro = null;
             if (user != null && user.userData != null)
                 micro = user.userData.microphoneName;
+            int minBufferSize = 0;
             if (micro == "None")
             {
                 Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
@@ -40,6 +41,7 @@ namespace VRT.UserRepresentation.Voice
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
                 codec = new VoiceEncoder(encoderQueue, senderQueue);
+                minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
             else
@@ -50,7 +52,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, this, _readerOutputQueue);
+            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {

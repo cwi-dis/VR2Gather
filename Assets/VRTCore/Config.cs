@@ -37,7 +37,9 @@ namespace VRT.Core
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public string videoCodec = "h264";
         public string pointcloudCodec = "cwi1";
-        public string audioCodec = "VR2a";
+        public string audioCodec = "VR2A";
+        public readonly int audioSampleRate = 48000;
+        public int audioFps = 50;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;

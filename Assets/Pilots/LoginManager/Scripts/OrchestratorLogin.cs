@@ -542,7 +542,7 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
-        VoiceReader.PrepareDSP();
+        VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
 
         system = EventSystem.current;
 
