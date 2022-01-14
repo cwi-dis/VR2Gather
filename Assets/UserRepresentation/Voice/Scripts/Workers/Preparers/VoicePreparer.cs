@@ -122,10 +122,30 @@ namespace VRT.UserRepresentation.Voice
                 currentQueueSize = InQueue._Count;
                 if (currentAudioFrame is FloatMemoryChunk)
                 {
-                    System.Array.Copy(((FloatMemoryChunk)currentAudioFrame).buffer, 0, dst, 0, len);
+                    var _frame = ((FloatMemoryChunk)currentAudioFrame);
+                    int availableLen = _frame.elements;
+                    if (availableLen < len)
+                    {
+                        Debug.Log($"{Name()}: {len} samples wanted but only {availableLen} in frame. Adding zeroes.");
+                        len = availableLen;
+                    } else if (availableLen > len)
+                    {
+                        Debug.Log($"{Name()}: {len} samples wanted but {availableLen} is frame. Remainder dropped.");
+                    }
+                    System.Array.Copy(_frame.buffer, 0, dst, 0, len);
                 }
                 else
                 {
+                    int availableLen = currentAudioFrame.length / 4;
+                    if (availableLen < len)
+                    {
+                        Debug.Log($"{Name()}: {len} samples wanted but only {availableLen} in frame. Adding zeroes.");
+                        len = availableLen;
+                    }
+                    else if (availableLen > len)
+                    {
+                        Debug.Log($"{Name()}: {len} samples wanted but {availableLen} is frame. Remainder dropped.");
+                    }
                     System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, dst, 0, len);
                 }
                 currentAudioFrame.free();
