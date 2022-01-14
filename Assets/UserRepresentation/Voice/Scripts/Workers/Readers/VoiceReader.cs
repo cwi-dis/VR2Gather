@@ -51,30 +51,25 @@ namespace VRT.UserRepresentation.Voice
 
         int wantedSampleRate;
         
-        static bool DSPIsNotReady = true;
         public static void PrepareDSP(int _sampleRate, int _bufferSize)
         {
-            if (DSPIsNotReady)
-            {
-                DSPIsNotReady = false;
-                var ac = AudioSettings.GetConfiguration();
-                if (_sampleRate == 0) _sampleRate = ac.sampleRate;
-                if (_bufferSize != 0) _bufferSize = ac.dspBufferSize;
+            var ac = AudioSettings.GetConfiguration();
+            if (_sampleRate == 0) _sampleRate = ac.sampleRate;
+            if (_bufferSize != 0) _bufferSize = ac.dspBufferSize;
 
-                if (_sampleRate != ac.sampleRate || _bufferSize != ac.dspBufferSize)
+            if (_sampleRate != ac.sampleRate || _bufferSize != ac.dspBufferSize)
+            {
+                ac.sampleRate = _sampleRate;
+                ac.dspBufferSize = _bufferSize;
+                AudioSettings.Reset(ac);
+                ac = AudioSettings.GetConfiguration();
+                if (ac.sampleRate != _sampleRate)
                 {
-                    ac.sampleRate = _sampleRate;
-                    ac.dspBufferSize = _bufferSize;
-                    AudioSettings.Reset(ac);
-                    ac = AudioSettings.GetConfiguration();
-                    if (ac.sampleRate != _sampleRate)
-                    {
-                        Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
-                    }
-                    if (ac.dspBufferSize != _bufferSize)
-                    {
-                        Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {_bufferSize}");
-                    }
+                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
+                }
+                if (ac.dspBufferSize != _bufferSize)
+                {
+                    Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {_bufferSize}");
                 }
               
             }
