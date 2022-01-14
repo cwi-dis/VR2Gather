@@ -69,6 +69,7 @@ namespace VRT.Core
             public int sessionScenario = -1;
             public int sessionTransportProtocol = -1;
             public bool sessionUncompressed = false;
+            public bool sessionUncompressedAudio = false;
             public bool autoCreate = false;
             public bool autoJoin = true;
             public string autoCreateForUser = "";

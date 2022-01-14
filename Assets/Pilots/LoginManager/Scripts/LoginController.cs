@@ -61,6 +61,10 @@ public class LoginController : PilotController {
             {
                 Config.Instance.pointcloudCodec = msg[4];
             }
+            if (msg.Length > 5 && msg[5] != "")
+            {
+                Config.Instance.audioCodec = msg[5];
+            }
             string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
             if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
         }
