@@ -7,9 +7,15 @@ namespace VRT.Core
     public abstract class BasePreparer : BaseWorker
     {
         protected Synchronizer synchronizer = null;
+        protected QueueThreadSafe InQueue;
 
-        public BasePreparer(WorkerType _type = WorkerType.Run) : base(_type)
+        public BasePreparer(QueueThreadSafe _InQueue) : base()
         {
+            if (_InQueue == null)
+            {
+                throw new System.Exception($"{Name()}: InQueue is null");
+            }
+            InQueue = _InQueue;
         }
 
         static int instanceCounter = 0;
@@ -37,6 +43,12 @@ namespace VRT.Core
         protected override void Update()
         {
             base.Update();
+        }
+
+        public ulong getQueueDuration()
+        {
+            if (InQueue == null) return 0;
+            return InQueue.QueuedDuration();
         }
     }
 }

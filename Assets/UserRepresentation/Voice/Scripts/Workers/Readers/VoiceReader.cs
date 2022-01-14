@@ -10,22 +10,27 @@ namespace VRT.UserRepresentation.Voice
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
-        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, int bufferLength, QueueThreadSafe _outQueue) : base(WorkerType.Init)
+        public VoiceReader(string deviceName, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
             stats = new Stats(Name());
             outQueue = _outQueue;
-            this.bufferLength = bufferLength;
+            this.bufferLength = wantedBufferSize;
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName));
             Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
             Start();
         }
 
+        public int getBufferSize()
+        {
+            return wantedBufferSize;
+        }
+
         long sampleTimestamp(int nSamplesInInputBuffer)
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             double timestamp = sinceEpoch.TotalMilliseconds;
-            timestamp -= (1000 * nSamplesInInputBuffer / wantedOutputSampleRate);
+            timestamp -= (1000 * nSamplesInInputBuffer / wantedSampleRate);
             return (long)timestamp;
         }
         protected override void Update()
@@ -44,9 +49,9 @@ namespace VRT.UserRepresentation.Voice
         int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
-        public const int wantedOutputSampleRate = 48000;
-        public const int wantedOutputFPS = 50;
-        public const int wantedOutputBufferSize = wantedOutputSampleRate / wantedOutputFPS;
+        const int wantedSampleRate = 48000;
+        const int wantedFPS = 50;
+        const int wantedBufferSize = wantedSampleRate / wantedFPS;
 
         static bool DSPIsNotReady = true;
         public static void PrepareDSP()
@@ -55,17 +60,17 @@ namespace VRT.UserRepresentation.Voice
             {
                 DSPIsNotReady = false;
                 var ac = AudioSettings.GetConfiguration();
-                ac.sampleRate = wantedOutputSampleRate;
-                ac.dspBufferSize = wantedOutputBufferSize;
+                ac.sampleRate = wantedSampleRate;
+                ac.dspBufferSize = wantedBufferSize;
                 AudioSettings.Reset(ac);
                 ac = AudioSettings.GetConfiguration();
-                if (ac.sampleRate != wantedOutputSampleRate)
+                if (ac.sampleRate != wantedSampleRate)
                 {
-                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {wantedOutputSampleRate}. Other participants may sound funny.");
+                    Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {wantedSampleRate}. Other participants may sound funny.");
                 }
-                if (ac.dspBufferSize != wantedOutputBufferSize)
+                if (ac.dspBufferSize != wantedBufferSize)
                 {
-                    Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {wantedOutputBufferSize}");
+                    Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {wantedBufferSize}");
                 }
             }
 
@@ -122,15 +127,16 @@ namespace VRT.UserRepresentation.Voice
                                     mc.buffer[i] = readBuffer[(int)idx];
                                     idx += inc;
                                 }
+                                readPosition = (readPosition + bufferLength) % recorderBufferSize;
+                                available -= bufferLength;
                                 mc.info = new FrameInfo();
                                 // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
+                                double timeRemainingInBuffer = (double)available / wantedSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
-                                stats.statsUpdate(available, !ok);
+                                stats.statsUpdate(timeRemainingInBuffer, !ok, outQueue.QueuedDuration());
                             }
-                            readPosition = (readPosition + neededBufferLength) % recorderBufferSize;
-                            available -= neededBufferLength;
                         }
                     }
                     else
@@ -145,32 +151,34 @@ namespace VRT.UserRepresentation.Voice
             else
                 Debug.LogError("{Name()}: No Microphones detected.");
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
 
             double statsTotalUpdates;
-            double statsTotalSamplesInInputBuffer;
+            double statsTotalTimeInInputBuffer;
+            double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(int samplesInInputBuffer, bool dropped)
+            public void statsUpdate(double timeInInputBuffer, bool dropped, ulong queuedDuration)
             {
 
                 statsTotalUpdates += 1;
-                statsTotalSamplesInInputBuffer += samplesInInputBuffer;
+                statsTotalTimeInInputBuffer += timeInInputBuffer;
+                statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsDrops++;
 
                 if (ShouldOutput())
                 {
-                    double samplesInBufferAverage = statsTotalSamplesInInputBuffer / statsTotalUpdates;
-                    double timeInBufferAverage = samplesInBufferAverage / VoiceReader.wantedOutputSampleRate;
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_samples={(int)samplesInBufferAverage}, record_latency_ms={(int)(timeInBufferAverage * 1000)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalUpdates = 0;
-                    statsTotalSamplesInInputBuffer = 0;
+                    statsTotalTimeInInputBuffer = 0;
+                    statsTotalQueuedDuration = 0;
                     statsDrops = 0;
                 }
             }

@@ -21,14 +21,12 @@ namespace VRT.Video
         VideoFilter RGBA2RGBFilter;
 
 
-        QueueThreadSafe inVideoQueue;
         QueueThreadSafe inAudioQueue;
 
         public int videFrameSize;
 
-        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(WorkerType.End)
+        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(_inVideoQueue)
         {
-            inVideoQueue = _inVideoQueue;
             inAudioQueue = _inAudioQueue;
 
             audioBufferSize = 24000 * 8;
@@ -63,10 +61,10 @@ namespace VRT.Video
         {
             bool didReadData = false;
             base.Update();
-            if (inVideoQueue != null && inVideoQueue._CanDequeue())
+            if (InQueue != null && InQueue._CanDequeue())
             {
                 didReadData = true;
-                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
+                NativeMemoryChunk mc = (NativeMemoryChunk)InQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
                 if (videoBufferSize == 0)
@@ -80,7 +78,7 @@ namespace VRT.Video
                 {
                     lock (this)
                     {
-                        mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                        mc = (NativeMemoryChunk)InQueue.Dequeue();
                         if (writeVideoPosition + len < videoBufferSize)
                         {
                             Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);

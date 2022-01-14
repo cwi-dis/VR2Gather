@@ -46,33 +46,36 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            
+            string audioCodec = Config.Instance.audioCodec;
+            bool audioIsEncoded = audioCodec == "VR2A";
+
+            preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
+            QueueThreadSafe _readerOutputQueue = preparerQueue;
+            if (audioIsEncoded)
+            {
+                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
+                codec = new VoiceDecoder(decoderQueue, preparerQueue);
+                _readerOutputQueue = decoderQueue;
+            }
 
             if (proto == Config.ProtocolType.Dash)
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
-                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _streamNumber, "VR2a", decoderQueue);
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
-                codec = new VoiceDecoder(decoderQueue, preparerQueue);
+                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
             }
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, true);
-                reader = new BaseTCPReader(user.userData.userAudioUrl, "VR2a", preparerQueue);
+                reader = new BaseTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
             }
             else
             {
-                decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
-                reader = new SocketIOReader(user, _streamName, "VR2a", decoderQueue);
-                preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
-                codec = new VoiceDecoder(decoderQueue, preparerQueue);
+                reader = new SocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
             }
 
             
-            preparer = new VoicePreparer(preparerQueue);//, optimalAudioBufferSize);
+            preparer = new VoicePreparer(preparerQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-            // xxxjack should set Synchronizer here
+            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
         }
 
         private void Update()
@@ -108,10 +111,10 @@ namespace VRT.UserRepresentation.Voice
                     data[i] += tmpBuffer[i / channels];
                 }
                 
-                stats.statsUpdate(preparer.currentTimestamp, preparer.currentQueueSize, true);
+                stats.statsUpdate(data.Length, preparer.currentTimestamp, preparer.getQueueDuration(), true);
             } else
             {
-                stats.statsUpdate(0, 0, false);
+                stats.statsUpdate(0, 0, 0, false);
             }
         }
 
@@ -125,16 +128,17 @@ namespace VRT.UserRepresentation.Voice
             public Stats(string name) : base(name) { }
 
             double statsTotalAudioframeCount = 0;
+            double statsTotalAudioSamples = 0;
             double statsTotalUnavailableCount = 0;
             double statsTotalLatency = 0;
-            int maxQueueSize = 0;
-            int minQueueSize = 99999;
+            double statsTotalQueueDuration = 0;
 
-            public void statsUpdate(ulong timestamp, int queueSize, bool fresh)
+            public void statsUpdate(int nSamples, ulong timestamp, ulong queueDuration, bool fresh)
             {
                 if (fresh)
                 {
                     statsTotalAudioframeCount++;
+                    statsTotalAudioSamples += nSamples;
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     long now = (long)sinceEpoch.TotalMilliseconds;
                     long latency = now - (long)timestamp;
@@ -142,23 +146,23 @@ namespace VRT.UserRepresentation.Voice
                 } else
                 {
                     statsTotalUnavailableCount++;
-                    return; //backport candidate
+                    // return; //backport candidate
                 }
-                if (queueSize > maxQueueSize) maxQueueSize = queueSize;
-                if (queueSize < minQueueSize) minQueueSize = queueSize;
-
+                statsTotalQueueDuration += queueDuration;
+            
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount))}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, max_queuesize={maxQueueSize}, min_queuesize={minQueueSize}, timestamp={timestamp}");
+                    double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
+                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / factor)}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalAudioframeCount = 0;
+                    statsTotalAudioSamples = 0;
                     statsTotalUnavailableCount = 0;
                     statsTotalLatency = 0;
-                    maxQueueSize = 0;
-                    minQueueSize = 99999;
+                    statsTotalQueueDuration = 0;
                 }
             }
         }

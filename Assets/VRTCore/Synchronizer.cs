@@ -14,6 +14,8 @@ namespace VRT.Core
         public int latencyCatchup = 0;
         [Tooltip("Minimum preferred playout latency")]
         public long minPreferredLatency = 0;
+        [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
+        public bool acceptDesyncOnDataUnavailable = false;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
         ulong availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
@@ -68,14 +70,25 @@ namespace VRT.Core
             //
             // Check whether the ranges are disjunct.
             //
-            if (earliestFrameTimestamp > availableIntervalEnd ||
-                latestFrameTimestamp < availableIntervalBegin)
+            bool rangeTooNew = earliestFrameTimestamp > availableIntervalEnd;
+            bool rangeTooOld = latestFrameTimestamp < availableIntervalBegin;
+            if (rangeTooNew || rangeTooOld)
             {
-                Debug.Log($"{Name()}: disjunct timestamp ranges [{earliestFrameTimestamp}..{latestFrameTimestamp}] had [{availableIntervalBegin}..{availableIntervalEnd}]");
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+                string problem = rangeTooNew ? "new" : "old";
+                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{(long)earliestFrameTimestamp-utcMillisForCurrentFrame}..{(long)latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{(long)availableIntervalBegin - utcMillisForCurrentFrame}..{(long)availableIntervalEnd - utcMillisForCurrentFrame}]");
                 // xxxjack decide which one to keep: the earliest or the latest range....
                 // keeping the latest range should cause "best progress".
                 // keeping the earliest should cause "quickest sync".
                 // For now we do nothing, just keeping the old one, which is random.
+                if (rangeTooOld && !acceptDesyncOnDataUnavailable)
+                {
+                    // This pipeline hasn't received the correct packets yet.
+                    // We make all other streams wait for this stream.
+                    availableIntervalBegin = earliestFrameTimestamp;
+                    availableIntervalEnd = latestFrameTimestamp;
+                }
                 return;
             }
             //
@@ -137,6 +150,7 @@ namespace VRT.Core
 
             stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
         }
+
         public ulong GetBestTimestampForCurrentFrame()
         {
             _Reset();

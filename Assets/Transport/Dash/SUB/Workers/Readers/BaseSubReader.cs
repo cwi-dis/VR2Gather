@@ -6,7 +6,7 @@ namespace VRT.Transport.Dash
 {
     public class BaseReader : BaseWorker
     {
-        public BaseReader(WorkerType _type = WorkerType.Run) : base(_type) { }
+        public BaseReader() : base() { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
         }
@@ -229,7 +229,7 @@ namespace VRT.Transport.Dash
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base(WorkerType.Init)
+        protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base()
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
