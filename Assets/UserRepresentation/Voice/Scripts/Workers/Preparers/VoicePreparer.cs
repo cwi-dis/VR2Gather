@@ -11,6 +11,7 @@ namespace VRT.UserRepresentation.Voice
         public ulong currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
+        float[] audioBuffer;
         bool readNextFrameWhenNeeded = true;
         // We should _not_ drop audio frames if they are in the past, but could still be
         // considered part of the current visual frame. Otherwise, we may end up dropping one
@@ -111,45 +112,75 @@ namespace VRT.UserRepresentation.Voice
             return true;
         }
 
+        int _fillFromAudioBuffer(float[] dst, int position, int len)
+        {
+            // If the buffer is empty we do nothing.
+            if (audioBuffer == null) return 0;
+            // If the buffer has no more samples than what we want we copy everything
+            // and delete the buffer
+            if (audioBuffer.Length <= len)
+            {
+                int copyCount = audioBuffer.Length;
+                System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
+                audioBuffer = null;
+                return copyCount;
+            }
+            // If the buffer has more samples we copy what we need and keep the rest.
+            System.Array.Copy(audioBuffer, 0, dst, 0, len);
+            int remaining = audioBuffer.Length - len;
+            float[] leftOver = new float[remaining];
+            System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
+            audioBuffer = leftOver;
+            return len;
+        }
+
+        bool _fillIntoAudioBuffer()
+        {
+            if (audioBuffer != null)
+            {
+                Debug.LogError($"{Name()}: Programmer error: __fillIntoAudioBuffer() called while audioBuffer is not empty");
+                return true;
+            }
+            if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
+            if (currentAudioFrame == null) return false;
+            currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+            if (currentAudioFrame is FloatMemoryChunk)
+            {
+                var _frame = ((FloatMemoryChunk)currentAudioFrame);
+                int availableLen = _frame.elements;
+                audioBuffer = new float[availableLen];
+                System.Array.Copy(_frame.buffer, 0, audioBuffer, 0, availableLen);
+            }
+            else
+            {
+                int availableLen = currentAudioFrame.length / sizeof(float);
+                audioBuffer = new float[availableLen];
+                System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, audioBuffer, 0, availableLen);
+            }
+            currentAudioFrame.free();
+            currentAudioFrame = null;
+            return true;
+        }
+
         public bool GetAudioBuffer(float[] dst, int len)
         {
             lock(this)
             {
                 if (InQueue.IsClosed()) return false;
-                if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
-                if (currentAudioFrame == null) return false;
-                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-                currentQueueSize = InQueue._Count;
-                if (currentAudioFrame is FloatMemoryChunk)
+                int position = 0;
+                _fillIntoAudioBuffer();
+                while (len > 0)
                 {
-                    var _frame = ((FloatMemoryChunk)currentAudioFrame);
-                    int availableLen = _frame.elements;
-                    if (availableLen < len)
+                    int curLen = _fillFromAudioBuffer(dst, position, len);
+                    // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
+                    if (curLen == 0)
                     {
-                        Debug.Log($"{Name()}: {len} samples wanted but only {availableLen} in frame. Adding zeroes.");
-                        len = availableLen;
-                    } else if (availableLen > len)
-                    {
-                        Debug.Log($"{Name()}: {len} samples wanted but {availableLen} is frame. Remainder dropped.");
+                        Debug.Log($"{Name()}: inserted {len} zero samples");
+                        return (position != 0);
                     }
-                    System.Array.Copy(_frame.buffer, 0, dst, 0, len);
+                    position += curLen;
+                    len -= curLen;
                 }
-                else
-                {
-                    int availableLen = currentAudioFrame.length / 4;
-                    if (availableLen < len)
-                    {
-                        Debug.Log($"{Name()}: {len} samples wanted but only {availableLen} in frame. Adding zeroes.");
-                        len = availableLen;
-                    }
-                    else if (availableLen > len)
-                    {
-                        Debug.Log($"{Name()}: {len} samples wanted but {availableLen} is frame. Remainder dropped.");
-                    }
-                    System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, dst, 0, len);
-                }
-                currentAudioFrame.free();
-                currentAudioFrame = null;
                 return true;
             }
         }
