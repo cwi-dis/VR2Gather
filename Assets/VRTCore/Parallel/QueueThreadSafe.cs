@@ -33,6 +33,11 @@ namespace VRT.Core
             isClosed = new CancellationTokenSource();
         }
 
+        public string Name()
+        {
+            return name;
+        }
+
         // Close the queue for further pushes, signals to consumers that we are about to stop
         public void Close()
         {

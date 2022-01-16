@@ -68,7 +68,7 @@ namespace VRT.UserRepresentation.Voice
                 // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
                 // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (InQueue.IsClosed()) return false; // We are shutting down
-                  return _FillAudioFrame(bestTimestamp);
+                return _FillAudioFrame(bestTimestamp);
             }
          }
 
@@ -77,15 +77,22 @@ namespace VRT.UserRepresentation.Voice
             int dropCount = 0;
             while(true)
             {
+                if (currentAudioFrame != null)
+                {
+                    Debug.LogError($"{Name()}: _fillAudioFrame called, but currentAudioFrame is not null");
+                    currentAudioFrame.free();
+                    currentAudioFrame = null;
+                }
                 currentAudioFrame = InQueue.TryDequeue(0);
                 if (currentAudioFrame == null) {
-                    if (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0)
+                    if (true || (synchronizer != null && synchronizer.debugSynchronizer && currentTimestamp != 0))
                     {
                         Debug.Log($"{Name()}: no audio frame available");
                     }
                     stats.statsUpdate(dropCount, true);
                     return false;
                 }
+                Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
                     currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
@@ -93,7 +100,7 @@ namespace VRT.UserRepresentation.Voice
                     if (trySkipForward)
                     {
                         bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
-                        // Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                        Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
                         if (canDrop)
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
@@ -123,6 +130,7 @@ namespace VRT.UserRepresentation.Voice
                 int copyCount = audioBuffer.Length;
                 System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
                 audioBuffer = null;
+                Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
             // If the buffer has more samples we copy what we need and keep the rest.
@@ -131,32 +139,30 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
+            Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
 
-        bool _fillIntoAudioBuffer()
+        bool _fillIntoAudioBuffer(bool optional)
         {
             if (audioBuffer != null)
             {
-                Debug.LogError($"{Name()}: Programmer error: __fillIntoAudioBuffer() called while audioBuffer is not empty");
+                if (!optional)
+                {
+                    Debug.LogError($"{Name()}: Programmer error: _fillIntoAudioBuffer() called while audioBuffer is not empty");
+                }
                 return true;
             }
             if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
             if (currentAudioFrame == null) return false;
             currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-            if (currentAudioFrame is FloatMemoryChunk)
+            int availableLen = currentAudioFrame.length / sizeof(float);
+            if (availableLen*sizeof(float) != currentAudioFrame.length)
             {
-                var _frame = ((FloatMemoryChunk)currentAudioFrame);
-                int availableLen = _frame.elements;
-                audioBuffer = new float[availableLen];
-                System.Array.Copy(_frame.buffer, 0, audioBuffer, 0, availableLen);
+                Debug.LogError($"{Name()}: frame contains {currentAudioFrame.length} bytes which is not {availableLen} floats");
             }
-            else
-            {
-                int availableLen = currentAudioFrame.length / sizeof(float);
-                audioBuffer = new float[availableLen];
-                System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, audioBuffer, 0, availableLen);
-            }
+            audioBuffer = new float[availableLen];
+            System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, audioBuffer, 0, availableLen);
             currentAudioFrame.free();
             currentAudioFrame = null;
             return true;
@@ -167,20 +173,26 @@ namespace VRT.UserRepresentation.Voice
             lock(this)
             {
                 if (InQueue.IsClosed()) return false;
+                Debug.Log($"{Name()}: xxxjack getAudioBuffer({len}");
                 int position = 0;
-                _fillIntoAudioBuffer();
+                _fillIntoAudioBuffer(true);
                 while (len > 0)
                 {
                     int curLen = _fillFromAudioBuffer(dst, position, len);
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        Debug.Log($"{Name()}: inserted {len} zero samples");
+                        Debug.Log($"{Name()}: getAudioBuffer: inserted {len} zero samples, done={position != 0}");
                         return (position != 0);
                     }
                     position += curLen;
                     len -= curLen;
+                    if (len > 0)
+                    {
+                        _fillIntoAudioBuffer(false);
+                    }
                 }
+                Debug.Log($"{Name()}: getAudioBuffer: done=true");
                 return true;
             }
         }
