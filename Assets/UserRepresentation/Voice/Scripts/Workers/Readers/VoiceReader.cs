@@ -48,6 +48,7 @@ namespace VRT.UserRepresentation.Voice
         int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
+        ToneGenerator debugToneGenerator = null; // Debug: add a tone to the microphone signal
 
         int wantedSampleRate;
         
@@ -78,6 +79,7 @@ namespace VRT.UserRepresentation.Voice
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
+            debugToneGenerator = new ToneGenerator();
             wantedSampleRate = _sampleRate;
             bufferLength = wantedSampleRate / _fps;
             if (_minBufferSize > 0 && bufferLength % _minBufferSize != 0)
@@ -140,6 +142,7 @@ namespace VRT.UserRepresentation.Voice
                                     mc.buffer[i] = readBuffer[(int)idx];
                                     idx += inc;
                                 }
+                                if (debugToneGenerator != null) debugToneGenerator.addTone(mc.buffer);
                                 readPosition = (readPosition + bufferLength) % recorderBufferSize;
                                 available -= bufferLength;
                                 mc.info = new FrameInfo();
@@ -201,5 +204,24 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+    }
+
+    public class ToneGenerator
+    {
+        float position = 0;
+        const float factor = 0.6f;
+        const float sampleFrequency = 48000f;
+        const float toneFrequency = 440f;
+
+        public ToneGenerator() { }
+
+        public void addTone(float[] buffer)
+        {
+            for(int i=0; i<buffer.Length; i++)
+            {
+                buffer[i] += Mathf.Sin(position) * factor;
+                position += 2 * Mathf.PI / (sampleFrequency / toneFrequency);
+            }
+        }
     }
 }
