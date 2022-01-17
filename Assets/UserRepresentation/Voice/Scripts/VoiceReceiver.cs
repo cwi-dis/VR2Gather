@@ -11,6 +11,14 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceReceiver : MonoBehaviour
     {
+        //
+        // Debug code to test what is going wrong with audio.
+        // Setting debugReplaceByTone will replace all incoming audio data with a 440Hz tone
+        // Setting debugAddTone will add the tone.
+        const bool debugReplaceByTone = false;
+        const bool debugAddTone = false;
+        ToneGenerator debugToneGenerator = null;
+
         BaseReader reader;
         BaseWorker codec;
         VoicePreparer preparer;
@@ -32,6 +40,10 @@ namespace VRT.UserRepresentation.Voice
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber, Config.ProtocolType proto)
         {
+            if (debugAddTone || debugReplaceByTone)
+            {
+                debugToneGenerator = new ToneGenerator();
+            }
             stats = new Stats(Name());
             if (synchronizer == null)
             {
@@ -80,6 +92,10 @@ namespace VRT.UserRepresentation.Voice
 
         public void Init(User user, QueueThreadSafe queue)
         {
+            if (debugAddTone || debugReplaceByTone)
+            {
+                debugToneGenerator = new ToneGenerator();
+            }
             stats = new Stats(Name());
             if (synchronizer == null)
             {
@@ -139,11 +155,19 @@ namespace VRT.UserRepresentation.Voice
             if (tmpBuffer == null) tmpBuffer = new float[data.Length/channels];
             if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
             {
-                for(int i=0; i<data.Length; i++)
+                if (debugReplaceByTone)
+                {
+                    for (int i = 0; i < tmpBuffer.Length; i++) tmpBuffer[i] = 0;
+                    for (int i = 0; i < data.Length; i++) data[i] = 0;
+                }
+                if (debugAddTone || debugReplaceByTone)
+                {
+                    debugToneGenerator.addTone(tmpBuffer);
+                }
+                for (int i=0; i<data.Length; i++)
                 {
                     data[i] += tmpBuffer[i / channels];
                 }
-                
                 stats.statsUpdate(data.Length, preparer.currentTimestamp, preparer.getQueueDuration(), true);
             } else
             {

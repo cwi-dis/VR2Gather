@@ -7,6 +7,13 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceReader : BaseWorker
     {
+        //
+        // For debugging we can add a 440Hz tone to the microphone signal by setting this
+        // value to true.
+        //
+        const bool debugAddTone = false;
+        ToneGenerator debugToneGenerator = null;
+
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
@@ -48,7 +55,6 @@ namespace VRT.UserRepresentation.Voice
         int recorderBufferSize;
         int bufferLength;
         AudioClip recorder;
-        ToneGenerator debugToneGenerator = null; // Debug: add a tone to the microphone signal
 
         int wantedSampleRate;
         
@@ -64,11 +70,11 @@ namespace VRT.UserRepresentation.Voice
                 ac.dspBufferSize = _bufferSize;
                 AudioSettings.Reset(ac);
                 ac = AudioSettings.GetConfiguration();
-                if (ac.sampleRate != _sampleRate)
+                if (ac.sampleRate != _sampleRate && _sampleRate != 0)
                 {
                     Debug.LogError($"Audio output sample rate is {ac.sampleRate} in stead of {_sampleRate}. Other participants may sound funny.");
                 }
-                if (ac.dspBufferSize != _bufferSize)
+                if (ac.dspBufferSize != _bufferSize && _bufferSize != 0)
                 {
                     Debug.LogWarning($"PrepareDSP: audio output buffer is {ac.dspBufferSize} in stead of {_bufferSize}");
                 }
@@ -79,7 +85,11 @@ namespace VRT.UserRepresentation.Voice
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
-            debugToneGenerator = new ToneGenerator();
+            if (debugAddTone)
+            {
+                debugToneGenerator = new ToneGenerator();
+                Debug.LogWarning($"{Name()}: Adding 440Hz tone to microphone signal");
+            }
             wantedSampleRate = _sampleRate;
             bufferLength = wantedSampleRate / _fps;
             if (_minBufferSize > 0 && bufferLength % _minBufferSize != 0)
@@ -96,7 +106,7 @@ namespace VRT.UserRepresentation.Voice
             PrepareDSP(wantedSampleRate, bufferLength);
             if (Microphone.devices.Length > 0)
             {
-                if (deviceName == null) deviceName = Microphone.devices[0];
+                if (deviceName == null || deviceName == "") deviceName = Microphone.devices[0];
                 int currentMinFreq;
                 int currentMaxFreq;
                 Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
@@ -110,10 +120,14 @@ namespace VRT.UserRepresentation.Voice
                 {
                     Debug.LogError($"VoiceReader: Incorrect clip size {recorderBufferSize} for buffer size {bufferLength}");
                 }
+                if (recorder.channels != 1)
+                {
+                    Debug.LogWarning("{Name()}: Microphone has {recorder.channels} channels, not supported");
+                }
                 float inc = 1; // was: recorderBufferSize / 16000f;
                 int neededBufferLength = (int)(bufferLength * inc);
                 float[] readBuffer = new float[neededBufferLength];
-                Debug.Log($"{Name()}: Using {deviceName}  Frequency {recorderBufferSize} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
+                Debug.Log($"{Name()}: Using {deviceName}  Channels {recorder.channels} Frequency {recorderBufferSize} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
 
                 int readPosition = 0;
 
