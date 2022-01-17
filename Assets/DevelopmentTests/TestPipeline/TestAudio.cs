@@ -18,7 +18,7 @@ public class TestAudio : MonoBehaviour
     {
         foreach(var d in Microphone.devices)
         {
-            Debug.Log($"Device name: {d}");
+            Debug.Log($"Supported audio input device name: {d}");
         }
         user = new User();
         user.userId = "testAudioUser";
