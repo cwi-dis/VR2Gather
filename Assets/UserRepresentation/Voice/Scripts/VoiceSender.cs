@@ -77,6 +77,48 @@ namespace VRT.UserRepresentation.Voice
             BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer={writer.Name()}");
         }
 
+        public void Init(User user, QueueThreadSafe queue)
+        {
+            string micro = null;
+            if (user != null && user.userData != null)
+                micro = user.userData.microphoneName;
+            int minBufferSize = 0;
+            if (micro == "None")
+            {
+                Debug.LogError("VoiceSender: no microphone, other participants will not hear you");
+                return;
+            }
+
+            string audioCodec = Config.Instance.audioCodec;
+            bool audioIsEncoded = audioCodec == "VR2A";
+
+            QueueThreadSafe _readerOutputQueue = null;
+            if (audioIsEncoded)
+            {
+                encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
+                senderQueue = queue;
+                codec = new VoiceEncoder(encoderQueue, senderQueue);
+                minBufferSize = codec.minSamplesPerFrame;
+                _readerOutputQueue = encoderQueue;
+            }
+            else
+            {
+                encoderQueue = null;
+                codec = null;
+                senderQueue = queue;
+                _readerOutputQueue = senderQueue;
+            }
+
+            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.audioFps, minBufferSize, this, _readerOutputQueue);
+            int audioSamplesPerPacket = reader.getBufferSize();
+            if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
+            {
+                Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
+            }
+
+            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+        }
+
         void OnDestroy()
         {
             reader?.Stop();

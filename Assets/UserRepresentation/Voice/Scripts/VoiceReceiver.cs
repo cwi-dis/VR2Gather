@@ -72,8 +72,41 @@ namespace VRT.UserRepresentation.Voice
                 reader = new SocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
             }
 
-            
+
             preparer = new VoicePreparer(preparerQueue);
+            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
+            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
+        }
+
+        public void Init(User user, QueueThreadSafe queue)
+        {
+            stats = new Stats(Name());
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<Synchronizer>();
+            }
+            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AudioSource audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.spatialize = true;
+            audioSource.spatialBlend = 1.0f;
+            audioSource.minDistance = 4f;
+            audioSource.maxDistance = 100f;
+            audioSource.loop = true;
+            audioSource.Play();
+
+            string audioCodec = Config.Instance.audioCodec;
+            bool audioIsEncoded = audioCodec == "VR2A";
+
+            preparerQueue = null;
+            QueueThreadSafe _readerOutputQueue = queue;
+            if (audioIsEncoded)
+            {
+                preparerQueue = new QueueThreadSafe("voicePreparer", 4, true);
+                codec = new VoiceDecoder(queue, preparerQueue);
+                _readerOutputQueue = preparerQueue;
+            }
+
+            preparer = new VoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
             BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
         }
