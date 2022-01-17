@@ -92,10 +92,10 @@ namespace VRT.UserRepresentation.Voice
                     stats.statsUpdate(dropCount, true);
                     return false;
                 }
+                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
                 Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
-                    currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
                     bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                     if (trySkipForward)
                     {
@@ -155,7 +155,6 @@ namespace VRT.UserRepresentation.Voice
             }
             if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
             if (currentAudioFrame == null) return false;
-            currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
             int availableLen = currentAudioFrame.length / sizeof(float);
             if (availableLen*sizeof(float) != currentAudioFrame.length)
             {
