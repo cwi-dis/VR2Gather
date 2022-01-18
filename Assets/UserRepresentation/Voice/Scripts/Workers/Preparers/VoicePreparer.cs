@@ -7,7 +7,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoicePreparer : BasePreparer
     {
-        
+        const bool debugBuffering = false;
         public ulong currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
@@ -93,14 +93,14 @@ namespace VRT.UserRepresentation.Voice
                     return false;
                 }
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
-                Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
+                if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
                     bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                     if (trySkipForward)
                     {
                         bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
-                        Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
                         if (canDrop)
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
@@ -130,7 +130,7 @@ namespace VRT.UserRepresentation.Voice
                 int copyCount = audioBuffer.Length;
                 System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
                 audioBuffer = null;
-                Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
+                if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
             // If the buffer has more samples we copy what we need and keep the rest.
@@ -139,7 +139,7 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
-            Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
+            if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
 
@@ -167,12 +167,12 @@ namespace VRT.UserRepresentation.Voice
             return true;
         }
 
-        public bool GetAudioBuffer(float[] dst, int len)
+        public int GetAudioBuffer(float[] dst, int len)
         {
             lock(this)
             {
-                if (InQueue.IsClosed()) return false;
-                Debug.Log($"{Name()}: xxxjack getAudioBuffer({len}");
+                if (InQueue.IsClosed()) return len;
+                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
                 int position = 0;
                 _fillIntoAudioBuffer(true);
                 while (len > 0)
@@ -181,8 +181,8 @@ namespace VRT.UserRepresentation.Voice
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        Debug.Log($"{Name()}: getAudioBuffer: inserted {len} zero samples, done={position != 0}");
-                        return (position != 0);
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples, done={position != 0}");
+                        return len;
                     }
                     position += curLen;
                     len -= curLen;
@@ -191,8 +191,8 @@ namespace VRT.UserRepresentation.Voice
                         _fillIntoAudioBuffer(false);
                     }
                 }
-                Debug.Log($"{Name()}: getAudioBuffer: done=true");
-                return true;
+                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
+                return len;
             }
         }
 

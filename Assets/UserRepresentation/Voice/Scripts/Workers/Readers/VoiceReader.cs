@@ -11,7 +11,7 @@ namespace VRT.UserRepresentation.Voice
         // For debugging we can add a 440Hz tone to the microphone signal by setting this
         // value to true.
         //
-        const bool debugAddTone = false;
+        const bool debugAddTone = true;
         ToneGenerator debugToneGenerator = null;
 
         Coroutine coroutine;
@@ -203,7 +203,7 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, saples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, samples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}");
                 }
                 if (ShouldClear())
                 {

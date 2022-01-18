@@ -152,27 +152,29 @@ namespace VRT.UserRepresentation.Voice
         float[] tmpBuffer;
         void OnAudioFilterRead(float[] data, int channels)
         {
-            if (tmpBuffer == null) tmpBuffer = new float[data.Length/channels];
-            if (preparer != null && preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length))
+            if (preparer == null)
             {
-                if (debugReplaceByTone)
-                {
-                    for (int i = 0; i < tmpBuffer.Length; i++) tmpBuffer[i] = 0;
-                    for (int i = 0; i < data.Length; i++) data[i] = 0;
-                }
-                if (debugAddTone || debugReplaceByTone)
-                {
-                    debugToneGenerator.addTone(tmpBuffer);
-                }
-                for (int i=0; i<data.Length; i++)
-                {
-                    data[i] += tmpBuffer[i / channels];
-                }
-                stats.statsUpdate(data.Length, preparer.currentTimestamp, preparer.getQueueDuration(), true);
-            } else
-            {
-                stats.statsUpdate(0, 0, 0, false);
+                return;
             }
+            if (tmpBuffer == null)
+            {
+                tmpBuffer = new float[data.Length / channels];
+            }
+            int nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
+            if (debugReplaceByTone)
+            {
+                for (int i = 0; i < tmpBuffer.Length; i++) tmpBuffer[i] = 0;
+                for (int i = 0; i < data.Length; i++) data[i] = 0;
+            }
+            if (debugAddTone || debugReplaceByTone)
+            {
+                debugToneGenerator.addTone(tmpBuffer);
+            }
+            for (int i=0; i<data.Length; i++)
+            {
+                data[i] += tmpBuffer[i / channels];
+            }
+            stats.statsUpdate(data.Length, nZeroSamplesInserted, preparer.currentTimestamp, preparer.getQueueDuration());
         }
 
         public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -186,38 +188,37 @@ namespace VRT.UserRepresentation.Voice
 
             double statsTotalAudioframeCount = 0;
             double statsTotalAudioSamples = 0;
-            double statsTotalUnavailableCount = 0;
+            double statsTotalAudioZeroSamples = 0;
+            int statsZeroInsertionCount = 0;
             double statsTotalLatency = 0;
             double statsTotalQueueDuration = 0;
 
-            public void statsUpdate(int nSamples, ulong timestamp, ulong queueDuration, bool fresh)
+            public void statsUpdate(int nSamples, int nZeroSamples, ulong timestamp, ulong queueDuration)
             {
-                if (fresh)
-                {
-                    statsTotalAudioframeCount++;
-                    statsTotalAudioSamples += nSamples;
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    long now = (long)sinceEpoch.TotalMilliseconds;
-                    long latency = now - (long)timestamp;
-                    statsTotalLatency += latency;
-                } else
-                {
-                    statsTotalUnavailableCount++;
-                    // return; //backport candidate
-                }
+                
+                statsTotalAudioframeCount++;
+                statsTotalAudioSamples += nSamples;
+                statsTotalAudioZeroSamples += nZeroSamples;
+                if (nZeroSamples > 0) statsZeroInsertionCount++;
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long now = (long)sinceEpoch.TotalMilliseconds;
+                long latency = now - (long)timestamp;
+                statsTotalLatency += latency;
+            
                 statsTotalQueueDuration += queueDuration;
             
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
-                    Output($"fps={statsTotalAudioframeCount / Interval():F2}, latency_ms={(int)(statsTotalLatency / factor)}, fps_nodata={statsTotalUnavailableCount / Interval():F2}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, timestamp={timestamp}");
+                    Output($"latency_ms={(int)(statsTotalLatency / factor)}, fps_output={statsTotalAudioframeCount / Interval():F2} fps_dropout={statsZeroInsertionCount / Interval():F2}, dropout_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, dropout_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalAudioframeCount = 0;
                     statsTotalAudioSamples = 0;
-                    statsTotalUnavailableCount = 0;
+                    statsTotalAudioZeroSamples = 0;
+                    statsZeroInsertionCount = 0;
                     statsTotalLatency = 0;
                     statsTotalQueueDuration = 0;
                 }
