@@ -174,7 +174,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 data[i] += tmpBuffer[i / channels];
             }
-            stats.statsUpdate(data.Length, nZeroSamplesInserted, preparer.currentTimestamp, preparer.getQueueDuration());
+            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.currentTimestamp, preparer.getQueueDuration());
         }
 
         public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -210,7 +210,7 @@ namespace VRT.UserRepresentation.Voice
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
-                    Output($"latency_ms={(int)(statsTotalLatency / factor)}, fps_output={statsTotalAudioframeCount / Interval():F2} fps_dropout={statsZeroInsertionCount / Interval():F2}, dropout_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, dropout_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, timestamp={timestamp}");
+                    Output($"latency_ms={(int)(statsTotalLatency / factor)}, fps_output={statsTotalAudioframeCount / Interval():F2}, fps_dropout={statsZeroInsertionCount / Interval():F2}, dropout_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, dropout_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, output_freq={statsTotalAudioSamples/Interval():F2}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
