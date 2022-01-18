@@ -11,7 +11,8 @@ namespace VRT.UserRepresentation.Voice
         // For debugging we can add a 440Hz tone to the microphone signal by setting this
         // value to true.
         //
-        const bool debugAddTone = true;
+        const bool debugReplaceByTone = false;
+        const bool debugAddTone = false;
         ToneGenerator debugToneGenerator = null;
 
         Coroutine coroutine;
@@ -23,13 +24,13 @@ namespace VRT.UserRepresentation.Voice
             outQueue = _outQueue;
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName, sampleRate, fps, minBufferSize));
-            Debug.Log($"{Name()}: Started bufferLength {bufferLength}.");
+            Debug.Log($"{Name()}: Started bufferLength {nSamplesPerPacket}.");
             Start();
         }
 
         public int getBufferSize()
         {
-            return bufferLength;
+            return nSamplesPerPacket;
         }
 
         long sampleTimestamp(int nSamplesInInputBuffer)
@@ -52,8 +53,8 @@ namespace VRT.UserRepresentation.Voice
         }
 
         string device;
-        int recorderBufferSize;
-        int bufferLength;
+        int nSamplesInCircularBuffer;
+        int nSamplesPerPacket;
         AudioClip recorder;
 
         int wantedSampleRate;
@@ -85,25 +86,25 @@ namespace VRT.UserRepresentation.Voice
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
-            if (debugAddTone)
+            if (debugAddTone || debugReplaceByTone)
             {
                 debugToneGenerator = new ToneGenerator();
                 Debug.LogWarning($"{Name()}: Adding 440Hz tone to microphone signal");
             }
             wantedSampleRate = _sampleRate;
-            bufferLength = wantedSampleRate / _fps;
-            if (_minBufferSize > 0 && bufferLength % _minBufferSize != 0)
+            nSamplesPerPacket = wantedSampleRate / _fps;
+            if (_minBufferSize > 0 && nSamplesPerPacket % _minBufferSize != 0)
             {
                 // Round up to a multiple of _minBufferSize
-                bufferLength = ((bufferLength + _minBufferSize - 1) / _minBufferSize) * _minBufferSize;
-                float actualFps = (float)wantedSampleRate / bufferLength;
-                Debug.LogWarning($"{Name()}: adapted bufferSize={bufferLength}, fps={actualFps}");
+                nSamplesPerPacket = ((nSamplesPerPacket + _minBufferSize - 1) / _minBufferSize) * _minBufferSize;
+                float actualFps = (float)wantedSampleRate / nSamplesPerPacket;
+                Debug.LogWarning($"{Name()}: adapted bufferSize={nSamplesPerPacket}, fps={actualFps}");
             }
-            if (wantedSampleRate % bufferLength != 0)
+            if (wantedSampleRate % nSamplesPerPacket != 0)
             {
                 Debug.LogWarning($"{Name()}: non-integral number of buffers per second. This may not work.");
             }
-            PrepareDSP(wantedSampleRate, bufferLength);
+            PrepareDSP(wantedSampleRate, nSamplesPerPacket);
             if (Microphone.devices.Length > 0)
             {
                 if (deviceName == null || deviceName == "") deviceName = Microphone.devices[0];
@@ -113,21 +114,25 @@ namespace VRT.UserRepresentation.Voice
                 // We record a looping clip of 1 second.
                 const int recorderBufferDuration = 1; 
                 recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
-                recorderBufferSize = recorder.samples * recorder.channels;
+                nSamplesInCircularBuffer = recorder.samples * recorder.channels;
                 // We expect the recorder clip to contain an integral number of
                 // buffers, because we are going to use it as a circular buffer.
-                if (recorderBufferSize % bufferLength != 0)
+                if (nSamplesInCircularBuffer % nSamplesPerPacket != 0)
                 {
-                    Debug.LogError($"VoiceReader: Incorrect clip size {recorderBufferSize} for buffer size {bufferLength}");
+                    Debug.LogError($"VoiceReader: Incorrect clip size {nSamplesInCircularBuffer} for buffer size {nSamplesPerPacket}");
                 }
                 if (recorder.channels != 1)
                 {
                     Debug.LogWarning("{Name()}: Microphone has {recorder.channels} channels, not supported");
                 }
+#if WITH_SAMPLERATE_ADAPTER
                 float inc = 1; // was: recorderBufferSize / 16000f;
-                int neededBufferLength = (int)(bufferLength * inc);
-                float[] readBuffer = new float[neededBufferLength];
-                Debug.Log($"{Name()}: Using {deviceName}  Channels {recorder.channels} Frequency {recorderBufferSize} bufferLength {bufferLength} IsRecording {Microphone.IsRecording(deviceName)} inc {inc}");
+                int nInputSamplesNeededPerPacket = (int)(nSamplesPerPacket * inc);
+#else
+                int nInputSamplesNeededPerPacket = nSamplesPerPacket;
+#endif
+                float[] readBuffer = new float[nInputSamplesNeededPerPacket];
+                Debug.Log($"{Name()}: Using {deviceName}  Channels {recorder.channels} Frequency {nSamplesInCircularBuffer} bufferLength {nSamplesPerPacket} IsRecording {Microphone.IsRecording(deviceName)}");
 
                 int readPosition = 0;
 
@@ -137,9 +142,9 @@ namespace VRT.UserRepresentation.Voice
                     {
                         int writePosition = Microphone.GetPosition(deviceName);
                         int available;
-                        if (writePosition < readPosition) available = recorderBufferSize - readPosition + writePosition;
+                        if (writePosition < readPosition) available = nSamplesInCircularBuffer - readPosition + writePosition;
                         else available = writePosition - readPosition;
-                        while (available >= neededBufferLength)
+                        while (available >= nInputSamplesNeededPerPacket)
                         {
                             if (!recorder.GetData(readBuffer, readPosition))
                             {
@@ -149,23 +154,25 @@ namespace VRT.UserRepresentation.Voice
                             // Write all data from microphone.
                             lock (outQueue)
                             {
-                                FloatMemoryChunk mc = new FloatMemoryChunk(bufferLength);
-                                float idx = 0;
-                                for (int i = 0; i < bufferLength; i++)
+                                FloatMemoryChunk mc = new FloatMemoryChunk(nSamplesPerPacket);
+                                _copyTo(readBuffer, mc.buffer);
+                                if (debugAddTone || debugReplaceByTone)
                                 {
-                                    mc.buffer[i] = readBuffer[(int)idx];
-                                    idx += inc;
+                                    if (debugReplaceByTone)
+                                    {
+                                        for (int i = 0; i < mc.buffer.Length; i++) mc.buffer[i] = 0;
+                                    }
+                                    debugToneGenerator.addTone(mc.buffer);
                                 }
-                                if (debugToneGenerator != null) debugToneGenerator.addTone(mc.buffer);
-                                readPosition = (readPosition + bufferLength) % recorderBufferSize;
-                                available -= bufferLength;
+                                readPosition = (readPosition + nSamplesPerPacket) % nSamplesInCircularBuffer;
+                                available -= nSamplesPerPacket;
                                 mc.info = new FrameInfo();
                                 // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
                                 double timeRemainingInBuffer = (double)available / wantedSampleRate;
                                 bool ok = outQueue.Enqueue(mc);
-                                stats.statsUpdate(timeRemainingInBuffer, bufferLength, !ok, outQueue.QueuedDuration());
+                                stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
                             }
                         }
                     }
@@ -176,6 +183,23 @@ namespace VRT.UserRepresentation.Voice
                         readPosition = 0;
                     }
                     yield return null;
+                }
+
+                void _copyTo(float[] inBuffer, float[] outBuffer)
+                {
+#if WITH_SAMPLERATE_ADAPTER
+                    float idx = 0;
+                    for (int i = 0; i < bufferLength; i++)
+                    {
+                        outBuffer[i] = inBuffer[(int)idx];
+                        idx += inc;
+                    }
+#else
+                    for (int i = 0; i < nSamplesPerPacket; i++)
+                    {
+                        outBuffer[i] = inBuffer[i];
+                    }
+#endif
                 }
             }
             else
