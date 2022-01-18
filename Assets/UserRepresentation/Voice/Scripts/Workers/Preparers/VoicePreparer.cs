@@ -89,7 +89,7 @@ namespace VRT.UserRepresentation.Voice
                     {
                         Debug.Log($"{Name()}: no audio frame available");
                     }
-                    stats.statsUpdate(dropCount, true);
+                    stats.statsUpdate(0, dropCount, true);
                     return false;
                 }
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
@@ -113,7 +113,8 @@ namespace VRT.UserRepresentation.Voice
                     }
 
                 }
-                stats.statsUpdate(dropCount, false);
+                int nSamples = currentAudioFrame.length / sizeof(float);
+                stats.statsUpdate(nSamples, dropCount, false);
                 break;
             }
             return true;
@@ -201,24 +202,27 @@ namespace VRT.UserRepresentation.Voice
             public Stats(string name) : base(name) { }
 
             double statsTotalUpdates;
+            double statsTotalSamples;
             double statsDrops;
             double statsNoData;
 
-            public void statsUpdate(int dropCount, bool noData)
+            public void statsUpdate(int nSamples, int dropCount, bool noData)
             {
 
                 statsTotalUpdates += 1;
+                statsTotalSamples += nSamples;
                 statsDrops += dropCount;
                 if (noData) statsNoData++;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={(int)(statsTotalSamples / statsTotalUpdates)}");
                  }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalUpdates = 0;
+                    statsTotalSamples = 0;
                     statsDrops = 0;
                     statsNoData = 0;
                 }
