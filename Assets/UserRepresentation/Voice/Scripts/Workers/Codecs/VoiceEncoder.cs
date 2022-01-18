@@ -1,5 +1,4 @@
-﻿#define USE_SPEEX
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -52,17 +51,13 @@ namespace VRT.UserRepresentation.Voice
             FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
             if (mcIn == null) return;
             if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
+
             var encodeStartTime = System.DateTime.Now;
-#if USE_SPEEX
             int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
             Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
-#else
-            int len = mcIn.elements;
-            NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
-            Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
-#endif
             ulong encodeDuration = (ulong)(System.DateTime.Now - encodeStartTime).TotalMilliseconds;
+
             mcOut.info.timestamp = mcIn.info.timestamp;
             if (outQueue.IsClosed())
             {
@@ -93,7 +88,7 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalUpdates)}, transmitted_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
