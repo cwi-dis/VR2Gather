@@ -124,7 +124,7 @@ namespace VRT.UserRepresentation.Voice
 
             preparer = new VoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
+            BaseStats.Output(Name(), $"encoded={audioIsEncoded}");
         }
 
         private void Update()
