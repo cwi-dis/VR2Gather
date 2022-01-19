@@ -92,6 +92,7 @@ namespace VRT.UserRepresentation.Voice
                     stats.statsUpdate(0, dropCount, true);
                     return false;
                 }
+                //ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.buffer);
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
@@ -183,6 +184,7 @@ namespace VRT.UserRepresentation.Voice
                     if (curLen == 0)
                     {
                         if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples, done={position != 0}");
+                        ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
                         return len;
                     }
                     position += curLen;
@@ -193,6 +195,7 @@ namespace VRT.UserRepresentation.Voice
                     }
                 }
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
+                ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.full", dst);
                 return len;
             }
         }

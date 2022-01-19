@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using VRT.Core;
 
@@ -171,6 +172,7 @@ namespace VRT.UserRepresentation.Voice
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
                                 double timeRemainingInBuffer = (double)available / wantedSampleRate;
+                                ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
                                 bool ok = outQueue.Enqueue(mc);
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
                             }
@@ -247,7 +249,7 @@ namespace VRT.UserRepresentation.Voice
     public class ToneGenerator
     {
         float position = 0;
-        const float factor = 0.6f;
+        const float factor = 0.2f;
         const float sampleFrequency = 48000f;
         const float toneFrequency = 440f;
 
@@ -255,10 +257,29 @@ namespace VRT.UserRepresentation.Voice
 
         public void addTone(float[] buffer)
         {
-            for(int i=0; i<buffer.Length; i++)
+            for (int i = 0; i < buffer.Length; i++)
             {
                 buffer[i] += Mathf.Sin(position) * factor;
                 position += 2 * Mathf.PI / (sampleFrequency / toneFrequency);
+            }
+        }
+
+        public static void checkToneBuffer(string name, float[] buffer)
+        {
+            float maxValue = Math.Abs(buffer[0]);
+            int maxIndex = 0;
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                if (Math.Abs(buffer[i]) > maxValue)
+                {
+                    maxValue = Math.Abs(buffer[i]);
+                    maxIndex = i;
+                }
+            }
+            Debug.Log($"xxxjack checkToneBuffer: {name}[{maxIndex}] = {maxValue}");
+            if (maxValue > factor)
+            {
+                Debug.LogWarning($"xxxjack checkToneBuffer: too large");
             }
         }
     }
