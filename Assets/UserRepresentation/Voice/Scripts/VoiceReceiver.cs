@@ -11,14 +11,15 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceReceiver : MonoBehaviour
     {
+#if VRT_AUDIO_DEBUG
         //
         // Debug code to test what is going wrong with audio.
         // Setting debugReplaceByTone will replace all incoming audio data with a 440Hz tone
         // Setting debugAddTone will add the tone.
         const bool debugReplaceByTone = false;
-        const bool debugAddTone = false;
+        const bool debugAddTone = true;
         ToneGenerator debugToneGenerator = null;
-
+#endif
         BaseReader reader;
         BaseWorker codec;
         VoicePreparer preparer;
@@ -40,10 +41,12 @@ namespace VRT.UserRepresentation.Voice
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber, Config.ProtocolType proto)
         {
+#if VRT_AUDIO_DEBUG
             if (debugAddTone || debugReplaceByTone)
             {
                 debugToneGenerator = new ToneGenerator();
             }
+#endif
             stats = new Stats(Name());
             if (synchronizer == null)
             {
@@ -92,10 +95,12 @@ namespace VRT.UserRepresentation.Voice
 
         public void Init(User user, QueueThreadSafe queue)
         {
+#if VRT_AUDIO_DEBUG
             if (debugAddTone || debugReplaceByTone)
             {
                 debugToneGenerator = new ToneGenerator();
             }
+#endif
             stats = new Stats(Name());
             if (synchronizer == null)
             {
@@ -161,6 +166,7 @@ namespace VRT.UserRepresentation.Voice
                 tmpBuffer = new float[data.Length / channels];
             }
             int nZeroSamplesInserted = preparer.GetAudioBuffer(tmpBuffer, tmpBuffer.Length);
+#if VRT_AUDIO_DEBUG
             if (debugReplaceByTone)
             {
                 for (int i = 0; i < tmpBuffer.Length; i++) tmpBuffer[i] = 0;
@@ -170,6 +176,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 debugToneGenerator.addTone(tmpBuffer);
             }
+#endif
             for (int i=0; i<data.Length; i++)
             {
                 data[i] += tmpBuffer[i / channels];

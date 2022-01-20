@@ -8,6 +8,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class VoiceReader : BaseWorker
     {
+#if VRT_AUDIO_DEBUG
         //
         // For debugging we can add a 440Hz tone to the microphone signal by setting this
         // value to true.
@@ -15,7 +16,7 @@ namespace VRT.UserRepresentation.Voice
         const bool debugReplaceByTone = false;
         const bool debugAddTone = false;
         ToneGenerator debugToneGenerator = null;
-
+#endif
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
@@ -87,11 +88,13 @@ namespace VRT.UserRepresentation.Voice
 
         IEnumerator MicroRecorder(string deviceName, int _sampleRate, int _fps, int _minBufferSize)
         {
+#if VRT_AUDIO_DEBUG
             if (debugAddTone || debugReplaceByTone)
             {
                 debugToneGenerator = new ToneGenerator();
                 Debug.LogWarning($"{Name()}: Adding 440Hz tone to microphone signal");
             }
+#endif
             wantedSampleRate = _sampleRate;
             nSamplesPerPacket = wantedSampleRate / _fps;
             if (_minBufferSize > 0 && nSamplesPerPacket % _minBufferSize != 0)
@@ -157,6 +160,7 @@ namespace VRT.UserRepresentation.Voice
                             {
                                 FloatMemoryChunk mc = new FloatMemoryChunk(nSamplesPerPacket);
                                 _copyTo(readBuffer, mc.buffer);
+#if VRT_AUDIO_DEBUG
                                 if (debugAddTone || debugReplaceByTone)
                                 {
                                     if (debugReplaceByTone)
@@ -165,6 +169,7 @@ namespace VRT.UserRepresentation.Voice
                                     }
                                     debugToneGenerator.addTone(mc.buffer);
                                 }
+#endif
                                 readPosition = (readPosition + nSamplesPerPacket) % nSamplesInCircularBuffer;
                                 available -= nSamplesPerPacket;
                                 mc.info = new FrameInfo();
@@ -172,7 +177,9 @@ namespace VRT.UserRepresentation.Voice
                                 // by using system clock and adjusting with "available".
                                 mc.info.timestamp = sampleTimestamp(available);
                                 double timeRemainingInBuffer = (double)available / wantedSampleRate;
+#if VRT_AUDIO_DEBUG
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
+#endif
                                 bool ok = outQueue.Enqueue(mc);
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
                             }
@@ -246,41 +253,4 @@ namespace VRT.UserRepresentation.Voice
         protected Stats stats;
     }
 
-    public class ToneGenerator
-    {
-        float position = 0;
-        const float factor = 0.2f;
-        const float sampleFrequency = 48000f;
-        const float toneFrequency = 440f;
-
-        public ToneGenerator() { }
-
-        public void addTone(float[] buffer)
-        {
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                buffer[i] += Mathf.Sin(position) * factor;
-                position += 2 * Mathf.PI / (sampleFrequency / toneFrequency);
-            }
-        }
-
-        public static void checkToneBuffer(string name, float[] buffer)
-        {
-            float maxValue = Math.Abs(buffer[0]);
-            int maxIndex = 0;
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                if (Math.Abs(buffer[i]) > maxValue)
-                {
-                    maxValue = Math.Abs(buffer[i]);
-                    maxIndex = i;
-                }
-            }
-            Debug.Log($"xxxjack checkToneBuffer: {name}[{maxIndex}] = {maxValue}");
-            if (maxValue > factor)
-            {
-                Debug.LogWarning($"xxxjack checkToneBuffer: too large");
-            }
-        }
-    }
 }

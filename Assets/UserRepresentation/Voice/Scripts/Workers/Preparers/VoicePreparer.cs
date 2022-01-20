@@ -183,8 +183,10 @@ namespace VRT.UserRepresentation.Voice
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples, done={position != 0}");
+                        if (true || debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
+#if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
+#endif
                         return len;
                     }
                     position += curLen;
@@ -195,7 +197,9 @@ namespace VRT.UserRepresentation.Voice
                     }
                 }
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
+#if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.full", dst);
+#endif
                 return len;
             }
         }
