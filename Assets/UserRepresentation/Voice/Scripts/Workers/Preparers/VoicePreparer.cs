@@ -92,7 +92,9 @@ namespace VRT.UserRepresentation.Voice
                     stats.statsUpdate(0, dropCount, true);
                     return false;
                 }
+#if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
+#endif
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
