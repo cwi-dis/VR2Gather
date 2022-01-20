@@ -17,6 +17,7 @@ namespace VRT.UserRepresentation.Voice
         const bool debugAddTone = true;
         ToneGenerator debugToneGenerator = null;
 #endif
+        const float extraWaitTime = 0.005f; // Schedule the next enumerator call 5ms after we expect the next audio frame to be available.
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
@@ -42,6 +43,7 @@ namespace VRT.UserRepresentation.Voice
             timestamp -= (1000 * nSamplesInInputBuffer / wantedSampleRate);
             return (long)timestamp;
         }
+
         protected override void Update()
         {
             base.Update();
@@ -112,12 +114,16 @@ namespace VRT.UserRepresentation.Voice
             if (Microphone.devices.Length > 0)
             {
                 if (deviceName == null || deviceName == "") deviceName = Microphone.devices[0];
+#if XXXJACK_UNNEEDED
                 int currentMinFreq;
                 int currentMaxFreq;
                 Microphone.GetDeviceCaps(deviceName, out currentMinFreq, out currentMaxFreq);
+                // xxxjack should check whether we think the frequency is supported
+#endif
+
                 // We record a looping clip of 1 second.
                 const int recorderBufferDuration = 1; 
-                recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
+                recorder = Microphone.Start(deviceName, true, recorderBufferDuration, wantedSampleRate);
                 nSamplesInCircularBuffer = recorder.samples * recorder.channels;
                 // We expect the recorder clip to contain an integral number of
                 // buffers, because we are going to use it as a circular buffer.
@@ -128,6 +134,10 @@ namespace VRT.UserRepresentation.Voice
                 if (recorder.channels != 1)
                 {
                     Debug.LogWarning("{Name()}: Microphone has {recorder.channels} channels, not supported");
+                }
+                if (nSamplesInCircularBuffer != wantedSampleRate)
+                {
+                    Debug.LogWarning($"VoiceReader: Microphone produces {nSamplesInCircularBuffer} samples per second, expected {wantedSampleRate}");
                 }
 #if WITH_SAMPLERATE_ADAPTER
                 float inc = 1; // was: recorderBufferSize / 16000f;
@@ -142,20 +152,48 @@ namespace VRT.UserRepresentation.Voice
 
                 while (true)
                 {
-                    if (Microphone.IsRecording(deviceName))
+                    //
+                    // Get the position in the circular buffer where the DSP has just deposited a sample.
+                    //
+                    int writePosition = Microphone.GetPosition(deviceName);
+                    //
+                    // See how many samples are available in the circular buffer
+                    //
+                    int available;
+                    if (writePosition < readPosition)
                     {
-                        int writePosition = Microphone.GetPosition(deviceName);
-                        int available;
-                        if (writePosition < readPosition) available = nSamplesInCircularBuffer - readPosition + writePosition;
-                        else available = writePosition - readPosition;
+                        available = nSamplesInCircularBuffer - readPosition + writePosition;
+                    }
+                    else
+                    {
+                        available = writePosition - readPosition;
+                    }
+                    float timeRemainingInBuffer = (float)available / wantedSampleRate;
+                    //
+                    // If the microphone is not recording for some reason we restart it
+                    //
+                    if (!Microphone.IsRecording(deviceName))
+                    {
+                        Debug.LogWarning($"{Name()}: microphone {deviceName} stopped recording, starting again.");
+                        recorder = Microphone.Start(deviceName, true, recorderBufferDuration, wantedSampleRate);
+                        readPosition = 0;
+                        writePosition = 0;
+                        available = 0;
+                        timeRemainingInBuffer = 0;
+                    }
+                    else
+                    {
+                        //
+                        // Move all available packets from the circular buffer to our output queue.
+                        //
                         while (available >= nInputSamplesNeededPerPacket)
                         {
                             if (!recorder.GetData(readBuffer, readPosition))
                             {
-                                Debug.Log($"{Name()}: ERROR!!! IsRecording {Microphone.IsRecording(deviceName)}");
-                                Debug.LogError("Error while getting audio from microphone");
+                                Debug.LogError($"{Name()}: Error getting audio from microphone");
                             }
-                            // Write all data from microphone.
+                            //
+                            // Write one packet from microphone.
                             lock (outQueue)
                             {
                                 FloatMemoryChunk mc = new FloatMemoryChunk(nSamplesPerPacket);
@@ -170,13 +208,18 @@ namespace VRT.UserRepresentation.Voice
                                     debugToneGenerator.addTone(mc.buffer);
                                 }
 #endif
+                                //
+                                // Update read position and number of available samples in the circular buffer
+                                //
                                 readPosition = (readPosition + nSamplesPerPacket) % nSamplesInCircularBuffer;
                                 available -= nSamplesPerPacket;
                                 mc.info = new FrameInfo();
+                                //
                                 // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
+                                //
                                 mc.info.timestamp = sampleTimestamp(available);
-                                double timeRemainingInBuffer = (double)available / wantedSampleRate;
+                                timeRemainingInBuffer = (float)available / wantedSampleRate;
 #if VRT_AUDIO_DEBUG
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc.pointer", mc.pointer, mc.length);
@@ -186,13 +229,12 @@ namespace VRT.UserRepresentation.Voice
                             }
                         }
                     }
-                    else
-                    {
-                        Debug.LogWarning($"{Name()}: microphone {deviceName} stopped recording, starting again.");
-                        recorder = Microphone.Start(deviceName, true, recorderBufferDuration, currentMaxFreq);
-                        readPosition = 0;
-                    }
-                    yield return null;
+                    // Check when we expect the next audio frame to be available in the circular buffer.
+                    float frameDuration = (float)nInputSamplesNeededPerPacket / wantedSampleRate;
+                    float untilNextCall = frameDuration - timeRemainingInBuffer + extraWaitTime; // Add 5ms to forestall getting the callback just a little too early
+                    Debug.Log($"{Name()}: xxxjack frameDuration={frameDuration} inBuffer={timeRemainingInBuffer} untilNextCall={untilNextCall}");
+
+                    yield return new WaitForSecondsRealtime(untilNextCall);
                 }
 
                 void _copyTo(float[] inBuffer, float[] outBuffer)
