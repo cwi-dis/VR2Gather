@@ -136,7 +136,7 @@ namespace VRT.UserRepresentation.Voice
                 return copyCount;
             }
             // If the buffer has more samples we copy what we need and keep the rest.
-            System.Array.Copy(audioBuffer, 0, dst, 0, len);
+            System.Array.Copy(audioBuffer, 0, dst, position, len);
             int remaining = audioBuffer.Length - len;
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
