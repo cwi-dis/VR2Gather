@@ -8,10 +8,24 @@ namespace VRT.UserRepresentation.Voice
     public class VoicePreparer : BasePreparer
     {
         const bool debugBuffering = false;
-        public ulong currentTimestamp;
+        ulong currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
+        //
+        // Keeping track of the "current" timestamp for audio is tricky. We remember the offset
+        // from system clock to audio clock as at was valid the last time we returned a frame to the receiver.
+        // We also compute when we expect the next call from the receiver, so we can attempt to
+        // do the right thing when synchronizing.
+        //
+        long sysClockToAudioClock;
+        long nextGetAudioBufferExpected;
+        //
+        // We need to double-buffer between currentAudioFrame and the receiver, because the buffer
+        // sizes can be different.
+        //
         float[] audioBuffer;
+        long audioBufferHeadTimestamp;
+
         bool readNextFrameWhenNeeded = true;
         // We should _not_ drop audio frames if they are in the past, but could still be
         // considered part of the current visual frame. Otherwise, we may end up dropping one
@@ -30,6 +44,14 @@ namespace VRT.UserRepresentation.Voice
         {
             base.OnStop();
             Debug.Log("VoicePreparer: Stopped");
+        }
+
+        public ulong getCurrentTimestamp()
+        {
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            long now = (long)sinceEpoch.TotalMilliseconds;
+
+            return (ulong)(now + sysClockToAudioClock);
         }
 
         public override void Synchronize()
@@ -134,6 +156,7 @@ namespace VRT.UserRepresentation.Voice
                 int copyCount = audioBuffer.Length;
                 System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
                 audioBuffer = null;
+                audioBufferHeadTimestamp = 0; // xxxjack or should we compute what it should have been??!?
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
@@ -143,6 +166,7 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
+            audioBufferHeadTimestamp += (long)(1000 * len / Config.Instance.audioSampleRate);
             if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
@@ -166,6 +190,7 @@ namespace VRT.UserRepresentation.Voice
             }
             audioBuffer = new float[availableLen];
             System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, audioBuffer, 0, availableLen);
+            audioBufferHeadTimestamp = currentAudioFrame.info.timestamp;
             currentAudioFrame.free();
             currentAudioFrame = null;
             return true;
@@ -181,6 +206,10 @@ namespace VRT.UserRepresentation.Voice
                 int oldPosition = 0;
                 int curLen = 0;
                 _fillIntoAudioBuffer(true);
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long now = (long)sinceEpoch.TotalMilliseconds;
+                sysClockToAudioClock = audioBufferHeadTimestamp - now;
+                nextGetAudioBufferExpected = now + (len * 1000 / Config.Instance.audioSampleRate);
                 while (len > 0)
                 {
                     curLen = _fillFromAudioBuffer(dst, position, len);

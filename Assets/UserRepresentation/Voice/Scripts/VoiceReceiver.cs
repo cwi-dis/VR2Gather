@@ -181,7 +181,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 data[i] += tmpBuffer[i / channels];
             }
-            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.currentTimestamp, preparer.getQueueDuration());
+            stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.getCurrentTimestamp(), preparer.getQueueDuration());
         }
 
         public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
