@@ -12,7 +12,7 @@ namespace VRT.Core
         public FloatMemoryChunk(int _elements) : base()
         {
             buffer = new float[_elements];
-            handle = GCHandle.Alloc(buffer);
+            handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
             _pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
             elements = _elements;
             length = _elements * 4;
