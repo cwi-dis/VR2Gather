@@ -14,7 +14,7 @@ namespace VRT.UserRepresentation.Voice
         // value to true.
         //
         const bool debugReplaceByTone = false;
-        const bool debugAddTone = false;
+        const bool debugAddTone = true;
         ToneGenerator debugToneGenerator = null;
 #endif
         Coroutine coroutine;
@@ -179,6 +179,7 @@ namespace VRT.UserRepresentation.Voice
                                 double timeRemainingInBuffer = (double)available / wantedSampleRate;
 #if VRT_AUDIO_DEBUG
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
+                                ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc.pointer", mc.pointer, mc.length);
 #endif
                                 bool ok = outQueue.Enqueue(mc);
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());

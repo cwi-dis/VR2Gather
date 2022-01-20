@@ -17,7 +17,7 @@ namespace VRT.UserRepresentation.Voice
         // Setting debugReplaceByTone will replace all incoming audio data with a 440Hz tone
         // Setting debugAddTone will add the tone.
         const bool debugReplaceByTone = false;
-        const bool debugAddTone = true;
+        const bool debugAddTone = false;
         ToneGenerator debugToneGenerator = null;
 #endif
         BaseReader reader;

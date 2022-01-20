@@ -92,7 +92,7 @@ namespace VRT.UserRepresentation.Voice
                     stats.statsUpdate(0, dropCount, true);
                     return false;
                 }
-                //ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.buffer);
+                ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
                 currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
@@ -176,10 +176,12 @@ namespace VRT.UserRepresentation.Voice
                 if (InQueue.IsClosed()) return len;
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
                 int position = 0;
+                int oldPosition = 0;
+                int curLen = 0;
                 _fillIntoAudioBuffer(true);
                 while (len > 0)
                 {
-                    int curLen = _fillFromAudioBuffer(dst, position, len);
+                    curLen = _fillFromAudioBuffer(dst, position, len);
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
@@ -189,6 +191,7 @@ namespace VRT.UserRepresentation.Voice
 #endif
                         return len;
                     }
+                    oldPosition = position;
                     position += curLen;
                     len -= curLen;
                     if (len > 0)
