@@ -232,7 +232,7 @@ namespace VRT.UserRepresentation.Voice
                     // Check when we expect the next audio frame to be available in the circular buffer.
                     float frameDuration = (float)nInputSamplesNeededPerPacket / wantedSampleRate;
                     float untilNextCall = frameDuration - timeRemainingInBuffer + extraWaitTime; // Add 5ms to forestall getting the callback just a little too early
-                    Debug.Log($"{Name()}: xxxjack frameDuration={frameDuration} inBuffer={timeRemainingInBuffer} untilNextCall={untilNextCall}");
+                    //Debug.Log($"{Name()}: xxxjack frameDuration={frameDuration} inBuffer={timeRemainingInBuffer} untilNextCall={untilNextCall}");
 
                     yield return new WaitForSecondsRealtime(untilNextCall);
                 }
