@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.Voice
     {
         Coroutine coroutine;
 
-        public EmptyReader() : base(WorkerType.Init)
+        public EmptyReader() : base()
         {
             Start();
         }

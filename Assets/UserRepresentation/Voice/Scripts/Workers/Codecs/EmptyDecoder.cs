@@ -7,7 +7,7 @@ namespace VRT.UserRepresentation.Voice
 {
     public class EmptyDecoder : BaseWorker
     {
-        public EmptyDecoder() : base(WorkerType.Run)
+        public EmptyDecoder() : base()
         {
             Start();
         }

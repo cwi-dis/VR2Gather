@@ -45,7 +45,7 @@ namespace VRT.Video
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run)
+        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
         {
             this.codec = codec;
             inVideoQueue = _inVideoQueue;
@@ -262,7 +262,7 @@ namespace VRT.Video
             {
                 swrCtx = ffmpeg.swr_alloc();
                 int src_nb_samples = 1024;
-                int dst_rate = 48000;
+                int dst_rate = Config.Instance.audioSampleRate;
 
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.

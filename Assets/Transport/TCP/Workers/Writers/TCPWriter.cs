@@ -188,7 +188,7 @@ namespace VRT.Transport.TCP
  
         TCPPushThread[] pusherThreads;
 
-        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base(WorkerType.End)
+        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {

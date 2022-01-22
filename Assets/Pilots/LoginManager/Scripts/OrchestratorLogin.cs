@@ -120,6 +120,7 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private Toggle dashProtocolToggle = null;
     [SerializeField] private Toggle tcpProtocolToggle = null;
     [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
+    [SerializeField] private Toggle uncompressedAudioToggle = null;
 
     [Header("Join")]
     [SerializeField] private GameObject joinPanel = null;
@@ -541,7 +542,7 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
-        VoiceReader.PrepareDSP();
+        VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
 
         system = EventSystem.current;
 
@@ -598,6 +599,7 @@ public class OrchestratorLogin : MonoBehaviour {
         dashProtocolToggle.isOn = false;
         tcpProtocolToggle.isOn = false;
         uncompressedPointcloudsToggle.isOn = Config.Instance.pointcloudCodec == "cwi0";
+        uncompressedAudioToggle.isOn = Config.Instance.audioCodec == "VR2a";
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -669,6 +671,7 @@ public class OrchestratorLogin : MonoBehaviour {
             Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionName={config.sessionName}");
             sessionNameIF.text = config.sessionName;
             uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
+            uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
             if (config.sessionTransportProtocol >= 0)
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
@@ -1102,7 +1105,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void ReadyButton() {
-        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.pointcloudCodec);
+        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.pointcloudCodec + "_" + Config.Instance.audioCodec);
     }
 
     public void GoToCalibration() {
@@ -1209,6 +1212,14 @@ public class OrchestratorLogin : MonoBehaviour {
         else
         {
             Config.Instance.pointcloudCodec = "cwi1";
+        }
+        if (uncompressedAudioToggle.isOn)
+        {
+            Config.Instance.audioCodec = "VR2a";
+        }
+        else
+        {
+            Config.Instance.audioCodec = "VR2A";
         }
     }
 
