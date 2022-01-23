@@ -26,6 +26,10 @@
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5
   },
+  "ScreenshotTool" : {
+  	"takeScreenshot" : false,
+  	"screenshotTargetDirectory" : "../session_screenshots"
+  },
   "VR" : {
 	"_preferredDevices" : ["", "Oculus", "OpenVR"],
 	"_preferredController" : "gamepad"
