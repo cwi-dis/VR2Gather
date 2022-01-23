@@ -6,18 +6,15 @@ namespace VRT.Core
 {
     public class BaseWorker
     {
-        public enum WorkerType { Init, Run, End };
-
+        
         public bool isRunning { get; private set; }
         System.Threading.Thread thread;
-        WorkerType type;
         protected int loopInterval = 1; // How many milliseconds to sleep in the runloop
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
         protected const bool debugThreading = true;
 
-        public BaseWorker(WorkerType _type = WorkerType.Run)
+        public BaseWorker()
         {
-            type = _type;
         }
 
         public virtual string Name()

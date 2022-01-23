@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         PCEncoder.EncoderStreamDescription[] outputs;
 
-        public NULLEncoder(QueueThreadSafe _inQueue, PCEncoder.EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        public NULLEncoder(QueueThreadSafe _inQueue, PCEncoder.EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {

@@ -1744,7 +1744,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4326305017399503632
 Transform:
   m_ObjectHideFlags: 0
@@ -1775,6 +1775,7 @@ MonoBehaviour:
   currentPreferredLatency: 100
   latencyCatchup: 5
   minPreferredLatency: 100
+  acceptDesyncOnDataUnavailable: 0
 --- !u!1 &5737502413439571115
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe out2Queue;
         protected bool dontWait = false;
 
-        protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             if (_outQueue == null)
             {

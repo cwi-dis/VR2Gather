@@ -15,7 +15,7 @@ namespace VRT.Transport.SocketIO
 
         User user;
 
-        public SocketIOReader(User user, string remoteStream, string fourcc, PCSubReader.TileDescriptor[] descriptors) : base(WorkerType.End)
+        public SocketIOReader(User user, string remoteStream, string fourcc, PCSubReader.TileDescriptor[] descriptors) : base()
         {
             this.user = user;
             if (descriptors == null)

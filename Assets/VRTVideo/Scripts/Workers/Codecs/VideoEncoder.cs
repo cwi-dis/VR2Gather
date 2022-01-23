@@ -41,13 +41,17 @@ namespace VRT.Video
         VideoFilter RGB2YUV420PFilter;
         Setup setup;
 
-        public VideoEncoder(Setup setup, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base(WorkerType.Run)
+        public VideoEncoder(Setup setup, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
         {
             this.setup = setup;
             inVideoQueue = _inVideoQueue;
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
             outAudioQueue = _outAudioQueue;
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             Start();
         }
 
@@ -66,7 +70,12 @@ namespace VRT.Video
                 if (codecVideo == null) CreateVideoCodec(mc, setup.width, setup.height, setup.fps, setup.bitrate);
                 if (!RGB2YUV420PFilter.Process(new byte*[] { (byte*)mc.pointer }, ref videoFrame->data, ref videoFrame->linesize))
                     Debug.LogError("Error while encoding video (RGB2YUV420PFilter.Process)");
+#if ENCODER_MONOTONIC_TIMESTAMPS
                 videoFrame->pts = frame++;
+#else
+                long tsInFps = (mc.info.timestamp * setup.fps) / 1000;
+                videoFrame->pts = tsInFps;
+#endif
                 int ret = ffmpeg.avcodec_send_frame(codecVideo_ctx, videoFrame);
                 mc.free();
                 if (ret < 0)
@@ -82,11 +91,16 @@ namespace VRT.Video
                         {
                             NativeMemoryChunk videoData = new NativeMemoryChunk(videoPacket->size);
                             Buffer.MemoryCopy(videoPacket->data, (void*)videoData.pointer, videoPacket->size, videoPacket->size);
+#if !ENCODER_MONOTONIC_TIMESTAMPS
+                            long tsInMs = (videoPacket->pts * 1000) / setup.fps;
+                            videoData.info.timestamp = tsInMs;
+#endif
                             outVideoQueue.Enqueue(videoData);
                         }
                         else
                         {
-                            if (ret != -11)
+                            // It seems EAGAIN is -11 on Windows, -35 on Mac.
+                            if (ret != -11 && ret != -35)
                                 ShowError(ret, $"avcodec_receive_packet");
                         }
                     }

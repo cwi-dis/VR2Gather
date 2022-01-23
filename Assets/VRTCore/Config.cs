@@ -37,6 +37,9 @@ namespace VRT.Core
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public string videoCodec = "h264";
         public string pointcloudCodec = "cwi1";
+        public string audioCodec = "VR2A";
+        public readonly int audioSampleRate = 48000;
+        public int audioFps = 50;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;
@@ -44,6 +47,7 @@ namespace VRT.Core
         public string statsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+        public string ffmpegDLLDir = "";
 
         [Serializable]
         public class _VR
@@ -75,6 +79,7 @@ namespace VRT.Core
             public int sessionScenario = -1;
             public int sessionTransportProtocol = -1;
             public bool sessionUncompressed = false;
+            public bool sessionUncompressedAudio = false;
             public bool autoCreate = false;
             public bool autoJoin = true;
             public string autoCreateForUser = "";
