@@ -12,14 +12,24 @@ namespace VRT.Pilots.Common
         private string screenshotTargetDirectory = "";
         private int width;
         private int height;
+
+        string Name()
+        {
+            return "ScreenshotRecorder";
+        }
+
         // Start is called before the first frame update
         void Start()
         {
             takeScreenshot = Config.Instance.ScreenshotTool.takeScreenshot;
             screenshotTargetDirectory = Config.Instance.ScreenshotTool.screenshotTargetDirectory;
-            GameObject screenshotTool = GameObject.Find("ScreenshotTool");
-            if (screenshotTool != null)
-                screenshotTool.SetActive(takeScreenshot);
+            gameObject.SetActive(takeScreenshot);
+            if (!takeScreenshot)
+            {
+                Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
+                return;
+            }
+            BaseStats.Output(Name(), $"output_dir={screenshotTargetDirectory}");
             width = Screen.width;
             height = Screen.height;
             if (!Directory.Exists(screenshotTargetDirectory))
