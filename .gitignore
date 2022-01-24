@@ -14,3 +14,5 @@ Builds/
 dll/
 built-VRTogether
 buildlog.txt
+bin2dash.so
+signals-unity-bridge.so

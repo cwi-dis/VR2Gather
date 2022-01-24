@@ -45,8 +45,9 @@ namespace VRT.UserRepresentation.PointCloud
         public struct tileinfo
         {
             public vector normal;
-            public IntPtr camera;
+            public IntPtr cameraName;
             public byte ncamera;
+            public byte cameraMask;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -85,6 +86,42 @@ namespace VRT.UserRepresentation.PointCloud
 
         public class cwipc_skeleton
         {
+            public enum JointIndex
+            {
+                PELVIS = 0,
+                SPINE_NAVEL,
+                SPINE_CHEST,
+                NECK,
+                CLAVICLE_LEFT,
+                SHOULDER_LEFT,
+                ELBOW_LEFT,
+                WRIST_LEFT,
+                HAND_LEFT,
+                HANDTIP_LEFT,
+                THUMB_LEFT,
+                CLAVICLE_RIGHT,
+                SHOULDER_RIGHT,
+                ELBOW_RIGHT,
+                WRIST_RIGHT,
+                HAND_RIGHT,
+                HANDTIP_RIGHT,
+                THUMB_RIGHT,
+                HIP_LEFT,
+                KNEE_LEFT,
+                ANKLE_LEFT,
+                FOOT_LEFT,
+                HIP_RIGHT,
+                KNEE_RIGHT,
+                ANKLE_RIGHT,
+                FOOT_RIGHT,
+                HEAD,
+                NOSE,
+                EYE_LEFT,
+                EAR_LEFT,
+                EYE_RIGHT,
+                EAR_RIGHT
+            };
+
             public ulong timestamp;
             public List<cwipc_skeleton_joint> joints;
             public cwipc_skeleton() { }
@@ -151,7 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20210412;
+            public const ulong CWIPC_API_VERSION = 0x20211230;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);

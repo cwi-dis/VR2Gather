@@ -28,9 +28,13 @@ namespace VRT.Video
         public int fps;
 
 
-        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base(WorkerType.Init)
+        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
 
+            if (Config.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+            }
             if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;
 
             this.width = width;
@@ -85,6 +89,9 @@ namespace VRT.Video
             {
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long now = (long)sinceEpoch.TotalMilliseconds;
+                chunk.info.timestamp = now;
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;
                 outQueue.Enqueue(chunk);
@@ -105,7 +112,7 @@ namespace VRT.Video
 
         void Init(string deviceName)
         {
-            /*
+#if WEBCAM_DEBUG_PRINT_RESOLUTIONS
             WebCamDevice[] devices = WebCamTexture.devices;
             for (int i = 0; i < devices.Length; ++i) {
                 var dev = devices[i];
@@ -116,19 +123,24 @@ namespace VRT.Video
                     }
                 }
             }
-            */
+#endif
             webcamTexture = new WebCamTexture(deviceName, width, height, fps);
             webcamTexture.Play();
-
+#if WEBCAM_AUTO_RESOLUTION
             width = webcamTexture.width;
             height = webcamTexture.height;
 
-            if (webcamTexture.isPlaying) webcamColors = webcamTexture.GetPixels32(webcamColors);
+            if (webcamTexture.isPlaying)
+            {
+                webcamColors = webcamTexture.GetPixels32(webcamColors);
+                UnityEngine.Debug.Log($"[FPA] Webcam initialized, got {webcamColors.Length} pixel buffer");
+            }
             else
             {
                 webcamColors = new Color32[width * height];
-                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized");
+                UnityEngine.Debug.LogWarning($"[FPA] Webcam not initialized, allocated {webcamColors.Length} pixel buffer");
             }
+#endif
 
             RGBA2RGBFilter = new VideoFilter(width, height, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGBA, FFmpeg.AutoGen.AVPixelFormat.AV_PIX_FMT_RGB24);
 
@@ -152,6 +164,12 @@ namespace VRT.Video
                         if (webcamTexture.isPlaying)
                         {
                             webcamColors = webcamTexture.GetPixels32(webcamColors);
+                            if (webcamColors.Length < width*height)
+                            {
+                                UnityEngine.Debug.Log($"xxxjack WebCamReader: drop short videoframe of length {webcamColors.Length}");
+                                webcamColors = null;
+                                yield return null;
+                            }
                             isFrameReady = true;
                         }
                         //                        frameReady.Release();

@@ -13,7 +13,7 @@ namespace VRT.Transport.SocketIO
     {
         B2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(User user, string remoteStream, B2DWriter.DashStreamDescription[] streams) : base(WorkerType.End)
+        public SocketIOWriter(User user, string remoteStream, string fourcc, B2DWriter.DashStreamDescription[] streams) : base()
         {
             if (streams == null)
             {
@@ -23,9 +23,9 @@ namespace VRT.Transport.SocketIO
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
-                streams[i].name = $"{user.userId}{remoteStream}#{i}";
+                streams[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
                 Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
-                BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}");
+                BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try
@@ -103,7 +103,7 @@ namespace VRT.Transport.SocketIO
                 statsTotalPackets++;
                 if (ShouldOutput())
                 {
-                    Output($"packets_per_second={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
                 }
                 if (ShouldClear())
                 {

@@ -63,13 +63,15 @@ namespace VRT.Transport.TCP
             {
                 if (listenSocket != null)
                 {
-                    listenSocket.Close();
+                    Socket tmp = listenSocket;
                     listenSocket = null;
+                    tmp.Close();
                 }
                 if (sendSocket != null)
                 {
-                    sendSocket.Close();
+                    Socket tmp = sendSocket;
                     sendSocket = null;
+                    tmp.Close();
                 }
             }
 
@@ -97,7 +99,10 @@ namespace VRT.Transport.TCP
                             }
                             catch(SocketException e)
                             {
-                                Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
+                                if (listenSocket != null)
+                                {
+                                    Debug.Log($"{Name()}: Accept: Exception {e.ToString()}");
+                                }
                                 continue;
                             }
                         }
@@ -120,15 +125,21 @@ namespace VRT.Transport.TCP
                         }
                         catch (ObjectDisposedException)
                         {
-                            Debug.Log($"{Name()}: socket was closed by another thread");
+                            if (sendSocket != null)
+                            {
+                                Debug.Log($"{Name()}: socket was closed by another thread");
+                            }
                             sendSocket = null;
                             BaseStats.Output(Name(), $"open=0");
                         }
                         catch(SocketException e)
                         {
-                            Debug.Log($"{Name()}: socket exception: {e.ToString()}");
-                            sendSocket.Close();
-                            sendSocket = null;
+                            if (sendSocket != null)
+                            {
+                                Debug.Log($"{Name()}: socket exception: {e.ToString()}");
+                                sendSocket.Close();
+                                sendSocket = null;
+                            }
                             BaseStats.Output(Name(), $"open=0");
                         }
                     }
@@ -177,7 +188,7 @@ namespace VRT.Transport.TCP
  
         TCPPushThread[] pusherThreads;
 
-        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base(WorkerType.End)
+        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -194,12 +205,21 @@ namespace VRT.Transport.TCP
                 throw new System.Exception($"{Name()}: TCP transport requires tcp://host:port/ URL, got \"{_url}\"");
             }
             TCPStreamDescription[] ourDescriptions = new TCPStreamDescription[_descriptions.Length];
+            // We use the lowest ports for the first quality, for each tile.
+            // The the next set of ports is used for the next quality, and so on.
+            int maxTileNumber = -1;
+            for(int i=0; i<_descriptions.Length; i++)
+            {
+                if (_descriptions[i].tileNumber > maxTileNumber) maxTileNumber = (int)_descriptions[i].tileNumber;
+            }
+            int portsPerQuality = maxTileNumber;
+            if (portsPerQuality == 0) portsPerQuality = 1;
             for(int i=0; i<_descriptions.Length; i++)
             {
                 ourDescriptions[i] = new TCPStreamDescription
                 {
                     host = url.Host,
-                    port = url.Port + i,
+                    port = url.Port + (int)_descriptions[i].tileNumber + (portsPerQuality*_descriptions[i].qualityIndex),
                     fourcc = fourccInt,
                     inQueue = _descriptions[i].inQueue
 
@@ -224,7 +244,7 @@ namespace VRT.Transport.TCP
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, port={descriptions[i].port}");
+                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
             }
             foreach (var t in pusherThreads)
             {

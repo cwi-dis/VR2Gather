@@ -7,12 +7,12 @@ namespace VRT.Core
     [Serializable]
     public class Config
     {
-        public enum ProtocolType
+        [Flags] public enum ProtocolType
         {
-            None,
-            Dash,
-            SocketIO,
-            TCP
+            None = 0,
+            SocketIO = 1,
+            Dash = 2,
+            TCP = 3,
         };
 
         public enum UserRepresentation
@@ -36,21 +36,35 @@ namespace VRT.Core
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public string videoCodec = "h264";
+        public string pointcloudCodec = "cwi1";
+        public string audioCodec = "VR2A";
+        public readonly int audioSampleRate = 48000;
+        public int audioFps = 50;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
-        public float nonHMDHeight = 1.8f;
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+        public string ffmpegDLLDir = "";
 
         [Serializable]
         public class _VR
         {
-            public bool disableKeyboardMouse = false;
+            public string[] preferredDevices = { "Oculus", "OpenVR", "" };
+            public string preferredController = "";
+            public bool useLookingGlass = false;
         }
         public _VR VR;
+
+        [Serializable]
+        public class _ScreenshotTool
+        {
+            public bool takeScreenshot = false;
+            public string screenshotTargetDirectory = "";
+        }
+        public _ScreenshotTool ScreenshotTool;
 
         [Serializable]
         public class _AutoStart
@@ -64,8 +78,11 @@ namespace VRT.Core
             public string sessionName = "";
             public int sessionScenario = -1;
             public int sessionTransportProtocol = -1;
+            public bool sessionUncompressed = false;
+            public bool sessionUncompressedAudio = false;
             public bool autoCreate = false;
             public bool autoJoin = true;
+            public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
         };
@@ -173,15 +190,6 @@ namespace VRT.Core
              }
             public _PCSelfConfig PCSelfConfig;
 
-            [Serializable]
-            public class _Render
-            {
-                public float pointSize = 0.008f;
-                public Vector3 position;
-                public Vector3 rotation;
-                public Vector3 scale = Vector3.one;
-            }
-            public _Render Render;
         };
         public _User LocalUser;
         public _User RemoteUser;

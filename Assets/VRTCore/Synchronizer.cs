@@ -14,11 +14,12 @@ namespace VRT.Core
         public int latencyCatchup = 0;
         [Tooltip("Minimum preferred playout latency")]
         public long minPreferredLatency = 0;
+        [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
+        public bool acceptDesyncOnDataUnavailable = false;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        ulong latestCurrentFrameTimestamp = 0; // Earliest timestamp available for this frame, for all clients
-        ulong earliestNextFrameTimestamp = 0;   // Latest timestamp available for this frame, for all clients
-        ulong earliestLatestFrameTimestamp = 0;   // earliest (over all clients) Latest timestamp available in the client queue
+        ulong availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
+        ulong availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
         ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
         static int instanceCounter = 0;
@@ -33,50 +34,89 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
-                latestCurrentFrameTimestamp = 0;
-                earliestNextFrameTimestamp = 0;
-                earliestLatestFrameTimestamp = 0;
+                availableIntervalBegin = 0;
+                availableIntervalEnd = 0;
                 bestTimestampForCurrentFrame = 0;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(string caller, ulong currentFrameTimestamp, ulong nextFrameTimestamp, ulong latestFrameTimestamp)
+        public void SetTimestampRangeForCurrentFrame(string caller, ulong earliestFrameTimestamp, ulong latestFrameTimestamp)
         {
             _Reset();
-            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={currentFrameTimestamp}, next={nextFrameTimestamp}, latest={latestFrameTimestamp}");
-            // First we record the minimum of the latest timestamp in the queue.
-            // This is only used for catch-up.
-            if (this.earliestLatestFrameTimestamp == 0 || earliestLatestFrameTimestamp >= latestFrameTimestamp)
+            if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={earliestFrameTimestamp}, latest={latestFrameTimestamp}");
+            //
+            // If there is nothing in the queue (for our caller) the latest is the earliest. Which may be 0, if there is nothing.
+            // If there is no earliest then the lastest is used as the earliest.
+            //
+            if (latestFrameTimestamp == 0) latestFrameTimestamp = earliestFrameTimestamp;
+            if (earliestFrameTimestamp == 0) earliestFrameTimestamp = latestFrameTimestamp;
+            //
+            // Now either both are zero or both are non-zero
+            //
+            if (latestFrameTimestamp == 0 || earliestFrameTimestamp == 0)
             {
-                this.earliestLatestFrameTimestamp = latestFrameTimestamp;
+                if (latestFrameTimestamp != 0 || earliestFrameTimestamp != 0) Debug.LogError($"{Name()}: programmer error in timestamp range [{earliestFrameTimestamp}..{latestFrameTimestamp}]");
+                return;
             }
-            // Record (for current frame) earliest and next timestamp available on all prepareres.
-            // In other words: the maximum of all earliest timestamps and minimum of all next reported.
-            if (nextFrameTimestamp == 0) nextFrameTimestamp = currentFrameTimestamp;
-            if (currentFrameTimestamp == 0) currentFrameTimestamp = nextFrameTimestamp;
-            if (currentFrameTimestamp == 0) return;
-            if (this.latestCurrentFrameTimestamp == 0 || currentFrameTimestamp > this.latestCurrentFrameTimestamp)
+            //
+            // If we have no interval yet we use this one.
+            //
+            if (availableIntervalBegin == 0 || availableIntervalEnd == 0)
             {
-                this.latestCurrentFrameTimestamp = currentFrameTimestamp;
+                if (availableIntervalBegin != 0 || availableIntervalEnd != 0) Debug.LogError($"{Name()}: programmer Error in previous timestamp range");
+                availableIntervalBegin = earliestFrameTimestamp;
+                availableIntervalEnd = latestFrameTimestamp;
+                return;
             }
-            if (this.earliestNextFrameTimestamp == 0 || nextFrameTimestamp < this.earliestNextFrameTimestamp)
+            //
+            // Check whether the ranges are disjunct.
+            //
+            bool rangeTooNew = earliestFrameTimestamp > availableIntervalEnd;
+            bool rangeTooOld = latestFrameTimestamp < availableIntervalBegin;
+            if (rangeTooNew || rangeTooOld)
             {
-                this.earliestNextFrameTimestamp = nextFrameTimestamp;
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+                string problem = rangeTooNew ? "new" : "old";
+                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{(long)earliestFrameTimestamp-utcMillisForCurrentFrame}..{(long)latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{(long)availableIntervalBegin - utcMillisForCurrentFrame}..{(long)availableIntervalEnd - utcMillisForCurrentFrame}]");
+                // xxxjack decide which one to keep: the earliest or the latest range....
+                // keeping the latest range should cause "best progress".
+                // keeping the earliest should cause "quickest sync".
+                // For now we do nothing, just keeping the old one, which is random.
+                if (rangeTooOld && !acceptDesyncOnDataUnavailable)
+                {
+                    // This pipeline hasn't received the correct packets yet.
+                    // We make all other streams wait for this stream.
+                    availableIntervalBegin = earliestFrameTimestamp;
+                    availableIntervalEnd = latestFrameTimestamp;
+                }
+                return;
             }
+            //
+            // There is overlap. Update the range.
+            //
+            if (earliestFrameTimestamp > availableIntervalBegin) availableIntervalBegin = earliestFrameTimestamp;
+            if (latestFrameTimestamp < availableIntervalEnd) availableIntervalEnd = latestFrameTimestamp;
         }
 
         void _ComputeTimestampForCurrentFrame()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+            // If we don't have an interval we cannot do anything
+            if (availableIntervalBegin == 0)
+            {
+                bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
+                return;
+            }
             //
             // We can lower the current preferred latency iff
             // - we are allowed to do catchup
             // - it is lower than the minimum preferred latency,
             // - there are ample entries in all the queues
             //
-            if (latencyCatchup > 0 && currentPreferredLatency > minPreferredLatency && earliestLatestFrameTimestamp > 0)
+            if (latencyCatchup > 0 && currentPreferredLatency > minPreferredLatency && availableIntervalEnd > 0)
             {
-                long maxCatchup = utcMillisForCurrentFrame - (long)earliestLatestFrameTimestamp;
+                long maxCatchup = utcMillisForCurrentFrame - (long)availableIntervalEnd;
                 long curCatchup = maxCatchup;
                 if (curCatchup > latencyCatchup)
                 {
@@ -98,44 +138,19 @@ namespace VRT.Core
             // best timestamp.
             //
             bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
-
             //
-            // If there is no next timestamp that all source have,
-            // or if it is later than the best timestamp, 
-            // we use the best timestamp for the current frame.
-            // This may still result in some sources catching up.
+            // Check whether it falls into the interval, adapt if not.
             //
-            if (earliestNextFrameTimestamp == 0 || bestTimestampForCurrentFrame < earliestNextFrameTimestamp)
-            {
-                bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
-                stats.statsUpdate(false, true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
-                //
-                // If the current actual latency is bigger than the preferred latency we update the preferred latency
-                //
-                long currentLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
-                if (currentLatency > currentPreferredLatency && currentLatency < 10000 && latencyCatchup > 0)
-                {
-                    currentPreferredLatency = currentLatency;
-                    if (debugSynchronizer) Debug.Log($"{Name()}: xxxjack increase currentPreferredLatency={currentPreferredLatency}");
-                }
-                return;
-            }
-            // If we do catch-up we see whether the latest timestamp isn't ahead of catch-up.
-            if (latencyCatchup != 0 && currentPreferredLatency != 0)
-            {
-                // earliestNextTimestamp may be too far in the future.
-                // In that case we stick with the latest current frame timestamp
-                long expectedNextTimestamp = utcMillisForCurrentFrame + currentPreferredLatency + latencyCatchup;
-                if (earliestNextFrameTimestamp > (ulong)expectedNextTimestamp)
-                {
-                    bestTimestampForCurrentFrame = latestCurrentFrameTimestamp;
-                    stats.statsUpdate(false, false, true, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
-                    return;
-                }
-            }
+            if (bestTimestampForCurrentFrame < availableIntervalBegin) bestTimestampForCurrentFrame = availableIntervalBegin;
+            if (bestTimestampForCurrentFrame > availableIntervalEnd) bestTimestampForCurrentFrame = availableIntervalEnd;
+            //
+            // And recompute preferred latency
+            //
+            currentPreferredLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
 
-            stats.statsUpdate(true, false, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+            stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
         }
+
         public ulong GetBestTimestampForCurrentFrame()
         {
             _Reset();
@@ -162,20 +177,18 @@ namespace VRT.Core
             int statsTotalCalls = 0;
             int statsTotalFreshReturn = 0;
             int statsTotalStaleReturn = 0;
-            int statsTotalHoldoffReturn = 0;
-
-            public void statsUpdate(bool freshReturn, bool staleReturn, bool holdReturn, long utcMillisForCurrentFrame, ulong timestamp)
+            
+            public void statsUpdate(bool freshReturn, bool staleReturn, long utcMillisForCurrentFrame, ulong timestamp)
             {
                 long currentLatency = utcMillisForCurrentFrame - (long)timestamp;
                 statsTotalPreferredLatency += currentLatency;
                 statsTotalCalls++;
                 if (freshReturn) statsTotalFreshReturn++;
                 if (staleReturn) statsTotalStaleReturn++;
-                if (holdReturn) statsTotalHoldoffReturn++;
-
+                
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fresh_fps={statsTotalFreshReturn / Interval():F2}, stale_fps={statsTotalStaleReturn / Interval():F2}, holdoff_fps={statsTotalHoldoffReturn / Interval():F2}, timestamp={timestamp}");
+                    Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fps_fresh={statsTotalFreshReturn / Interval():F2}, fps_stale={statsTotalStaleReturn / Interval():F2}, timestamp={timestamp}");
 
                 }
                 if (ShouldClear())
@@ -184,7 +197,6 @@ namespace VRT.Core
                     statsTotalPreferredLatency = 0;
                     statsTotalCalls = 0;
                     statsTotalFreshReturn = 0;
-                    statsTotalHoldoffReturn = 0;
                     statsTotalStaleReturn = 0;
                 }
             }

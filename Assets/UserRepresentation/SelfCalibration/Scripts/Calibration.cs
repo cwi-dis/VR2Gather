@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VRT.Core;
 
 public class Calibration : MonoBehaviour {
     private enum State { Comfort, Mode, Translation, Rotation }
@@ -12,166 +13,171 @@ public class Calibration : MonoBehaviour {
     public float        _rotationSlightStep = 1f;
     public float        _translationSlightStep = 0.01f;
     public string        prefix = "pcs";
+
+    [Header("Input controller support")]
+    public CalibrationControls emulation;
+    public CalibrationControls gamepad;
+    public CalibrationControls oculus;
+    public CalibrationControls openvr;
+    private CalibrationControls controls = null;
+    [Header("UI Panel references")]
     public GameObject   ComfortUI;
     public GameObject   CalibrationModeUI;
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
-    bool rightTrigger = false;
-    bool oldRightTrigger = false;
-    bool leftTrigger = false;
-    bool oldLeftTrigger = false;
-
-    bool IsDownRightTrigger { get { return rightTrigger && !oldRightTrigger; } }
-    bool IsDownLeftTrigger { get { return leftTrigger && !oldLeftTrigger; } }
+    public static void ResetFactorySettings()
+    {
+        PlayerPrefs.SetFloat("pcs_pos_x", 0);
+        PlayerPrefs.SetFloat("pcs_pos_y", 0);
+        PlayerPrefs.SetFloat("pcs_pos_z", 0);
+        PlayerPrefs.SetFloat("pcs_rot_x", 0);
+        PlayerPrefs.SetFloat("pcs_rot_y", 0);
+        PlayerPrefs.SetFloat("pcs_rot_z", 0);
+        PlayerPrefs.SetFloat("tvm_pos_x", 0);
+        PlayerPrefs.SetFloat("tvm_pos_y", 0);
+        PlayerPrefs.SetFloat("tvm_pos_z", 0);
+        PlayerPrefs.SetFloat("tvm_rot_x", 0);
+        PlayerPrefs.SetFloat("tvm_rot_y", 0);
+        PlayerPrefs.SetFloat("tvm_rot_z", 0);
+    }
 
     private void Start() {
-        cameraReference.transform.localPosition = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
-        cameraReference.transform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
+        // Enable the correct set of controls (and only the correct set)
+        if (VRConfig.Instance.useControllerEmulation()) controls = emulation;
+        if (VRConfig.Instance.useControllerGamepad()) controls = gamepad;
+        if (VRConfig.Instance.useControllerOculus()) controls = oculus;
+        if (VRConfig.Instance.useControllerOpenVR()) controls = openvr;
+        emulation.enabled = emulation == controls;
+        gamepad.enabled = gamepad == controls;
+        oculus.enabled = oculus == controls;
+        openvr.enabled = openvr == controls;
+        // Get initial position/orientation from the preferences
+        Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
+        Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
+        Debug.Log($"Calibration: initial pos={pos}, rot={rot}");
+        cameraReference.transform.localPosition = pos;
+        cameraReference.transform.localRotation = Quaternion.Euler(rot);
     }
 
     // Update is called once per frame
     void Update() {
-        oldRightTrigger = rightTrigger;
-        oldLeftTrigger = leftTrigger;
-        rightTrigger = Input.GetAxisRaw("PrimaryTriggerRight") >= 0.9;
-        leftTrigger = Input.GetAxisRaw("PrimaryTriggerLeft") >= 0.9;
-        
+        //
+        // Enable current UI
+        //
+        ComfortUI.SetActive(state == State.Comfort);
+        CalibrationModeUI.SetActive(state == State.Mode);
+        TransalationUI.SetActive(state == State.Translation);
+        RotationUI.SetActive(state == State.Rotation);
+
         switch (state) {
             case State.Comfort:
-                #region UI
-                ComfortUI.SetActive(true);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
-                // I'm Comfortabler
-                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || Input.GetKeyDown(KeyCode.Y)) {
-                    Debug.Log("Calibration: User is happy, return to LoginManager");
+                // I'm Comfortable
+                if (controls.yes.get())
+                {
+                    Debug.Log("Calibration: Comfort: User is happy, return to LoginManager");
                     //Application.Quit();
                     SceneManager.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
-                if (Input.GetKeyDown(KeyCode.Keypad0) || IsDownLeftTrigger || Input.GetKeyDown(KeyCode.N)) {
-                    Debug.Log("Calibration: Starting calibration process");
+                if (controls.no.get())
+                {
+                    Debug.Log("Calibration: Comfort: Starting calibration process");
                     state = State.Mode;
                 }
-                // ResetAxisTrigger
-                #endregion
                 break;
             case State.Mode:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(true);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
                 //Activate Translation
-                if (Input.GetKeyDown(KeyCode.Keypad1) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKeyDown(KeyCode.T)) {
-                    Debug.Log("Calibration: Translation Mode");
+                if (controls.translate.get())
+                {
+                    Debug.Log("Calibration: Mode: Selected Translation Mode");
                     state = State.Translation;
                 }
                 //Activate Rotation (UpAxis)
-                if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.JoystickButton2) || Input.GetKeyDown(KeyCode.R)) {
-                    Debug.Log("Calibration: Rotation Mode");
+                if (controls.rotate.get())
+                {
+                    Debug.Log("Calibration: Mode: Selected Rotation Mode");
                     state = State.Rotation;
                 }
-                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger || IsDownLeftTrigger) {
-                    Debug.Log("Calibration: User is done");
+                // Reset everything to factory settings
+                if (controls.reset.get())
+                {
+                    Debug.Log("Calibration: Mode: Reset factory settings");
+                    ResetFactorySettings();
+                    cameraReference.transform.localPosition = Vector3.zero;
+                    cameraReference.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                }
+                if (controls.yes.get() || controls.no.get() || controls.done.get()) {
+                    Debug.Log("Calibration: Mode: User is done");
                     state = State.Comfort;
                 }
-                #endregion
                 break;
             case State.Translation:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(true);
-                RotationUI.SetActive(false);
-                #endregion
-                #region INPUT
                 // Movement
-                float zAxis = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical");
-                if (Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.F)) zAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.B)) zAxis = -1;
-                float xAxis = -Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
-                if (Input.GetKeyDown(KeyCode.Keypad4) || Input.GetKeyDown(KeyCode.R)) xAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad6) || Input.GetKeyDown(KeyCode.L)) xAxis = -1;
-                float yAxis = -Input.GetAxis("Oculus_CrossPlatform_PrimaryThumbstickVertical");
-                if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.U)) yAxis = 1;
-                if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.D)) yAxis = -1;
-                // Code added by Jack to allow resetting of position (mainly for non-HMD users)
-                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0) || Input.GetKeyDown(KeyCode.JoystickButton2))
+                float zAxis = controls.backwardForward.get();
+                float xAxis = controls.leftRight.get();
+                float yAxis = controls.downUp.get();
+                if (zAxis != 0) Debug.Log($"xxxjack translation z={zAxis}");
+                if (xAxis != 0) Debug.Log($"xxxjack translation x={xAxis}");
+                if (yAxis != 0) Debug.Log($"xxxjack translation y={yAxis}");
+                if (controls.reset.get())
                 {
                     cameraReference.transform.localPosition = new Vector3(0, 0, 0);
-                    Debug.Log("Calibration: Try translation 0,0,0");
+                    Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
                 }
                 cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 // Save Translation
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetAxis("PrimaryTriggerRight") >= 0.9) {
+                if (controls.yes.get()) {
                     var pos = cameraReference.transform.localPosition;
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
-                    Debug.Log($"Calibration: Translation Saved: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
                     state = State.Mode;
                 }
                 // Back
-                if (Input.GetKeyDown(KeyCode.Backspace) || IsDownLeftTrigger) {
+                if (controls.no.get()) {
                     cameraReference.transform.localPosition = new Vector3 ( 
                         PlayerPrefs.GetFloat(prefix+"_pos_x", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_y", 0), 
                         PlayerPrefs.GetFloat(prefix+"_pos_z", 0)
                     );
                     var pos = cameraReference.transform.localPosition;
-                    Debug.Log($"Calibration: Translation Reset to: {pos.x},{pos.y},{pos.z}");
+                    Debug.Log($"Calibration: Translation: Reloaded to: {pos.x}, {pos.y}, {pos.z}");
                     state = State.Mode;
                 }
-                #endregion
                 break;
             case State.Rotation:
-                #region UI
-                ComfortUI.SetActive(false);
-                CalibrationModeUI.SetActive(false);
-                TransalationUI.SetActive(false);
-                RotationUI.SetActive(true);
-                #endregion
-                #region INPUT
                 // Rotation
-                float yAxisR = Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal");
-                if (Input.GetKeyDown(KeyCode.Keypad7) || Input.GetKeyDown(KeyCode.L)) yAxisR = -1;
-                if (Input.GetKeyDown(KeyCode.Keypad9) || Input.GetKeyDown(KeyCode.R)) yAxisR =  1;
-                // Code added by Jack to allow resetting of rotation (mainly for non-HMD users)
-                if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Keypad0) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                float yAxisR = controls.leftRight.get();
+                if (yAxisR != 0) Debug.Log($"xxxjack rotation y={yAxisR}");
+                if (controls.reset.get())
                 {
-                    Debug.Log("Calibration: Try rotation 0,0,0");
+                    Debug.Log("Calibration: Rotation: Reset to 0,0,0");
                     cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);
                 }
                 cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep* yAxisR);
                 // Save Translation
-                if (Input.GetKeyDown(KeyCode.Space) || IsDownRightTrigger ) {
+                if (controls.yes.get()) {
                     var rot = cameraReference.transform.localRotation.eulerAngles;
                     PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
 
-                    Debug.Log($"Calibration: Rotation Saved: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
                     state = State.Mode;
                 }
                 // Back
-                if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetAxis("PrimaryTriggerLeft") >= 0.9) {
+                if (controls.no.get()) {
                     cameraReference.transform.localRotation = Quaternion.Euler( 
                         PlayerPrefs.GetFloat(prefix + "_rot_x", 0),
                         PlayerPrefs.GetFloat(prefix + "_rot_y", 0),
                         PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
                     );
                     var rot = cameraReference.transform.localRotation;
-                    Debug.Log($"Calibration: Rotation Reset to: {rot.x},{rot.y},{rot.z}");
+                    Debug.Log($"Calibration: Rotation: Reloaded to: {rot.x}, {rot.y}, {rot.z}");
                     state = State.Mode;
                 }
-                #endregion
                 break;
             default:
                 break;

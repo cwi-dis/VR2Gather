@@ -25,7 +25,7 @@ namespace VRT.Pilots.Common
 		public bool ForceSleepSync;
 		private bool _IsSimulating = false;
 
-		private HandInteractionManager _CurrentGrabber;
+		private HandController _CurrentGrabber;
 
 		public void Awake()
 		{
@@ -70,9 +70,9 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void OnGrab(HandInteractionManager handInteractionManager)
+		public void OnGrab(HandController handController)
 		{
-			if (_CurrentGrabber != handInteractionManager)
+			if (_CurrentGrabber != handController)
 			{
 				if (_CurrentGrabber != null)
 				{
@@ -85,29 +85,29 @@ namespace VRT.Pilots.Common
 					Rigidbody.useGravity = false;
 				}
 
-				transform.parent = handInteractionManager.transform;
+				transform.parent = handController.transform;
 
 				if (UseOffsets)
 				{
-					if (handInteractionManager.Handedness == HandController.Handedness.Left)
+					if (handController.HandHandedness == HandController.Handedness.Left)
 					{
-						ParentToHand(handInteractionManager.transform, GrabPositionOffsetLeft, GrabRotationOffsetLeft);
+						ParentToHand(handController.transform, GrabPositionOffsetLeft, GrabRotationOffsetLeft);
 					}
 					else
 					{
-						ParentToHand(handInteractionManager.transform, GrabPositionOffsetRight, GrabRotationOffsetRight);
+						ParentToHand(handController.transform, GrabPositionOffsetRight, GrabRotationOffsetRight);
 					}
 				}
 
-				_CurrentGrabber = handInteractionManager;
-				handInteractionManager.HeldGrabbable = this;
+				_CurrentGrabber = handController;
+				handController.HeldGrabbable = this;
 				_IsSimulating = false;
 			}
 		}
 
-		public void OnRelease(HandInteractionManager handInteractionManager)
+		public void OnRelease(HandController handController)
 		{
-			if (_CurrentGrabber == handInteractionManager)
+			if (_CurrentGrabber == handController)
 			{
 				transform.parent = null;
 				_CurrentGrabber.HeldGrabbable = null;

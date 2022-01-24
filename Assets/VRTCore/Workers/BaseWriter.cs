@@ -2,7 +2,7 @@ namespace VRT.Core
 {
     public class BaseWriter : BaseWorker
     {
-        public BaseWriter(WorkerType _type = WorkerType.Run) : base(_type)
+        public BaseWriter() : base()
         {
         }
 

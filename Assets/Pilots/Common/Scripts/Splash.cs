@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
@@ -21,11 +22,11 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void LateUpdate()
         {
-            Vector3 forward = Camera.main.transform.forward;
+            Vector3 forward = VRConfig.Instance.getMainCameraTransform().forward;
             forward.y = 0;
             forward = forward.normalized;
 
-            Vector3 position = Camera.main.transform.position + forward * distance;
+            Vector3 position = VRConfig.Instance.getMainCameraTransform().position + forward * distance;
             Quaternion rotation = Quaternion.LookRotation(forward);
             transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
             transform.position = Vector3.Lerp(transform.position, position, velocity);

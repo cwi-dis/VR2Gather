@@ -64,7 +64,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         StopMicrophone();
         currentMicrophoneName = microphoneName;
         if (currentMicrophoneName != "None") {
-            VoiceReader.PrepareDSP();
+            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
             readPosition = 0;
         }
@@ -82,6 +82,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
+        player.setupInputOutput(true); // xxxjack needed for preview?
         Stop();
 
         switch (representation) {

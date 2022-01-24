@@ -10,6 +10,7 @@ namespace VRT.UserRepresentation.PointCloud
         int pointCount = 0;
         static Material baseMaterial;
         public Material material;
+        public bool paused = false;
         MaterialPropertyBlock block;
         PointCloudPreparer preparer;
         static int instanceCounter = 0;
@@ -40,6 +41,11 @@ namespace VRT.UserRepresentation.PointCloud
             stats = new Stats(Name());
         }
 
+        public void PausePlayback(bool _paused)
+        {
+            paused = _paused;
+        }
+
         public void SetPreparer(PointCloudPreparer _preparer)
         {
             if (preparer != null)
@@ -56,6 +62,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
+            if (paused) return;
             float pointSize = 0;
             if (fresh)
             {
@@ -69,7 +76,7 @@ namespace VRT.UserRepresentation.PointCloud
             block.SetMatrix("_Transform", transform.localToWorldMatrix);
 
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
-            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueSize(), fresh);
+            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
         }
 
         public void OnDestroy()
@@ -88,28 +95,29 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalPointCount = 0;
             double statsTotalDisplayPointCount = 0;
             double statsTotalPointSize = 0;
-            int statsMaxQueueSize = 0;
-            int statsMinQueueSize = 0;
+            double statsTotalQueueDuration = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, ulong timestamp, int queueSize, bool fresh)
+            public void statsUpdate(int pointCount, float pointSize, ulong timestamp, ulong queueDuration, bool fresh)
             {
     
                 statsTotalDisplayPointCount += pointCount;
                 statsTotalDisplayCount += 1;
-                if (!fresh) return; //remember to commit with this tag backport candidate
-                if (fresh)
+                if (!fresh)
                 {
-                    statsTotalPointcloudCount += 1;
-                    statsTotalPointCount += pointCount;
+                    // If this was just a re-display of a previously received pointcloud we don't need the rest of the data.
+                    return;
                 }
+                statsTotalPointcloudCount += 1;
+                statsTotalPointCount += pointCount;
                 statsTotalPointSize += pointSize;
-                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
-                if (queueSize < statsMinQueueSize) statsMinQueueSize = queueSize;
+                statsTotalQueueDuration += queueDuration;
 
                 if (ShouldOutput())
                 {
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount))}, points_per_display={(int)(statsTotalDisplayPointCount / (statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount))}, avg_pointsize={(statsTotalPointSize / (statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount)):G4}, max_queuesize={statsMaxQueueSize}, min_queuesize={statsMinQueueSize}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
+                    double factor = statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount;
+                    double display_factor = statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount;
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={(long)sinceEpoch.TotalMilliseconds - (long)timestamp}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
                   }
                 if (ShouldClear())
                 {
@@ -119,8 +127,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalDisplayPointCount = 0;
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
-                    statsMaxQueueSize = 0;
-                    statsMinQueueSize = 99999;
+                    statsTotalQueueDuration = 0;
                 }
             }
         }
