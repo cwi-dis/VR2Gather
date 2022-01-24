@@ -43,7 +43,7 @@ public class PilotRegistry
                 return "HoloMeet";
             case "MedicalExamination":
                 return "MedicalExamination";
-            case "Development":
+            case "Mediascape":
                 return "MediaScape_Museum";
             default:
                 throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");

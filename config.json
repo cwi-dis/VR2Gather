@@ -13,13 +13,13 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "jj",
-  	"sessionScenario" : 7,
+  	"sessionName" : "mediascape-test",
+  	"sessionScenario" : 4,
   	"_sessionScenario" : 1,
   	"sessionTransportProtocol" : 1,
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoStartWith" : 2,
   	"autoDelay" : 0.5
   },
   "VR" : {
