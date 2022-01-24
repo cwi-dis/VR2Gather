@@ -56,7 +56,6 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.PCSelfConfig.PrerecordedReaderConfig.preferBest = preferBest;
 #endif
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
-            cfg.Render = realUser.Render;
             try
             {
                 Init(dummyUser, cfg, true);

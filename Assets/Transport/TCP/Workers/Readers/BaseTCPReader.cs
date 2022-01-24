@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
 using VRT.Core;
 using VRT.Transport.Dash;
@@ -17,8 +18,10 @@ namespace VRT.Transport.TCP
             public QueueThreadSafe outQueue;
             public string host;
             public int port;
+            public int portOffset = 0;
             public object tileDescriptor;
             public int tileNumber = -1;
+            public uint fourcc;
         }
         protected ReceiverInfo[] receivers;
    
@@ -85,6 +88,7 @@ namespace VRT.Transport.TCP
 
             protected void run()
             {
+                int portOffset = 0;
                 try
                 {
                     while (!stopping)
@@ -96,12 +100,14 @@ namespace VRT.Transport.TCP
                         {
                             return;
                         }
+
                         if (socket == null)
                         {
                             IPAddress[] all = Dns.GetHostAddresses(receiverInfo.host);
                             all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                             IPAddress ipAddress = all[0];
-                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port);
+                            portOffset = receiverInfo.portOffset;
+                            IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port + portOffset);
                             BaseStats.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
                             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                             try
@@ -110,7 +116,7 @@ namespace VRT.Transport.TCP
                             }
                             catch(SocketException e)
                             {
-                                Debug.Log($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}");
+                                Debug.LogWarning($"{Name()}: Connect({remoteEndpoint}) failed: {e.ToString()}. Sleep 1 second.");
                                 socket = null;
                                 System.Threading.Thread.Sleep(1000);
                                 continue;
@@ -122,18 +128,24 @@ namespace VRT.Transport.TCP
                         int hdrSize = _ReceiveAll(socket, hdr);
                         if (hdrSize != 16)
                         {
-                            Debug.Log($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
+                            Debug.LogWarning($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
                             socket.Close();
                             socket = null;
                             continue;
                         }
+                        // Check fourcc
+                        int fourccReceived = BitConverter.ToInt32(hdr, 0);
+                        if (fourccReceived != receiverInfo.fourcc)
+                        {
+                            Debug.LogWarning($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
+                        } 
                         int dataSize = BitConverter.ToInt32(hdr, 4);
                         long timestamp = BitConverter.ToInt64(hdr, 8);
                         byte[] data = new byte[dataSize];
                         int actualDataSize = _ReceiveAll(socket, data);
                         if (actualDataSize != dataSize)
                         {
-                            Debug.Log($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
+                            Debug.LogWarning($"{Name()}: short data read ({actualDataSize} in stead of {dataSize}), closing socket");
                             socket.Close();
                             socket = null;
                             continue;
@@ -146,17 +158,26 @@ namespace VRT.Transport.TCP
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         bool ok = receiverInfo.outQueue.Enqueue(mc);
                         stats.statsUpdate(dataSize, !ok);
-
+                        // Close the socket if the portOffset (the quality index) has been changed in the mean time
+                        if (socket != null && receiverInfo.portOffset != portOffset)
+                        {
+                            Debug.Log($"{Name()}: closing socket for quality switch");
+                            socket.Close();
+                            socket = null;
+                        }
                     }
                 }
                 catch (System.Exception e)
                 {
+                    if (!stopping)
+                    {
 #if UNITY_EDITOR
-                    throw;
+                        throw;
 #else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while receiving visual representation or audio from another participant");
+                        Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+                        Debug.LogError("Error while receiving visual representation or audio from another participant");
 #endif
+                    }
                 }
 
             }
@@ -177,7 +198,7 @@ namespace VRT.Transport.TCP
                     if (dropped) statsDroppedPackets++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, dropped_fps={statsDroppedPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
                      }
                     if (ShouldClear())
                     {
@@ -196,7 +217,7 @@ namespace VRT.Transport.TCP
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseTCPReader(string _url) : base(WorkerType.Init)
+        protected BaseTCPReader(string _url) : base()
         {
             lock (this)
             {
@@ -220,7 +241,7 @@ namespace VRT.Transport.TCP
             }
         }
 
-        public BaseTCPReader(string _url, QueueThreadSafe outQueue) : this(_url)
+        public BaseTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
         {
             lock (this)
             {
@@ -230,8 +251,9 @@ namespace VRT.Transport.TCP
                     {
                         outQueue = outQueue,
                         host = url.Host,
-                        port = url.Port
-            },
+                        port = url.Port,
+                        fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
+                    },
                 };
                 Start();
 

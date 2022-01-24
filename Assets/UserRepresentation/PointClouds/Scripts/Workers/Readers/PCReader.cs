@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe out2Queue;
         protected bool dontWait = false;
 
-        protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             if (_outQueue == null)
             {
@@ -60,8 +60,8 @@ namespace VRT.UserRepresentation.PointCloud
             for (int i = 0; i < nTile; i++)
             {
                 rv[i].normal = new Vector3((float)origTileInfo[i].normal.x, (float)origTileInfo[i].normal.y, (float)origTileInfo[i].normal.z);
-                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].camera);
-                rv[i].cameraMask = origTileInfo[i].ncamera;
+                rv[i].cameraName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(origTileInfo[i].cameraName);
+                rv[i].cameraMask = origTileInfo[i].cameraMask;
             }
             return rv;
         }
@@ -123,6 +123,7 @@ namespace VRT.UserRepresentation.PointCloud
 
             bool didDrop = false;
             bool didDropSelf = false;
+            ulong encoderQueuedDuration = 0;
             if (outQueue == null)
             {
                 Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
@@ -142,13 +143,14 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
+                encoderQueuedDuration = out2Queue.QueuedDuration();
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
                     didDrop = true;
                 }
             }
-            stats.statsUpdate(pc.count(), didDrop, didDropSelf);
+            stats.statsUpdate(pc.count(), pc.cellsize(), didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
             pc.free();
         }
 
@@ -160,23 +162,28 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
+            double statsTotalPointSize = 0;
             double statsDrops = 0;
             double statsSelfDrops = 0;
+            double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp)
             {
                 
                 statsTotalPoints += pointCount;
-                statsTotalPointclouds += 1;
+                statsTotalPointSize += pointSize;
+                statsTotalPointclouds++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
+                statsQueuedDuration += queuedDuration;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}");
-                    if (statsDrops > 3 * Interval())
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, pc_timestamp={timestamp}");
+                    if (statsDrops > 1 + 3 * Interval())
                     {
-                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                        double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
+                        Debug.LogWarning($"{name}: excessive dropped frames. Set LocalUser.PCSelfConfig.frameRate <= {ok_fps:F2}  in config.json.");
                     }
                  }
                 if (ShouldClear())
@@ -184,8 +191,10 @@ namespace VRT.UserRepresentation.PointCloud
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
+                    statsTotalPointSize = 0;
                     statsDrops = 0;
                     statsSelfDrops = 0;
+                    statsQueuedDuration = 0;
                 }
             }
         }

@@ -351,9 +351,13 @@ namespace VRT.Orchestrator.Wrapping
 
         #region NTP clock
 
+        long timeOfGetNTPTimeRequest = 0;
+
         public void GetNTPTime() {
             Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
             Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
         }
 
@@ -368,7 +372,9 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
-            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}");
+            long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
+            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}, uncertainty_interval_ms={uncertainty}");
+            if (OnGetNTPTimeEvent == null) Debug.LogWarning("OrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 

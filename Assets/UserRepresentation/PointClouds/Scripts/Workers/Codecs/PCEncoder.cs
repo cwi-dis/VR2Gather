@@ -14,7 +14,9 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-
+        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
+        ulong mostRecentTimestampFed = 0;
+        
         public struct EncoderStreamDescription
         {
             public int octreeBits;
@@ -23,7 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
         };
         EncoderStreamDescription[] outputs;
 
-        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {
@@ -116,13 +118,18 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Update();
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            if (pc == null) return; // Terminating
-            if (encoderGroup != null)
+            while (pc != null)
             {
-                // Not terminating yet
-                encoderGroup.feed(pc);
+                if (encoderGroup != null)
+                {
+                    // Not terminating yet
+                    mostRecentFeedTime = System.DateTime.Now;
+                    mostRecentTimestampFed = pc.timestamp();
+                    encoderGroup.feed(pc);
+                }
+                pc.free();
+                pc = (cwipc.pointcloud)inQueue.Dequeue();
             }
-            pc.free();
         }
 
         protected void PusherThread(int stream_number)
@@ -139,10 +146,12 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoder.available(true))
                     {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                        mc.info.timestamp = (long)mostRecentTimestampFed;
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            stats.statsUpdate();
-                            outQueue.Enqueue(mc);
+                            ulong encodeDuration = (ulong)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
+                            bool dropped = !outQueue.Enqueue(mc);
+                            stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
                         }
                         else
                         {
@@ -172,22 +181,28 @@ namespace VRT.UserRepresentation.PointCloud
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;
+            double statsTotalDropped = 0;
+            double statsTotalEncodeDuration = 0;
+            double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate() {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            public void statsUpdate(bool dropped, ulong encodeDuration, ulong queuedDuration) {
                 statsTotalPointclouds++;
+                statsTotalEncodeDuration += encodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, avg_transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
                 }
                 if (ShouldClear()) {
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }
 
         protected Stats stats;
-
     }
 }
