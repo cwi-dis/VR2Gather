@@ -30,6 +30,7 @@ namespace VRT.UserRepresentation.PointCloud
         public List<BaseWorker> preparers = new List<BaseWorker>();
         [Tooltip("Debugging: current renderers")]
         public List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
+        public bool paused = false;
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
@@ -488,6 +489,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             BaseStats.Output(Name(), msg);
             renderers.Add(render);
+            if (paused) PausePlayback(true); // check if renderer should be paused
             render.SetPreparer(preparer);
             return preparerQueue;
         }
