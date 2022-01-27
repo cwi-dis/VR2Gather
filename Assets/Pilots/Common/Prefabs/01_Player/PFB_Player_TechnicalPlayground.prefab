@@ -256,6 +256,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: localPlayerOnlyObjects.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: localPlayerOnlyObjects.Array.data[2]
+      value: 
+      objectReference: {fileID: 4767837841994370689}
     - target: {fileID: 7210636311981259469, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
