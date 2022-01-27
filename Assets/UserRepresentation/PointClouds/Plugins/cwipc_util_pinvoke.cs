@@ -188,7 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20211230;
+            public const ulong CWIPC_API_VERSION = 0x20220126;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
@@ -275,6 +275,9 @@ namespace VRT.UserRepresentation.PointCloud
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_colormap(IntPtr pc, UInt32 clearBits, UInt32 setBits);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_crop(IntPtr pc, float[] bbox);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_join(IntPtr pc1, IntPtr pc2);
@@ -858,6 +861,14 @@ namespace VRT.UserRepresentation.PointCloud
         {
             IntPtr pcPtr = pc._intptr();
             IntPtr rvPtr = _API_cwipc_util.cwipc_colormap(pcPtr, clearMask, setMask);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud crop(pointcloud pc, float[] bbox)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_crop(pcPtr, bbox);
             if (rvPtr == IntPtr.Zero) return null;
             return new pointcloud(rvPtr);
         }
