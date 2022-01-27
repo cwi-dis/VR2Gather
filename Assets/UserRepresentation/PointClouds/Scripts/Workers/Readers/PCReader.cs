@@ -14,6 +14,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe outQueue;
         protected QueueThreadSafe out2Queue;
         protected bool dontWait = false;
+        protected float[] bbox;
 
         protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
@@ -64,6 +65,16 @@ namespace VRT.UserRepresentation.PointCloud
                 rv[i].cameraMask = origTileInfo[i].cameraMask;
             }
             return rv;
+        }
+
+        public void SetCrop(float[] _bbox)
+        {
+            bbox = _bbox;
+        }
+
+        public void ClearCrop()
+        {
+            bbox = null;
         }
 
         public override void Stop()
@@ -118,6 +129,13 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     pc = newPc;
                 }
+            }
+
+            if (bbox != null)
+            {
+                cwipc.pointcloud newPc = cwipc.crop(pc, bbox);
+                pc.free();
+                pc = newPc;
             }
 
             bool didDrop = false;
