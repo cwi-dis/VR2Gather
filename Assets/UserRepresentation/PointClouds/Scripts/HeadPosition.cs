@@ -28,7 +28,7 @@ public class HeadPosition : MonoBehaviour
     {
         if (drawGizmoBbox)
         {
-            float[] boundingbox = GetBoundingBox();
+            float[] boundingbox = GetBoundingBox(null);
             Gizmos.color = Color.yellow;
             Vector3[] corners = new Vector3[8];
             int i = 0;
@@ -55,7 +55,7 @@ public class HeadPosition : MonoBehaviour
         }
         if (drawGizmoHeadcube)
         {
-            Vector3[] corners = GetCorners();
+            Vector3[] corners = GetCorners(null);
             Gizmos.color = Color.yellow;
             foreach(var p1 in corners)
             {
@@ -70,24 +70,41 @@ public class HeadPosition : MonoBehaviour
         }
     }
 
-    public Vector3[] GetCorners()
+    public Vector3[] GetCorners(Transform destinationTransform)
     {
-        return new Vector3[8]
+        if (destinationTransform == null)
         {
-            transform.TransformPoint(new Vector3(0, 0, 0)),
-            transform.TransformPoint(new Vector3(0, 0, 1)),
-            transform.TransformPoint(new Vector3(0, 1, 0)),
-            transform.TransformPoint(new Vector3(0, 1, 1)),
-            transform.TransformPoint(new Vector3(1, 0, 0)),
-            transform.TransformPoint(new Vector3(1, 0, 1)),
-            transform.TransformPoint(new Vector3(1, 1, 0)),
-            transform.TransformPoint(new Vector3(1, 1, 1))
-        };
+            return new Vector3[8]
+            {
+                transform.TransformPoint(new Vector3(0, 0, 0)),
+                transform.TransformPoint(new Vector3(0, 0, 1)),
+                transform.TransformPoint(new Vector3(0, 1, 0)),
+                transform.TransformPoint(new Vector3(0, 1, 1)),
+                transform.TransformPoint(new Vector3(1, 0, 0)),
+                transform.TransformPoint(new Vector3(1, 0, 1)),
+                transform.TransformPoint(new Vector3(1, 1, 0)),
+                transform.TransformPoint(new Vector3(1, 1, 1))
+            };
+        } else
+        {
+            return new Vector3[8]
+            {
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(0, 0, 0))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(0, 0, 1))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(0, 1, 0))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(0, 1, 1))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(1, 0, 0))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(1, 0, 1))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(1, 1, 0))),
+                destinationTransform.InverseTransformPoint(transform.TransformPoint(new Vector3(1, 1, 1)))
+            };
+
+        }
     }
 
-    public float[] GetBoundingBox()
+    public float[] GetBoundingBox(Transform destinationTransform)
     {
-        Vector3[] corners = GetCorners();
+        Vector3[] corners = GetCorners(destinationTransform);
         float[] rv = new float[6];
         rv[0] = rv[1] = corners[0].x;
         rv[2] = rv[3] = corners[0].y;
