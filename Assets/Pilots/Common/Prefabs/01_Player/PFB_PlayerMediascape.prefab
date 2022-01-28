@@ -2214,13 +2214,13 @@ MonoBehaviour:
   leftHand:
     vrTarget: {fileID: 7926430877375235021}
     rigTarget: {fileID: 8300821615235237294}
-    trackingPositionOffset: {x: 0, y: 0, z: 0}
-    trackingRotationOffset: {x: 0, y: 0, z: 0}
+    trackingPositionOffset: {x: 0, y: -0.02, z: -0.1}
+    trackingRotationOffset: {x: -90, y: 180, z: 0}
   rightHand:
     vrTarget: {fileID: 9095412289411162012}
     rigTarget: {fileID: 9046394060385167130}
-    trackingPositionOffset: {x: 0, y: 0, z: 0}
-    trackingRotationOffset: {x: 0, y: 0, z: 0}
+    trackingPositionOffset: {x: 0, y: -0.02, z: -0.1}
+    trackingRotationOffset: {x: -90, y: 180, z: 0}
   leftFoot:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 0}
