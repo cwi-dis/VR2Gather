@@ -32,8 +32,14 @@ public class CameraFader : MonoBehaviour
 
 	public void Awake()
 	{
-		_FadeMaterial = FadeImage.material;
+		_FadeMaterial = Instantiate(FadeImage.material);
+		FadeImage.material = _FadeMaterial;
+		_InitFade();
 
+	}
+
+	void _InitFade()
+    {
 		if (StartFadedOut)
 		{
 			_FadeMaterial.color = Color.black;
@@ -58,6 +64,9 @@ public class CameraFader : MonoBehaviour
 
 	public IEnumerator FadeIn()
 	{
+		_InitFade();
+		yield return null;
+
 		ClearText();
 		_Fading = true;
 		_Target = 0.0f;
