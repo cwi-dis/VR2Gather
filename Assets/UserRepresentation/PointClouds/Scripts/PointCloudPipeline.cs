@@ -557,8 +557,9 @@ namespace VRT.UserRepresentation.PointCloud
             SetCrop(null);
         }
 
-        public void PausePlayback(bool paused)
+        public void PausePlayback(bool _paused)
         {
+            paused = _paused;
             foreach(var r in renderers)
             {
                 r.PausePlayback(paused);
