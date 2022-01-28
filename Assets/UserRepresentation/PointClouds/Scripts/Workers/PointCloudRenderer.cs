@@ -6,6 +6,11 @@ namespace VRT.UserRepresentation.PointCloud
 {
     public class PointCloudRenderer : MonoBehaviour
     {
+        // For reasons I don't understand pointclouds need to be mirrored in the X direction.
+        // Doing this on the GameObject.transform has the drawback that coordinate systems
+        // become mirrored, for example when cropping a pointcloud. Therefore, we mirror here,
+        // by adjusting the matrix.
+        const bool pcMirrorX = true;
         ComputeBuffer pointBuffer;
         int pointCount = 0;
         static Material baseMaterial;
@@ -66,8 +71,12 @@ namespace VRT.UserRepresentation.PointCloud
                 block.SetFloat("_PointSize", pointSize);
             }
             if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
-            block.SetMatrix("_Transform", transform.localToWorldMatrix);
-
+            Matrix4x4 pcMatrix = transform.localToWorldMatrix;
+            if (pcMirrorX)
+            {
+                pcMatrix = pcMatrix * Matrix4x4.Scale(new Vector3(-1, 1, 1));
+            }
+            block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
             stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
         }
