@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: pc
       value: 
       objectReference: {fileID: 7108597504989543390}
+    - target: {fileID: 2432352442910619577, guid: a604d45e2d52f42c8b5100b0e76586cf,
+        type: 3}
+      propertyPath: headOnly
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6916535084958141328, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
       propertyPath: m_Name
@@ -30,7 +35,7 @@ PrefabInstance:
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.2
+      value: -0.125
       objectReference: {fileID: 0}
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
@@ -229,6 +234,11 @@ PrefabInstance:
     - target: {fileID: 8428722593867726133, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8516495362261673857, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: StartFadedOut
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
