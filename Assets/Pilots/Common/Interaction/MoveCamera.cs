@@ -86,8 +86,8 @@ namespace VRT.Pilots.Common
 
         protected void adjustBodyHead(float hAngle, float vAngle)
         {
-            playerBody.Rotate(Vector3.up, hAngle);
-            avatarHead.Rotate(Vector3.right, vAngle);
+            if (playerBody != null) playerBody.Rotate(Vector3.up, hAngle);
+            if (avatarHead != null) avatarHead.Rotate(Vector3.right, vAngle);
         }
     }
 }
