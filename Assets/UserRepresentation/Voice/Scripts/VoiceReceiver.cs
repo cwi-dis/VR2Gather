@@ -61,7 +61,7 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            string audioCodec = Config.Instance.audioCodec;
+            string audioCodec = Config.Instance.Voice.Codec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
@@ -115,7 +115,7 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            string audioCodec = Config.Instance.audioCodec;
+            string audioCodec = Config.Instance.Voice.Codec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             preparerQueue = null;
@@ -136,6 +136,7 @@ namespace VRT.UserRepresentation.Voice
         {
             preparer?.Synchronize();
         }
+
         private void LateUpdate()
         {
             preparer?.LatchFrame();
