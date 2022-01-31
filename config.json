@@ -18,7 +18,7 @@
   	"autoLogin" : true,
   	"sessionName" : "jittertest",
   	"sessionScenario" : 0,
-  	"sessionTransportProtocol" : 3,
+  	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
   	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
