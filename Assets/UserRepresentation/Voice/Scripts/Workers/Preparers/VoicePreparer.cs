@@ -32,12 +32,22 @@ namespace VRT.UserRepresentation.Voice
         // audio frame for every visual frame (because the visual clock jumps forward over the
         // audio clock).
         const int VISUAL_FRAME_DURATION_MS = 66;
-
+        
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             stats = new Stats(Name());
             Debug.Log("VoicePreparer: Started.");
             Start();
+        }
+
+        public override void SetSynchronizer(Synchronizer _synchronizer)
+        {
+            if (_synchronizer != null && Config.Instance.Voice.ignoreSynchronizer)
+            {
+                BaseStats.Output(Name(), "unsynchronized=1");
+                _synchronizer = null;
+            }
+            synchronizer = _synchronizer;
         }
 
         public override void OnStop()
@@ -65,6 +75,7 @@ namespace VRT.UserRepresentation.Voice
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
+
         public override bool LatchFrame()
         {
             lock (this)
@@ -87,8 +98,20 @@ namespace VRT.UserRepresentation.Voice
                     }
                     if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp - currentTimestamp} ms too late");
                 }
-                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
-                // xxxjack Also: the 0 timeout to TryDecode may need thought.
+                // For voice, we do an extra step: we optionally set an upper limit to the latency.
+                if (Config.Instance.Voice.maxPlayoutLatency > 0)
+                {
+                    if (bestTimestamp == 0)
+                    {
+                        bestTimestamp = currentTimestamp;
+                    }
+                    ulong latestTimestampInqueue = InQueue.LatestTimestamp();
+                    if (latestTimestampInqueue > currentTimestamp + (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000))
+                    {
+                        // Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
+                        bestTimestamp = latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                    }
+                }
                 if (InQueue.IsClosed()) return false; // We are shutting down
                 return _FillAudioFrame(bestTimestamp);
             }
@@ -216,7 +239,7 @@ namespace VRT.UserRepresentation.Voice
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        if (true || debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
 #if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
 #endif

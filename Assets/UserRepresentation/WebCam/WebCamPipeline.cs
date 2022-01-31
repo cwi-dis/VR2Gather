@@ -65,13 +65,13 @@ namespace VRT.UserRepresentation.WebCam
             }
             //bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             FFmpeg.AutoGen.AVCodecID codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
-            if (Config.Instance.videoCodec == "h264")
+            if (Config.Instance.Video.Codec == "h264")
             {
                 codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
             }
             else
             {
-                Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.videoCodec}");
+                Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.Video.Codec}");
             }
             isSource = (cfg.sourceType == "self");
             if (user.userData.webcamName == "None") return this;

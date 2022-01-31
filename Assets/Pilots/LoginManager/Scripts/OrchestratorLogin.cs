@@ -598,8 +598,8 @@ public class OrchestratorLogin : MonoBehaviour {
         socketProtocolToggle.isOn = true;
         dashProtocolToggle.isOn = false;
         tcpProtocolToggle.isOn = false;
-        uncompressedPointcloudsToggle.isOn = Config.Instance.pointcloudCodec == "cwi0";
-        uncompressedAudioToggle.isOn = Config.Instance.audioCodec == "VR2a";
+        uncompressedPointcloudsToggle.isOn = Config.Instance.PCs.Codec == "cwi0";
+        uncompressedAudioToggle.isOn = Config.Instance.Voice.Codec == "VR2a";
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -1105,7 +1105,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     public void ReadyButton() {
-        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.pointcloudCodec + "_" + Config.Instance.audioCodec);
+        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.PCs.Codec + "_" + Config.Instance.Voice.Codec);
     }
 
     public void GoToCalibration() {
@@ -1207,19 +1207,19 @@ public class OrchestratorLogin : MonoBehaviour {
     {
         if (uncompressedPointcloudsToggle.isOn)
         {
-            Config.Instance.pointcloudCodec = "cwi0";
+            Config.Instance.PCs.Codec = "cwi0";
         }
         else
         {
-            Config.Instance.pointcloudCodec = "cwi1";
+            Config.Instance.PCs.Codec = "cwi1";
         }
         if (uncompressedAudioToggle.isOn)
         {
-            Config.Instance.audioCodec = "VR2a";
+            Config.Instance.Voice.Codec = "VR2a";
         }
         else
         {
-            Config.Instance.audioCodec = "VR2A";
+            Config.Instance.Voice.Codec = "VR2A";
         }
     }
 

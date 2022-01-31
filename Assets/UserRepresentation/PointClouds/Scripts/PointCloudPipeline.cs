@@ -178,7 +178,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // allocate and initialize per-stream outgoing stream datastructures
                         //
-                        string pointcloudCodec = Config.Instance.pointcloudCodec;
+                        string pointcloudCodec = Config.Instance.PCs.Codec;
                         var Encoders = PCSelfConfig.Encoders;
                         int minTileNum = 0;
                         int nTileToTransmit = 1;
@@ -400,7 +400,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
-            string pointcloudCodec = Config.Instance.pointcloudCodec;
+            string pointcloudCodec = Config.Instance.PCs.Codec;
 
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)

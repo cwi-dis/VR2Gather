@@ -32,7 +32,7 @@ namespace VRT.UserRepresentation.Voice
                 return;
             }
 
-            string audioCodec = Config.Instance.audioCodec;
+            string audioCodec = Config.Instance.Voice.Codec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             QueueThreadSafe _readerOutputQueue = null;
@@ -52,7 +52,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
@@ -89,7 +89,7 @@ namespace VRT.UserRepresentation.Voice
                 return;
             }
 
-            string audioCodec = Config.Instance.audioCodec;
+            string audioCodec = Config.Instance.Voice.Codec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             QueueThreadSafe _readerOutputQueue = null;
@@ -109,7 +109,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
