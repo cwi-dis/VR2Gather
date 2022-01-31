@@ -108,12 +108,10 @@ namespace VRT.UserRepresentation.Voice
                     ulong latestTimestampInqueue = InQueue.LatestTimestamp();
                     if (latestTimestampInqueue > currentTimestamp + (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000))
                     {
-                        Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
+                        // Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
                         bestTimestamp = latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000);
                     }
                 }
-                // xxxjack Note: we are holding the lock during TryDequeue. Is this a good idea?
-                // xxxjack Also: the 0 timeout to TryDecode may need thought.
                 if (InQueue.IsClosed()) return false; // We are shutting down
                 return _FillAudioFrame(bestTimestamp);
             }
@@ -241,7 +239,7 @@ namespace VRT.UserRepresentation.Voice
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        if (true || debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
 #if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
 #endif
