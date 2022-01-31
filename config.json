@@ -48,7 +48,8 @@
   },
   "Voice": {
   	"Codec": "VR2A",
-  	"maxPlayoutLatency" : 0.150
+  	"maxPlayoutLatency" : 1,
+	"ignoreSynchronizer" : true
   },
   "Video": {
   	"Codec" : "h264"
