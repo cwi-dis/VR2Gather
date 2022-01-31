@@ -117,6 +117,7 @@ namespace VRT.Core
             public string Codec = "VR2A";
             public int audioFps = 50;
             public float maxPlayoutLatency = 0.3f;
+            public bool ignoreSynchronizer = false;
         }
         public _Voice Voice;
 

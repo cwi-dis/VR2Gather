@@ -40,6 +40,16 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
+        public override void SetSynchronizer(Synchronizer _synchronizer)
+        {
+            if (_synchronizer != null && Config.Instance.Voice.ignoreSynchronizer)
+            {
+                BaseStats.Output(Name(), "unsynchronized=1");
+                _synchronizer = null;
+            }
+            synchronizer = _synchronizer;
+        }
+
         public override void OnStop()
         {
             base.OnStop();

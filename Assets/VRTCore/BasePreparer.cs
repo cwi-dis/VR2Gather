@@ -25,7 +25,7 @@ namespace VRT.Core
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void SetSynchronizer(Synchronizer _synchronizer)
+        public virtual void SetSynchronizer(Synchronizer _synchronizer)
         {
             synchronizer = _synchronizer;
        }
