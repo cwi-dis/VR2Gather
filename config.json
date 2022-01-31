@@ -16,11 +16,11 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
+  	"sessionName" : "jittertest",
   	"sessionScenario" : 0,
-  	"sessionTransportProtocol" : 1,
+  	"sessionTransportProtocol" : 3,
   	"sessionUncompressed" : false,
-  	"autoCreateForUser" : "",
+  	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -65,11 +65,11 @@
 	  },
       "voxelSize": 0.0,
       "frameRate": 10,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
 		
 		{
-          "octreeBits": 9
+          "octreeBits": 8
         }
 
       ],
