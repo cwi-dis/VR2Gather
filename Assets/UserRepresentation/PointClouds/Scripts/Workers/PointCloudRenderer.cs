@@ -122,7 +122,7 @@ namespace VRT.UserRepresentation.PointCloud
                     System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     double factor = statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount;
                     double display_factor = statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount;
-                    Timedelta latency = (Timestamp)sinceEpoch.TotalMilliseconds - timestamp;
+                    Timedelta latency = timestamp > 0 ? (Timestamp)sinceEpoch.TotalMilliseconds - timestamp : 0;
                     Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={latency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
                   }
                 if (ShouldClear())

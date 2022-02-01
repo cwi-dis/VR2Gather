@@ -202,6 +202,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalAudioZeroSamples = 0;
             int statsZeroInsertionCount = 0;
             double statsTotalLatency = 0;
+            int statsTotalLatencyContributions = 0;
             double statsTotalQueueDuration = 0;
 
             public void statsUpdate(int nSamples, int nZeroSamples, Timestamp timestamp, Timedelta queueDuration)
@@ -211,17 +212,30 @@ namespace VRT.UserRepresentation.Voice
                 statsTotalAudioSamples += nSamples;
                 statsTotalAudioZeroSamples += nZeroSamples;
                 if (nZeroSamples > 0) statsZeroInsertionCount++;
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                Timedelta latency = now - timestamp;
-                statsTotalLatency += latency;
-            
+                if (timestamp > 0)
+                {
+                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                    Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+                    Timedelta latency = now - timestamp;
+                    if (latency < 0 || latency > 1000000)
+                    {
+                        Debug.LogWarning($"{name}.Stats: preposterous latency {latency}");
+                    }
+                    statsTotalLatency += latency;
+                    statsTotalLatencyContributions++;
+                }
+
                 statsTotalQueueDuration += queueDuration;
             
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalAudioframeCount == 0 ? 1 : statsTotalAudioframeCount);
-                    Output($"latency_ms={(int)(statsTotalLatency / factor)}, fps_output={statsTotalAudioframeCount / Interval():F2}, fps_dropout={statsZeroInsertionCount / Interval():F2}, dropout_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, dropout_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, output_freq={statsTotalAudioSamples/Interval():F2}, timestamp={timestamp}");
+                    long latency_ms = statsTotalLatencyContributions == 0 ? 0 : (int)(statsTotalLatency / statsTotalLatencyContributions);
+                    if (latency_ms < 0 || latency_ms > 1000000)
+                    {
+                        Debug.LogWarning($"{name}.Stats: preposterous average latency {latency_ms}");
+                    }
+                    Output($"latency_ms={latency_ms}, fps_output={statsTotalAudioframeCount / Interval():F2}, fps_dropout={statsZeroInsertionCount / Interval():F2}, dropout_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, dropout_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, output_freq={statsTotalAudioSamples/Interval():F2}, timestamp={timestamp}");
                 }
                 if (ShouldClear())
                 {
@@ -231,6 +245,7 @@ namespace VRT.UserRepresentation.Voice
                     statsTotalAudioZeroSamples = 0;
                     statsZeroInsertionCount = 0;
                     statsTotalLatency = 0;
+                    statsTotalLatencyContributions = 0;
                     statsTotalQueueDuration = 0;
                 }
             }

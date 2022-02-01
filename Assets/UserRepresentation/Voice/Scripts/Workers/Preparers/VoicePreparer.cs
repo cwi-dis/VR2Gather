@@ -239,8 +239,11 @@ namespace VRT.UserRepresentation.Voice
                 _fillIntoAudioBuffer(true);
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                sysClockToAudioClock = audioBufferHeadTimestamp - now;
                 nextGetAudioBufferExpected = now + (len * 1000 / Config.Instance.audioSampleRate);
+                if (audioBufferHeadTimestamp > 0)
+                {
+                    sysClockToAudioClock = audioBufferHeadTimestamp - now;
+                }
                 while (len > 0)
                 {
                     curLen = _fillFromAudioBuffer(dst, position, len);
