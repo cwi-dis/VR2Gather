@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class BaseReader : BaseWorker
     {
         public BaseReader() : base() { }
@@ -143,7 +146,7 @@ namespace VRT.Transport.Dash
                                 continue;
                             }
                             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                            long now = (long)sinceEpoch.TotalMilliseconds;
+                            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
 
                             // If we have no clock correspondence yet we use the first received frame on any stream to set it
                             if (parent.clockCorrespondence.wallClockTime == 0)
@@ -153,10 +156,10 @@ namespace VRT.Transport.Dash
                                 BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
                             }
                             // Convert clock values to wallclock
-                            long dashTimestamp = frameInfo.timestamp;
+                            Timestamp dashTimestamp = frameInfo.timestamp;
                             frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                             mc.info = frameInfo;
-                            long network_latency_ms = now - frameInfo.timestamp;
+                            Timedelta network_latency_ms = now - frameInfo.timestamp;
 
                             bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
                             stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
@@ -201,7 +204,7 @@ namespace VRT.Transport.Dash
                 double statsTotalDrops;
                 double statsTotalLatency;
                 
-                public void statsUpdate(int nBytes, bool didDrop, long timeStamp, long latency, int stream_index)
+                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timedelta latency, int stream_index)
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
@@ -441,14 +444,14 @@ namespace VRT.Transport.Dash
 
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
-            long oldEpoch = 0;
+            Timedelta oldEpoch = 0;
             if (clockCorrespondence.wallClockTime != 0)
             {
                 oldEpoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
             }
             clockCorrespondence = _clockCorrespondence;
-            long epoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
-            long delta = 0;
+            Timedelta epoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
+            Timedelta delta = 0;
             if (oldEpoch != 0)
             {
                 delta = epoch - oldEpoch;

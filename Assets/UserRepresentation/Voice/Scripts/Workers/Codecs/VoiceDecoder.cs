@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoiceDecoder : BaseWorker
     {
         QueueThreadSafe inQueue;
@@ -62,7 +65,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 mcOut.buffer[i] = temporalBuffer[i];
             }
-            ulong decodeDuration = (ulong)(System.DateTime.Now - decodeStartTime).TotalMilliseconds;
+            Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - decodeStartTime).TotalMilliseconds;
             bool dropped = !outQueue.Enqueue(mcOut);
             stats.statsUpdate(decodeDuration, inQueue.QueuedDuration(), dropped);
             mcIn.free();
@@ -77,7 +80,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(ulong decodeDuration, ulong queuedDuration, bool dropped)
+            public void statsUpdate(Timedelta decodeDuration, Timedelta queuedDuration, bool dropped)
             {
 
                 statsTotalUpdates += 1;

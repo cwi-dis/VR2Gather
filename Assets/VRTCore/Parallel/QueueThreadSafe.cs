@@ -5,16 +5,19 @@ using UnityEngine;
 
 namespace VRT.Core
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class QueueThreadSafe
     {
-
+       
         string name;
         int size;
         bool dropWhenFull;
         CancellationTokenSource isClosed;
         Queue<BaseMemoryChunk> queue;
-        ulong latestTimestamp = 0;
-        ulong latestTimestampReturned = 0;
+        Timestamp latestTimestamp = 0;
+        Timestamp latestTimestampReturned = 0;
         SemaphoreSlim empty;
         SemaphoreSlim full;
 
@@ -130,12 +133,12 @@ namespace VRT.Core
 
         // Return timestamp of next frame, or zeroReturn if frame has no timestamp, or 0 if there is nothing in
         // the queue. Potentially unsafe.
-        public ulong _PeekTimestamp(ulong zeroReturn = 0)
+        public Timestamp _PeekTimestamp(Timestamp zeroReturn = 0)
         {
             BaseMemoryChunk head = _Peek();
             if (head != null)
             {
-                ulong rv = (ulong)head.info.timestamp;
+                Timestamp rv = (Timestamp)head.info.timestamp;
                 if (rv == 0) rv = zeroReturn;
                 return rv;
             }
@@ -143,13 +146,13 @@ namespace VRT.Core
         }
 
         // Return timestamp of most recent item pushed into the queue.
-        public ulong LatestTimestamp()
+        public Timestamp LatestTimestamp()
         {
             return latestTimestamp;
         }
 
         // Return the time span of the queue (difference of timestamps of earliest and latest timestamps)
-        public ulong QueuedDuration()
+        public Timedelta QueuedDuration()
         {
             if (latestTimestampReturned == 0 || latestTimestamp == 0 || latestTimestampReturned > latestTimestamp)
             {
@@ -177,7 +180,7 @@ namespace VRT.Core
                 lock (queue)
                 {
                     item = queue.Dequeue();
-                    latestTimestampReturned = (ulong)item.info.timestamp;
+                    latestTimestampReturned = item.info.timestamp;
                 }
                 empty.Release();
                 return item;
@@ -203,7 +206,7 @@ namespace VRT.Core
                     lock (queue)
                     {
                         item = queue.Dequeue();
-                        latestTimestampReturned = (ulong)item.info.timestamp;
+                        latestTimestampReturned = item.info.timestamp;
                     }
                     empty.Release();
                     return item;
@@ -231,7 +234,7 @@ namespace VRT.Core
                 empty.Wait(isClosed.Token);
                 lock (queue)
                 {
-                    latestTimestamp = (ulong)item.info.timestamp;
+                    latestTimestamp = item.info.timestamp;
                     if (latestTimestamp == 0)
                     {
                         UnityEngine.Debug.Log("Warning: Enqueue() got item with timestamp=0");
@@ -266,11 +269,12 @@ namespace VRT.Core
                         oldItem.free();
                         empty.Wait(isClosed.Token);
                     }
-                    latestTimestamp = (ulong)item.info.timestamp;
+                    latestTimestamp = item.info.timestamp;
                     if (latestTimestamp == 0)
                     {
                         UnityEngine.Debug.Log("Warning: TryEnqueue() got item with timestamp=0");
                     }
+                    System.Int64 x;
                     queue.Enqueue(item);
                     full.Release();
                     return gotSlot;

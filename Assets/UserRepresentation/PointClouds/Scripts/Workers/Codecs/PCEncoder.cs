@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PCEncoder : BaseWorker
     {
         cwipc.encodergroup encoderGroup;
@@ -15,7 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
-        ulong mostRecentTimestampFed = 0;
+        Timestamp mostRecentTimestampFed = 0;
         
         public struct EncoderStreamDescription
         {
@@ -146,10 +149,10 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoder.available(true))
                     {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
-                        mc.info.timestamp = (long)mostRecentTimestampFed;
+                        mc.info.timestamp = mostRecentTimestampFed;
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            ulong encodeDuration = (ulong)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
+                            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
                             bool dropped = !outQueue.Enqueue(mc);
                             stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
                         }
@@ -185,7 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(bool dropped, ulong encodeDuration, ulong queuedDuration) {
+            public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration) {
                 statsTotalPointclouds++;
                 statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;

@@ -5,10 +5,13 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoicePreparer : BasePreparer
     {
         const bool debugBuffering = false;
-        ulong currentTimestamp;
+        Timestamp currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         //
@@ -17,14 +20,14 @@ namespace VRT.UserRepresentation.Voice
         // We also compute when we expect the next call from the receiver, so we can attempt to
         // do the right thing when synchronizing.
         //
-        long sysClockToAudioClock;
-        long nextGetAudioBufferExpected;
+        Timedelta sysClockToAudioClock;
+        Timestamp nextGetAudioBufferExpected;
         //
         // We need to double-buffer between currentAudioFrame and the receiver, because the buffer
         // sizes can be different.
         //
         float[] audioBuffer;
-        long audioBufferHeadTimestamp;
+        Timestamp audioBufferHeadTimestamp;
 
         bool readNextFrameWhenNeeded = true;
         // We should _not_ drop audio frames if they are in the past, but could still be
@@ -56,12 +59,12 @@ namespace VRT.UserRepresentation.Voice
             Debug.Log("VoicePreparer: Stopped");
         }
 
-        public ulong getCurrentTimestamp()
+        public Timestamp getCurrentTimestamp()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            long now = (long)sinceEpoch.TotalMilliseconds;
+            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
 
-            return (ulong)(now + sysClockToAudioClock);
+            return now + sysClockToAudioClock;
         }
 
         public override void Synchronize()
@@ -69,9 +72,9 @@ namespace VRT.UserRepresentation.Voice
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong earliestTimestamp = currentTimestamp;
+                Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
-                ulong latestTimestamp = InQueue.LatestTimestamp();
+                Timestamp latestTimestamp = InQueue.LatestTimestamp();
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
@@ -81,7 +84,7 @@ namespace VRT.UserRepresentation.Voice
             lock (this)
             {
                 readNextFrameWhenNeeded = true;
-                ulong bestTimestamp = 0;
+                Timestamp bestTimestamp = 0;
                 if (currentAudioFrame != null)
                 {
                     // Debug.Log($"{Name()}: previous audio frame not consumed yet");
@@ -105,11 +108,11 @@ namespace VRT.UserRepresentation.Voice
                     {
                         bestTimestamp = currentTimestamp;
                     }
-                    ulong latestTimestampInqueue = InQueue.LatestTimestamp();
-                    if (latestTimestampInqueue > currentTimestamp + (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000))
+                    Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
+                    if (latestTimestampInqueue > currentTimestamp + (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000))
                     {
                         // Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
-                        bestTimestamp = latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                        bestTimestamp = latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000);
                     }
                 }
                 if (InQueue.IsClosed()) return false; // We are shutting down
@@ -117,7 +120,7 @@ namespace VRT.UserRepresentation.Voice
             }
          }
 
-        bool _FillAudioFrame(ulong minTimestamp)
+        bool _FillAudioFrame(Timestamp minTimestamp)
         {
             int dropCount = 0;
             while(true)
@@ -140,7 +143,7 @@ namespace VRT.UserRepresentation.Voice
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
 #endif
-                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+                currentTimestamp = currentAudioFrame.info.timestamp;
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
@@ -189,7 +192,7 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
-            audioBufferHeadTimestamp += (long)(1000 * len / Config.Instance.audioSampleRate);
+            audioBufferHeadTimestamp += (Timedelta)(1000 * len / Config.Instance.audioSampleRate);
             if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
@@ -230,7 +233,7 @@ namespace VRT.UserRepresentation.Voice
                 int curLen = 0;
                 _fillIntoAudioBuffer(true);
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                long now = (long)sinceEpoch.TotalMilliseconds;
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
                 sysClockToAudioClock = audioBufferHeadTimestamp - now;
                 nextGetAudioBufferExpected = now + (len * 1000 / Config.Instance.audioSampleRate);
                 while (len > 0)

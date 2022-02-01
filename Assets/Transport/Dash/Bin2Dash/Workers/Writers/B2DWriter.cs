@@ -6,6 +6,8 @@ using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
 
     public class B2DWriter : BaseWriter
     {
@@ -143,7 +145,7 @@ namespace VRT.Transport.Dash
 
             return new SyncConfig.ClockCorrespondence
             {
-                wallClockTime = (long)sinceEpoch.TotalMilliseconds,
+                wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
                 streamClockTime = uploader.get_media_time(1000)
             };
         }

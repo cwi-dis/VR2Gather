@@ -9,6 +9,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoiceReceiver : MonoBehaviour
     {
 #if VRT_AUDIO_DEBUG
@@ -201,7 +204,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalLatency = 0;
             double statsTotalQueueDuration = 0;
 
-            public void statsUpdate(int nSamples, int nZeroSamples, ulong timestamp, ulong queueDuration)
+            public void statsUpdate(int nSamples, int nZeroSamples, Timestamp timestamp, Timedelta queueDuration)
             {
                 
                 statsTotalAudioframeCount++;
@@ -209,8 +212,8 @@ namespace VRT.UserRepresentation.Voice
                 statsTotalAudioZeroSamples += nZeroSamples;
                 if (nZeroSamples > 0) statsZeroInsertionCount++;
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                long now = (long)sinceEpoch.TotalMilliseconds;
-                long latency = now - (long)timestamp;
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+                Timedelta latency = now - timestamp;
                 statsTotalLatency += latency;
             
                 statsTotalQueueDuration += queueDuration;

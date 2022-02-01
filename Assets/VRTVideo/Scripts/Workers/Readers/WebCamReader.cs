@@ -10,6 +10,9 @@ using VRT.Core;
 
 namespace VRT.Video
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class WebCamReader : BaseWorker
     {
         MonoBehaviour monoBehaviour;
@@ -90,7 +93,7 @@ namespace VRT.Video
                 handle = GCHandle.Alloc(colors, GCHandleType.Pinned);
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                long now = (long)sinceEpoch.TotalMilliseconds;
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
                 chunk.info.timestamp = now;
                 chunk.info.dsi = infoData;
                 chunk.info.dsi_size = 12;

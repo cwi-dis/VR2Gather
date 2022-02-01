@@ -9,6 +9,9 @@ using VRT.Core;
 
 namespace VRT.Transport.SocketIO
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class SocketIOWriter : BaseWriter
     {
         B2DWriter.DashStreamDescription[] streams;
