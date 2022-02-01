@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePreparer : BasePreparer
     {
-        const bool debugBuffering = false;
+        const bool debugBuffering = true;
         Timestamp currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
@@ -151,9 +151,10 @@ namespace VRT.UserRepresentation.Voice
                     bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
                     if (trySkipForward)
                     {
-                        bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+                        Timestamp queueHeadTimestamp = InQueue._PeekTimestamp();
+                        bool canDrop = queueHeadTimestamp != 0 && queueHeadTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
 #pragma warning disable CS0162
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack _FillAudioFrame: trySkipForward=true minTimestamp={minTimestamp} currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, queueHeadTimestamp={queueHeadTimestamp} candrop={canDrop}");
                         if (canDrop)
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
