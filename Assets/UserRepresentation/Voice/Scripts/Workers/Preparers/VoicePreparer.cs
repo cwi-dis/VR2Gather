@@ -144,6 +144,7 @@ namespace VRT.UserRepresentation.Voice
                 ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
 #endif
                 currentTimestamp = currentAudioFrame.info.timestamp;
+#pragma warning disable CS0162
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
@@ -151,6 +152,7 @@ namespace VRT.UserRepresentation.Voice
                     if (trySkipForward)
                     {
                         bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
+#pragma warning disable CS0162
                         if (debugBuffering) Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
                         if (canDrop)
                         {
@@ -183,6 +185,7 @@ namespace VRT.UserRepresentation.Voice
                 System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
                 audioBuffer = null;
                 audioBufferHeadTimestamp = 0; // xxxjack or should we compute what it should have been??!?
+#pragma warning disable CS0162
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
@@ -193,6 +196,7 @@ namespace VRT.UserRepresentation.Voice
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
             audioBufferHeadTimestamp += (Timedelta)(1000 * len / Config.Instance.audioSampleRate);
+#pragma warning disable CS0162
             if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
@@ -227,6 +231,7 @@ namespace VRT.UserRepresentation.Voice
             lock(this)
             {
                 if (InQueue.IsClosed()) return len;
+#pragma warning disable CS0162
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
                 int position = 0;
                 int oldPosition = 0;
@@ -242,6 +247,7 @@ namespace VRT.UserRepresentation.Voice
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
+#pragma warning disable CS0162
                         if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
 #if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
@@ -256,6 +262,7 @@ namespace VRT.UserRepresentation.Voice
                         _fillIntoAudioBuffer(false);
                     }
                 }
+#pragma warning disable CS0162
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.full", dst);

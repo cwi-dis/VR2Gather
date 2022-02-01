@@ -169,6 +169,7 @@ namespace VRT.UserRepresentation.PointCloud
                 outQueue.Close();
                 Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
             }
+#pragma warning disable CS0168
             catch (System.Exception e)
             {
 #if UNITY_EDITOR

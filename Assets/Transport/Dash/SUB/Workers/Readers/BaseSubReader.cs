@@ -184,6 +184,7 @@ namespace VRT.Transport.Dash
                         }
                     }
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
 #if UNITY_EDITOR

@@ -169,6 +169,7 @@ namespace VRT.Transport.TCP
                         }
                     }
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
                     if (!stopping)

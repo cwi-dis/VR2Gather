@@ -83,8 +83,7 @@ namespace VRT.LivePresenter
             }
             ready = true;
         }
-        float timeToFrame = 0;
-
+        
         private void Update()
         {
             preparer.Synchronize();

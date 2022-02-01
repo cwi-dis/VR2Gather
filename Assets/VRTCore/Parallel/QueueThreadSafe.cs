@@ -274,7 +274,6 @@ namespace VRT.Core
                     {
                         UnityEngine.Debug.Log("Warning: TryEnqueue() got item with timestamp=0");
                     }
-                    System.Int64 x;
                     queue.Enqueue(item);
                     full.Release();
                     return gotSlot;

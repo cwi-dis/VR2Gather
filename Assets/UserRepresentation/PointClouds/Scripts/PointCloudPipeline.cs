@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.PointCloud
             return dst.AddComponent<PointCloudPipeline>();
         }
 
-        public string Name()
+        public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
         }
@@ -492,6 +492,7 @@ namespace VRT.UserRepresentation.PointCloud
         System.DateTime lastUpdateTime;
         private void Update()
         {
+#pragma warning disable CS0162
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.

@@ -2,7 +2,7 @@
 // Copyright (C) 2003 Jean-Marc Valin
 // Copyright (C) 1999-2003 Wimba S.A., All Rights Reserved.
 // Copyright (C) 2008 Filip Navara
-// Copyright (C) 2009-2010 Christoph Fröschl
+// Copyright (C) 2009-2010 Christoph Fr?schl
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -115,6 +115,7 @@ namespace NSpeex
 		{
 			average_energy = 0;
 			last_energy = 1;
+#pragma warning disable CS0414 // Variable is assigned but its value is never used
 			accum_sum = 0;
 			energy_alpha = .1f;
 			soft_pitch = 0;

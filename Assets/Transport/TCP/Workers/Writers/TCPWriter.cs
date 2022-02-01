@@ -147,6 +147,7 @@ namespace VRT.Transport.TCP
                     }
                     Debug.Log($"{Name()}: thread stopped");
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
 #if UNITY_EDITOR
