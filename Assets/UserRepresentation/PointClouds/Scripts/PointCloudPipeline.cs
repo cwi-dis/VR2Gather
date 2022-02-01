@@ -698,7 +698,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 rv.audio = voiceSender.GetSyncInfo();
             }
-            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
+            Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -710,6 +710,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             if (reader == null) return; // Too early
+            Debug.Log($"{Name()}: SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {

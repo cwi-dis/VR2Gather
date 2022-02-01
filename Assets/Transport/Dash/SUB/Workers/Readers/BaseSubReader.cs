@@ -12,6 +12,10 @@ namespace VRT.Transport.Dash
         public BaseReader() : base() { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
+            if (_clockCorrespondence.streamClockTime != _clockCorrespondence.wallClockTime)
+            {
+                Debug.LogWarning($"{Name()}: SetSyncInfo({_clockCorrespondence.wallClockTime}={_clockCorrespondence.streamClockTime}) called but not implemented in this reader");
+            }
         }
     }
 
@@ -157,6 +161,10 @@ namespace VRT.Transport.Dash
                             }
                             // Convert clock values to wallclock
                             Timestamp dashTimestamp = frameInfo.timestamp;
+                            if (!parent.clockCorrespondenceReceived)
+                            {
+                                Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
+                            }
                             frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                             mc.info = frameInfo;
                             Timedelta network_latency_ms = now - frameInfo.timestamp;
@@ -232,6 +240,7 @@ namespace VRT.Transport.Dash
         SubPullThread[] threads;
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
+        bool clockCorrespondenceReceived = false;
 
         protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base()
         { // Orchestrator Based SUB
@@ -457,6 +466,7 @@ namespace VRT.Transport.Dash
             {
                 delta = epoch - oldEpoch;
             }
+            clockCorrespondenceReceived = true;
             BaseStats.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
         }
     }
