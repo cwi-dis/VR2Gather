@@ -98,6 +98,7 @@ namespace NSpeex
 		private float average_energy;
 		private float last_energy;
 		private float[] last_log_energy;
+#pragma warning disable CS0414 // Variable is assigned but its value is never used
 		private float accum_sum;
 		private float last_pitch_coef;
 		private float soft_pitch;
