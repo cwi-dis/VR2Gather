@@ -10,7 +10,8 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoicePreparer : BasePreparer
     {
-        const bool debugBuffering = true;
+        const bool debugBuffering = false;
+        const bool debugBufferingMore = false;
         Timestamp currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
@@ -29,7 +30,7 @@ namespace VRT.UserRepresentation.Voice
         float[] audioBuffer;
         Timestamp audioBufferHeadTimestamp;
 
-        bool readNextFrameWhenNeeded = true;
+        bool PauseAudioPlayout = true;
         // We should _not_ drop audio frames if they are in the past, but could still be
         // considered part of the current visual frame. Otherwise, we may end up dropping one
         // audio frame for every visual frame (because the visual clock jumps forward over the
@@ -83,36 +84,39 @@ namespace VRT.UserRepresentation.Voice
         {
             lock (this)
             {
-                readNextFrameWhenNeeded = true;
-                Timestamp bestTimestamp = 0;
+                PauseAudioPlayout = false;
                 if (currentAudioFrame != null)
                 {
                     // Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }
+                Timestamp bestTimestamp = 0;
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
+                    if (bestTimestamp != 0 && bestTimestamp < currentTimestamp)
                     {
-                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
-                        readNextFrameWhenNeeded = false;
+                        if (debugBuffering || synchronizer.debugSynchronizer) Debug.Log($"{Name()}: LatchFrame: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
+                        PauseAudioPlayout = true;
                         return false;
                     }
                     if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp - currentTimestamp} ms too late");
                 }
-                // For voice, we do an extra step: we optionally set an upper limit to the latency.
-                if (Config.Instance.Voice.maxPlayoutLatency > 0)
+                else
                 {
-                    if (bestTimestamp == 0)
+                    // For voice, we do an extra step: we optionally set an upper limit to the latency.
+                    if (Config.Instance.Voice.maxPlayoutLatency > 0)
                     {
-                        bestTimestamp = currentTimestamp;
-                    }
-                    Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
-                    if (latestTimestampInqueue > currentTimestamp + (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000))
-                    {
-                        // Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
-                        bestTimestamp = latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                        if (bestTimestamp == 0)
+                        {
+                            bestTimestamp = currentTimestamp;
+                        }
+                        Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
+                        if (latestTimestampInqueue > currentTimestamp + (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000))
+                        {
+                            if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
+                            bestTimestamp = latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                        }
                     }
                 }
                 if (InQueue.IsClosed()) return false; // We are shutting down
@@ -187,7 +191,7 @@ namespace VRT.UserRepresentation.Voice
                 audioBuffer = null;
                 audioBufferHeadTimestamp = 0; // xxxjack or should we compute what it should have been??!?
 #pragma warning disable CS0162
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
             // If the buffer has more samples we copy what we need and keep the rest.
@@ -198,7 +202,7 @@ namespace VRT.UserRepresentation.Voice
             audioBuffer = leftOver;
             audioBufferHeadTimestamp += (Timedelta)(1000 * len / Config.Instance.audioSampleRate);
 #pragma warning disable CS0162
-            if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
+            if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
 
@@ -212,7 +216,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 return true;
             }
-            if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
+            if (currentAudioFrame == null) _FillAudioFrame(0);
             if (currentAudioFrame == null) return false;
             int availableLen = currentAudioFrame.length / sizeof(float);
             if (availableLen*sizeof(float) != currentAudioFrame.length)
@@ -232,8 +236,13 @@ namespace VRT.UserRepresentation.Voice
             lock(this)
             {
                 if (InQueue.IsClosed()) return len;
+                if (PauseAudioPlayout)
+                {
+                    if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: paused, inQueue={InQueue.QueuedDuration()} ms");
+                    return len;
+                }
 #pragma warning disable CS0162
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
                 int position = 0;
                 int oldPosition = 0;
                 int curLen = 0;
@@ -252,7 +261,10 @@ namespace VRT.UserRepresentation.Voice
                     if (curLen == 0)
                     {
 #pragma warning disable CS0162
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
+                        if (debugBuffering)
+                        {
+                            Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}, inQueue={InQueue.QueuedDuration()} ms");
+                        }
 #if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
 #endif
@@ -267,7 +279,7 @@ namespace VRT.UserRepresentation.Voice
                     }
                 }
 #pragma warning disable CS0162
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.full", dst);
 #endif
