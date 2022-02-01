@@ -9,6 +9,7 @@ namespace VRT.Core
 
     public class Synchronizer : MonoBehaviour
     {
+        
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool debugSynchronizer = false;
         [Tooltip("Current preferred playout latency")]
@@ -25,6 +26,14 @@ namespace VRT.Core
         Timestamp availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
         Timestamp bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
 
+        public class TimestampRange
+        {
+            public string caller;
+            public Timestamp earliestFrameTimestamp;
+            public Timestamp latestFrameTimestamp;
+        };
+        TimestampRange audioTimestampRange;
+
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         public string Name()
@@ -40,8 +49,24 @@ namespace VRT.Core
                 availableIntervalBegin = 0;
                 availableIntervalEnd = 0;
                 bestTimestampForCurrentFrame = 0;
+                audioTimestampRange = null;
             }
         }
+
+        public void SetAudioTimestampRangeForCurrentFrame(string caller, Timestamp earliestFrameTimestamp, Timestamp latestFrameTimestamp)
+        {
+            if (audioTimestampRange != null)
+            {
+                Debug.LogError($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call");
+            }
+            audioTimestampRange = new TimestampRange()
+            {
+                caller = caller,
+                earliestFrameTimestamp = earliestFrameTimestamp,
+                latestFrameTimestamp = latestFrameTimestamp
+            };
+        }
+
         public void SetTimestampRangeForCurrentFrame(string caller, Timestamp earliestFrameTimestamp, Timestamp latestFrameTimestamp)
         {
             _Reset();
@@ -103,6 +128,12 @@ namespace VRT.Core
 
         void _ComputeTimestampForCurrentFrame()
         {
+            // First we have to add the audio to the computations.
+            if (audioTimestampRange != null)
+            {
+                SetTimestampRangeForCurrentFrame(audioTimestampRange.caller, audioTimestampRange.earliestFrameTimestamp, audioTimestampRange.latestFrameTimestamp);
+                audioTimestampRange = null;
+            }
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
             // If we don't have an interval we cannot do anything

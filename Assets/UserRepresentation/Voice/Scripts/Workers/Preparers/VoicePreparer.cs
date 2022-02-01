@@ -75,7 +75,7 @@ namespace VRT.UserRepresentation.Voice
                 Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
                 Timestamp latestTimestamp = InQueue.LatestTimestamp();
-                synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
+                synchronizer.SetAudioTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
 
