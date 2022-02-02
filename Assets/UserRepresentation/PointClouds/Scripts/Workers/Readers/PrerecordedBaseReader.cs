@@ -6,6 +6,9 @@ using VRT.Core;
 namespace VRT.UserRepresentation.PointCloud
 {
 
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     // PrerecordedBaseReader reads pointclouds from .ply or .cwipcdump files.
     //
     // It contains the common code for two distinct use cases (subclasses):
@@ -273,7 +276,7 @@ namespace VRT.UserRepresentation.PointCloud
             cwipc.pointcloud pc;
             if (parent.readPlyFiles)
             {
-                System.UInt64 timestamp = 0;
+                Timestamp timestamp = 0;
                 pc = cwipc.read(nextFilename, timestamp);
             }
             else
@@ -283,7 +286,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return;
             if (parent.newTimestamps) {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
+                Timestamp timestamp = (Timestamp)sinceEpoch.TotalMilliseconds;
                 pc._set_timestamp(timestamp);
             }
             if (parent.voxelSize != 0)
@@ -300,7 +303,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
-            ulong encoderQueuedDuration = 0;
+            Timedelta encoderQueuedDuration = 0;
             if (outQueue == null || outQueue.IsClosed())
             {
                 Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
@@ -343,7 +346,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp, string subdir)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp, string subdir)
             {
                 
                 statsTotalPoints += pointCount;

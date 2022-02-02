@@ -72,6 +72,7 @@ namespace VRT.Core
                     System.Threading.Thread.Sleep(loopInterval);
                 }
             }
+#pragma warning disable CS0168
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
@@ -86,6 +87,7 @@ namespace VRT.Core
             {
                 OnStop();
             }
+#pragma warning disable CS0168
             catch (System.Exception e)
             {
 #if UNITY_EDITOR

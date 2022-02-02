@@ -6,6 +6,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoiceEncoder : BaseWorker
     {
         public int minSamplesPerFrame { get; private set; }
@@ -56,7 +59,7 @@ namespace VRT.UserRepresentation.Voice
             int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
             Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
-            ulong encodeDuration = (ulong)(System.DateTime.Now - encodeStartTime).TotalMilliseconds;
+            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - encodeStartTime).TotalMilliseconds;
 
             mcOut.info.timestamp = mcIn.info.timestamp;
             if (outQueue.IsClosed())
@@ -78,7 +81,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(ulong encodeDuration, ulong queuedDuration, bool dropped)
+            public void statsUpdate(Timedelta encodeDuration, Timedelta queuedDuration, bool dropped)
             {
 
                 statsTotalUpdates += 1;

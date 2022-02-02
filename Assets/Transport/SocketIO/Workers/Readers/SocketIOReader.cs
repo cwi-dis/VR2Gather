@@ -9,6 +9,9 @@ using VRT.Core;
 
 namespace VRT.Transport.SocketIO
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class SocketIOReader : BaseReader, ISocketReader
     {
         PCSubReader.TileDescriptor[] descriptors;
@@ -89,7 +92,7 @@ namespace VRT.Transport.SocketIO
                     // This packet is for us.
                     byte[] hdr_timestamp = new byte[sizeof(long)];
                     Array.Copy(pPacket.dataStreamPacket, hdr_timestamp, sizeof(long));
-                    long timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
+                    Timestamp timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
                     BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length - sizeof(long));
                     chunk.info.timestamp = timestamp;
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
@@ -122,7 +125,7 @@ namespace VRT.Transport.SocketIO
             double statsTotalPackets = 0;
             double statsTotalDrops = 0;
             
-            public void statsUpdate(int nBytes, bool dropped, long timestamp, int streamId)
+            public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp, int streamId)
             {
                 statsTotalBytes += nBytes;
                 statsTotalPackets++;

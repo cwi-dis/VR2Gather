@@ -6,6 +6,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoiceReader : BaseWorker
     {
 #if VRT_AUDIO_DEBUG
@@ -36,12 +39,12 @@ namespace VRT.UserRepresentation.Voice
             return nSamplesPerPacket;
         }
 
-        long sampleTimestamp(int nSamplesInInputBuffer)
+        Timestamp sampleTimestamp(int nSamplesInInputBuffer)
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             double timestamp = sinceEpoch.TotalMilliseconds;
             timestamp -= (1000 * nSamplesInInputBuffer / wantedSampleRate);
-            return (long)timestamp;
+            return (Timestamp)timestamp;
         }
 
         protected override void Update()
@@ -268,7 +271,7 @@ namespace VRT.UserRepresentation.Voice
             double statsTotalQueuedDuration;
             double statsDrops;
 
-            public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, ulong queuedDuration)
+            public void statsUpdate(double timeInInputBuffer, int sampleCount, bool dropped, Timedelta queuedDuration)
             {
 
                 statsTotalUpdates += 1;

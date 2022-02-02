@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class NULLEncoder : BaseWorker
     {
         cwipc.encodergroup encoderGroup;
@@ -48,7 +51,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return; // Terminating, or no pointcloud currently available
             for (int i=0; i<outputs.Length; i++)
             {
-                ulong encodeDuration = 0;
+                Timedelta encodeDuration = 0;
                 NativeMemoryChunk mc = null;
                 if (outputs[i].tileNumber == 0)
                 {
@@ -56,9 +59,9 @@ namespace VRT.UserRepresentation.PointCloud
                     int size = pc.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pc.copy_packet(mc.pointer, mc.length);
-                    mc.info.timestamp = (long)pc.timestamp();
+                    mc.info.timestamp = pc.timestamp();
                     System.DateTime encodeStopTime = System.DateTime.Now;
-                    encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
+                    encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
                 else
                 {
@@ -67,10 +70,10 @@ namespace VRT.UserRepresentation.PointCloud
                     int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
                     mc = new NativeMemoryChunk(size);
                     pcTile.copy_packet(mc.pointer, mc.length);
-                    mc.info.timestamp = (long)pc.timestamp();
+                    mc.info.timestamp = pc.timestamp();
                     pcTile.free();
                     System.DateTime encodeStopTime = System.DateTime.Now;
-                    encodeDuration = (ulong)(encodeStopTime - encodeStartTime).TotalMilliseconds;
+                    encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
                 bool dropped = !outputs[i].outQueue.Enqueue(mc);
                 stats.statsUpdate(dropped, encodeDuration, outputs[i].outQueue.QueuedDuration());
@@ -87,7 +90,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(bool dropped, ulong encodeDuration, ulong queuedDuration)
+            public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration)
             {
                 statsTotalPointclouds++;
                 statsTotalEncodeDuration += encodeDuration;

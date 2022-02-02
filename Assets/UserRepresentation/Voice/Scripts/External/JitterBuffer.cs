@@ -200,10 +200,12 @@ namespace NSpeex
         /// How many frames we want to keep in the buffer (lower bound)
         /// </summary>
         int buffer_margin;
+#if XXXJACK_UNUSED
         /// <summary>
         /// How late must a packet be for it not to be considered at all
         /// </summary>
         int late_cutoff;
+#endif
 
         /// <summary>
         /// An interpolation is requested by <see cref="UpdateDelay"/>
@@ -280,7 +282,9 @@ namespace NSpeex
             concealment_size = step_size;
             /*FIXME: Should this be 0 or 1?*/
             buffer_margin = 0;
+#if XXXJACK_UNUSED
             late_cutoff = 50;
+#endif
             DestroyBufferCallback = null;
             latency_tradeoff = 0;
             auto_adjust = true;

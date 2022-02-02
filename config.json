@@ -48,7 +48,8 @@
   },
   "Voice": {
   	"Codec": "VR2A",
-  	"maxPlayoutLatency" : 1,
+  	"maxPlayoutLatency" : 0.5,
+	"maxPlayoutAhead": 0.066,
 	"ignoreSynchronizer" : true
   },
   "Video": {
@@ -72,7 +73,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.0,
+      "voxelSize": 0.007,
       "frameRate": 10,
       "tiled": false,
       "Encoders": [

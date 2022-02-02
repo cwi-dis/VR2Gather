@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace VRT.Core
 {
-
+    using Timestamp = System.Int64;
     // This structure should really be declared in the sub package, but that creates a circular reference.
     // And because the format is shared with the C++ native code we cannot turn it into an object (Jack thinks).
     //
@@ -12,7 +12,7 @@ namespace VRT.Core
     public struct FrameInfo
     {
         // presentation timestamp, in milliseconds units.
-        public long timestamp;
+        public Timestamp timestamp;
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
         public byte[] dsi;
         public int dsi_size;

@@ -5,10 +5,14 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoicePreparer : BasePreparer
     {
         const bool debugBuffering = false;
-        ulong currentTimestamp;
+        const bool debugBufferingMore = false;
+        Timestamp currentTimestamp;
         public int currentQueueSize;
         BaseMemoryChunk currentAudioFrame;
         //
@@ -17,24 +21,33 @@ namespace VRT.UserRepresentation.Voice
         // We also compute when we expect the next call from the receiver, so we can attempt to
         // do the right thing when synchronizing.
         //
-        long sysClockToAudioClock;
-        long nextGetAudioBufferExpected;
+        Timedelta sysClockToAudioClock;
+        Timestamp nextGetAudioBufferExpected;
         //
         // We need to double-buffer between currentAudioFrame and the receiver, because the buffer
         // sizes can be different.
         //
         float[] audioBuffer;
-        long audioBufferHeadTimestamp;
+        Timestamp audioBufferHeadTimestamp;
 
-        bool readNextFrameWhenNeeded = true;
-        // We should _not_ drop audio frames if they are in the past, but could still be
-        // considered part of the current visual frame. Otherwise, we may end up dropping one
-        // audio frame for every visual frame (because the visual clock jumps forward over the
-        // audio clock).
-        const int VISUAL_FRAME_DURATION_MS = 66;
+        bool PauseAudioPlayout = true;
+        // We should _not_ drop audio frames if they are in the past, but we also don't want to
+        // drop frames if we later have to insert zeros because we dropped too aggressive.
+        // Especially with bursty transport like Dash this is likely to happen.
+        //
+        // The value of this parameter should be dynamically adjusted: it should start small and increase
+        // whenever we detect that after we have dropped frames we have to insert zeros a relatively short time
+        // later.
+        public Timedelta audioMaxAheadMs = 66;
+        // If we do need to drop frames to catch up it may be better to do a single drop of multiple
+        // frames than multiple drops of a single frame. We need to cater for that.
         
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
+            if (Config.Instance.Voice.maxPlayoutAhead != 0)
+            {
+                audioMaxAheadMs = (Timedelta)(Config.Instance.Voice.maxPlayoutAhead * 1000);
+            }
             stats = new Stats(Name());
             Debug.Log("VoicePreparer: Started.");
             Start();
@@ -56,12 +69,12 @@ namespace VRT.UserRepresentation.Voice
             Debug.Log("VoicePreparer: Stopped");
         }
 
-        public ulong getCurrentTimestamp()
+        public Timestamp getCurrentTimestamp()
         {
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            long now = (long)sinceEpoch.TotalMilliseconds;
+            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
 
-            return (ulong)(now + sysClockToAudioClock);
+            return now + sysClockToAudioClock;
         }
 
         public override void Synchronize()
@@ -69,10 +82,10 @@ namespace VRT.UserRepresentation.Voice
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong earliestTimestamp = currentTimestamp;
+                Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
-                ulong latestTimestamp = InQueue.LatestTimestamp();
-                synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
+                Timestamp latestTimestamp = InQueue.LatestTimestamp();
+                synchronizer.SetAudioTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }
 
@@ -80,36 +93,40 @@ namespace VRT.UserRepresentation.Voice
         {
             lock (this)
             {
-                readNextFrameWhenNeeded = true;
-                ulong bestTimestamp = 0;
+                PauseAudioPlayout = false;
                 if (currentAudioFrame != null)
                 {
                     // Debug.Log($"{Name()}: previous audio frame not consumed yet");
                     return true;
                 }
+                Timestamp bestTimestamp = 0;
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
-                    if (bestTimestamp != 0 && bestTimestamp <= currentTimestamp)
+                    if (bestTimestamp != 0 && bestTimestamp < currentTimestamp)
                     {
-                        if (synchronizer.debugSynchronizer) Debug.Log($"{Name()}: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
-                        readNextFrameWhenNeeded = false;
+                        if (debugBuffering || synchronizer.debugSynchronizer) Debug.Log($"{Name()}: LatchFrame: show nothing for frame {UnityEngine.Time.frameCount}: {currentTimestamp - bestTimestamp} ms in the future: bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}");
+                        PauseAudioPlayout = true;
                         return false;
                     }
                     if (bestTimestamp != 0 && synchronizer.debugSynchronizer) Debug.Log($"{Name()}: frame {UnityEngine.Time.frameCount} bestTimestamp={bestTimestamp}, currentTimestamp={currentTimestamp}, {bestTimestamp - currentTimestamp} ms too late");
                 }
-                // For voice, we do an extra step: we optionally set an upper limit to the latency.
-                if (Config.Instance.Voice.maxPlayoutLatency > 0)
+                else
                 {
-                    if (bestTimestamp == 0)
+                    // For voice, we do an extra step: we optionally set an upper limit to the latency.
+                    if (Config.Instance.Voice.maxPlayoutLatency > 0)
                     {
-                        bestTimestamp = currentTimestamp;
-                    }
-                    ulong latestTimestampInqueue = InQueue.LatestTimestamp();
-                    if (latestTimestampInqueue > currentTimestamp + (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000))
-                    {
-                        // Debug.Log($"{Name()}: xxxjack skip forward {latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
-                        bestTimestamp = latestTimestampInqueue - (ulong)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                        if (bestTimestamp == 0)
+                        {
+                            bestTimestamp = currentTimestamp;
+                        }
+                        Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
+                        if (latestTimestampInqueue > currentTimestamp + (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000))
+                        {
+#pragma warning disable CS0162
+                            if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
+                            bestTimestamp = latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000);
+                        }
                     }
                 }
                 if (InQueue.IsClosed()) return false; // We are shutting down
@@ -117,7 +134,7 @@ namespace VRT.UserRepresentation.Voice
             }
          }
 
-        bool _FillAudioFrame(ulong minTimestamp)
+        bool _FillAudioFrame(Timestamp minTimestamp)
         {
             int dropCount = 0;
             while(true)
@@ -140,16 +157,19 @@ namespace VRT.UserRepresentation.Voice
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
 #endif
-                currentTimestamp = (ulong)currentAudioFrame.info.timestamp;
+                currentTimestamp = currentAudioFrame.info.timestamp;
+#pragma warning disable CS0162
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
-                    bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
-                    if (trySkipForward)
+                    bool canSkipForward = currentTimestamp < minTimestamp - audioMaxAheadMs;
+                    if (canSkipForward)
                     {
-                        bool canDrop = InQueue._PeekTimestamp(minTimestamp + 1) < minTimestamp;
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack trySkipForward _FillAudioFrame({minTimestamp}) currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, candrop={canDrop}");
-                        if (canDrop)
+                        Timestamp queueHeadTimestamp = InQueue._PeekTimestamp();
+                        canSkipForward = queueHeadTimestamp != 0 && queueHeadTimestamp < minTimestamp - audioMaxAheadMs;
+#pragma warning disable CS0162
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack _FillAudioFrame: minTimestamp={minTimestamp} currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, queueHeadTimestamp={queueHeadTimestamp} canSkipForward={canSkipForward}");
+                        if (canSkipForward)
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
                             // Drop this one.
@@ -180,7 +200,8 @@ namespace VRT.UserRepresentation.Voice
                 System.Array.Copy(audioBuffer, 0, dst, position, copyCount);
                 audioBuffer = null;
                 audioBufferHeadTimestamp = 0; // xxxjack or should we compute what it should have been??!?
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
+#pragma warning disable CS0162
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied {copyCount} samples, buffer empty, want {len - copyCount} more");
                 return copyCount;
             }
             // If the buffer has more samples we copy what we need and keep the rest.
@@ -189,8 +210,9 @@ namespace VRT.UserRepresentation.Voice
             float[] leftOver = new float[remaining];
             System.Array.Copy(audioBuffer, len, leftOver, 0, remaining);
             audioBuffer = leftOver;
-            audioBufferHeadTimestamp += (long)(1000 * len / Config.Instance.audioSampleRate);
-            if (debugBuffering) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
+            audioBufferHeadTimestamp += (Timedelta)(1000 * len / Config.Instance.audioSampleRate);
+#pragma warning disable CS0162
+            if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack copied all {len} samples, {remaining} left in buffer");
             return len;
         }
 
@@ -204,7 +226,7 @@ namespace VRT.UserRepresentation.Voice
                 }
                 return true;
             }
-            if (currentAudioFrame == null && readNextFrameWhenNeeded) _FillAudioFrame(0);
+            if (currentAudioFrame == null) _FillAudioFrame(0);
             if (currentAudioFrame == null) return false;
             int availableLen = currentAudioFrame.length / sizeof(float);
             if (availableLen*sizeof(float) != currentAudioFrame.length)
@@ -224,22 +246,35 @@ namespace VRT.UserRepresentation.Voice
             lock(this)
             {
                 if (InQueue.IsClosed()) return len;
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
+                if (PauseAudioPlayout)
+                {
+                    if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: paused, inQueue={InQueue.QueuedDuration()} ms");
+                    return len;
+                }
+#pragma warning disable CS0162
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer({len})");
                 int position = 0;
                 int oldPosition = 0;
                 int curLen = 0;
                 _fillIntoAudioBuffer(true);
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                long now = (long)sinceEpoch.TotalMilliseconds;
-                sysClockToAudioClock = audioBufferHeadTimestamp - now;
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
                 nextGetAudioBufferExpected = now + (len * 1000 / Config.Instance.audioSampleRate);
+                if (audioBufferHeadTimestamp > 0)
+                {
+                    sysClockToAudioClock = audioBufferHeadTimestamp - now;
+                }
                 while (len > 0)
                 {
                     curLen = _fillFromAudioBuffer(dst, position, len);
                     // If we didn't copy anything this time we're done. And we return true if we have copied anything at all.
                     if (curLen == 0)
                     {
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}");
+#pragma warning disable CS0162
+                        if (debugBuffering)
+                        {
+                            Debug.Log($"{Name()}: xxxjack getAudioBuffer: inserted {len} zero samples from {position}, done={position != 0}, inQueue={InQueue.QueuedDuration()} ms");
+                        }
 #if VRT_AUDIO_DEBUG
                         ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.partial", dst);
 #endif
@@ -253,7 +288,8 @@ namespace VRT.UserRepresentation.Voice
                         _fillIntoAudioBuffer(false);
                     }
                 }
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
+#pragma warning disable CS0162
+                if (debugBufferingMore) Debug.Log($"{Name()}: xxxjack getAudioBuffer: done=true");
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.GetAudioBuffer.full", dst);
 #endif

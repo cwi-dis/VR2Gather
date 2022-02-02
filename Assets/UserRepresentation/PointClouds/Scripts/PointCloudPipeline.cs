@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.PointCloud
             return dst.AddComponent<PointCloudPipeline>();
         }
 
-        public string Name()
+        public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
         }
@@ -492,6 +492,7 @@ namespace VRT.UserRepresentation.PointCloud
         System.DateTime lastUpdateTime;
         private void Update()
         {
+#pragma warning disable CS0162
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -697,7 +698,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 rv.audio = voiceSender.GetSyncInfo();
             }
-            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
+            Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -709,6 +710,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             if (reader == null) return; // Too early
+            Debug.Log($"{Name()}: SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {
