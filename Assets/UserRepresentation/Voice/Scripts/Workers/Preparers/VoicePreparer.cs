@@ -38,7 +38,7 @@ namespace VRT.UserRepresentation.Voice
         // The value of this parameter should be dynamically adjusted: it should start small and increase
         // whenever we detect that after we have dropped frames we have to insert zeros a relatively short time
         // later.
-        public Timedelta audioMaxAheadMs = 500;
+        public Timedelta audioMaxAheadMs = 66;
         // If we do need to drop frames to catch up it may be better to do a single drop of multiple
         // frames than multiple drops of a single frame. We need to cater for that.
         
