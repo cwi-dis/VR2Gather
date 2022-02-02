@@ -72,13 +72,16 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.0,
-      "frameRate": 10,
+      "voxelSize": 0.007,
+      "frameRate": 15,
       "tiled": true,
       "Encoders": [
 		
 		{
-          "octreeBits": 8
+          "octreeBits": 9
+        },
+		{
+          "octreeBits": 5
         }
 
       ],
