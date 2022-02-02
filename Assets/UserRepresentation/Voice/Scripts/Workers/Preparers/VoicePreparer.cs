@@ -31,11 +31,16 @@ namespace VRT.UserRepresentation.Voice
         Timestamp audioBufferHeadTimestamp;
 
         bool PauseAudioPlayout = true;
-        // We should _not_ drop audio frames if they are in the past, but could still be
-        // considered part of the current visual frame. Otherwise, we may end up dropping one
-        // audio frame for every visual frame (because the visual clock jumps forward over the
-        // audio clock).
-        const int VISUAL_FRAME_DURATION_MS = 66;
+        // We should _not_ drop audio frames if they are in the past, but we also don't want to
+        // drop frames if we later have to insert zeros because we dropped too aggressive.
+        // Especially with bursty transport like Dash this is likely to happen.
+        //
+        // The value of this parameter should be dynamically adjusted: it should start small and increase
+        // whenever we detect that after we have dropped frames we have to insert zeros a relatively short time
+        // later.
+        public Timedelta audioMaxAheadMs = 500;
+        // If we do need to drop frames to catch up it may be better to do a single drop of multiple
+        // frames than multiple drops of a single frame. We need to cater for that.
         
         public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
@@ -114,6 +119,7 @@ namespace VRT.UserRepresentation.Voice
                         Timestamp latestTimestampInqueue = InQueue.LatestTimestamp();
                         if (latestTimestampInqueue > currentTimestamp + (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000))
                         {
+#pragma warning disable CS0162
                             if (debugBuffering) Debug.Log($"{Name()}: LatchFrame: skip forward {latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000) - bestTimestamp} ms: more than maxPlayoutLatency in input queue");
                             bestTimestamp = latestTimestampInqueue - (Timedelta)(Config.Instance.Voice.maxPlayoutLatency * 1000);
                         }
@@ -152,14 +158,14 @@ namespace VRT.UserRepresentation.Voice
                 if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
-                    bool trySkipForward = currentTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
-                    if (trySkipForward)
+                    bool canSkipForward = currentTimestamp < minTimestamp - audioMaxAheadMs;
+                    if (canSkipForward)
                     {
                         Timestamp queueHeadTimestamp = InQueue._PeekTimestamp();
-                        bool canDrop = queueHeadTimestamp != 0 && queueHeadTimestamp < minTimestamp - VISUAL_FRAME_DURATION_MS;
+                        canSkipForward = queueHeadTimestamp != 0 && queueHeadTimestamp < minTimestamp - audioMaxAheadMs;
 #pragma warning disable CS0162
-                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack _FillAudioFrame: trySkipForward=true minTimestamp={minTimestamp} currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, queueHeadTimestamp={queueHeadTimestamp} candrop={canDrop}");
-                        if (canDrop)
+                        if (debugBuffering) Debug.Log($"{Name()}: xxxjack _FillAudioFrame: minTimestamp={minTimestamp} currentTimestamp={currentTimestamp}, delta={minTimestamp - currentTimestamp}, queueHeadTimestamp={queueHeadTimestamp} canSkipForward={canSkipForward}");
+                        if (canSkipForward)
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
                             // Drop this one.
