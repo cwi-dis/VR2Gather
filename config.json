@@ -73,7 +73,7 @@
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0.007,
-      "frameRate": 15,
+      "frameRate": 10,
       "tiled": true,
       "Encoders": [
 		
