@@ -22,6 +22,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: HeadIsolation
       objectReference: {fileID: 0}
+    - target: {fileID: 6916535084958141328, guid: a604d45e2d52f42c8b5100b0e76586cf,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
       propertyPath: m_RootOrder
@@ -120,6 +125,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3771994549369435325, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5072070730475040801, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
@@ -220,6 +230,11 @@ PrefabInstance:
         type: 3}
       propertyPath: localPlayerOnlyObjects.Array.data[2]
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7118474587514814776, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: algorithm
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7210636311981259469, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}

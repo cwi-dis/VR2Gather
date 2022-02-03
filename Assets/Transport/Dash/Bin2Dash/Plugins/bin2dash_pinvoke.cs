@@ -4,6 +4,9 @@ using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class bin2dash
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -50,7 +53,7 @@ namespace VRT.Transport.Dash
 
             // Gets the current media time in @timescale unit.
             [DllImport(myDllName)]
-            extern static public long vrt_get_media_time(IntPtr h, int timescale);
+            extern static public Timestamp vrt_get_media_time(IntPtr h, int timescale);
         }
 
         public class connection : BaseMemoryChunk
@@ -82,7 +85,7 @@ namespace VRT.Transport.Dash
                 return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
             }
 
-            public long get_media_time(int timescale)
+            public Timestamp get_media_time(int timescale)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with pointer==null");
                 return _API.vrt_get_media_time(pointer, timescale);

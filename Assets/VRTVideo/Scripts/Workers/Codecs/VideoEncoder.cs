@@ -60,7 +60,9 @@ namespace VRT.Video
             base.OnStop();
             Debug.Log("{Name()}: Stopped");
         }
+#if ENCODER_MONOTONIC_TIMESTAMPS
         long frame = 0;
+#endif
         protected override void Update()
         {
             base.Update();

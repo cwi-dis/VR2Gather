@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class NULLDecoder : BaseWorker
     {
         protected QueueThreadSafe inQueue;
@@ -60,13 +63,13 @@ namespace VRT.UserRepresentation.PointCloud
             System.DateTime decodeStartTime = System.DateTime.Now;
             cwipc.pointcloud pc = cwipc.from_packet(mc.pointer, (System.IntPtr)mc.length);
             System.DateTime decodeStopTime = System.DateTime.Now;
-            ulong decodeDuration = (ulong)(decodeStopTime - decodeStartTime).TotalMilliseconds;
+            Timedelta decodeDuration = (Timedelta)(decodeStopTime - decodeStartTime).TotalMilliseconds;
             mc.free();
             if (pc == null)
             {
                 throw new System.Exception($"{Name()}: from_packet did not return a pointcloud");
             }
-            ulong queuedDuration = outQueue.QueuedDuration();
+            Timedelta queuedDuration = outQueue.QueuedDuration();
             bool dropped = !outQueue.Enqueue(pc);
             stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
         }
@@ -82,7 +85,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDecodeDuration = 0;
             double statsTotalQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, ulong inQueueDuration, ulong decodeDuration, ulong queuedDuration)
+            public void statsUpdate(int pointCount, bool dropped, Timedelta inQueueDuration, Timedelta decodeDuration, Timedelta queuedDuration)
             {
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;

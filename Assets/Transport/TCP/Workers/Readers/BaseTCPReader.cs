@@ -8,6 +8,8 @@ using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
 
     public class BaseTCPReader : BaseReader
     {
@@ -140,7 +142,7 @@ namespace VRT.Transport.TCP
                             Debug.LogWarning($"{Name()}: expected 4CC 0x{receiverInfo.fourcc:x} got 0x{fourccReceived:x}");
                         } 
                         int dataSize = BitConverter.ToInt32(hdr, 4);
-                        long timestamp = BitConverter.ToInt64(hdr, 8);
+                        Timestamp timestamp = BitConverter.ToInt64(hdr, 8);
                         byte[] data = new byte[dataSize];
                         int actualDataSize = _ReceiveAll(socket, data);
                         if (actualDataSize != dataSize)
@@ -167,6 +169,7 @@ namespace VRT.Transport.TCP
                         }
                     }
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
                     if (!stopping)

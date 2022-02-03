@@ -5,13 +5,16 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PointCloudPreparer : BasePreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr currentBuffer;
         int currentSize;
-        public ulong currentTimestamp;
+        public Timestamp currentTimestamp;
         float currentCellSize = 0.008f;
         float defaultCellSize;
         float cellSizeFactor;
@@ -36,7 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
            lock (this)
             {
                 int dropCount = 0;
-                ulong bestTimestamp = 0;
+                Timestamp bestTimestamp = 0;
                 if (synchronizer != null)
                 {
                     bestTimestamp = synchronizer.GetBestTimestampForCurrentFrame();
@@ -63,7 +66,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // See if there are more pointclouds in the queue that are no later than bestTimestamp
                 while (pc.timestamp() < bestTimestamp)
                 {
-                    ulong nextTimestamp = InQueue._PeekTimestamp();
+                    Timestamp nextTimestamp = InQueue._PeekTimestamp();
                     // If there is no next queue entry, or it has no timestamp, or it is after bestTimestamp we break out of the loop
                     if (nextTimestamp == 0 || nextTimestamp > bestTimestamp) break;
                     // We know there is another pointcloud in the queue, and we know it is better than what we have now. Replace it.
@@ -108,7 +111,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Synchronize playout for the current frame with other preparers (if needed)
             if (synchronizer)
             {
-                ulong earliestTimestamp = currentTimestamp;
+                Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();
                 while (earliestTimestamp != 0 && earliestTimestamp < currentTimestamp)
                 {
@@ -120,7 +123,7 @@ namespace VRT.UserRepresentation.PointCloud
                     frameToDrop.free();
                     earliestTimestamp = InQueue._PeekTimestamp(currentTimestamp);
                 }
-                ulong latestTimestamp = InQueue.LatestTimestamp();
+                Timestamp latestTimestamp = InQueue.LatestTimestamp();
                 synchronizer.SetTimestampRangeForCurrentFrame(Name(), earliestTimestamp, latestTimestamp);
             }
         }

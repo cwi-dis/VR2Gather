@@ -24,10 +24,10 @@ public class TestAudio : MonoBehaviour
             Debug.Log($"Supported audio input device name: {d}");
         }
         // Copy parameters
-        if (audioCodec != "") Config.Instance.audioCodec = audioCodec;
-        audioCodec = Config.Instance.audioCodec;
-        if (audioFps != 0) Config.Instance.audioFps = audioFps;
-        audioFps = Config.Instance.audioFps;
+        if (audioCodec != "") Config.Instance.Voice.Codec = audioCodec;
+        audioCodec = Config.Instance.Voice.Codec;
+        if (audioFps != 0) Config.Instance.Voice.audioFps = audioFps;
+        audioFps = Config.Instance.Voice.audioFps;
         
 
         user = new User();

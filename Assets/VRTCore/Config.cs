@@ -35,11 +35,7 @@ namespace VRT.Core
         public float memoryDamping = 1.3f;
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
-        public string videoCodec = "h264";
-        public string pointcloudCodec = "cwi1";
-        public string audioCodec = "VR2A";
         public readonly int audioSampleRate = 48000;
-        public int audioFps = 50;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;
@@ -108,11 +104,30 @@ namespace VRT.Core
         [Serializable]
         public class _PCs
         {
+            public string Codec = "cwi1";
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
         };
         public _PCs PCs;
+
+        [Serializable]
+        public class _Voice
+        {
+            public string Codec = "VR2A";
+            public int audioFps = 50;
+            public float maxPlayoutLatency = 0.3f;
+            public float maxPlayoutAhead = 0.066f;
+            public bool ignoreSynchronizer = false;
+        }
+        public _Voice Voice;
+
+        [Serializable]
+        public class _Video
+        {
+            public string Codec = "h264";
+        }
+        public _Video Video;
 
         [Serializable]
         public class _User

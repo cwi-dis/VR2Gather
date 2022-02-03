@@ -58,7 +58,7 @@ namespace VRT.UserRepresentation.PointCloud
             return dst.AddComponent<PointCloudPipeline>();
         }
 
-        public string Name()
+        public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
         }
@@ -183,7 +183,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // allocate and initialize per-stream outgoing stream datastructures
                         //
-                        string pointcloudCodec = Config.Instance.pointcloudCodec;
+                        string pointcloudCodec = Config.Instance.PCs.Codec;
                         var Encoders = PCSelfConfig.Encoders;
                         int minTileNum = 0;
                         int nTileToTransmit = 1;
@@ -405,7 +405,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
         {
-            string pointcloudCodec = Config.Instance.pointcloudCodec;
+            string pointcloudCodec = Config.Instance.PCs.Codec;
 
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
@@ -498,6 +498,7 @@ namespace VRT.UserRepresentation.PointCloud
         System.DateTime lastUpdateTime;
         private void Update()
         {
+#pragma warning disable CS0162
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -712,7 +713,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 rv.audio = voiceSender.GetSyncInfo();
             }
-            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
+            Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -724,6 +725,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             if (reader == null) return; // Too early
+            Debug.Log($"{Name()}: SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace VRT.Core
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public abstract class BasePreparer : BaseWorker
     {
         protected Synchronizer synchronizer = null;
@@ -25,7 +28,7 @@ namespace VRT.Core
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void SetSynchronizer(Synchronizer _synchronizer)
+        public virtual void SetSynchronizer(Synchronizer _synchronizer)
         {
             synchronizer = _synchronizer;
        }
@@ -45,7 +48,7 @@ namespace VRT.Core
             base.Update();
         }
 
-        public ulong getQueueDuration()
+        public Timedelta getQueueDuration()
         {
             if (InQueue == null) return 0;
             return InQueue.QueuedDuration();

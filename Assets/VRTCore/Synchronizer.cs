@@ -4,23 +4,35 @@ using UnityEngine;
 
 namespace VRT.Core
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class Synchronizer : MonoBehaviour
     {
+        
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool debugSynchronizer = false;
         [Tooltip("Current preferred playout latency")]
-        public long currentPreferredLatency = 0;
+        public Timedelta currentPreferredLatency = 0;
         [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame (if currentPreferredLatency > minPreferredLatency). Default: as fast as possible.")]
         public int latencyCatchup = 0;
         [Tooltip("Minimum preferred playout latency")]
-        public long minPreferredLatency = 0;
+        public Timedelta minPreferredLatency = 0;
         [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
         public bool acceptDesyncOnDataUnavailable = false;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
-        ulong availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
-        ulong availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
-        ulong bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
+        Timestamp availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
+        Timestamp availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
+        Timestamp bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
+
+        public class TimestampRange
+        {
+            public string caller;
+            public Timestamp earliestFrameTimestamp;
+            public Timestamp latestFrameTimestamp;
+        };
+        TimestampRange audioTimestampRange;
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -37,9 +49,25 @@ namespace VRT.Core
                 availableIntervalBegin = 0;
                 availableIntervalEnd = 0;
                 bestTimestampForCurrentFrame = 0;
+                audioTimestampRange = null;
             }
         }
-        public void SetTimestampRangeForCurrentFrame(string caller, ulong earliestFrameTimestamp, ulong latestFrameTimestamp)
+
+        public void SetAudioTimestampRangeForCurrentFrame(string caller, Timestamp earliestFrameTimestamp, Timestamp latestFrameTimestamp)
+        {
+            if (audioTimestampRange != null)
+            {
+                Debug.LogError($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call");
+            }
+            audioTimestampRange = new TimestampRange()
+            {
+                caller = caller,
+                earliestFrameTimestamp = earliestFrameTimestamp,
+                latestFrameTimestamp = latestFrameTimestamp
+            };
+        }
+
+        public void SetTimestampRangeForCurrentFrame(string caller, Timestamp earliestFrameTimestamp, Timestamp latestFrameTimestamp)
         {
             _Reset();
             if (debugSynchronizer) Debug.Log($"{Name()}: SetTimestampRangeForCurrentFrame {caller}: frame={currentFrameCount}, earliest={earliestFrameTimestamp}, latest={latestFrameTimestamp}");
@@ -75,9 +103,9 @@ namespace VRT.Core
             if (rangeTooNew || rangeTooOld)
             {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+                Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
                 string problem = rangeTooNew ? "new" : "old";
-                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{(long)earliestFrameTimestamp-utcMillisForCurrentFrame}..{(long)latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{(long)availableIntervalBegin - utcMillisForCurrentFrame}..{(long)availableIntervalEnd - utcMillisForCurrentFrame}]");
+                Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{earliestFrameTimestamp-utcMillisForCurrentFrame}..{latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{availableIntervalBegin - utcMillisForCurrentFrame}..{availableIntervalEnd - utcMillisForCurrentFrame}]");
                 // xxxjack decide which one to keep: the earliest or the latest range....
                 // keeping the latest range should cause "best progress".
                 // keeping the earliest should cause "quickest sync".
@@ -100,12 +128,18 @@ namespace VRT.Core
 
         void _ComputeTimestampForCurrentFrame()
         {
+            // First we have to add the audio to the computations.
+            if (audioTimestampRange != null)
+            {
+                SetTimestampRangeForCurrentFrame(audioTimestampRange.caller, audioTimestampRange.earliestFrameTimestamp, audioTimestampRange.latestFrameTimestamp);
+                audioTimestampRange = null;
+            }
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            long utcMillisForCurrentFrame = (long)sinceEpoch.TotalMilliseconds;
+            Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
             // If we don't have an interval we cannot do anything
             if (availableIntervalBegin == 0)
             {
-                bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
+                bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentPreferredLatency);
                 return;
             }
             //
@@ -116,8 +150,8 @@ namespace VRT.Core
             //
             if (latencyCatchup > 0 && currentPreferredLatency > minPreferredLatency && availableIntervalEnd > 0)
             {
-                long maxCatchup = utcMillisForCurrentFrame - (long)availableIntervalEnd;
-                long curCatchup = maxCatchup;
+                Timedelta maxCatchup = utcMillisForCurrentFrame - availableIntervalEnd;
+                Timedelta curCatchup = maxCatchup;
                 if (curCatchup > latencyCatchup)
                 {
                     curCatchup = latencyCatchup;
@@ -137,7 +171,7 @@ namespace VRT.Core
             // We now know the preferred latency, so we can compute the
             // best timestamp.
             //
-            bestTimestampForCurrentFrame = (ulong)(utcMillisForCurrentFrame - currentPreferredLatency);
+            bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentPreferredLatency);
             //
             // Check whether it falls into the interval, adapt if not.
             //
@@ -151,7 +185,7 @@ namespace VRT.Core
             stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
         }
 
-        public ulong GetBestTimestampForCurrentFrame()
+        public Timestamp GetBestTimestampForCurrentFrame()
         {
             _Reset();
             if (bestTimestampForCurrentFrame == 0) _ComputeTimestampForCurrentFrame();
@@ -173,14 +207,14 @@ namespace VRT.Core
         {
             public Stats(string name) : base(name) { }
 
-            long statsTotalPreferredLatency;
+            Timedelta statsTotalPreferredLatency;
             int statsTotalCalls = 0;
             int statsTotalFreshReturn = 0;
             int statsTotalStaleReturn = 0;
             
-            public void statsUpdate(bool freshReturn, bool staleReturn, long utcMillisForCurrentFrame, ulong timestamp)
+            public void statsUpdate(bool freshReturn, bool staleReturn, Timestamp utcMillisForCurrentFrame, Timestamp timestamp)
             {
-                long currentLatency = utcMillisForCurrentFrame - (long)timestamp;
+                Timedelta currentLatency = utcMillisForCurrentFrame - timestamp;
                 statsTotalPreferredLatency += currentLatency;
                 statsTotalCalls++;
                 if (freshReturn) statsTotalFreshReturn++;

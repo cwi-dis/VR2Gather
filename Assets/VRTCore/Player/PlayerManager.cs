@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour {
     public GameObject avatar;
     public GameObject webcam;
     public GameObject pc;
-    public GameObject audio;
+    public GameObject voice;
     public GameObject[] localPlayerOnlyObjects;
     public GameObject[] inputEmulationOnlyObjects;
     public GameObject[] inputGamepadOnlyObjects;

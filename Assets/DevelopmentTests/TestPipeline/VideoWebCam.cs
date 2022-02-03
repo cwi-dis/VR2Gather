@@ -76,7 +76,7 @@ public class VideoWebCam : MonoBehaviour {
         }
         ready = true;
     }
-    float timeToFrame = 0;
+
     private void Update()
     {
         preparer.Synchronize();

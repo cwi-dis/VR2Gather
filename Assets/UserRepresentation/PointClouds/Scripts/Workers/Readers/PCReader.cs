@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PCReader : TiledWorker
     {
         protected cwipc.source reader;
@@ -141,7 +144,7 @@ namespace VRT.UserRepresentation.PointCloud
 
             bool didDrop = false;
             bool didDropSelf = false;
-            ulong encoderQueuedDuration = 0;
+            Timedelta encoderQueuedDuration = 0;
             if (outQueue == null)
             {
                 Debug.LogError($"Programmer error: {Name()}: no outQueue, dropping pointcloud");
@@ -185,7 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, ulong queuedDuration, ulong timestamp)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp)
             {
                 
                 statsTotalPoints += pointCount;

@@ -9,6 +9,8 @@ using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
 
     public class TCPWriter : BaseWriter
     {
@@ -145,6 +147,7 @@ namespace VRT.Transport.TCP
                     }
                     Debug.Log($"{Name()}: thread stopped");
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
 #if UNITY_EDITOR
@@ -289,7 +292,7 @@ namespace VRT.Transport.TCP
 
             return new SyncConfig.ClockCorrespondence
             {
-                wallClockTime = (long)sinceEpoch.TotalMilliseconds,
+                wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
                 streamClockTime = uploader.get_media_time(1000)
             };
         }
