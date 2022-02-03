@@ -125,10 +125,10 @@ namespace VRT.UserRepresentation.PointCloud
                 EAR_RIGHT
             };
 
-            public ulong timestamp;
+            public Timestamp timestamp;
             public List<cwipc_skeleton_joint> joints;
             public cwipc_skeleton() { }
-            public cwipc_skeleton(IntPtr data_pointer, int data_size, ulong _timestamp)
+            public cwipc_skeleton(IntPtr data_pointer, int data_size, Timestamp _timestamp)
             {
                 timestamp = _timestamp;
                 joints = new List<cwipc_skeleton_joint>();
