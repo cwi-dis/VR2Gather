@@ -16,11 +16,11 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
+  	"sessionName" : "jittertest",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
-  	"autoCreateForUser" : "",
+  	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -73,9 +73,9 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.007,
+      "voxelSize": 0,
       "frameRate": 10,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
 		
 		{
