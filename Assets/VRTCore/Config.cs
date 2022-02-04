@@ -108,6 +108,7 @@ namespace VRT.Core
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
+            public float timeoutBeforeGhosting = 5.0f;
         };
         public _PCs PCs;
 

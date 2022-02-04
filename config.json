@@ -34,17 +34,14 @@
 	"_preferredDevices" : ["", "Oculus", "OpenVR"],
 	"_preferredController" : "gamepad"
   },
-  "ScreenshotTool" : {
-	  "takeScreenshot" : false,
-	  "screenshotTargetDirectory" : "../Screenshots"
-  },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
   "PCs": {
-  	"Codec" : "cwi1",
+    "Codec": "cwi1",
     "defaultCellSize": 0.0024,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 1,
+    "timeoutBeforeGhosting" : 5
   },
   "Voice": {
   	"Codec": "VR2A",
