@@ -18,7 +18,7 @@
   	"autoLogin" : true,
   	"sessionName" : "jittertest",
   	"sessionScenario" : 0,
-  	"sessionTransportProtocol" : 1,
+  	"sessionTransportProtocol" : 2,
   	"sessionUncompressed" : false,
   	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
@@ -41,7 +41,7 @@
     "Codec": "cwi1",
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 5
+    "timeoutBeforeGhosting" : 0.2
   },
   "Voice": {
   	"Codec": "VR2A",
