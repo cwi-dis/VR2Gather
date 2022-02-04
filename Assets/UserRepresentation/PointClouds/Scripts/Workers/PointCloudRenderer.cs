@@ -14,9 +14,14 @@ namespace VRT.UserRepresentation.PointCloud
         // become mirrored, for example when cropping a pointcloud. Therefore, we mirror here,
         // by adjusting the matrix.
         const bool pcMirrorX = true;
+        bool dataIsMissing = false;
+        Timestamp lastDataReceived;
+        [Tooltip("Make pointsize smaller if no new data received for this many ms")]
+        public Timedelta missingDataDuration = 5000;
         ComputeBuffer pointBuffer;
         int pointCount = 0;
         static Material baseMaterial;
+        [Tooltip("Private clone of Material used by this renderer instance")]
         public Material material;
         MaterialPropertyBlock block;
         PointCloudPreparer preparer;
@@ -65,15 +70,42 @@ namespace VRT.UserRepresentation.PointCloud
         {
             bool fresh = preparer.LatchFrame();
             float pointSize = 0;
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+
             if (fresh)
             {
+                lastDataReceived = now;
+                if (dataIsMissing)
+                {
+                    Debug.Log($"{Name()}: Data received again, set pointsize=1");
+                    // Was missing previously. Reset pointsize.
+                    block.SetFloat("_PointSizeFactor", 1.0f);
+                }
+                dataIsMissing = false;
                 pointCount = preparer.GetComputeBuffer(ref pointBuffer);
                 pointSize = preparer.GetPointSize();
-                if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+                if (pointBuffer == null || !pointBuffer.IsValid())
+                {
+                    Debug.LogError($"{Name()}: Invalid pointBuffer");
+                    return;
+                }
                 block.SetBuffer("_PointBuffer", pointBuffer);
                 block.SetFloat("_PointSize", pointSize);
+            } 
+            else
+            {
+                if (now > lastDataReceived + missingDataDuration && !dataIsMissing)
+                {
+                    Debug.Log($"{Name()}: No data for {missingDataDuration}, set pointsize=0.2");
+                    block.SetFloat("_PointSizeFactor", 0.2f);
+                    dataIsMissing = true;
+                }
             }
-            if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+            if (pointBuffer == null || !pointBuffer.IsValid())
+            {
+                return;
+            }
             Matrix4x4 pcMatrix = transform.localToWorldMatrix;
             if (pcMirrorX)
             {
