@@ -12,18 +12,21 @@ namespace VRT.Core
         
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool debugSynchronizer = false;
-        [Tooltip("Current preferred playout latency")]
+        [Tooltip("Current preferred playout latency (ms)")]
         public Timedelta currentPreferredLatency = 0;
         [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame (if currentPreferredLatency > minPreferredLatency). Default: as fast as possible.")]
         public int latencyCatchup = 0;
-        [Tooltip("Minimum preferred playout latency")]
+        [Tooltip("Minimum preferred playout latency (ms)")]
         public Timedelta minPreferredLatency = 0;
+        [Tooltip("Maximum preferred playout latency (ms), reset if we reach this")]
+        public Timedelta maxPreferredLatency = 0;
         [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
         public bool acceptDesyncOnDataUnavailable = false;
         [Tooltip("Set to true once a correctly synchronized frame has been produced")]
         public bool stableStreamsDetected = false;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
+        Timestamp utcMillisForCurrentFrame = 0; // timestamp for the frame we are currently working for
         bool currentFrameDesync = false; // Set to true if we detect we can't do the right thing for the current frame
         Timestamp availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
         Timestamp availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
@@ -49,6 +52,8 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
                 currentFrameDesync = false;
                 availableIntervalBegin = 0;
                 availableIntervalEnd = 0;
@@ -108,8 +113,6 @@ namespace VRT.Core
             if (rangeTooNew || rangeTooOld)
             {
                 currentFrameDesync = true;
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
                 string problem = rangeTooNew ? "new" : "old";
                 Debug.Log($"{Name()}: {caller}: too {problem}: timestamp range [{earliestFrameTimestamp-utcMillisForCurrentFrame}..{latestFrameTimestamp - utcMillisForCurrentFrame}], allowed range [{availableIntervalBegin - utcMillisForCurrentFrame}..{availableIntervalEnd - utcMillisForCurrentFrame}]");
                 // xxxjack decide which one to keep: the earliest or the latest range....
@@ -140,8 +143,6 @@ namespace VRT.Core
                 SetTimestampRangeForCurrentFrame(audioTimestampRange.caller, audioTimestampRange.earliestFrameTimestamp, audioTimestampRange.latestFrameTimestamp);
                 audioTimestampRange = null;
             }
-            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-            Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
             // If we don't have an interval we cannot do anything
             if (availableIntervalBegin == 0)
             {
@@ -154,9 +155,16 @@ namespace VRT.Core
             if (!currentFrameDesync && !stableStreamsDetected)
             {
                 Debug.Log($"{Name()}: First synchronized frame produced");
-                Stats.Output(Name(), "sync_found=1");
+                Stats.Output(Name(), "synchronised=1");
                 stableStreamsDetected = true;
             }
+            _AdjustParameters();
+
+            stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+        }
+
+        void _AdjustParameters()
+        {
             //
             // We can lower the current preferred latency iff
             // - we are allowed to do catchup
@@ -177,10 +185,19 @@ namespace VRT.Core
                     if (debugSynchronizer) Debug.Log($"{Name()}: catching up {curCatchup} ms, currentPreferredLatency={currentPreferredLatency}, maxCatchup={maxCatchup}");
                 }
             }
-            // Sanity check
+            //
+            // Check that the latency is within the acceptable range
+            //
             if (currentPreferredLatency < minPreferredLatency)
             {
                 currentPreferredLatency = minPreferredLatency;
+            }
+            if (maxPreferredLatency > 0 && currentPreferredLatency > maxPreferredLatency)
+            {
+                currentPreferredLatency = minPreferredLatency;
+                stableStreamsDetected = false;
+                Stats.Output(Name(), "synchronised=0");
+                Debug.LogWarning($"{Name()}: lost synchronization");
             }
             //
             // We now know the preferred latency, so we can compute the
@@ -197,7 +214,6 @@ namespace VRT.Core
             //
             currentPreferredLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
 
-            stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
         }
 
         public Timestamp GetBestTimestampForCurrentFrame()
