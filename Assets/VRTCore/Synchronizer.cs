@@ -20,8 +20,11 @@ namespace VRT.Core
         public Timedelta minPreferredLatency = 0;
         [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
         public bool acceptDesyncOnDataUnavailable = false;
+        [Tooltip("Set to true once a correctly synchronized frame has been produced")]
+        public bool stableStreamsDetected = false;
 
         int currentFrameCount = 0;  // Unity frame number we are currently working for
+        bool currentFrameDesync = false; // Set to true if we detect we can't do the right thing for the current frame
         Timestamp availableIntervalBegin = 0; // Earliest timestamp available for this frame, for all clients
         Timestamp availableIntervalEnd = 0;   // earliest (over all clients) Latest timestamp available in the client queue
         Timestamp bestTimestampForCurrentFrame = 0; // Computed best timestamp for this frame
@@ -46,6 +49,7 @@ namespace VRT.Core
             if (Time.frameCount != currentFrameCount)
             {
                 currentFrameCount = Time.frameCount;
+                currentFrameDesync = false;
                 availableIntervalBegin = 0;
                 availableIntervalEnd = 0;
                 bestTimestampForCurrentFrame = 0;
@@ -82,6 +86,7 @@ namespace VRT.Core
             //
             if (latestFrameTimestamp == 0 || earliestFrameTimestamp == 0)
             {
+                currentFrameDesync = true;
                 if (latestFrameTimestamp != 0 || earliestFrameTimestamp != 0) Debug.LogError($"{Name()}: programmer error in timestamp range [{earliestFrameTimestamp}..{latestFrameTimestamp}]");
                 return;
             }
@@ -102,6 +107,7 @@ namespace VRT.Core
             bool rangeTooOld = latestFrameTimestamp < availableIntervalBegin;
             if (rangeTooNew || rangeTooOld)
             {
+                currentFrameDesync = true;
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp utcMillisForCurrentFrame = (Timestamp)sinceEpoch.TotalMilliseconds;
                 string problem = rangeTooNew ? "new" : "old";
@@ -139,8 +145,17 @@ namespace VRT.Core
             // If we don't have an interval we cannot do anything
             if (availableIntervalBegin == 0)
             {
+                currentFrameDesync = true;
                 bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentPreferredLatency);
                 return;
+            }
+            // If we managed to find a correctly synced timestamp for this frame
+            // we check whether it is the first time we managed to do so.
+            if (!currentFrameDesync && !stableStreamsDetected)
+            {
+                Debug.Log($"{Name()}: First synchronized frame produced");
+                Stats.Output(Name(), "sync_found=1");
+                stableStreamsDetected = true;
             }
             //
             // We can lower the current preferred latency iff
