@@ -47,7 +47,7 @@
   	"Codec": "VR2A",
   	"maxPlayoutLatency" : 0.5,
 	"maxPlayoutAhead": 0.066,
-	"ignoreSynchronizer" : true
+	"ignoreSynchronizer" : false
   },
   "Video": {
   	"Codec" : "h264"
