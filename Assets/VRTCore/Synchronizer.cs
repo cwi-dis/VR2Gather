@@ -12,14 +12,22 @@ namespace VRT.Core
         
         [Tooltip("Enable to get lots of log messages on Synchronizer use")]
         public bool debugSynchronizer = false;
+        [Tooltip("Enable to get log messages on jitter buffer adaptations")]
+        public bool debugJitterBuffer = false;
+
         [Tooltip("Current preferred playout latency (ms)")]
-        public Timedelta currentPreferredLatency = 0;
-        [Tooltip("If nonzero enable jitterbuffer. The number is maximum ms catchup per frame (if currentPreferredLatency > minPreferredLatency). Default: as fast as possible.")]
-        public int latencyCatchup = 0;
+        public Timedelta currentLatency = 0;
+
         [Tooltip("Minimum preferred playout latency (ms)")]
-        public Timedelta minPreferredLatency = 0;
-        [Tooltip("Maximum preferred playout latency (ms), reset if we reach this")]
-        public Timedelta maxPreferredLatency = 0;
+        public Timedelta minLatency = 0;
+        [Tooltip("Maximum preferred playout latency (ms), reset to minLatency if we reach this")]
+        public Timedelta maxLatency = 0;
+
+        [Tooltip("Limit by how much we decrease preferred latency")]
+        public int latencyMaxDecrease = 0;
+        [Tooltip("Limit by how much we increase preferred latency")]
+        public int latencyMaxIncrease = 0;
+
         [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
         public bool acceptDesyncOnDataUnavailable = false;
         [Tooltip("Set to true once a correctly synchronized frame has been produced")]
@@ -147,7 +155,7 @@ namespace VRT.Core
             if (availableIntervalBegin == 0)
             {
                 currentFrameDesync = true;
-                bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentPreferredLatency);
+                bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentLatency);
                 return;
             }
             // If we managed to find a correctly synced timestamp for this frame
@@ -165,6 +173,7 @@ namespace VRT.Core
 
         void _AdjustParameters()
         {
+#if xxxjack_outdated
             //
             // We can lower the current preferred latency iff
             // - we are allowed to do catchup
@@ -185,16 +194,18 @@ namespace VRT.Core
                     if (debugSynchronizer) Debug.Log($"{Name()}: catching up {curCatchup} ms, currentPreferredLatency={currentPreferredLatency}, maxCatchup={maxCatchup}");
                 }
             }
+#else
+#endif
             //
             // Check that the latency is within the acceptable range
             //
-            if (currentPreferredLatency < minPreferredLatency)
+            if (currentLatency < minLatency)
             {
-                currentPreferredLatency = minPreferredLatency;
+                currentLatency = minLatency;
             }
-            if (maxPreferredLatency > 0 && currentPreferredLatency > maxPreferredLatency)
+            if (maxLatency > 0 && currentLatency > maxLatency)
             {
-                currentPreferredLatency = minPreferredLatency;
+                currentLatency = minLatency;
                 stableStreamsDetected = false;
                 Stats.Output(Name(), "synchronised=0");
                 Debug.LogWarning($"{Name()}: lost synchronization");
@@ -203,17 +214,67 @@ namespace VRT.Core
             // We now know the preferred latency, so we can compute the
             // best timestamp.
             //
-            bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentPreferredLatency);
+            Timedelta latencyAdjustment = 0;
+            bestTimestampForCurrentFrame = (Timestamp)(utcMillisForCurrentFrame - currentLatency);
             //
             // Check whether it falls into the interval, adapt if not.
             //
-            if (bestTimestampForCurrentFrame < availableIntervalBegin) bestTimestampForCurrentFrame = availableIntervalBegin;
-            if (bestTimestampForCurrentFrame > availableIntervalEnd) bestTimestampForCurrentFrame = availableIntervalEnd;
-            //
-            // And recompute preferred latency
-            //
-            currentPreferredLatency = utcMillisForCurrentFrame - (long)bestTimestampForCurrentFrame;
-
+            if (bestTimestampForCurrentFrame < availableIntervalBegin)
+            {
+                // Our best timestamp falls before the begin of the available range.
+                // We need to forward the best timestamp, so we should also decrease the currentPreferredLatency.
+                if (debugJitterBuffer)
+                {
+                    Debug.Log($"{Name()}: jitterBuffer: need to decrease latency, interval too new");
+                }
+                latencyAdjustment = bestTimestampForCurrentFrame - availableIntervalBegin;
+                // We return the oldest available timestamp in the range.
+                bestTimestampForCurrentFrame = availableIntervalBegin;
+            }
+            else
+            if (bestTimestampForCurrentFrame > availableIntervalEnd)
+            {
+                // Our best timestamp falls after the end of the available range.
+                // So we need to decrease the best timestamp, which means we should increase the currentPreferredLatency.
+                if (debugJitterBuffer)
+                {
+                    Debug.Log($"{Name()}: jitterBuffer: need to increase latency, interval too old");
+                }
+                latencyAdjustment = bestTimestampForCurrentFrame - availableIntervalEnd;
+                // We return the newest frame in the range.
+                bestTimestampForCurrentFrame = availableIntervalEnd;
+            }
+            else
+            {
+                // Our best timestamp falls within the available range, so we return it as-is.
+                // xxxjack we should do optional catchup here by setting latencyAdjustment to a negative value, if there
+                // is enough data in the range.
+            }
+            if (latencyAdjustment != 0)
+            {
+                // We limit latencyAdjustment
+                if (latencyAdjustment < -latencyMaxDecrease)
+                {
+                    latencyAdjustment = -latencyMaxDecrease;
+                    if (debugJitterBuffer)
+                    {
+                        Debug.Log($"{Name()}: jitterBuffer: limited latency decrease: {latencyAdjustment}");
+                    }
+                }
+                if (latencyAdjustment > latencyMaxIncrease)
+                {
+                    latencyAdjustment = latencyMaxIncrease;
+                    if (debugJitterBuffer)
+                    {
+                        Debug.Log($"{Name()}: jitterBuffer: limited latency increase: {latencyAdjustment}");
+                    }
+                }
+                currentLatency += latencyAdjustment;
+                if (debugJitterBuffer)
+                {
+                    Debug.Log($"{Name()}: jitterBuffer: currentPreferredLatency={currentLatency}, latencyAdjustment={latencyAdjustment}");
+                }
+            }
         }
 
         public Timestamp GetBestTimestampForCurrentFrame()
