@@ -52,6 +52,15 @@
   "Video": {
   	"Codec" : "h264"
   },
+  "Synchronizer" : {
+  	"debugSynchronizer" : false,
+  	"debugJitterBuffer" : false,
+  	"minLatency" : 100,
+  	"maxLatency" : 5000,
+  	"latencyMaxDecrease" : 1,
+  	"latencyMaxIncrease" : 33,
+  	"acceptDesyncOnDataUnavailable" : false
+  },
 
   "LocalUser": {
     "sourceType": "self",

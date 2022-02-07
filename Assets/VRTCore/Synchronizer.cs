@@ -17,10 +17,12 @@ namespace VRT.Core
 
         [Tooltip("Current preferred playout latency (ms)")]
         public Timedelta currentLatency = 0;
+        [Tooltip("Current minimum latency")]
+        public Timedelta currentMinLatency = 0;
 
-        [Tooltip("Minimum preferred playout latency (ms)")]
+        [Tooltip("Minimum ever playout latency (ms)")]
         public Timedelta minLatency = 0;
-        [Tooltip("Maximum preferred playout latency (ms), reset to minLatency if we reach this")]
+        [Tooltip("Maximum ever playout latency (ms), reset to minLatency if we reach this")]
         public Timedelta maxLatency = 0;
 
         [Tooltip("Limit by how much we decrease preferred latency")]
@@ -199,13 +201,17 @@ namespace VRT.Core
             //
             // Check that the latency is within the acceptable range
             //
-            if (currentLatency < minLatency)
+            if (currentMinLatency < minLatency)
             {
-                currentLatency = minLatency;
+                currentMinLatency = minLatency;
+            }
+            if (currentLatency < currentMinLatency)
+            {
+                currentLatency = currentMinLatency;
             }
             if (maxLatency > 0 && currentLatency > maxLatency)
             {
-                currentLatency = minLatency;
+                currentLatency = currentMinLatency = minLatency;
                 stableStreamsDetected = false;
                 Stats.Output(Name(), "synchronised=0");
                 Debug.LogWarning($"{Name()}: lost synchronization");
@@ -272,8 +278,17 @@ namespace VRT.Core
                 currentLatency += latencyAdjustment;
                 if (debugJitterBuffer)
                 {
-                    Debug.Log($"{Name()}: jitterBuffer: currentPreferredLatency={currentLatency}, latencyAdjustment={latencyAdjustment}");
+                    Debug.Log($"{Name()}: jitterBuffer: currentLatency={currentLatency}, latencyAdjustment={latencyAdjustment}");
                 }
+                if (currentLatency < currentMinLatency)
+                {
+                    currentLatency = currentMinLatency;
+                    if (debugJitterBuffer)
+                    {
+                        Debug.Log($"{Name()}: jitterBuffer: currentLatency clamped to currentMinLatency {currentLatency}");
+                    }
+                }
+                // xxxjack Finally we need to update currentMinLatency
             }
         }
 
@@ -287,7 +302,19 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
+            debugSynchronizer = Config.Instance.Synchronizer.debugSynchronizer;
+            debugJitterBuffer = Config.Instance.Synchronizer.debugJitterBuffer;
+            minLatency = Config.Instance.Synchronizer.minLatency;
+            currentMinLatency = minLatency;
+            currentLatency = minLatency;
+            maxLatency = Config.Instance.Synchronizer.maxLatency;
+            latencyMaxDecrease = Config.Instance.Synchronizer.latencyMaxDecrease;
+            latencyMaxIncrease = Config.Instance.Synchronizer.latencyMaxIncrease;
+            acceptDesyncOnDataUnavailable = Config.Instance.Synchronizer.acceptDesyncOnDataUnavailable;
+
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
+            BaseStats.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
+
             stats = new Stats(Name());
         }
 

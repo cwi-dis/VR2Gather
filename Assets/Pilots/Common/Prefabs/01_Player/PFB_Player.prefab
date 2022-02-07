@@ -1772,10 +1772,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugSynchronizer: 0
-  currentPreferredLatency: 100
-  latencyCatchup: 5
-  minPreferredLatency: 100
+  debugJitterBuffer: 0
+  currentLatency: 0
+  currentMinLatency: 0
+  minLatency: 0
+  maxLatency: 0
+  latencyMaxDecrease: 0
+  latencyMaxIncrease: 0
   acceptDesyncOnDataUnavailable: 0
+  stableStreamsDetected: 0
 --- !u!1 &5737502413439571115
 GameObject:
   m_ObjectHideFlags: 0
