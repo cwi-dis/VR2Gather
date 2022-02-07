@@ -50,6 +50,7 @@ namespace VRT.UserRepresentation.PointCloud
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
+            pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
         }
 
         public void SetPreparer(PointCloudPreparer _preparer)
