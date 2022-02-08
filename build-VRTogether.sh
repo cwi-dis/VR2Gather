@@ -6,6 +6,7 @@ dirname=`cd $dirname ; pwd`
 INSTALL_PCL=false
 INSTALL_TVM=false
 DEST=built-VRTogether
+UNITY_VERSION=2019.4.35f1
 
 unitycmd=Unity
 unityflag=
@@ -16,7 +17,7 @@ linux=false
 case `uname -s` in
 Darwin)
 	mac=true
-	unitycmd=/Applications/Unity/Hub/Editor/2019.4.31f1/Unity.app/Contents/MacOS/Unity
+	unitycmd=/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity
 	unityflag=-buildOSXUniversalPlayer
 	output=VRTogether.app
 	;;
@@ -28,7 +29,7 @@ MINGW64*)
 	;;
 Linux*)
 	linux=true
-	unitycmd=/Applications/Unity/Hub/Editor/2019.4.31f1/Unity.app/Contents/MacOS/Unity
+	unitycmd=/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity
 	unityflag=-buildLinux64Player
 	output=VRTogether
 	;;
