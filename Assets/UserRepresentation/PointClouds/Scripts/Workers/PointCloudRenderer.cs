@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -16,8 +17,6 @@ namespace VRT.UserRepresentation.PointCloud
         const bool pcMirrorX = true;
         bool dataIsMissing = false;
         Timestamp lastDataReceived;
-        [Tooltip("Make pointsize smaller if no new data received for this many ms")]
-        public Timedelta missingDataDuration = 5000;
         ComputeBuffer pointBuffer;
         int pointCount = 0;
         static Material baseMaterial;
@@ -51,6 +50,7 @@ namespace VRT.UserRepresentation.PointCloud
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
+            pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
         }
 
         public void SetPreparer(PointCloudPreparer _preparer)
@@ -95,9 +95,9 @@ namespace VRT.UserRepresentation.PointCloud
             } 
             else
             {
-                if (now > lastDataReceived + missingDataDuration && !dataIsMissing)
+                if (now > lastDataReceived + (int)(Config.Instance.PCs.timeoutBeforeGhosting*1000) && !dataIsMissing)
                 {
-                    Debug.Log($"{Name()}: No data for {missingDataDuration}, set pointsize=0.2");
+                    Debug.Log($"{Name()}: No data for {Config.Instance.PCs.timeoutBeforeGhosting}, set pointsize=0.2");
                     block.SetFloat("_PointSizeFactor", 0.2f);
                     dataIsMissing = true;
                 }

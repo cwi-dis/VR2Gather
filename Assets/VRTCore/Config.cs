@@ -108,6 +108,7 @@ namespace VRT.Core
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
+            public float timeoutBeforeGhosting = 5.0f;
         };
         public _PCs PCs;
 
@@ -128,6 +129,29 @@ namespace VRT.Core
             public string Codec = "h264";
         }
         public _Video Video;
+
+        [Serializable]
+        public class _Synchronizer
+        {
+            [Tooltip("Enable to get lots of log messages on Synchronizer use")]
+            public bool debugSynchronizer = false;
+            [Tooltip("Enable to get log messages on jitter buffer adaptations")]
+            public bool debugJitterBuffer = false;
+
+            [Tooltip("Minimum preferred playout latency in milliseconds")]
+            public int minLatency = 0;
+            [Tooltip("Maximum preferred playout latency, reset to minLatency if we reach this latency")]
+            public int maxLatency = 0;
+
+            [Tooltip("Limit by how much we decrease preferred latency")]
+            public int latencyMaxDecrease = 1;
+            [Tooltip("Limit by how much we increase preferred latency")]
+            public int latencyMaxIncrease = 33;
+
+            [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
+            public bool acceptDesyncOnDataUnavailable = false;
+        }
+        public _Synchronizer Synchronizer;
 
         [Serializable]
         public class _User

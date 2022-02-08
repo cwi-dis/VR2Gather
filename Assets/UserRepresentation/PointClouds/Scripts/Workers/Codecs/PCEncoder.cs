@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using VRT.Core;
 
@@ -12,6 +13,7 @@ namespace VRT.UserRepresentation.PointCloud
     {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
+        int nEncodersBusy;
         System.Threading.Thread[] pusherThreads;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
@@ -77,12 +79,12 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Start();
             int nThreads = encoderOutputs.Length;
-            pusherThreads = new System.Threading.Thread[nThreads];
+            pusherThreads = new Thread[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new System.Threading.Thread(
+                pusherThreads[i] = new Thread(
                     () => PusherThread(stream_number)
                     );
             }
@@ -120,18 +122,19 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
+            if (nEncodersBusy > 0) return;
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            while (pc != null)
+            if (pc != null)
             {
                 if (encoderGroup != null)
                 {
                     // Not terminating yet
                     mostRecentFeedTime = System.DateTime.Now;
                     mostRecentTimestampFed = pc.timestamp();
+                    Interlocked.Exchange(ref nEncodersBusy, pusherThreads.Length);
                     encoderGroup.feed(pc);
                 }
                 pc.free();
-                pc = (cwipc.pointcloud)inQueue.Dequeue();
             }
         }
 
@@ -160,6 +163,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
                         }
+                        Interlocked.Decrement(ref nEncodersBusy);
                     }
                     else
                     {
