@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using VRT.Core;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -188,10 +189,11 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
-            if (!(mySession is null)) {
+            if (mySession != null) {
                 Collect_SFU_Logs(mySession.sessionId);
                 VRT.Core.BaseStats.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
             }
+            _OptionalStopOnLeave();
         }
 
         #endregion
@@ -487,6 +489,7 @@ namespace VRT.Orchestrator.Wrapping
 
             // update the lists of session, anyway the result
             orchestratorWrapper.GetSessions();
+            _OptionalStopOnLeave();
         }
 
         public void JoinSession(string pSessionID) {
@@ -551,6 +554,19 @@ namespace VRT.Orchestrator.Wrapping
 
             // Set this at the end and for the session creator, when the session has been deleted.
             mySession = null;
+            _OptionalStopOnLeave();
+        }
+
+        void _OptionalStopOnLeave()
+        {
+            // If wanted: stop playing (in editor), or quit application
+            if (Config.Instance.AutoStart.autoStopAfterLeave)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
         }
 
         public void OnUserJoinedSession(string userID) {
@@ -829,6 +845,11 @@ namespace VRT.Orchestrator.Wrapping
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
                 VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+                if (Config.Instance.AutoStart.autoLeaveAfter > 0)
+                {
+                    VRT.Core.BaseStats.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+                    Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
+                }
             }
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
@@ -933,6 +954,7 @@ namespace VRT.Orchestrator.Wrapping
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {
+                _OptionalStopOnLeave();
                 yield break;
             }
 
@@ -946,6 +968,7 @@ namespace VRT.Orchestrator.Wrapping
             if (mySession.sessionUsers.Length == 0) {
                 DeleteSession(mySession.sessionId);
             }
+            _OptionalStopOnLeave();
         }
 
         #endregion

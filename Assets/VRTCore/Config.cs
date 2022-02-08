@@ -81,6 +81,8 @@ namespace VRT.Core
             public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
+            public float autoLeaveAfter = 0f;
+            public bool autoStopAfterLeave = false;
         };
         public _AutoStart AutoStart;
 
