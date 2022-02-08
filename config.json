@@ -1,49 +1,67 @@
 {
+	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
 	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
 	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
 
   "targetFrameRate": 30,
   "memoryDamping": 1.2999999523162842,
-  "useAudio": true,
-  "ntpSyncThreshold": 0.033,
+  "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
   "statsOutputFile":  "",
+  "statsOutputFileAppend": false,
+  "ffmpegDLLDir" : "../ffmpeg/x64",
  
   "AutoStart" : {
-  	"autoLogin" : false,
-  	"sessionName" : "",
-  	"sessionScenario" : -1,
-  	"sessionTransportProtocol" : -1,
+  	"autoLogin" : true,
+  	"sessionName" : "test",
+  	"sessionScenario" : 0,
+  	"sessionTransportProtocol" : 1,
+  	"sessionUncompressed" : false,
+  	"autoCreateForUser" : "",
   	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : -1,
-  	"autoDelay" : 0.5
+  	"autoStartWith" : 2,
+  	"autoDelay" : 1.5,
+  	"autoLeaveAfter" : 0,
+  	"autoStopAfterLeave" : false
+  },
+  "ScreenshotTool" : {
+  	"takeScreenshot" : false,
+  	"screenshotTargetDirectory" : "../session_screenshots"
+  },
+  "VR" : {
+	"_preferredDevices" : ["", "Oculus", "OpenVR"],
+	"_preferredController" : "gamepad"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
   "PCs": {
-    "offsetPosition": {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "offsetRotation": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "scale": {
-      "x": 0.0,
-      "y": 0.0,
-      "z": 0.0
-    },
-    "forceMesh": false,
+    "Codec": "cwi1",
     "defaultCellSize": 0.0024,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 1,
+    "timeoutBeforeGhosting" : 5
+  },
+  "Voice": {
+  	"Codec": "VR2A",
+  	"maxPlayoutLatency" : 0.5,
+	"maxPlayoutAhead": 0.066,
+	"ignoreSynchronizer" : false
+  },
+  "Video": {
+  	"Codec" : "h264"
+  },
+  "Synchronizer" : {
+  	"debugSynchronizer" : false,
+  	"debugJitterBuffer" : false,
+  	"minLatency" : 100,
+  	"maxLatency" : 5000,
+  	"latencyMaxDecrease" : 1,
+  	"latencyMaxIncrease" : 33,
+  	"acceptDesyncOnDataUnavailable" : false
   },
 
   "LocalUser": {
@@ -54,78 +72,39 @@
         "configFilename": "./cameraconfig.xml"
       },
       "SynthReaderConfig": {
-        "nPoints": 8000
+        "nPoints": 160000
       },
       "ProxyReaderConfig": {
         "localIP": "",
         "port": 9335
       },
 	  "PrerecordedReaderConfig" : {
-		"folder" : "../mmsys2021-loot-150K"
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.005,
-      "frameRate": 15,
+      "voxelSize": 0.007,
+      "frameRate": 10,
       "tiled": false,
       "Encoders": [
-        {
+		
+		{
           "octreeBits": 9
         }
 
       ],
       "Bin2Dash": {
-        "segmentSize": 2000,
-        "segmentLife": 10000
+        "segmentSize": 1000,
+        "segmentLife": 16000
       },
       "AudioBin2Dash": {
-        "segmentSize": 2000,
-        "segmentLife": 10000
-      }
-    },
-    "Render": {
-      "pointSize": 0,
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": -1.0
+        "segmentSize": 1000,
+        "segmentLife": 16000
       }
     }
   },
   "RemoteUser": {
     "sourceType": "remote",
-    "SUBConfig": {
-      "initialDelay": 0
-    },
     "AudioSUBConfig": {
-      "streamNumber": 0,
-      "initialDelay": 0
-    },
-    "Render": {
-      "pointSize": 0,
-      "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": -1.0
-      }
+      "streamNumber": 0
     }
   }
 }

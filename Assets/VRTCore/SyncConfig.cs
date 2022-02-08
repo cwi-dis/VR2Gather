@@ -4,14 +4,17 @@ using UnityEngine;
 
 namespace VRT.Core
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     [Serializable]
     public struct SyncConfig
     {
         [Serializable]
         public struct ClockCorrespondence
         {
-            public long wallClockTime;
-            public long streamClockTime;
+            public Timestamp wallClockTime;
+            public Timestamp streamClockTime;
         };
         public ClockCorrespondence visuals;
         public ClockCorrespondence audio;

@@ -1,5 +1,4 @@
-﻿#define USE_SPEEX
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -7,6 +6,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class VoiceEncoder : BaseWorker
     {
         public int minSamplesPerFrame { get; private set; }
@@ -15,8 +17,9 @@ namespace VRT.UserRepresentation.Voice
 
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
-        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base(WorkerType.Run)
+        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
         {
+            stats = new Stats(Name());
             inQueue = _inQueue;
             outQueue = _outQueue;
             this.frames = frames;
@@ -51,19 +54,56 @@ namespace VRT.UserRepresentation.Voice
             FloatMemoryChunk mcIn = (FloatMemoryChunk)inQueue.Dequeue();
             if (mcIn == null) return;
             if (sendBuffer == null) sendBuffer = new byte[mcIn.length];
-#if USE_SPEEX
+
+            var encodeStartTime = System.DateTime.Now;
             int len = encoder.Encode(mcIn.buffer, 0, mcIn.elements, sendBuffer, 0, sendBuffer.Length);
             NativeMemoryChunk mcOut = new NativeMemoryChunk(len);
             Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
-#else
-            int len = mcIn.elements;
-            NativeMemoryChunk mcOut = new NativeMemoryChunk(len*4);
-            Marshal.Copy(mcIn.buffer, 0, mcOut.pointer, len); // numero de elementos de la matriz.
-#endif
+            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - encodeStartTime).TotalMilliseconds;
+
             mcOut.info.timestamp = mcIn.info.timestamp;
-            if (!outQueue.IsClosed())
-                outQueue.Enqueue(mcOut);
+            if (outQueue.IsClosed())
+            {
+                mcOut.free();
+                return;
+            }
+            bool ok = outQueue.Enqueue(mcOut);
+            stats.statsUpdate(encodeDuration, outQueue.QueuedDuration(), !ok);
             mcIn.free();
         }
+
+        protected class Stats : VRT.Core.BaseStats
+        {
+            public Stats(string name) : base(name) { }
+
+            double statsTotalUpdates;
+            double statsTotalEncodeDuration;
+            double statsTotalQueuedDuration;
+            double statsDrops;
+
+            public void statsUpdate(Timedelta encodeDuration, Timedelta queuedDuration, bool dropped)
+            {
+
+                statsTotalUpdates += 1;
+                statsTotalEncodeDuration += encodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsDrops++;
+
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
+                }
+                if (ShouldClear())
+                {
+                    Clear();
+                    statsTotalUpdates = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
+                    statsDrops = 0;
+                }
+            }
+        }
+
+        protected Stats stats;
     }
 }

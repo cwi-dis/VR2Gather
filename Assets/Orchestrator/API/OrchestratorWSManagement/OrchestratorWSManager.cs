@@ -255,37 +255,12 @@ namespace VRT.Orchestrator.WSManagement
             }
         }
 
-        // [deprecated] send the command (command name, parameters)
-        private Boolean SendCommand(string command, JsonData parameters)
-        {
-            lock (this) {
-                // increment the commandId and add it to the command parameters (see NOTE on top of file)
-                commandId++;
-                parameters["commandId"] = commandId;
-
-                // We don't send a command if one has already been sent without response
-                // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
-                //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
-                //        could be done if the orchestrator integrates the commandId with the response
-                if (!IsWaitingResponse) {
-                    // warn the messages Listener that new message is emitted
-                    if (messagesListener != null) {
-                        messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
-                    }
-
-                    // emit the command on socket.io
-                    Manager.Socket.Emit(command, OnAckCallback, parameters);
-                    IsWaitingResponse = true;
-                    return true;
-                }
-                return false;
-            }
-        }
-
         // Callback that is called on a command response
         private void OnAckCallback(Socket socket, Packet originalPacket, params object[] args)
         {
-            int ackedCmd = 0;
+            int ackedCmdIndex = -1;
+            OrchestratorCommand ackedCmd = null;
+
             OrchestratorResponse response = JsonToOrchestratorResponse(originalPacket.Payload);
 
             //warn the messages Listener that a response is received from the orchestrator
@@ -293,17 +268,28 @@ namespace VRT.Orchestrator.WSManagement
             {
                 messagesListener.OnOrchestratorResponse(response.commandId, response.error, originalPacket.Payload);
             }
-
-            for (int i = 0; i < commandQueue.Count; i++)
+            lock(this)
             {
-                if (response.commandId == commandQueue[i].commandID)
+                for (int i = 0; i < commandQueue.Count; i++)
                 {
-                    commandQueue[i]?.ResponseCallback.Invoke(commandQueue[i], response);
-                    ackedCmd = i;
+                    if (response.commandId == commandQueue[i].commandID)
+                    {
+                        ackedCmd = commandQueue[i];
+                        if (ackedCmdIndex >= 0)
+                        {
+                            throw new Exception($"OrchestratorWSManager: ACK for commandId {response.commandId} which has duplicate entry");
+                        }
+                        ackedCmdIndex = i;
+                    }
                 }
+                if (ackedCmdIndex < 0)
+                {
+                    throw new Exception($"OrchestratorWSManager: ACK for commandId {response.commandId} which is unknown");
+                }
+                commandQueue.RemoveAt(ackedCmdIndex);
             }
-
-            commandQueue.RemoveAt(ackedCmd);
+  
+            ackedCmd.ResponseCallback.Invoke(ackedCmd, response);
 
             /*
             for (int i = 0; i < commandQueue.Count; i++)

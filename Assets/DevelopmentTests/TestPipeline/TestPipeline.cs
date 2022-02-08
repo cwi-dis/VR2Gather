@@ -15,37 +15,54 @@ using VRT.Core;
 public class TestPipeline : MonoBehaviour
 {
 
-
+    [Tooltip("Don't send pointclouds via Dash, just show locally")]
     public bool localPCs = false;
+    [Tooltip("Filename for prerecorded pointclouds (synthetic used when empty)")]
     public string prerecordedPointclouds = "";
+    [Tooltip("Compress and decompress even when showing locally")]
     public bool useCompression = true;
+    [Tooltip("Do audio over dash")]
     public bool useDashVoice = false;
+    [Tooltip("Enable to show pointclouds (otherwise only audio or video)")]
     public bool usePointClouds = false;
+    [Tooltip("Enable for SocketIO, disable for Dash")]
     public bool useSocketIO = true;
+    [Tooltip("Queues drop when full if enabled, otherwise they wait until there is room")]
     public bool dropQueuesWhenFull = true;
+    [Tooltip("Pointcloud reader frames per second")]
     public float targetFPS = 20f;
+    [Tooltip("Number of points if using synthetic reader")]
     public int numPoints = 1000;
+    [Tooltip("Encoder parameter: octree_bits")]
+    public int octree_bits = 10;
+    [Tooltip("Encoder parameter: tile number to encode/decode, 0 for all")]
+    public int tilenum;
 
     public NetController orchestrator;
-
+    [Tooltip("Set if remoteURL is full url of stream created by another instance")]
     public bool useRemoteStream = false;
+    [Tooltip("Partial URL of Dash stream (or full URL if useRemoteStream is set)")]
     public string remoteURL = "https://vrt-evanescent1.viaccess-orca.com";
     string URL = "";
     public string remoteStream = "";
 
     BaseWorker reader;
     BaseWorker[] encoder;
+    [Tooltip("Use multiple decoders in parallel (untested)")]
     public int decoders = 1;
+    [Tooltip("Use multiple encoders in parallel (untested)")]
     public int encoders = 1;
     BaseWorker[] decoder;
     BaseWorker pointcloudsWriter;
     BaseWorker pointcloudsReader;
 
+    [Tooltip("Debugging: preparer created")]
     public BaseWorker preparer;
     QueueThreadSafe preparerQueue;
     QueueThreadSafe encoderQueue;
     QueueThreadSafe writerQueue;
     QueueThreadSafe decoderQueue;
+    [Tooltip("Debugging: renderer created")]
     public MonoBehaviour render;
 
     // rtmp://127.0.0.1:1935/live/signals
@@ -77,9 +94,9 @@ public class TestPipeline : MonoBehaviour
                 string uuid = System.Guid.NewGuid().ToString();
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
-                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, 1, Config.ProtocolType.SocketIO); //Audio Pipeline
-                pointcloudsReader = new SocketIOReader(user, remoteStream, tiles);
-                pointcloudsWriter = new SocketIOWriter(user, remoteStream, streams);
+                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
+                pointcloudsReader = new SocketIOReader(user, remoteStream, "cwi1", tiles);
+                pointcloudsWriter = new SocketIOWriter(user, remoteStream, "cwi1", streams);
 
             };
         }
@@ -103,8 +120,8 @@ public class TestPipeline : MonoBehaviour
                 }
                 if (useCompression) {
 					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
-					encStreams[0].octreeBits = 10;
-					encStreams[0].tileNumber = 0;
+					encStreams[0].octreeBits = octree_bits;
+					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
 					encoder = new PCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
@@ -115,10 +132,17 @@ public class TestPipeline : MonoBehaviour
 				}
 			} else {
 				if (!useRemoteStream) {
-					reader = new PCReader(targetFPS, numPoints, encoderQueue);
-					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
-					encStreams[0].octreeBits = 10;
-					encStreams[0].tileNumber = 0;
+                    if (prerecordedPointclouds != "")
+                    {
+                        reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, encoderQueue);
+                    }
+                    else
+                    {
+                        reader = new PCReader(targetFPS, numPoints, encoderQueue);
+                    }
+                    PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					encStreams[0].octreeBits = octree_bits;
+					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
 
                     encoder = new PCEncoder[encoders];
@@ -133,7 +157,7 @@ public class TestPipeline : MonoBehaviour
 					URL = remoteURL;
 
 				if (!useSocketIO)
-					pointcloudsReader = new PCSubReader(URL, remoteStream, 1, tiles);
+					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", 1, tiles);
 
 				decoder = new PCDecoder[decoders];
 				for (int i = 0; i < decoders; ++i)
@@ -154,7 +178,7 @@ public class TestPipeline : MonoBehaviour
                 sfuData = new SfuData() { 
                     url_audio = $"{remoteURL}/{uuid}/audio/" 
                 } 
-            }, "audio", 0, 1, Config.ProtocolType.Dash); //Audio Pipeline
+            }, "audio", 0, Config.ProtocolType.Dash); //Audio Pipeline
         }
 
     }

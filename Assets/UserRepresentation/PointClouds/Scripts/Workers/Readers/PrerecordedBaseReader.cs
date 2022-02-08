@@ -6,6 +6,9 @@ using VRT.Core;
 namespace VRT.UserRepresentation.PointCloud
 {
 
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     // PrerecordedBaseReader reads pointclouds from .ply or .cwipcdump files.
     //
     // It contains the common code for two distinct use cases (subclasses):
@@ -44,7 +47,7 @@ namespace VRT.UserRepresentation.PointCloud
         public float frameRate;
         public bool loop = true;
         
-        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base(WorkerType.Init)
+        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
         {
             voxelSize = _voxelSize;
             frameRate = _frameRate;
@@ -163,7 +166,7 @@ namespace VRT.UserRepresentation.PointCloud
         int thread_index;
         PrerecordedBaseReader parent;
 
-        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(WorkerType.Init)
+        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             dirname = _dirname;
             subdir = _subdir;
@@ -273,7 +276,7 @@ namespace VRT.UserRepresentation.PointCloud
             cwipc.pointcloud pc;
             if (parent.readPlyFiles)
             {
-                System.UInt64 timestamp = 0;
+                Timestamp timestamp = 0;
                 pc = cwipc.read(nextFilename, timestamp);
             }
             else
@@ -283,7 +286,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (pc == null) return;
             if (parent.newTimestamps) {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                ulong timestamp = (ulong)sinceEpoch.TotalMilliseconds;
+                Timestamp timestamp = (Timestamp)sinceEpoch.TotalMilliseconds;
                 pc._set_timestamp(timestamp);
             }
             if (parent.voxelSize != 0)
@@ -300,6 +303,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             bool didDropSelfView = false;
             bool didDropEncoder = false;
+            Timedelta encoderQueuedDuration = 0;
             if (outQueue == null || outQueue.IsClosed())
             {
                 Debug.LogError($"{Name()}: no outQueue, dropping pointcloud");
@@ -319,6 +323,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             else
             {
+                encoderQueuedDuration = out2Queue.QueuedDuration();
                 bool ok = out2Queue.Enqueue(pc.AddRef());
                 if (!ok)
                 {
@@ -326,7 +331,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
             }
           
-            stats.statsUpdate(pc.count(), didDropEncoder, didDropSelfView, pc.timestamp(), subdir);
+            stats.statsUpdate(pc.count(), pc.cellsize(), didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
             pc.free();
         }
 
@@ -336,37 +341,44 @@ namespace VRT.UserRepresentation.PointCloud
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
+            double statsTotalPointSize = 0;
             double statsDrops = 0;
             double statsSelfDrops = 0;
+            double statsQueuedDuration = 0;
 
-            public void statsUpdate(int pointCount, bool dropped, bool droppedSelf, ulong timestamp, string subdir)
+            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp, string subdir)
             {
                 
                 statsTotalPoints += pointCount;
-                statsTotalPointclouds += 1;
+                statsTotalPointSize += pointSize;
+                statsTotalPointclouds++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
+                statsQueuedDuration += queuedDuration;
 
                 if (ShouldOutput())
                 {
-                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, drop_fps={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2}, pc_timestamp={timestamp}";
+                    string msg = $"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints /  statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, fps_dropped_self={statsSelfDrops / Interval():F2}, encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, pc_timestamp={timestamp}";
                     if (subdir != null && subdir != "")
                     {
                         msg += $", quality={subdir}";
                     }
                     Output(msg);
-                    if (statsDrops > 3 * Interval())
+                    if (statsDrops > 1 + 3 * Interval())
                     {
-                        Debug.LogWarning($"{name}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
+                        double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
+                        Debug.LogWarning($"{name}: excessive dropped frames. Set LocalUser.PCSelfConfig.frameRate <= {ok_fps:F2}  in config.json.");
                     }
-                 }
+                }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
+                    statsTotalPointSize = 0;
                     statsDrops = 0;
                     statsSelfDrops = 0;
+                    statsQueuedDuration = 0;
                 }
             }
         }

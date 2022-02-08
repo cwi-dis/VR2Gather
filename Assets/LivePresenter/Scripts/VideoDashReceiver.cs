@@ -46,6 +46,10 @@ namespace VRT.LivePresenter
         {
             try
             {
+                if (Config.Instance.ffmpegDLLDir != "")
+                {
+                    FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                }
                 decoder = new VideoDecoder(codec, videoCodecQueue, audioCodecQueue, videoPreparerQueue, audioPreparerQueue);
                 preparer = new VideoPreparer(videoPreparerQueue, audioPreparerQueue);
                 // xxxjack should set Synchronizer here

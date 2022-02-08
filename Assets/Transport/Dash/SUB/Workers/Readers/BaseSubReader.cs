@@ -4,11 +4,18 @@ using System.Collections.Generic;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class BaseReader : BaseWorker
     {
-        public BaseReader(WorkerType _type = WorkerType.Run) : base(_type) { }
+        public BaseReader() : base() { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
+            if (_clockCorrespondence.streamClockTime != _clockCorrespondence.wallClockTime)
+            {
+                Debug.LogWarning($"{Name()}: SetSyncInfo({_clockCorrespondence.wallClockTime}={_clockCorrespondence.streamClockTime}) called but not implemented in this reader");
+            }
         }
     }
 
@@ -86,9 +93,6 @@ namespace VRT.Transport.Dash
             protected void run()
             {
                 bool bCanQueue = (frequency==0); // If frequency is 0 enqueue at the very begining
-                // Create a stopwatch to measure the time.
-                System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
-                stopWatch.Start();
                 System.TimeSpan oldElapsed = System.TimeSpan.Zero;
                 try
                 {
@@ -145,21 +149,28 @@ namespace VRT.Transport.Dash
                                 mc.free();
                                 continue;
                             }
+                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
 
                             // If we have no clock correspondence yet we use the first received frame on any stream to set it
                             if (parent.clockCorrespondence.wallClockTime == 0)
                             {
-                                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                                parent.clockCorrespondence.wallClockTime = (long)sinceEpoch.TotalMilliseconds;
+                                parent.clockCorrespondence.wallClockTime = now;
                                 parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                                BaseStats.Output(parent.Name(), $"stream_timestamp={parent.clockCorrespondence.streamClockTime}, timestamp={parent.clockCorrespondence.wallClockTime}, delta={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}");
+                                BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
                             }
                             // Convert clock values to wallclock
+                            Timestamp dashTimestamp = frameInfo.timestamp;
+                            if (!parent.clockCorrespondenceReceived)
+                            {
+                                Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
+                            }
                             frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
                             mc.info = frameInfo;
+                            Timedelta network_latency_ms = now - frameInfo.timestamp;
 
                             bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                            stats.statsUpdate(bytesRead, didDrop, frameInfo.timestamp, stream_index);
+                            stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
 
                         }
 
@@ -181,6 +192,7 @@ namespace VRT.Transport.Dash
                         }
                     }
                 }
+#pragma warning disable CS0168
                 catch (System.Exception e)
                 {
 #if UNITY_EDITOR
@@ -190,46 +202,26 @@ namespace VRT.Transport.Dash
                     Debug.LogError("Error while receiving visual representation or audio from another participant");
 #endif
                 }
-
-                stopWatch.Stop();
-            }
+           }
 
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
 
-                System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
                 double statsTotalPackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
-                bool statsGotFirstReception;
-
-                public void statsUpdate(int nBytes, bool didDrop, long timeStamp, int stream_index)
+                
+                public void statsUpdate(int nBytes, bool didDrop, Timestamp timeStamp, Timedelta latency, int stream_index)
                 {
-                    if (!statsGotFirstReception)
-                    {
-                        statsConnectionStartTime = System.DateTime.Now;
-                        statsGotFirstReception = true;
-                    }
-      
-                    System.TimeSpan sinceEpoch = System.DateTime.Now - statsConnectionStartTime;
-                    double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-                    // Unfortunately we don't know the _real_ connection start time (because it is on the sender end)
-                    // if we appear to be ahead we adjust connection start time.
-                    if (latency < 0)
-                    {
-                        statsConnectionStartTime -= System.TimeSpan.FromMilliseconds(-latency);
-                        latency = 0;
-                    }
-                    statsTotalLatency += latency;
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        int msLatency = (int)(1000 * statsTotalLatency / statsTotalPackets);
-                        Output($"fps_received={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, latency_lowerbound_ms={msLatency}, stream_index={stream_index}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
                      }
                     if (ShouldClear())
                     {
@@ -248,8 +240,9 @@ namespace VRT.Transport.Dash
         SubPullThread[] threads;
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
+        bool clockCorrespondenceReceived = false;
 
-        protected BaseSubReader(string _url, string _streamName, int _initialDelay, int _frequency=0) : base(WorkerType.Init)
+        protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base()
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -267,18 +260,12 @@ namespace VRT.Transport.Dash
                     _url += _streamName;
                 }
                 url = _url;
-                if (_initialDelay != 0)
-                {
-                    // We do not try to start play straight away, to work around bugs when creating the SUB before
-                    // the dash data is stable. To be removed at some point in the future (Jack, 20200123)
-                    Debug.Log($"{Name()}: Delaying {_initialDelay} seconds before playing {url}");
-                    subRetryNotBefore = System.DateTime.Now + System.TimeSpan.FromSeconds(_initialDelay);
-                }
+               
                 frequency = _frequency;
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int _initialDelay, int streamIndex, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _initialDelay, _frenquecy)
+        public BaseSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _frenquecy)
         {
             lock (this)
             {
@@ -467,8 +454,20 @@ namespace VRT.Transport.Dash
 
         public override void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
+            Timedelta oldEpoch = 0;
+            if (clockCorrespondence.wallClockTime != 0)
+            {
+                oldEpoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
+            }
             clockCorrespondence = _clockCorrespondence;
-            BaseStats.Output(Name(), $"guessed=0, stream_timestamp={clockCorrespondence.streamClockTime}, timestamp={clockCorrespondence.wallClockTime}, delta={clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime}");
+            Timedelta epoch = clockCorrespondence.wallClockTime - clockCorrespondence.streamClockTime;
+            Timedelta delta = 0;
+            if (oldEpoch != 0)
+            {
+                delta = epoch - oldEpoch;
+            }
+            clockCorrespondenceReceived = true;
+            BaseStats.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
         }
     }
 }
