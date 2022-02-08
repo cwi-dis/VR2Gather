@@ -41,7 +41,7 @@
     "Codec": "cwi1",
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 0.2
+    "timeoutBeforeGhosting" : 5
   },
   "Voice": {
   	"Codec": "VR2A",
