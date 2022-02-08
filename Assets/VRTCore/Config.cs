@@ -81,6 +81,8 @@ namespace VRT.Core
             public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
+            public float autoLeaveAfter = 0f;
+            public bool autoStopAfterLeave = false;
         };
         public _AutoStart AutoStart;
 
@@ -255,8 +257,25 @@ namespace VRT.Core
             //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
         }
 
+        static string _ConfigFilenameFromCommandLineArgs()
+        {
+            string[] arguments = Environment.GetCommandLineArgs();
+            for (int i=0; i<arguments.Length-1; i++)
+            {
+                if (arguments[i] == "-vrt-config") return arguments[i + 1];
+            }
+            return null;
+        }
+
         public static string ConfigFilename(string filename="config.json")
         {
+            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+            if (clConfigFile != null)
+            {
+                clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                return clConfigFile;
+            }
+
             string dataPath;
             if (Application.isEditor)
             {
