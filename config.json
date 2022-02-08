@@ -1,6 +1,6 @@
 {
-	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
-	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
+	"orchestratorURL": "http://192.168.1.10:8080/socket.io/",
+	"_orchestratorURL": "http://192.16.197.145:8080/socket.io/",
 	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
 
@@ -9,32 +9,32 @@
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsInterval": 0,
+  "statsOutputFile":  "statistics.log",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
+  	"sessionName" : "latencytest",
   	"sessionScenario" : 0,
-  	"sessionTransportProtocol" : 1,
+  	"sessionTransportProtocol" : 3,
   	"sessionUncompressed" : false,
-  	"autoCreateForUser" : "",
+  	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
-  	"autoLeaveAfter" : 0,
-  	"autoStopAfterLeave" : false
+  	"autoLeaveAfter" : 60,
+  	"autoStopAfterLeave" : true
   },
   "ScreenshotTool" : {
   	"takeScreenshot" : false,
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : ["", "Oculus", "OpenVR"],
-	"_preferredController" : "gamepad"
+	"_preferredDevices" : [""],
+	"_preferredController" : ""
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
@@ -81,9 +81,9 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.007,
+      "voxelSize": 0,
       "frameRate": 10,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
 		
 		{
