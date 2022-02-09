@@ -67,8 +67,9 @@ namespace VRT.UserRepresentation.Voice
                 mcOut.free();
                 return;
             }
+            Timedelta queuedDuration = outQueue.QueuedDuration();
             bool ok = outQueue.Enqueue(mcOut);
-            stats.statsUpdate(encodeDuration, outQueue.QueuedDuration(), !ok);
+            stats.statsUpdate(encodeDuration, queuedDuration, !ok);
             mcIn.free();
         }
 

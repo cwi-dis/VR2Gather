@@ -75,8 +75,10 @@ namespace VRT.UserRepresentation.PointCloud
                     System.DateTime encodeStopTime = System.DateTime.Now;
                     encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
                 }
-                bool dropped = !outputs[i].outQueue.Enqueue(mc);
-                stats.statsUpdate(dropped, encodeDuration, outputs[i].outQueue.QueuedDuration());
+                QueueThreadSafe queue = outputs[i].outQueue;
+                Timedelta queuedDuration = queue.QueuedDuration();
+                bool dropped = !queue.Enqueue(mc);
+                stats.statsUpdate(dropped, encodeDuration, queuedDuration);
             }
             pc.free();
         }

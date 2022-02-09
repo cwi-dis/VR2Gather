@@ -9,7 +9,7 @@
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
-  "statsInterval": 0,
+  "statsInterval": 1,
   "statsOutputFile":  "statistics.log",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
