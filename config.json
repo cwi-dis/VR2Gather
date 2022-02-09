@@ -19,7 +19,8 @@
   	"sessionName" : "latencytest",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 3,
-  	"sessionUncompressed" : false,
+  	"sessionUncompressed" : true,
+  	"sessionUncompressedAudio" : true,
   	"autoCreateForUser" : "cwitiny",
   	"autoCreate" : false,
   	"autoJoin" : false,
@@ -48,7 +49,7 @@
   "Voice": {
   	"Codec": "VR2A",
   	"maxPlayoutLatency" : 0.5,
-	"maxPlayoutAhead": 0.066,
+	"maxPlayoutAhead": 0.400,
 	"ignoreSynchronizer" : false
   },
   "Video": {
