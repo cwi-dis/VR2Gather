@@ -29,7 +29,7 @@ namespace VRT.Core
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
                 //
-                string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=stats, starting=1, statsFilename={statsFilename}";
+                string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=stats, starting=1, wallClock={ts}, statsFilename={statsFilename}";
                 statsStream.WriteLine(statsLine);
                 statsStream.Flush();
                 Debug.Log(statsLine);
