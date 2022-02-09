@@ -126,8 +126,10 @@ namespace VRT.Transport.TCP
                             BaseStats.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
                             Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
                         }
+                        System.DateTime receiveStartTime = System.DateTime.Now;
                         byte[] hdr = new byte[16];
                         int hdrSize = _ReceiveAll(socket, hdr);
+                        System.DateTime receiveMidTime = System.DateTime.Now;
                         if (hdrSize != 16)
                         {
                             Debug.LogWarning($"{Name()}: short header read ({hdrSize} in stead of {hdr.Length}), closing socket");
@@ -152,6 +154,8 @@ namespace VRT.Transport.TCP
                             socket = null;
                             continue;
                         }
+                        System.DateTime receiveStopTime = System.DateTime.Now;
+                        Timedelta receiveDuration = (Timedelta)(receiveStopTime - receiveMidTime).TotalMilliseconds;
 
                         NativeMemoryChunk mc = new NativeMemoryChunk(dataSize);
                         mc.info.timestamp = timestamp;
@@ -159,7 +163,7 @@ namespace VRT.Transport.TCP
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         bool ok = receiverInfo.outQueue.Enqueue(mc);
-                        stats.statsUpdate(dataSize, !ok);
+                        stats.statsUpdate(dataSize, receiveDuration, !ok);
                         // Close the socket if the portOffset (the quality index) has been changed in the mean time
                         if (socket != null && receiverInfo.portOffset != portOffset)
                         {
@@ -191,22 +195,25 @@ namespace VRT.Transport.TCP
 
                 System.DateTime statsConnectionStartTime;
                 double statsTotalBytes;
+                double statsTotalDuration;
                 double statsTotalPackets;
                 double statsDroppedPackets;
                 
-                public void statsUpdate(int nBytes, bool dropped)
+                public void statsUpdate(int nBytes, Timedelta duration, bool dropped)
                 {
                     statsTotalBytes += nBytes;
+                    statsTotalDuration += duration;
                     statsTotalPackets++;
                     if (dropped) statsDroppedPackets++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_ms={(int)(statsTotalDuration/statsTotalPackets)}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
                      }
                     if (ShouldClear())
                     {
                         Clear();
                         statsTotalBytes = 0;
+                        statsTotalDuration = 0;
                         statsTotalPackets = 0;
                         statsDroppedPackets = 0;
                     }
