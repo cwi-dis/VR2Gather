@@ -101,12 +101,13 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds:F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
                 }
                 if (ShouldClear())
                 {
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
                     statsTotalEncodeDuration = 0;
                     statsTotalQueuedDuration = 0;
                 }

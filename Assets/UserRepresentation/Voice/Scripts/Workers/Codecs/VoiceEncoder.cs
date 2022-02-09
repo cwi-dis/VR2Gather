@@ -92,7 +92,7 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
+                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(statsTotalEncodeDuration / statsTotalUpdates):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                 }
                 if (ShouldClear())
                 {
