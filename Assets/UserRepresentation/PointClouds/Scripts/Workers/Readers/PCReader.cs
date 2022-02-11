@@ -120,8 +120,10 @@ namespace VRT.UserRepresentation.PointCloud
             }
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
+            Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
+                System.DateTime downsampleStartTime = System.DateTime.Now;
                 var newPc = cwipc.downsample(pc, voxelSize);
                 if (newPc == null)
                 {
@@ -132,6 +134,9 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     pc = newPc;
                 }
+                System.DateTime downsampleStopTime = System.DateTime.Now;
+                downsampleDuration = (Timedelta)(downsampleStopTime - downsampleStartTime).TotalMilliseconds;
+
             }
 
             if (bbox != null)
@@ -170,7 +175,7 @@ namespace VRT.UserRepresentation.PointCloud
                     didDrop = true;
                 }
             }
-            stats.statsUpdate(pc.count(), pc.cellsize(), didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
+            stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
             pc.free();
         }
 
@@ -184,8 +189,9 @@ namespace VRT.UserRepresentation.PointCloud
             double statsDrops = 0;
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
+            double statsDownsampleDuration = 0;
 
-            public void statsUpdate(int pointCount, float pointSize, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp)
+            public void statsUpdate(int pointCount, float pointSize, Timedelta downsampleDuration, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp)
             {
                 
                 statsTotalPoints += pointCount;
@@ -194,10 +200,11 @@ namespace VRT.UserRepresentation.PointCloud
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
                 statsQueuedDuration += queuedDuration;
+                statsDownsampleDuration += downsampleDuration;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, pc_timestamp={timestamp}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, downsample_ms={statsDownsampleDuration/statsTotalPointclouds:F2}, pc_timestamp={timestamp}");
                     if (statsDrops > 1 + 3 * Interval())
                     {
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
@@ -213,6 +220,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statsDrops = 0;
                     statsSelfDrops = 0;
                     statsQueuedDuration = 0;
+                    statsDownsampleDuration = 0;
                 }
             }
         }
