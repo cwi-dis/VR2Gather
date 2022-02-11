@@ -270,12 +270,11 @@ namespace VRT.Core
                         // for it overtaking us and grabbing the item, in which case we would be stuck in a livelock.
                        
                         BaseMemoryChunk oldItem = TryDequeue(0);
-                        if (oldItem != null)
+                        if (oldItem == null)
                         {
-                            oldItem.free();
-                        } else
-                        {
+                            item.free();
                             UnityEngine.Debug.Log($"{Name()}: xxxjack EnqueueWithDrop TryDequeue returned null, forestalled livelock");
+                            return false;
                         }
                         empty.Wait(isClosed.Token);
                     }
