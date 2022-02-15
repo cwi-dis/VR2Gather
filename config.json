@@ -34,8 +34,8 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : [""],
-	"_preferredController" : ""
+	"preferredDevices" : [""],
+	"preferredController" : ""
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
