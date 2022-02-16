@@ -427,14 +427,15 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
+                BaseWorker decoder = null;
                 if (pointcloudCodec == "cwi1")
                 {
-                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoder = new PCDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 }
                 else if (pointcloudCodec == "cwi0")
                 {
-                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoder = new NULLDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 } else
                 {
@@ -448,6 +449,7 @@ namespace VRT.UserRepresentation.PointCloud
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]
                 };
+                BaseStats.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
@@ -460,33 +462,25 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
-            BaseStats.Output(Name(), $"reader={reader.Name()}");
-        }
-
-        public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
-        {
-            //
-            // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
-            // We 
-            Config._PCs PCs = Config.Instance.PCs;
-            if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
-            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
-            preparerQueues.Add(preparerQueue);
-            PointCloudPreparer preparer = new PointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.enabled)
             {
                 synchronizerName = synchronizer.Name();
             }
+            BaseStats.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
+        }
+
+        public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
+        {
+            Config._PCs PCs = Config.Instance.PCs;
+            if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
+            QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
+            preparerQueues.Add(preparerQueue);
+            PointCloudPreparer preparer = new PointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparer.SetSynchronizer(synchronizer); 
             preparers.Add(preparer);
             PointCloudRenderer render = gameObject.AddComponent<PointCloudRenderer>();
-            string decoderName = "none";
-            if (curTile >= 0)
-            {
-                decoderName = decoders[curTile].Name();
-            }
-            string msg = $"preparer={preparer.Name()}, renderer={render.Name()}, synchronizer={synchronizerName}, decoder={decoderName}";
+            string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
             if (curTile >= 0)
             {
                 msg += $", tile={curTile}";
