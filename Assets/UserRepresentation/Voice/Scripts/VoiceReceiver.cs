@@ -92,8 +92,21 @@ namespace VRT.UserRepresentation.Voice
 
 
             preparer = new VoicePreparer(preparerQueue);
-            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
+            string synchronizerName = "none";
+            if (synchronizer != null && synchronizer.enabled)
+            {
+                preparer.SetSynchronizer(synchronizer);
+                if (!Config.Instance.Voice.ignoreSynchronizer)
+                {
+                    synchronizerName = synchronizer.Name();
+                }
+            }
+            string decoderName = "none";
+            if (codec != null)
+            {
+                decoderName = codec.Name();
+            }
+            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
         }
 
         public void Init(User user, QueueThreadSafe queue)

@@ -460,7 +460,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
-            
             BaseStats.Output(Name(), $"reader={reader.Name()}");
         }
 
@@ -474,10 +473,20 @@ namespace VRT.UserRepresentation.PointCloud
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
             PointCloudPreparer preparer = new PointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            string synchronizerName = "none";
+            if (synchronizer != null && synchronizer.enabled)
+            {
+                synchronizerName = synchronizer.Name();
+            }
             preparer.SetSynchronizer(synchronizer); 
             preparers.Add(preparer);
             PointCloudRenderer render = gameObject.AddComponent<PointCloudRenderer>();
-            string msg = $"preparer={preparer.Name()}, renderer={render.Name()}";
+            string decoderName = "none";
+            if (curTile >= 0)
+            {
+                decoderName = decoders[curTile].Name();
+            }
+            string msg = $"preparer={preparer.Name()}, renderer={render.Name()}, synchronizer={synchronizerName}, decoder={decoderName}";
             if (curTile >= 0)
             {
                 msg += $", tile={curTile}";
