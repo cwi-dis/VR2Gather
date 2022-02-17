@@ -19,8 +19,8 @@
   	"sessionName" : "latencytest",
   	"sessionScenario" : 0,
   	"sessionTransportProtocol" : 3,
-  	"sessionUncompressed" : true,
-  	"sessionUncompressedAudio" : true,
+  	"sessionUncompressed" : false,
+  	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "cwismall",
   	"autoCreate" : false,
   	"autoJoin" : false,
@@ -83,8 +83,8 @@
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0,
-      "frameRate": 10,
-      "tiled": false,
+      "frameRate": 15,
+      "tiled": true,
       "Encoders": [
 		
 		{
