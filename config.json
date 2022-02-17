@@ -21,7 +21,7 @@
   	"sessionTransportProtocol" : 3,
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : true,
-  	"autoCreateForUser" : "cwitiny",
+  	"autoCreateForUser" : "cwismall",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
