@@ -206,6 +206,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldClear()) {
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
                     statsTotalEncodeDuration = 0;
                     statsTotalQueuedDuration = 0;
                 }
