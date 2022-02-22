@@ -312,7 +312,7 @@ namespace VRT.UserRepresentation.PointCloud
                             Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
-                        BaseStats.Output(Name(), $"writer={writer.Name()}");
+                        BaseStats.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}");
                     }
                     break;
                 case "prerecorded":
