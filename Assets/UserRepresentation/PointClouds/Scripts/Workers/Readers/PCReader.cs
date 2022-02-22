@@ -210,9 +210,6 @@ namespace VRT.UserRepresentation.PointCloud
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();
                         Debug.LogWarning($"{name}: excessive dropped frames. Set LocalUser.PCSelfConfig.frameRate <= {ok_fps:F2}  in config.json.");
                     }
-                 }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;

@@ -60,11 +60,7 @@ namespace VRT.Core
         {
             DeInit();
         }
-        protected bool ShouldClear()
-        {
-            return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval);
-        }
-
+  
         protected void Clear()
         {
             statsLastTime = System.DateTime.Now;

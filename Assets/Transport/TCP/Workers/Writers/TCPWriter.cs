@@ -176,9 +176,6 @@ namespace VRT.Transport.TCP
                     if (ShouldOutput())
                     {
                         Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
-                      }
-                    if (ShouldClear())
-                    {
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;

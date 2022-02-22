@@ -172,9 +172,6 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldOutput())
                 {
                     Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalUpdates = 0;
                     statsDrops = 0;

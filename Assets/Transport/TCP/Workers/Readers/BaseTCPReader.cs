@@ -208,9 +208,6 @@ namespace VRT.Transport.TCP
                     if (ShouldOutput())
                     {
                         Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_ms={(int)(statsTotalDuration/statsTotalPackets)}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
-                     }
-                    if (ShouldClear())
-                    {
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalDuration = 0;

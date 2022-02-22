@@ -107,9 +107,6 @@ namespace VRT.Transport.SocketIO
                 if (ShouldOutput())
                 {
                     Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;

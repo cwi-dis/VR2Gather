@@ -49,9 +49,6 @@ namespace VRT.Core
                 if (ShouldOutput())
                 {
                     Output($"px={px/count:f2}, py={py/count:f2}, pz={pz/count:f2}, rx={rx/count:f0}, ry={ry/count:f0}, rz={rz/count:f0}, count={count}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     px = py = pz = 0;
                     rx = ry = rz = 0;

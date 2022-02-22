@@ -222,9 +222,6 @@ namespace VRT.Transport.Dash
                     if (ShouldOutput())
                     {
                         Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
-                     }
-                    if (ShouldClear())
-                    {
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
