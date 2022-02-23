@@ -129,3 +129,11 @@ Update Mode: updateDependencies
 The following packages were updated:
   com.unity.collab-proxy from version 1.10.2 to 1.14.9
   com.unity.mathematics from version 1.2.4 to 1.2.5
+
+=== Wed Feb 23 11:13:37 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.14.9 to 1.14.12

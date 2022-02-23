@@ -10,7 +10,7 @@
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 1,
-  "statsOutputFile":  "statistics.log",
+  "statsOutputFile":  "",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
@@ -21,10 +21,10 @@
   	"sessionTransportProtocol" : 3,
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "cwismall",
-  	"autoCreate" : false,
+  	"autoCreateForUser" : "",
+  	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 60,
   	"autoStopAfterLeave" : true
