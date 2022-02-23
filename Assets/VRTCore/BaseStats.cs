@@ -9,8 +9,9 @@ namespace VRT.Core
         private System.DateTime statsLastTime;
         private static bool initialized = false;
         private static double defaultStatsInterval = 10;
-        private double statsInterval = 10;
+        private static double statsIntervalOverride;
         private static System.IO.StreamWriter statsStream;
+        static System.DateTime statsGlobalNextTime;
 
         private static void Init()
         {
@@ -19,6 +20,7 @@ namespace VRT.Core
             if (Config.Instance.statsOutputFile != "")
             {
                 string sfn = Config.Instance.statsOutputFile;
+                statsIntervalOverride = Config.Instance.statsInterval;
                 string host = Environment.MachineName;
                 DateTime now = DateTime.Now;
                 string ts = now.ToString("yyyyMMdd-HHmm");
@@ -48,11 +50,11 @@ namespace VRT.Core
         {
             if (statsStream != null) statsStream.Flush();
         }
-        protected BaseStats(string _name, double interval=0)
+        protected BaseStats(string _name, double interval=-1)
         {
             if (!initialized) Init();
             name = _name;
-            statsInterval = interval > 0 ? interval : defaultStatsInterval;
+            statsIntervalOverride = interval;
             statsLastTime = System.DateTime.Now;
         }
 
@@ -64,6 +66,7 @@ namespace VRT.Core
         protected void Clear()
         {
             statsLastTime = System.DateTime.Now;
+            statsGlobalNextTime = statsLastTime + TimeSpan.FromSeconds(defaultStatsInterval);
         }
 
         protected double Interval()
@@ -73,7 +76,11 @@ namespace VRT.Core
 
         protected bool ShouldOutput()
         {
-            return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval);
+            if (statsIntervalOverride >= 0)
+            {
+                return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsIntervalOverride);
+            }
+            return statsLastTime >= statsGlobalNextTime;
         }
 
         protected void Output(string s)
