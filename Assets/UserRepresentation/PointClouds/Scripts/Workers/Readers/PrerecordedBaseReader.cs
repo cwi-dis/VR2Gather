@@ -46,6 +46,7 @@ namespace VRT.UserRepresentation.PointCloud
         public float voxelSize;
         public float frameRate;
         public bool loop = true;
+        public bool multireader = false;
         
         public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
         {
@@ -213,7 +214,14 @@ namespace VRT.UserRepresentation.PointCloud
         }
         public override string Name()
         {
-            return $"{parent.Name()}.{thread_index}";
+            if (parent.multireader)
+            {
+                return $"{parent.Name()}.{thread_index}";
+            }
+            else
+            {
+                return $"{parent.Name()}";
+            }
         }
 
         public void setSubDir(string newSubDir)
