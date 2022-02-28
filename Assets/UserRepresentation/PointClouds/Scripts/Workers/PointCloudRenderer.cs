@@ -133,6 +133,8 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDisplayPointCount = 0;
             double statsTotalPointSize = 0;
             double statsTotalQueueDuration = 0;
+            Timedelta statsMinLatency = 0;
+            Timedelta statsMaxLatency = 0;
 
             public void statsUpdate(int pointCount, float pointSize, Timestamp timestamp, Timedelta queueDuration, bool fresh)
             {
@@ -149,13 +151,19 @@ namespace VRT.UserRepresentation.PointCloud
                 statsTotalPointSize += pointSize;
                 statsTotalQueueDuration += queueDuration;
 
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                if (timestamp > 0)
+                {
+                    Timedelta latency = (Timestamp)sinceEpoch.TotalMilliseconds - timestamp;
+                    if (latency < statsMinLatency || statsMinLatency == 0) statsMinLatency = latency;
+                    if (latency > statsMaxLatency) statsMaxLatency = latency;
+                }
+
                 if (ShouldOutput())
                 {
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     double factor = statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount;
                     double display_factor = statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount;
-                    Timedelta latency = timestamp > 0 ? (Timestamp)sinceEpoch.TotalMilliseconds - timestamp : 0;
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={latency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={statsMinLatency}, latency_max_ms={statsMaxLatency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
                     Clear();
                     statsTotalPointcloudCount = 0;
                     statsTotalDisplayCount = 0;
@@ -163,6 +171,8 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
                     statsTotalQueueDuration = 0;
+                    statsMinLatency = 0;
+                    statsMaxLatency = 0;
                 }
             }
         }
