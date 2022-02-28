@@ -18,8 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 15; // Was: 2.
+        static int pcDecoderQueueSize = 10;  // Was: 2.
+        static int pcPreparerQueueSize = 15; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -65,6 +65,12 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
+            // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
+            // tile (because it would mean that the other tiles with the same timestamp become useless)
+            if (Config.Instance.PCs.decoderQueueSizeOverride > 0) pcDecoderQueueSize = Config.Instance.PCs.decoderQueueSizeOverride;
+            // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
+            // largest conceivable latency needed by the Synchronizer.
+            if (Config.Instance.PCs.preparerQueueSizeOverride > 0) pcPreparerQueueSize = Config.Instance.PCs.preparerQueueSizeOverride;
             user = (User)_user;
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
