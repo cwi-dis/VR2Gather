@@ -161,17 +161,25 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalUpdates;
             double statsDrops;
             double statsNoData;
+            int statsAggregatePackets;
 
             public void statsUpdate(int dropCount, bool noData)
             {
 
                 statsTotalUpdates += 1;
                 statsDrops += dropCount;
-                if (noData) statsNoData++;
+                if (noData)
+                {
+                    statsNoData++;
+                } else
+                {
+                    statsAggregatePackets++;
+                }
+                statsAggregatePackets += dropCount;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsDrops = 0;

@@ -146,6 +146,7 @@ namespace VRT.Transport.Dash
 
                 double statsTotalBytes;
                 double statsTotalPackets;
+                int statsAggregatePackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
                 
@@ -153,11 +154,12 @@ namespace VRT.Transport.Dash
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    statsAggregatePackets++;
                     statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;

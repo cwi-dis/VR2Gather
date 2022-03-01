@@ -190,6 +190,7 @@ namespace VRT.UserRepresentation.PointCloud
             double statsSelfDrops = 0;
             double statsQueuedDuration = 0;
             double statsDownsampleDuration = 0;
+            int statsAggregatePackets = 0;
 
             public void statsUpdate(int pointCount, float pointSize, Timedelta downsampleDuration, bool dropped, bool droppedSelf, Timedelta queuedDuration, Timestamp timestamp)
             {
@@ -197,6 +198,7 @@ namespace VRT.UserRepresentation.PointCloud
                 statsTotalPoints += pointCount;
                 statsTotalPointSize += pointSize;
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
                 if (dropped) statsDrops++;
                 if (droppedSelf) statsSelfDrops++;
                 statsQueuedDuration += queuedDuration;
@@ -204,7 +206,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, downsample_ms={statsDownsampleDuration/statsTotalPointclouds:F2}, pc_timestamp={timestamp}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / statsTotalPointclouds)}, avg_pointsize={(statsTotalPointSize / statsTotalPointclouds):G4}, fps_dropped={statsDrops / Interval():F2}, selfdrop_fps={statsSelfDrops / Interval():F2},  encoder_queue_ms={(int)(statsQueuedDuration / statsTotalPointclouds)}, downsample_ms={statsDownsampleDuration/statsTotalPointclouds:F2}, pc_timestamp={timestamp}, aggregate_packets={statsAggregatePackets}");
                     if (statsDrops > 1 + 3 * Interval())
                     {
                         double ok_fps = (statsTotalPointclouds - statsDrops) / Interval();

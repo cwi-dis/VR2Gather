@@ -197,6 +197,7 @@ namespace VRT.Transport.TCP
                 double statsTotalBytes;
                 double statsTotalDuration;
                 double statsTotalPackets;
+                int statsAggregatePackets;
                 double statsDroppedPackets;
                 
                 public void statsUpdate(int nBytes, Timedelta duration, bool dropped)
@@ -204,10 +205,11 @@ namespace VRT.Transport.TCP
                     statsTotalBytes += nBytes;
                     statsTotalDuration += duration;
                     statsTotalPackets++;
+                    statsAggregatePackets++;
                     if (dropped) statsDroppedPackets++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_ms={(int)(statsTotalDuration/statsTotalPackets)}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}");
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsDroppedPackets / Interval():F2}, receive_ms={(int)(statsTotalDuration/statsTotalPackets)}, receive_bandwidth={(int)(statsTotalBytes/Interval())}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalDuration = 0;

@@ -91,17 +91,19 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDropped = 0;
             double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
             public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration)
             {
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
                 statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds:F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}");
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds:F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPointclouds = 0;
                     statsTotalDropped = 0;
