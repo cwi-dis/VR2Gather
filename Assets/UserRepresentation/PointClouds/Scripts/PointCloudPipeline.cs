@@ -404,7 +404,7 @@ namespace VRT.UserRepresentation.PointCloud
             return this;
         }
 
-        private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
+        private void _CreatePointcloudReader(int[] tileNumbers)
         {
             string pointcloudCodec = Config.Instance.PCs.Codec;
 
@@ -459,7 +459,7 @@ namespace VRT.UserRepresentation.PointCloud
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
-                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, initialDelay, tilesToReceive);
+                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
                 reader = new PCTCPReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
@@ -605,7 +605,7 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileNumber++;
                 curTileIndex++;
             }
-            _CreatePointcloudReader(tileNumbers, 0);
+            _CreatePointcloudReader(tileNumbers);
             _InitTileSelector();
         }
 
