@@ -90,6 +90,73 @@ namespace VRT.Transport.Dash
                 myThread.Join();
             }
 
+            protected void getDataFromStream(sub.connection subHandle, int stream_index, int bytesNeeded)
+            {
+                FrameInfo frameInfo = new FrameInfo();
+
+                // Allocate and read.
+                NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+
+                if (bytesRead != bytesNeeded)
+                {
+                    Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                    mc.free();
+                    return;
+                }
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+
+                // If we have no clock correspondence yet we use the first received frame on any stream to set it
+                if (parent.clockCorrespondence.wallClockTime == 0)
+                {
+                    parent.clockCorrespondence.wallClockTime = now;
+                    parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                    BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
+                }
+                // Convert clock values to wallclock
+                Timestamp dashTimestamp = frameInfo.timestamp;
+                if (!parent.clockCorrespondenceReceived)
+                {
+                    Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
+                }
+                frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
+                mc.info = frameInfo;
+                Timedelta network_latency_ms = now - frameInfo.timestamp;
+
+                bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
+                stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
+
+            }
+
+            protected bool getDataForTile(sub.connection subHandle)
+            {
+                if (receiverInfo.streamIndexes == null)
+                {
+                    return false;
+                }
+                bool received_anything = false;
+                foreach (int stream_index in receiverInfo.streamIndexes)
+                {
+                    FrameInfo frameInfo = new FrameInfo();
+                    int bytesNeeded = 0;
+
+                    // See whether data is available on this stream, and how many bytes we need to allocate
+                    bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
+
+
+                    // If no data is available on this stream we try the next
+                    if (bytesNeeded == 0)
+                    {
+                        continue;
+                    }
+                    received_anything = true;
+                    lastSuccessfulReceive = System.DateTime.Now;
+                    getDataFromStream(subHandle, stream_index, bytesNeeded);
+                }
+                return received_anything;
+            }
+
             protected void run()
             {
                 bool bCanQueue = (frequency==0); // If frequency is 0 enqueue at the very begining
@@ -115,64 +182,11 @@ namespace VRT.Transport.Dash
                             return;
                         }
 
-                        if (receiverInfo.streamIndexes == null)
-                        {
-                            continue;
-                        }
                         //
-                        // We have work to do. 
+                        // Check whehter we have incoming data for this set of streams. 
                         //
-                        bool received_anything = false;
-                        foreach(int stream_index in receiverInfo.streamIndexes) {
-                            FrameInfo frameInfo = new FrameInfo();
-                            int bytesNeeded = 0;
 
-                            // See whether data is available on this stream, and how many bytes we need to allocate
-                            bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-
-
-                            // If no data is available on this stream we try the next
-                            if (bytesNeeded == 0)
-                            {
-                                continue;
-                            }
-                            received_anything = true;
-                            lastSuccessfulReceive = System.DateTime.Now;
-
-                            // Allocate and read.
-                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                            int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
-         
-                            if (bytesRead != bytesNeeded)
-                            {
-                                Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                                mc.free();
-                                continue;
-                            }
-                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-
-                            // If we have no clock correspondence yet we use the first received frame on any stream to set it
-                            if (parent.clockCorrespondence.wallClockTime == 0)
-                            {
-                                parent.clockCorrespondence.wallClockTime = now;
-                                parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                                BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
-                            }
-                            // Convert clock values to wallclock
-                            Timestamp dashTimestamp = frameInfo.timestamp;
-                            if (!parent.clockCorrespondenceReceived)
-                            {
-                                Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
-                            }
-                            frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
-                            mc.info = frameInfo;
-                            Timedelta network_latency_ms = now - frameInfo.timestamp;
-
-                            bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                            stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
-
-                        }
+                        bool received_anything = getDataForTile(subHandle);
 
                         // We no longer need subHandle
                         subHandle.free();
