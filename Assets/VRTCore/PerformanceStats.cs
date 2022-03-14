@@ -40,9 +40,6 @@ namespace VRT.Core
                     long memory = myProcess.VirtualMemorySize64;
                     
                     Output($"cpu={(cpu-prevCpu)/Interval()}, memory={memory}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     prevCpu = myProcess.TotalProcessorTime.TotalSeconds;
                 }

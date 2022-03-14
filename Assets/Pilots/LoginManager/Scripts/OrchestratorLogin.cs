@@ -1464,6 +1464,7 @@ public class OrchestratorLogin : MonoBehaviour {
         if (Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoCreateForUser != "")
         {
             bool isThisUser = Config.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
+            Debug.Log($"[OrchestratorLogin][AutoStart] user={userNameLoginIF.text} autoCreateForUser={Config.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
             Config.Instance.AutoStart.autoCreate = isThisUser;
             Config.Instance.AutoStart.autoJoin = !isThisUser;
         }
@@ -1509,7 +1510,7 @@ public class OrchestratorLogin : MonoBehaviour {
             )
         {
             if (Input.GetKey(KeyCode.LeftShift)) return;
-            Debug.Log($"[OrchestratorLogin][AutoStart] autoPlay");
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
             autoState = AutoState.DidPlay;
             StateButton(State.Play);
             Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);

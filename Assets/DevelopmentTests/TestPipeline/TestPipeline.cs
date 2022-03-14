@@ -157,7 +157,7 @@ public class TestPipeline : MonoBehaviour
 					URL = remoteURL;
 
 				if (!useSocketIO)
-					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", 1, tiles);
+					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", tiles);
 
 				decoder = new PCDecoder[decoders];
 				for (int i = 0; i < decoders; ++i)

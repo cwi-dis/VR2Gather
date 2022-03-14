@@ -141,11 +141,13 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalInQueueDuration = 0;
             double statsTotalDecodeDuration = 0;
             double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
             public void statsUpdate(int pointCount, bool dropped, Timedelta inQueueDuration, Timedelta decodeDuration, Timedelta queuedDuration)
             {
                 statsTotalPoints += pointCount;
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
                 statsTotalInQueueDuration += inQueueDuration;
                 statsTotalDecodeDuration += decodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
@@ -154,10 +156,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (ShouldOutput())
                 {
                     double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={(int)(statsTotalInQueueDuration / factor)}, decoder_ms={(int)(statsTotalDecodeDuration / factor)}, decoded_queue_ms={(int)(statsTotalQueuedDuration / factor)}");
-                }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={(int)(statsTotalInQueueDuration / factor)}, decoder_ms={statsTotalDecodeDuration / factor:F2}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;

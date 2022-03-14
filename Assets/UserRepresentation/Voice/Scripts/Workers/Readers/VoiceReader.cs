@@ -283,9 +283,6 @@ namespace VRT.UserRepresentation.Voice
                 if (ShouldOutput())
                 {
                     Output($"fps={statsTotalUpdates / Interval():F3}, record_latency_ms={(int)(statsTotalTimeInInputBuffer * 1000 / statsTotalUpdates)}, output_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}, samples_per_frame={(int)(statsTotalSamples/statsTotalUpdates)}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamples = 0;

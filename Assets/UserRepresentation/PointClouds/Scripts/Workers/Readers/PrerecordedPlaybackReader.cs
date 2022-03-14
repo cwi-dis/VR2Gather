@@ -11,6 +11,7 @@ namespace VRT.UserRepresentation.PointCloud
         public PrerecordedPlaybackReader(string _dirname, float _voxelSize, float _frameRate)
         : base(_dirname, _voxelSize, _frameRate)
         {
+            multireader = true;
         }
 
         public StaticPredictionInformation GetStaticPredictionInformation()

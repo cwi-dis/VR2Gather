@@ -111,6 +111,8 @@ namespace VRT.Core
             public float cellSizeFactor;
             public bool debugColorize;
             public float timeoutBeforeGhosting = 5.0f;
+            public int decoderQueueSizeOverride = 0;
+            public int preparerQueueSizeOverride = 0;
         };
         public _PCs PCs;
 

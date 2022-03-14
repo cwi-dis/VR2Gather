@@ -156,8 +156,9 @@ namespace VRT.UserRepresentation.PointCloud
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
                             Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
+                            Timedelta queuedDuration = outQueue.QueuedDuration();
                             bool dropped = !outQueue.Enqueue(mc);
-                            stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
+                            stats.statsUpdate(dropped, encodeDuration, queuedDuration);
                         }
                         else
                         {
@@ -192,19 +193,20 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDropped = 0;
             double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
             public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration) {
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
                 statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, avg_transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
-                }
-                if (ShouldClear()) {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(statsTotalEncodeDuration / statsTotalPointclouds):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
                     statsTotalEncodeDuration = 0;
                     statsTotalQueuedDuration = 0;
                 }

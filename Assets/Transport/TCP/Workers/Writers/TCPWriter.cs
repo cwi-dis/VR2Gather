@@ -166,19 +166,18 @@ namespace VRT.Transport.TCP
 
                 double statsTotalBytes = 0;
                 double statsTotalPackets = 0;
+                int statsAggregatePackets = 0;
 
                 public void statsUpdate(int nBytes)
                 {
  
                     statsTotalBytes += nBytes;
-                    statsTotalPackets += 1;
+                    statsTotalPackets++;
+                    statsAggregatePackets++;
 
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
-                      }
-                    if (ShouldClear())
-                    {
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;

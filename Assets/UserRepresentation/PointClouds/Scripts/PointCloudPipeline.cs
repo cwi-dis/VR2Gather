@@ -18,8 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 15; // Was: 2.
+        static int pcDecoderQueueSize = 10;  // Was: 2.
+        static int pcPreparerQueueSize = 15; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -65,6 +65,12 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
+            // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
+            // tile (because it would mean that the other tiles with the same timestamp become useless)
+            if (Config.Instance.PCs.decoderQueueSizeOverride > 0) pcDecoderQueueSize = Config.Instance.PCs.decoderQueueSizeOverride;
+            // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
+            // largest conceivable latency needed by the Synchronizer.
+            if (Config.Instance.PCs.preparerQueueSizeOverride > 0) pcPreparerQueueSize = Config.Instance.PCs.preparerQueueSizeOverride;
             user = (User)_user;
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -312,7 +318,7 @@ namespace VRT.UserRepresentation.PointCloud
                             Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
-                        BaseStats.Output(Name(), $"writer={writer.Name()}");
+                        BaseStats.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
                     }
                     break;
                 case "prerecorded":
@@ -398,7 +404,7 @@ namespace VRT.UserRepresentation.PointCloud
             return this;
         }
 
-        private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
+        private void _CreatePointcloudReader(int[] tileNumbers)
         {
             string pointcloudCodec = Config.Instance.PCs.Codec;
 
@@ -427,14 +433,15 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
+                BaseWorker decoder = null;
                 if (pointcloudCodec == "cwi1")
                 {
-                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoder = new PCDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 }
                 else if (pointcloudCodec == "cwi0")
                 {
-                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoder = new NULLDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 } else
                 {
@@ -448,10 +455,11 @@ namespace VRT.UserRepresentation.PointCloud
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]
                 };
+                BaseStats.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
-                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, initialDelay, tilesToReceive);
+                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
                 reader = new PCTCPReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
@@ -460,15 +468,16 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
-            
-            BaseStats.Output(Name(), $"reader={reader.Name()}");
+            string synchronizerName = "none";
+            if (synchronizer != null && synchronizer.enabled)
+            {
+                synchronizerName = synchronizer.Name();
+            }
+            BaseStats.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
         }
 
         public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
-            //
-            // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
-            // We 
             Config._PCs PCs = Config.Instance.PCs;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
@@ -596,7 +605,7 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileNumber++;
                 curTileIndex++;
             }
-            _CreatePointcloudReader(tileNumbers, 0);
+            _CreatePointcloudReader(tileNumbers);
             _InitTileSelector();
         }
 

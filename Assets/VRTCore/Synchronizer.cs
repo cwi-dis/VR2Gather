@@ -342,10 +342,6 @@ namespace VRT.Core
                 if (ShouldOutput())
                 {
                     Output($"fps={statsTotalCalls / Interval():F2}, latency_ms={(int)(statsTotalPreferredLatency / statsTotalCalls)}, fps_fresh={statsTotalFreshReturn / Interval():F2}, fps_stale={statsTotalStaleReturn / Interval():F2}, timestamp={timestamp}");
-
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalPreferredLatency = 0;
                     statsTotalCalls = 0;

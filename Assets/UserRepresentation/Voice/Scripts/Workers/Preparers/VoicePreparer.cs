@@ -317,9 +317,6 @@ namespace VRT.UserRepresentation.Voice
                 if (ShouldOutput())
                 {
                     Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={(int)(statsTotalSamples / (statsTotalUpdates-statsNoData))}");
-                 }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamples = 0;
