@@ -16,14 +16,14 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "mediascape-test",
+  	"sessionName" : "mediascape",
   	"sessionScenario" : 4,
   	"_sessionScenario" : 1,
   	"sessionTransportProtocol" : 1,
-  	"autoCreateForUser" : "",
-  	"autoCreate" : true,
+  	"autoCreateForUser" : "vrtiny",
+  	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 3,
   	"autoDelay" : 1.5
   },
   "ScreenshotTool" : {
