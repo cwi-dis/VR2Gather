@@ -604,7 +604,137 @@ MonoBehaviour:
   - Assets/PilotsExternal/Traction/Traction/Resources/bar chair.fbx
   - Assets/PilotsExternal/Traction/Traction/Resources/wine bottle.fbx
   - Assets/PilotsExternal/Traction/Traction/Resources/dart-board/source/d147a38a28294446bd842c751a5ae3e1.fbx
-  uvOverlapAssetList: 00000000ffffffff000000000101000000000000010100000000000001010000010100000101000000000000010100000000000001010000010100000101000000000000010100000101000000000000010100000101000000000000010100000000000000000000010100000101000000000000000000000000000001010000000000000000000001010000000000000000000000000000010100000000000000000000010100000101000001010000010100000101000001010000010100000000000001010000010100000101000001010000010100000101000001010000010100000101000001010000000000000101000001010000010100000101000001010000000000000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000
+  - Assets/PilotsExternal/Traction/Traction/Resources/round-in.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/round-out.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/pointer.fbx
+  - Assets/Resources/Player/person-color@Male Sitting Pose with skin.fbx
+  - Assets/Resources/People/Avatars/@person-man2@T-Pose.fbx
+  - Assets/Resources/People/Avatars/@person-man1@T-Pose.fbx
+  - Assets/Resources/People/Animations/person@Playing Drums.fbx
+  - Assets/Resources/People/Animations/person@Sitting Clap.fbx
+  - Assets/Resources/Player/person-color@Sitting Idle.fbx
+  - Assets/Resources/People/Avatars/@person-woman3@T-Pose.fbx
+  - Assets/Resources/Player/person_final@Sitting.fbx
+  - Assets/Resources/People/Animations/person-woman2@Wheelbarrow Idle.fbx
+  - Assets/Resources/People/Avatars/@person-woman2@T-Pose.fbx
+  - Assets/Resources/People/Animations/person@Piano Playing (1).fbx
+  - Assets/Resources/People/Animations/person@Sitting Idle.fbx
+  - Assets/Resources/People/Animations/person@Guitar Playing (1).fbx
+  - Assets/Resources/Player/person-color@Male Sitting Pose.fbx
+  - Assets/Resources/People/Avatars/@person-man3@T-Pose.fbx
+  - Assets/Resources/People/Avatars/@person-woman1@T-Pose.fbx
+  - Assets/Resources/People/Animations/person@Piano Playing.fbx
+  - Assets/Resources/People/Animations/person@Sitting Idle 1.fbx
+  - Assets/Resources/People/Animations/person@Guitar Playing.fbx
+  - Assets/Resources/Environment/salon/the western saloon1.fbx
+  - Assets/Resources/People/Animations/Drum1.fbx
+  - Assets/Resources/Instruments/Guitar/source/to subs.obj
+  - Assets/Resources/Player/person-color-rig.fbx
+  - Assets/Resources/Player/person-color T-pose.fbx
+  - Assets/Resources/People/Animations/Bass1.fbx
+  - Assets/Resources/People/Animations/Guitar1.fbx
+  - Assets/Resources/Instruments/Keyboard/source/X_Stand_2.fbx
+  - Assets/Resources/People/Avatars/person-torso 1.fbx
+  - Assets/Resources/Instruments/Keyboard/source/Nektar Panorama P6 FBX 2020.fbx
+  - Assets/Resources/Instruments/Acous/source/guitar.fbx
+  - Assets/Resources/Player/person-color.fbx
+  - Assets/Resources/Environment/stage light/stage light.fbx
+  - Assets/Resources/People/Animations/Avatar.fbx
+  - Assets/Resources/Environment/Stage Curtains.fbx
+  - Assets/Resources/Player/person-color-rig2.fbx
+  - Assets/Resources/People/Animations/Friend2.fbx
+  - Assets/Resources/Instruments/Bass/model.dae
+  - Assets/Resources/People/Avatars/person-torso.fbx
+  - Assets/Resources/People/Animations/Friend1.fbx
+  - Assets/Resources/Instruments/Drum/source/Drum.fbx
+  - Assets/Resources/People/Animations/Piano1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Resources/Instruments/Keyboard/source/Nektar
+    Panorama P6 FBX 2020.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Resources/Instruments/Drum/source/Drum.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Biosignal/Instruments/Keyboard/source/Nektar
+    Panorama P6 FBX 2020.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Biosignal/Instruments/Drum/source/Drum.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Dialogue.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1@T-Pose.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1@Idle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1@Idle (1).fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1@Idle (2).fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-woman1@Waving.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Hanging panel.fbx
+  - Assets/Plugins/Banana Yellow Games/Characters/Banana Man/Banana Man.fbx
+  - Assets/PilotsExternal/Traction/Traction/Plugins/Banana Yellow Games/Characters/Banana
+    Man/Banana Man.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/photo machine.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/photomachine.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/mirror.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/mirror 1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/photo walls.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/SM_AAAHousePlants.fbx
+  - Assets/HDRPFurniturePack/Dining_Chair/Models/Dining_Chair.fbx
+  - Assets/HDRPFurniturePack/Plant_Potted_Monstera_Deliciosa/Models/Plant_Potted_Monstera_Deliciosa.fbx
+  - Assets/HDRPFurniturePack/Taper_Candle_Holders/Models/Taper_Candle_Holders.fbx
+  - Assets/HDRPFurniturePack/Artek/Floor_Light_A810_Artek/Models/Floor_Light_A810_Artek.fbx
+  - Assets/HDRPFurniturePack/Artek/Armchair_406_Artek/Models/Armchair_406_Artek.fbx
+  - Assets/HDRPFurniturePack/Artek/Coffee_Table_90D_Artek/Models/Coffee_Table_90D_Artek.fbx
+  - Assets/HDRPFurniturePack/Sofa_SL03_Allemuir_Stirling/Models/Sofa_SL03_Allemuir_Stirling.fbx
+  - Assets/HDRPFurniturePack/Artek/Stool 60 Artek/Models/Stool_60_Artek.fbx
+  - Assets/HDRPFurniturePack/Rug_High_Pile_Grey/Models/Rug_High_Pile_Grey.fbx
+  - Assets/HDRPFurniturePack/Decorative_Throw_Pillows/Models/Decorative_Throw_Pillow.fbx
+  - Assets/HDRPFurniturePack/Curtain/Models/Curtain_240x140.fbx
+  - Assets/HDRPFurniturePack/Succulent_Planter/Models/Succulent_Planter_Ceramic.fbx
+  - Assets/HDRPFurniturePack/Coffee_Table_Books/Models/Coffee_Table_Books.fbx
+  - Assets/HDRPFurniturePack/Wall_Decoration_Art_Zebra/Models/Wall_Decoration_Art_Zebra.fbx
+  - Assets/HDRPFurniturePack/Artek/Coffee_Table_907B_Artek/Models/Coffee_Table_907B_Artek.fbx
+  - Assets/HDRPFurniturePack/Artek/Table_97_Artek/Models/Table_97_Artek.fbx
+  - Assets/HDRPFurniturePack/Rug_Woven_Wool_Natural/Models/Rug_140x200cm.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Photo zone_main wall.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Photo zone_text.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Photo booth_text.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Photo booth_rec curve.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/Makeup area_text.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-hannah.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-katie.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-elaine.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-rachel.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-stella.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-sarah-bacon.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-raphaela.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-sarah-baxter.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-paul.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Happy Idle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting
+    Idle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Idle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Breathing
+    Idle.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close-katie.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Rigged_person-close-katie
+    1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag-director.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag-director
+    1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag 1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag 2.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag2.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag3.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/nametag-sarahbaxter.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag-sarahbaxter.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/Nametags/nametag-collection.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/3D Models/Rigged_person-close-katie.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/INO_logo/ino_text_architecture.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/INO_logo/creative team_text.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/3D Text/creative team_text.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting2.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting
+    Talking.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting
+    1.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/People/person-close@Sitting3.fbx
+  - Assets/PilotsExternal/Traction/Traction/Resources/3D Text and Panels/panel texts.fbx
+  uvOverlapAssetList: 00000000ffffffff000000000101000000000000010100000000000001010000010100000101000000000000010100000000000001010000010100000101000000000000010100000101000000000000010100000101000000000000010100000000000000000000010100000101000000000000000000000000000001010000000000000000000001010000000000000000000000000000010100000000000000000000010100000101000001010000010100000101000001010000010100000000000001010000010100000101000001010000010100000101000001010000010100000101000001010000000000000101000001010000010100000101000001010000000000000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000000000000000000000101000000000000000000000000000000000000ffffffff0101000001010000010100000000000000000000ffffffff000000000000000001010000000000000000000001010000000000000101000001010000010100000101000001010000000000000000000001010000000000000000000000000000010100000000000000000000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000001010000010100000101000000000000000000000000000001010000010100000000000001010000010100000101000001010000010100000101000000000000010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010100000000000001010000010100000101000001010000010100000000000000000000010100000101000001010000000000000101000001010000010100000000000000000000000000000000000001010000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0

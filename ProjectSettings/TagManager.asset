@@ -13,6 +13,13 @@ TagManager:
   - SensorLight
   - Card
   - CardDeck
+  - NumberOfPlayers
+  - ColorLight
+  - Tree
+  - Snow
+  - Ground
+  - ColorWall
+  - TVScreen
   layers:
   - Default
   - TransparentFX
