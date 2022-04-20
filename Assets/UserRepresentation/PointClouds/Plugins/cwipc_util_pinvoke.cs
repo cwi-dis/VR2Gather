@@ -4,6 +4,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class cwipc
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -43,17 +46,18 @@ namespace VRT.UserRepresentation.PointCloud
         public struct tileinfo
         {
             public vector normal;
-            public IntPtr camera;
+            public IntPtr cameraName;
             public byte ncamera;
+            public byte cameraMask;
         };
 
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20210412;
+            public const ulong CWIPC_API_VERSION = 0x20220126;
 
             [DllImport(myDllName)]
-            internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
+            internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, Timestamp timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 			[DllImport(myDllName)]
 			internal extern static IntPtr cwipc_read_debugdump([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
@@ -61,7 +65,7 @@ namespace VRT.UserRepresentation.PointCloud
             [DllImport(myDllName)]
             internal extern static void cwipc_free(IntPtr pc);
             [DllImport(myDllName)]
-            internal extern static ulong cwipc_timestamp(IntPtr pc);
+            internal extern static Timestamp cwipc_timestamp(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static int cwipc_count(IntPtr pc);
             [DllImport(myDllName)]
@@ -69,7 +73,7 @@ namespace VRT.UserRepresentation.PointCloud
             [DllImport(myDllName)]
             internal extern static void cwipc__set_cellsize(IntPtr pc, float cellsize);
             [DllImport(myDllName)]
-            internal extern static void cwipc__set_timestamp(IntPtr pc, ulong timestamp);
+            internal extern static void cwipc__set_timestamp(IntPtr pc, Timestamp timestamp);
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_get_uncompressed_size(IntPtr pc);
             [DllImport(myDllName)]
@@ -105,7 +109,7 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static IntPtr cwipc_synthetic(int fps, int npoints, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
-            internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
+            internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, Timestamp timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_proxy([MarshalAs(UnmanagedType.LPStr)]string ip, int port, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
@@ -121,6 +125,9 @@ namespace VRT.UserRepresentation.PointCloud
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_colormap(IntPtr pc, UInt32 clearBits, UInt32 setBits);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_crop(IntPtr pc, float[] bbox);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_join(IntPtr pc1, IntPtr pc2);
@@ -205,7 +212,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (_pointer == IntPtr.Zero)
                     throw new Exception("cwipc.pointcloud called with NULL pointer argument");
                 // This is a hack. We copy the timestamp from the cwipc data to our info structure.
-                info.timestamp = (long)timestamp();
+                info.timestamp = timestamp();
             }
 
             ~pointcloud()
@@ -219,17 +226,17 @@ namespace VRT.UserRepresentation.PointCloud
                 _API_cwipc_util.cwipc_free(pointer);
             }
 
-            public ulong timestamp()
+            public Timestamp timestamp()
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.timestamp called with NULL pointer");
                 return _API_cwipc_util.cwipc_timestamp(pointer);
             }
 
-            public void _set_timestamp(ulong timestamp)
+            public void _set_timestamp(Timestamp timestamp)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
                 _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
-                info.timestamp = (long)timestamp;
+                info.timestamp = timestamp;
             }
 
             public int count()
@@ -635,6 +642,14 @@ namespace VRT.UserRepresentation.PointCloud
             return new pointcloud(rvPtr);
         }
 
+        public static pointcloud crop(pointcloud pc, float[] bbox)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_crop(pcPtr, bbox);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
         public static pointcloud join(pointcloud pc1, pointcloud pc2)
         {
             IntPtr pc1Ptr = pc1._intptr();
@@ -644,7 +659,7 @@ namespace VRT.UserRepresentation.PointCloud
             return new pointcloud(rvPtr);
         }
 
-        public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, ulong timestamp)
+        public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, Timestamp timestamp)
         {
             IntPtr errorPtr = IntPtr.Zero;
             // Need to pass origin and bbox as array pointers.
@@ -664,7 +679,7 @@ namespace VRT.UserRepresentation.PointCloud
             return new pointcloud(rvPtr);
         }
 
-        public static pointcloud read(string filename, UInt64 timestamp)
+        public static pointcloud read(string filename, Timestamp timestamp)
         {
             System.IntPtr errorPtr = System.IntPtr.Zero;
             System.IntPtr rvPtr = _API_cwipc_util.cwipc_read(filename, timestamp, ref errorPtr);

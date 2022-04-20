@@ -5,6 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PCDecoder : BaseWorker
     {
         protected cwipc.decoder decoder;
@@ -13,8 +16,9 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         bool debugColorize = true;
+        System.DateTime mostRecentFeed = System.DateTime.MinValue;
 
-        public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(WorkerType.Run)
+        public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             if (_inQueue == null)
             {
@@ -24,6 +28,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception("PCDecoder: outQueue is null");
             }
+            stats = new Stats(Name());
             try
             {
                 inQueue = _inQueue;
@@ -70,38 +75,44 @@ namespace VRT.UserRepresentation.PointCloud
             if (debugThreading) Debug.Log($"{Name()} Stopped");
         }
 
+        bool _FeedDecoder() {
+            NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.TryDequeue(0);
+            if (mc == null) return false;
+            mostRecentFeed = System.DateTime.Now;
+            decoder.feed(mc.pointer, mc.length);
+            mc.free();
+            return true;
+        }
+
         protected override void Update()
         {
-            base.Update();
-            NativeMemoryChunk mc;
+            base.Update(); 
             lock (this)
             {
-                mc = (NativeMemoryChunk)inQueue.Dequeue();
+                // Feed data into the decoder, unless it already
+                // has a pointcloud available, or a previously fed buffer hasn't been decoded yet.
                 if (decoder == null) return;
-                if (mc != null)
+                if (mostRecentFeed == System.DateTime.MinValue)
                 {
-                    decoder.feed(mc.pointer, mc.length);
-                    mc.free();
-                } else
-                {
-                    // No pointcloud obtained.
-                    // If there's also no decoder output available
-                    // record this in the stats and return
-                    if (!decoder.available(false))
+                    if (!_FeedDecoder())
                     {
-                        stats.statsUpdate(false, 0, 0, 0);
                         return;
                     }
                 }
             }
             while (decoder.available(false))
             {
+                // While the decoder has pointclouds available
+                // push them into the output queue, and if there
+                // are more input packets available feed the decoder
+                // again.
                 cwipc.pointcloud pc = decoder.get();
+                Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeed).TotalMilliseconds;
+                mostRecentFeed = System.DateTime.MinValue;
                 if (pc == null)
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
                 }
-                stats.statsUpdate(true, pc.count(), pc.timestamp(), inQueue._Count);
                 if (debugColorize)
                 {
                     int cnum = (instanceNumber % 6) + 1;
@@ -113,42 +124,46 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     pc = newpc;
                 }
-                outQueue.Enqueue(pc);
+                Timedelta queuedDuration = outQueue.QueuedDuration();
+                bool dropped = !outQueue.Enqueue(pc);
+                stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
+                _FeedDecoder();
             }
         }
+
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
 
             double statsTotalPoints = 0;
             double statsTotalPointclouds = 0;
-            double statsTotalLatency = 0;
-            int statsMaxQueueSize = 0;
+            double statsTotalDropped = 0;
+            double statsTotalInQueueDuration = 0;
+            double statsTotalDecodeDuration = 0;
+            double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
-            public void statsUpdate(bool gotPC, int pointCount, ulong timeStamp, int queueSize)
+            public void statsUpdate(int pointCount, bool dropped, Timedelta inQueueDuration, Timedelta decodeDuration, Timedelta queuedDuration)
             {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                double latency = (sinceEpoch.TotalMilliseconds - timeStamp) / 1000.0;
-                if (gotPC)
-                {
-                    statsTotalPoints += pointCount;
-                    statsTotalPointclouds++;
-                    statsTotalLatency += latency;
-                }
-                if (queueSize > statsMaxQueueSize) statsMaxQueueSize = queueSize;
-
+                statsTotalPoints += pointCount;
+                statsTotalPointclouds++;
+                statsAggregatePackets++;
+                statsTotalInQueueDuration += inQueueDuration;
+                statsTotalDecodeDuration += decodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
+                
                 if (ShouldOutput())
                 {
-                    int msLatency = (int)(1000 * statsTotalLatency / statsTotalPointclouds);
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds))}, pipeline_latency_ms={msLatency}, max_decoder_queuesize={statsMaxQueueSize}");
-                 }
-                if (ShouldClear())
-                {
+                    double factor = (statsTotalPointclouds == 0 ? 1 : statsTotalPointclouds);
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, points_per_cloud={(int)(statsTotalPoints / factor)}, decoder_queue_ms={(int)(statsTotalInQueueDuration / factor)}, decoder_ms={statsTotalDecodeDuration / factor:F2}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPoints = 0;
                     statsTotalPointclouds = 0;
-                    statsTotalLatency = 0;
-                    statsMaxQueueSize = 0;
+                    statsTotalDropped = 0;
+                    statsTotalInQueueDuration = 0;
+                    statsTotalQueuedDuration = 0;
+                    statsTotalDecodeDuration = 0;
                 }
             }
         }

@@ -17,18 +17,18 @@ namespace VRT.Transport.Dash
         protected TileDescriptor[] tileDescriptors;
         protected sub.StreamDescriptor[] allStreamDescriptors;
 
-        public PCSubReader(string _url, string _streamName, int _initialDelay, TileDescriptor[] _tileDescriptors)
-        : base(_url, _streamName, _initialDelay)
+        public PCSubReader(string _url, string _streamName, string fourcc, TileDescriptor[] _tileDescriptors)
+        : base(_url, _streamName)
         {
             lock (this)
             {
                 tileDescriptors = _tileDescriptors;
                 int nTiles = tileDescriptors.Length;
                 //Debug.Log($"xxxjack {Name()}: constructor: nTiles={nTiles}");
-                receivers = new ReceiverInfo[nTiles];
+                perTileInfo = new TileOrMediaInfo[nTiles];
                 for (int ti = 0; ti < nTiles; ti++)
                 {
-                    ReceiverInfo ri = new ReceiverInfo();
+                    TileOrMediaInfo ri = new TileOrMediaInfo();
                     TileDescriptor td = tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.tileNumber = td.tileNumber;
@@ -40,7 +40,7 @@ namespace VRT.Transport.Dash
                             ri.streamIndexes.Add(sd.streamIndex);
                         }
                     }
-                    receivers[ti] = ri;
+                    perTileInfo[ti] = ri;
                 }
                 Start();
             }
@@ -110,14 +110,14 @@ namespace VRT.Transport.Dash
                 // We have both tile descriptions and stream descriptions. Match them up.
                 //
                 Debug.Log($"{Name()}: xxxjack _recomputeStreams: received tileDescriptors for {tileDescriptors.Length} tiles");
-                if (tileDescriptors.Length != receivers.Length)
+                if (tileDescriptors.Length != perTileInfo.Length)
                 {
-                    Debug.LogError($"{Name()}: _recomputeStreams: {tileDescriptors.Length} tile descriptors but {receivers.Length} receivers");
+                    Debug.LogError($"{Name()}: _recomputeStreams: {tileDescriptors.Length} tile descriptors but {perTileInfo.Length} receivers");
                 }
                 for (int i = 0; i < tileDescriptors.Length; i++)
                 {
                     TileDescriptor td = tileDescriptors[i];
-                    ReceiverInfo ri = receivers[i];
+                    TileOrMediaInfo ri = perTileInfo[i];
 
                     List<sub.StreamDescriptor> streamDescriptorsPerTile = new List<sub.StreamDescriptor>();
                     Debug.Log($"{Name()}: _recomputeStreams: tile {i}: tileNumber={td.tileNumber}: examine streamDescriptors for {allStreamDescriptors.Length} streams");

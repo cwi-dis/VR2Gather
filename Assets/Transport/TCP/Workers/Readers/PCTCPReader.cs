@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Text;
 using System.Collections.Generic;
 using VRT.Core;
 using VRT.Transport.Dash;
@@ -7,7 +9,7 @@ namespace VRT.Transport.TCP
 {
     public class PCTCPReader : BaseTCPReader
     {
-        public PCTCPReader(string _url, PCSubReader.TileDescriptor[] _tileDescriptors)
+        public PCTCPReader(string _url, string fourcc, PCSubReader.TileDescriptor[] _tileDescriptors)
         : base(_url)
         {
             lock (this)
@@ -23,10 +25,18 @@ namespace VRT.Transport.TCP
                     PCSubReader.TileDescriptor td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
+                    ri.fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
                     receivers[ti] = ri;
                 }
                 Start();
             }
+        }
+
+        public void setTileQualityIndex(int tileIndex, int qualityIndex)
+        {
+            Debug.Log($"{Name()}: setTileQualityIndex({tileIndex},{qualityIndex})");
+            int portOffset = qualityIndex * receivers.Length;
+            receivers[tileIndex].portOffset = portOffset;
         }
     }
 }

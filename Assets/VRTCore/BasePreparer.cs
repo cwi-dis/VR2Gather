@@ -4,12 +4,21 @@ using UnityEngine;
 
 namespace VRT.Core
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public abstract class BasePreparer : BaseWorker
     {
         protected Synchronizer synchronizer = null;
+        protected QueueThreadSafe InQueue;
 
-        public BasePreparer(WorkerType _type = WorkerType.Run) : base(_type)
+        public BasePreparer(QueueThreadSafe _InQueue) : base()
         {
+            if (_InQueue == null)
+            {
+                throw new System.Exception($"{Name()}: InQueue is null");
+            }
+            InQueue = _InQueue;
         }
 
         static int instanceCounter = 0;
@@ -19,7 +28,7 @@ namespace VRT.Core
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public void SetSynchronizer(Synchronizer _synchronizer)
+        public virtual void SetSynchronizer(Synchronizer _synchronizer)
         {
             synchronizer = _synchronizer;
        }
@@ -37,6 +46,12 @@ namespace VRT.Core
         protected override void Update()
         {
             base.Update();
+        }
+
+        public Timedelta getQueueDuration()
+        {
+            if (InQueue == null) return 0;
+            return InQueue.QueuedDuration();
         }
     }
 }

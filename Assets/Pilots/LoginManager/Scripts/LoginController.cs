@@ -51,11 +51,20 @@ public class LoginController : PilotController {
                     Config.Instance.protocolType = Config.ProtocolType.TCP;
                     break;
                 default:
+                    Debug.LogError($"LoginController: received unknown START audio type {msg[2]}");
                     break;
             }
             string pilotName = msg[1];
             string pilotVariant = null;
-            if (msg.Length > 3) pilotVariant = msg[3];
+            if (msg.Length > 3 && msg[3] != "") pilotVariant = msg[3];
+            if (msg.Length > 4 && msg[4] != "")
+            {
+                Config.Instance.PCs.Codec = msg[4];
+            }
+            if (msg.Length > 5 && msg[5] != "")
+            {
+                Config.Instance.Voice.Codec = msg[5];
+            }
             string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
             if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
         }

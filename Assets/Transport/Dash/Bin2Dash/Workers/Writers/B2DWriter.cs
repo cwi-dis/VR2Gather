@@ -6,6 +6,8 @@ using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
 
     public class B2DWriter : BaseWriter
     {
@@ -24,100 +26,10 @@ namespace VRT.Transport.Dash
         public bin2dash.connection uploader;
         public string url;
         DashStreamDescription[] descriptions;
-        public class B2DPushThread
-        {
-            B2DWriter parent;
-            int stream_index;
-            DashStreamDescription description;
-            System.Threading.Thread myThread;
-
-            public B2DPushThread(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
-            {
-                parent = _parent;
-                stream_index = _stream_index;
-                description = _description;
-                myThread = new System.Threading.Thread(run);
-                myThread.Name = Name();
-                stats = new Stats(Name());
-            }
-
-            public string Name()
-            {
-                return $"{parent.Name()}.{stream_index}";
-            }
-
-            public void Start()
-            {
-                myThread.Start();
-            }
-
-            public void Join()
-            {
-                myThread.Join();
-            }
-
-            protected void run()
-            {
-                try
-                {
-                    Debug.Log($"{Name()}: thread started");
-                    QueueThreadSafe queue = description.inQueue;
-                    while (!queue.IsClosed())
-                    {
-                        NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
-                        if (mc == null) continue; // Probably closing...
-                        stats.statsUpdate(mc.length); // xxxjack needs to be changed to be per-stream
-                        if (!parent.uploader.push_buffer(stream_index, mc.pointer, (uint)mc.length))
-                            Debug.Log($"{Name()}({parent.url}): ERROR sending data");
-                        mc.free();
-                    }
-                    Debug.Log($"{Name()}: thread stopped");
-                }
-                catch (System.Exception e)
-                {
-#if UNITY_EDITOR
-                    throw;
-#else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while sending visual representation or audio to other participants");
-#endif
-                }
-
-            }
-
-            protected class Stats : VRT.Core.BaseStats
-            {
-                public Stats(string name) : base(name) { }
-
-                double statsTotalBytes = 0;
-                double statsTotalPackets = 0;
-
-                public void statsUpdate(int nBytes)
-                {
- 
-                    statsTotalBytes += nBytes;
-                    statsTotalPackets += 1;
-
-                    if (ShouldOutput())
-                    {
-                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}");
-                      }
-                    if (ShouldClear())
-                    {
-                        Clear();
-                        statsTotalBytes = 0;
-                        statsTotalPackets = 0;
-                    }
-                }
-            }
-
-            protected Stats stats;
-        }
- 
-        B2DPushThread[] pusherThreads;
+        B2DPusher[] streamPushers;
 
 
-        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base(WorkerType.End)
+        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -183,20 +95,16 @@ namespace VRT.Transport.Dash
 
         protected override void Start()
         {
-            base.Start();
-            int nThreads = descriptions.Length;
-            pusherThreads = new B2DPushThread[nThreads];
-            for (int i = 0; i < nThreads; i++)
+            int nStreams = descriptions.Length;
+            streamPushers = new B2DPusher[nStreams];
+            for (int i = 0; i < nStreams; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new B2DPushThread(this, i, descriptions[i]);
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+                streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
+                BaseStats.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
             }
-            foreach (var t in pusherThreads)
-            {
-                t.Start();
-            }
+            base.Start();
         }
 
         public override void OnStop()
@@ -215,19 +123,20 @@ namespace VRT.Transport.Dash
             base.OnStop();
             uploader?.free();
             uploader = null;
-            // wait for pusherThreads to terminate
-            foreach (var t in pusherThreads)
-            {
-                t.Join();
-            }
             Debug.Log($"{Name()} {url} Stopped");
         }
 
         protected override void Update()
         {
-            base.Update();
-            // xxxjack anything to do?
-            System.Threading.Thread.Sleep(10);
+            int nStreams = streamPushers.Length;
+            for (int i = 0; i < nStreams; i++)
+            {
+                if (!streamPushers[i].LockBuffer()) Stop();
+            }
+            for (int i = 0; i < nStreams; i++)
+            {
+                streamPushers[i].PushBuffer();
+            }
         }
 
         public override SyncConfig.ClockCorrespondence GetSyncInfo()
@@ -236,9 +145,85 @@ namespace VRT.Transport.Dash
 
             return new SyncConfig.ClockCorrespondence
             {
-                wallClockTime = (long)sinceEpoch.TotalMilliseconds,
+                wallClockTime = (Timestamp)sinceEpoch.TotalMilliseconds,
                 streamClockTime = uploader.get_media_time(1000)
             };
         }
+
+        protected class B2DPusher
+        {
+            B2DWriter parent;
+            int stream_index;
+            DashStreamDescription description;
+            NativeMemoryChunk curBuffer = null;
+
+            public B2DPusher(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
+            {
+                parent = _parent;
+                stream_index = _stream_index;
+                description = _description;
+                stats = new Stats(Name());
+            }
+
+            public string Name()
+            {
+                return $"{parent.Name()}.{stream_index}";
+            }
+
+            public bool LockBuffer()
+            {
+                lock(this)
+                {
+                    if (curBuffer != null)
+                    {
+                        curBuffer.free();
+                        curBuffer = null;
+                    }
+                    curBuffer = (NativeMemoryChunk)description.inQueue.Dequeue();
+                    return curBuffer != null;
+                }
+            }
+
+            public void PushBuffer()
+            {
+                lock(this)
+                {
+                    if (curBuffer == null) return;
+                    stats.statsUpdate(curBuffer.length);
+                    if (!parent.uploader.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
+                        Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
+                }
+            }
+
+ 
+            protected class Stats : VRT.Core.BaseStats
+            {
+                public Stats(string name) : base(name) { }
+
+                double statsTotalBytes = 0;
+                double statsTotalPackets = 0;
+                int statsAggregatePackets = 0;
+
+                public void statsUpdate(int nBytes)
+                {
+ 
+                    statsTotalBytes += nBytes;
+                    statsTotalPackets++;
+                    statsAggregatePackets++;
+
+                    if (ShouldOutput())
+                    {
+                        Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / (statsTotalPackets == 0 ? 1 : statsTotalPackets))}, aggregate_packets={statsAggregatePackets}");
+                        Clear();
+                        statsTotalBytes = 0;
+                        statsTotalPackets = 0;
+                    }
+                }
+            }
+
+            protected Stats stats;
+        }
+ 
+ 
     }
 }

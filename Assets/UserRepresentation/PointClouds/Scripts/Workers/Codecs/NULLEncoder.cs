@@ -5,18 +5,20 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class NULLEncoder : BaseWorker
     {
         cwipc.encodergroup encoderGroup;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
-        QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
         PCEncoder.EncoderStreamDescription[] outputs;
 
-        public NULLEncoder(QueueThreadSafe _inQueue, PCEncoder.EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        public NULLEncoder(QueueThreadSafe _inQueue, PCEncoder.EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {
@@ -24,13 +26,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             inQueue = _inQueue;
             outputs = _outputs;
-            int nOutputs = outputs.Length;
-            if (nOutputs != 1)
-            {
-                throw new System.Exception($"{Name()}: only single output supported");
-            }
-            outQueue = _outputs[0].outQueue;
-
             Start();
             Debug.Log($"{Name()}: Inited");
             stats = new Stats(Name());
@@ -42,10 +37,9 @@ namespace VRT.UserRepresentation.PointCloud
 
         public override void OnStop()
         {
-            if (outQueue != null)
-            {
-                outQueue.Close();
-                outQueue = null;
+            for (int i=0; i<outputs.Length; i++) {
+                outputs[i].outQueue.Close();
+                outputs[i].outQueue = null;
             }
             base.OnStop();
         }
@@ -53,31 +47,68 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
-            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            if (pc == null) return; // Terminating
-            int size = pc.copy_packet(System.IntPtr.Zero, 0);
-            NativeMemoryChunk mc = new NativeMemoryChunk(size);
-            pc.copy_packet(mc.pointer, mc.length);
-            stats.statsUpdate();
-            outputs[0].outQueue.Enqueue(mc);    
+            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.TryDequeue(0);
+            if (pc == null) return; // Terminating, or no pointcloud currently available
+            for (int i=0; i<outputs.Length; i++)
+            {
+                Timedelta encodeDuration = 0;
+                NativeMemoryChunk mc = null;
+                if (outputs[i].tileNumber == 0)
+                {
+                    System.DateTime encodeStartTime = System.DateTime.Now;
+                    int size = pc.copy_packet(System.IntPtr.Zero, 0);
+                    mc = new NativeMemoryChunk(size);
+                    pc.copy_packet(mc.pointer, mc.length);
+                    mc.info.timestamp = pc.timestamp();
+                    System.DateTime encodeStopTime = System.DateTime.Now;
+                    encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
+                }
+                else
+                {
+                    System.DateTime encodeStartTime = System.DateTime.Now;
+                    cwipc.pointcloud pcTile = cwipc.tilefilter(pc, outputs[i].tileNumber);
+                    int size = pcTile.copy_packet(System.IntPtr.Zero, 0);
+                    mc = new NativeMemoryChunk(size);
+                    pcTile.copy_packet(mc.pointer, mc.length);
+                    mc.info.timestamp = pc.timestamp();
+                    pcTile.free();
+                    System.DateTime encodeStopTime = System.DateTime.Now;
+                    encodeDuration = (Timedelta)(encodeStopTime - encodeStartTime).TotalMilliseconds;
+                }
+                QueueThreadSafe queue = outputs[i].outQueue;
+                Timedelta queuedDuration = queue.QueuedDuration();
+                bool dropped = !queue.Enqueue(mc);
+                stats.statsUpdate(dropped, encodeDuration, queuedDuration);
+            }
             pc.free();
         }
 
-        protected class Stats : VRT.Core.BaseStats {
+        protected class Stats : VRT.Core.BaseStats
+        {
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;
+            double statsTotalDropped = 0;
+            double statsTotalEncodeDuration = 0;
+            double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
-            public void statsUpdate() {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration)
+            {
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
+                statsTotalEncodeDuration += encodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
-                if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}");
-                }
-                if (ShouldClear()) {
+                if (ShouldOutput())
+                {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={statsTotalEncodeDuration / statsTotalPointclouds:F2}, transmitter_queue_ms={statsTotalQueuedDuration / statsTotalPointclouds}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }

@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
         };
 
         public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url, streamName, 0)
+         : base(url, streamName)
         {
             lock (this)
             {
@@ -52,14 +52,14 @@ namespace VRT.Transport.Dash
                     Debug.Log($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
                     Debug.LogError($"No audio stream in {streamName}");
                 }
-                receivers = new ReceiverInfo[]
+                perTileInfo = new TileOrMediaInfo[]
                 {
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _outQueue,
                     streamIndexes = new List<int> {videoStream }
                 },
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _out2Queue,
                     streamIndexes = new List<int> {audioStream}
@@ -67,7 +67,7 @@ namespace VRT.Transport.Dash
                 };
 
 
-                InitThreads();
+                InitThread();
                 Start();
             }
         }

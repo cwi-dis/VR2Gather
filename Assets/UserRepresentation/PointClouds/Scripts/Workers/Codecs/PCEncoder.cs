@@ -1,20 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PCEncoder : BaseWorker
     {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
+        int nEncodersBusy;
         System.Threading.Thread[] pusherThreads;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-
+        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
+        Timestamp mostRecentTimestampFed = 0;
+        
         public struct EncoderStreamDescription
         {
             public int octreeBits;
@@ -23,7 +30,7 @@ namespace VRT.UserRepresentation.PointCloud
         };
         EncoderStreamDescription[] outputs;
 
-        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(WorkerType.Run)
+        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {
@@ -72,12 +79,12 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Start();
             int nThreads = encoderOutputs.Length;
-            pusherThreads = new System.Threading.Thread[nThreads];
+            pusherThreads = new Thread[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new System.Threading.Thread(
+                pusherThreads[i] = new Thread(
                     () => PusherThread(stream_number)
                     );
             }
@@ -115,14 +122,20 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
+            if (nEncodersBusy > 0) return;
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            if (pc == null) return; // Terminating
-            if (encoderGroup != null)
+            if (pc != null)
             {
-                // Not terminating yet
-                encoderGroup.feed(pc);
+                if (encoderGroup != null)
+                {
+                    // Not terminating yet
+                    mostRecentFeedTime = System.DateTime.Now;
+                    mostRecentTimestampFed = pc.timestamp();
+                    Interlocked.Exchange(ref nEncodersBusy, pusherThreads.Length);
+                    encoderGroup.feed(pc);
+                }
+                pc.free();
             }
-            pc.free();
         }
 
         protected void PusherThread(int stream_number)
@@ -139,15 +152,19 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoder.available(true))
                     {
                         NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                        mc.info.timestamp = mostRecentTimestampFed;
                         if (encoder.copy_data(mc.pointer, mc.length))
                         {
-                            stats.statsUpdate();
-                            outQueue.Enqueue(mc);
+                            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
+                            Timedelta queuedDuration = outQueue.QueuedDuration();
+                            bool dropped = !outQueue.Enqueue(mc);
+                            stats.statsUpdate(dropped, encodeDuration, queuedDuration);
                         }
                         else
                         {
                             Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
                         }
+                        Interlocked.Decrement(ref nEncodersBusy);
                     }
                     else
                     {
@@ -157,6 +174,7 @@ namespace VRT.UserRepresentation.PointCloud
                 outQueue.Close();
                 Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
             }
+#pragma warning disable CS0168
             catch (System.Exception e)
             {
 #if UNITY_EDITOR
@@ -172,22 +190,29 @@ namespace VRT.UserRepresentation.PointCloud
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;
+            double statsTotalDropped = 0;
+            double statsTotalEncodeDuration = 0;
+            double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
-            public void statsUpdate() {
-                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration) {
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
+                statsTotalEncodeDuration += encodeDuration;
+                statsTotalQueuedDuration += queuedDuration;
+                if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}");
-                }
-                if (ShouldClear()) {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(statsTotalEncodeDuration / statsTotalPointclouds):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
+                    statsTotalEncodeDuration = 0;
+                    statsTotalQueuedDuration = 0;
                 }
             }
         }
 
         protected Stats stats;
-
     }
 }
