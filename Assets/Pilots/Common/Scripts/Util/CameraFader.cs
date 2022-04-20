@@ -67,7 +67,6 @@ public class CameraFader : MonoBehaviour
 		_InitFade();
 		yield return null;
 
-		ClearText();
 		_Fading = true;
 		_Target = 0.0f;
 		_Step = -1.0f / FadeDuration;
@@ -87,6 +86,7 @@ public class CameraFader : MonoBehaviour
 			_FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
 			yield return null;
 		}
+		ClearText();
 	}
 
 	public IEnumerator FadeOut()

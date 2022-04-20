@@ -16,13 +16,13 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
-  	"sessionScenario" : 0,
+  	"sessionName" : "traction",
+  	"sessionScenario" : 2,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
   	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
