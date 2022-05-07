@@ -237,9 +237,6 @@ namespace VRT.Transport.Dash
         // This could be either here or in bin2dash_pinvoke. 
         public static void SetMSPaths(string module_base = "signals-unity-bridge")
         {
-#if !UNITY_EDITOR
-        return;
-#endif
 
             if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
             {
@@ -295,7 +292,7 @@ namespace VRT.Transport.Dash
             string dirName = Path.GetDirectoryName(modPath.ToString());
             dirName = dirName.Replace("\\", "/");
             dirName += "/";
-            //UnityEngine.Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={dirName}");
+            UnityEngine.Debug.Log($"sub.SetMSPaths: xxxjack: SIGNALS_SMD_PATH={dirName}");
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
             lastMSpathInstalled = module_base;
         }
