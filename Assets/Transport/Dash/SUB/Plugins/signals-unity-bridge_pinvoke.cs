@@ -238,7 +238,7 @@ namespace VRT.Transport.Dash
         public static void SetMSPaths(string module_base = "signals-unity-bridge")
         {
 
-            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
+            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor || UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXPlayer)
             {
 
                 // xxxjack should we use another way to find the path?
