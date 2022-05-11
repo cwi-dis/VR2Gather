@@ -14,7 +14,7 @@ namespace VRT.UserRepresentation.PointCloud
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
         int nEncodersBusy;
-        System.Threading.Thread[] pusherThreads;
+        PCEncoderOutputPusher[] pusherThreads;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
@@ -29,6 +29,80 @@ namespace VRT.UserRepresentation.PointCloud
             public QueueThreadSafe outQueue;
         };
         EncoderStreamDescription[] outputs;
+
+        public class PCEncoderOutputPusher
+        {
+            PCEncoder parent;
+            int stream_number;
+            cwipc.encoder encoder;
+            QueueThreadSafe outQueue;
+            System.Threading.Thread thread;
+
+            public PCEncoderOutputPusher(PCEncoder _parent, int _stream_number)
+            {
+                parent = _parent;
+                stream_number = _stream_number;
+                encoder = parent.encoderOutputs[stream_number];
+                outQueue = parent.outputs[stream_number].outQueue;
+                thread = new Thread(run);
+            }
+
+            public void Start()
+            {
+                thread.Start();
+            }
+
+            public void Join()
+            {
+                thread?.Join();
+            }
+
+            protected void run()
+            {
+                try
+                {
+                    Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
+                    // Get encoder and output queue for our stream
+                    // Loop until feeder signals no more data is forthcoming
+                    while (!encoder.eof())
+                    {
+                        if (encoder.available(true))
+                        {
+                            NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
+                            mc.info.timestamp = parent.mostRecentTimestampFed;
+                            if (encoder.copy_data(mc.pointer, mc.length))
+                            {
+                                Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTime).TotalMilliseconds;
+                                Timedelta queuedDuration = outQueue.QueuedDuration();
+                                bool dropped = !outQueue.Enqueue(mc);
+                                parent.stats.statsUpdate(dropped, encodeDuration, queuedDuration);
+                            }
+                            else
+                            {
+                                Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
+                            }
+                            Interlocked.Decrement(ref parent.nEncodersBusy);
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                    outQueue.Close();
+                    Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
+                }
+#pragma warning disable CS0168
+                catch (System.Exception e)
+                {
+#if UNITY_EDITOR
+                    throw;
+#else
+                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
+                Debug.LogError("Error while sending your representation to other participants.");
+#endif
+                }
+            }
+        }
 
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
@@ -79,14 +153,12 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Start();
             int nThreads = encoderOutputs.Length;
-            pusherThreads = new Thread[nThreads];
+            pusherThreads = new PCEncoderOutputPusher[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new Thread(
-                    () => PusherThread(stream_number)
-                    );
+                pusherThreads[i] = new PCEncoderOutputPusher(this, stream_number);
             }
             foreach (var t in pusherThreads)
             {
@@ -138,7 +210,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        protected void PusherThread(int stream_number)
+        protected void xxxPusherThread(int stream_number)
         {
             try
             {
