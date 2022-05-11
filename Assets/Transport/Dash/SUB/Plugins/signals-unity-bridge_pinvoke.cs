@@ -238,7 +238,7 @@ namespace VRT.Transport.Dash
         public static void SetMSPaths(string module_base = "signals-unity-bridge")
         {
 
-            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor || UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXPlayer)
+            if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor && UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsPlayer)
             {
 
                 // xxxjack should we use another way to find the path?
@@ -249,7 +249,7 @@ namespace VRT.Transport.Dash
                 }
                 if (path == "" || path == null)
                 {
-                    UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
+                    UnityEngine.Debug.LogWarning($"Environment variable SIGNALS_SMD_PATH not set, Dash modules may fail to load");
                 }
                 Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
 #if DOES_NOT_WORK
