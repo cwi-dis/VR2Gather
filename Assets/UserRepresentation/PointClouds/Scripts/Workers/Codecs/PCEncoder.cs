@@ -37,6 +37,8 @@ namespace VRT.UserRepresentation.PointCloud
             cwipc.encoder encoder;
             QueueThreadSafe outQueue;
             System.Threading.Thread thread;
+            NativeMemoryChunk curBuffer = null;
+
 
             public PCEncoderOutputPusher(PCEncoder _parent, int _stream_number)
             {
@@ -57,6 +59,39 @@ namespace VRT.UserRepresentation.PointCloud
                 thread?.Join();
             }
 
+            public bool LockBuffer()
+            {
+                lock (this)
+                {
+                    if (!encoder.available(false)) return false;
+                    if (curBuffer != null)
+                    {
+                        curBuffer.free();
+                        curBuffer = null;
+                    }
+                    curBuffer = new NativeMemoryChunk(encoder.get_encoded_size());
+                    curBuffer.info.timestamp = parent.mostRecentTimestampFed;
+                    if (!encoder.copy_data(curBuffer.pointer, curBuffer.length))
+                    {
+                        Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
+                    }
+                    return true;
+                }
+            }
+
+            public void PushBuffer()
+            {
+                lock(this)
+                {
+                    if (curBuffer == null) return;
+                    Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTime).TotalMilliseconds;
+                    Timedelta queuedDuration = outQueue.QueuedDuration();
+                    bool dropped = !outQueue.Enqueue(curBuffer);
+                    parent.stats.statsUpdate(dropped, encodeDuration, queuedDuration);
+                    curBuffer = null;
+                }
+            }
+
             protected void run()
             {
                 try
@@ -66,21 +101,9 @@ namespace VRT.UserRepresentation.PointCloud
                     // Loop until feeder signals no more data is forthcoming
                     while (!encoder.eof())
                     {
-                        if (encoder.available(true))
+                        if (LockBuffer())
                         {
-                            NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
-                            mc.info.timestamp = parent.mostRecentTimestampFed;
-                            if (encoder.copy_data(mc.pointer, mc.length))
-                            {
-                                Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTime).TotalMilliseconds;
-                                Timedelta queuedDuration = outQueue.QueuedDuration();
-                                bool dropped = !outQueue.Enqueue(mc);
-                                parent.stats.statsUpdate(dropped, encodeDuration, queuedDuration);
-                            }
-                            else
-                            {
-                                Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
-                            }
+                            PushBuffer();
                             Interlocked.Decrement(ref parent.nEncodersBusy);
                         }
                         else
@@ -210,54 +233,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        protected void xxxPusherThread(int stream_number)
-        {
-            try
-            {
-                Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
-                // Get encoder and output queue for our stream
-                cwipc.encoder encoder = encoderOutputs[stream_number];
-                QueueThreadSafe outQueue = outputs[stream_number].outQueue;
-                // Loop until feeder signals no more data is forthcoming
-                while (!encoder.eof())
-                {
-                    if (encoder.available(true))
-                    {
-                        NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
-                        mc.info.timestamp = mostRecentTimestampFed;
-                        if (encoder.copy_data(mc.pointer, mc.length))
-                        {
-                            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
-                            Timedelta queuedDuration = outQueue.QueuedDuration();
-                            bool dropped = !outQueue.Enqueue(mc);
-                            stats.statsUpdate(dropped, encodeDuration, queuedDuration);
-                        }
-                        else
-                        {
-                            Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
-                        }
-                        Interlocked.Decrement(ref nEncodersBusy);
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-                outQueue.Close();
-                Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
-            }
-#pragma warning disable CS0168
-            catch (System.Exception e)
-            {
-#if UNITY_EDITOR
-                throw;
-#else
-                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
-                Debug.LogError("Error while sending your representation to other participants.");
-#endif
-            }
-        }
-
+       
         protected class Stats : VRT.Core.BaseStats {
             public Stats(string name) : base(name) { }
 
