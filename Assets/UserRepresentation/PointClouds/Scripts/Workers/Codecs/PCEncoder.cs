@@ -19,8 +19,8 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
-        Timestamp mostRecentTimestampFed = 0;
+        Queue<System.DateTime> mostRecentFeedTimes = new Queue<System.DateTime>();
+        Queue<Timestamp> mostRecentFeedTimestamps = new Queue<Timestamp>();
         int nParallel = 0;
         
         public struct EncoderStreamDescription
@@ -63,8 +63,8 @@ namespace VRT.UserRepresentation.PointCloud
                     if (curBuffer != null) return true;
                     if (!encoder.available(false)) return false;
                     curBuffer = new NativeMemoryChunk(encoder.get_encoded_size());
-                    curBuffer.info.timestamp = parent.mostRecentTimestampFed;
-                    curEncodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTime).TotalMilliseconds;
+                    curBuffer.info.timestamp = parent.mostRecentFeedTimestamps.Peek();
+                    curEncodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTimes.Peek()).TotalMilliseconds;
                     if (!encoder.copy_data(curBuffer.pointer, curBuffer.length))
                     {
                         Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
@@ -228,6 +228,8 @@ namespace VRT.UserRepresentation.PointCloud
                         t.PushBuffer();
                     }
                     encodersAreBusy = false;
+                    mostRecentFeedTimes.Dequeue();
+                    mostRecentFeedTimestamps.Dequeue();
                 }
             }
             if (!encodersAreBusy || nParallel > 1)
@@ -239,8 +241,8 @@ namespace VRT.UserRepresentation.PointCloud
                     if (encoderGroup != null)
                     {
                         // Not terminating yet
-                        mostRecentFeedTime = System.DateTime.Now;
-                        mostRecentTimestampFed = pc.timestamp();
+                        mostRecentFeedTimes.Enqueue(System.DateTime.Now);
+                        mostRecentFeedTimestamps.Enqueue(pc.timestamp());
                         encoderGroup.feed(pc);
                         encodersAreBusy = true;
                     }
