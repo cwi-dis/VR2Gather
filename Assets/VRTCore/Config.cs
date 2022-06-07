@@ -215,6 +215,7 @@ namespace VRT.Core
                 public float voxelSize;
                 public float frameRate;
                 public bool tiled;
+                public int encoderParallelism;
                 [Serializable]
                 public class _Encoder
                 {

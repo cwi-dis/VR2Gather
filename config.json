@@ -21,7 +21,7 @@
   	"sessionTransportProtocol" : 2,
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "vrsmall",
+  	"autoCreateForUser" : "",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -84,7 +84,8 @@
 	  },
       "voxelSize": 0,
       "frameRate": 15,
-      "tiled": true,
+      "tiled": false,
+	  "encoderParallelism" : 4,
       "Encoders": [
 		
 		{

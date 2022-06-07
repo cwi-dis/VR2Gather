@@ -21,6 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
         int instanceNumber = instanceCounter++;
         System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
         Timestamp mostRecentTimestampFed = 0;
+        int nParallel = 0;
         
         public struct EncoderStreamDescription
         {
@@ -120,6 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
+            nParallel = VRT.Core.Config.Instance.LocalUser.PCSelfConfig.encoderParallelism;
             if (_inQueue == null)
             {
                 throw new System.Exception("{Name()}: inQueue is null");
@@ -143,7 +145,8 @@ namespace VRT.UserRepresentation.PointCloud
                         jpeg_quality = 75,
                         macroblock_size = 0,
                         tilenumber = op.tileNumber,
-                        voxelsize = 0
+                        voxelsize = 0,
+                        n_parallel = nParallel
                     };
                     var encoder = encoderGroup.addencoder(parms);
                     encoderOutputs[i] = encoder;
@@ -208,7 +211,9 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
-            if(encodersAreBusy)
+            // If we do multi-threaded encoding we always try to obtain results
+            // and we always try to feed.
+            if(encodersAreBusy || nParallel > 1)
             {
                 // See if encoders are done and we can feed the transmitters
                 bool allDone = true;
@@ -225,7 +230,7 @@ namespace VRT.UserRepresentation.PointCloud
                     encodersAreBusy = false;
                 }
             }
-            if (!encodersAreBusy)
+            if (!encodersAreBusy || nParallel > 1)
             {
                 // See if we can start encoding.
                 cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
