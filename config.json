@@ -44,7 +44,9 @@
     "Codec": "cwi1",
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 5
+    "timeoutBeforeGhosting" : 5,
+	"encoderParallelism" : 4,
+    "decoderParallelism" : 4
   },
   "Voice": {
   	"Codec": "VR2A",
@@ -85,8 +87,7 @@
       "voxelSize": 0,
       "frameRate": 15,
       "tiled": false,
-	  "encoderParallelism" : 4,
-      "Encoders": [
+	  "Encoders": [
 		
 		{
           "octreeBits": 9

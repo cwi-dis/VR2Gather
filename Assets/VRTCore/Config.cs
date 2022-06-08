@@ -113,6 +113,9 @@ namespace VRT.Core
             public float timeoutBeforeGhosting = 5.0f;
             public int decoderQueueSizeOverride = 0;
             public int preparerQueueSizeOverride = 0;
+            public int encoderParallelism = 0;
+            public int decoderParallelism = 0;
+
         };
         public _PCs PCs;
 
@@ -215,7 +218,6 @@ namespace VRT.Core
                 public float voxelSize;
                 public float frameRate;
                 public bool tiled;
-                public int encoderParallelism;
                 [Serializable]
                 public class _Encoder
                 {

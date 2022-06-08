@@ -121,7 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
-            nParallel = VRT.Core.Config.Instance.LocalUser.PCSelfConfig.encoderParallelism;
+            nParallel = VRT.Core.Config.Instance.PCs.encoderParallelism;
             if (_inQueue == null)
             {
                 throw new System.Exception("{Name()}: inQueue is null");
