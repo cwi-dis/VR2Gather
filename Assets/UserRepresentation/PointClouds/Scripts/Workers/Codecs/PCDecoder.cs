@@ -14,8 +14,6 @@ namespace VRT.UserRepresentation.PointCloud
         protected int nParallel = 1;
         protected int inDecoderIndex = 0;
         protected int outDecoderIndex = 0;
-        protected cwipc.decoder in_decoder { get { return decoders[inDecoderIndex];  } }
-        protected cwipc.decoder out_decoder { get { return decoders[outDecoderIndex];  } }
         protected QueueThreadSafe inQueue;
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
@@ -26,6 +24,7 @@ namespace VRT.UserRepresentation.PointCloud
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             nParallel = VRT.Core.Config.Instance.PCs.decoderParallelism;
+            if (nParallel == 0) nParallel = 1;
             if (_inQueue == null)
             {
                 throw new System.Exception("PCDecoder: inQueue is null");
@@ -39,7 +38,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 inQueue = _inQueue;
                 outQueue = _outQueue;
-                nParallel = 1;
                 decoders = new cwipc.decoder[nParallel];
                 for(int i=0; i<nParallel; i++)
                 {
@@ -93,21 +91,23 @@ namespace VRT.UserRepresentation.PointCloud
             NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.TryDequeue(0);
             if (mc == null) return false;
             mostRecentFeed = System.DateTime.Now;
+            var decoder = decoders[inDecoderIndex];
+            inDecoderIndex = (inDecoderIndex + 1) % nParallel;
             if (nParallel > 1)
             {
                 System.Threading.Thread th = new System.Threading.Thread(() =>
                 {
-                    in_decoder.feed(mc.pointer, mc.length);
+
+                    decoder.feed(mc.pointer, mc.length);
                     mc.free();
                 });
                 th.Start();
             } 
             else
             {
-                in_decoder.feed(mc.pointer, mc.length);
+                decoder.feed(mc.pointer, mc.length);
                 mc.free();
             }
-            inDecoderIndex = (inDecoderIndex + 1) % nParallel;
             return true;
         }
 
@@ -119,18 +119,18 @@ namespace VRT.UserRepresentation.PointCloud
                 // Feed data into the decoder, unless it already
                 // has a pointcloud available, or a previously fed buffer hasn't been decoded yet.
                 if (decoders == null) return;
-                if (mostRecentFeed == System.DateTime.MinValue || nParallel > 1)
+                while (mostRecentFeed == System.DateTime.MinValue || nParallel > 1)
                 {
-                    _FeedDecoder();
+                    if (!_FeedDecoder()) break;
                 }
             }
-            while (out_decoder.available(false))
+            if (decoders[outDecoderIndex].available(false))
             {
                 // While the decoder has pointclouds available
                 // push them into the output queue, and if there
                 // are more input packets available feed the decoder
                 // again.
-                cwipc.pointcloud pc = out_decoder.get();
+                cwipc.pointcloud pc = decoders[outDecoderIndex].get();
                 outDecoderIndex = (outDecoderIndex + 1) % nParallel;
                 Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeed).TotalMilliseconds;
                 mostRecentFeed = System.DateTime.MinValue;
