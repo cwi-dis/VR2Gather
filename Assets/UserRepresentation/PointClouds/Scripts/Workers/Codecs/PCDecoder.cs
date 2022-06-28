@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
         bool debugColorize = true;
-        System.DateTime mostRecentFeed = System.DateTime.MinValue;
+        System.DateTime[] mostRecentFeeds;
 
         public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
@@ -39,6 +39,7 @@ namespace VRT.UserRepresentation.PointCloud
                 inQueue = _inQueue;
                 outQueue = _outQueue;
                 decoders = new cwipc.decoder[nParallel];
+                mostRecentFeeds = new System.DateTime[nParallel];
                 for(int i=0; i<nParallel; i++)
                 {
                     var d = cwipc.new_decoder();
@@ -47,6 +48,7 @@ namespace VRT.UserRepresentation.PointCloud
                         throw new System.Exception("PCSUBReader: cwipc_new_decoder creation failed"); // Should not happen, should throw exception
                     }
                     decoders[i] = d;
+                    mostRecentFeeds[i] = System.DateTime.MinValue;
                 }
                 Start();
                 Debug.Log($"{Name()} Inited");
@@ -90,7 +92,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool _FeedDecoder() {
             NativeMemoryChunk mc = (NativeMemoryChunk)inQueue.TryDequeue(0);
             if (mc == null) return false;
-            mostRecentFeed = System.DateTime.Now;
+            mostRecentFeeds[inDecoderIndex] = System.DateTime.Now;
             var decoder = decoders[inDecoderIndex];
             inDecoderIndex = (inDecoderIndex + 1) % nParallel;
             if (nParallel > 1)
@@ -119,7 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // Feed data into the decoder, unless it already
                 // has a pointcloud available, or a previously fed buffer hasn't been decoded yet.
                 if (decoders == null) return;
-                while (mostRecentFeed == System.DateTime.MinValue || nParallel > 1)
+                while (mostRecentFeeds[inDecoderIndex] == System.DateTime.MinValue)
                 {
                     if (!_FeedDecoder()) break;
                 }
@@ -131,9 +133,9 @@ namespace VRT.UserRepresentation.PointCloud
                 // are more input packets available feed the decoder
                 // again.
                 cwipc.pointcloud pc = decoders[outDecoderIndex].get();
+                Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeeds[outDecoderIndex]).TotalMilliseconds;
+                mostRecentFeeds[outDecoderIndex] = System.DateTime.MinValue;
                 outDecoderIndex = (outDecoderIndex + 1) % nParallel;
-                Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeed).TotalMilliseconds;
-                mostRecentFeed = System.DateTime.MinValue;
                 if (pc == null)
                 {
                     throw new System.Exception($"{Name()}: cwipc_decoder: available() true, but did not return a pointcloud");
