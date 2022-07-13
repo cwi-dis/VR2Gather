@@ -148,3 +148,13 @@ The following packages were updated:
   com.unity.ide.vscode from version 1.2.4 to 1.2.5
   com.unity.test-framework from version 1.1.30 to 1.1.31
   com.unity.xr.legacyinputhelpers from version 2.1.8 to 2.1.9
+
+=== Wed Jul 13 16:09:51 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.14.13 to 1.14.18
+  com.unity.ide.visualstudio from version 2.0.14 to 2.0.15
+  com.unity.mathematics from version 1.2.5 to 1.2.6
