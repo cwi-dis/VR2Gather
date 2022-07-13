@@ -18,7 +18,6 @@ namespace VRT.Pilots.Common
             //transform.localScale = new Vector3(scale.x / 2, scale.y / 2, scale.z / 2);
         }
 
-        bool first = true;
         // Update is called once per frame
         void LateUpdate()
         {
@@ -31,8 +30,6 @@ namespace VRT.Pilots.Common
             transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
             transform.position = Vector3.Lerp(transform.position, position, velocity);
             //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
-            first = false;
-
         }
     }
 }

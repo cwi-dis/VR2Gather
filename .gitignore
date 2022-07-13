@@ -11,6 +11,11 @@ cameraconfig.xml
 Exe/
 Build/
 Builds/
+built/
 dll/
 built-VRTogether
 buildlog.txt
+bin2dash.so
+signals-unity-bridge.so
+bin2dash.dylib
+signals-unity-bridge.dylib

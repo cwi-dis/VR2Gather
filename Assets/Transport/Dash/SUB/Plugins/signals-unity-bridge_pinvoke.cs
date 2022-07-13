@@ -237,11 +237,8 @@ namespace VRT.Transport.Dash
         // This could be either here or in bin2dash_pinvoke. 
         public static void SetMSPaths(string module_base = "signals-unity-bridge")
         {
-#if !UNITY_EDITOR
-        return;
-#endif
 
-            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.OSXEditor)
+            if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor && UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsPlayer)
             {
 
                 // xxxjack should we use another way to find the path?
@@ -252,9 +249,27 @@ namespace VRT.Transport.Dash
                 }
                 if (path == "" || path == null)
                 {
-                    UnityEngine.Debug.LogError($"Environment variable SIGNALS_SMD_PATH must be set on MacOS");
+                    UnityEngine.Debug.LogWarning($"Environment variable SIGNALS_SMD_PATH not set, Dash modules may fail to load");
                 }
                 Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
+#if DOES_NOT_WORK
+                // Sigh: since MacOS 12 ~/lib is no longer on the default search path. So we have to add
+                // symlinks in our toplevel project directory.
+                // That is because setting DYLD_LIBRARY_PATH here doesn't work (only read by dyld upon process start)
+                // And setting it globally also doesn't work (SIP clears it when a child process is executed)
+                // But unfortunately creating symlinks doesn't work either...
+
+                string top_dir_path = Path.GetDirectoryName(Application.dataPath);
+                string orig_dll_path = Path.Combine(path, "pcl2dash.so");
+                string wanted_dll_path = Path.Combine(top_dir_path, "pcl2dash.so");
+                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
+                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
+
+                orig_dll_path = Path.Combine(path, "signals-unity-bridge.so");
+                wanted_dll_path = Path.Combine(top_dir_path, "signals-unity-bridge.so");
+                if (File.Exists(wanted_dll_path)) File.Delete(wanted_dll_path);
+                File.CreateSymbolicLink(orig_dll_path, wanted_dll_path);
+#endif
                 return;
             }
             if (lastMSpathInstalled == module_base) return;
@@ -277,7 +292,7 @@ namespace VRT.Transport.Dash
             string dirName = Path.GetDirectoryName(modPath.ToString());
             dirName = dirName.Replace("\\", "/");
             dirName += "/";
-            //UnityEngine.Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={dirName}");
+            UnityEngine.Debug.Log($"sub.SetMSPaths: xxxjack: SIGNALS_SMD_PATH={dirName}");
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
             lastMSpathInstalled = module_base;
         }

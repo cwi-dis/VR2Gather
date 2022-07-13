@@ -13,7 +13,7 @@ namespace VRT.UserRepresentation.Voice
         int readPosition;
 
 
-        public EmptyPreparer(WorkerType _type = WorkerType.Run) : base(_type)
+        public EmptyPreparer() : base(null)
         {
             Start();
         }

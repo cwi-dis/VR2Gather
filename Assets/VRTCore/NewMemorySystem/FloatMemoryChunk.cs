@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace VRT.Core
 {
@@ -6,17 +7,21 @@ namespace VRT.Core
     {
         public int elements { get; private set; }
         public float[] buffer;
+        GCHandle handle;
 
         public FloatMemoryChunk(int _elements) : base()
         {
             buffer = new float[_elements];
-            _pointer = System.Runtime.InteropServices.Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
+            handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+            _pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
             elements = _elements;
             length = _elements * 4;
         }
 
         protected override void onfree()
         {
+            _pointer = IntPtr.Zero;
+            handle.Free();
             buffer = null;
         }
     }

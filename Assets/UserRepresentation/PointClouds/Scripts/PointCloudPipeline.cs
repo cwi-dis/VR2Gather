@@ -18,8 +18,8 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
-        const int pcDecoderQueueSize = 10;  // Was: 2.
-        const int pcPreparerQueueSize = 50; // Was: 2.
+        static int pcDecoderQueueSize = 10;  // Was: 2.
+        static int pcPreparerQueueSize = 15; // Was: 2.
         protected BaseWorker reader;
         BaseWorker encoder;
         List<BaseWorker> decoders = new List<BaseWorker>();
@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.PointCloud
             return dst.AddComponent<PointCloudPipeline>();
         }
 
-        public string Name()
+        public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
         }
@@ -65,6 +65,12 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
+            // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
+            // tile (because it would mean that the other tiles with the same timestamp become useless)
+            if (Config.Instance.PCs.decoderQueueSizeOverride > 0) pcDecoderQueueSize = Config.Instance.PCs.decoderQueueSizeOverride;
+            // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
+            // largest conceivable latency needed by the Synchronizer.
+            if (Config.Instance.PCs.preparerQueueSizeOverride > 0) pcPreparerQueueSize = Config.Instance.PCs.preparerQueueSizeOverride;
             user = (User)_user;
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -178,6 +184,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // allocate and initialize per-stream outgoing stream datastructures
                         //
+                        string pointcloudCodec = Config.Instance.PCs.Codec;
                         var Encoders = PCSelfConfig.Encoders;
                         int minTileNum = 0;
                         int nTileToTransmit = 1;
@@ -215,6 +222,15 @@ namespace VRT.UserRepresentation.PointCloud
                         dashStreamDescriptions = new B2DWriter.DashStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
+                        // For the TCP connections we want legth 1 leaky queues. For
+                        // DASH we want length 2 non-leaky queues.
+                        bool e2tQueueDrop = false;
+                        int e2tQueueSize = 2;
+                        if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                        {
+                            e2tQueueDrop = true;
+                            e2tQueueSize = 1;
+                        }
                         for (int it = 0; it < nTileToTransmit; it++)
                         {
                             tilingConfig.tiles[it].orientation = tileNormals[it];
@@ -222,7 +238,7 @@ namespace VRT.UserRepresentation.PointCloud
                             for (int iq = 0; iq < nQuality; iq++)
                             {
                                 int i = it * nQuality + iq;
-                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}");
+                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
                                 int octreeBits = Encoders[iq].octreeBits;
                                 encoderStreamDescriptions[i] = new PCEncoder.EncoderStreamDescription
                                 {
@@ -246,7 +262,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // Create encoders for transmission
                         //
-                        if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                        if (pointcloudCodec == "cwi1")
                         {
                             try
                             {
@@ -258,7 +274,7 @@ namespace VRT.UserRepresentation.PointCloud
                                 throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                             }
                         }
-                        else
+                        else if (pointcloudCodec == "cwi0")
                         {
                             try
                             {
@@ -270,6 +286,10 @@ namespace VRT.UserRepresentation.PointCloud
                                 throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
                             }
 
+                        } else
+                        {
+                            Debug.Log($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
+                            throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
                         }
                         //
                         // Create bin2dash writer for PC transmission
@@ -281,16 +301,16 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", "cwi1", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(user.userData.userPCurl, "cwi1", dashStreamDescriptions);
+                                writer = new TCPWriter(user.userData.userPCurl, pointcloudCodec, dashStreamDescriptions);
                             }
                             else
                             {
-                                writer = new SocketIOWriter(user, "pointcloud", dashStreamDescriptions);
+                                writer = new SocketIOWriter(user, "pointcloud", pointcloudCodec, dashStreamDescriptions);
                             }
                         }
                         catch (System.EntryPointNotFoundException e)
@@ -298,7 +318,7 @@ namespace VRT.UserRepresentation.PointCloud
                             Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
-                        BaseStats.Output(Name(), $"writer={writer.Name()}");
+                        BaseStats.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
                     }
                     break;
                 case "prerecorded":
@@ -371,6 +391,8 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
                     break;
             }
+#if XXXJACK_REMOVED
+            // Jack thinks this should go, and we use the transform supplied in the PFB_Player (or whereever)
             //
             // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
             // in the scene.
@@ -378,12 +400,14 @@ namespace VRT.UserRepresentation.PointCloud
             //Position in the center
             transform.localPosition = new Vector3(0, 0, 0);
             transform.localRotation = Quaternion.Euler(0, 0, 0);
-            transform.localScale = cfg.Render.scale;
+#endif
             return this;
         }
 
-        private void _CreatePointcloudReader(int[] tileNumbers, int initialDelay)
+        private void _CreatePointcloudReader(int[] tileNumbers)
         {
+            string pointcloudCodec = Config.Instance.PCs.Codec;
+
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
             {
@@ -409,15 +433,19 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                if (Config.Instance.protocolType != Config.ProtocolType.TCP)
+                BaseWorker decoder = null;
+                if (pointcloudCodec == "cwi1")
                 {
-                    BaseWorker decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoder = new PCDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 }
-                else
+                else if (pointcloudCodec == "cwi0")
                 {
-                    BaseWorker decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoder = new NULLDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
+                } else
+                {
+                    Debug.LogError($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
                 }
                 //
                 // And collect the relevant information for the Dash receiver
@@ -427,27 +455,29 @@ namespace VRT.UserRepresentation.PointCloud
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]
                 };
+                BaseStats.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
-                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", initialDelay, tilesToReceive);
+                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
-                reader = new PCTCPReader(user.userData.userPCurl, tilesToReceive);
+                reader = new PCTCPReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
             }
             else
             {
-                reader = new SocketIOReader(user, "pointcloud", tilesToReceive);
+                reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
-            
-            BaseStats.Output(Name(), $"reader={reader.Name()}");
+            string synchronizerName = "none";
+            if (synchronizer != null && synchronizer.enabled)
+            {
+                synchronizerName = synchronizer.Name();
+            }
+            BaseStats.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
         }
 
         public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
-            //
-            // Hack-ish code to determine whether we uses meshes or buffers to render (depends on graphic card).
-            // We 
             Config._PCs PCs = Config.Instance.PCs;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
@@ -471,6 +501,7 @@ namespace VRT.UserRepresentation.PointCloud
         System.DateTime lastUpdateTime;
         private void Update()
         {
+#pragma warning disable CS0162
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -508,6 +539,26 @@ namespace VRT.UserRepresentation.PointCloud
             BaseStats.Output(Name(), $"finished=1");
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
             BaseMemoryChunkReferences.ShowTotalRefCount();
+        }
+        public void SetCrop(float[] _bbox)
+        {
+            if (!isSource)
+            {
+                Debug.LogError($"Programmer error: {Name()}: SetCrop called for pipeline that is not a source");
+                return;
+            }
+            PCReader pcReader = reader as PCReader;
+            if (pcReader == null)
+            {
+                Debug.Log($"{Name()}: SetCrop: not a PCReader");
+                return;
+            }
+            pcReader.SetCrop(_bbox);
+        }
+
+        public void ClearCrop()
+        {
+            SetCrop(null);
         }
 
         public TilingConfig GetTilingConfig()
@@ -554,7 +605,7 @@ namespace VRT.UserRepresentation.PointCloud
                 curTileNumber++;
                 curTileIndex++;
             }
-            _CreatePointcloudReader(tileNumbers, 0);
+            _CreatePointcloudReader(tileNumbers);
             _InitTileSelector();
         }
 
@@ -612,11 +663,22 @@ namespace VRT.UserRepresentation.PointCloud
             PCSubReader _subreader = reader as PCSubReader;
             if (_subreader != null)
             {
-                for(int tileIndex=0; tileIndex < decoders.Count; tileIndex++)
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
                 {
                     int qualIndex = tileQualities[tileIndex];
                     Debug.Log($"{Name()}: xxxjack +subreader.setTileQualityIndex({tileIndex}, {qualIndex})");
                     _subreader.setTileQualityIndex(tileIndex, qualIndex);
+                }
+                return;
+            }
+            PCTCPReader _tcpreader = reader as PCTCPReader;
+            if (_tcpreader != null)
+            {
+                for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
+                {
+                    int qualIndex = tileQualities[tileIndex];
+                    Debug.Log($"{Name()}: xxxjack +tcpreader.setTileQualityIndex({tileIndex}, {qualIndex})");
+                    _tcpreader.setTileQualityIndex(tileIndex, qualIndex);
                 }
                 return;
             }
@@ -645,7 +707,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 rv.audio = voiceSender.GetSyncInfo();
             }
-            Debug.Log($"{Name()}: xxxjack GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
+            Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
         }
 
@@ -657,6 +719,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             if (reader == null) return; // Too early
+            Debug.Log($"{Name()}: SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
             BaseReader pcReader = reader as BaseReader;
             if (pcReader != null)
             {

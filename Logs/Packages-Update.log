@@ -120,3 +120,41 @@ The following packages were updated:
   com.unity.textmeshpro from version 2.0.1 to 2.1.4
   com.unity.timeline from version 1.2.6 to 1.2.18
   com.unity.xr.legacyinputhelpers from version 2.1.4 to 2.1.8
+
+=== Fri Feb  4 15:28:39 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.10.2 to 1.14.9
+  com.unity.mathematics from version 1.2.4 to 1.2.5
+
+=== Wed Feb 23 11:13:37 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.14.9 to 1.14.12
+
+=== Tue May  3 17:11:46 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.14.12 to 1.14.13
+  com.unity.ide.vscode from version 1.2.4 to 1.2.5
+  com.unity.test-framework from version 1.1.30 to 1.1.31
+  com.unity.xr.legacyinputhelpers from version 2.1.8 to 2.1.9
+
+=== Wed Jul 13 16:09:51 2022
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.14.13 to 1.14.18
+  com.unity.ide.visualstudio from version 2.0.14 to 2.0.15
+  com.unity.mathematics from version 1.2.5 to 1.2.6

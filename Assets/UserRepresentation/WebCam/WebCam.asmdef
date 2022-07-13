@@ -4,6 +4,7 @@
         "VRTCore",
         "Dash",
         "SocketIO",
+        "TCP",
         "Orchestrator",
         "Voice",
         "VRTVideo"

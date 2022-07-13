@@ -7,12 +7,12 @@ namespace VRT.Core
     [Serializable]
     public class Config
     {
-        public enum ProtocolType
+        [Flags] public enum ProtocolType
         {
-            None,
-            Dash,
-            SocketIO,
-            TCP
+            None = 0,
+            SocketIO = 1,
+            Dash = 2,
+            TCP = 3,
         };
 
         public enum UserRepresentation
@@ -35,7 +35,7 @@ namespace VRT.Core
         public float memoryDamping = 1.3f;
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
-        public string videoCodec = "h264";
+        public readonly int audioSampleRate = 48000;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
         public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;
@@ -43,6 +43,7 @@ namespace VRT.Core
         public string statsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
+        public string ffmpegDLLDir = "";
 
         [Serializable]
         public class _VR
@@ -52,6 +53,14 @@ namespace VRT.Core
             public bool useLookingGlass = false;
         }
         public _VR VR;
+
+        [Serializable]
+        public class _ScreenshotTool
+        {
+            public bool takeScreenshot = false;
+            public string screenshotTargetDirectory = "";
+        }
+        public _ScreenshotTool ScreenshotTool;
 
         [Serializable]
         public class _AutoStart
@@ -65,10 +74,15 @@ namespace VRT.Core
             public string sessionName = "";
             public int sessionScenario = -1;
             public int sessionTransportProtocol = -1;
+            public bool sessionUncompressed = false;
+            public bool sessionUncompressedAudio = false;
             public bool autoCreate = false;
             public bool autoJoin = true;
+            public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
+            public float autoLeaveAfter = 0f;
+            public bool autoStopAfterLeave = false;
         };
         public _AutoStart AutoStart;
 
@@ -92,11 +106,59 @@ namespace VRT.Core
         [Serializable]
         public class _PCs
         {
+            public string Codec = "cwi1";
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
+            public float timeoutBeforeGhosting = 5.0f;
+            public int decoderQueueSizeOverride = 0;
+            public int preparerQueueSizeOverride = 0;
+            public int encoderParallelism = 0;
+            public int decoderParallelism = 0;
+
         };
         public _PCs PCs;
+
+        [Serializable]
+        public class _Voice
+        {
+            public string Codec = "VR2A";
+            public int audioFps = 50;
+            public float maxPlayoutLatency = 0.3f;
+            public float maxPlayoutAhead = 0.066f;
+            public bool ignoreSynchronizer = false;
+        }
+        public _Voice Voice;
+
+        [Serializable]
+        public class _Video
+        {
+            public string Codec = "h264";
+        }
+        public _Video Video;
+
+        [Serializable]
+        public class _Synchronizer
+        {
+            [Tooltip("Enable to get lots of log messages on Synchronizer use")]
+            public bool debugSynchronizer = false;
+            [Tooltip("Enable to get log messages on jitter buffer adaptations")]
+            public bool debugJitterBuffer = false;
+
+            [Tooltip("Minimum preferred playout latency in milliseconds")]
+            public int minLatency = 0;
+            [Tooltip("Maximum preferred playout latency, reset to minLatency if we reach this latency")]
+            public int maxLatency = 0;
+
+            [Tooltip("Limit by how much we decrease preferred latency")]
+            public int latencyMaxDecrease = 1;
+            [Tooltip("Limit by how much we increase preferred latency")]
+            public int latencyMaxIncrease = 33;
+
+            [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
+            public bool acceptDesyncOnDataUnavailable = false;
+        }
+        public _Synchronizer Synchronizer;
 
         [Serializable]
         public class _User
@@ -173,15 +235,6 @@ namespace VRT.Core
              }
             public _PCSelfConfig PCSelfConfig;
 
-            [Serializable]
-            public class _Render
-            {
-                public float pointSize = 0.008f;
-                public Vector3 position;
-                public Vector3 rotation;
-                public Vector3 scale = Vector3.one;
-            }
-            public _Render Render;
         };
         public _User LocalUser;
         public _User RemoteUser;
@@ -209,8 +262,25 @@ namespace VRT.Core
             //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
         }
 
+        static string _ConfigFilenameFromCommandLineArgs()
+        {
+            string[] arguments = Environment.GetCommandLineArgs();
+            for (int i=0; i<arguments.Length-1; i++)
+            {
+                if (arguments[i] == "-vrt-config") return arguments[i + 1];
+            }
+            return null;
+        }
+
         public static string ConfigFilename(string filename="config.json")
         {
+            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+            if (clConfigFile != null)
+            {
+                clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                return clConfigFile;
+            }
+
             string dataPath;
             if (Application.isEditor)
             {

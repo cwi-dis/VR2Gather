@@ -7,11 +7,12 @@ namespace VRT.Core
     {
         protected string name;
         private System.DateTime statsLastTime;
+        private static System.DateTime globalStatsLastTime;
         private static bool initialized = false;
         private static double defaultStatsInterval = 10;
         private double statsInterval = 10;
         private static System.IO.StreamWriter statsStream;
-
+        private bool usesDefaultInterval;
         private static void Init()
         {
             if (initialized) return;
@@ -21,6 +22,7 @@ namespace VRT.Core
                 string sfn = Config.Instance.statsOutputFile;
                 string host = Environment.MachineName;
                 DateTime now = DateTime.Now;
+                globalStatsLastTime = now + System.TimeSpan.FromSeconds(defaultStatsInterval);
                 string ts = now.ToString("yyyyMMdd-HHmm");
                 sfn = sfn.Replace("{host}", host);
                 sfn = sfn.Replace("{ts}", ts);
@@ -29,7 +31,7 @@ namespace VRT.Core
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
                 //
-                string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=stats, starting=1, statsFilename={statsFilename}";
+                string statsLine = $"stats: ts={System.DateTime.Now.TimeOfDay.TotalSeconds:F3}, component=stats, starting=1, wallClock={ts}, statsFilename={statsFilename}";
                 statsStream.WriteLine(statsLine);
                 statsStream.Flush();
                 Debug.Log(statsLine);
@@ -48,26 +50,24 @@ namespace VRT.Core
         {
             if (statsStream != null) statsStream.Flush();
         }
-        protected BaseStats(string _name, double interval=0)
+        protected BaseStats(string _name, double interval=-1)
         {
             if (!initialized) Init();
             name = _name;
-            statsInterval = interval > 0 ? interval : defaultStatsInterval;
-            statsLastTime = System.DateTime.Now;
+            usesDefaultInterval = interval < 0;
+            statsInterval = usesDefaultInterval ? defaultStatsInterval : interval;
+            statsLastTime = globalStatsLastTime;
         }
 
         ~BaseStats()
         {
             DeInit();
         }
-        protected bool ShouldClear()
-        {
-            return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval);
-        }
-
+  
         protected void Clear()
         {
             statsLastTime = System.DateTime.Now;
+            globalStatsLastTime = statsLastTime;
         }
 
         protected double Interval()

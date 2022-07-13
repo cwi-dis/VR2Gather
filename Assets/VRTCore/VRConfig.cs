@@ -130,6 +130,10 @@ namespace VRT.Core
 
         public bool useHMD()
         {
+            if (!initialized)
+            {
+                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+            }
             bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
             return rv;
         }

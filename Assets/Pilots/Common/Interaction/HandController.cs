@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.XR;
+﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
@@ -26,54 +24,41 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
-		[Tooltip("When this key is pressed we are in teleporting mode, using a ray from this hand")]
-		public KeyCode teleportModeKey = KeyCode.None;
-
-		[Tooltip("When this key is pressed while in teleporting mode we teleport home")]
-		public KeyCode teleportHomeKey = KeyCode.None;
-
-		[Tooltip("Teleporter to use")]
-		public VRT.Teleporter.BaseTeleporter teleporter;
-
-		[Tooltip("Arc length for curving teleporters")]
-		public float teleportStrength = 10.0f;
-
-		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
-		public string pointingModeAxis = "";
-		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
-		public KeyCode pointingModeKey = KeyCode.None;
-		[Tooltip("Invert meaning of PointingModeAxis or Key")]
-		public bool pointingModeAxisInvert = false;
-
-		[Tooltip("When this axis is active (or inactive depending on invert) we are in grabbing mode")]
-		public string grabbingModeAxis = "";
-		[Tooltip("When this Key is active (or inactive depending on invert) we are in grabbing mode")]
-		public KeyCode grabbingModeKey = KeyCode.None;
-		[Tooltip("Invert meaning of grabbingModeAxis")]
-		public bool grabbingModeAxisInvert = false;
-		
-		public XRNode XRNode;
 		public State HandState;
 		public Handedness HandHandedness;
 
-		public GameObject GrabCollider;
-		public GameObject TouchCollider;
+		public enum HandInteractionEventType
+		{
+			Grab = 0,
+			Release = 1
+		}
+
+		public class HandGrabEvent : BaseMessage
+		{
+			public string GrabbableObjectId;
+			public string UserId;
+			public Handedness Handedness;
+			public HandInteractionEventType EventType;
+		}
+
+		public Grabbable HeldGrabbable;
+
+		private bool _CanGrabAgain = true;
 
 		private Animator _Animator;
+
 		private NetworkPlayer _Player;
-		
+
 		public void Awake()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
+			_Player = GetComponentInParent<NetworkPlayer>();
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
 		}
 
 		void Start()
 		{
 			_Animator = GetComponentInChildren<Animator>();
 			_Player = GetComponentInParent<NetworkPlayer>();
-
-			GrabCollider.SetActive(false);
-			TouchCollider.SetActive(false);
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
 		}
@@ -83,90 +68,63 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
-		void Update()
+
+		private void OnTriggerStay(Collider other)
 		{
-			if (_Player.IsLocalPlayer)
+			if (HandState == State.Grabbing && _CanGrabAgain && HeldGrabbable == null)
 			{
-				//Prevent floor clipping when input tracking provides glitched results
-				//This could on occasion cause released grabbables to go throught he floor
-				if (transform.position.y <= 0.05f)
+				var grabbable = other.GetComponent<Grabbable>();
+				if (grabbable == null)
 				{
-					transform.position = new Vector3(transform.position.x, 0.05f, transform.position.z);
+					return;
 				}
 
-				//
-				// See whether we are pointing, grabbing, teleporting or idle
-				//
+				HandGrabEvent handGrabEvent = new HandGrabEvent()
+				{
+					GrabbableObjectId = grabbable.NetworkId,
+					UserId = _Player.UserId,
+					Handedness = HandHandedness,
+					EventType = HandInteractionEventType.Grab,
+				};
 
-				bool pointingModeAxisIsPressed = false;
-				if (pointingModeKey != KeyCode.None)
-				{
-					pointingModeAxisIsPressed = Input.GetKey(pointingModeKey);
-				}
-				if (pointingModeAxis != "")
-				{
-					pointingModeAxisIsPressed = Input.GetAxis(pointingModeAxis) >= 0.5f;
-				}
-				if (pointingModeAxisInvert) pointingModeAxisIsPressed = !pointingModeAxisIsPressed;
+				ExecuteHandGrabEvent(handGrabEvent);
 
-				bool grabbingModeAxisIsPressed = false;
-				if (pointingModeKey != KeyCode.None)
-				{
-					grabbingModeAxisIsPressed = Input.GetKey(grabbingModeKey);
-				}
-				if (grabbingModeAxis != "")
-				{
-					grabbingModeAxisIsPressed = Input.GetAxis(grabbingModeAxis) >= 0.5f;
-				}
-				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
+				_CanGrabAgain = false;
+			}
+		}
 
-				if (grabbingModeAxisInvert) grabbingModeAxisIsPressed = !grabbingModeAxisIsPressed;
-				if (teleportModeKey != KeyCode.None && teleporter != null)
+		private void Update()
+		{
+			if (HeldGrabbable != null && HandState != State.Grabbing)
+			{
+				HandGrabEvent handGrabEvent = new HandGrabEvent()
 				{
-					bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
+					GrabbableObjectId = HeldGrabbable.NetworkId,
+					UserId = _Player.UserId,
+					Handedness = HandHandedness,
+					EventType = HandInteractionEventType.Release
+				};
 
-					if (teleportModeKeyIsPressed)
-					{
-						teleporter.SetActive(true);
-						var touchTransform = TouchCollider.transform;
-						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
-						// See if user wants to go to the home position
-						if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
-                        {
-							teleporter.TeleportHome();
-                        }
-					}
-					else if (teleporter.teleporterActive)
-					{
-						//
-						// Teleport key was released. See if we should teleport.
-						//
-						if (teleporter.canTeleport())
-						{
-							teleporter.Teleport();
-						}
-						teleporter.SetActive(false);
-					}
-				}
+				ExecuteHandGrabEvent(handGrabEvent);
+			}
 
-				if (grabbingModeAxisIsPressed)
-				{
-					SetHandState(State.Grabbing);
-					GrabCollider.SetActive(true);
-					TouchCollider.SetActive(false);
-				}
-				else if (pointingModeAxisIsPressed)
-				{
-					SetHandState(State.Pointing);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(true);
-				}
-				else
-				{
-					SetHandState(State.Idle);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(false);
-				}
+			if (!_CanGrabAgain && HandState != State.Grabbing)
+			{
+				_CanGrabAgain = true;
+			}
+		}
+
+		private void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
+		{
+			//If we're not master, inform the master
+			//And then execute the event locally already instead of waiting for it to return
+			if (!OrchestratorController.Instance.UserIsMaster)
+			{
+				OrchestratorController.Instance.SendTypeEventToMaster(handGrabEvent);
+			}
+			else
+			{
+				GrabbableObjectManager.Instance.HandleHandGrabEvent(handGrabEvent);
 			}
 		}
 
@@ -190,7 +148,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		void SetHandState(State handState)
+		public void SetHandState(State handState)
 		{
 			if (HandState != handState)
 			{
