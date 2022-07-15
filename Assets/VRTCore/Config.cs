@@ -20,13 +20,6 @@ namespace VRT.Core
             PC
         };
 
-        public enum Presenter
-        {
-            None,
-            Local,
-            Live
-        }
-
         public string orchestratorURL = "";
         public string orchestratorLogURL = "";
         public bool openLogOnExit = true;
@@ -36,7 +29,6 @@ namespace VRT.Core
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public readonly int audioSampleRate = 48000;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
-        public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
