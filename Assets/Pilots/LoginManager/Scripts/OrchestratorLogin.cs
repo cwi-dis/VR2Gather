@@ -106,9 +106,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private InputField sessionNameIF = null;
     [SerializeField] private InputField sessionDescriptionIF = null;
     [SerializeField] private Dropdown scenarioIdDrop = null;
-    [SerializeField] private GameObject presenterPanel = null;
-    [SerializeField] private Toggle presenterToggle = null;
-    [SerializeField] private Toggle liveToggle = null;
     [SerializeField] private Toggle socketProtocolToggle = null;
     [SerializeField] private Toggle dashProtocolToggle = null;
     [SerializeField] private Toggle tcpProtocolToggle = null;
@@ -565,9 +562,7 @@ public class OrchestratorLogin : MonoBehaviour {
         tcpProtocolToggle.isOn = false;
         uncompressedPointcloudsToggle.isOn = Config.Instance.PCs.Codec == "cwi0";
         uncompressedAudioToggle.isOn = Config.Instance.Voice.Codec == "VR2a";
-        presenterToggle.isOn = false;
-        liveToggle.isOn = false;
-
+   
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to online
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
@@ -598,7 +593,6 @@ public class OrchestratorLogin : MonoBehaviour {
         TabShortcut();
         if (state == State.Create) {
             AudioToggle();
-            PresenterToggles();
         }
         // Refresh Sessions
         if (state == State.Join) {
@@ -1068,80 +1062,6 @@ public class OrchestratorLogin : MonoBehaviour {
         SceneManager.LoadScene("SelfCalibration");
     }
 
-    public void AutoFillButtons(int user) {
-        switch (user) {
-            case 0:
-                userNameLoginIF.text = "Marc@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 1:
-                userNameLoginIF.text = "Luca@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 2:
-                userNameLoginIF.text = "Einar@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 3:
-                userNameLoginIF.text = "Isaac@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 4:
-                userNameLoginIF.text = "cwibig";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 5:
-                userNameLoginIF.text = "cwismall";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 6:
-                userNameLoginIF.text = "cwitiny";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 7:
-                userNameLoginIF.text = "Jack@CWI";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 8:
-                userNameLoginIF.text = "Shishir@CWI";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 9:
-                userNameLoginIF.text = "Fernando@THEMO";
-                userPasswordLoginIF.text = "THEMO2020";
-                break;
-            case 10:
-                userNameLoginIF.text = "Romain@MS";
-                userPasswordLoginIF.text = "MS2020";
-                break;
-            case 11:
-                userNameLoginIF.text = "Argyris@CERTH";
-                userPasswordLoginIF.text = "CERTH2020";
-                break;
-            case 12:
-                userNameLoginIF.text = "Spiros@CERTH";
-                userPasswordLoginIF.text = "CERTH2020";
-                break;
-            case 13:
-                userNameLoginIF.text = "Vincent@VO";
-                userPasswordLoginIF.text = "VO2020";
-                break;
-            case 14:
-                userNameLoginIF.text = "Patrice@VO";
-                userPasswordLoginIF.text = "VO2020";
-                break;
-			case 15:
-				userNameLoginIF.text = "Bart@ARTANIM";
-				userPasswordLoginIF.text = "ARTANIM2020";
-				break;
-			case 16:
-                userNameLoginIF.text = "Name";
-                userPasswordLoginIF.text = "Lastname";
-                break;
-            default:
-                break;
-        }
-    }
 
 #endregion
 
@@ -1210,31 +1130,7 @@ public class OrchestratorLogin : MonoBehaviour {
         kindAudio = (int)Config.Instance.protocolType;
     }
 
-    private void PresenterToggles() {
-        if (OrchestratorController.Instance.AvailableScenarios?[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            presenterPanel.SetActive(true);
-            // Check if presenter is active to show live option
-            if (presenterToggle.isOn) {
-                liveToggle.gameObject.SetActive(true);
-                if (liveToggle.isOn) {
-                    Config.Instance.presenter = Config.Presenter.Live;
-                    kindPresenter = 2;
-                }
-                else {
-                    Config.Instance.presenter = Config.Presenter.Local;
-                    kindPresenter = 1;
-                }
-            }
-            else {
-                liveToggle.gameObject.SetActive(false);
-                Config.Instance.presenter = Config.Presenter.None;
-                kindPresenter = 0;
-            }  
-        }
-        else {
-            presenterPanel.SetActive(false);
-        }
-    }      
+       
 
 #endregion
 
