@@ -3,11 +3,6 @@ using System.Collections.Generic;
 
 namespace VRT.Core
 {
-    public interface ITVMHookUp
-    {
-        void HookUp(bool _firstTVM, string _connectionURI, string _exchangeName);
-    }
-
     abstract public class BasePipeline : MonoBehaviour
     {
         protected bool isSource = false;
