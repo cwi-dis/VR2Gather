@@ -75,6 +75,7 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
+            if (paused) return;
             float pointSize = 0;
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;

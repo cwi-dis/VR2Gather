@@ -495,6 +495,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             BaseStats.Output(Name(), msg);
             renderers.Add(render);
+            if (paused) PausePlayback(true); // check if renderer should be paused
             render.SetPreparer(preparer);
             return preparerQueue;
         }

@@ -11,8 +11,8 @@ public class PilotRegistry
         // through Unity Editor File->Build Settings dialog.
         switch (pilotName)
         {
-            case "Cinema":
-                return "Pilot0";
+            case "Pilot 0":
+                return "Cinema";
             case "Pilot 1":
                 return "Pilot1";
             case "Pilot 2":
