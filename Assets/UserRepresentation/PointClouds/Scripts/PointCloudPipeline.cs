@@ -25,7 +25,9 @@ namespace VRT.UserRepresentation.PointCloud
         List<BaseWorker> decoders = new List<BaseWorker>();
         BaseWorker writer;
         List<BaseWorker> preparers = new List<BaseWorker>();
-        List<MonoBehaviour> renderers = new List<MonoBehaviour>();
+        [Tooltip("Debugging: current renderers")]
+        public List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
+        public bool paused = false;
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
@@ -559,6 +561,15 @@ namespace VRT.UserRepresentation.PointCloud
         public void ClearCrop()
         {
             SetCrop(null);
+        }
+
+        public void PausePlayback(bool _paused)
+        {
+            paused = _paused;
+            foreach (var r in renderers)
+            {
+                r.PausePlayback(paused);
+            }
         }
 
         public TilingConfig GetTilingConfig()

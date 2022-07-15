@@ -50,6 +50,19 @@ MonoBehaviour:
   inhibitKeys: 
   playerBody: {fileID: 1711943322272815071}
   avatarHead: {fileID: 1728085052174936810}
+--- !u!114 &1372650605032521260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1711943322272815008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c872e4fa51745e49a46ffe035a89acc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PointcloudGO: {fileID: 6131856614200068255}
 --- !u!1001 &5833414839023914803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -224,6 +237,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
+--- !u!1 &1711943322272815008 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5131421326051842195, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 5833414839023914803}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1711943322272815071 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5131421326051842284, guid: 21abad33e8196954b8f19e6b888a67a4,
@@ -269,6 +288,12 @@ Transform:
 --- !u!4 &364401564845182804 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6195526648355536999, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 5833414839023914803}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6131856614200068255 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 426937040433907628, guid: 21abad33e8196954b8f19e6b888a67a4,
     type: 3}
   m_PrefabInstance: {fileID: 5833414839023914803}
   m_PrefabAsset: {fileID: 0}

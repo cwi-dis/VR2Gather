@@ -11,7 +11,7 @@ public class PilotRegistry
         // through Unity Editor File->Build Settings dialog.
         switch (pilotName)
         {
-            case "Pilot 0":
+            case "Cinema":
                 return "Pilot0";
             case "Pilot 1":
                 return "Pilot1";
@@ -46,7 +46,7 @@ public class PilotRegistry
             case "Technical Playground":
                 return "TechnicalPlayground";
             case "Development":
-                return "Cinema"; //"TractionLobby";
+                return "TractionLobby";
             default:
                 throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
                 return null;
