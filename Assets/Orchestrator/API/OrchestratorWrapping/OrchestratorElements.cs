@@ -139,7 +139,7 @@ namespace VRT.Orchestrator.Wrapping
         public System.Int64 ntpTimeMs;
 
         public NtpClock() {}
-        public int Timestamp { get { return (int)(ntpTimeMs / 1000); } }
+        public double Timestamp { get { return (ntpTimeMs / 1000.0); } }
     }
 
     public class Scenario : OrchestratorElement

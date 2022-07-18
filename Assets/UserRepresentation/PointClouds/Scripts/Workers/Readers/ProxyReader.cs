@@ -34,7 +34,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: caught System.exception {e.Message}");
-                throw e;
+                throw;
             }
         }
 	}

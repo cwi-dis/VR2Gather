@@ -112,12 +112,15 @@ namespace VRT.Pilots.Common
 			bool firstTVM = true;
 
 			// First tell the tilingConfigDistributor what our user ID is.
-			var anyConfigDistributor = FindObjectOfType<BaseConfigDistributor>();
-			if (anyConfigDistributor == null)
+			var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+			if (configDistributors == null || configDistributors.Length == 0)
 			{
 				Debug.LogWarning("No BaseConfigDistributor found");
 			}
-			anyConfigDistributor?.Init(OrchestratorController.Instance.SelfUser.userId);
+			foreach(var cd in configDistributors) {
+				cd?.Init(OrchestratorController.Instance.SelfUser.userId);
+			}
+			
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -127,14 +130,15 @@ namespace VRT.Pilots.Common
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
+				playerManager.userRepresentationType = representationType;
 				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
 				{
-					SetUpPlayerManager(playerManager, user, anyConfigDistributor, true);
+					SetUpPlayerManager(playerManager, user, configDistributors, true);
 					firstTVM = false;
 				}
 				else
 				{
-					SetUpPlayerManager(playerManager, user, anyConfigDistributor);
+					SetUpPlayerManager(playerManager, user, configDistributors);
 				}
 
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
@@ -162,7 +166,7 @@ namespace VRT.Pilots.Common
 #if UNITY_EDITOR
 						if (representationType == UserRepresentationType.__CAMERAMAN__ && me.userId == user.userId) {
 							Debug.Log($"-----------------------> {player.name} representationType {representationType}");
-							playerManager.cam.GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+							playerManager.getCameraTransform().GetComponent<VRTCore.UnityRecorderController>().enabled = true;
 						}
 #endif
 						Voyeurs.Add(networkPlayer.UserId, networkPlayer);
@@ -181,22 +185,20 @@ namespace VRT.Pilots.Common
 		}
 
 		//Looks like this could very well be internal to the PlayerManager? 
-		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor tilingConfigDistributor, bool firstTVM = false)
+		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor[] configDistributors, bool firstTVM = false)
 		{
 
 			playerManager.orchestratorId = user.userId;
 			playerManager.userName.text = user.userName;
 
-			bool isLocalPlayer = false;
-			if (user.userId == OrchestratorController.Instance.SelfUser.userId)
-			{
-				isLocalPlayer = true;
-				playerManager.cam.gameObject.SetActive(true);
+			bool isLocalPlayer = user.userId == OrchestratorController.Instance.SelfUser.userId;
+			playerManager.setupInputOutput(isLocalPlayer);
+			Transform cameraTransform = null;
+			if (isLocalPlayer)
+            {
+				cameraTransform = playerManager.getCameraTransform();
 			}
-			else
-			{
-				playerManager.teleporter.SetActive(false);
-			}
+
 			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
@@ -215,31 +217,39 @@ namespace VRT.Pilots.Common
 						break;
 					case UserRepresentationType.__PCC_CERTH__:
 					case UserRepresentationType.__PCC_SYNTH__:
+					case UserRepresentationType.__PCC_PRERECORDED__:
 					case UserRepresentationType.__PCC_CWIK4A_:
 					case UserRepresentationType.__PCC_PROXY__:
 					case UserRepresentationType.__PCC_CWI_: // PC
 						playerManager.pc.SetActive(true);
-						if (isLocalPlayer)
+						if (cameraTransform)
 						{
-							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+							Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+							Debug.Log($"SessionPlayersManager: self-camera pos={pos}, rot={rot}");
+							playerManager.cam.gameObject.transform.parent.localPosition = pos;
+							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
 						}
 						userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
 						BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(playerManager.pc, user.userData.userRepresentationType);
 						pcPipeline?.Init(user, userCfg);
-						if (tilingConfigDistributor == null)
+						if (configDistributors == null || configDistributors.Length == 0)
                         {
 							Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
                         }
-						// Register for distribution of tiling configurations
-						tilingConfigDistributor?.RegisterPipeline(user.userId, pcPipeline);
+						// Register for distribution of tiling and sync configurations
+						foreach(var cd in configDistributors)
+                        {
+							cd?.RegisterPipeline(user.userId, pcPipeline);
+						}
+						
 						break;
 					case UserRepresentationType.__TVM__: // TVM
 														 // xxxjack we should *really* create a dummy TVMPipeline object for this...
-						if (isLocalPlayer)
+						if (cameraTransform)
 						{
-							playerManager.cam.gameObject.transform.parent.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-							playerManager.cam.gameObject.transform.parent.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
+							cameraTransform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
+							cameraTransform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
 						}
 						ITVMHookUp tvm = playerManager.tvm;
 						if (tvm != null)
@@ -256,7 +266,7 @@ namespace VRT.Pilots.Common
 				}
 
 				// Audio
-				playerManager.audio.SetActive(true);
+				playerManager.voice.SetActive(true);
 				try
 				{
 					LoadAudio(playerManager, user);
@@ -264,13 +274,19 @@ namespace VRT.Pilots.Common
 				catch (Exception e)
 				{
 					Debug.Log($"[SessionPlayersManager] Exception occured when trying to load audio for user {user.userName} - {user.userId}: " + e);
-					Debug.LogError($"Cannot recieve audio from participant {user.userName}");
+					Debug.LogError($"Cannot receive audio from participant {user.userName}");
+					throw;
 				}
 			}
 		}
 
 		public void LoadAudio(PlayerManager player, User user)
 		{
+			if (user.userData.microphoneName == "None")
+            {
+				Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");
+				return;
+            }
 			if (user.userId == OrchestratorController.Instance.SelfUser.userId)
 			{ // Sender
 				var AudioBin2Dash = Config.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
@@ -278,7 +294,7 @@ namespace VRT.Pilots.Common
 					throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
 				try
 				{
-					player.audio.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+					player.voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType); //Audio Pipeline
 				}
 				catch (EntryPointNotFoundException e)
 				{
@@ -291,7 +307,7 @@ namespace VRT.Pilots.Common
 				var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
 				if (AudioSUBConfig == null)
 					throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-				player.audio.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, AudioSUBConfig.initialDelay, Config.Instance.protocolType == Config.ProtocolType.Dash); //Audio Pipeline
+				player.voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
 			}
 		}
 
@@ -462,7 +478,13 @@ namespace VRT.Pilots.Common
 							new PlayerLocationChangeRequest { LocationNetworkId = locationNetworkId }
 							);
 					}
+				} else
+				{
+					Debug.Log($"[SessionsPlayersManager] RequestLocationChange destination {locationNetworkId} is occupied");
 				}
+			} else
+			{
+				Debug.Log($"[SessionPlayersManager] could not TryGetPlayerLocationFromNetworkId for {locationNetworkId}");
 			}
 		}
 

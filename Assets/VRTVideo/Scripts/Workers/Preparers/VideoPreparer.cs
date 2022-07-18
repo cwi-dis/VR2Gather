@@ -21,14 +21,12 @@ namespace VRT.Video
         VideoFilter RGBA2RGBFilter;
 
 
-        QueueThreadSafe inVideoQueue;
         QueueThreadSafe inAudioQueue;
 
         public int videFrameSize;
 
-        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(WorkerType.End)
+        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(_inVideoQueue)
         {
-            inVideoQueue = _inVideoQueue;
             inAudioQueue = _inAudioQueue;
 
             audioBufferSize = 24000 * 8;
@@ -59,13 +57,14 @@ namespace VRT.Video
             // Synchronize playout for the current frame with other preparers (if needed)
         }
 
-        public override void LatchFrame()
+        public override bool LatchFrame()
         {
+            bool didReadData = false;
             base.Update();
-            if (inVideoQueue != null && inVideoQueue._CanDequeue())
+            if (InQueue != null && InQueue._CanDequeue())
             {
-
-                NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue._Peek();
+                didReadData = true;
+                NativeMemoryChunk mc = (NativeMemoryChunk)InQueue._Peek();
                 int len = mc.length;
                 videFrameSize = len;
                 if (videoBufferSize == 0)
@@ -79,7 +78,7 @@ namespace VRT.Video
                 {
                     lock (this)
                     {
-                        mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
+                        mc = (NativeMemoryChunk)InQueue.Dequeue();
                         if (writeVideoPosition + len < videoBufferSize)
                         {
                             Marshal.Copy(mc.pointer, circularVideoBuffer, writeVideoPosition, len);
@@ -105,6 +104,7 @@ namespace VRT.Video
 
             if (inAudioQueue != null && inAudioQueue._CanDequeue())
             {
+                didReadData = true;
                 FloatMemoryChunk mc = (FloatMemoryChunk)inAudioQueue._Peek();
                 int len = mc.elements;
                 if (len < freeAudio)
@@ -127,6 +127,7 @@ namespace VRT.Video
                 }
 
             }
+            return didReadData;
         }
 
         public int availableAudio { get; private set; }

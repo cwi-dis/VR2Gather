@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using VRT.Core;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -188,10 +189,11 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
-            if (!(mySession is null)) {
+            if (mySession != null) {
                 Collect_SFU_Logs(mySession.sessionId);
                 VRT.Core.BaseStats.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
             }
+            _OptionalStopOnLeave();
         }
 
         #endregion
@@ -351,9 +353,13 @@ namespace VRT.Orchestrator.Wrapping
 
         #region NTP clock
 
+        long timeOfGetNTPTimeRequest = 0;
+
         public void GetNTPTime() {
             Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
             Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
         }
 
@@ -366,7 +372,11 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
             Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
-            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}");
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
+            long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
+            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}, uncertainty_interval_ms={uncertainty}");
+            if (OnGetNTPTimeEvent == null) Debug.LogWarning("OrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
@@ -409,7 +419,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-            VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+            VRT.Core.BaseStats.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
@@ -479,6 +489,7 @@ namespace VRT.Orchestrator.Wrapping
 
             // update the lists of session, anyway the result
             orchestratorWrapper.GetSessions();
+            _OptionalStopOnLeave();
         }
 
         public void JoinSession(string pSessionID) {
@@ -543,6 +554,19 @@ namespace VRT.Orchestrator.Wrapping
 
             // Set this at the end and for the session creator, when the session has been deleted.
             mySession = null;
+            _OptionalStopOnLeave();
+        }
+
+        void _OptionalStopOnLeave()
+        {
+            // If wanted: stop playing (in editor), or quit application
+            if (Config.Instance.AutoStart.autoStopAfterLeave)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            }
         }
 
         public void OnUserJoinedSession(string userID) {
@@ -816,6 +840,17 @@ namespace VRT.Orchestrator.Wrapping
 
         // Message from a user received spontaneously from the Orchestrator         
         public void OnUserMessageReceived(UserMessage userMessage) {
+            if (userMessage.message.Substring(0,6) == "START_")
+            {
+                // xxxjack this is gross. We have to print the stats line for "session started" , because
+                // in LoginController we don't know the session ID.
+                VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+                if (Config.Instance.AutoStart.autoLeaveAfter > 0)
+                {
+                    VRT.Core.BaseStats.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+                    Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
+                }
+            }
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
@@ -919,6 +954,7 @@ namespace VRT.Orchestrator.Wrapping
 
         private IEnumerator WaitForEmptySessionToDelete() {
             if (mySession == null) {
+                _OptionalStopOnLeave();
                 yield break;
             }
 
@@ -932,6 +968,7 @@ namespace VRT.Orchestrator.Wrapping
             if (mySession.sessionUsers.Length == 0) {
                 DeleteSession(mySession.sessionId);
             }
+            _OptionalStopOnLeave();
         }
 
         #endregion

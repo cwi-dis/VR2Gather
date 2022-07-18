@@ -4,16 +4,19 @@ using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class bin2dash
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct StreamDesc
         {
             public uint MP4_4CC;
-            public uint tileNumber;    // objectX, officially. In VRTogether, for pointclouds, we use this field for tileNumber
-            public uint quality;    // objectY, officially. In VRTogether, for pointclouds, we use this field for quality
-            public uint objectWidth;
-            public uint objectHeight;
+            public uint tileNumber;    // objectX. In VRTogether, for pointclouds, we use this field for tileNumber
+            public int nx;    // objectY. In VRTogether, for pointclouds, we use this field for nx
+            public int ny;    // objectWidth. In VRTogether, for pointclouds, we use this field for ny
+            public int nz;    // objectHeight. In VRTogether, for pointclouds, we use this field for nz
             public uint totalWidth;
             public uint totalHeight;
         }
@@ -50,7 +53,7 @@ namespace VRT.Transport.Dash
 
             // Gets the current media time in @timescale unit.
             [DllImport(myDllName)]
-            extern static public long vrt_get_media_time(IntPtr h, int timescale);
+            extern static public Timestamp vrt_get_media_time(IntPtr h, int timescale);
         }
 
         public class connection : BaseMemoryChunk
@@ -82,7 +85,7 @@ namespace VRT.Transport.Dash
                 return _API.vrt_push_buffer_ext(pointer, stream_index, buffer, bufferSize);
             }
 
-            public long get_media_time(int timescale)
+            public Timestamp get_media_time(int timescale)
             {
                 if (pointer == IntPtr.Zero) throw new Exception($"bin2dash.get_media_time: called with pointer==null");
                 return _API.vrt_get_media_time(pointer, timescale);

@@ -43,9 +43,9 @@ namespace VRT.Orchestrator.Wrapping
             return list;
         }
 
-        public static int GetClockTimestamp(System.DateTime pDate)
+        public static double GetClockTimestamp(System.DateTime pDate)
         {
-            return (int)pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
+            return pDate.Subtract(new System.DateTime(1970, 1, 1)).TotalSeconds;
         }
     }
 }

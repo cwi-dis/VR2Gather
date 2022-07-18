@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.XR;
+﻿using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
@@ -26,38 +24,41 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
-		public XRNode XRNode;
 		public State HandState;
 		public Handedness HandHandedness;
 
-		public GameObject GrabCollider;
-		public GameObject TouchCollider;
+		public enum HandInteractionEventType
+		{
+			Grab = 0,
+			Release = 1
+		}
 
-		public LineRenderer TeleportLineRenderer;
-		public Material TeleportPossibleMaterial;
-		public Material TeleportImpossibleMaterial;
+		public class HandGrabEvent : BaseMessage
+		{
+			public string GrabbableObjectId;
+			public string UserId;
+			public Handedness Handedness;
+			public HandInteractionEventType EventType;
+		}
 
+		public Grabbable HeldGrabbable;
+
+		private bool _CanGrabAgain = true;
 
 		private Animator _Animator;
+
 		private NetworkPlayer _Player;
-
-		private List<XRNodeState> _NodeStates = new List<XRNodeState>();
-
-		private bool _WasAButtonPressed = false;
-		private PlayerLocation _SelectedLocation;
 
 		public void Awake()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandControllerData));
+			_Player = GetComponentInParent<NetworkPlayer>();
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
 		}
 
 		void Start()
 		{
 			_Animator = GetComponentInChildren<Animator>();
 			_Player = GetComponentInParent<NetworkPlayer>();
-
-			GrabCollider.SetActive(false);
-			TouchCollider.SetActive(false);
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
 		}
@@ -67,103 +68,72 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 
-		void Update()
+
+		private void OnTriggerStay(Collider other)
 		{
-			if (_Player.IsLocalPlayer)
+			if (HandState == State.Grabbing && _CanGrabAgain && HeldGrabbable == null)
 			{
-				InputTracking.GetNodeStates(_NodeStates);
-
-				//Prevent floor clipping when input tracking provides glitched results
-				//This could on occasion cause released grabbables to go throught he floor
-				if (transform.position.y <= 0.05f)
+				var grabbable = other.GetComponent<Grabbable>();
+				if (grabbable == null)
 				{
-					transform.position = new Vector3(transform.position.x, 0.05f, transform.position.z);
+					return;
 				}
 
-
-				bool index_trigger_pressed = ControllerInput.Instance.PrimaryTrigger(XRNode);
-				bool hand_trigger_pressed = ControllerInput.Instance.SecondaryTrigger(XRNode);
-				bool a_button_held_down = ControllerInput.Instance.ButtonA();
-
-				if (HandHandedness == Handedness.Right && a_button_held_down)
+				HandGrabEvent handGrabEvent = new HandGrabEvent()
 				{
-					_WasAButtonPressed = true;
-					var touchTransform = TouchCollider.transform;
-					Debug.DrawLine(touchTransform.position, touchTransform.position + 10.0f * touchTransform.forward, Color.red);
-					Ray teleportRay = new Ray(touchTransform.position, touchTransform.forward);
-					RaycastHit hit = new RaycastHit();
+					GrabbableObjectId = grabbable.NetworkId,
+					UserId = _Player.UserId,
+					Handedness = HandHandedness,
+					EventType = HandInteractionEventType.Grab,
+				};
 
-					TeleportLineRenderer.enabled = true;
+				ExecuteHandGrabEvent(handGrabEvent);
 
-					Vector3[] points = new Vector3[2];
-					points[0] = touchTransform.position;
-					points[1] = touchTransform.position + 25.0f * touchTransform.forward;
+				_CanGrabAgain = false;
+			}
+		}
 
-					if (Physics.Raycast(teleportRay, out hit))
-					{
-						points[1] = hit.point;
-						if (hit.collider.tag == "PlayerLocation")
-						{
-							var location = hit.collider.GetComponent<PlayerLocation>();
-							if (location.IsEmpty)
-							{
-								TeleportLineRenderer.material = TeleportPossibleMaterial;
-								_SelectedLocation = location;
-							}
-							else
-							{
-								TeleportLineRenderer.material = TeleportImpossibleMaterial;
-								_SelectedLocation = null;
-							}
-						}
-						else
-						{
-							TeleportLineRenderer.material = TeleportImpossibleMaterial;
-							_SelectedLocation = null;
-						}
-					}
-					else
-					{
-						TeleportLineRenderer.material = TeleportImpossibleMaterial;
-					}
-					TeleportLineRenderer.SetPositions(points);
-				}
-				else if (_WasAButtonPressed)
+		private void Update()
+		{
+			if (HeldGrabbable != null && HandState != State.Grabbing)
+			{
+				HandGrabEvent handGrabEvent = new HandGrabEvent()
 				{
-					if (_SelectedLocation != null)
-					{
-						SessionPlayersManager.Instance.RequestLocationChange(_SelectedLocation.NetworkId);
-					}
-					_SelectedLocation = null;
-					TeleportLineRenderer.material = TeleportImpossibleMaterial;
-					TeleportLineRenderer.enabled = false;
-				}
+					GrabbableObjectId = HeldGrabbable.NetworkId,
+					UserId = _Player.UserId,
+					Handedness = HandHandedness,
+					EventType = HandInteractionEventType.Release
+				};
 
+				ExecuteHandGrabEvent(handGrabEvent);
+			}
 
+			if (!_CanGrabAgain && HandState != State.Grabbing)
+			{
+				_CanGrabAgain = true;
+			}
+		}
 
-				if (index_trigger_pressed && hand_trigger_pressed)
-				{
-					SetHandState(State.Grabbing);
-					GrabCollider.SetActive(true);
-					TouchCollider.SetActive(false);
-				}
-				else if (hand_trigger_pressed)
-				{
-					SetHandState(State.Pointing);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(true);
-				}
-				else
-				{
-					SetHandState(State.Idle);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(false);
-				}
+		private void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
+		{
+			//If we're not master, inform the master
+			//And then execute the event locally already instead of waiting for it to return
+			if (!OrchestratorController.Instance.UserIsMaster)
+			{
+				OrchestratorController.Instance.SendTypeEventToMaster(handGrabEvent);
+			}
+			else
+			{
+				GrabbableObjectManager.Instance.HandleHandGrabEvent(handGrabEvent);
 			}
 		}
 
 		void OnHandControllerData(HandControllerData data)
 		{
+			//
+			// For incoming hand data, see if this is for a remote player hand and we
+			// are that player and that hand. If so: Update our visual representation/animation.
+			//
 			if (!_Player.IsLocalPlayer && _Player.UserId == data.SenderId)
 			{
 				if (OrchestratorController.Instance.UserIsMaster)
@@ -178,13 +148,16 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		void SetHandState(State handState)
+		public void SetHandState(State handState)
 		{
 			if (HandState != handState)
 			{
 				HandState = handState;
 				UpdateAnimation();
-
+				//
+				// If we are a hand of the local player we forward the state change,
+				// so other players can see it too.
+				//
 				if (_Player.IsLocalPlayer)
 				{
 					var data = new HandControllerData

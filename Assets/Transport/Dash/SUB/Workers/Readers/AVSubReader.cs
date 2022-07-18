@@ -1,6 +1,6 @@
 using UnityEngine;
 using VRT.Core;
-
+using System.Collections.Generic;
 namespace VRT.Transport.Dash
 {
     public class AVSubReader : BaseSubReader
@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
         };
 
         public AVSubReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url, streamName, 0)
+         : base(url, streamName)
         {
             lock (this)
             {
@@ -52,22 +52,22 @@ namespace VRT.Transport.Dash
                     Debug.Log($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
                     Debug.LogError($"No audio stream in {streamName}");
                 }
-                receivers = new ReceiverInfo[]
+                perTileInfo = new TileOrMediaInfo[]
                 {
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _outQueue,
-                    streamIndexes = new int[] { videoStream}
+                    streamIndexes = new List<int> {videoStream }
                 },
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _out2Queue,
-                    streamIndexes = new int[] { audioStream}
+                    streamIndexes = new List<int> {audioStream}
                 },
                 };
 
 
-                InitThreads();
+                InitThread();
                 Start();
             }
         }

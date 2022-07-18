@@ -22,6 +22,7 @@ namespace VRT.Pilots.Common
 		TID_KeywordsResponseData = 112,
 		TID_PlayerTransformSyncData = 113,
 		TID_AddPlayerToSequenceData = 114,
+		TID_SyncConfigMessage = 115,
 	};
 
 	/// <summary>
@@ -46,7 +47,7 @@ namespace VRT.Pilots.Common
 			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationData, typeof(SessionPlayersManager.PlayerLocationData));
 			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationDataRequest, typeof(SessionPlayersManager.PlayerLocationDataRequest));
 			//AddTypeIdMapping(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(SessionPlayersManager.PlayerLocationChangeRequest));
-			//AddTypeIdMapping(MessageTypeID.TID_HandGrabEvent, typeof(HandInteractionManager.HandGrabEvent));
+			//AddTypeIdMapping(MessageTypeID.TID_HandGrabEvent, typeof(HandController.HandGrabEvent));
 			//AddTypeIdMapping(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncBehaviour.NetworkTransformSyncData));
 			//AddTypeIdMapping(MessageTypeID.TID_RigidbodySyncMessage, typeof(Grabbable.RigidbodySyncMessage));
 			//AddTypeIdMapping(MessageTypeID.TID_TextChatDataMessage, typeof(TextChatManager.TextChatDataMessage));

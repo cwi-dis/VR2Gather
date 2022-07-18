@@ -14,7 +14,6 @@ namespace VRT.Profiler
         private string fileName = "Profiler";
         private string csvOutputPathname;
         private float SamplingRate = 1 / 30f;
-        private bool FPSActive = true;
         private bool HMDActive = false;
         private bool printedStatMessage = false;
         private float timeToNext = 0.0f;
@@ -58,12 +57,12 @@ namespace VRT.Profiler
             // xxxjack should bail out quickly if no profilers active
             if (!printedStatMessage)
             {
-                VRT.Core.BaseStats.Output("ProfilerManager", $"started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, FPSActive={FPSActive}, HMDActive={HMDActive}, TVMActive={TVMActive}");
+                //VRT.Core.BaseStats.Output("ProfilerManager", $"started=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}, HMDActive={HMDActive}, TVMActive={TVMActive}");
                 printedStatMessage = true;
             }
             if (HMDActive == true)
             {
-                var cam = FindObjectOfType<Camera>().gameObject;
+                var cam = VRConfig.Instance.getMainCameraGameObject();
                 if (cam != null)
                 {
                     HMD = cam.transform;
@@ -107,7 +106,7 @@ namespace VRT.Profiler
         {
             lastLogWriteTime = Time.time;
             StringBuilder sb = new StringBuilder();
-            VRT.Core.BaseStats.Output("ProfilerManager", $"finished=0, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            //VRT.Core.BaseStats.Output("ProfilerManager", $"finished=0, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
             if (!headerWritten)
             {
                 foreach (var profile in profiles)
@@ -132,7 +131,7 @@ namespace VRT.Profiler
         private void OnDestroy()
         {
             StringBuilder sb = new StringBuilder();
-            VRT.Core.BaseStats.Output("ProfilerManager", $"finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
+            //VRT.Core.BaseStats.Output("ProfilerManager", $"finished=1, csv_output={csvOutputPathname}, TimeSinceGameStart={Time.time}");
             if (profiles.Count > 0)
             {
                 savelog();

@@ -17,7 +17,7 @@ namespace VRT.UserRepresentation.PointCloud
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
         private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
-        const bool debug = false;
+        const bool debug = true;
 
         public void Awake()
         {
@@ -41,6 +41,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         void Start()
         {
+            if (debug) Debug.Log($"TilingConfigDistributor: Started");
             //Subscribe to incoming data of the type we're interested in. 
             OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }

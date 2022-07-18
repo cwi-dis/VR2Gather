@@ -53,7 +53,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         player.webcam.SetActive(false);
         if (player.pc.TryGetComponent(out PointCloudPipeline pointcloud))
             Destroy(pointcloud);
-        if (player.pc.TryGetComponent(out PointBufferRenderer renderer))
+        if (player.pc.TryGetComponent(out PointCloudRenderer renderer))
             Destroy(renderer);
         player.pc.SetActive(false);
         NetworkDataProvider tvm = (NetworkDataProvider)player.tvm;
@@ -64,7 +64,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         StopMicrophone();
         currentMicrophoneName = microphoneName;
         if (currentMicrophoneName != "None") {
-            VoiceReader.PrepareDSP();
+            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
             readPosition = 0;
         }
@@ -82,6 +82,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
         player.userName.text = OrchestratorController.Instance.SelfUser.userName;
         player.gameObject.SetActive(true);
+        player.setupInputOutput(true); // xxxjack needed for preview?
         Stop();
 
         switch (representation) {
@@ -107,6 +108,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
             case UserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
             case UserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
                 BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);

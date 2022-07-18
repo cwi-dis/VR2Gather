@@ -1,0 +1,16 @@
+{
+    "name": "TCP",
+    "references": [
+        "GUID:6f16117c2be38af4f989c1918efefead",
+        "GUID:30bd862cd7044fd4484784b07598041d"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

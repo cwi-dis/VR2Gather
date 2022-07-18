@@ -8,6 +8,9 @@ using VRT.Transport.RabbitMQ.Utils;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class MyRabbitMQReceiver : RabbitMQReceiver
     {
         public MyRabbitMQReceiver(string uri, string exchange)
@@ -66,7 +69,7 @@ namespace VRT.UserRepresentation.PointCloud
                 catch (System.Exception exc)
                 {
                     Debug.Log($"PCCerthReader: set_number_wrappers: caught exception: {exc.Message}");
-                    throw exc;
+                    throw;
                 }
 
             }
@@ -136,7 +139,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewMetaData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
         }
 
@@ -192,7 +195,7 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         move = new float[3] { originCorrection.x, originCorrection.y, originCorrection.z };
                     }
-                    ulong timestamp = 0;
+                    Timestamp timestamp = 0;
                     cwipc.pointcloud pc = cwipc.from_certh(pclPtr, move, bbox, timestamp);
                     if (voxelSize != 0)
                     {
@@ -262,7 +265,7 @@ namespace VRT.UserRepresentation.PointCloud
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
 
 

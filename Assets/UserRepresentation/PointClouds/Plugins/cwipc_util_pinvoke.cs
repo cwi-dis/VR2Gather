@@ -4,6 +4,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class cwipc
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -17,6 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
             public int macroblock_size;    /**< (unused in this version, ignored) macroblock size for inter-frame prediction */
             public int tilenumber;         /**< 0 for encoding full pointclouds, > 0 for selecting a single tile to encode */
             public float voxelsize;        /**< If non-zero run voxelizer with this cell size to get better tiled pointcloud */
+            public int n_parallel;          /**< If greater than 1 use multiple threads to encode successive pointclouds in parallel */
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -43,21 +47,26 @@ namespace VRT.UserRepresentation.PointCloud
         public struct tileinfo
         {
             public vector normal;
-            public IntPtr camera;
+            public IntPtr cameraName;
             public byte ncamera;
+            public byte cameraMask;
         };
 
         private class _API_cwipc_util
         {
             const string myDllName = "cwipc_util";
-            public const ulong CWIPC_API_VERSION = 0x20210228;
+            public const ulong CWIPC_API_VERSION = 0x20220126;
 
             [DllImport(myDllName)]
-            internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
+            internal extern static IntPtr cwipc_read([MarshalAs(UnmanagedType.LPStr)]string filename, Timestamp timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
+			[DllImport(myDllName)]
+			internal extern static IntPtr cwipc_read_debugdump([MarshalAs(UnmanagedType.LPStr)]string filename, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_from_packet(IntPtr packet, IntPtr size, ref System.IntPtr errorMessage, System.UInt64 apiVersion = CWIPC_API_VERSION);
             [DllImport(myDllName)]
             internal extern static void cwipc_free(IntPtr pc);
             [DllImport(myDllName)]
-            internal extern static ulong cwipc_timestamp(IntPtr pc);
+            internal extern static Timestamp cwipc_timestamp(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static int cwipc_count(IntPtr pc);
             [DllImport(myDllName)]
@@ -65,11 +74,14 @@ namespace VRT.UserRepresentation.PointCloud
             [DllImport(myDllName)]
             internal extern static void cwipc__set_cellsize(IntPtr pc, float cellsize);
             [DllImport(myDllName)]
-            internal extern static void cwipc__set_timestamp(IntPtr pc, ulong timestamp);
+            internal extern static void cwipc__set_timestamp(IntPtr pc, Timestamp timestamp);
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_get_uncompressed_size(IntPtr pc);
             [DllImport(myDllName)]
             internal extern static int cwipc_copy_uncompressed(IntPtr pc, IntPtr data, IntPtr size);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_copy_packet(IntPtr pc, IntPtr packet, IntPtr size);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_source_get(IntPtr src);
@@ -98,7 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
             internal extern static IntPtr cwipc_synthetic(int fps, int npoints, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
-            internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, ulong timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
+            internal extern static IntPtr cwipc_from_certh(IntPtr certhPC, float[] origin, float[] bbox, Timestamp timestamp, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_proxy([MarshalAs(UnmanagedType.LPStr)]string ip, int port, ref IntPtr errorMessage, ulong apiVersion = CWIPC_API_VERSION);
@@ -108,6 +120,18 @@ namespace VRT.UserRepresentation.PointCloud
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_tilefilter(IntPtr pc, int tilenum);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_tilemap(IntPtr pc, byte[] map);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_colormap(IntPtr pc, UInt32 clearBits, UInt32 setBits);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_crop(IntPtr pc, float[] bbox);
+
+            [DllImport(myDllName)]
+            internal extern static IntPtr cwipc_join(IntPtr pc1, IntPtr pc2);
 
         }
         private class _API_cwipc_realsense2
@@ -127,7 +151,7 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_codec
         {
             const string myDllName = "cwipc_codec";
-            public const int CWIPC_ENCODER_PARAM_VERSION = 0x20190506;
+            public const int CWIPC_ENCODER_PARAM_VERSION = 0x20220607;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_new_decoder(ref IntPtr errorMessage, ulong apiVersion = _API_cwipc_util.CWIPC_API_VERSION);
@@ -189,7 +213,7 @@ namespace VRT.UserRepresentation.PointCloud
                 if (_pointer == IntPtr.Zero)
                     throw new Exception("cwipc.pointcloud called with NULL pointer argument");
                 // This is a hack. We copy the timestamp from the cwipc data to our info structure.
-                info.timestamp = (long)timestamp();
+                info.timestamp = timestamp();
             }
 
             ~pointcloud()
@@ -203,16 +227,17 @@ namespace VRT.UserRepresentation.PointCloud
                 _API_cwipc_util.cwipc_free(pointer);
             }
 
-            public ulong timestamp()
+            public Timestamp timestamp()
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.timestamp called with NULL pointer");
                 return _API_cwipc_util.cwipc_timestamp(pointer);
             }
 
-            public void _set_timestamp(ulong timestamp)
+            public void _set_timestamp(Timestamp timestamp)
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud._set_timestamp called with NULL pointer");
                 _API_cwipc_util.cwipc__set_timestamp(pointer, timestamp);
+                info.timestamp = timestamp;
             }
 
             public int count()
@@ -243,6 +268,31 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
                 return _API_cwipc_util.cwipc_copy_uncompressed(pointer, data, (IntPtr)size);
+            }
+
+            public int copy_packet(IntPtr data, int size)
+            {
+                if (pointer == IntPtr.Zero) throw new Exception("cwipc.pointcloud.copy_uncompressed called with NULL pointer");
+                return (int)_API_cwipc_util.cwipc_copy_packet(pointer, data, (IntPtr)size);
+            }
+
+            public byte[] get_packet()
+            {
+                int size = copy_packet(IntPtr.Zero, 0);
+                byte[] rv = new byte[size];
+                int actualSize = 0;
+                unsafe
+                {
+                    fixed (byte* rvPtr = rv)
+                    {
+                        actualSize = copy_packet((IntPtr)rvPtr, size);
+                    }
+                }
+                if (actualSize != size)
+                {
+                    throw new System.Exception($"cwipc.get_packet: size={actualSize} after promising {size}");
+                }
+                return rv;
             }
 
             internal IntPtr _intptr()
@@ -577,7 +627,40 @@ namespace VRT.UserRepresentation.PointCloud
             return new pointcloud(rvPtr);
         }
 
-        public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, ulong timestamp)
+        public static pointcloud tilemap(pointcloud pc, byte[] map)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_tilemap(pcPtr, map);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud colormap(pointcloud pc, uint clearMask, uint setMask)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_colormap(pcPtr, clearMask, setMask);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud crop(pointcloud pc, float[] bbox)
+        {
+            IntPtr pcPtr = pc._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_crop(pcPtr, bbox);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud join(pointcloud pc1, pointcloud pc2)
+        {
+            IntPtr pc1Ptr = pc1._intptr();
+            IntPtr pc2Ptr = pc2._intptr();
+            IntPtr rvPtr = _API_cwipc_util.cwipc_join(pc1Ptr, pc2Ptr);
+            if (rvPtr == IntPtr.Zero) return null;
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud from_certh(IntPtr certhPC, float[] move, float[] bbox, Timestamp timestamp)
         {
             IntPtr errorPtr = IntPtr.Zero;
             // Need to pass origin and bbox as array pointers.
@@ -595,6 +678,65 @@ namespace VRT.UserRepresentation.PointCloud
                 UnityEngine.Debug.LogError($"cwipc_from_certh: {Marshal.PtrToStringAnsi(errorPtr)}. Attempting to continue.");
             }
             return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud read(string filename, Timestamp timestamp)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_read(filename, timestamp, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud readdump(string filename)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_read_debugdump(filename, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.read: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_read: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud from_packet(IntPtr packet, IntPtr size)
+        {
+            System.IntPtr errorPtr = System.IntPtr.Zero;
+            System.IntPtr rvPtr = _API_cwipc_util.cwipc_from_packet(packet, size, ref errorPtr);
+            if (rvPtr == System.IntPtr.Zero)
+            {
+                if (errorPtr == System.IntPtr.Zero)
+                {
+                    throw new System.Exception("cwipc.from_packet: returned null without setting error message");
+                }
+                throw new System.Exception($"cwipc_from_packet: {System.Runtime.InteropServices.Marshal.PtrToStringAnsi(errorPtr)} ");
+            }
+            return new pointcloud(rvPtr);
+        }
+
+        public static pointcloud from_packet(byte[] packet)
+        {
+            IntPtr size = (IntPtr)packet.Length;
+            pointcloud rv = null;
+            unsafe
+            {
+                fixed(byte *packetPtr = packet)
+                {
+                    rv = from_packet((IntPtr)packetPtr, size);
+                }
+            }
+            return rv;
         }
     }
 }

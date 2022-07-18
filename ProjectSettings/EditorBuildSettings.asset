@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/CWI_cake/CWI_cake/Scenes/CWI_cake.unity
     guid: 6ba746b82a3151f4aa79b94681c07226
+  - enabled: 1
+    path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
+    guid: 8d7c2248902f944f78d3799d2a8f1dba
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}
