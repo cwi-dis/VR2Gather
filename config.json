@@ -1,6 +1,6 @@
 {
-	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
-	"orchestratorURL": "http://rapenburg.local:8080/socket.io/",
+	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
+	"_orchestratorURL": "http://rapenburg.local:8080/socket.io/",
 	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
 
@@ -20,11 +20,11 @@
   	"sessionScenario" : 4,
   	"_sessionScenario" : 1,
   	"sessionTransportProtocol" : 1,
-  	"autoCreateForUser" : "vrtiny",
+  	"autoCreateForUser" : "",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 3,
-  	"autoDelay" : 1.5
+  	"autoDelay" : 1.5,
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoLeaveAfter" : 0,

@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         public Synchronizer synchronizer = null;
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
-        protected BaseWorker reader;
+        public BaseWorker reader;
         BaseWorker encoder;
         [Tooltip("Debugging: current decoders")]
         public List<BaseWorker> decoders = new List<BaseWorker>();

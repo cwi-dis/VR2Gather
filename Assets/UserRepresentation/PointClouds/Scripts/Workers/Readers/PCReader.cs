@@ -121,6 +121,7 @@ namespace VRT.UserRepresentation.PointCloud
             cwipc.pointcloud pc = reader.get();
             if (pc == null) return;
             optionalProcessing(pc);
+            Timedelta downsampleDuration = 0;
             if (voxelSize != 0)
             {
                 System.DateTime downsampleStartTime = System.DateTime.Now;
