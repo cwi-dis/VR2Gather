@@ -1,0 +1,3 @@
+[submodule "Assets/PilotsExternal/MedicalExamination"]
+	path = Assets/PilotsExternal/MedicalExamination
+	url = ../VRTApp-MedicalExamination
