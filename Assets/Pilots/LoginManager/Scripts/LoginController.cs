@@ -4,12 +4,17 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using VRT.Orchestrator.Wrapping;
-using VRT.LivePresenter;
 using VRT.Pilots.Common;
 using VRT.Core;
 
 public class LoginController : PilotController {
 
+    public class MessageType
+    {
+        // Bad magic. These are prefixes generated (I think) by the orchestrator)
+        public const string START = "START";
+        public const string READY = "READY";
+    }
     private static LoginController instance;
 
     public static LoginController Instance { get { return instance; } }

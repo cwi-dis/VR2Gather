@@ -81,16 +81,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     [Header("Config")]
     [SerializeField] private GameObject configPanel = null;
-    [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private GameObject webcamInfoGO = null;
-    [SerializeField] private GameObject pccerthInfoGO = null;
     [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
     [SerializeField] private InputField tcpAudioURLConfigIF = null;
-    [SerializeField] private InputField tvmConnectionURIConfigIF = null;
-    [SerializeField] private InputField tvmExchangeNameConfigIF = null;
-    [SerializeField] private InputField pccerthConnectionURIConfigIF = null;
-    [SerializeField] private InputField pccerthPCLExchangeNameConfigIF = null;
-    [SerializeField] private InputField pccerthMetaExchangeNameConfigIF = null;
     [SerializeField] private Dropdown representationTypeConfigDropdown = null;
     [SerializeField] private Dropdown webcamDropdown = null;
     [SerializeField] private Dropdown microphoneDropdown = null;
@@ -113,9 +106,6 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private InputField sessionNameIF = null;
     [SerializeField] private InputField sessionDescriptionIF = null;
     [SerializeField] private Dropdown scenarioIdDrop = null;
-    [SerializeField] private GameObject presenterPanel = null;
-    [SerializeField] private Toggle presenterToggle = null;
-    [SerializeField] private Toggle liveToggle = null;
     [SerializeField] private Toggle socketProtocolToggle = null;
     [SerializeField] private Toggle dashProtocolToggle = null;
     [SerializeField] private Toggle tcpProtocolToggle = null;
@@ -260,10 +250,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 textItem.text += " - (3D Avatar)";
                 break;
-            case UserRepresentationType.__TVM__:
-                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                textItem.text += " - (Volumetric 3D Mesh)";
-                break;
             case UserRepresentationType.__PCC_CWI_:
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
@@ -277,10 +263,6 @@ public class OrchestratorLogin : MonoBehaviour {
             case UserRepresentationType.__PCC_PRERECORDED__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Prerecorded PC)";
-                break;
-            case UserRepresentationType.__PCC_CERTH__:
-                imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                textItem.text += " - (Volumetric PC)";
                 break;
             case UserRepresentationType.__SPECTATOR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
@@ -373,9 +355,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 case "__AVATAR__":
                     enumName = "3D Avatar";
                     break;
-                case "__TVM__":
-                    enumName = "Volumetric 3D Mesh";
-                    break;
                 case "__PCC_CWI_":
                     enumName = "Simple PointCloud (RealSense)";
                     break;
@@ -390,9 +369,6 @@ public class OrchestratorLogin : MonoBehaviour {
                     break;
                 case "__PCC_PRERECORDED__":
                     enumName = "Prerecorded PointCloud (development option)";
-                    break;
-                case "__PCC_CERTH__":
-                    enumName = "Volumetric PointCloud (development option)";
                     break;
                 case "__SPECTATOR__":
                     enumName = "Spectator";
@@ -453,10 +429,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "3D AVATAR";
                 break;
-            case UserRepresentationType.__TVM__:
-                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                userRepresentationLobbyText.text = "VOLUMETRIC 3D MESH";
-                break;
             case UserRepresentationType.__PCC_CWI_:
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
@@ -470,10 +442,6 @@ public class OrchestratorLogin : MonoBehaviour {
             case UserRepresentationType.__PCC_PRERECORDED__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 userRepresentationLobbyText.text = "PRERECORDED PC";
-                break;
-            case UserRepresentationType.__PCC_CERTH__:
-                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
-                userRepresentationLobbyText.text = "VOLUMETRIC PC";
                 break;
             case UserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
@@ -500,9 +468,6 @@ public class OrchestratorLogin : MonoBehaviour {
             case UserRepresentationType.__AVATAR__:
                 selfRepresentationDescription.text = "3D Synthetic Avatar.";
                 break;
-            case UserRepresentationType.__TVM__:
-                selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a Time Varying Meshes (TVM).";
-                break;
             case UserRepresentationType.__PCC_CWI_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
                 break;
@@ -517,9 +482,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserRepresentationType.__PCC_PRERECORDED__:
                 selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
-                break;
-            case UserRepresentationType.__PCC_CERTH__:
-                selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";
                 break;
             case UserRepresentationType.__SPECTATOR__:
                 selfRepresentationDescription.text = "No visual representation, but audio communication.";
@@ -600,9 +562,7 @@ public class OrchestratorLogin : MonoBehaviour {
         tcpProtocolToggle.isOn = false;
         uncompressedPointcloudsToggle.isOn = Config.Instance.PCs.Codec == "cwi0";
         uncompressedAudioToggle.isOn = Config.Instance.Voice.Codec == "VR2a";
-        presenterToggle.isOn = false;
-        liveToggle.isOn = false;
-
+   
         if (OrchestratorController.Instance.UserIsLogged) { // Comes from another scene
             // Set status to online
             statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
@@ -633,7 +593,6 @@ public class OrchestratorLogin : MonoBehaviour {
         TabShortcut();
         if (state == State.Create) {
             AudioToggle();
-            PresenterToggles();
         }
         // Refresh Sessions
         if (state == State.Join) {
@@ -745,11 +704,6 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData userData = user.userData;
         tcpPointcloudURLConfigIF.text = userData.userPCurl;
         tcpAudioURLConfigIF.text = userData.userAudioUrl;
-        tvmExchangeNameConfigIF.text = userData.userMQexchangeName;
-        tvmConnectionURIConfigIF.text = userData.userMQurl;
-        pccerthConnectionURIConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.ConnectionURI;
-        pccerthPCLExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.PCLExchangeName;
-        pccerthMetaExchangeNameConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.MetaExchangeName;
         representationTypeConfigDropdown.value = (int)userData.userRepresentationType;
         webcamDropdown.value = 0;
 
@@ -965,15 +919,9 @@ public class OrchestratorLogin : MonoBehaviour {
 
     public void SelfRepresentationChanger() {
         // Dropdown Logic
-        tvmInfoGO.SetActive(false);
         webcamInfoGO.SetActive(false);
-        pccerthInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
-        if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__TVM__) {
-            tvmInfoGO.SetActive(true);
-            calibButton.gameObject.SetActive(true);
-        }
-        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWI_)
+        if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWI_)
         {
             calibButton.gameObject.SetActive(true);
         }
@@ -987,10 +935,6 @@ public class OrchestratorLogin : MonoBehaviour {
         }
         else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_SYNTH__)
         {
-            calibButton.gameObject.SetActive(true);
-        }
-        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CERTH__) {
-            pccerthInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
         else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__) {
@@ -1118,80 +1062,6 @@ public class OrchestratorLogin : MonoBehaviour {
         SceneManager.LoadScene("SelfCalibration");
     }
 
-    public void AutoFillButtons(int user) {
-        switch (user) {
-            case 0:
-                userNameLoginIF.text = "Marc@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 1:
-                userNameLoginIF.text = "Luca@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 2:
-                userNameLoginIF.text = "Einar@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 3:
-                userNameLoginIF.text = "Isaac@i2CAT";
-                userPasswordLoginIF.text = "i2CAT2020";
-                break;
-            case 4:
-                userNameLoginIF.text = "cwibig";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 5:
-                userNameLoginIF.text = "cwismall";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 6:
-                userNameLoginIF.text = "cwitiny";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 7:
-                userNameLoginIF.text = "Jack@CWI";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 8:
-                userNameLoginIF.text = "Shishir@CWI";
-                userPasswordLoginIF.text = "CWI2020";
-                break;
-            case 9:
-                userNameLoginIF.text = "Fernando@THEMO";
-                userPasswordLoginIF.text = "THEMO2020";
-                break;
-            case 10:
-                userNameLoginIF.text = "Romain@MS";
-                userPasswordLoginIF.text = "MS2020";
-                break;
-            case 11:
-                userNameLoginIF.text = "Argyris@CERTH";
-                userPasswordLoginIF.text = "CERTH2020";
-                break;
-            case 12:
-                userNameLoginIF.text = "Spiros@CERTH";
-                userPasswordLoginIF.text = "CERTH2020";
-                break;
-            case 13:
-                userNameLoginIF.text = "Vincent@VO";
-                userPasswordLoginIF.text = "VO2020";
-                break;
-            case 14:
-                userNameLoginIF.text = "Patrice@VO";
-                userPasswordLoginIF.text = "VO2020";
-                break;
-			case 15:
-				userNameLoginIF.text = "Bart@ARTANIM";
-				userPasswordLoginIF.text = "ARTANIM2020";
-				break;
-			case 16:
-                userNameLoginIF.text = "Name";
-                userPasswordLoginIF.text = "Lastname";
-                break;
-            default:
-                break;
-        }
-    }
 
 #endregion
 
@@ -1260,31 +1130,7 @@ public class OrchestratorLogin : MonoBehaviour {
         kindAudio = (int)Config.Instance.protocolType;
     }
 
-    private void PresenterToggles() {
-        if (OrchestratorController.Instance.AvailableScenarios?[scenarioIdDrop.value].scenarioName == "Pilot 2") {
-            presenterPanel.SetActive(true);
-            // Check if presenter is active to show live option
-            if (presenterToggle.isOn) {
-                liveToggle.gameObject.SetActive(true);
-                if (liveToggle.isOn) {
-                    Config.Instance.presenter = Config.Presenter.Live;
-                    kindPresenter = 2;
-                }
-                else {
-                    Config.Instance.presenter = Config.Presenter.Local;
-                    kindPresenter = 1;
-                }
-            }
-            else {
-                liveToggle.gameObject.SetActive(false);
-                Config.Instance.presenter = Config.Presenter.None;
-                kindPresenter = 0;
-            }  
-        }
-        else {
-            presenterPanel.SetActive(false);
-        }
-    }      
+       
 
 #endregion
 
@@ -1771,8 +1617,6 @@ public class OrchestratorLogin : MonoBehaviour {
     private void UpdateUserData() {
         // UserData info in Config
         UserData lUserData = new UserData {
-            userMQexchangeName = Config.Instance.TVMs.exchangeName,
-            userMQurl = Config.Instance.TVMs.connectionURI,
             userPCurl = tcpPointcloudURLConfigIF.text,
             userAudioUrl = tcpAudioURLConfigIF.text,
             userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
@@ -1798,8 +1642,6 @@ public class OrchestratorLogin : MonoBehaviour {
                 //UserData
                 tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
                 tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
-                tvmExchangeNameConfigIF.text = user.userData.userMQexchangeName;
-                tvmConnectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
 
                 SetUserRepresentationGUI(user.userData.userRepresentationType);
