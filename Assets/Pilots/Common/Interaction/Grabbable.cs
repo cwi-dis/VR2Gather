@@ -90,8 +90,7 @@ namespace VRT.Pilots.Common
 
                 if (Rigidbody != null)
                 {
-                    //Rigidbody.isKinematic = true;
-					//We need to remove gravity in order to be able to move the object
+                    Rigidbody.isKinematic = true;
                     Rigidbody.useGravity = false;
                 }
 
@@ -129,6 +128,7 @@ namespace VRT.Pilots.Common
 					//Rigidbody.useGravity = true;
 
 					//we return the original state
+					Rigidbody.isKinematic = _isKinematic;
 					Rigidbody.useGravity = _useGravity;
 					_IsSimulating = true;
 				}
