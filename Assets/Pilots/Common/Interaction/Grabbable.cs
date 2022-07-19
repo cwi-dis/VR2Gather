@@ -23,6 +23,8 @@ namespace VRT.Pilots.Common
 
 		public Rigidbody Rigidbody;
 		public bool ForceSleepSync;
+		private bool _isKinematic = false;
+		private bool _useGravity = true;
 		private bool _IsSimulating = false;
 
 		private HandController _CurrentGrabber;
@@ -51,7 +53,14 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
 
-		public void Update()
+        public void Start()
+        {
+			//on start we save the selected properties
+			_isKinematic = Rigidbody.isKinematic;
+			_useGravity = Rigidbody.useGravity;
+        }
+
+        public void Update()
 		{
 			if (OrchestratorController.Instance.UserIsMaster && ForceSleepSync && _IsSimulating)
 			{
@@ -79,13 +88,14 @@ namespace VRT.Pilots.Common
 					_CurrentGrabber.HeldGrabbable = null;
 				}
 
-				if (Rigidbody != null)
-				{
-					Rigidbody.isKinematic = true;
-					Rigidbody.useGravity = false;
-				}
+                if (Rigidbody != null)
+                {
+                    //Rigidbody.isKinematic = true;
+					//We need to remove gravity in order to be able to move the object
+                    Rigidbody.useGravity = false;
+                }
 
-				transform.parent = handController.transform;
+                transform.parent = handController.transform;
 
 				if (UseOffsets)
 				{
@@ -115,8 +125,11 @@ namespace VRT.Pilots.Common
 
 				if (Rigidbody != null)
 				{
-					Rigidbody.isKinematic = false;
-					Rigidbody.useGravity = true;
+					//Rigidbody.isKinematic = false;
+					//Rigidbody.useGravity = true;
+
+					//we return the original state
+					Rigidbody.useGravity = _useGravity;
 					_IsSimulating = true;
 				}
 			}
