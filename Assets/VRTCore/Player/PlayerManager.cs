@@ -9,7 +9,6 @@ public class PlayerManager : MonoBehaviour {
     public TMPro.TextMeshProUGUI userName;
     public Camera   cam;
 	public GameObject holoCamera;
-    public ITVMHookUp tvm;
     public GameObject avatar;
     public GameObject webcam;
     public GameObject pc;

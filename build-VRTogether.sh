@@ -4,7 +4,6 @@
 dirname=`dirname $0`
 dirname=`cd $dirname ; pwd`
 INSTALL_PCL=false
-INSTALL_TVM=false
 DEST=built-VRTogether
 UNITY_VERSION=2019.4.35f1
 
@@ -52,22 +51,15 @@ do
 		INSTALL_PCL=true
 		shift # past argument
 		;;
-		--tvm)
-		echo "$0: --tvm not implemented"
-		exit 1
-		INSTALL_TVM=true
-		shift # past argument
-		;;
 		--dest)
 		DEST="$2"
 		shift
 		shift
 		;;
 		--help)
-		echo "Usage: $0 [--pcl] [--tvm]"
+		echo "Usage: $0 [--pcl]"
 		echo "Creates VRTogether app in $dirname/$DEST"
 		echo "--pcl Includes pointcloud DLLs and support programs (must be in expected location)"
-		echo "--tvm Includes TVM DLLs and support programs (unimplemented)"
 		exit 0
 		;;
 		*)    # unknown option
