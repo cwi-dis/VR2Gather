@@ -1,0 +1,23 @@
+{
+    "name": "Pilots",
+    "references": [
+        "VRTCore",
+        "VRTeleporter",
+        "Dash",
+        "Orchestrator",
+        "Voice",
+        "UnityEngine.SpatialTracking",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

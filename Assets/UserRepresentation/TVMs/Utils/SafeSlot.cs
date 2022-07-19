@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public class SafeSlot<T>
     {
-        private T m_Slot = default(T);
+        private T m_Slot = default;
         private object m_LockObject = new object();
         private bool m_HasNew = false;
 
@@ -23,8 +23,8 @@ namespace Utils
         {
             get
             {
-                lock(m_LockObject)
-                {                    
+                lock (m_LockObject)
+                {
                     m_HasNew = false;
                     return m_Slot;
                 }
@@ -38,6 +38,6 @@ namespace Utils
                 }
             }
         }
-        
+
     }
 }

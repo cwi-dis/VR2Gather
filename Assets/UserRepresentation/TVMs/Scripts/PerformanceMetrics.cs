@@ -4,259 +4,539 @@ using System.IO;
 using System.Linq;
 using System;
 using System.Text;
+using System.Net.Http;
+using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
-public class PerformanceMetrics : MonoBehaviour
+namespace VRT.UserRepresentation.TVM
 {
-    private static System.Diagnostics.Process process = new System.Diagnostics.Process();
-    private string fullPathToExe = "";
-    private List<long> deserializeTime = new List<long>();
-    private List<long> renderingTime = new List<long>();
-    private List<long> deserializeFunctionTime = new List<long>();
-    private List<long> deserializeTexturesTime = new List<long>();
-    private List<long> deserializeGeometryTime = new List<long>();
-    private List<long> deserializeParamsTime = new List<long>();
-    private List<string> metric_units = new List<string>() { "KBs", "MBs", "GBs" };
-    private long totalTime = 0;
-    private int fps = 0;
-    private int all_frames = 0;
-    private int total_compressed_buffer_size = 0;
-    private int total_decompressed_buffer_size = 0;
-    private int total_num_vertices = 0;
-    private StringBuilder perfomanceMetricsCSV = new StringBuilder();
-    public static List<float> usageSamplesCPU = new List<float>();
-    public static List<float> usageSamplesGPU = new List<float>();
-    public static List<float> usageSamplesRAM = new List<float>();
-    public static List<float> usageSamplesBW = new List<float>();
-
-    public void updateReceivingAndDeserializationMetrics(List<System.Diagnostics.Stopwatch> deserializationStopWatches, List<int> tvmSizeData)
+    public class PerformanceMetrics : MonoBehaviour
     {
-        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
-            return;
+        private static System.Diagnostics.Process performanceProcess = new System.Diagnostics.Process();
+        private static System.Diagnostics.Process RMQprocess = new System.Diagnostics.Process();
+        private string fullPathToExe = "";
+        private bool tenSecondsReached = false;
+        private List<double> deserializeTime = new List<double>();
+        private List<double> renderingTime = new List<double>();
+        private List<double> deserializeFunctionTime = new List<double>();
+        private List<double> deserializeTexturesTime = new List<double>();
+        private List<double> deserializeGeometryTime = new List<double>();
+        private List<double> deserializeParamsTime = new List<double>();
+        private List<double> frameTime = new List<double>();
+        private List<string> metric_units = new List<string>() { "KBs", "MBs", "GBs" };
+        private long totalTime = 0;
+        private int fps = 0;
+        private int all_frames = 0;
+        private List<int> compressed_buffer_size = new List<int>();
+        private List<int> decompressed_buffer_size = new List<int>();
+        private List<int> num_vertices = new List<int>();
+        private List<int> endToEndDelay = new List<int>();
+        private StringBuilder metricsCSV = new StringBuilder();
+        private List<double> usageSamplesCPU = new List<double>();
+        private List<double> usageSamplesGPU = new List<double>();
+        private List<double> usageSamplesRAM = new List<double>();
+        private List<double> usageSamplesBW = new List<double>();
+        private SortedDictionary<string, Dictionary<string, string>> nodesMemoryData = new SortedDictionary<string, Dictionary<string, string>>();
+        private SortedDictionary<string, Dictionary<string, string>> exchangesData = new SortedDictionary<string, Dictionary<string, string>>();
+        private SortedDictionary<string, Dictionary<string, string>> connectionsData = new SortedDictionary<string, Dictionary<string, string>>();
+        private List<string> connectionNames = new List<string>();
+        private List<string> exchangeNames = new List<string>();
+        private static readonly HttpClient client = new HttpClient();
+        private int userNum = 0;
+        private List<string> connectedUserIds = new List<string>();
 
-        ++all_frames;
-        total_compressed_buffer_size += tvmSizeData[0];
-        total_decompressed_buffer_size += tvmSizeData[1];
-        total_num_vertices += tvmSizeData[2];
-        deserializeTime.Add(deserializationStopWatches[0].ElapsedMilliseconds);
-        deserializeFunctionTime.Add(deserializationStopWatches[1].ElapsedMilliseconds);
-        deserializeTexturesTime.Add(deserializationStopWatches[2].ElapsedMilliseconds);
-        deserializeGeometryTime.Add(deserializationStopWatches[3].ElapsedMilliseconds);
-        deserializeParamsTime.Add(deserializationStopWatches[4].ElapsedMilliseconds);
-    }
-
-    public void updateRenderingMetrics(System.Diagnostics.Stopwatch renderingStopWatch)
-    {
-        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
-            return;
-
-        ++fps;
-        renderingTime.Add(renderingStopWatch.ElapsedMilliseconds);
-    }
-
-    private double CalculateStdDev(IEnumerable<long> values)
-    {
-        double ret = 0;
-        if (values.Count() > 0)
+        private void Awake()
         {
-            //Compute the Average      
-            double avg = values.Average();
-            //Perform the Sum of (value-avg)_2_2      
-            double sum = values.Sum(d => Math.Pow(d - avg, 2));
-            //Put it all together      
-            ret = Math.Sqrt((sum) / (values.Count() - 1));
-        }
-        return ret;
-    }
-
-    private double changeMetricUnit(double metric_int, int metric_unit)
-    {
-        double metric_double = Convert.ToDouble(metric_int);
-
-        for (int i=0; i < metric_unit + 1; i++)
-        {
-            metric_double /= 1024;
+            fullPathToExe = Application.streamingAssetsPath + "\\PerformanceCounting";
+            connectedUserIds = OrchestratorController.Instance.ConnectedUsers.Select(x => x.userId).ToList();
+            exchangeNames.Add(Config.Instance.TVMs.exchangeName);
+            OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
+            OrchestratorController.Instance.GetUserInfo(connectedUserIds[userNum]);
         }
 
-        return metric_double;
-    }
-
-    public void printMetrics(System.Diagnostics.Stopwatch stopWatch, int mesh_id)
-    {
-        if (!Config.Instance.TVMs.printMetrics)
-            return;
-        try
+        private void OnGetUserInfoHandler(User user)
         {
-            if (!usageSamplesBW.Any() || !usageSamplesGPU.Any() || !usageSamplesCPU.Any() || !usageSamplesRAM.Any())
+            if (!string.IsNullOrEmpty(user.userData.userIP) && !connectionNames.Contains(user.userData.userIP))
+                connectionNames.Add(user.userData.userIP);
+
+            connectionNames.Add(user.userData.userIP);
+            userNum++;
+
+            if (userNum >= connectedUserIds.Count)
+            {
+                connectionNames.Add(OrchestratorController.Instance.GetIPAddress());
+                OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
+                runRMQMetricsExe();
+                return;
+            }
+            else
+                OrchestratorController.Instance.GetUserInfo(connectedUserIds[userNum]);
+        }
+
+        public void updateReceivingAndDeserializationMetrics(List<System.Diagnostics.Stopwatch> deserializationStopWatches, List<int> tvmData)
+        {
+
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
                 return;
 
-            totalTime += stopWatch.ElapsedMilliseconds;
-
-            Debug.Log("sw (ms) = " + totalTime + ": Unity player Rate (TVM #" + mesh_id +
-                                                    "): Frames (TVMs rendered) per second: " + (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5") +
-                                                    ", Number of TVMs received but not rendered: " + ((all_frames - fps) < 0 ? 0 : (all_frames - fps)));
-
-            Debug.Log("sw (ms) = " + totalTime + ": Compression Module (TVM #" + mesh_id +
-                                                    "): Average compressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString() + " " + metric_units[0] +
-                                                    ", Average decompressed TVM buffer size: " + changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString() + " " + metric_units[1]);
-
-            Debug.Log("sw (ms) = " + totalTime + ": Deserialization Module (TVM #" + mesh_id +
-            "): Average total deserialization time per TVM: " + (deserializeTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTime).ToString("F5") + ")" +
-            ", Average time of deserialization function call per TVM: " + (deserializeFunctionTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeFunctionTime).ToString("F5") + ")" +
-            ", Average deserialization time of color data per TVM: " + (deserializeTexturesTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeTexturesTime).ToString("F5") + ")" +
-            ", Average deserialization time of geometry (faces, vertices) data per TVM: " + (deserializeGeometryTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeGeometryTime).ToString("F5") + ")" +
-            ", Average deserialization time of parameters per TVM: " + (deserializeParamsTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(deserializeParamsTime).ToString("F5") + ")");
-
-            Debug.Log("sw (ms) = " + totalTime + ": Rendering Module (TVM #" + mesh_id + ", Average number of vertices per TVM: " + (total_num_vertices / fps) +
-            ", Average rendering time per TVM: " + (renderingTime.Average()).ToString("F5") + " ms (Standard deviation: " + CalculateStdDev(renderingTime).ToString("F5") + ")");
-
-            Debug.Log("sw (ms) = " + totalTime + ": PC Consumptions (TVM #" + mesh_id +
-            "): Average CPU% usage: " + (usageSamplesCPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
-            ", Average GPU% usage: " + (usageSamplesGPU.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesGPU.ConvertAll(Convert.ToInt64)).ToString("F5") + ")" +
-            ", Average RAM usage (MBs): " + (usageSamplesRAM.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesRAM.ConvertAll(Convert.ToInt64)).ToString("F5") + ")"+
-            ", Average BW usage (MBps): " + (usageSamplesBW.Average()).ToString("F5") + " (Standard deviation: " + CalculateStdDev(usageSamplesBW.ConvertAll(Convert.ToInt64)).ToString("F5") + ")");
+            compressed_buffer_size.Add(tvmData[0]);
+            decompressed_buffer_size.Add(tvmData[1]);
+            num_vertices.Add(tvmData[2]);
+            all_frames = tvmData[3];
+            deserializeTime.Add(deserializationStopWatches[0].ElapsedMilliseconds);
+            deserializeFunctionTime.Add(deserializationStopWatches[1].Elapsed.TotalMilliseconds);
+            deserializeTexturesTime.Add(deserializationStopWatches[2].Elapsed.TotalMilliseconds);
+            deserializeGeometryTime.Add(deserializationStopWatches[3].Elapsed.TotalMilliseconds);
+            deserializeParamsTime.Add(deserializationStopWatches[4].Elapsed.TotalMilliseconds);
         }
-        catch(Exception e)
+
+        public void updateRenderingMetrics(System.Diagnostics.Stopwatch renderingStopWatch, System.Diagnostics.Stopwatch frametime, int E2Edelay)
         {
-            clearAll();
-            Debug.Log(e);
-            return;
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+                return;
+
+            ++fps;
+            endToEndDelay.Add(E2Edelay);
+            renderingTime.Add(renderingStopWatch.ElapsedMilliseconds);
+            frameTime.Add(frametime.ElapsedMilliseconds);
         }
-    }
 
-    public void saveMetrics(System.Diagnostics.Stopwatch stopWatch, int mesh_id)
-    {
-        if (!Config.Instance.TVMs.saveMetrics)
-            return;
-
-        try
+        private double CalculateStdDev(IEnumerable<double> values)
         {
-            string metricsLastTen = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25}",
-                                                    DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"), (((double)fps / stopWatch.ElapsedMilliseconds) * 1000).ToString("F5"), ((all_frames - fps) < 0 ? 0 : (all_frames - fps)).ToString(),
-                                                    (total_num_vertices / fps).ToString(), changeMetricUnit(Convert.ToDouble(total_compressed_buffer_size / fps), 0).ToString(), changeMetricUnit(Convert.ToDouble(total_decompressed_buffer_size / fps), 1).ToString(),
-                                                    (deserializeTime.Average()).ToString("F5"), CalculateStdDev(deserializeTime).ToString("F5"),
-                                                    (deserializeFunctionTime.Average()).ToString("F5"), CalculateStdDev(deserializeFunctionTime).ToString("F5"),
-                                                    (deserializeTexturesTime.Average()).ToString("F5"), CalculateStdDev(deserializeTexturesTime).ToString("F5"),
-                                                    (deserializeGeometryTime.Average()).ToString("F5"), CalculateStdDev(deserializeGeometryTime).ToString("F5"),
-                                                    (deserializeParamsTime.Average()).ToString("F5"), CalculateStdDev(deserializeParamsTime).ToString("F5"),
-                                                    (renderingTime.Average()).ToString("F5"), CalculateStdDev(renderingTime).ToString("F5"),
-                                                    (usageSamplesCPU.Average()).ToString("F5"), CalculateStdDev(usageSamplesCPU.ConvertAll(Convert.ToInt64)).ToString("F5"),
-                                                    (usageSamplesGPU.Average()).ToString("F5"), CalculateStdDev(usageSamplesGPU.ConvertAll(Convert.ToInt64)).ToString("F5"),
-                                                    (usageSamplesRAM.Average()).ToString("F5"), CalculateStdDev(usageSamplesRAM.ConvertAll(Convert.ToInt64)).ToString("F5"),
-                                                    (usageSamplesBW.Average()).ToString("F5"), CalculateStdDev(usageSamplesBW.ConvertAll(Convert.ToInt64)).ToString("F5"));
-
-            if (perfomanceMetricsCSV.Length == 0)
+            double ret = 0;
+            if (values.Count() > 0)
             {
-                string metricsNames = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25}",
-                                                    "Timestamp", "Frames per second", "Missed/Skipped Frames",
-                                                    "Average number of vertices per TVM", "Average size of received compressed TVM (" + metric_units[0] + ")", "Average size of decompressed TVM (" + metric_units[1] + ")",
-                                                    "Average total deserialization time per TVM (milliseconds)", "Standard deviation of deserialization time per TVM (milliseconds)",
-                                                    "Average deserialization function execution time per TVM (milliseconds)", "Standard deviation of deserialization function execution time  per TVM (milliseconds)",
-                                                    "Average marshalling time for the texture data per TVM (milliseconds)", "Standard deviation of marshalling time for the texture data per TVM (milliseconds)",
-                                                    "Average marshalling time for the geometry data per TVM (milliseconds)", "Standard deviation of marshalling time for the geometry data per TVM (milliseconds)",
-                                                    "Average marshalling time for the extra parameters per TVM (milliseconds)", "Standard deviation of marshalling time for the extra parameters per TVM (milliseconds)",
-                                                    "Average rendering time per TVM (milliseconds)", "Standard deviation of rendering time per TVM (milliseconds)",
-                                                    "Average CPU % consuption", "Standard deviation of CPU % consuption",
-                                                    "Average GPU % consuption", "Standard deviation of GPU % consuption",
-                                                    "Average RAM consuption (MBs)", "Standard deviation of RAM consuption (MBs)",
-                                                    "Average BW consuption (Mbps)", "Standard deviation of BW consuption (Mbps)");
+                //Compute the Average      
+                double avg = values.Average();
+                //Perform the Sum of (value-avg)_2_2      
+                double sum = values.Sum(d => Math.Pow(d - avg, 2));
+                //Put it all together      
+                ret = Math.Sqrt(sum / (values.Count() - 1));
+            }
+            return ret;
+        }
 
-                perfomanceMetricsCSV.AppendLine(metricsNames);
+        private double changeMetricUnit(double metric, int metric_unit)
+        {
+            for (int i = 0; i < metric_unit + 1; i++)
+                metric /= 1024;
+
+            return metric;
+        }
+
+        public void printMetrics(System.Diagnostics.Stopwatch stopWatch, string tvmObjName)
+        {
+            if (!Config.Instance.TVMs.printMetrics)
+                return;
+            try
+            {
+                tenSecondsReached = true;
+                totalTime += stopWatch.ElapsedMilliseconds;
+
+                if (Math.Abs(stopWatch.ElapsedMilliseconds - 10000) > 500)
+                    return;
+
+                Debug.Log("sw (ms) = " + totalTime + ": General Statistics (TVM Object Name: " + tvmObjName +
+                "): \n                                      Frames per second (number of frames / time): " + ((double)fps / stopWatch.ElapsedMilliseconds * 1000).ToString("F8") +
+                "\n                                      Average Frametime: " + (!frameTime.Any() ? "None" : frameTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!frameTime.Any() ? "None" : CalculateStdDev(frameTime).ToString("F8")) + ")" +
+                "\n                                      Frames per second (1 / Average Frametime in seconds): " + (!frameTime.Any() ? "None" : (1000 / frameTime.Average()).ToString("F8")) +
+                "\n                                      Number of TVMs received but not rendered: " + (all_frames - fps <= 0 ? 0 : all_frames - fps) +
+                "\n                                      Average end to end delay: " + (!endToEndDelay.Any() ? "None" : endToEndDelay.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!endToEndDelay.Any() ? "None" : CalculateStdDev(endToEndDelay.Select(x => Convert.ToDouble(x))).ToString("F8")) + ")" +
+                "\n                                      Average number of vertices per TVM: " + (!num_vertices.Any() ? "None" : num_vertices.Average().ToString("F8")) +
+                                                        " (Standard deviation: " + (!num_vertices.Any() ? "None" : CalculateStdDev(num_vertices.Select(x => Convert.ToDouble(x))).ToString("F8")) + ")");
+
+                Debug.Log("sw (ms) = " + totalTime + ": Compression Module (TVM Object Name: " + tvmObjName +
+                "): \n                                      Average compressed TVM buffer size (" + metric_units[1] + "): " + (!compressed_buffer_size.Any() ? "None" : changeMetricUnit(Convert.ToDouble(compressed_buffer_size.Average()), 1).ToString("F8")) + " " +
+                                                        " (Standard deviation: " + (!compressed_buffer_size.Any() ? "None" : changeMetricUnit(CalculateStdDev(compressed_buffer_size.Select(x => Convert.ToDouble(x))), 1).ToString("F8")) + ")" +
+                "\n                                      Average decompressed TVM buffer size (" + metric_units[1] + "): " + (!decompressed_buffer_size.Any() ? "None" : changeMetricUnit(Convert.ToDouble(decompressed_buffer_size.Average()), 1).ToString("F8")) + " " +
+                                                        " (Standard deviation: " + (!decompressed_buffer_size.Any() ? "None" : changeMetricUnit(CalculateStdDev(decompressed_buffer_size.Select(x => Convert.ToDouble(x))), 1).ToString("F8")) + ")");
+
+                Debug.Log("sw (ms) = " + totalTime + ":  Deserialization-Decompression Module (TVM Object Name: " + tvmObjName +
+                "): \n                                      Average total deserialization-decompression time per TVM: " + (!deserializeTime.Any() ? "None" : deserializeTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!deserializeTime.Any() ? "None" : CalculateStdDev(deserializeTime).ToString("F8")) + ")" +
+                "\n                                      Average time of deserialization-decompression function call per TVM: " + (!deserializeFunctionTime.Any() ? "None" : deserializeFunctionTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!deserializeFunctionTime.Any() ? "None" : CalculateStdDev(deserializeFunctionTime).ToString("F8")) + ")" +
+                "\n                                      Average deserialization time of texture data per TVM: " + (!deserializeTexturesTime.Any() ? "None" : deserializeTexturesTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!deserializeTexturesTime.Any() ? "None" : CalculateStdDev(deserializeTexturesTime).ToString("F8")) + ")" +
+                "\n                                      Average deserialization time of geometry (faces, vertices) data per TVM: " + (!deserializeGeometryTime.Any() ? "None" : deserializeGeometryTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!deserializeGeometryTime.Any() ? "None" : CalculateStdDev(deserializeGeometryTime).ToString("F8")) + ")" +
+                "\n                                      Average deserialization time of parameters per TVM: " + (!deserializeParamsTime.Any() ? "None" : deserializeParamsTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!deserializeParamsTime.Any() ? "None" : CalculateStdDev(deserializeParamsTime).ToString("F8")) + ")");
+
+                Debug.Log("sw (ms) = " + totalTime + ": Rendering Module (TVM Object Name: " + tvmObjName +
+                "): \n                                      Average rendering time per TVM: " + (!renderingTime.Any() ? "None" : renderingTime.Average().ToString("F8")) + " ms" +
+                                                        " (Standard deviation: " + (!renderingTime.Any() ? "None" : CalculateStdDev(renderingTime).ToString("F8")) + ")");
+
+                Debug.Log("sw (ms) = " + totalTime + ": PC Consumptions (TVM Object Name: " + tvmObjName +
+                "): \n                                      Average CPU% usage: " + (!usageSamplesCPU.Any() ? "None" : usageSamplesCPU.Average().ToString("F8")) +
+                                                        " (Standard deviation: " + (!usageSamplesCPU.Any() ? "None" : CalculateStdDev(usageSamplesCPU).ToString("F8")) + ")" +
+                "\n                                      Average GPU% usage: " + (!usageSamplesGPU.Any() ? "None" : usageSamplesGPU.Average().ToString("F8")) +
+                                                        " (Standard deviation: " + (!usageSamplesGPU.Any() ? "None" : CalculateStdDev(usageSamplesGPU).ToString("F8")) + ")" +
+                "\n                                      Average RAM usage (MBs): " + (!usageSamplesRAM.Any() ? "None" : usageSamplesRAM.Average().ToString("F8")) +
+                                                        " (Standard deviation: " + (!usageSamplesRAM.Any() ? "None" : CalculateStdDev(usageSamplesRAM).ToString("F8")) + ")" +
+                "\n                                      Average BW usage (MBps): " + (!usageSamplesBW.Any() ? "None" : usageSamplesBW.Average().ToString("F8")) +
+                                                        " (Standard deviation: " + (!usageSamplesBW.Any() ? "None" : CalculateStdDev(usageSamplesBW).ToString("F8")) + ")");
+
+                Debug.Log("sw (ms) = " + totalTime + ": RMQ Consumptions (TVM Object Name: " + tvmObjName +
+                "): \n                                      RMQ Exchanges:" + formatRMQMetricsOutputString(exchangesData, "RMQ exchange name", -1) +
+                "\n                                      Peer connections to RMQ server " + Config.Instance.TVMs.connectionURI.Split('@')[1].Split(':')[0] + ":" + formatRMQMetricsOutputString(connectionsData, "Peer 's IP(:Port)", 1) +
+                "\n                                      RMQ server 's " + Config.Instance.TVMs.connectionURI.Split('@')[1].Split(':')[0] + " memory (MBs):" + formatRMQMetricsOutputString(nodesMemoryData, "RMQ node 's name", 1));
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                return;
+            }
+        }
+
+        private string formatRMQMetricsOutputString(SortedDictionary<string, Dictionary<string, string>> data, string typeData, int metricsUnit)
+        {
+            string outputString = "";
+            List<string> valuesOfInterest = new List<string>();
+
+            foreach (var key in data.Keys)
+            {
+                outputString += "\n                                                 " + typeData + ": " + key;
+
+                for (int i = 0; i < data[key].Count; i++)
+                {
+                    if (data[key].ElementAt(i).Value.Split(',').Length > 0)
+                    {
+                        valuesOfInterest = data[key].ElementAt(i).Value.Split(',').ToList();
+                        valuesOfInterest.RemoveAll(x => x.Contains("None"));
+
+                        if (!data[key].ElementAt(i).Key.Contains("strategy"))
+                        {
+                            if (metricsUnit < 0)
+                                outputString += "\n                                                             " + data[key].ElementAt(i).Key + ": " +
+                                                    (!valuesOfInterest.Any() ? "None" : valuesOfInterest.Select(x => double.Parse(x)).ToList().Average().ToString("F8")) +
+                                            " (Standard deviation: " + (!valuesOfInterest.Any() ? "None" : CalculateStdDev(valuesOfInterest.Select(x => double.Parse(x)).ToList()).ToString("F8")) + ")";
+                            else
+                                outputString += "\n                                                             " + data[key].ElementAt(i).Key + ": " +
+                                                    (!valuesOfInterest.Any() ? "None" : changeMetricUnit(valuesOfInterest.Select(x => double.Parse(x)).ToList().Average(), metricsUnit).ToString("F8")) +
+                                            " (Standard deviation: " + (!valuesOfInterest.Any() ? "None" : changeMetricUnit(CalculateStdDev(valuesOfInterest.Select(x => double.Parse(x)).ToList()), metricsUnit).ToString("F8")) + ")";
+                        }
+                        else
+                        {
+                            outputString += "\n                                                             " + data[key].ElementAt(i).Key + ": " +
+                                                    (!valuesOfInterest.Any() ? "None" : string.Join("x", new HashSet<string>(valuesOfInterest)));
+                        }
+                    }
+                }
+            }
+            return string.IsNullOrEmpty(outputString) ? "\n                                                             None" : outputString;
+        }
+
+        private string formatRMQMetricsSavedString(SortedDictionary<string, Dictionary<string, string>> data, int metricsUnit)
+        {
+            string outputString = "";
+            List<string> valuesOfInterest = new List<string>();
+
+            foreach (var key in data.Keys)
+            {
+                for (int i = 0; i < data[key].Count; i++)
+                {
+                    if (data[key].ElementAt(i).Value.Split(',').Length > 0)
+                    {
+                        valuesOfInterest = data[key].ElementAt(i).Value.Split(',').ToList();
+                        valuesOfInterest.RemoveAll(x => x.Contains("None"));
+
+                        if (!data[key].ElementAt(i).Key.Contains("strategy"))
+                        {
+                            if (metricsUnit < 0)
+                                outputString += "," + (!valuesOfInterest.Any() ? "None" : valuesOfInterest.Select(x => double.Parse(x)).ToList().Average().ToString("F8")) +
+                                            "," + (!valuesOfInterest.Any() ? "None" : CalculateStdDev(valuesOfInterest.Select(x => double.Parse(x)).ToList()).ToString("F8"));
+                            else
+                                outputString += "," + (!valuesOfInterest.Any() ? "None" : changeMetricUnit(valuesOfInterest.Select(x => double.Parse(x)).ToList().Average(), metricsUnit).ToString("F8")) +
+                                            "," + (!valuesOfInterest.Any() ? "None" : changeMetricUnit(CalculateStdDev(valuesOfInterest.Select(x => double.Parse(x)).ToList()), metricsUnit).ToString("F8"));
+                        }
+                        else
+                        {
+                            outputString += "," + (!valuesOfInterest.Any() ? "None" : string.Join("x", new HashSet<string>(valuesOfInterest)));
+                        }
+
+                        valuesOfInterest.Clear();
+                    }
+                }
             }
 
-            perfomanceMetricsCSV.AppendLine(metricsLastTen);
-        }
-        catch (Exception e)
-        {
-            clearAll();
-            Debug.Log(e);
-            return;
-        }
-    }
-
-    public void saveAndDestroy()
-    {
-        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
-            return;
-
-        process.Kill();
-
-        if (Config.Instance.TVMs.saveMetrics)
-        {
-            string expDirectory = Directory.GetParent(fullPathToExe) + "\\logs\\" + DateTime.Now.ToString("yyyy-MM-dd");
-            if (!Directory.Exists(expDirectory))
-                Directory.CreateDirectory(expDirectory);
-
-            File.WriteAllText(expDirectory + "\\PerformanceMetrics_" + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + ".csv", perfomanceMetricsCSV.ToString());
+            return outputString;
         }
 
-        perfomanceMetricsCSV.Clear();
-    }
-
-    public void clearAll()
-    {
-        if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
-            return;
-
-        fps = 0;
-        total_compressed_buffer_size = 0;
-        total_decompressed_buffer_size = 0;
-        total_num_vertices = 0;
-        all_frames = 0;
-        renderingTime.Clear();
-        deserializeTime.Clear();
-        deserializeParamsTime.Clear();
-        deserializeGeometryTime.Clear();
-        deserializeTexturesTime.Clear();
-        deserializeFunctionTime.Clear();
-        usageSamplesCPU.Clear();
-        usageSamplesGPU.Clear();
-        usageSamplesRAM.Clear();
-        usageSamplesBW.Clear();
-    }
-
-    public void runCommand()
-    {
-        if ((!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics) || !string.IsNullOrEmpty(fullPathToExe))
-            return;
-
-        fullPathToExe = Application.streamingAssetsPath + "\\PerformanceCounting\\PerfomanceData";
-
-        process = new System.Diagnostics.Process
+        private string formatRMQMetricsNamesSavedString(SortedDictionary<string, Dictionary<string, string>> data, string typeData)
         {
-            StartInfo = new System.Diagnostics.ProcessStartInfo
+            string outputString = "";
+
+            foreach (var key in data.Keys)
             {
-                FileName = fullPathToExe,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                CreateNoWindow = true
+                for (int i = 0; i < data[key].Count; i++)
+                {
+                    if (data[key].ElementAt(i).Value.Split(',').Length > 0)
+                    {
+                        if (!data[key].ElementAt(i).Key.Contains("strategy"))
+                        {
+                            outputString += ",Average of " + data[key].ElementAt(i).Key + typeData + key;
+                            outputString += ",Standard deviation of " + data[key].ElementAt(i).Key + typeData + key;
+                        }
+                        else
+                            outputString += ",Strategy of" + typeData + key;
+                    }
+                }
             }
-        };
-        //* Set your output and error (asynchronous) handlers
-        process.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(OutputHandler);
-        process.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(ErrorHandler);
-        process.Start();
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-    }
 
-    private static void ErrorHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
-    {
-        if(outLine.Data.Length > 0)
-            Debug.Log("Error: " + outLine.Data);
-    }
+            return outputString;
+        }
 
-    private static void OutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
-    {
-        //* Do your stuff with the output (write to console/log/StringBuilder)
-        if (outLine.Data.Contains("CPU"))
-            usageSamplesCPU.Add(float.Parse(outLine.Data.Split(' ')[2]));
-        else if (outLine.Data.Contains("GPU"))
-            usageSamplesGPU.Add(float.Parse(outLine.Data.Split(' ')[2]));
-        else if (outLine.Data.Contains("RAM"))
-            usageSamplesRAM.Add(float.Parse(outLine.Data.Split(' ')[2]));
-        else if (outLine.Data.Contains("BW"))
-            usageSamplesBW.Add(float.Parse(outLine.Data.Split(' ')[1]));
+        public void saveMetrics(System.Diagnostics.Stopwatch stopWatch)
+        {
+            if (!Config.Instance.TVMs.saveMetrics)
+                return;
+
+            try
+            {
+                if (Math.Abs(stopWatch.ElapsedMilliseconds - 10000) > 500)
+                    return;
+
+                string metricsLastTen = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29},{30},{31},{32},{33}",
+                                                        DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"), ((double)fps / stopWatch.ElapsedMilliseconds * 1000).ToString("F8"), (all_frames - fps <= 0 ? 0 : all_frames - fps).ToString(),
+                                                        !frameTime.Any() ? "None" : frameTime.Average().ToString("F8"), !frameTime.Any() ? "None" : CalculateStdDev(frameTime).ToString("F8"),
+                                                        !frameTime.Any() ? "None" : (1000 / frameTime.Average()).ToString("F8"),
+                                                        !endToEndDelay.Any() ? "None" : endToEndDelay.Average().ToString("F8"), !endToEndDelay.Any() ? "None" : CalculateStdDev(endToEndDelay.Select(x => Convert.ToDouble(x))).ToString("F8"),
+                                                        !num_vertices.Any() ? "None" : num_vertices.Average().ToString("F8"), !num_vertices.Any() ? "None" : CalculateStdDev(num_vertices.Select(x => Convert.ToDouble(x))).ToString("F8"),
+                                                        !compressed_buffer_size.Any() ? "None" : changeMetricUnit(Convert.ToDouble(compressed_buffer_size.Average()), 1).ToString("F8"),
+                                                        !compressed_buffer_size.Any() ? "None" : changeMetricUnit(CalculateStdDev(compressed_buffer_size.Select(x => Convert.ToDouble(x))), 1).ToString("F8"),
+                                                        !decompressed_buffer_size.Any() ? "None" : changeMetricUnit(Convert.ToDouble(decompressed_buffer_size.Average()), 1).ToString("F8"),
+                                                        !decompressed_buffer_size.Any() ? "None" : changeMetricUnit(CalculateStdDev(decompressed_buffer_size.Select(x => Convert.ToDouble(x))), 1).ToString("F8"),
+                                                        !deserializeTime.Any() ? "None" : deserializeTime.Average().ToString("F8"), !deserializeTime.Any() ? "None" : CalculateStdDev(deserializeTime).ToString("F8"),
+                                                        !deserializeFunctionTime.Any() ? "None" : deserializeFunctionTime.Average().ToString("F8"), !deserializeFunctionTime.Any() ? "None" : CalculateStdDev(deserializeFunctionTime).ToString("F8"),
+                                                        !deserializeTexturesTime.Any() ? "None" : deserializeTexturesTime.Average().ToString("F8"), !deserializeTexturesTime.Any() ? "None" : CalculateStdDev(deserializeTexturesTime).ToString("F8"),
+                                                        !deserializeGeometryTime.Any() ? "None" : deserializeGeometryTime.Average().ToString("F8"), !deserializeGeometryTime.Any() ? "None" : CalculateStdDev(deserializeGeometryTime).ToString("F8"),
+                                                        !deserializeParamsTime.Any() ? "None" : deserializeParamsTime.Average().ToString("F8"), !deserializeParamsTime.Any() ? "None" : CalculateStdDev(deserializeParamsTime).ToString("F8"),
+                                                        !renderingTime.Any() ? "None" : renderingTime.Average().ToString("F8"), !renderingTime.Any() ? "None" : CalculateStdDev(renderingTime).ToString("F8"),
+                                                        !usageSamplesCPU.Any() ? "None" : usageSamplesCPU.Average().ToString("F8"), !usageSamplesCPU.Any() ? "None" : CalculateStdDev(usageSamplesCPU).ToString("F8"),
+                                                        !usageSamplesGPU.Any() ? "None" : usageSamplesGPU.Average().ToString("F8"), !usageSamplesGPU.Any() ? "None" : CalculateStdDev(usageSamplesGPU).ToString("F8"),
+                                                        !usageSamplesRAM.Any() ? "None" : usageSamplesRAM.Average().ToString("F8"), !usageSamplesRAM.Any() ? "None" : CalculateStdDev(usageSamplesRAM).ToString("F8"),
+                                                        !usageSamplesBW.Any() ? "None" : usageSamplesBW.Average().ToString("F8"), !usageSamplesBW.Any() ? "None" : CalculateStdDev(usageSamplesBW).ToString("F8")) +
+                                                        formatRMQMetricsSavedString(exchangesData, -1) +
+                                                        formatRMQMetricsSavedString(connectionsData, 1) +
+                                                        formatRMQMetricsSavedString(nodesMemoryData, 1);
+
+                if (metricsCSV.Length == 0)
+                {
+                    string metricsNames = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24},{25},{26},{27},{28},{29},{30},{31},{32},{33}",
+                                                        "Timestamp", "Frames per second (number of frames / time)", "Missed / Skipped frames",
+                                                        "Average frametime per TVM (milliseconds) ", "Standard deviation of average frametime per TVM (milliseconds)",
+                                                        "Frames per second (1 / Average frametime in seconds)",
+                                                        "Average end to end delay (milliseconds)", "Standard deviation of end to end delay (milliseconds)",
+                                                        "Average number of vertices per TVM", "Standard deviation of number of vertices per TVM",
+                                                        "Average size of received compressed TVM (" + metric_units[1] + ")", "Standard deviation of received compressed TVM 's size (" + metric_units[1] + ")",
+                                                        "Average size of decompressed TVM (" + metric_units[1] + ")", "Standard deviation of decompressed TVM 's size (" + metric_units[1] + ")",
+                                                        "Average total deserialization-decompression time per TVM (milliseconds)", "Standard deviation of deserialization-decompression time per TVM (milliseconds)",
+                                                        "Average deserialization-decompression function execution time per TVM (milliseconds)", "Standard deviation of deserialization-decompression function execution time  per TVM (milliseconds)",
+                                                        "Average marshalling time for the texture data per TVM (milliseconds)", "Standard deviation of marshalling time for the texture data per TVM (milliseconds)",
+                                                        "Average marshalling time for the geometry data per TVM (milliseconds)", "Standard deviation of marshalling time for the geometry data per TVM (milliseconds)",
+                                                        "Average marshalling time for the extra parameters per TVM (milliseconds)", "Standard deviation of marshalling time for the extra parameters per TVM (milliseconds)",
+                                                        "Average rendering time per TVM (milliseconds)", "Standard deviation of rendering time per TVM (milliseconds)",
+                                                        "Average CPU % consumption", "Standard deviation of CPU % consumption",
+                                                        "Average GPU % consumption", "Standard deviation of GPU % consumption",
+                                                        "Average RAM consumption (MBs)", "Standard deviation of RAM consumption (MBs)",
+                                                        "Average BW consumption (Mbps)", "Standard deviation of BW consumption (Mbps)") +
+                                                        formatRMQMetricsNamesSavedString(exchangesData, " of RMQ exchange ") +
+                                                        formatRMQMetricsNamesSavedString(connectionsData, " of RMQ connection ") +
+                                                        formatRMQMetricsNamesSavedString(nodesMemoryData, " memory (MBs) of RMQ server 's node ");
+
+                    metricsCSV.AppendLine(metricsNames);
+                }
+
+                metricsCSV.AppendLine(metricsLastTen);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+                return;
+            }
+        }
+
+        public void saveAndDestroy(string tvmObjName)
+        {
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+                return;
+
+            if (!performanceProcess.HasExited)
+                performanceProcess.Kill();
+            if (!RMQprocess.HasExited)
+                RMQprocess.Kill();
+
+            if (Config.Instance.TVMs.saveMetrics)
+            {
+                string[] allLines = metricsCSV.ToString().Split('\n');
+
+                string expDirectory = Path.Combine(Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "TVMPerfomanceLogs", DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss"));
+                if (!Directory.Exists(expDirectory))
+                    Directory.CreateDirectory(expDirectory);
+
+                File.WriteAllText(expDirectory + "\\PerformanceMetrics_" + tvmObjName + ".csv", metricsCSV.ToString());
+            }
+
+            metricsCSV.Clear();
+        }
+
+        public void clearAll()
+        {
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+                return;
+
+            fps = 0;
+            compressed_buffer_size.Clear();
+            decompressed_buffer_size.Clear();
+            num_vertices.Clear();
+            frameTime.Clear();
+            endToEndDelay.Clear();
+            all_frames = 0;
+            renderingTime.Clear();
+            deserializeTime.Clear();
+            deserializeParamsTime.Clear();
+            deserializeGeometryTime.Clear();
+            deserializeTexturesTime.Clear();
+            deserializeFunctionTime.Clear();
+            usageSamplesCPU.Clear();
+            usageSamplesGPU.Clear();
+            usageSamplesRAM.Clear();
+            usageSamplesBW.Clear();
+            nodesMemoryData.Clear();
+            exchangesData.Clear();
+            connectionsData.Clear();
+            tenSecondsReached = false;
+        }
+
+        public void runCommand()
+        {
+            runPerfomanceMetricsExe();
+        }
+
+        public void runPerfomanceMetricsExe()
+        {
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+                return;
+
+            performanceProcess = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = fullPathToExe + "\\PerfomanceData",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true
+                }
+            };
+
+            //* Set your output and error (asynchronous) handlers
+            performanceProcess.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(PerformanceOutputHandler);
+            performanceProcess.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(PerformanceErrorHandler);
+            performanceProcess.Start();
+            performanceProcess.BeginOutputReadLine();
+            performanceProcess.BeginErrorReadLine();
+        }
+
+        private void runRMQMetricsExe()
+        {
+            if (!Config.Instance.TVMs.printMetrics && !Config.Instance.TVMs.saveMetrics)
+                return;
+
+            RMQprocess = new System.Diagnostics.Process
+            {
+                StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = fullPathToExe + "\\RMQData",
+                    Arguments = Config.Instance.TVMs.connectionURI.Split('@')[1].Split(':')[0] + " " + // RMQ Server 's ip
+                                Config.Instance.TVMs.connectionURI.Split('@')[0].Split(new string[] { "//" }, StringSplitOptions.None)[1].Split(':')[0] + " " + // RMQ Server 's username
+                                Config.Instance.TVMs.connectionURI.Split('@')[0].Split(new string[] { "//" }, StringSplitOptions.None)[1].Split(':')[1] + " " + // RMQ Server 's password
+                                (exchangeNames.Where(s => !string.IsNullOrWhiteSpace(s)).ToList().Count > 0 ? string.Join(",", exchangeNames.Where(s => !string.IsNullOrWhiteSpace(s)).ToList()) : "None") + " " + // RMQ Server 's exchange name
+                                (connectionNames.Where(s => !string.IsNullOrWhiteSpace(s)).ToList().Count > 0 ? string.Join(",", connectionNames.Where(s => !string.IsNullOrWhiteSpace(s)).ToList()) : "None") + " " + // RMQ Server 's connections
+                                "1000", // period
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true
+                }
+            };
+
+            //* Set your output and error (asynchronous) handlers
+            RMQprocess.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler(RMQOutputHandler);
+            RMQprocess.ErrorDataReceived += new System.Diagnostics.DataReceivedEventHandler(RMQErrorHandler);
+            RMQprocess.Start();
+            RMQprocess.BeginOutputReadLine();
+            RMQprocess.BeginErrorReadLine();
+        }
+
+        private void RMQErrorHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        {
+            if (!tenSecondsReached && outLine.Data.Length > 0)
+            {
+                Debug.Log("RMQ Metrics Executable Error: " + outLine.Data);
+                RMQprocess.Kill();
+                runRMQMetricsExe();
+            }
+        }
+
+        private void RMQOutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        {
+            if (!tenSecondsReached && outLine.Data.Length > 0)
+            {
+                string dataDescription = outLine.Data.Split(new string[] { " -> " }, StringSplitOptions.None)[0];
+
+                if (dataDescription.Contains("Exchange"))
+                    parseRMQMessage(exchangesData, outLine.Data);
+                else if (dataDescription.Contains("memory"))
+                    parseRMQMessage(nodesMemoryData, outLine.Data);
+                else if (dataDescription.Contains("IP(:Port)"))
+                    parseRMQMessage(connectionsData, outLine.Data);
+            }
+        }
+
+        private void parseRMQMessage(SortedDictionary<string, Dictionary<string, string>> data, string outLine)
+        {
+            string dataDescription = outLine.Split(new string[] { " -> " }, StringSplitOptions.None)[0];
+            string dataValue = outLine.Split(new string[] { " -> " }, StringSplitOptions.None)[1];
+            dataValue = dataValue.Contains("(bytes / second)") ? dataValue.Replace("(bytes / second)", "(MBs / second)") : dataValue;
+
+            if (!data.ContainsKey(dataDescription.Split(' ')[2]))
+                data[dataDescription.Split(' ')[2]] = new Dictionary<string, string>();
+            if (!data[dataDescription.Split(' ')[2]].ContainsKey(dataValue.Split(':')[0]))
+                data[dataDescription.Split(' ')[2]][dataValue.Split(new string[] { ": " }, StringSplitOptions.None)[0]] = dataValue.Split(' ').Last();
+            else
+                data[dataDescription.Split(' ')[2]][dataValue.Split(new string[] { ": " }, StringSplitOptions.None)[0]] += "," + dataValue.Split(' ').Last();
+        }
+
+        private void PerformanceErrorHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        {
+            if (outLine.Data.Length > 0)
+            {
+                Debug.Log("Perfomance Metrics Executable Error: " + outLine.Data);
+                performanceProcess.Kill();
+                runPerfomanceMetricsExe();
+            }
+        }
+
+        private void PerformanceOutputHandler(object sendingProcess, System.Diagnostics.DataReceivedEventArgs outLine)
+        {
+            //* Do your stuff with the output (write to console/log/StringBuilder)
+            if (outLine.Data.Length > 0)
+            {
+                if (outLine.Data.Contains("CPU"))
+                    usageSamplesCPU.Add(double.Parse(outLine.Data.Split(' ')[2]));
+                else if (outLine.Data.Contains("GPU"))
+                    usageSamplesGPU.Add(double.Parse(outLine.Data.Split(' ')[2]));
+                else if (outLine.Data.Contains("RAM"))
+                    usageSamplesRAM.Add(double.Parse(outLine.Data.Split(' ')[2]));
+                else if (outLine.Data.Contains("BW"))
+                    usageSamplesBW.Add(double.Parse(outLine.Data.Split(' ')[1]));
+            }
+        }
     }
 }

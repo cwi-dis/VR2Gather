@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
+using VRT.Orchestrator.Wrapping;
+using VRT.LivePresenter;
+using VRT.Pilots.Common;
+using VRT.Core;
 
 public class LoginController : PilotController {
 
@@ -13,19 +17,7 @@ public class LoginController : PilotController {
     //AsyncOperation async;
     Coroutine loadCoroutine = null;
 
-    void Awake() {
-        if (!XRDevice.isPresent) {
-            Resolution[] resolutions = Screen.resolutions;
-            bool fullRes = false;
-            foreach (var res in resolutions) {
-                if (res.width == 1920 && res.height == 1080) fullRes = true;
-            }
-            if (fullRes) Screen.SetResolution(1920, 1080, false, 30);
-            else Screen.SetResolution(1280, 720, false, 30);
-            Debug.Log("Resolution: " + Screen.width + "x" + Screen.height);
-        }
-    }
-
+   
     public override void Start() {
         base.Start();
         if (instance == null) {
@@ -55,59 +47,26 @@ public class LoginController : PilotController {
                 case "2": // Dash Audio
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     break;
-                default:
-                    break;
-            } 
-            // Check Pilot
-            switch (msg[1]) {
-                case "Pilot 0": // PILOT 0
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot0"));
-                    break;
-                case "Pilot 1": // PILOT 1
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot1"));
-                    break;
-                case "Pilot 2": // PILOT 2
-                    // Check Presenter
-                    switch (msg[3]) {
-                        case "0": // NONE
-                            Config.Instance.presenter = Config.Presenter.None;
-                            break;
-                        case "1": // LOCAL
-                            Config.Instance.presenter = Config.Presenter.Local;
-                            break;
-                        case "2": // LIVE
-                            Config.Instance.presenter = Config.Presenter.Live;
-                            break;
-                        default:
-                            break;
-                    }
-                    // Load Pilot
-                    if (loadCoroutine == null) {
-                        if (OrchestratorController.Instance.UserIsMaster && Config.Instance.presenter == Config.Presenter.Live)
-                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Presenter"));
-                        else
-                            loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot2_Player"));
-                    }
-                    break;
-				case "Pilot 3":
-					if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Pilot3"));
-					break;
-                case "Museum":
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("Museum"));
-                    break;
-                case "HoloConference":
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("HoloMeet"));
-                    break;
-                case "MedicalExamination": // PILOT 0
-                    // Load Pilot
-                    if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad("MedicalExamination"));
+                case "3": // Raw TCP
+                    Config.Instance.protocolType = Config.ProtocolType.TCP;
                     break;
                 default:
-                    Debug.Log("[LoginController][MessageActivation] This Scenario is not setted in the switch: " + msg[1]);
+                    Debug.LogError($"LoginController: received unknown START audio type {msg[2]}");
                     break;
             }
+            string pilotName = msg[1];
+            string pilotVariant = null;
+            if (msg.Length > 3 && msg[3] != "") pilotVariant = msg[3];
+            if (msg.Length > 4 && msg[4] != "")
+            {
+                Config.Instance.PCs.Codec = msg[4];
+            }
+            if (msg.Length > 5 && msg[5] != "")
+            {
+                Config.Instance.Voice.Codec = msg[5];
+            }
+            string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+            if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
         }
         else if (msg[0] == MessageType.READY) {
             // Do something to check if all the users are ready (future implementation)

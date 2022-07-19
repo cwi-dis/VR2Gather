@@ -1,0 +1,22 @@
+{
+    "name": "PointClouds",
+    "references": [
+        "VRTCore",
+        "Dash",
+        "Orchestrator",
+        "Voice",
+        "RabbitMQ",
+        "SocketIO",
+        "Pilots",
+        "TCP"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

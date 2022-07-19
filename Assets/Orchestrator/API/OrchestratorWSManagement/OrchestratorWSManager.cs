@@ -1,9 +1,32 @@
-﻿using BestHTTP.SocketIO;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using BestHTTP.SocketIO;
 using LitJson;
 using System;
 using System.Collections.Generic;
-using OrchestratorWrapping;
 using System.Diagnostics;
+using VRT.Orchestrator.Wrapping;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -16,7 +39,7 @@ using System.Diagnostics;
  *              main object by its ID. That allows to access it directly via its ID on JS, but it's not parsable directly on C#.
  **/
 
-namespace OrchestratorWSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     public interface IOrchestratorConnectionListener
     {
@@ -232,37 +255,12 @@ namespace OrchestratorWSManagement
             }
         }
 
-        // [deprecated] send the command (command name, parameters)
-        private Boolean SendCommand(string command, JsonData parameters)
-        {
-            lock (this) {
-                // increment the commandId and add it to the command parameters (see NOTE on top of file)
-                commandId++;
-                parameters["commandId"] = commandId;
-
-                // We don't send a command if one has already been sent without response
-                // Note : could depend on how the UMTS will be used : simultaneous commands could be launched if we store awaiting commands
-                //        in a list but we would have later to link the response with the emitted commands, which is not done for the moment but
-                //        could be done if the orchestrator integrates the commandId with the response
-                if (!IsWaitingResponse) {
-                    // warn the messages Listener that new message is emitted
-                    if (messagesListener != null) {
-                        messagesListener.OnOrchestratorRequest(command + " " + parameters.ToJson());
-                    }
-
-                    // emit the command on socket.io
-                    Manager.Socket.Emit(command, OnAckCallback, parameters);
-                    IsWaitingResponse = true;
-                    return true;
-                }
-                return false;
-            }
-        }
-
         // Callback that is called on a command response
         private void OnAckCallback(Socket socket, Packet originalPacket, params object[] args)
         {
-            int ackedCmd = 0;
+            int ackedCmdIndex = -1;
+            OrchestratorCommand ackedCmd = null;
+
             OrchestratorResponse response = JsonToOrchestratorResponse(originalPacket.Payload);
 
             //warn the messages Listener that a response is received from the orchestrator
@@ -270,17 +268,28 @@ namespace OrchestratorWSManagement
             {
                 messagesListener.OnOrchestratorResponse(response.commandId, response.error, originalPacket.Payload);
             }
-
-            for (int i = 0; i < commandQueue.Count; i++)
+            lock(this)
             {
-                if (response.commandId == commandQueue[i].commandID)
+                for (int i = 0; i < commandQueue.Count; i++)
                 {
-                    commandQueue[i]?.ResponseCallback.Invoke(commandQueue[i], response);
-                    ackedCmd = i;
+                    if (response.commandId == commandQueue[i].commandID)
+                    {
+                        ackedCmd = commandQueue[i];
+                        if (ackedCmdIndex >= 0)
+                        {
+                            throw new Exception($"OrchestratorWSManager: ACK for commandId {response.commandId} which has duplicate entry");
+                        }
+                        ackedCmdIndex = i;
+                    }
                 }
+                if (ackedCmdIndex < 0)
+                {
+                    throw new Exception($"OrchestratorWSManager: ACK for commandId {response.commandId} which is unknown");
+                }
+                commandQueue.RemoveAt(ackedCmdIndex);
             }
-
-            commandQueue.RemoveAt(ackedCmd);
+  
+            ackedCmd.ResponseCallback.Invoke(ackedCmd, response);
 
             /*
             for (int i = 0; i < commandQueue.Count; i++)

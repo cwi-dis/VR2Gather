@@ -9,38 +9,14 @@ EditorBuildSettings:
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
   - enabled: 1
-    path: Assets/Pilots/HoloMeet/Scenes/HoloMeet.unity
-    guid: 5c134d40d6bda4d419638dc9cbe450a9
-  - enabled: 1
-    path: Assets/Pilots/Museum/Scenes/Museum.unity
-    guid: 7ebd5a05dde9ab54991d713a402a02d6
-  - enabled: 1
     path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
     guid: 01e8d4050e184da48aba95c97a697601
   - enabled: 1
-    path: Assets/Pilots/Pilot1/Scenes/Pilot1.unity
-    guid: 729c2f5197e10724996923c482b5f533
-  - enabled: 0
-    path: Assets/Pilots/Pilot2/Scenes/Pilot2_Presenter.unity
-    guid: bab88bbc29626f04891faadc31bb6426
-  - enabled: 1
-    path: Assets/Pilots/Pilot2/Scenes/Pilot2_Player.unity
-    guid: 411fba5423c48c14ab54d9f0a44740dc
-  - enabled: 1
-    path: Assets/Pilots/Pilot3/Scenes/Pilot3.unity
-    guid: 952b79172f9066b4595b40860a4957b0
-  - enabled: 1
-    path: Assets/Pilots/Pilot3/Scenes/Pilot3_BedRoom.unity
-    guid: 6c999ad37f4be7c418d45a5a08dc4a19
-  - enabled: 1
     path: Assets/UserRepresentation/SelfCalibration/Scenes/SelfCalibration.unity
     guid: a290470eafc8681428308a5ea76efe5d
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Pilots/MedicalExamination/Scenes/MedicalExamination.unity
-    guid: a7e3aa5f5caa42f49ab8c87a882ebfb1
+    path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
+    guid: 8d7c2248902f944f78d3799d2a8f1dba
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}

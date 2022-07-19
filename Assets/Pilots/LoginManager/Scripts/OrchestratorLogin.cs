@@ -5,12 +5,19 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using OrchestratorWrapping;
 using UnityEditor;
+using VRT.Orchestrator.Wrapping;
+using VRT.UserRepresentation.Voice;
+using VRT.Core;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
 }
+
+public enum AutoState
+{
+    DidNone, DidLogIn, DidPlay, DidCreate, DidPartialCreation, DidCompleteCreation, DidJoin, DidStart, Done
+};
 
 public class OrchestratorLogin : MonoBehaviour {
 
@@ -24,12 +31,12 @@ public class OrchestratorLogin : MonoBehaviour {
     public bool usePresenter = false;
     private int kindAudio = 2; // Set Dash as default
     private int kindPresenter = 0;
-    private int ntpSyncThreshold = 4; // Magic number to be defined (in seconds)
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
+    private AutoState autoState = AutoState.DidNone;
 
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
@@ -77,6 +84,8 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject tvmInfoGO = null;
     [SerializeField] private GameObject webcamInfoGO = null;
     [SerializeField] private GameObject pccerthInfoGO = null;
+    [SerializeField] private InputField tcpPointcloudURLConfigIF = null;
+    [SerializeField] private InputField tcpAudioURLConfigIF = null;
     [SerializeField] private InputField tvmConnectionURIConfigIF = null;
     [SerializeField] private InputField tvmExchangeNameConfigIF = null;
     [SerializeField] private InputField pccerthConnectionURIConfigIF = null;
@@ -107,8 +116,11 @@ public class OrchestratorLogin : MonoBehaviour {
     [SerializeField] private GameObject presenterPanel = null;
     [SerializeField] private Toggle presenterToggle = null;
     [SerializeField] private Toggle liveToggle = null;
-    [SerializeField] private Toggle socketAudioToggle = null;
-    [SerializeField] private Toggle dashAudioToggle = null;
+    [SerializeField] private Toggle socketProtocolToggle = null;
+    [SerializeField] private Toggle dashProtocolToggle = null;
+    [SerializeField] private Toggle tcpProtocolToggle = null;
+    [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
+    [SerializeField] private Toggle uncompressedAudioToggle = null;
 
     [Header("Join")]
     [SerializeField] private GameObject joinPanel = null;
@@ -236,39 +248,47 @@ public class OrchestratorLogin : MonoBehaviour {
         rectImage.localScale = Vector3.one;
         // IMAGE
         switch (user.userData.userRepresentationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 textItem.text += " - (No Rep)";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                 textItem.text += " - (2D Video)";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 textItem.text += " - (3D Avatar)";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric 3D Mesh)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_PROXY__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Simple PC)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_SYNTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 textItem.text += " - (Synthetic PC)";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                textItem.text += " - (Prerecorded PC)";
+                break;
+            case UserRepresentationType.__PCC_CERTH__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 textItem.text += " - (Volumetric PC)";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 textItem.text += " - (Spectator)";
+                break;
+            case UserRepresentationType.__CAMERAMAN__:
+                imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                textItem.text += " - (Cameraman)";
                 break;
             default:
                 break;
@@ -291,6 +311,9 @@ public class OrchestratorLogin : MonoBehaviour {
                 AddUserComponentOnContent(container.transform, u);
             }
             sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
+            // We may be able to continue auto-starting
+            if (Config.Instance.AutoStart != null)
+            Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
         else {
             Debug.Log("[OrchestratorLogin][UpdateUsersSession] ConnectedUsers was null");
@@ -334,11 +357,11 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void UpdateRepresentations(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
-        //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserData.eUserRepresentationType))));
+        //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
         List<string> finalNames = new List<string>();
-        foreach (string type in Enum.GetNames(typeof(UserData.eUserRepresentationType))) {
+        foreach (string type in Enum.GetNames(typeof(UserRepresentationType))) {
             string enumName;
             switch (type) {
                 case "__NONE__":
@@ -363,13 +386,19 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "Simple PointCloud (5G phone proxy)";
                     break;
                 case "__PCC_SYNTH__":
-                    enumName = "Synthetic PointCloud";
+                    enumName = "Synthetic PointCloud (development option)";
+                    break;
+                case "__PCC_PRERECORDED__":
+                    enumName = "Prerecorded PointCloud (development option)";
                     break;
                 case "__PCC_CERTH__":
-                    enumName = "Volumetric PointCloud";
+                    enumName = "Volumetric PointCloud (development option)";
                     break;
                 case "__SPECTATOR__":
                     enumName = "Spectator";
+                    break;
+                case "__CAMERAMAN__":
+                    enumName = "Cameraman";
                     break;
                 default:
                     enumName = type + " Not Defined";
@@ -381,7 +410,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void UpdateWebcams(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
         WebCamDevice[] devices = WebCamTexture.devices;
         List<string> webcams = new List<string>();
@@ -392,7 +421,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void Updatemicrophones(Dropdown dd) {
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         dd.ClearOptions();
         string[] devices = Microphone.devices;
         List<string> microphones = new List<string>();
@@ -408,81 +437,95 @@ public class OrchestratorLogin : MonoBehaviour {
         logsScrollRect.verticalScrollbar.value = 0;
     }
 
-    private void SetUserRepresentationGUI(UserData.eUserRepresentationType _representationType) {
+    private void SetUserRepresentationGUI(UserRepresentationType _representationType) {
         userRepresentationLobbyText.text = _representationType.ToString();
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 userRepresentationLobbyText.text = "NO REPRESENTATION";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                 userRepresentationLobbyText.text = "2D VIDEO";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "3D AVATAR";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC 3D MESH";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                 userRepresentationLobbyText.text = "SIMPLE PC";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
-                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+            case UserRepresentationType.__PCC_SYNTH__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                 userRepresentationLobbyText.text = "SYNTHETIC PC";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
+                userRepresentationLobbyText.text = "PRERECORDED PC";
+                break;
+            case UserRepresentationType.__PCC_CERTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URPCIcon");
                 userRepresentationLobbyText.text = "VOLUMETRIC PC";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                 userRepresentationLobbyText.text = "SPECTATOR";
+                break;
+            case UserRepresentationType.__CAMERAMAN__:
+                userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
+                userRepresentationLobbyText.text = "CAMERAMAN";
                 break;
             default:
                 break;
         }
     }
 
-    private void SetUserRepresentationDescription(UserData.eUserRepresentationType _representationType) {
+    private void SetUserRepresentationDescription(UserRepresentationType _representationType) {
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
-            case UserData.eUserRepresentationType.__NONE__:
+            case UserRepresentationType.__NONE__:
                 selfRepresentationDescription.text = "No visual representation, and no audio communication. The user can only listen.";
                 break;
-            case UserData.eUserRepresentationType.__2D__:
+            case UserRepresentationType.__2D__:
                 selfRepresentationDescription.text = "2D video window from your camera, as in typical conferencing services.";
                 break;
-            case UserData.eUserRepresentationType.__AVATAR__:
+            case UserRepresentationType.__AVATAR__:
                 selfRepresentationDescription.text = "3D Synthetic Avatar.";
                 break;
-            case UserData.eUserRepresentationType.__TVM__:
+            case UserRepresentationType.__TVM__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a Time Varying Meshes (TVM).";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWI_:
+            case UserRepresentationType.__PCC_CWI_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CWIK4A_:
+            case UserRepresentationType.__PCC_CWIK4A_:
                 selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_PROXY__:
+            case UserRepresentationType.__PCC_PROXY__:
                 selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_SYNTH__:
+            case UserRepresentationType.__PCC_SYNTH__:
                 selfRepresentationDescription.text = "3D Synthetic PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__PCC_CERTH__:
+            case UserRepresentationType.__PCC_PRERECORDED__:
+                selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
+                break;
+            case UserRepresentationType.__PCC_CERTH__:
                 selfRepresentationDescription.text = "Realistic user representation, using the full capturing system with 4 RGB-D cameras, as a PointCloud.";
                 break;
-            case UserData.eUserRepresentationType.__SPECTATOR__:
+            case UserRepresentationType.__SPECTATOR__:
                 selfRepresentationDescription.text = "No visual representation, but audio communication.";
+                break;
+            case UserRepresentationType.__CAMERAMAN__:
+                selfRepresentationDescription.text = "Local video recorder.";
                 break;
             default:
                 break;
@@ -499,7 +542,7 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
-        Workers.VoiceReader.PrepareDSP();
+        VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
 
         system = EventSystem.current;
 
@@ -512,7 +555,7 @@ public class OrchestratorLogin : MonoBehaviour {
         // Font to build gui components for logs!
         //MenuFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
-        // Fill UserData representation dropdown according to eUserRepresentationType enum declaration
+        // Fill UserData representation dropdown according to UserRepresentationType enum declaration
         UpdateRepresentations(representationTypeConfigDropdown);
         UpdateWebcams(webcamDropdown);
         Updatemicrophones(microphoneDropdown);
@@ -552,8 +595,11 @@ public class OrchestratorLogin : MonoBehaviour {
 
         InitialiseControllerEvents();
 
-        socketAudioToggle.isOn = true;
-        dashAudioToggle.isOn = false;
+        socketProtocolToggle.isOn = true;
+        dashProtocolToggle.isOn = false;
+        tcpProtocolToggle.isOn = false;
+        uncompressedPointcloudsToggle.isOn = Config.Instance.PCs.Codec == "cwi0";
+        uncompressedAudioToggle.isOn = Config.Instance.Voice.Codec == "VR2a";
         presenterToggle.isOn = false;
         liveToggle.isOn = false;
 
@@ -599,6 +645,94 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
+    void AutoStateUpdate()
+    {
+        Config._AutoStart config = Config.Instance.AutoStart;
+        if (config == null) return;
+        if (Input.GetKey(KeyCode.LeftShift)) return;
+        if (state == State.Play && autoState == AutoState.DidPlay)
+        {
+            if (config.autoCreate)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting");
+                autoState = AutoState.DidCreate;
+                StateButton(State.Create);
+
+            }
+            if (config.autoJoin)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoJoin: starting");
+                autoState = AutoState.DidJoin;
+                StateButton(State.Join);
+            }
+        }
+        if (state == State.Create && autoState == AutoState.DidCreate)
+        {
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionName={config.sessionName}");
+            sessionNameIF.text = config.sessionName;
+            uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
+            uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
+            if (config.sessionTransportProtocol >= 0)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
+                // xxxjack I don't understand the intended logic behind the toggles. But turning everything
+                // on and then simulating a button callback works.
+                switch(config.sessionTransportProtocol)
+                {
+                    case 1:
+                        socketProtocolToggle.isOn = true;
+                        break;
+                    case 2:
+                        dashProtocolToggle.isOn = true;
+                        break;
+                    case 3:
+                        tcpProtocolToggle.isOn = true;
+                        break;
+                }
+                SetAudio(config.sessionTransportProtocol);
+            }
+            autoState = AutoState.DidPartialCreation;
+        }
+        if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0) {
+            if (config.sessionScenario >= 0)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionScenario={config.sessionScenario}");
+                scenarioIdDrop.value = config.sessionScenario;
+            }
+            if (config.autoCreate)
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: creating");
+                Invoke("AddSession", config.autoDelay);
+            }
+            autoState = AutoState.DidCompleteCreation;
+
+        }
+        if (state == State.Lobby && autoState == AutoState.DidCompleteCreation && config.autoStartWith >= 1)
+        {
+            if (sessionNumUsersText.text == config.autoStartWith.ToString())
+            {
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting with {config.autoStartWith} users");
+                Invoke("ReadyButton", config.autoDelay);
+                autoState = AutoState.Done;
+            }
+        }
+        if (state == State.Join && autoState == AutoState.DidJoin)
+        {
+            var options = sessionIdDrop.options;
+            Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: look for {config.sessionName}");
+            for(int i=0; i<options.Count; i++)
+            {
+                if (options[i].text.StartsWith(config.sessionName + " "))
+                {
+                    Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: entry {i} is {config.sessionName}, joining");
+                    sessionIdDrop.value = i;
+                    autoState = AutoState.Done;
+                    Invoke("JoinSession", config.autoDelay);
+                }
+            }
+        }
+    }
+
     public void FillSelfUserData() {
         if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser==null) return;
         User user = OrchestratorController.Instance.SelfUser;
@@ -609,6 +743,8 @@ public class OrchestratorLogin : MonoBehaviour {
         userNameVRTText.text = user.userName;
         // Config Info
         UserData userData = user.userData;
+        tcpPointcloudURLConfigIF.text = userData.userPCurl;
+        tcpAudioURLConfigIF.text = userData.userAudioUrl;
         tvmExchangeNameConfigIF.text = userData.userMQexchangeName;
         tvmConnectionURIConfigIF.text = userData.userMQurl;
         pccerthConnectionURIConfigIF.text = Config.Instance.LocalUser.PCSelfConfig.CerthReaderConfig.ConnectionURI;
@@ -833,32 +969,36 @@ public class OrchestratorLogin : MonoBehaviour {
         webcamInfoGO.SetActive(false);
         pccerthInfoGO.SetActive(false);
         calibButton.gameObject.SetActive(false);
-        if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__TVM__) {
+        if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__TVM__) {
             tvmInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWI_)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWI_)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CWIK4A_)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWIK4A_)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_PROXY__)
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_PROXY__)
         {
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__PCC_CERTH__) {
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_SYNTH__)
+        {
+            calibButton.gameObject.SetActive(true);
+        }
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CERTH__) {
             pccerthInfoGO.SetActive(true);
             calibButton.gameObject.SetActive(true);
         }
-        else if ((UserData.eUserRepresentationType)representationTypeConfigDropdown.value == UserData.eUserRepresentationType.__2D__) {
+        else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__) {
             webcamInfoGO.SetActive(true);
         }
         // Preview
-        SetUserRepresentationDescription((UserData.eUserRepresentationType)representationTypeConfigDropdown.value);
-        selfRepresentationPreview.ChangeRepresentation((UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+        SetUserRepresentationDescription((UserRepresentationType)representationTypeConfigDropdown.value);
+        selfRepresentationPreview.ChangeRepresentation((UserRepresentationType)representationTypeConfigDropdown.value,
             webcamDropdown.options[webcamDropdown.value].text);
         selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
     }
@@ -959,14 +1099,13 @@ public class OrchestratorLogin : MonoBehaviour {
         state = _state;
         PanelChanger();
         if (state == State.Config)
+        {
             UpdateUserData();
+        }
     }
 
     public void ReadyButton() {
-        if (OrchestratorController.Instance.MyScenario.scenarioName == "Pilot 2")
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter);
-        else 
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio);
+        SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.PCs.Codec + "_" + Config.Instance.Voice.Codec);
     }
 
     public void GoToCalibration() {
@@ -1059,36 +1198,70 @@ public class OrchestratorLogin : MonoBehaviour {
 #region Toggles 
 
     private void AudioToggle() {
-        socketAudioToggle.interactable = !socketAudioToggle.isOn;
-        dashAudioToggle.interactable = !dashAudioToggle.isOn;
+        socketProtocolToggle.interactable = !socketProtocolToggle.isOn;
+        dashProtocolToggle.interactable = !dashProtocolToggle.isOn;
+        tcpProtocolToggle.interactable = !tcpProtocolToggle.isOn;
+    }
+
+    public void SetCompression()
+    {
+        if (uncompressedPointcloudsToggle.isOn)
+        {
+            Config.Instance.PCs.Codec = "cwi0";
+        }
+        else
+        {
+            Config.Instance.PCs.Codec = "cwi1";
+        }
+        if (uncompressedAudioToggle.isOn)
+        {
+            Config.Instance.Voice.Codec = "VR2a";
+        }
+        else
+        {
+            Config.Instance.Voice.Codec = "VR2A";
+        }
     }
 
     public void SetAudio(int kind) {
         switch (kind) {
             case 1: // Socket
-                if (socketAudioToggle.isOn) {
+                if (socketProtocolToggle.isOn) {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
                     // Set Toggles
-                    dashAudioToggle.isOn = false;
+                    dashProtocolToggle.isOn = false;
+                    tcpProtocolToggle.isOn = false;
                 }
                 break;
             case 2: // Dash
-                if (dashAudioToggle.isOn) {
+                if (dashProtocolToggle.isOn)
+                {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.Dash;
                     // Set Toggles
-                    socketAudioToggle.isOn = false;
+                    socketProtocolToggle.isOn = false;
+                    tcpProtocolToggle.isOn = false;
+                }
+                break;
+            case 3: // Dash
+                if (tcpProtocolToggle.isOn)
+                {
+                    // Set AudioType
+                    Config.Instance.protocolType = Config.ProtocolType.TCP;
+                    // Set Toggles
+                    socketProtocolToggle.isOn = false;
+                    dashProtocolToggle.isOn = false;
                 }
                 break;
             default:
                 break;
         }
-        kindAudio = kind;
+        kindAudio = (int)Config.Instance.protocolType;
     }
 
     private void PresenterToggles() {
-        if (OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioName == "Pilot 2") {
+        if (OrchestratorController.Instance.AvailableScenarios?[scenarioIdDrop.value].scenarioName == "Pilot 2") {
             presenterPanel.SetActive(true);
             // Check if presenter is active to show live option
             if (presenterToggle.isOn) {
@@ -1211,6 +1384,13 @@ public class OrchestratorLogin : MonoBehaviour {
             state = State.Online;
         }
         PanelChanger();
+        if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
+        {
+            if (Input.GetKey(KeyCode.LeftShift)) return;
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
+            autoState = AutoState.DidLogIn;
+            Login();
+        }
     }
 
     private void OnConnecting() {
@@ -1280,6 +1460,14 @@ public class OrchestratorLogin : MonoBehaviour {
             PlayerPrefs.DeleteKey("userNameLoginIF");
             PlayerPrefs.DeleteKey("userPasswordLoginIF");
         }
+        // If we want to autoCreate or autoStart depending on username set the right config flags.
+        if (Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoCreateForUser != "")
+        {
+            bool isThisUser = Config.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
+            Debug.Log($"[OrchestratorLogin][AutoStart] user={userNameLoginIF.text} autoCreateForUser={Config.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
+            Config.Instance.AutoStart.autoCreate = isThisUser;
+            Config.Instance.AutoStart.autoJoin = !isThisUser;
+        }
         OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
     }
 
@@ -1301,7 +1489,7 @@ public class OrchestratorLogin : MonoBehaviour {
             //UserData lUserData = new UserData {
             //    userMQexchangeName = exchangeNameLoginIF.text,
             //    userMQurl = connectionURILoginIF.text,
-            //    userRepresentationType = (UserData.eUserRepresentationType)representationTypeLoginDropdown.value
+            //    userRepresentationType = (UserRepresentationType)representationTypeLoginDropdown.value
             //};
             //OrchestratorController.Instance.UpdateUserData(lUserData);
             state = State.Logged;
@@ -1315,8 +1503,20 @@ public class OrchestratorLogin : MonoBehaviour {
         }
 
         PanelChanger();
+        if (userLoggedSucessfully
+            && autoState == AutoState.DidLogIn
+            && Config.Instance.AutoStart != null
+            && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
+            )
+        {
+            if (Input.GetKey(KeyCode.LeftShift)) return;
+            Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
+            autoState = AutoState.DidPlay;
+            StateButton(State.Play);
+            Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+        }
     }
-    
+
     private void Logout() {
         OrchestratorController.Instance.Logout();
     }
@@ -1340,9 +1540,9 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void OnGetNTPTimeResponse(NtpClock ntpTime) {
-        int difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
-        if (difference >= ntpSyncThreshold || difference <= -ntpSyncThreshold) {
-            ntpText.text = "You have a desynchronization of " + difference + " sec with the Orchestrator.\nYou may suffer some problems as a result.";
+        double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+        if (Math.Abs(difference) >= Config.Instance.ntpSyncThreshold) {
+            ntpText.text = $"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {Config.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.";
             ntpPanel.SetActive(true);
             loginPanel.SetActive(false);
         }
@@ -1361,6 +1561,9 @@ public class OrchestratorLogin : MonoBehaviour {
         if (sessions != null) {
             // update the list of available sessions
             UpdateSessions(orchestratorSessions, sessionIdDrop);
+            // We may be able to advance auto-connection
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
     }
 
@@ -1380,13 +1583,16 @@ public class OrchestratorLogin : MonoBehaviour {
             isMaster = OrchestratorController.Instance.UserIsMaster;
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
 
             state = State.Lobby;
             PanelChanger();
+            // We may be able to advance auto-connection
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
         else {
             isMaster = false;
@@ -1405,7 +1611,8 @@ public class OrchestratorLogin : MonoBehaviour {
             isMaster = OrchestratorController.Instance.UserIsMaster;
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            if (session.sessionMaster != "")
+                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
             // Update the list of session users
             UpdateUsersSession(usersSession);
         } else {
@@ -1450,7 +1657,7 @@ public class OrchestratorLogin : MonoBehaviour {
             // Update the info in LobbyPanel
             sessionNameText.text = session.sessionName;
             sessionDescriptionText.text = session.sessionDescription;
-            sessionMasterID = OrchestratorController.Instance.GetMasterUser(session.sessionMaster).userName;
+            sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
 
             // Update the list of session users
             UpdateUsersSession(usersSession);
@@ -1509,6 +1716,9 @@ public class OrchestratorLogin : MonoBehaviour {
         if (scenarios != null && scenarios.Length > 0) {
             //update the data in the dropdown
             UpdateScenarios(scenarioIdDrop);
+            // We may be able to advance auto-connection
+            if (Config.Instance.AutoStart != null)
+                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
         }
     }
 
@@ -1563,11 +1773,13 @@ public class OrchestratorLogin : MonoBehaviour {
         UserData lUserData = new UserData {
             userMQexchangeName = Config.Instance.TVMs.exchangeName,
             userMQurl = Config.Instance.TVMs.connectionURI,
-            userRepresentationType = (UserData.eUserRepresentationType)representationTypeConfigDropdown.value,
+            userPCurl = tcpPointcloudURLConfigIF.text,
+            userAudioUrl = tcpAudioURLConfigIF.text,
+            userRepresentationType = (UserRepresentationType)representationTypeConfigDropdown.value,
             webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
             microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
         };
-        OrchestratorController.Instance.UpdateUserData(lUserData);
+        OrchestratorController.Instance.UpdateFullUserData(lUserData);
     }
 
     private void GetUserInfo() {
@@ -1584,6 +1796,8 @@ public class OrchestratorLogin : MonoBehaviour {
                 userNameVRTText.text = user.userName;
 
                 //UserData
+                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
+                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
                 tvmExchangeNameConfigIF.text = user.userData.userMQexchangeName;
                 tvmConnectionURIConfigIF.text = user.userData.userMQurl;
                 representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
@@ -1598,8 +1812,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
             }
 
-            if (!OrchestratorController.Instance.IsAutoRetrievingData)
-                GetUsers(); // To update the user representation
+            GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null) {

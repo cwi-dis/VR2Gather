@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System;
 
-namespace Utils
+namespace VRT.UserRepresentation.TVM.Utils
 {
     public class StatisticsEngine
     {
@@ -44,8 +44,8 @@ namespace Utils
             {
                 if (m_Values.Count > 0)
                 {
-                    double mean = m_Sum / (double)(m_Values.Count);
-                    return Math.Sqrt(m_SumSquared / (double)(m_Values.Count) - mean * mean);
+                    double mean = m_Sum / m_Values.Count;
+                    return Math.Sqrt(m_SumSquared / m_Values.Count - mean * mean);
                 }
                 return 0;
             }
@@ -57,7 +57,7 @@ namespace Utils
             {
                 if (m_Values.Count > 0)
                 {
-                    return m_Sum / (double)(m_Values.Count);
+                    return m_Sum / m_Values.Count;
                 }
                 return 0.0;
             }

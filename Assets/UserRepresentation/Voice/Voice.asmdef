@@ -1,0 +1,22 @@
+{
+    "name": "Voice",
+    "references": [
+        "VRTCore",
+        "Dash",
+        "Orchestrator",
+        "SocketIO",
+        "TCP"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "",
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using Utils;
+using VRT.Core;
+using VRT.Transport.RabbitMQ;
+using VRT.Transport.RabbitMQ.Utils;
 
-namespace Workers {
+namespace VRT.UserRepresentation.PointCloud
+{
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class MyRabbitMQReceiver : RabbitMQReceiver
     {
         public MyRabbitMQReceiver(string uri, string exchange)
@@ -14,7 +20,7 @@ namespace Workers {
         }
     }
 
-    public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but EntityPipeline expects it.
+    public class CerthReader : TiledWorker   // Doesn't have to be a BaseWorker, but PointCloudPipeline expects it.
     {
         float voxelSize;
         Vector3 originCorrection;
@@ -33,7 +39,7 @@ namespace Workers {
         private RabbitMQReceiver PCLRabbitMQReceiver;
         private RabbitMQReceiver MetaRabbitMQReceiver;
 
-        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, Vector3 _originCorrection, Vector3 _boundingBotLeft, Vector3 _boundingTopRight, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue=null)
+        public CerthReader(string _ConnectionURI, string _PCLExchangeName, string _MetaExchangeName, Vector3 _originCorrection, Vector3 _boundingBotLeft, Vector3 _boundingTopRight, float _voxelSize, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         {
             if (_outQueue == null)
             {
@@ -49,7 +55,8 @@ namespace Workers {
 
             // Tell Certh library how many pc constructors we want. pcl_id must be < this.
             // Locking here only for completeness (no-one else can have a reference yet)
-            lock (constructorLock) {
+            lock (constructorLock)
+            {
                 try
                 {
                     native_pointcloud_receiver_pinvoke.set_number_wrappers(numWrappers);
@@ -62,7 +69,7 @@ namespace Workers {
                 catch (System.Exception exc)
                 {
                     Debug.Log($"PCCerthReader: set_number_wrappers: caught exception: {exc.Message}");
-                    throw exc;
+                    throw;
                 }
 
             }
@@ -88,11 +95,13 @@ namespace Workers {
             MetaRabbitMQReceiver.Enabled = true;
         }
 
-        public override void StopAndWait() {
+        public override void StopAndWait()
+        {
             Stop();
         }
 
-        public override void Stop() {
+        public override void Stop()
+        {
             Debug.Log("PCCerthReader: Stopping...");
             base.Stop();
             PCLRabbitMQReceiver.Enabled = false;
@@ -104,7 +113,8 @@ namespace Workers {
         }
 
         // Informing that the metadata were received
-        private void OnNewMetaData(object sender, EventArgs<byte[]> e) {
+        private void OnNewMetaData(object sender, EventArgs<byte[]> e)
+        {
             try
             {
                 lock (constructorLock)
@@ -129,20 +139,25 @@ namespace Workers {
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewMetaData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
         }
 
         // Updating the pointcloud every time a new buffer is received from the network
-        private void OnNewPCLData(object sender, EventArgs<byte[]> e) {
-            try {
-                lock (constructorLock) {
-                    if (e.Value == null) {
+        private void OnNewPCLData(object sender, EventArgs<byte[]> e)
+        {
+            try
+            {
+                lock (constructorLock)
+                {
+                    if (e.Value == null)
+                    {
                         Debug.LogWarning("CerthReader: OnNewPCLData: received null data");
                         return;
                     }
 
-                    if (!metaDataReceived) {
+                    if (!metaDataReceived)
+                    {
                         Debug.Log("CerthReader: OnNewPCLData: received data, but no metadata yet");
                         return;
 
@@ -180,7 +195,7 @@ namespace Workers {
                     {
                         move = new float[3] { originCorrection.x, originCorrection.y, originCorrection.z };
                     }
-                    System.UInt64 timestamp = 0;
+                    Timestamp timestamp = 0;
                     cwipc.pointcloud pc = cwipc.from_certh(pclPtr, move, bbox, timestamp);
                     if (voxelSize != 0)
                     {
@@ -202,7 +217,7 @@ namespace Workers {
                     //
                     // Push the cwipc pointcloud to the consumers
                     //
-                    statsUpdate(pc.count());
+                    // Couldn't be bothered to update to BaseStats: statsUpdate(pc.count());
                     if (pc == null)
                     {
                         Debug.LogWarning("CerthReader: cwipc.from_certh did not produce a pointcloud");
@@ -250,41 +265,11 @@ namespace Workers {
             catch (System.Exception exc)
             {
                 Debug.Log($"PCCerthReader: OnNewPCLData: caught exception: {exc.Message}");
-                throw exc;
+                throw;
             }
 
 
         }
-        System.DateTime statsLastTime;
-        double statsTotalPoints;
-        double statsTotalPointclouds;
-        double statsDrops;
-        const int statsInterval = 10;
 
-        public void statsUpdate(int pointCount, bool dropped=false)
-        {
-            if (statsLastTime == null)
-            {
-                statsLastTime = System.DateTime.Now;
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDrops = 0;
-            }
-            if (System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval))
-            {
-                Debug.Log($"stats: ts={(int)System.DateTime.Now.TimeOfDay.TotalSeconds}: CerthReader: {statsTotalPointclouds / statsInterval} fps, {(int)(statsTotalPoints / statsTotalPointclouds)} points per cloud, {statsDrops/statsInterval} drops per second");
-                if (statsDrops > 3 * statsInterval)
-                {
-                    Debug.LogWarning($"{Name()}: excessive dropped frames. Lower LocalUser.PCSelfConfig.frameRate in config.json.");
-                }
-                statsTotalPoints = 0;
-                statsTotalPointclouds = 0;
-                statsDrops = 0;
-                statsLastTime = System.DateTime.Now;
-            }
-            statsTotalPoints += pointCount;
-            statsTotalPointclouds += 1;
-            if (dropped) statsDrops++;
-        }
     }
 }

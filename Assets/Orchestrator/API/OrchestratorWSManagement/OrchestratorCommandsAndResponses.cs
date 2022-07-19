@@ -1,11 +1,34 @@
-﻿using System;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using System;
 using System.Collections.Generic;
 using BestHTTP;
 using BestHTTP.SocketIO.Events;
 using LitJson;
 
 // class used as a convenience to represent the commands and the responses
-namespace OrchestratorWSManagement
+namespace VRT.Orchestrator.WSManagement
 {
     // template for functions that treat the responses (command = the command sent, response = the response to parse)
     public delegate void ResponseCallbackManager(OrchestratorCommand command, OrchestratorResponse response);
@@ -24,6 +47,13 @@ namespace OrchestratorWSManagement
         public Object ParamValue;
 
         // Constructor
+        public Parameter(Parameter old)
+        {
+            ParamName = old.ParamName;
+            type = old.type;
+            ParamValue = old.ParamValue;
+        }
+
         public Parameter(string paramName, Type type, Object paramValue)
         {
             ParamName = paramName;
@@ -50,6 +80,22 @@ namespace OrchestratorWSManagement
 
 
         // Constructors
+        public OrchestratorCommand(OrchestratorCommand old)
+        {
+            SocketEventName = old.SocketEventName;
+            commandID = old.commandID;
+            if (old.Parameters != null)
+            {
+                Parameters = new List<Parameter>();
+                foreach (var p in old.Parameters)
+                {
+                    Parameters.Add(new Parameter(p));
+                }
+            }
+           
+            ResponseCallback = old.ResponseCallback;
+        }
+
         public OrchestratorCommand(string socketEventName,
             List<Parameter> parameters,
             ResponseCallbackManager responseCallback)

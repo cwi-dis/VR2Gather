@@ -1,16 +1,39 @@
-﻿using System;
+﻿//  © - 2020 – viaccess orca 
+//  
+//  Copyright
+//  This code is strictly confidential and the receiver is obliged to use it 
+//  exclusively for his or her own purposes. No part of Viaccess-Orca code may
+//  be reproduced or transmitted in any form or by any means, electronic or 
+//  mechanical, including photocopying, recording, or by any information 
+//  storage and retrieval system, without permission in writing from 
+//  Viaccess S.A. The information in this code is subject to change without 
+//  notice. Viaccess S.A. does not warrant that this code is error-free. If 
+//  you find any problems with this code or wish to make comments, please 
+//  report them to Viaccess-Orca.
+//  
+//  Trademarks
+//  Viaccess-Orca is a registered trademark of Viaccess S.A in France and/or
+//  other countries. All other product and company names mentioned herein are
+//  the trademarks of their respective owners. Viaccess S.A may hold patents,
+//  patent applications, trademarks, copyrights or other intellectual property
+//  rights over the code hereafter. Unless expressly specified otherwise in a 
+//  written license agreement, the delivery of this code does not imply the 
+//  concession of any license over these patents, trademarks, copyrights or 
+//  other intellectual property.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using OrchestratorWSManagement;
 using LitJson;
 using BestHTTP;
 using BestHTTP.SocketIO;
 using BestHTTP.SocketIO.Events;
 using System.Text;
+using VRT.Orchestrator.WSManagement;
 
-namespace OrchestratorWrapping
+namespace VRT.Orchestrator.Wrapping
 {
     // class that describes the status for the response from the orchestrator
     public class ResponseStatus
@@ -178,11 +201,13 @@ namespace OrchestratorWrapping
 
         public void OnSocketConnect()
         {
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketConnect: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnConnect();
         }
 
         public void OnSocketConnecting()
         {
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketConnecting: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnConnecting();
         }
 
@@ -196,11 +221,13 @@ namespace OrchestratorWrapping
 
         public void OnSocketDisconnect()
         {
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketDisconnect: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnDisconnect();
         }
 
         public void OnSocketError(ResponseStatus status)
         {
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketError: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnError(status);
         }
 
@@ -228,6 +255,7 @@ namespace OrchestratorWrapping
         {
             try { myUserID = response.body["userId"].ToString(); }
             catch { myUserID = "";  }
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLoginResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLoginResponse(new ResponseStatus(response.error, response.message), myUserID);
         }
 
@@ -240,6 +268,7 @@ namespace OrchestratorWrapping
         private void OnLogoutResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             myUserID = "";
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLogoutResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLogoutResponse(new ResponseStatus(response.error, response.message));
         }
 
@@ -253,7 +282,8 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
-            if (ResponsesListener != null) ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketConnect: no ResponsesListener");
+            if (ResponsesListener != null)ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
         public void AddSession(string scenarioId, string sessionName, string sessionDescription)
@@ -269,6 +299,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnAddSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnAddSessionResponse(status, session);
         }
 
@@ -282,6 +313,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<Session> list = Helper.ParseElementsList<Session>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSessionsResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetSessionsResponse(status, list);
         }
 
@@ -295,6 +327,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSessionsInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetSessionInfoResponse(status, session);
         }
 
@@ -308,6 +341,7 @@ namespace OrchestratorWrapping
         private void OnDeleteSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnDeleteSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnDeleteSessionResponse(status);
         }
 
@@ -324,6 +358,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             Session session = Session.ParseJsonData<Session>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnJoinSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnJoinSessionResponse(status, session);
         }
 
@@ -336,6 +371,7 @@ namespace OrchestratorWrapping
         private void OnLeaveSessionResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveSessionResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
@@ -349,6 +385,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             LivePresenterData liveData = LivePresenterData.ParseJsonData<LivePresenterData>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: GetLivePresenterDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
 
@@ -362,6 +399,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<Scenario> list = Helper.ParseElementsList<Scenario>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSecenarionsResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetScenariosResponse(status, list);
         }
 
@@ -376,6 +414,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             ScenarioInstance scenario = ScenarioInstance.ParseJsonData<ScenarioInstance>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetSecenarioInstanceInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetScenarioInstanceInfoResponse(status, scenario);
         }
 
@@ -389,6 +428,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<User> list = Helper.ParseElementsList<User>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OnGetUsersResponse: OnSocketConnect: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUsersResponse(status, list);
         }
 
@@ -405,6 +445,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             User user = User.ParseJsonData<User>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnAddUserResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnAddUserResponse(status, user);
         }
 
@@ -419,7 +460,23 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             User user = User.ParseJsonData<User>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetUserInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
+        }
+
+        public void UpdateUserData(string userDataKey, string userDataValue)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
+            command.GetParameter("userDataKey").ParamValue = userDataKey;
+            command.GetParameter("userDataValue").ParamValue = userDataValue;
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnUpdateUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataResponse: no ResponsesListener");
+            if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
 
         public void UpdateUserDataJson(UserData userData)
@@ -433,6 +490,7 @@ namespace OrchestratorWrapping
         private void OnUpdateUserDataJsonResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataJsonResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
 
@@ -445,6 +503,7 @@ namespace OrchestratorWrapping
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnClearUserDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnClearUserDataResponse(status);
         }
 
@@ -458,6 +517,7 @@ namespace OrchestratorWrapping
         private void OnDeleteUserResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnDeleteUserResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
         }
 
@@ -471,6 +531,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<RoomInstance> rooms = Helper.ParseElementsList<RoomInstance>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRoomsResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetRoomsResponse(status, rooms);
         }
 
@@ -484,6 +545,7 @@ namespace OrchestratorWrapping
         private void OnJoinRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnJoinRoomResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnJoinRoomResponse(status);
         }
 
@@ -496,6 +558,7 @@ namespace OrchestratorWrapping
         private void OnLeaveRoomResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveRoomResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveRoomResponse(status);
         }
 
@@ -510,6 +573,7 @@ namespace OrchestratorWrapping
         private void OnSendMessageResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSendMessageResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnSendMessageResponse(status);
         }
 
@@ -523,6 +587,7 @@ namespace OrchestratorWrapping
         private void OnSendMessageToAllResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSendMessageToAllResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
 
@@ -537,6 +602,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetAvailableDataStreams: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetAvailableDataStreams(status, lDataStreams);
         }
 
@@ -550,6 +616,7 @@ namespace OrchestratorWrapping
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
             List<DataStream> lDataStreams = Helper.ParseElementsList<DataStream>(response.body);
+            if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRegisteredDataStreams: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
         }
 
@@ -814,6 +881,12 @@ namespace OrchestratorWrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+                new OrchestratorCommand("UpdateUserData", new List<Parameter>
+                {
+                    new Parameter("userDataKey", typeof(string)),
+                    new Parameter("userDataValue", typeof(string))
+                },
+                OnUpdateUserDataResponse),
                 new OrchestratorCommand("UpdateUserDataJson", new List<Parameter>
                 {
                     new Parameter("userDataJson", typeof(string))
@@ -927,7 +1000,7 @@ namespace OrchestratorWrapping
             {
                 if (orchestratorCommands[i].SocketEventName == commandName)
                 {
-                    return orchestratorCommands[i];
+                    return new OrchestratorCommand(orchestratorCommands[i]);
                 }
             }
             return null;
