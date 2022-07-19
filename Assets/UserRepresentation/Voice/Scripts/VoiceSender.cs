@@ -74,7 +74,12 @@ namespace VRT.UserRepresentation.Voice
             {
                 writer = new SocketIOWriter(user, _streamName, audioCodec, b2dStreams);
             }
-            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer={writer.Name()}");
+            string encoderName = "none";
+            if (codec != null)
+            {
+                encoderName = codec.Name();
+            }
+            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
         }
 
         public void Init(User user, QueueThreadSafe queue)

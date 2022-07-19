@@ -25,14 +25,18 @@
   	"autoJoin" : false,
   	"autoStartWith" : 3,
   	"autoDelay" : 1.5
+  	"sessionUncompressed" : false,
+  	"sessionUncompressedAudio" : false,
+  	"autoLeaveAfter" : 0,
+  	"autoStopAfterLeave" : false
   },
   "ScreenshotTool" : {
   	"takeScreenshot" : false,
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : ["Oculus", ""],
-	"_preferredController" : "gamepad"
+	"_preferredDevices" : ["Oculus", "OpenVR", ""],
+	"preferredController" : ""
   },
   "ScreenshotTool" : {
 	  "takeScreenshot" : false,
@@ -42,18 +46,30 @@
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
   },
   "PCs": {
-  	"Codec" : "cwi1",
+    "Codec": "cwi1",
     "defaultCellSize": 0.0024,
-    "cellSizeFactor": 1
+    "cellSizeFactor": 1,
+    "timeoutBeforeGhosting" : 5,
+    "encoderParallelism" : 4,
+    "decoderParallelism" : 8
   },
   "Voice": {
   	"Codec": "VR2A",
   	"maxPlayoutLatency" : 0.5,
-	"maxPlayoutAhead": 0.066,
-	"ignoreSynchronizer" : true
+	"maxPlayoutAhead": 0.400,
+	"ignoreSynchronizer" : false
   },
   "Video": {
   	"Codec" : "h264"
+  },
+  "Synchronizer" : {
+  	"debugSynchronizer" : false,
+  	"debugJitterBuffer" : false,
+  	"minLatency" : 100,
+  	"maxLatency" : 5000,
+  	"latencyMaxDecrease" : 1,
+  	"latencyMaxIncrease" : 33,
+  	"acceptDesyncOnDataUnavailable" : false
   },
 
   "LocalUser": {
@@ -75,7 +91,7 @@
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0.007,
-      "frameRate": 10,
+      "frameRate": 15,
       "tiled": false,
       "Encoders": [
 		

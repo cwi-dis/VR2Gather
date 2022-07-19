@@ -81,6 +81,8 @@ namespace VRT.Core
             public string autoCreateForUser = "";
             public int autoStartWith = -1;
             public float autoDelay = 0.2f;
+            public float autoLeaveAfter = 0f;
+            public bool autoStopAfterLeave = false;
         };
         public _AutoStart AutoStart;
 
@@ -108,6 +110,12 @@ namespace VRT.Core
             public float defaultCellSize;
             public float cellSizeFactor;
             public bool debugColorize;
+            public float timeoutBeforeGhosting = 5.0f;
+            public int decoderQueueSizeOverride = 0;
+            public int preparerQueueSizeOverride = 0;
+            public int encoderParallelism = 0;
+            public int decoderParallelism = 0;
+
         };
         public _PCs PCs;
 
@@ -128,6 +136,29 @@ namespace VRT.Core
             public string Codec = "h264";
         }
         public _Video Video;
+
+        [Serializable]
+        public class _Synchronizer
+        {
+            [Tooltip("Enable to get lots of log messages on Synchronizer use")]
+            public bool debugSynchronizer = false;
+            [Tooltip("Enable to get log messages on jitter buffer adaptations")]
+            public bool debugJitterBuffer = false;
+
+            [Tooltip("Minimum preferred playout latency in milliseconds")]
+            public int minLatency = 0;
+            [Tooltip("Maximum preferred playout latency, reset to minLatency if we reach this latency")]
+            public int maxLatency = 0;
+
+            [Tooltip("Limit by how much we decrease preferred latency")]
+            public int latencyMaxDecrease = 1;
+            [Tooltip("Limit by how much we increase preferred latency")]
+            public int latencyMaxIncrease = 33;
+
+            [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
+            public bool acceptDesyncOnDataUnavailable = false;
+        }
+        public _Synchronizer Synchronizer;
 
         [Serializable]
         public class _User
@@ -232,8 +263,25 @@ namespace VRT.Core
             //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
         }
 
+        static string _ConfigFilenameFromCommandLineArgs()
+        {
+            string[] arguments = Environment.GetCommandLineArgs();
+            for (int i=0; i<arguments.Length-1; i++)
+            {
+                if (arguments[i] == "-vrt-config") return arguments[i + 1];
+            }
+            return null;
+        }
+
         public static string ConfigFilename(string filename="config.json")
         {
+            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+            if (clConfigFile != null)
+            {
+                clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                return clConfigFile;
+            }
+
             string dataPath;
             if (Application.isEditor)
             {

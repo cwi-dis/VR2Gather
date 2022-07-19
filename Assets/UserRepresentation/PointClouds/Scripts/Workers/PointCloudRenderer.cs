@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -14,9 +15,12 @@ namespace VRT.UserRepresentation.PointCloud
         // become mirrored, for example when cropping a pointcloud. Therefore, we mirror here,
         // by adjusting the matrix.
         const bool pcMirrorX = true;
+        bool dataIsMissing = false;
+        Timestamp lastDataReceived;
         ComputeBuffer pointBuffer;
         int pointCount = 0;
         static Material baseMaterial;
+        [Tooltip("Private clone of Material used by this renderer instance")]
         public Material material;
         public bool paused = false;
         MaterialPropertyBlock block;
@@ -47,6 +51,7 @@ namespace VRT.UserRepresentation.PointCloud
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
             stats = new Stats(Name());
+            pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
         }
 
         public void PausePlayback(bool _paused)
@@ -72,15 +77,42 @@ namespace VRT.UserRepresentation.PointCloud
             bool fresh = preparer.LatchFrame();
             if (paused) return;
             float pointSize = 0;
+            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+
             if (fresh)
             {
+                lastDataReceived = now;
+                if (dataIsMissing)
+                {
+                    Debug.Log($"{Name()}: Data received again, set pointsize=1");
+                    // Was missing previously. Reset pointsize.
+                    block.SetFloat("_PointSizeFactor", 1.0f);
+                }
+                dataIsMissing = false;
                 pointCount = preparer.GetComputeBuffer(ref pointBuffer);
                 pointSize = preparer.GetPointSize();
-                if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+                if (pointBuffer == null || !pointBuffer.IsValid())
+                {
+                    Debug.LogError($"{Name()}: Invalid pointBuffer");
+                    return;
+                }
                 block.SetBuffer("_PointBuffer", pointBuffer);
                 block.SetFloat("_PointSize", pointSize);
+            } 
+            else
+            {
+                if (now > lastDataReceived + (int)(Config.Instance.PCs.timeoutBeforeGhosting*1000) && !dataIsMissing)
+                {
+                    Debug.Log($"{Name()}: No data for {Config.Instance.PCs.timeoutBeforeGhosting}, set pointsize=0.2");
+                    block.SetFloat("_PointSizeFactor", 0.2f);
+                    dataIsMissing = true;
+                }
             }
-            if (pointCount == 0 || pointBuffer == null || !pointBuffer.IsValid()) return;
+            if (pointBuffer == null || !pointBuffer.IsValid())
+            {
+                return;
+            }
             Matrix4x4 pcMatrix = transform.localToWorldMatrix;
             if (pcMirrorX)
             {
@@ -108,6 +140,8 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDisplayPointCount = 0;
             double statsTotalPointSize = 0;
             double statsTotalQueueDuration = 0;
+            Timedelta statsMinLatency = 0;
+            Timedelta statsMaxLatency = 0;
 
             public void statsUpdate(int pointCount, float pointSize, Timestamp timestamp, Timedelta queueDuration, bool fresh)
             {
@@ -124,16 +158,19 @@ namespace VRT.UserRepresentation.PointCloud
                 statsTotalPointSize += pointSize;
                 statsTotalQueueDuration += queueDuration;
 
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                if (timestamp > 0)
+                {
+                    Timedelta latency = (Timestamp)sinceEpoch.TotalMilliseconds - timestamp;
+                    if (latency < statsMinLatency || statsMinLatency == 0) statsMinLatency = latency;
+                    if (latency > statsMaxLatency) statsMaxLatency = latency;
+                }
+
                 if (ShouldOutput())
                 {
-                    System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                     double factor = statsTotalPointcloudCount == 0 ? 1 : statsTotalPointcloudCount;
                     double display_factor = statsTotalDisplayCount == 0 ? 1 : statsTotalDisplayCount;
-                    Timedelta latency = timestamp > 0 ? (Timestamp)sinceEpoch.TotalMilliseconds - timestamp : 0;
-                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={latency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
-                  }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalPointcloudCount / Interval():F2}, latency_ms={statsMinLatency}, latency_max_ms={statsMaxLatency}, fps_display={statsTotalDisplayCount / Interval():F2}, points_per_cloud={(int)(statsTotalPointCount / factor)}, points_per_display={(int)(statsTotalDisplayPointCount / display_factor)}, avg_pointsize={(statsTotalPointSize / factor):G4}, renderer_queue_ms={(int)(statsTotalQueueDuration / factor)}, framenumber={UnityEngine.Time.frameCount},  timestamp={timestamp}");
                     Clear();
                     statsTotalPointcloudCount = 0;
                     statsTotalDisplayCount = 0;
@@ -141,6 +178,8 @@ namespace VRT.UserRepresentation.PointCloud
                     statsTotalPointCount = 0;
                     statsTotalPointSize = 0;
                     statsTotalQueueDuration = 0;
+                    statsMinLatency = 0;
+                    statsMaxLatency = 0;
                 }
             }
         }

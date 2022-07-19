@@ -67,8 +67,9 @@ namespace VRT.UserRepresentation.Voice
                 mcOut.free();
                 return;
             }
+            Timedelta queuedDuration = outQueue.QueuedDuration();
             bool ok = outQueue.Enqueue(mcOut);
-            stats.statsUpdate(encodeDuration, outQueue.QueuedDuration(), !ok);
+            stats.statsUpdate(encodeDuration, queuedDuration, !ok);
             mcIn.free();
         }
 
@@ -91,10 +92,7 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalUpdates)}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
-                }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalUpdates / Interval():F3}, encoder_ms={(statsTotalEncodeDuration / statsTotalUpdates):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalUpdates)}, fps_dropped={statsDrops / Interval()}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalEncodeDuration = 0;

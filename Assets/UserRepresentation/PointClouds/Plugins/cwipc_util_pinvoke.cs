@@ -22,6 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
             public int macroblock_size;    /**< (unused in this version, ignored) macroblock size for inter-frame prediction */
             public int tilenumber;         /**< 0 for encoding full pointclouds, > 0 for selecting a single tile to encode */
             public float voxelsize;        /**< If non-zero run voxelizer with this cell size to get better tiled pointcloud */
+            public int n_parallel;          /**< If greater than 1 use multiple threads to encode successive pointclouds in parallel */
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -303,7 +304,7 @@ namespace VRT.UserRepresentation.PointCloud
         private class _API_cwipc_codec
         {
             const string myDllName = "cwipc_codec";
-            public const int CWIPC_ENCODER_PARAM_VERSION = 0x20190506;
+            public const int CWIPC_ENCODER_PARAM_VERSION = 0x20220607;
 
             [DllImport(myDllName)]
             internal extern static IntPtr cwipc_new_decoder(ref IntPtr errorMessage, ulong apiVersion = _API_cwipc_util.CWIPC_API_VERSION);

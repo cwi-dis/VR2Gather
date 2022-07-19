@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using VRT.Core;
 
@@ -12,13 +13,15 @@ namespace VRT.UserRepresentation.PointCloud
     {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
-        System.Threading.Thread[] pusherThreads;
+        bool encodersAreBusy = false;
+        PCEncoderOutputPusher[] pushers;
         System.IntPtr encoderBuffer;
         QueueThreadSafe inQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        System.DateTime mostRecentFeedTime = System.DateTime.MinValue;
-        Timestamp mostRecentTimestampFed = 0;
+        Queue<System.DateTime> mostRecentFeedTimes = new Queue<System.DateTime>();
+        Queue<Timestamp> mostRecentFeedTimestamps = new Queue<Timestamp>();
+        int nParallel = 0;
         
         public struct EncoderStreamDescription
         {
@@ -28,8 +31,97 @@ namespace VRT.UserRepresentation.PointCloud
         };
         EncoderStreamDescription[] outputs;
 
+        public class PCEncoderOutputPusher
+        {
+            PCEncoder parent;
+            int stream_number;
+            cwipc.encoder encoder;
+            QueueThreadSafe outQueue;
+            NativeMemoryChunk curBuffer = null;
+            Timedelta curEncodeDuration;
+
+            public PCEncoderOutputPusher(PCEncoder _parent, int _stream_number)
+            {
+                parent = _parent;
+                stream_number = _stream_number;
+                encoder = parent.encoderOutputs[stream_number];
+                outQueue = parent.outputs[stream_number].outQueue;
+            }
+
+            public void Start()
+            {
+            }
+
+            public void Join()
+            {
+            }
+
+            public bool LockBuffer()
+            {
+                lock (this)
+                {
+                    if (curBuffer != null) return true;
+                    if (!encoder.available(false)) return false;
+                    curBuffer = new NativeMemoryChunk(encoder.get_encoded_size());
+                    curBuffer.info.timestamp = parent.mostRecentFeedTimestamps.Peek();
+                    curEncodeDuration = (Timedelta)(System.DateTime.Now - parent.mostRecentFeedTimes.Peek()).TotalMilliseconds;
+                    if (!encoder.copy_data(curBuffer.pointer, curBuffer.length))
+                    {
+                        Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
+                    }
+                    return true;
+                }
+            }
+
+            public void PushBuffer()
+            {
+                lock(this)
+                {
+                    if (curBuffer == null) return;
+                    Timedelta queuedDuration = outQueue.QueuedDuration();
+                    bool dropped = !outQueue.Enqueue(curBuffer);
+                    parent.stats.statsUpdate(dropped, curEncodeDuration, queuedDuration);
+                    curBuffer = null;
+                }
+            }
+
+            protected void run()
+            {
+                try
+                {
+                    Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
+                    // Get encoder and output queue for our stream
+                    // Loop until feeder signals no more data is forthcoming
+                    while (!encoder.eof())
+                    {
+                        if (LockBuffer())
+                        {
+                            PushBuffer();
+                        }
+                        else
+                        {
+                            System.Threading.Thread.Sleep(10);
+                        }
+                    }
+                    outQueue.Close();
+                    Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
+                }
+#pragma warning disable CS0168
+                catch (System.Exception e)
+                {
+#if UNITY_EDITOR
+                    throw;
+#else
+                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
+                Debug.LogError("Error while sending your representation to other participants.");
+#endif
+                }
+            }
+        }
+
         public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
+            nParallel = VRT.Core.Config.Instance.PCs.encoderParallelism;
             if (_inQueue == null)
             {
                 throw new System.Exception("{Name()}: inQueue is null");
@@ -53,7 +145,8 @@ namespace VRT.UserRepresentation.PointCloud
                         jpeg_quality = 75,
                         macroblock_size = 0,
                         tilenumber = op.tileNumber,
-                        voxelsize = 0
+                        voxelsize = 0,
+                        n_parallel = nParallel
                     };
                     var encoder = encoderGroup.addencoder(parms);
                     encoderOutputs[i] = encoder;
@@ -77,16 +170,14 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.Start();
             int nThreads = encoderOutputs.Length;
-            pusherThreads = new System.Threading.Thread[nThreads];
+            pushers = new PCEncoderOutputPusher[nThreads];
             for (int i = 0; i < nThreads; i++)
             {
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
-                pusherThreads[i] = new System.Threading.Thread(
-                    () => PusherThread(stream_number)
-                    );
+                pushers[i] = new PCEncoderOutputPusher(this, stream_number);
             }
-            foreach (var t in pusherThreads)
+            foreach (var t in pushers)
             {
                 t.Start();
             }
@@ -97,7 +188,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Signal end-of-data
             encoderGroup.close();
             // Wait for each pusherThread to see this and terminate
-            foreach (var t in pusherThreads)
+            foreach (var t in pushers)
             {
                 t.Join();
             }
@@ -120,66 +211,46 @@ namespace VRT.UserRepresentation.PointCloud
         protected override void Update()
         {
             base.Update();
-            cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
-            while (pc != null)
+            // If we do multi-threaded encoding we always try to obtain results
+            // and we always try to feed.
+            if(encodersAreBusy || nParallel > 1)
             {
-                if (encoderGroup != null)
+                // See if encoders are done and we can feed the transmitters
+                bool allDone = true;
+                foreach(var t in pushers)
                 {
-                    // Not terminating yet
-                    mostRecentFeedTime = System.DateTime.Now;
-                    mostRecentTimestampFed = pc.timestamp();
-                    encoderGroup.feed(pc);
+                    if (!t.LockBuffer()) allDone = false;
                 }
-                pc.free();
-                pc = (cwipc.pointcloud)inQueue.Dequeue();
+                if (allDone)
+                {
+                    foreach(var t in pushers)
+                    {
+                        t.PushBuffer();
+                    }
+                    encodersAreBusy = false;
+                    mostRecentFeedTimes.Dequeue();
+                    mostRecentFeedTimestamps.Dequeue();
+                }
+            }
+            if (!encodersAreBusy || nParallel > 1)
+            {
+                // See if we can start encoding.
+                cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.Dequeue();
+                if (pc != null)
+                {
+                    if (encoderGroup != null)
+                    {
+                        // Not terminating yet
+                        mostRecentFeedTimes.Enqueue(System.DateTime.Now);
+                        mostRecentFeedTimestamps.Enqueue(pc.timestamp());
+                        encoderGroup.feed(pc);
+                        encodersAreBusy = true;
+                    }
+                    pc.free();
+                }
             }
         }
 
-        protected void PusherThread(int stream_number)
-        {
-            try
-            {
-                Debug.Log($"PCEncoder#{stream_number}: PusherThread started");
-                // Get encoder and output queue for our stream
-                cwipc.encoder encoder = encoderOutputs[stream_number];
-                QueueThreadSafe outQueue = outputs[stream_number].outQueue;
-                // Loop until feeder signals no more data is forthcoming
-                while (!encoder.eof())
-                {
-                    if (encoder.available(true))
-                    {
-                        NativeMemoryChunk mc = new NativeMemoryChunk(encoder.get_encoded_size());
-                        mc.info.timestamp = mostRecentTimestampFed;
-                        if (encoder.copy_data(mc.pointer, mc.length))
-                        {
-                            Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - mostRecentFeedTime).TotalMilliseconds;
-                            bool dropped = !outQueue.Enqueue(mc);
-                            stats.statsUpdate(dropped, encodeDuration, outQueue.QueuedDuration());
-                        }
-                        else
-                        {
-                            Debug.LogError($"Programmer error: PCEncoder#{stream_number}: cwipc_encoder_copy_data returned false");
-                        }
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(10);
-                    }
-                }
-                outQueue.Close();
-                Debug.Log($"PCEncoder#{stream_number}: PusherThread stopped");
-            }
-#pragma warning disable CS0168
-            catch (System.Exception e)
-            {
-#if UNITY_EDITOR
-                throw;
-#else
-                Debug.Log($"PCEncoder#{stream_number}: Exception: {e.Message} Stack: {e.StackTrace}");
-                Debug.LogError("Error while sending your representation to other participants.");
-#endif
-            }
-        }
 
         protected class Stats : VRT.Core.BaseStats {
             public Stats(string name) : base(name) { }
@@ -188,19 +259,20 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalDropped = 0;
             double statsTotalEncodeDuration = 0;
             double statsTotalQueuedDuration = 0;
+            int statsAggregatePackets = 0;
 
             public void statsUpdate(bool dropped, Timedelta encodeDuration, Timedelta queuedDuration) {
                 statsTotalPointclouds++;
+                statsAggregatePackets++;
                 statsTotalEncodeDuration += encodeDuration;
                 statsTotalQueuedDuration += queuedDuration;
                 if (dropped) statsTotalDropped++;
 
                 if (ShouldOutput()) {
-                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(int)(statsTotalEncodeDuration / statsTotalPointclouds)}, avg_transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}");
-                }
-                if (ShouldClear()) {
+                    Output($"fps={statsTotalPointclouds / Interval():F2}, fps_dropped={statsTotalDropped / Interval():F2}, encoder_ms={(statsTotalEncodeDuration / statsTotalPointclouds):F2}, transmitter_queue_ms={(int)(statsTotalQueuedDuration / statsTotalPointclouds)}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalPointclouds = 0;
+                    statsTotalDropped = 0;
                     statsTotalEncodeDuration = 0;
                     statsTotalQueuedDuration = 0;
                 }

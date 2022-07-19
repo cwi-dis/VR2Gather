@@ -265,8 +265,17 @@ namespace VRT.Core
                     {
                         // No room. Get oldest item and free it.
                         // Note that the lock() in Dequeue doesn't bother us because we are in the same thread.
-                        BaseMemoryChunk oldItem = Dequeue();
-                        oldItem.free();
+                        // But: if we have a 1-entry queue we could end up in a livelock if we use
+                        // dequeue() because the consumer does the Wait outside the lock. So we have to cater
+                        // for it overtaking us and grabbing the item, in which case we would be stuck in a livelock.
+                       
+                        BaseMemoryChunk oldItem = TryDequeue(0);
+                        if (oldItem == null)
+                        {
+                            item.free();
+                            UnityEngine.Debug.Log($"{Name()}: xxxjack EnqueueWithDrop TryDequeue returned null, forestalled livelock");
+                            return false;
+                        }
                         empty.Wait(isClosed.Token);
                     }
                     latestTimestamp = item.info.timestamp;

@@ -78,12 +78,6 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     currentSize = pc.get_uncompressed_size();
                     currentTimestamp = pc.timestamp();
-                    if (currentSize <= 0)
-                    {
-                        // This happens very often with tiled pointclouds.
-                        //Debug.Log("PointCloudPreparer: pc.get_uncompressed_size is 0");
-                        return false;
-                    }
                     currentCellSize = pc.cellsize();
                     // xxxjack if currentCellsize is != 0 it is the size at which the points should be displayed
                     if (currentSize > byteArray.Length)
@@ -92,13 +86,16 @@ namespace VRT.UserRepresentation.PointCloud
                         byteArray = new Unity.Collections.NativeArray<byte>(currentSize, Unity.Collections.Allocator.Persistent);
                         currentBuffer = (System.IntPtr)Unity.Collections.LowLevel.Unsafe.NativeArrayUnsafeUtility.GetUnsafePtr(byteArray);
                     }
-                    int ret = pc.copy_uncompressed(currentBuffer, currentSize);
-                    pc.free();
-                    if (ret * 16 != currentSize)
+                    if (currentSize > 0)
                     {
-                        Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
-                        Debug.LogError("Programmer error while rendering a participant.");
+                        int ret = pc.copy_uncompressed(currentBuffer, currentSize);
+                        if (ret * 16 != currentSize)
+                        {
+                            Debug.Log($"PointCloudPreparer decompress size problem: currentSize={currentSize}, copySize={ret * 16}, #points={ret}");
+                            Debug.LogError("Programmer error while rendering a participant.");
+                        }
                     }
+                    pc.free();
                     isReady = true;
                 }
                 stats.statsUpdate(dropCount, false);
@@ -164,20 +161,25 @@ namespace VRT.UserRepresentation.PointCloud
             double statsTotalUpdates;
             double statsDrops;
             double statsNoData;
+            int statsAggregatePackets;
 
             public void statsUpdate(int dropCount, bool noData)
             {
 
                 statsTotalUpdates += 1;
                 statsDrops += dropCount;
-                if (noData) statsNoData++;
+                if (noData)
+                {
+                    statsNoData++;
+                } else
+                {
+                    statsAggregatePackets++;
+                }
+                statsAggregatePackets += dropCount;
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}");
-                }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsDrops = 0;

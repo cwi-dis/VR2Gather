@@ -92,8 +92,21 @@ namespace VRT.UserRepresentation.Voice
 
 
             preparer = new VoicePreparer(preparerQueue);
-            if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}");
+            string synchronizerName = "none";
+            if (synchronizer != null && synchronizer.enabled)
+            {
+                preparer.SetSynchronizer(synchronizer);
+                if (!Config.Instance.Voice.ignoreSynchronizer)
+                {
+                    synchronizerName = synchronizer.Name();
+                }
+            }
+            string decoderName = "none";
+            if (codec != null)
+            {
+                decoderName = codec.Name();
+            }
+            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
         }
 
         public void Init(User user, QueueThreadSafe queue)
@@ -243,9 +256,6 @@ namespace VRT.UserRepresentation.Voice
                         Debug.LogWarning($"{name}.Stats: preposterous average latency {latency_ms}");
                     }
                     Output($"latency_ms={latency_ms}, fps_output={statsTotalAudioframeCount / Interval():F2}, fps_zero_inserted={statsZeroInsertionCount / Interval():F2}, zero_inserted_percentage={(statsTotalAudioZeroSamples/statsTotalAudioSamples)*100:F2}, zero_inserted_samples={(int)statsTotalAudioZeroSamples}, voicereceiver_queue_ms={(int)(statsTotalQueueDuration / factor)}, samples_per_frame={(int)(statsTotalAudioSamples/factor)}, output_freq={statsTotalAudioSamples/Interval():F2}, timestamp={timestamp}");
-                }
-                if (ShouldClear())
-                {
                     Clear();
                     statsTotalAudioframeCount = 0;
                     statsTotalAudioSamples = 0;

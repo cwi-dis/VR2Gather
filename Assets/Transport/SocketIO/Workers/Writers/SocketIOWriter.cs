@@ -99,17 +99,16 @@ namespace VRT.Transport.SocketIO
 
             double statsTotalBytes;
             double statsTotalPackets;
+            int statsAggregatePackets;
            
             public void statsUpdate(int nBytes, int streamIndex)
             {
                 statsTotalBytes += nBytes;
                 statsTotalPackets++;
+                statsAggregatePackets++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}");
-                }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalPackets / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_id={streamIndex}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;

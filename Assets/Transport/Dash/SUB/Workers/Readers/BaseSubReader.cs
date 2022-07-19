@@ -29,180 +29,118 @@ namespace VRT.Transport.Dash
         protected uint[] stream4CCs;
         protected sub.connection subHandle;
         protected bool isPlaying;
-        protected int frequency=20;
         int numberOfUnsuccessfulReceives;
-        //        object subLock = new object();
         System.DateTime subRetryNotBefore = System.DateTime.Now;
         System.TimeSpan subRetryInterval = System.TimeSpan.FromSeconds(5);
 
-        public class ReceiverInfo
+        public class TileOrMediaInfo
         {
             public QueueThreadSafe outQueue;
             public List<int> streamIndexes;
             public object tileDescriptor;
             public int tileNumber = -1;
-            //public int curStreamIndex = -1;
         }
-        protected ReceiverInfo[] receivers;
-        //        protected QueueThreadSafe[] outQueues;
-        //        protected int[] streamIndexes;
-
+        protected TileOrMediaInfo[] perTileInfo;
+   
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        public class SubPullThread
+        public class TileOrMediaHandler
         {
             BaseSubReader parent;
-            //            int stream_index;
-            //            QueueThreadSafe outQueue;
-            int thread_index;
-            ReceiverInfo receiverInfo;
-            int frequency = 20;
-            System.Threading.Thread myThread;
-            System.DateTime lastSuccessfulReceive;
-            System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
-            System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
+            int handler_index;
+            TileOrMediaInfo receiverInfo;
+            public Timestamp mostRecentDashTimestamp;
 
-            public SubPullThread(BaseSubReader _parent, int _thread_index, ReceiverInfo _receiverInfo, int _frenquecy)
+
+            public TileOrMediaHandler(BaseSubReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
             {
                 parent = _parent;
-                thread_index = _thread_index;
+                handler_index = _handler_index;
                 receiverInfo = _receiverInfo;
-                frequency = _frenquecy;
-                myThread = new System.Threading.Thread(run);
-                myThread.Name = Name();
-                lastSuccessfulReceive = System.DateTime.Now;
                 stats = new Stats(Name());
             }
 
             public string Name()
             {
-                return $"{parent.Name()}.{thread_index}";
+                return $"{parent.Name()}.{handler_index}";
             }
 
             public void Start()
             {
-                myThread.Start();
             }
 
             public void Join()
             {
-                myThread.Join();
             }
 
-            protected void run()
+            protected void getDataFromStream(sub.connection subHandle, int stream_index, int bytesNeeded)
             {
-                bool bCanQueue = (frequency==0); // If frequency is 0 enqueue at the very begining
-                System.TimeSpan oldElapsed = System.TimeSpan.Zero;
-                try
+                FrameInfo frameInfo = new FrameInfo();
+
+                // Allocate and read.
+                NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
+                int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
+
+                if (bytesRead != bytesNeeded)
                 {
-                    while (true)
+                    Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
+                    mc.free();
+                    return;
+                }
+                System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
+                Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
+
+                // If we have no clock correspondence yet we use the first received frame on any stream to set it
+                if (parent.clockCorrespondence.wallClockTime == 0)
+                {
+                    parent.clockCorrespondence.wallClockTime = now;
+                    parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+                    BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
+                }
+                // Convert clock values to wallclock
+                mostRecentDashTimestamp = frameInfo.timestamp;
+                if (!parent.clockCorrespondenceReceived)
+                {
+                    Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
+                }
+                frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
+                mc.info = frameInfo;
+                Timedelta network_latency_ms = now - frameInfo.timestamp;
+
+                bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
+                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, network_latency_ms, stream_index);
+
+            }
+
+            public bool getDataForTile(sub.connection subHandle)
+            {
+                if (receiverInfo.streamIndexes == null)
+                {
+                    return false;
+                }
+                bool received_anything = false;
+                foreach (int stream_index in receiverInfo.streamIndexes)
+                {
+                    FrameInfo frameInfo = new FrameInfo();
+                    int bytesNeeded = 0;
+
+                    // See whether data is available on this stream, and how many bytes we need to allocate
+                    bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
+
+
+                    // If no data is available on this stream we try the next
+                    if (bytesNeeded == 0)
                     {
-
-                        System.Threading.Thread.Sleep(1); // xxxjack Yield() may be better?
-                        //
-                        // First check whether we should terminate, and otherwise whether we have nay work to do currently.
-                        //
-                        if (receiverInfo.outQueue.IsClosed())
-                        {
-                            return;
-                        }
-
-                        sub.connection subHandle = parent.getSubHandle();
-                        if (subHandle == null)
-                        {
-                            Debug.Log($"{Name()}: subHandle was closed, exiting SubPullThread");
-                            return;
-                        }
-
-                        if (receiverInfo.streamIndexes == null)
-                        {
-                            continue;
-                        }
-                        //
-                        // We have work to do. 
-                        //
-                        bool received_anything = false;
-                        foreach(int stream_index in receiverInfo.streamIndexes) {
-                            FrameInfo frameInfo = new FrameInfo();
-                            int bytesNeeded = 0;
-
-                            // See whether data is available on this stream, and how many bytes we need to allocate
-                            bytesNeeded = subHandle.grab_frame(stream_index, System.IntPtr.Zero, 0, ref frameInfo);
-
-
-                            // If no data is available on this stream we try the next
-                            if (bytesNeeded == 0)
-                            {
-                                continue;
-                            }
-                            received_anything = true;
-                            lastSuccessfulReceive = System.DateTime.Now;
-
-                            // Allocate and read.
-                            NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
-                            int bytesRead = subHandle.grab_frame(stream_index, mc.pointer, mc.length, ref frameInfo);
-         
-                            if (bytesRead != bytesNeeded)
-                            {
-                                Debug.LogError($"{Name()}: programmer error: sub_grab_frame returned {bytesRead} bytes after promising {bytesNeeded}");
-                                mc.free();
-                                continue;
-                            }
-                            System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
-                            Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-
-                            // If we have no clock correspondence yet we use the first received frame on any stream to set it
-                            if (parent.clockCorrespondence.wallClockTime == 0)
-                            {
-                                parent.clockCorrespondence.wallClockTime = now;
-                                parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
-                                BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
-                            }
-                            // Convert clock values to wallclock
-                            Timestamp dashTimestamp = frameInfo.timestamp;
-                            if (!parent.clockCorrespondenceReceived)
-                            {
-                                Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
-                            }
-                            frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
-                            mc.info = frameInfo;
-                            Timedelta network_latency_ms = now - frameInfo.timestamp;
-
-                            bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                            stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
-
-                        }
-
-                        // We no longer need subHandle
-                        subHandle.free();
-
-                        // If no data was available on any stream we may want to close the subHandle, or sleep a bit
-                        if (!received_anything)
-                        {
-                            System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
-                            if (noReceives > maxNoReceives)
-                            {
-                                Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
-                                parent.playFailed();
-                                return;
-                            }
-                            System.Threading.Thread.Sleep(receiveInterval);
-                            continue;
-                        }
+                        continue;
                     }
+                    received_anything = true;
+                    getDataFromStream(subHandle, stream_index, bytesNeeded);
                 }
-#pragma warning disable CS0168
-                catch (System.Exception e)
-                {
-#if UNITY_EDITOR
-                    throw;
-#else
-                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
-                    Debug.LogError("Error while receiving visual representation or audio from another participant");
-#endif
-                }
-           }
+                return received_anything;
+            }
+
+
 
             protected class Stats : VRT.Core.BaseStats
             {
@@ -210,6 +148,7 @@ namespace VRT.Transport.Dash
 
                 double statsTotalBytes;
                 double statsTotalPackets;
+                int statsAggregatePackets;
                 double statsTotalDrops;
                 double statsTotalLatency;
                 
@@ -217,14 +156,12 @@ namespace VRT.Transport.Dash
                 {
                     statsTotalBytes += nBytes;
                     statsTotalPackets++;
+                    statsAggregatePackets++;
                     statsTotalLatency += latency;
                     if (didDrop) statsTotalDrops++;
                     if (ShouldOutput())
                     {
-                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}");
-                     }
-                    if (ShouldClear())
-                    {
+                        Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, network_latency_ms={(int)(statsTotalLatency / statsTotalPackets)}, last_stream_index={stream_index}, last_timestamp={timeStamp}, aggregate_packets={statsAggregatePackets}");
                         Clear();
                         statsTotalBytes = 0;
                         statsTotalPackets = 0;
@@ -237,12 +174,16 @@ namespace VRT.Transport.Dash
             protected Stats stats;
 
         }
-        SubPullThread[] threads;
+
+        TileOrMediaHandler[] perTileHandler;
+        System.Threading.Thread myThread;
+        System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
+        System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(100); // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
-        protected BaseSubReader(string _url, string _streamName, int _frequency=0) : base()
+        protected BaseSubReader(string _url, string _streamName) : base()
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -261,17 +202,16 @@ namespace VRT.Transport.Dash
                 }
                 url = _url;
                
-                frequency = _frequency;
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue, int _frenquecy=0) : this(_url, _streamName, _frenquecy)
+        public BaseSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue) : this(_url, _streamName)
         {
             lock (this)
             {
-                receivers = new ReceiverInfo[]
+                perTileInfo = new TileOrMediaInfo[]
                 {
-                    new ReceiverInfo()
+                    new TileOrMediaInfo()
                     {
                         outQueue = outQueue,
                         streamIndexes = new List<int> {streamIndex}
@@ -376,23 +316,26 @@ namespace VRT.Transport.Dash
             }
         }
 
-        protected void InitThreads()
+        protected void InitThread()
         {
             lock (this)
             {
-                int threadCount = receivers.Length;
-                threads = new SubPullThread[threadCount];
+                int threadCount = perTileInfo.Length;
+                perTileHandler = new TileOrMediaHandler[threadCount];
                 for (int i = 0; i < threadCount; i++)
                 {
-                    threads[i] = new SubPullThread(this, i, receivers[i], frequency);
-                    string msg = $"pull_thread={threads[i].Name()}";
-                    if (receivers[i].tileNumber >= 0)
+                    perTileHandler[i] = new TileOrMediaHandler(this, i, perTileInfo[i]);
+                    string msg = $"pull_thread={perTileHandler[i].Name()}";
+                    if (perTileInfo[i].tileNumber >= 0)
                     {
-                        msg += $", tile={receivers[i].tileNumber}";
+                        msg += $", tile={perTileInfo[i].tileNumber}";
                     }
                     BaseStats.Output(Name(), msg);
                 }
-                foreach (var t in threads)
+                myThread = new System.Threading.Thread(ingestThreadRunner);
+                myThread.Name = Name();
+                myThread.Start();
+                foreach (var t in perTileHandler)
                 {
                     t.Start();
                 }
@@ -408,17 +351,19 @@ namespace VRT.Transport.Dash
                 isPlaying = false;
             }
             if (closeQueues) _closeQueues();
-            if (threads == null) return;
-            foreach (var t in threads)
+            myThread?.Join();
+            myThread = null;
+            if (perTileHandler == null) return;
+            foreach (var t in perTileHandler)
             {
                 t.Join();
             }
-            threads = null;
+            perTileHandler = null;
         }
 
         private void _closeQueues()
         {
-            foreach (var r in receivers)
+            foreach (var r in perTileInfo)
             {
                 var oq = r.outQueue;
                 if (!oq.IsClosed()) oq.Close();
@@ -446,7 +391,7 @@ namespace VRT.Transport.Dash
                 {
                     if (InitDash())
                     {
-                        InitThreads();
+                        InitThread();
                     }
                 }
             }
@@ -468,6 +413,68 @@ namespace VRT.Transport.Dash
             }
             clockCorrespondenceReceived = true;
             BaseStats.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
+        }
+
+        protected void ingestThreadRunner()
+        {
+            System.DateTime lastSuccessfulReceive = System.DateTime.Now;
+            try
+            {
+                while (true)
+                {
+                    bool received_anything = false;
+                    for(int i= 0; i < perTileInfo.Length; i++)
+                    {
+                        var receiverInfo = perTileInfo[i];
+                        var receiverHandler = perTileHandler[i];
+                        if (receiverInfo.outQueue.IsClosed())
+                        {
+                            continue;
+                        }
+                        if (subHandle == null)
+                        {
+                            Debug.Log($"{Name()}: subHandle was closed, exiting run thread");
+                            return;
+                        }
+                        //
+                        // Check whether we have incoming data for this set of streams. 
+                        //
+
+                        if(receiverHandler.getDataForTile(subHandle))
+                        {
+                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
+                            received_anything = true;
+                            lastSuccessfulReceive = System.DateTime.Now;
+                        }
+
+                    }
+
+                    // If no data was available on any stream we may want to close the subHandle, or sleep a bit
+                    if (!received_anything)
+                    {
+                        System.TimeSpan noReceives = System.DateTime.Now - lastSuccessfulReceive;
+                        if (noReceives > maxNoReceives)
+                        {
+                            Debug.LogWarning($"{Name()}: No data received for {noReceives.TotalSeconds} seconds, closing subHandle");
+                            playFailed();
+                            return;
+                        }
+                        System.Threading.Thread.Sleep(receiveInterval);
+                        Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
+                        continue;
+                    }
+                }
+            }
+#pragma warning disable CS0168
+            catch (System.Exception e)
+            {
+#if UNITY_EDITOR
+                throw;
+#else
+                    Debug.Log($"{Name()}: Exception: {e.Message} Stack: {e.StackTrace}");
+                    Debug.LogError("Error while receiving visual representation or audio from another participant");
+#endif
+            }
         }
     }
 }

@@ -123,19 +123,18 @@ namespace VRT.Transport.SocketIO
 
             double statsTotalBytes = 0;
             double statsTotalPackets = 0;
+            int statsAggregatePackets = 0;
             double statsTotalDrops = 0;
             
             public void statsUpdate(int nBytes, bool dropped, Timestamp timestamp, int streamId)
             {
                 statsTotalBytes += nBytes;
                 statsTotalPackets++;
+                statsAggregatePackets++;
                 if (dropped) statsTotalDrops++;
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}");
-                }
-                if (ShouldClear())
-                {
+                    Output($"fps={statsTotalPackets / Interval():F2}, fps_dropped={statsTotalDrops / Interval():F2}, bytes_per_packet={(int)(statsTotalBytes / statsTotalPackets)}, last_stream_index={streamId}, last_timestamp={timestamp}, aggregate_packets={statsAggregatePackets}");
                     Clear();
                     statsTotalBytes = 0;
                     statsTotalPackets = 0;
