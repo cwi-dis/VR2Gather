@@ -17,16 +17,8 @@ namespace VRT.Core
 
         public enum UserRepresentation
         {
-            TVM,
             PC
         };
-
-        public enum Presenter
-        {
-            None,
-            Local,
-            Live
-        }
 
         public string orchestratorURL = "";
         public string orchestratorLogURL = "";
@@ -37,7 +29,6 @@ namespace VRT.Core
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public readonly int audioSampleRate = 48000;
         public UserRepresentation userRepresentation = UserRepresentation.PC;
-        public Presenter presenter = Presenter.None;
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
@@ -85,16 +76,6 @@ namespace VRT.Core
             public bool autoStopAfterLeave = false;
         };
         public _AutoStart AutoStart;
-
-        [Serializable]
-        public class _TVMs
-        {
-            public string connectionURI;
-            public string exchangeName;
-            public bool printMetrics;
-            public bool saveMetrics;
-        };
-        public _TVMs TVMs;
 
         [Serializable]
         public class _Macintosh
@@ -204,17 +185,7 @@ namespace VRT.Core
 					public string folder;
                 };
 				public _PrerecordedReaderConfig PrerecordedReaderConfig;
-				[Serializable]
-				public class _CerthReaderConfig
-                {
-                    public string ConnectionURI;
-                    public string PCLExchangeName;
-                    public string MetaExchangeName;
-                    public Vector3 OriginCorrection;
-                    public Vector3 BoundingBotLeft;
-                    public Vector3 BoundingTopRight;
-                }
-                public _CerthReaderConfig CerthReaderConfig;
+				
                 public float voxelSize;
                 public float frameRate;
                 public bool tiled;

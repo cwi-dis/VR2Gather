@@ -14,27 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modifiedAssetPathList:
   - Assets/Bakery/examples/content/sponza/sponza.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Techo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Props_TV_Set_02.fbx
-  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_01.fbx"
-  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_02.fbx"
-  - "Assets/Pilots/Pilot2/Geo/Props/Geometr\xEDa_Foco_03.fbx"
-  - Assets/Pilots/Pilot2/Geo/tube.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Lamp_01.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Lamp_00.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/cylinder.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/PanelTras.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos1.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Suelo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Mesa.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Panel.fbx
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Armarios.fbx
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Lamp_Lexinton/Lamp_Lexinton.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/balda.fbx
   modifiedAssetPaddingHash: 00000000393fd3d9383fd3d9af67e2a8a2d1d3df83f3d20b2f10eacc567e9363567e93631b3a80333f3fd3d968a8f1ed9e248725363fd3d9797e9363383fd3d9bb09ecc05a083ca8d7c2a6938f26a0db819341b6eddb894b
   modifiedMeshList: []
   modifiedMeshPaddingList: 
@@ -522,49 +501,12 @@ MonoBehaviour:
   assetList:
   - Assets/Bakery/examples/content/sponza/bush.FBX
   - Assets/Bakery/examples/content/floor_lamp.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/luztecho.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Escama.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Plataforma_suelo.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Base_users.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Tramoya_02.fbx
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Trees/SilverBirch_01_Vertex.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Candle_Set2/Candle_Set2.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Shower/Shower.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Mirror.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Frame4/Frame4D.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Sanitary/Sanitary.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Sinnesro/Sinnesro.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Strandmon/Strandmon.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Pictures2/Pictures2.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Carpet_Bronden/Carpet_Bronden.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Trees/Tree_03_Vertex.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Nimo/Nimo.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Towel_Heater/Towel_Heater.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Elvengen/Elvengen.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom.fbx
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Stocksund.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/BathroomFront/Bathroom front.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Carpet_Kollund/Carpet_Kollund.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Props/Frame_v5/Frame_v5.FBX
-  - Assets/Pilots/Pilot3/Assets/Apartment/Bedroom/Bedroom_walls.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Escalones.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/Pared.fbx
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos.fbx
-  - Assets/Pilots/Pilot2/Geo/tube.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/PanelTras.FBX
-  - Assets/Pilots/Pilot2/Geo/Props/cilindroFocos_cortado.fbx
-  - Assets/Pilots/Pilot1/Art/Characters/Test/Ten24_Sample_100k.OBJ
   - Assets/Pilots/Common/Prefabs/01_Player/Models/playerpositionring.fbx
   - Assets/Pilots/Common/Prefabs/01_Player/Models/LeftHand.fbx
   - Assets/Pilots/Common/Prefabs/04_Props/PhoneFinder/Models/Phone Finder.fbx
   - Assets/Pilots/Common/Prefabs/02_Objects/Models/sphere.fbx
-  - Assets/Pilots/Common/Props/Base_users.fbx
-  - Assets/Holoplay/Models/holoplay_center-target.fbx
-  - Assets/Holoplay/Models/holoplay_cone.obj
-  - Assets/Holoplay/Models/holoplay_button-circle.fbx
-  - Assets/Holoplay/Models/holoplay_button-square.fbx
-  - Assets/Holoplay/Models/holoplay_button-arrows.fbx
-  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000010100000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000000000000000000000000000001010000ffffffff00000000ffffffffffffffffffffffff
+  - Assets/Pilots/Common/Props/UserBasePosition.fbx
+  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000001010000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000000000000000000000000000101000001010000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0

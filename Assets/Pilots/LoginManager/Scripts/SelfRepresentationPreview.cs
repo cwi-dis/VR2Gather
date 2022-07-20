@@ -7,7 +7,6 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
-using VRT.UserRepresentation.TVM.DataProviders;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }
@@ -56,8 +55,6 @@ public class SelfRepresentationPreview : MonoBehaviour{
         if (player.pc.TryGetComponent(out PointCloudRenderer renderer))
             Destroy(renderer);
         player.pc.SetActive(false);
-        NetworkDataProvider tvm = (NetworkDataProvider)player.tvm;
-        tvm?.gameObject.SetActive(false);
     }
 
     public void ChangeMicrophone(string microphoneName) {
@@ -100,16 +97,11 @@ public class SelfRepresentationPreview : MonoBehaviour{
             case UserRepresentationType.__AVATAR__:
                 player.avatar.SetActive(true);
                 break;
-            case UserRepresentationType.__TVM__:
-                //player.tvm.gameObject.SetActive(true);
-                Debug.Log("TVM PREVIEW");
-                break;
             case UserRepresentationType.__PCC_CWI_:
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
             case UserRepresentationType.__PCC_SYNTH__:
             case UserRepresentationType.__PCC_PRERECORDED__:
-            case UserRepresentationType.__PCC_CERTH__:
                 player.pc.SetActive(true);
                 BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);
                 pcPipeline.Init(new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);

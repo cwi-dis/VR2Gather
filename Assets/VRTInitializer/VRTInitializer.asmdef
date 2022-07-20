@@ -3,8 +3,7 @@
     "references": [
         "VRTCore",
         "PointClouds",
-        "WebCam",
-        "TVM"
+        "WebCam"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

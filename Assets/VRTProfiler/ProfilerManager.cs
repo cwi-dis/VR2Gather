@@ -8,9 +8,7 @@ namespace VRT.Profiler
 {
     public class ProfilerManager : MonoBehaviour
     {
-        public bool TVMActive = false;
-        public GameObject[] TVMs;
-
+        
         private string fileName = "Profiler";
         private string csvOutputPathname;
         private float SamplingRate = 1 / 30f;
@@ -47,8 +45,6 @@ namespace VRT.Profiler
         // Use this for initialization
         void Start()
         {
-            // xxxjack I don't like all this comment-edout code.... Why? Why not set the corresponding boolean to false?
-            if (TVMActive) AddProfiler(new TVMProfiler(TVMs));
         }
 
         // Update is called once per frame
