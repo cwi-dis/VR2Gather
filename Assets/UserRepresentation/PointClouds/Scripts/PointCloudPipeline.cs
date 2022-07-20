@@ -45,7 +45,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         public static void Register()
         {
-            RegisterPipelineClass(UserRepresentationType.__PCC_CERTH__, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
             RegisterPipelineClass(UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
@@ -167,21 +166,9 @@ namespace VRT.UserRepresentation.PointCloud
                         pcReader = new PrerecordedLiveReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
-                    else // sourcetype == pccerth: same as pcself but using Certh capturer
+                    else
                     {
-                        var CerthReaderConfig = PCSelfConfig.CerthReaderConfig;
-                        if (CerthReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CerthReaderConfig config");
-                        pcReader = new CerthReader(
-                            CerthReaderConfig.ConnectionURI,
-                            CerthReaderConfig.PCLExchangeName,
-                            CerthReaderConfig.MetaExchangeName,
-                            CerthReaderConfig.OriginCorrection,
-                            CerthReaderConfig.BoundingBotLeft,
-                            CerthReaderConfig.BoundingTopRight,
-                            PCSelfConfig.voxelSize,
-                            selfPreparerQueue,
-                            encoderQueue);
-                        reader = pcReader;
+                        throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
                     }
 
                     if (!preview)

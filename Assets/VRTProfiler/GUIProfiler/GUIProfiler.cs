@@ -38,9 +38,7 @@ namespace VRT.Profiler
         [SerializeField] private Text packetsText = null;
         [SerializeField] private Text ppsText = null;
 
-        //[SerializeField]
-        //private ShowTVMs[] playersTVM;
-
+        
 
         // Start is called before the first frame update
         void Start()
@@ -123,28 +121,5 @@ namespace VRT.Profiler
             packetsText.text = packetsInfo;
             ppsText.text = ppsInfo;
         }
-
-        //void CalculateUsers() {
-        //    numUsers = 0;
-        //    pps = 0;
-        //    totalPackets = 0;
-        //    foreach(ShowTVMs o in playersTVM) {
-        //        if (o.isActiveAndEnabled) {
-        //            ++numUsers;
-        //            pps += o.pps;
-        //            totalPackets += o.Packets;
-        //        }
-        //    }
-        //    if (numUsers > 0) pps /= numUsers;
-        //}
-
-        //private void OnGUI()
-        //{
-        //    GUI.Label(new Rect(5, 10, 1000, 25), cpuInfo);
-        //    GUI.Label(new Rect(5, 40, 1000, 25), ramInfo);
-        //    GUI.Label(new Rect(5, 70, 1000, 25), gpuInfo);
-        //    GUI.Label(new Rect(5, 100, 1000, 25), vramInfo);
-        //    GUI.Label(new Rect(5, 130, 1000, 50), fpsInfo);
-        //}
     }
 }

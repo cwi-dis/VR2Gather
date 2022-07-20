@@ -10,7 +10,6 @@ public class PlayerManager : MonoBehaviour {
     public string userNameStr;
     public Camera   cam;
 	public GameObject holoCamera;
-    public ITVMHookUp tvm;
     public GameObject avatar;
     public GameObject webcam;
     public GameObject pc;

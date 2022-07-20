@@ -109,8 +109,6 @@ namespace VRT.Pilots.Common
 		{
 			var me = OrchestratorController.Instance.SelfUser;
 
-			bool firstTVM = true;
-
 			// First tell the tilingConfigDistributor what our user ID is.
 			var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
 			if (configDistributors == null || configDistributors.Length == 0)
@@ -132,17 +130,9 @@ namespace VRT.Pilots.Common
                 playerManager.id = i;
                 i++;
 				var representationType = user.userData.userRepresentationType;
-				playerManager.userRepresentationType = representationType;
-				if (representationType == UserRepresentationType.__TVM__ && firstTVM)
-				{
-					SetUpPlayerManager(playerManager, user, configDistributors, true);
-					firstTVM = false;
-				}
-				else
-				{
-					SetUpPlayerManager(playerManager, user, configDistributors);
-				}
-
+				
+				SetUpPlayerManager(playerManager, user, configDistributors);
+				
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
 				networkPlayer.UserId = user.userId;
 				networkPlayer.SetIsLocalPlayer(me.userId == user.userId);
@@ -187,7 +177,7 @@ namespace VRT.Pilots.Common
 		}
 
 		//Looks like this could very well be internal to the PlayerManager? 
-		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor[] configDistributors, bool firstTVM = false)
+		private void SetUpPlayerManager(PlayerManager playerManager, User user, BaseConfigDistributor[] configDistributors)
 		{
 
 			playerManager.orchestratorId = user.userId;
@@ -218,7 +208,6 @@ namespace VRT.Pilots.Common
 					case UserRepresentationType.__AVATAR__:
 						playerManager.avatar.SetActive(true);
 						break;
-					case UserRepresentationType.__PCC_CERTH__:
 					case UserRepresentationType.__PCC_SYNTH__:
 					case UserRepresentationType.__PCC_PRERECORDED__:
 					case UserRepresentationType.__PCC_CWIK4A_:
@@ -246,21 +235,6 @@ namespace VRT.Pilots.Common
 							cd?.RegisterPipeline(user.userId, pcPipeline);
 						}
 						
-						break;
-					case UserRepresentationType.__TVM__: // TVM
-														 // xxxjack we should *really* create a dummy TVMPipeline object for this...
-						if (cameraTransform)
-						{
-							cameraTransform.localPosition = new Vector3(PlayerPrefs.GetFloat("tvm_pos_x", 0), PlayerPrefs.GetFloat("tvm_pos_y", 0), PlayerPrefs.GetFloat("tvm_pos_z", 0));
-							cameraTransform.localRotation = Quaternion.Euler(PlayerPrefs.GetFloat("tvm_rot_x", 0), PlayerPrefs.GetFloat("tvm_rot_y", 0), PlayerPrefs.GetFloat("tvm_rot_z", 0));
-						}
-						ITVMHookUp tvm = playerManager.tvm;
-						if (tvm != null)
-						{
-							tvm.HookUp(firstTVM, user.userData.userMQurl, user.userData.userMQexchangeName);
-							firstTVM = false;
-
-						}
 						break;
 					default:
 						break;
