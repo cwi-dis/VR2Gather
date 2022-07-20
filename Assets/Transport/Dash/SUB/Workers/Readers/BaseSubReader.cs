@@ -50,7 +50,9 @@ namespace VRT.Transport.Dash
             BaseSubReader parent;
             int handler_index;
             TileOrMediaInfo receiverInfo;
-          
+            public Timestamp mostRecentDashTimestamp;
+
+
             public TileOrMediaHandler(BaseSubReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
             {
                 parent = _parent;
@@ -97,7 +99,7 @@ namespace VRT.Transport.Dash
                     BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
                 }
                 // Convert clock values to wallclock
-                Timestamp dashTimestamp = frameInfo.timestamp;
+                mostRecentDashTimestamp = frameInfo.timestamp;
                 if (!parent.clockCorrespondenceReceived)
                 {
                     Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
@@ -107,7 +109,7 @@ namespace VRT.Transport.Dash
                 Timedelta network_latency_ms = now - frameInfo.timestamp;
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
-                stats.statsUpdate(bytesRead, didDrop, dashTimestamp, network_latency_ms, stream_index);
+                stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, network_latency_ms, stream_index);
 
             }
 
@@ -176,7 +178,7 @@ namespace VRT.Transport.Dash
         TileOrMediaHandler[] perTileHandler;
         System.Threading.Thread myThread;
         System.TimeSpan maxNoReceives = System.TimeSpan.FromSeconds(15);
-        System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(2); // xxxjack maybe too aggressive for PCs and video?
+        System.TimeSpan receiveInterval = System.TimeSpan.FromMilliseconds(100); // This parameter needs work. 2ms causes jitter with tiled pcs, but 33ms may be too high for audio 
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
@@ -440,6 +442,7 @@ namespace VRT.Transport.Dash
 
                         if(receiverHandler.getDataForTile(subHandle))
                         {
+                            Debug.Log($"{Name()}: xxxjack tile {i} received {receiverHandler.mostRecentDashTimestamp}");
                             received_anything = true;
                             lastSuccessfulReceive = System.DateTime.Now;
                         }
@@ -457,6 +460,7 @@ namespace VRT.Transport.Dash
                             return;
                         }
                         System.Threading.Thread.Sleep(receiveInterval);
+                        Debug.Log($"{Name()}: xxxjack no data sleep({receiveInterval}");
                         continue;
                     }
                 }

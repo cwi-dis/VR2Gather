@@ -13,36 +13,6 @@ public class PilotRegistry
         {
             case "Pilot 0":
                 return "Cinema";
-            case "Pilot 1":
-                return "Pilot1";
-            case "Pilot 2":
-                switch (pilotVariant)
-                {
-                    case "0": // NONE
-                        Config.Instance.presenter = Config.Presenter.None;
-                        break;
-                    case "1": // LOCAL
-                        Config.Instance.presenter = Config.Presenter.Local;
-                        break;
-                    case "2": // LIVE
-                        Config.Instance.presenter = Config.Presenter.Live;
-                        break;
-                    default:
-                        break;
-                }
-                if (OrchestratorController.Instance.UserIsMaster && Config.Instance.presenter == Config.Presenter.Live)
-                {
-                    return "Pilot2_Presenter";
-                }
-                return "Pilot2_Player";
-            case "Pilot 3":
-                return "Pilot3";
-            case "Museum":
-                return "Museum";
-            case "HoloConference":
-                return "HoloMeet";
-            case "MedicalExamination":
-                return "MedicalExamination";
             case "Technical Playground":
                 return "TechnicalPlayground";
             case "Development":

@@ -24,7 +24,7 @@
   	"autoCreateForUser" : "",
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
@@ -44,7 +44,9 @@
     "Codec": "cwi1",
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 5
+    "timeoutBeforeGhosting" : 5,
+    "encoderParallelism" : 4,
+    "decoderParallelism" : 8
   },
   "Voice": {
   	"Codec": "VR2A",
@@ -84,7 +86,7 @@
 	  },
       "voxelSize": 0.007,
       "frameRate": 15,
-      "tiled": true,
+      "tiled": false,
       "Encoders": [
 		
 		{
