@@ -4,7 +4,7 @@
 dirname=`dirname $0`
 dirname=`cd $dirname ; pwd`
 INSTALL_PCL=false
-DEST=built-VRTogether
+DEST=built-VR2Gather
 UNITY_VERSION=2019.4.35f1
 
 unitycmd=Unity
@@ -18,19 +18,19 @@ Darwin)
 	mac=true
 	unitycmd=/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity
 	unityflag=-buildOSXUniversalPlayer
-	output=VRTogether.app
+	output=VR2Gather.app
 	;;
 MINGW64*)
 	win=true
 	unitycmd=Unity
 	unityflag=-buildWindows64Player
-	output=VRTogether.exe
+	output=VR2Gather.exe
 	;;
 Linux*)
 	linux=true
 	unitycmd=/Applications/Unity/Hub/Editor/$UNITY_VERSION/Unity.app/Contents/MacOS/Unity
 	unityflag=-buildLinux64Player
-	output=VRTogether
+	output=VR2Gather
 	;;
 *)
 	echo Unknown system `uname -s`
@@ -58,7 +58,7 @@ do
 		;;
 		--help)
 		echo "Usage: $0 [--pcl]"
-		echo "Creates VRTogether app in $dirname/$DEST"
+		echo "Creates VR2Gather app in $dirname/$DEST"
 		echo "--pcl Includes pointcloud DLLs and support programs (must be in expected location)"
 		exit 0
 		;;
