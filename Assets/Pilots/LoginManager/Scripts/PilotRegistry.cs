@@ -16,7 +16,7 @@ public class PilotRegistry
             case "Technical Playground":
                 return "TechnicalPlayground";
             default:
-                throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
+                return null;
         }
     }
 

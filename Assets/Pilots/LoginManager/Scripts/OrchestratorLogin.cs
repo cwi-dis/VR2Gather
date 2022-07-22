@@ -333,9 +333,23 @@ public class OrchestratorLogin : MonoBehaviour {
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+        // Add scenarios we have implemented first, others afterwards after a blank line
         foreach(var scenario in OrchestratorController.Instance.AvailableScenarios)
         {
-            options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+
+            if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
+            {
+                options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+            }
+        }
+        options.Add(new Dropdown.OptionData(""));
+        foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
+        {
+
+            if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
+            {
+                options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+            }
         }
         dd.AddOptions(options);
     }
