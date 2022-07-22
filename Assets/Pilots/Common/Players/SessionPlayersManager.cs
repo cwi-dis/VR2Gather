@@ -149,6 +149,7 @@ namespace VRT.Pilots.Common
 					if (representationType == UserRepresentationType.__SPECTATOR__)
 					{
 						Spectators.Add(networkPlayer.UserId, networkPlayer);
+						playerManager.cam.fieldOfView = 47.0f;
 					}
 					else
 					{
