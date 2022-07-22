@@ -647,21 +647,24 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionNameIF.text = config.sessionName;
             uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
             uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
-            if (config.sessionTransportProtocol >= 0)
+            if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                 // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                 // on and then simulating a button callback works.
                 switch(config.sessionTransportProtocol)
                 {
-                    case 1:
+                    case "socketio":
                         socketProtocolToggle.isOn = true;
                         break;
-                    case 2:
+                    case "dash":
                         dashProtocolToggle.isOn = true;
                         break;
-                    case 3:
+                    case "tcp":
                         tcpProtocolToggle.isOn = true;
+                        break;
+                    default:
+                        Debug.LogError($"Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
                         break;
                 }
                 SetAudio(config.sessionTransportProtocol);
@@ -669,10 +672,29 @@ public class OrchestratorLogin : MonoBehaviour {
             autoState = AutoState.DidPartialCreation;
         }
         if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0) {
-            if (config.sessionScenario >= 0)
+            if (config.sessionScenario != null && config.sessionScenario != "")
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionScenario={config.sessionScenario}");
-                scenarioIdDrop.value = config.sessionScenario;
+                bool found = false;
+                int idx = 0;
+                foreach(var entry in scenarioIdDrop.options)
+                {
+                    if (entry.text.Contains(config.sessionScenario))
+                    {
+                        if (found)
+                        {
+                            Debug.LogError($"Multiple scenarios match {config.sessionScenario}");
+                        }
+                        found = true;
+                        scenarioIdDrop.value = idx;
+                    }
+                    idx++;
+                }
+                if (!found)
+                {
+                    Debug.LogError($"No scenarios match {config.sessionScenario}");
+
+                }
             }
             if (config.autoCreate)
             {
@@ -1109,9 +1131,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    public void SetAudio(int kind) {
-        switch (kind) {
-            case 1: // Socket
+    public void SetAudio(string proto) {
+        switch (proto) {
+            case "socketio": // Socket
                 if (socketProtocolToggle.isOn) {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
@@ -1120,7 +1142,7 @@ public class OrchestratorLogin : MonoBehaviour {
                     tcpProtocolToggle.isOn = false;
                 }
                 break;
-            case 2: // Dash
+            case "dash": // Dash
                 if (dashProtocolToggle.isOn)
                 {
                     // Set AudioType
@@ -1130,7 +1152,7 @@ public class OrchestratorLogin : MonoBehaviour {
                     tcpProtocolToggle.isOn = false;
                 }
                 break;
-            case 3: // Dash
+            case "tcp": // Dash
                 if (tcpProtocolToggle.isOn)
                 {
                     // Set AudioType
