@@ -303,9 +303,10 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void UpdateSessions(Transform container, Dropdown dd) {
         RemoveComponentsFromList(container.transform);
-        Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session element) {
-            AddTextComponentOnContent(container.transform, element.GetGuiRepresentation());
-        });
+        foreach(var session in OrchestratorController.Instance.AvailableSessions)
+        {
+            AddTextComponentOnContent(container.transform, session.GetGuiRepresentation());
+        }
 
         string selectedOption = "";
         // store selected option in dropdown
@@ -314,9 +315,10 @@ public class OrchestratorLogin : MonoBehaviour {
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session sess) {
+        foreach(var sess in OrchestratorController.Instance.AvailableSessions)
+        {
             options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
-        });
+        }
         dd.AddOptions(options);
         // re-assign selected option in dropdown
         if (dd.options.Count > 0) { 
@@ -331,9 +333,10 @@ public class OrchestratorLogin : MonoBehaviour {
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        Array.ForEach(OrchestratorController.Instance.AvailableScenarios, delegate (Scenario scenario) {
+        foreach(var scenario in OrchestratorController.Instance.AvailableScenarios)
+        {
             options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-        });
+        }
         dd.AddOptions(options);
     }
 
