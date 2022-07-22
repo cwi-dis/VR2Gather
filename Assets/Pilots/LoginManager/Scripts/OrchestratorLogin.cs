@@ -28,9 +28,8 @@ public class OrchestratorLogin : MonoBehaviour {
     #region GUI Components
 
     public bool developerOptions = true;
-    public bool usePresenter = false;
     private int kindAudio = 2; // Set Dash as default
-    private int kindPresenter = 0;
+    const int kindPresenter = 0;
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
