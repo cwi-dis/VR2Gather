@@ -366,28 +366,28 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "No Representation";
                     break;
                 case "__2D__":
-                    enumName = "2D Video";
+                    enumName = "Video Avatar";
                     break;
                 case "__AVATAR__":
-                    enumName = "3D Avatar";
+                    enumName = "Avatar";
                     break;
                 case "__PCC_CWI_":
-                    enumName = "Simple PointCloud (RealSense)";
+                    enumName = "PointCloud (RealSense)";
                     break;
                 case "__PCC_CWIK4A_":
-                    enumName = "Simple PointCloud (Kinect)";
+                    enumName = "PointCloud (Kinect)";
                     break;
                 case "__PCC_PROXY__":
-                    enumName = "Simple PointCloud (5G phone proxy)";
+                    enumName = "PointCloud (5G phone)";
                     break;
                 case "__PCC_SYNTH__":
-                    enumName = "Synthetic PointCloud (development option)";
+                    enumName = "Synthetic PointCloud";
                     break;
                 case "__PCC_PRERECORDED__":
-                    enumName = "Prerecorded PointCloud (development option)";
+                    enumName = "Prerecorded PointCloud";
                     break;
                 case "__SPECTATOR__":
-                    enumName = "Spectator";
+                    enumName = "Voice-only Spectator";
                     break;
                 case "__CAMERAMAN__":
                     enumName = "Cameraman";
@@ -439,17 +439,17 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                userRepresentationLobbyText.text = "2D VIDEO";
+                userRepresentationLobbyText.text = "VIDEO";
                 break;
             case UserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                userRepresentationLobbyText.text = "3D AVATAR";
+                userRepresentationLobbyText.text = "AVATAR";
                 break;
             case UserRepresentationType.__PCC_CWI_:
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                userRepresentationLobbyText.text = "SIMPLE PC";
+                userRepresentationLobbyText.text = "POINTCLOUD";
                 break;
             case UserRepresentationType.__PCC_SYNTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
@@ -476,31 +476,31 @@ public class OrchestratorLogin : MonoBehaviour {
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
             case UserRepresentationType.__NONE__:
-                selfRepresentationDescription.text = "No visual representation, and no audio communication. The user can only listen.";
+                selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
                 break;
             case UserRepresentationType.__2D__:
-                selfRepresentationDescription.text = "2D video window from your camera, as in typical conferencing services.";
+                selfRepresentationDescription.text = "Avatar with video window from your camera.";
                 break;
             case UserRepresentationType.__AVATAR__:
                 selfRepresentationDescription.text = "3D Synthetic Avatar.";
                 break;
             case UserRepresentationType.__PCC_CWI_:
-                selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with RealSense cameras.";
                 break;
             case UserRepresentationType.__PCC_CWIK4A_:
-                selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with Azure Kinect cameras.";
                 break;
             case UserRepresentationType.__PCC_PROXY__:
-                selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with 5G phone camera.";
                 break;
             case UserRepresentationType.__PCC_SYNTH__:
-                selfRepresentationDescription.text = "3D Synthetic PointCloud.";
+                selfRepresentationDescription.text = "3D Synthetic point cloud avatar.";
                 break;
             case UserRepresentationType.__PCC_PRERECORDED__:
-                selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
+                selfRepresentationDescription.text = "3D Pre-recorded point cloud.";
                 break;
             case UserRepresentationType.__SPECTATOR__:
-                selfRepresentationDescription.text = "No visual representation, but audio communication.";
+                selfRepresentationDescription.text = "No visual representation, only audio communication.";
                 break;
             case UserRepresentationType.__CAMERAMAN__:
                 selfRepresentationDescription.text = "Local video recorder.";
@@ -1810,7 +1810,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
 #endregion
 
-#if UNITY_STANDALONE_WIN
+#if NO_LONGER_USED_UNITY_STANDALONE_WIN
     void OnGUI() {
         if (GUI.Button(new Rect(Screen.width / 2, 5, 70, 20), "Open Log")) {
             var log_path = System.IO.Path.Combine(System.IO.Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "Player.log");
