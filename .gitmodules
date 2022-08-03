@@ -1,0 +1,3 @@
+[submodule "Assets/ExternalAssets/VR2G-vivesr"]
+	path = Assets/ExternalAssets/VR2G-vivesr
+	url = git@github.com:cwi-dis/VR2G-vivesr.git
