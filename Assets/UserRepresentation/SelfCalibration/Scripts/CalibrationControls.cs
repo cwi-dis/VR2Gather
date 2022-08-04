@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CalibrationControls : MonoBehaviour
 {
@@ -52,16 +53,22 @@ public class CalibrationControls : MonoBehaviour
     public AxisOrTwoKeys backwardForward;
     public AxisOrTwoKeys leftRight;
     public AxisOrTwoKeys downUp;
+    //private Array values;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        //values = Enum.GetValues(typeof(KeyCode));
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        ////code to know hey pressed
+        //foreach (KeyCode kcode in values)
+        //{
+        //    if (Input.GetKey(kcode))
+        //        Debug.Log("KeyCode down: " + kcode);
+        //}
     }
 }

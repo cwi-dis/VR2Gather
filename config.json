@@ -17,14 +17,14 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "test",
-  	"sessionScenario" : "Pilot 0",
+  	"sessionScenario" : "Technical Playground",
   	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
