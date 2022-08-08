@@ -18,7 +18,7 @@
   	"autoLogin" : true,
   	"sessionName" : "",
   	"sessionScenario" : "",
-  	"sessionTransportProtocol" : "socketio",
+  	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
