@@ -1,0 +1,3 @@
+[submodule "Assets/ExternalAssets/VR2G-besthttp"]
+	path = Assets/ExternalAssets/VR2G-besthttp
+	url = ../VR2G-besthttp.git
