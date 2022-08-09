@@ -1,3 +1,6 @@
 [submodule "Assets/ExternalAssets/VR2G-vivesr"]
 	path = Assets/ExternalAssets/VR2G-vivesr
 	url = git@github.com:cwi-dis/VR2G-vivesr.git
+[submodule "Assets/PilotsExternal/EyeTrackingExp"]
+	path = Assets/PilotsExternal/EyeTrackingExp
+	url = git@github.com:cwi-dis/eye_tracking_pointclouds_experiment.git
