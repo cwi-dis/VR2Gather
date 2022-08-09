@@ -295,6 +295,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (parent.newTimestamps) {
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp timestamp = (Timestamp)sinceEpoch.TotalMilliseconds;
+                BaseStats.Output(Name(), "Mapping " + nextFilename + "with timestamp=" + timestamp);
                 pc._set_timestamp(timestamp);
             }
             Timedelta downsampleDuration = 0;

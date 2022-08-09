@@ -475,6 +475,8 @@ MonoBehaviour:
   EyeR: {fileID: 944181091959325039}
   EyeL: {fileID: 6209947730614330523}
   EyeCombi: {fileID: 1524626000616370025}
+  writeStats: 1
+  interval: 0.033
 --- !u!1001 &67013158885020824
 PrefabInstance:
   m_ObjectHideFlags: 0

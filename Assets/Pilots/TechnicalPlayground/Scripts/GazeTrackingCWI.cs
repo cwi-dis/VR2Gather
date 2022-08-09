@@ -14,6 +14,12 @@ public class GazeTrackingCWI : MonoBehaviour
     public GameObject EyeR;
     public GameObject EyeL;
     public GameObject EyeCombi;
+
+    //stats
+    public bool writeStats;
+    public double interval = 0;
+    static int instanceCounter = 0;
+    int instanceNumber = instanceCounter++;
     private void Start()
     {
         if (!SRanipal_Eye_Framework.Instance.EnableEye)
@@ -22,6 +28,8 @@ public class GazeTrackingCWI : MonoBehaviour
             return;
         }
         Assert.IsNotNull(GazeRayRenderer);
+
+        stats = new Stats(Name(), interval);
     }
 
     private void Update()
@@ -42,7 +50,8 @@ public class GazeTrackingCWI : MonoBehaviour
 
         EyeR.gameObject.transform.position = Camera.main.transform.TransformPoint(eyeData.verbose_data.right.gaze_origin_mm / 1000.0f);
         EyeL.gameObject.transform.position = Camera.main.transform.TransformPoint(eyeData.verbose_data.left.gaze_origin_mm / 1000.0f);
-        EyeCombi.gameObject.transform.position = Camera.main.transform.TransformPoint(eyeData.verbose_data.combined.eye_data.gaze_origin_mm / 1000.0f);
+        Vector3 combinedEyePosition = Camera.main.transform.TransformPoint(eyeData.verbose_data.combined.eye_data.gaze_origin_mm / 1000.0f);
+        EyeCombi.gameObject.transform.position = combinedEyePosition;
 
 
         Vector3 GazeOriginCombinedLocal, GazeDirectionCombinedLocal;
@@ -62,12 +71,23 @@ public class GazeTrackingCWI : MonoBehaviour
             else return;
         }
 
-        Vector3 GazeDirectionCombined = Camera.main.transform.TransformDirection(GazeDirectionCombinedLocal);
+        Vector3 combinedGazeDirection = Camera.main.transform.TransformDirection(GazeDirectionCombinedLocal);
         //GazeRayRenderer.SetPosition(0, Camera.main.transform.position - Camera.main.transform.up * 0.05f); //- Camera.main.transform.up * 0.05f
         //GazeRayRenderer.SetPosition(1, Camera.main.transform.position + GazeDirectionCombined * LengthOfRay);
-        GazeRayRenderer.SetPosition(0, EyeCombi.gameObject.transform.position); //- Camera.main.transform.up * 0.05f
-        GazeRayRenderer.SetPosition(1, EyeCombi.gameObject.transform.position + GazeDirectionCombined * LengthOfRay);
+        GazeRayRenderer.SetPosition(0, combinedEyePosition);
+        GazeRayRenderer.SetPosition(1, combinedEyePosition + combinedGazeDirection * LengthOfRay);
+
+        if (writeStats)
+        {
+            stats.statsUpdate(combinedEyePosition, combinedGazeDirection, 0);
+        }
     }
+
+    public string Name()
+    {
+        return $"{GetType().Name}#{transform.parent.gameObject.name}.{instanceNumber}";
+    }
+
     private void Release()
     {
         if (eye_callback_registered == true)
@@ -80,4 +100,22 @@ public class GazeTrackingCWI : MonoBehaviour
     {
         eyeData = eye_data;
     }
+
+    protected class Stats : VRT.Core.BaseStats
+    {
+        public Stats(string name, double interval) : base(name, interval)
+        {
+        }
+
+        public void statsUpdate(Vector3 pos, Vector3 dir, long pc_timestamp)
+        {
+            if (ShouldOutput())
+            {
+                Output($"px={pos.x:f2}, py={pos.y:f2}, pz={pos.z:f2}, rx={dir.x:f2}, ry={dir.y:f2}, rz={dir.z:f2}, pc_timestamp={pc_timestamp}");
+                Clear();
+            }
+        }
+    }
+
+    protected Stats stats;
 }
