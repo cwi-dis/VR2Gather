@@ -6,6 +6,7 @@
     "com.unity.ugui": "1.0.0",
     "com.unity.xr.legacyinputhelpers": "2.1.9",
     "com.unity.xr.oculus.standalone": "2.38.4",
+    "com.unity.xr.openvr.standalone": "2.0.5",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
