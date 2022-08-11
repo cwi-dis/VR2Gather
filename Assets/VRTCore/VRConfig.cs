@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.XR;
+using UnityEngine.XR.Management;
 
 namespace VRT.Core
 {
@@ -80,6 +81,7 @@ namespace VRT.Core
         {
             if (!loaded)
             {
+#if OLD_UNITY_VR
                 Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
                 foreach (var d in XRSettings.supportedDevices)
                 {
@@ -88,6 +90,10 @@ namespace VRT.Core
                 string[] devices = preferredDevices();
                 Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
                 XRSettings.LoadDeviceByName(devices);
+#else
+				Debug.Log("VRConfig: Initializing XR Loader...");
+				yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+#endif
                 yield return null;
            }
             loaded = true;
@@ -106,7 +112,21 @@ namespace VRT.Core
                 _initialized = true;
                 return;
             }
+#if OLD_UNITY_VR
             currentOutputDevice = XRSettings.loadedDeviceName;
+#else
+            if (XRGeneralSettings.Instance.Manager.activeLoader == null)
+            {
+                Debug.Log("VRConfig: No XR plugin could be loaded. Disabling XR.");
+                currentOutputDevice = "";
+            }
+            else
+            {
+                Debug.Log("VRConfig: Starting XR...");
+                XRGeneralSettings.Instance.Manager.StartSubsystems();
+	            currentOutputDevice = XRSettings.loadedDeviceName;
+            }
+#endif
             if (currentOutputDevice != "")
             {
                 XRSettings.enabled = true;

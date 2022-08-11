@@ -3,7 +3,8 @@
     "references": [
         "Unity.TextMeshPro",
         "Unity.Recorder",
-        "Unity.Recorder.Editor"
+        "Unity.Recorder.Editor",
+        "Unity.XR.Management"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
