@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
+  - enabled: 1
+    path: Assets/PilotsExternal/EyeTrackingExp/EyeTrackingExp/Scenes/EyeTrackingExp.unity
+    guid: ec574075d2e1df549abd5e11f2f3760c
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}
