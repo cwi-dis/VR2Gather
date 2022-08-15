@@ -28,7 +28,7 @@ public class OrchestratorLogin : MonoBehaviour {
     #region GUI Components
 
     public bool developerOptions = true;
-    private int kindAudio = 2; // Set Dash as default
+    private int kindAudio = 0; // Set SocketIO as default
     const int kindPresenter = 0;
 
     [HideInInspector] public bool isMaster = false;
@@ -668,6 +668,10 @@ public class OrchestratorLogin : MonoBehaviour {
                         break;
                 }
                 SetAudio(config.sessionTransportProtocol);
+            } else {
+                // No default set. Use socketio.
+                socketProtocolToggle.isOn = true;
+                SetAudio("socketio");
             }
             autoState = AutoState.DidPartialCreation;
         }
