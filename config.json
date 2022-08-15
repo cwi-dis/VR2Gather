@@ -17,7 +17,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "test",
-  	"sessionScenario" : "Technical Playground",
+  	"sessionScenario" : "EyeTrackingExp",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
