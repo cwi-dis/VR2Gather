@@ -12,7 +12,7 @@ public class PilotRegistry
         switch (pilotName)
         {
             case "Pilot 0":
-                return "EyeTrackingExp";
+                return "Pilot0";
             case "Technical Playground":
                 return "TechnicalPlayground";
             case "Development": // Temporary scenario-placeholder. Use for QualityAssesment on this branch.
