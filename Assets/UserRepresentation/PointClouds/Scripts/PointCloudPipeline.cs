@@ -315,7 +315,7 @@ namespace VRT.UserRepresentation.PointCloud
                      var _reader = new PrerecordedPlaybackReader(PrerecordedReaderConfig.folder, 0, cfg.PCSelfConfig.frameRate);
                     StaticPredictionInformation info = _reader.GetStaticPredictionInformation();
                     string[] tileSubdirs = info.tileNames;
-                    int nTiles = tileSubdirs.Length;
+                    int nTiles = tileSubdirs==null ? 0 : tileSubdirs.Length;
                     int nQualities = info.qualityNames.Length;
                     if (tileSubdirs == null || tileSubdirs.Length == 0)
                     {
