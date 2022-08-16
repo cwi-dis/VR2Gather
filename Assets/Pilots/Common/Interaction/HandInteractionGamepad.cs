@@ -27,10 +27,9 @@ namespace VRT.Pilots.Common
 
         protected float xHand, yHand;
 
-        protected override void StartGroping()
+        protected override void startGroping()
         {
             xHand = yHand = 0f;
-            base.StartGroping();
         }
 
         protected override void showCursor()

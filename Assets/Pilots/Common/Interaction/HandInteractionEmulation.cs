@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
 using VRT.Core;
 using VRT.Teleporter;
 
@@ -43,9 +41,7 @@ namespace VRT.Pilots.Common
         public Transform handHomeTransform;
         [Tooltip("Collider that actually presses the button")]
         public GameObject touchCollider = null;
-        protected bool isTeleporting;
         protected bool isGroping;
-        protected bool isTouching;
         protected bool isTouchable;
         protected Animator _Animator = null;
         private LineRenderer _Line;
@@ -58,6 +54,7 @@ namespace VRT.Pilots.Common
         {
             _Animator = hand.GetComponentInChildren<Animator>();
             _Line = GetComponent<LineRenderer>();
+            stopGroping();
             if (unusedHand != null)
             {
                 unusedHand.SetActive(false);
@@ -66,140 +63,56 @@ namespace VRT.Pilots.Common
 
         void OnDestroy()
         {
-            FinishGroping();
-            FinishTeleporting(true);
-        }
-
-        void StartTeleporting()
-        {
-            if (teleporter == null) return;
-            isTeleporting = true;
-            teleporter.SetActive(isTeleporting);
-        }
-
-        void FinishTeleporting(bool abort)
-        {
-            if (teleporter == null || !isTeleporting) return;
-            if (abort)
-            {
-                teleporter.TeleportHome();
-            } else
-            {
-                if (teleporter.canTeleport())
-                {
-                    teleporter.Teleport();
-                }
-            }
-            isTeleporting = false;
-            teleporter.SetActive(isTeleporting);
-        }
-
-        void UpdateTeleporting()
-        {
-            if (teleporter == null || !isTeleporting) return;
-            Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
-            // We have the ray starting at our "hand" going in the direction
-            // of our gaze.
-            Vector3 pos = transform.position;
-            Vector3 dir = teleportRay.direction;
-            teleporter.CustomUpdatePath(pos, dir, 10f);
+            stopGroping();
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (teleportGropeKey != KeyCode.None)
+            // First check teleporter, if enabled
+            if (teleporter != null && teleportGropeKey != KeyCode.None)
             {
-                if (Input.GetKeyDown(teleportGropeKey))
+                bool isTeleportingNow = Input.GetKey(teleportGropeKey);
+                teleporter.SetActive(isTeleportingNow);
+                if (teleporter.teleporterActive)
                 {
-                    StartTeleporting();
-                }
-                if (Input.GetKeyUp(teleportGropeKey))
-                {
-                    FinishTeleporting(false);
-                }
-                if (Input.GetKeyUp(teleportHomeKey))
-                {
-                    FinishTeleporting(true);
+                    Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+                    // We have the ray starting at our "hand" going in the direction
+                    // of our gaze.
+                    Vector3 pos = transform.position;
+                    Vector3 dir = teleportRay.direction;
+                    teleporter.CustomUpdatePath(pos, dir, 10f);
+                    if (Input.GetKeyDown(teleportKey))
+                    {
+                        if (teleporter.canTeleport())
+                        {
+                            teleporter.Teleport();
+                        }
+                        teleporter.SetActive(false);
+                    }
+                    if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
+                    {
+                        teleporter.TeleportHome();
+                    }
+                    return;
                 }
             }
-            UpdateTeleporting();
-
-            if (gropeKey != KeyCode.None)
+            bool isGropingingNow = Input.GetKey(gropeKey);
+            if (isGroping != isGropingingNow)
             {
-                if (Input.GetKeyDown(gropeKey))
+                isGroping = isGropingingNow;
+                if (isGroping)
                 {
-                    StartGroping();
-                }
-                if (Input.GetKeyUp(gropeKey))
-                {
-                    FinishGroping();
-                }
-            }
-            if (touchKey != KeyCode.None)
-            {
-                if (Input.GetKeyDown(touchKey))
-                {
-                    StartTouching();
-                }
-                if (Input.GetKeyUp(touchKey))
-                {
-                    FinishTouching();
-                }
-            }
-            UpdateGroping();
-
-        }
-
-        protected virtual void StartGroping()
-        {
-            hideCursor();
-            isGroping = true;
-            isTouching = false;
-        }
-        protected virtual void FinishGroping()
-        {
-            // xxxjack should we check isGroping?
-            if (hotspot != null)
-            {
-                hotspot.SetActive(false);
-            }
-            if (hand != null)
-            {
-                UpdateAnimation("");
-                if (handHomeTransform == null)
-                {
-                    hand.transform.localPosition = Vector3.zero;
-                    hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+                    touchCollider.SetActive(false);
+                    isTouchable = false;
+                    startGroping();
                 }
                 else
                 {
-                    hand.transform.position = handHomeTransform.position;
-                    hand.transform.rotation = handHomeTransform.rotation;
+                    stopGroping();
+                    touchCollider.SetActive(false);
                 }
             }
-            if (_Line != null)
-            {
-                _Line.enabled = false;
-            }
-            showCursor();
-            isGroping = false;
-            isTouching = false;
-        }
-
-        public void StartTouching()
-        {
-            if (!isGroping) return;
-            isTouching = true;
-        }
-
-        public void FinishTouching()
-        {
-            isTouching = false;
-        }
-
-        protected virtual void UpdateGroping()
-        {
             if (!isGroping) return;
 
             //
@@ -221,8 +134,7 @@ namespace VRT.Pilots.Common
             {
                 handDistance = firstHit.distance;
                 hitPoint = firstHit.point;
-            }
-            else
+            } else
             {
                 hitPoint = ray.GetPoint(maxDistance);
             }
@@ -232,7 +144,8 @@ namespace VRT.Pilots.Common
             // Note that when isTouching is set the hand is moved so the TouchCollider (or grabcollider, when implemented)
             // should do the touch magic.
             //
-            showGrope(hitPoint);
+            bool isTouching = isTouchable && Input.GetKey(touchKey);
+            showGrope(hitPoint, isTouchable, isTouching);
             if (isTouching)
             {
                 touchCollider.transform.position = hitPoint;
@@ -240,7 +153,12 @@ namespace VRT.Pilots.Common
             touchCollider.SetActive(isTouching);
         }
 
-        protected void showGrope(Vector3 touchPoint)
+        protected virtual void startGroping()
+        {
+            hideCursor();
+        }
+
+        protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
         {
             Vector3 homePoint = handHomeTransform.position;
             Vector3 distance3 = touchPoint - homePoint;
@@ -267,6 +185,33 @@ namespace VRT.Pilots.Common
                 _Line.SetPositions(points);
                 _Line.enabled = true;
             }
+        }
+
+        protected void stopGroping()
+        {
+            if (hotspot != null)
+            {
+                hotspot.SetActive(false);
+            }
+            if (hand != null)
+            {
+                UpdateAnimation("");
+                if (handHomeTransform == null)
+                {
+                    hand.transform.localPosition = Vector3.zero;
+                    hand.transform.localRotation = Quaternion.LookRotation(Vector3.forward, Vector3.up);
+                }
+                else
+                {
+                    hand.transform.position = handHomeTransform.position;
+                    hand.transform.rotation = handHomeTransform.rotation;
+                }
+            }
+            if (_Line != null)
+            {
+                _Line.enabled = false;
+            }
+            showCursor();
         }
 
         private void hideHand()
