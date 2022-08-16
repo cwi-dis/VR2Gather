@@ -1349,7 +1349,7 @@ MonoBehaviour:
   inhibitKeys: 3001000032010000
   inhibitKeyNames:
   - shift
-  - control
+  - left ctrl
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
 --- !u!1 &5131421326051842195

@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.XR;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+#endif
 
 public class GamePadDiscover : MonoBehaviour
 {
@@ -32,6 +36,23 @@ public class GamePadDiscover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+#if ENABLE_INPUT_SYSTEM
+        foreach(Key keyCode in Enum.GetValues(typeof(Key)))
+        {
+            try
+            {
+                var key = (ButtonControl)Keyboard.current[keyCode];
+                if (key.wasPressedThisFrame)
+                {
+                    Debug.Log($"Key down: '{key.name}' code {keyCode}");
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+
+            }
+        }
+#else
         foreach(var a in axes)
         {
             if (a.axisName != "")
@@ -52,5 +73,6 @@ public class GamePadDiscover : MonoBehaviour
                 Debug.Log("KeyCode down: " + kcode);
             }
         }
+#endif
     }
 }
