@@ -23,6 +23,8 @@ public class GamePadDiscover : MonoBehaviour
     // Start is called before the first frame update
     [Tooltip("InputSystem Paths of buttons to monitor")]
     public string[] buttons;
+    [Tooltip("This will enable (many) messages on control of the wrong type")]
+    public bool messageOnBadControl = false;
     void Start()
     {
         Debug.Log($"XRSettings.enabled={XRSettings.enabled}");
@@ -63,24 +65,43 @@ public class GamePadDiscover : MonoBehaviour
         }
         foreach(var buttonPath in buttons)
         {
-            ButtonControl button = InputSystem.FindControl(buttonPath) as ButtonControl;
-            if (button != null && button.wasPressedThisFrame)
-            {
-                Debug.Log($"Button down: {buttonPath}");
-            }
+            using (var buttons = InputSystem.FindControls(buttonPath))
+                foreach (var _button in buttons)
+                {
+                    ButtonControl button = _button as ButtonControl;
+                    if (button == null)
+                    {
+                        if (messageOnBadControl) Debug.Log($"Not a ButtonControl: {_button.path}");
+                        continue;
+                    }
+                    if (button != null && button.wasPressedThisFrame)
+                    {
+                        Debug.Log($"Button down: {buttonPath}: {button.path}");
+                    }
+                }
         }
         foreach (var a in axes)
         {
-            AxisControl axis = InputSystem.FindControl(a.axisPath) as AxisControl;
-            if (axis != null)
-            {
-                float newValue = axis.ReadValue();
-                if (newValue != a.axisValue)
+            using (var axes = InputSystem.FindControls(a.axisPath))
+                foreach (var _axis in axes)
                 {
-                    Debug.Log($"Axis {a.axisPath} = {newValue}");
-                    a.axisValue = newValue;
+                    AxisControl axis = _axis as AxisControl;
+                    if (axis == null)
+                    {
+                        if (messageOnBadControl) Debug.Log($"Not an AxisControl: {_axis.path}");
+                        continue;
+
+                    }
+                    if (axis != null)
+                    {
+                        float newValue = axis.ReadValue();
+                        if (newValue != a.axisValue)
+                        {
+                            Debug.Log($"Axis {a.axisPath}: {axis.path} = {newValue}");
+                            a.axisValue = newValue;
+                        }
+                    }
                 }
-            }
         }
 #else
         foreach(var a in axes)
