@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+#endif
 using VRT.Core;
 
 namespace VRT.Pilots.Common
@@ -15,6 +19,17 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
+#if ENABLE_INPUT_SYSTEM
+            foreach (var inhibitKeyName in inhibitKeyNames)
+            {
+                var k = Gamepad.current[inhibitKeyName] as ButtonControl;
+                if (k == null) Debug.LogError($"MoveCameraGamepad: unknown keyname {inhibitKeyName}");
+                if (k != null && k.isPressed)
+                {
+                    return;
+                }
+            }
+#else
             foreach (var inhibitKey in inhibitKeys)
             {
                 if (inhibitKey != KeyCode.None && Input.GetKey(inhibitKey))
@@ -22,6 +37,7 @@ namespace VRT.Pilots.Common
                     return;
                 }
             }
+#endif
             if (heightAxisName != "")
             {
                 float deltaHeight = 0;

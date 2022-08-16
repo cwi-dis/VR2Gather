@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.XR;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+#endif
 using VRT.Core;
 
 namespace VRT.Pilots.Common
@@ -10,8 +14,9 @@ namespace VRT.Pilots.Common
         public float heightSensitivity = 0.05f; // 5 Centimeters
         public bool allowHJKLforMouse = true;
         public bool spectator = false;
-        [Tooltip("Key that disables head movement (because they use these axes for pointing or teleporting)")]
+        [Tooltip("Keys that disable head movement (because they use these axes for pointing or teleporting)")]
         public KeyCode[] inhibitKeys;
+        public string[] inhibitKeyNames;
 
         protected Transform cameraTransformToControl = null;
         protected float xRotation = 0f;
@@ -27,6 +32,17 @@ namespace VRT.Pilots.Common
 
         void Update()
         {
+#if ENABLE_INPUT_SYSTEM
+            foreach (var inhibitKeyName in inhibitKeyNames)
+            {
+                var k = Keyboard.current[inhibitKeyName] as KeyControl;
+                if (k == null) Debug.LogError($"MoveCamera: unknown keyname {inhibitKeyName}");
+                if (k != null && k.isPressed)
+                {
+                    return;
+                }
+            }
+#else
             foreach(var inhibitKey in inhibitKeys)
             {
                 if (inhibitKey != KeyCode.None && Input.GetKey(inhibitKey))
@@ -34,8 +50,17 @@ namespace VRT.Pilots.Common
                     return;
                 }
             }
+#endif
 
-            float deltaHeight = Input.mouseScrollDelta.y;
+            float deltaHeight =
+#if ENABLE_INPUT_SYSTEM
+                Mouse.current.scroll.ReadValue().y
+
+#else
+                Input.mouseScrollDelta.y
+#endif
+
+                ;
 
             // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
             // with the current implementation all users have this ability, which may or may not be a good idea.
@@ -48,7 +73,9 @@ namespace VRT.Pilots.Common
                     cameraTransformToControl.localPosition.z);
             }
 
-
+#if ENABLE_INPUT_SYSTEM
+            // xxxjack need to port to InputSystem
+#else
             // Camera Rotation when primary mouse button is pressed
             if (Input.GetKey(KeyCode.Mouse0))
             {
@@ -82,6 +109,7 @@ namespace VRT.Pilots.Common
                     adjustBodyHead(hAngle, vAngle);
                 }
             }
+#endif
         }
 
         protected void adjustBodyHead(float hAngle, float vAngle)
