@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+#endif
 using VRT.Core;
 using VRT.Teleporter;
 
@@ -21,14 +25,19 @@ namespace VRT.Pilots.Common
         public float maxDistance = Mathf.Infinity;
         [Tooltip("Key to press to start looking for touchable items")]
         public KeyCode gropeKey = KeyCode.LeftShift;
+        public string gropeKeyName;
         [Tooltip("Key to press to touch an item")]
         public KeyCode touchKey = KeyCode.Mouse0;
+        public string touchKeyName;
         [Tooltip("Key to press to start looking for teleportable locations")]
         public KeyCode teleportGropeKey = KeyCode.LeftControl;
+        public string teleportGropeKeyName;
         [Tooltip("Key to press to teleport (with teleportGropeKey also pressed)")]
         public KeyCode teleportKey = KeyCode.Mouse0;
+        public string teleportKeyName;
         [Tooltip("Key to press to teleport home (with teleportGropeKey also pressed)")]
         public KeyCode teleportHomeKey = KeyCode.Alpha0;
+        public string teleportHomeKeyName;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
         [Tooltip("Where the hitpoint is in 3D space")]
@@ -66,13 +75,24 @@ namespace VRT.Pilots.Common
             stopGroping();
         }
 
+        bool _isTeleportGropeKeyPressed()
+        {
+#if ENABLE_INPUT_SYSTEM
+            if (teleportGropeKeyName == null || teleportGropeKeyName == "") return false;
+            return ((KeyControl) Keyboard.current[teleportGropeKeyName]).isPressed;
+#else
+            if (teleportGropeKey == KeyCode.None) return false;
+            return Input.GetKey(teleportGropeKey);
+#endif
+        }
+
         // Update is called once per frame
         void Update()
         {
             // First check teleporter, if enabled
-            if (teleporter != null && teleportGropeKey != KeyCode.None)
+            if (teleporter != null)
             {
-                bool isTeleportingNow = Input.GetKey(teleportGropeKey);
+                bool isTeleportingNow = _isTeleportGropeKeyPressed();
                 teleporter.SetActive(isTeleportingNow);
                 if (teleporter.teleporterActive)
                 {

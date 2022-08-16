@@ -2789,6 +2789,16 @@ PrefabInstance:
       objectReference: {fileID: 136980260111034875}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: gropeKeyName
+      value: /<Keyboard>/leftShift
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchKeyName
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: touchCollider
       value: 
       objectReference: {fileID: 5401827870845855719}
@@ -2799,9 +2809,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: teleportKeyName
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportHomeKeyName
+      value: /<Keyboard>/0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: gropingCursorTexture
       value: 
       objectReference: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87, type: 3}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportGropeKeyName
+      value: /<Keyboard>/leftControl
+      objectReference: {fileID: 0}
     - target: {fileID: 3185680175615349953, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: m_Name

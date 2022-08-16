@@ -13,24 +13,33 @@ public class GamePadDiscover : MonoBehaviour
     [System.Serializable]
     public class axisInfo
     {
-        [Tooltip("Name of axis")]
-        public string axisName;
+        [Tooltip("InputSystem path of axis")]
+        public string axisPath;
         [Tooltip("Current axis value")]
         public float axisValue;
     };
     [Tooltip("Axes to monitor")]
     public axisInfo[] axes;
     // Start is called before the first frame update
+    [Tooltip("InputSystem Paths of buttons to monitor")]
+    public string[] buttons;
     void Start()
     {
         Debug.Log($"XRSettings.enabled={XRSettings.enabled}");
         Debug.Log($"XRSettings.isDeviceActive={XRSettings.isDeviceActive}");
         Debug.Log($"XRSettings.loadedDeviceName={XRSettings.loadedDeviceName}");
+#if ENABLE_INPUT_SYSTEM
+        foreach(var d in InputSystem.devices)
+        {
+            Debug.Log($"InputSystem device: {d.path}");
+        }
+#else
         var names = Input.GetJoystickNames();
         foreach(var name in names)
         {
             Debug.Log($"Joystick or gamepad name: {name}");
         }
+#endif
     }
 
     // Update is called once per frame
@@ -50,6 +59,27 @@ public class GamePadDiscover : MonoBehaviour
             catch (ArgumentOutOfRangeException)
             {
 
+            }
+        }
+        foreach(var buttonPath in buttons)
+        {
+            ButtonControl button = InputSystem.FindControl(buttonPath) as ButtonControl;
+            if (button != null && button.wasPressedThisFrame)
+            {
+                Debug.Log($"Button down: {buttonPath}");
+            }
+        }
+        foreach (var a in axes)
+        {
+            AxisControl axis = InputSystem.FindControl(a.axisPath) as AxisControl;
+            if (axis != null)
+            {
+                float newValue = axis.ReadValue();
+                if (newValue != a.axisValue)
+                {
+                    Debug.Log($"Axis {a.axisPath} = {newValue}");
+                    a.axisValue = newValue;
+                }
             }
         }
 #else
