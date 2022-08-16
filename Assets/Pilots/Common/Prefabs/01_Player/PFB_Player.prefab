@@ -378,8 +378,7 @@ MonoBehaviour:
   heightSensitivity: 0.1
   allowHJKLforMouse: 0
   spectator: 0
-  inhibitKeys: 4e0100004f0100005001000051010000
-  inhibitKeyNames: []
+  inhibitKeyPaths: []
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
   leftRightAxisName: Gamepad_Axis_1
@@ -1346,10 +1345,9 @@ MonoBehaviour:
   heightSensitivity: 0.05
   allowHJKLforMouse: 1
   spectator: 0
-  inhibitKeys: 3001000032010000
-  inhibitKeyNames:
-  - leftShift
-  - leftCtrl
+  inhibitKeyPaths:
+  - /<Keyboard>/leftShitf
+  - /<Keyboard>/leftCtrl
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
 --- !u!1 &5131421326051842195

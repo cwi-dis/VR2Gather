@@ -15,8 +15,11 @@ namespace VRT.Pilots.Common
         public bool allowHJKLforMouse = true;
         public bool spectator = false;
         [Tooltip("Keys that disable head movement (because they use these axes for pointing or teleporting)")]
+#if ENABLE_INPUT_SYSTEM
+        public string[] inhibitKeyPaths;
+#else
         public KeyCode[] inhibitKeys;
-        public string[] inhibitKeyNames;
+#endif
 
         protected Transform cameraTransformToControl = null;
         protected float xRotation = 0f;
@@ -33,10 +36,10 @@ namespace VRT.Pilots.Common
         void Update()
         {
 #if ENABLE_INPUT_SYSTEM
-            foreach (var inhibitKeyName in inhibitKeyNames)
+            foreach (var inhibitKeyPath in inhibitKeyPaths)
             {
-                var k = Keyboard.current[inhibitKeyName] as KeyControl;
-                if (k == null) Debug.LogError($"MoveCamera: unknown keyname {inhibitKeyName}");
+                var k = InputSystem.FindControl(inhibitKeyPath) as ButtonControl;
+                if (k == null) Debug.LogError($"MoveCamera: unknown keypath {inhibitKeyPath}");
                 if (k != null && k.isPressed)
                 {
                     return;

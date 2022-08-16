@@ -20,10 +20,10 @@ namespace VRT.Pilots.Common
         void Update()
         {
 #if ENABLE_INPUT_SYSTEM
-            foreach (var inhibitKeyName in inhibitKeyNames)
+            foreach (var inhibitKeyPath in inhibitKeyPaths)
             {
-                var k = Gamepad.current[inhibitKeyName] as ButtonControl;
-                if (k == null) Debug.LogError($"MoveCameraGamepad: unknown keyname {inhibitKeyName}");
+                var k = InputSystem.FindControl(inhibitKeyPath) as ButtonControl;
+                if (k == null) Debug.LogError($"MoveCameraGamepad: unknown keyname {inhibitKeyPath}");
                 if (k != null && k.isPressed)
                 {
                     return;
