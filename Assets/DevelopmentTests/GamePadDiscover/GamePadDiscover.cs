@@ -35,6 +35,10 @@ public class GamePadDiscover : MonoBehaviour
         {
             Debug.Log($"InputSystem device: {d.path}");
         }
+        if (Keyboard.current != null) Debug.Log($"Keyboard: {Keyboard.current.path}");
+        if (Mouse.current != null) Debug.Log($"Mouse: {Mouse.current.path}");
+        if (Gamepad.current != null) Debug.Log($"Gamepad: {Gamepad.current.path}");
+        if (Joystick.current != null) Debug.Log($"Joystick: {Joystick.current.path}");
 #else
         var names = Input.GetJoystickNames();
         foreach(var name in names)
