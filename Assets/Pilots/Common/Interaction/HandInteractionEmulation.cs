@@ -25,19 +25,19 @@ namespace VRT.Pilots.Common
         public float maxDistance = Mathf.Infinity;
         [Tooltip("Key to press to start looking for touchable items")]
         public KeyCode gropeKey = KeyCode.LeftShift;
-        public string gropeKeyName;
+        public string gropeKeyPath;
         [Tooltip("Key to press to touch an item")]
         public KeyCode touchKey = KeyCode.Mouse0;
-        public string touchKeyName;
+        public string touchKeyPath;
         [Tooltip("Key to press to start looking for teleportable locations")]
         public KeyCode teleportGropeKey = KeyCode.LeftControl;
-        public string teleportGropeKeyName;
+        public string teleportGropeKeyPath;
         [Tooltip("Key to press to teleport (with teleportGropeKey also pressed)")]
         public KeyCode teleportKey = KeyCode.Mouse0;
-        public string teleportKeyName;
+        public string teleportKeyPath;
         [Tooltip("Key to press to teleport home (with teleportGropeKey also pressed)")]
         public KeyCode teleportHomeKey = KeyCode.Alpha0;
-        public string teleportHomeKeyName;
+        public string teleportHomeKeyPath;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
         [Tooltip("Where the hitpoint is in 3D space")]
@@ -75,15 +75,21 @@ namespace VRT.Pilots.Common
             stopGroping();
         }
 
-        bool _isTeleportGropeKeyPressed()
+        bool _isKeyPressed(string controlPath)
         {
-#if ENABLE_INPUT_SYSTEM
-            if (teleportGropeKeyName == null || teleportGropeKeyName == "") return false;
-            return ((KeyControl) Keyboard.current[teleportGropeKeyName]).isPressed;
-#else
-            if (teleportGropeKey == KeyCode.None) return false;
-            return Input.GetKey(teleportGropeKey);
-#endif
+            if (controlPath == null || controlPath == "") return false;
+            var k = InputSystem.FindControl(controlPath) as ButtonControl;
+            if (k == null) Debug.LogWarning($"HandInteractionEmulation: {controlPath} is not a ButtonControl");
+            return k != null && k.isPressed;
+        }
+
+        bool _wasKeyPressedThisFrame(string controlPath)
+        {
+            if (controlPath == null || controlPath == "") return false;
+            var k = InputSystem.FindControl(controlPath) as ButtonControl;
+            if (k == null) Debug.LogWarning($"HandInteractionEmulation: {controlPath} is not a ButtonControl");
+            return k != null && k.wasPressedThisFrame;
+
         }
 
         // Update is called once per frame
@@ -92,7 +98,7 @@ namespace VRT.Pilots.Common
             // First check teleporter, if enabled
             if (teleporter != null)
             {
-                bool isTeleportingNow = _isTeleportGropeKeyPressed();
+                bool isTeleportingNow = _isKeyPressed(teleportGropeKeyPath);
                 teleporter.SetActive(isTeleportingNow);
                 if (teleporter.teleporterActive)
                 {
@@ -102,7 +108,7 @@ namespace VRT.Pilots.Common
                     Vector3 pos = transform.position;
                     Vector3 dir = teleportRay.direction;
                     teleporter.CustomUpdatePath(pos, dir, 10f);
-                    if (Input.GetKeyDown(teleportKey))
+                    if (_wasKeyPressedThisFrame(teleportKeyPath))
                     {
                         if (teleporter.canTeleport())
                         {
@@ -110,14 +116,14 @@ namespace VRT.Pilots.Common
                         }
                         teleporter.SetActive(false);
                     }
-                    if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
+                    if (_wasKeyPressedThisFrame(teleportHomeKeyPath))
                     {
                         teleporter.TeleportHome();
                     }
                     return;
                 }
             }
-            bool isGropingingNow = Input.GetKey(gropeKey);
+            bool isGropingingNow = _isKeyPressed(gropeKeyPath);
             if (isGroping != isGropingingNow)
             {
                 isGroping = isGropingingNow;
@@ -164,7 +170,7 @@ namespace VRT.Pilots.Common
             // Note that when isTouching is set the hand is moved so the TouchCollider (or grabcollider, when implemented)
             // should do the touch magic.
             //
-            bool isTouching = isTouchable && Input.GetKey(touchKey);
+            bool isTouching = isTouchable && _isKeyPressed(touchKeyPath);
             showGrope(hitPoint, isTouchable, isTouching);
             if (isTouching)
             {
@@ -258,7 +264,8 @@ namespace VRT.Pilots.Common
 
         protected virtual Vector3 getRayDestination()
         {
-            return Input.mousePosition;
+            var rv = Mouse.current.position.ReadValue();
+            return rv;
         }
 
         protected virtual Ray getRay()

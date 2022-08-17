@@ -78,6 +78,38 @@ namespace VRT.Pilots.Common
 
 #if ENABLE_INPUT_SYSTEM
             // xxxjack need to port to InputSystem
+            if (Mouse.current.leftButton.isPressed)
+            {
+                var pos = Mouse.current.position;
+                float mouseX = pos.x.ReadValue() * xySensitivity * Time.deltaTime;
+                float mouseY = pos.y.ReadValue() * xySensitivity * Time.deltaTime;
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                adjustBodyHead(mouseX, -mouseY);
+
+            }
+            if (allowHJKLforMouse)
+            {
+                // Use HJKL keys to simulate mouse movement, mainly for debugging
+                // because mouse doesn't work over screen sharing connections.
+                float hAngle = 0;
+                float vAngle = 0;
+                if (Keyboard.current.hKey.isPressed) hAngle = 5;
+                if (Keyboard.current.lKey.isPressed) hAngle = -5;
+                if (Keyboard.current.jKey.isPressed) vAngle = -5;
+                if (Keyboard.current.kKey.isPressed) vAngle = 5;
+                if (hAngle != 0 || vAngle != 0)
+                {
+                    xRotation += vAngle;
+                    xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                    cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+                    adjustBodyHead(hAngle, vAngle);
+                }
+            }
 #else
             // Camera Rotation when primary mouse button is pressed
             if (Input.GetKey(KeyCode.Mouse0))

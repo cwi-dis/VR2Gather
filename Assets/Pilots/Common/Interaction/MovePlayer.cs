@@ -15,12 +15,16 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
+#if ENABLE_INPUT_SYSTEM
+// xxxjack to be done
+#else
             float x = Input.GetAxis(leftRightAxis);
             float z = Input.GetAxis(forwardAxis);
             if (invertForwardAxis) z = -z;
 
             Vector3 move = transform.right * x + transform.forward * z;
             controller.Move(move * speed * Time.deltaTime);
+#endif
         }
     }
 }

@@ -1161,13 +1161,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 333
+  teleportModeKeyPath: 
   teleportHomeKey: 331
+  teleportHomeKeyPath: 
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
   pointingModeAxis: 
+  pointingModeAxisPath: 
   pointingModeKey: 344
   pointingModeAxisInvert: 1
   grabbingModeAxis: 
+  grabbingModeAxisPath: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -1346,7 +1350,7 @@ MonoBehaviour:
   allowHJKLforMouse: 1
   spectator: 0
   inhibitKeyPaths:
-  - /<Keyboard>/leftShitf
+  - /<Keyboard>/leftShift
   - /<Keyboard>/leftCtrl
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
@@ -1607,13 +1611,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 338
+  teleportModeKeyPath: 
   teleportHomeKey: 339
+  teleportHomeKeyPath: 
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
   pointingModeAxis: 
+  pointingModeAxisPath: 
   pointingModeKey: 344
   pointingModeAxisInvert: 0
   grabbingModeAxis: 
+  grabbingModeAxisPath: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -2050,13 +2058,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 331
+  teleportModeKeyPath: 
   teleportHomeKey: 333
+  teleportHomeKeyPath: 
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
   pointingModeAxis: 
+  pointingModeAxisPath: 
   pointingModeKey: 345
   pointingModeAxisInvert: 1
   grabbingModeAxis: 
+  grabbingModeAxisPath: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
@@ -2304,13 +2316,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleportModeKey: 339
+  teleportModeKeyPath: 
   teleportHomeKey: 338
+  teleportHomeKeyPath: 
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
   pointingModeAxis: 
+  pointingModeAxisPath: 
   pointingModeKey: 345
   pointingModeAxisInvert: 0
   grabbingModeAxis: 
+  grabbingModeAxisPath: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
@@ -2792,7 +2808,17 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: gropeKeyPath
+      value: /<Keyboard>/leftShift
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: touchKeyName
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchKeyPath
       value: /<Mouse>/leftButton
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
@@ -2812,8 +2838,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: teleportKeyPath
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: teleportHomeKeyName
       value: /<Keyboard>/0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportHomeKeyPath
+      value: /<Keyboard>/digit0
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
@@ -2824,6 +2860,11 @@ PrefabInstance:
         type: 3}
       propertyPath: teleportGropeKeyName
       value: /<Keyboard>/leftControl
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportGropeKeyPath
+      value: /<Keyboard>/leftCtrl
       objectReference: {fileID: 0}
     - target: {fileID: 3185680175615349953, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
