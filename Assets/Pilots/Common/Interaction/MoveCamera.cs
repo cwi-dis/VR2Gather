@@ -10,10 +10,12 @@ namespace VRT.Pilots.Common
 {
     public class MoveCamera : MonoBehaviour
     {
-        public float xySensitivity = 100.0f;
-        public float heightSensitivity = 0.05f; // 5 Centimeters
-        public bool allowHJKLforMouse = true;
-        public bool spectator = false;
+        public float xySensitivity = 1;
+        public float heightSensitivity = 1; // 5 Centimeters
+        [Tooltip("Move head using HJKL keys")]
+        public bool allowMouseForHeadMovement = true;
+        [Tooltip("Move head using HJKL keys")]
+        public bool allowHJKLforHeadMovement = true;
         [Tooltip("Keys that disable head movement (because they use these axes for pointing or teleporting)")]
 #if ENABLE_INPUT_SYSTEM
         public string[] inhibitKeyPaths;
@@ -77,20 +79,23 @@ namespace VRT.Pilots.Common
             }
 
 #if ENABLE_INPUT_SYSTEM
-            // xxxjack need to port to InputSystem
-            if (Mouse.current.leftButton.isPressed)
+            if (allowMouseForHeadMovement)
             {
-                var pos = Mouse.current.position;
-                float mouseX = pos.x.ReadValue() * xySensitivity * Time.deltaTime;
-                float mouseY = pos.y.ReadValue() * xySensitivity * Time.deltaTime;
-                xRotation -= mouseY;
-                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+                if (Mouse.current.leftButton.isPressed)
+                {
+                    var pos = Mouse.current.position;
+                    float mouseX = pos.x.ReadValue() * xySensitivity * Time.deltaTime;
+                    float mouseY = pos.y.ReadValue() * xySensitivity * Time.deltaTime;
+                    xRotation -= mouseY;
+                    xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-                adjustBodyHead(mouseX, -mouseY);
+                    cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                    adjustBodyHead(mouseX, -mouseY);
 
+                }
             }
-            if (allowHJKLforMouse)
+            
+            if (allowHJKLforHeadMovement)
             {
                 // Use HJKL keys to simulate mouse movement, mainly for debugging
                 // because mouse doesn't work over screen sharing connections.

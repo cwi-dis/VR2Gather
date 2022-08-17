@@ -376,8 +376,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xySensitivity: 250
   heightSensitivity: 0.1
-  allowHJKLforMouse: 0
-  spectator: 0
+  allowMouseForHeadMovement: 1
+  allowHJKLforHeadMovement: 1
   inhibitKeyPaths: []
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
@@ -1160,18 +1160,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 333
   teleportModeKeyPath: 
-  teleportHomeKey: 331
+  teleportModeKey: 333
   teleportHomeKeyPath: 
+  teleportHomeKey: 331
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
   pointingModeAxisPath: 
+  pointingModeAxis: 
   pointingModeKey: 344
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
   grabbingModeAxisPath: 
+  grabbingModeAxis: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -1345,10 +1345,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xySensitivity: 100
-  heightSensitivity: 0.05
-  allowHJKLforMouse: 1
-  spectator: 0
+  xySensitivity: 10
+  heightSensitivity: 0.001
+  allowMouseForHeadMovement: 0
+  allowHJKLforHeadMovement: 1
   inhibitKeyPaths:
   - /<Keyboard>/leftShift
   - /<Keyboard>/leftCtrl
@@ -1610,18 +1610,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 338
   teleportModeKeyPath: 
-  teleportHomeKey: 339
+  teleportModeKey: 338
   teleportHomeKeyPath: 
+  teleportHomeKey: 339
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
   pointingModeAxisPath: 
+  pointingModeAxis: 
   pointingModeKey: 344
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
   grabbingModeAxisPath: 
+  grabbingModeAxis: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -2057,18 +2057,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 331
   teleportModeKeyPath: 
-  teleportHomeKey: 333
+  teleportModeKey: 331
   teleportHomeKeyPath: 
+  teleportHomeKey: 333
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
   pointingModeAxisPath: 
+  pointingModeAxis: 
   pointingModeKey: 345
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
   grabbingModeAxisPath: 
+  grabbingModeAxis: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
@@ -2315,18 +2315,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 339
   teleportModeKeyPath: 
-  teleportHomeKey: 338
+  teleportModeKey: 339
   teleportHomeKeyPath: 
+  teleportHomeKey: 338
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
   pointingModeAxisPath: 
+  pointingModeAxis: 
   pointingModeKey: 345
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
   grabbingModeAxisPath: 
+  grabbingModeAxis: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
