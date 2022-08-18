@@ -5,6 +5,32 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEditor;
+
+#if UNITY_EDITOR
+[InitializeOnLoad]
+#endif
+public class NegateProcessor : InputProcessor<float>
+{
+
+#if UNITY_EDITOR
+    static NegateProcessor()
+    {
+        Initialize();
+    }
+#endif
+
+    [RuntimeInitializeOnLoadMethod]
+    static void Initialize()
+    {
+        InputSystem.RegisterProcessor<NegateProcessor>();
+    }
+
+    public override float Process(float value, InputControl control)
+    {
+        return 1-value;
+    }
+}
 
 public class TestNewInputSystem : MonoBehaviour
 {
