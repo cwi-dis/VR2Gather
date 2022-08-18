@@ -6,12 +6,12 @@
             "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
             "actions": [
                 {
-                    "name": "Foobar",
+                    "name": "FoobarMode",
                     "type": "Button",
                     "id": "6fca549b-1e68-4f97-bb08-c925fd8e1221",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 },
                 {
@@ -21,6 +21,33 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Teleport",
+                    "type": "Button",
+                    "id": "d3075410-8b62-4edf-8b0b-65e29c3b2ab2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Delta",
+                    "type": "PassThrough",
+                    "id": "7ad5b969-748a-407d-86af-125de33d9d22",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MoveMode",
+                    "type": "Button",
+                    "id": "597a7904-2027-4a32-8233-997ba6cb11f3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 }
             ],
@@ -32,7 +59,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Foobar",
+                    "action": "FoobarMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -44,6 +71,39 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "Voobar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3767fff6-2413-4926-a68a-f4244cea3fee",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Delta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cfd8b097-281c-4571-95e1-ec9522be8d06",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MoveMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

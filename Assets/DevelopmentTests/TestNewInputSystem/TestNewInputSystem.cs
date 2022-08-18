@@ -10,38 +10,70 @@ public class TestNewInputSystem : MonoBehaviour
 {
     Vector2 oldMousePosition;
 
-     void Start()
+    [Tooltip("Show key presses and mouse moves")]
+    public bool showKeyboardMouse = false;
+    [Tooltip("Virtual position after move/teleport")]
+    public Vector2 virtualPosition = new Vector2(0, 0);
+
+    public bool moveModeActive = false;
+    public bool foobarModeActive = false;
+
+    void Start()
     {
  
     }
 
-    public void OnMove()
+  
+    public void OnDelta(InputValue value)
     {
-        Debug.Log($"Move");
+        Vector2 delta = value.Get<Vector2>();
+        if (moveModeActive)
+        {
+            virtualPosition += delta;
+            Debug.Log($"OnDelta: Move({delta}) to {virtualPosition}");
+        }
+        if (foobarModeActive)
+        {
+            Debug.Log($"OnDelta: Foobar({delta})");
+        }
     }
 
     public void OnTeleport()
     {
-        Debug.Log("Teleport");
+        virtualPosition = new Vector2(0, 0);
+        Debug.Log($"Teleport to {virtualPosition}");
     }
 
-    public void OnFoobar()
+    public void OnFoobarMode(InputValue value)
     {
-        Debug.Log("Foobar");
+        bool onOff = value.Get<float>() != 0;
+        foobarModeActive = onOff;
+        Debug.Log($"FoobarMode({onOff})");
     }
+
+    public void OnMoveMode(InputValue value)
+    {
+        bool onOff = value.Get<float>() != 0;
+        moveModeActive = onOff;
+        Debug.Log($"MoveMode({onOff})");
+    }
+
 
     // Update is called once per frame
     void Update()
     {
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
-        if (mousePosition != oldMousePosition)
+        if(showKeyboardMouse)
         {
-            Debug.Log($"Mouse was moved from {oldMousePosition} to {mousePosition}");
-            oldMousePosition = mousePosition;
-        }
-        if (Keyboard.current.anyKey.wasPressedThisFrame)
-        {
-            Debug.Log("A key was pressed");
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            if (mousePosition != oldMousePosition)
+            {
+                Debug.Log($"Mouse was moved from {oldMousePosition} to {mousePosition}");
+                oldMousePosition = mousePosition;
+            }
+            if (Keyboard.current.anyKey.wasPressedThisFrame)
+            {
+                Debug.Log("A key was pressed");
+            }
         }
     }
 }
