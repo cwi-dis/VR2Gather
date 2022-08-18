@@ -39,6 +39,16 @@ public class InputSystemHandling : MonoBehaviour
     [Tooltip("How fast moves go")]
     public float moveSpeed = 1f;
 
+    [Tooltip("The camera attached to the head that turns (Usually found automatically)")]
+    public Transform cameraTransformToControl = null;
+    [Tooltip("The player body that turns horizontally")]
+    public Transform playerBody;
+    [Tooltip("The player head that tilts")]
+    public Transform avatarHead;
+    [Tooltip("How fast the viewpoint turns")]
+    public float xySensitivity = 1;
+    [Tooltip("How fast the viewpoint moves up/down")]
+    public float heightSensitivity = 1; // 5 Centimeters
 
     Vector2 oldMousePosition;
 
@@ -53,6 +63,13 @@ public class InputSystemHandling : MonoBehaviour
     public bool modeTurningActive = false;
     public bool modeGropingActive = false;
     public bool modeTeleportingActive = false;
+
+    private void Awake()
+    {
+        if (cameraTransformToControl != null) return;
+        PlayerManager player = GetComponentInParent<PlayerManager>();
+        cameraTransformToControl = player.getCameraTransform();
+    }
 
     void Start()
     {
@@ -73,8 +90,14 @@ public class InputSystemHandling : MonoBehaviour
         }
         if (modeTurningActive)
         {
-            turnPosition += delta;
+            float xRotation = delta.x * xySensitivity * Time.deltaTime;
+            float yRotation = delta.y * xySensitivity * Time.deltaTime;
+
             Debug.Log($"OnDelta: Turn({delta}) to {turnPosition}");
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+            cameraTransformToControl.localRotation = cameraTransformToControl.localRotation*Quaternion.Euler(xRotation, 0f, 0f);
+            adjustBodyHead(xRotation, -yRotation);
         }
         if (modeGropingActive)
         {
@@ -84,6 +107,23 @@ public class InputSystemHandling : MonoBehaviour
         {
             teleportPosition += delta;
         }
+    }
+
+    public void OnHeightDelta(InputValue value)
+    {
+        float deltaHeight = value.Get<float>();
+
+        // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
+        // with the current implementation all users have this ability, which may or may not be a good idea.
+        if (deltaHeight != 0)
+        {
+            // Do Camera movement for up/down.
+            cameraTransformToControl.localPosition = new Vector3(
+                cameraTransformToControl.localPosition.x,
+                cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
+                cameraTransformToControl.localPosition.z);
+        }
+
     }
 
     public void OnTeleportGo()
@@ -156,4 +196,11 @@ public class InputSystemHandling : MonoBehaviour
     {
         
     }
+
+    protected void adjustBodyHead(float hAngle, float vAngle)
+    {
+        playerBody.Rotate(Vector3.up, hAngle);
+        avatarHead.Rotate(Vector3.right, vAngle);
+    }
+
 }
