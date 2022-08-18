@@ -65,6 +65,17 @@
                 },
                 {
                     "name": "",
+                    "id": "38a3af20-edf0-4865-b38a-8fa7718a5dbe",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "FoobarMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "8976a725-44ba-49ee-9960-ac23258fc60e",
                     "path": "<Keyboard>/v",
                     "interactions": "",
@@ -87,6 +98,17 @@
                 },
                 {
                     "name": "",
+                    "id": "877d7c5c-97b4-42ae-b3fd-477f2e6ae564",
+                    "path": "<Joystick>/stick",
+                    "interactions": "",
+                    "processors": "StickDeadzone",
+                    "groups": "Joystick",
+                    "action": "Delta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "cfd8b097-281c-4571-95e1-ec9522be8d06",
                     "path": "<Keyboard>/t",
                     "interactions": "",
@@ -98,11 +120,33 @@
                 },
                 {
                     "name": "",
+                    "id": "da0365f2-de9f-4890-8e7e-d489a6626552",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Teleport",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
+                    "action": "MoveMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5056fa4e-b690-4019-9ec9-549fbecca277",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "Negate",
+                    "groups": "Joystick",
                     "action": "MoveMode",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -122,6 +166,17 @@
                 },
                 {
                     "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Joystick",
+            "bindingGroup": "Joystick",
+            "devices": [
+                {
+                    "devicePath": "<Joystick>",
                     "isOptional": false,
                     "isOR": false
                 }
