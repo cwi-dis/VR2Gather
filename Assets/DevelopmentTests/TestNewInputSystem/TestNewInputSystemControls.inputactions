@@ -115,9 +115,9 @@
                 {
                     "name": "",
                     "id": "5056fa4e-b690-4019-9ec9-549fbecca277",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
                     "interactions": "Press(behavior=2)",
-                    "processors": "Negate",
+                    "processors": "",
                     "groups": "Joystick",
                     "action": "ModeMoving",
                     "isComposite": false,
@@ -136,11 +136,33 @@
                 },
                 {
                     "name": "",
+                    "id": "c8c1fee5-69d6-4576-af2f-52328b76bd0b",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModeTeleporting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
                     "path": "<Mouse>/rightButton",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
+                    "action": "ModeTurning",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c6fa61f3-fc51-4c76-9648-04c7b8c5c1c1",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "Joystick",
                     "action": "ModeTurning",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -158,11 +180,33 @@
                 },
                 {
                     "name": "",
+                    "id": "27792203-2210-45f6-8bc2-f62fcb09ac72",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "TeleportHome",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "248e13c6-f29b-4cba-bd57-0ce4105af421",
                     "path": "<Keyboard>/ctrl",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
+                    "action": "ModeGroping",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bba3a4b2-49b8-4943-ad6a-fee7b43eaa39",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "Joystick",
                     "action": "ModeGroping",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -181,7 +225,7 @@
                 {
                     "name": "",
                     "id": "da0365f2-de9f-4890-8e7e-d489a6626552",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "path": "<Joystick>/trigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -196,6 +240,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
+                    "action": "GropingTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3fd9527d-5bdd-461b-969e-b606c24621f0",
+                    "path": "<Joystick>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
                     "action": "GropingTouch",
                     "isComposite": false,
                     "isPartOfComposite": false
