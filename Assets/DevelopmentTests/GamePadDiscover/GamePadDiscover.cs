@@ -8,6 +8,13 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 #endif
 
+//
+// Note to self (or others):
+//
+// There is an input debugger (for the new InputSystem) under
+// Window->Analysis->Input Debugger. Double-click a device and you will
+// see all the events it outputs, axis values, etc.
+//
 public class GamePadDiscover : MonoBehaviour
 {
     [System.Serializable]
