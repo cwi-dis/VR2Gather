@@ -6,33 +6,6 @@
             "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
             "actions": [
                 {
-                    "name": "FoobarMode",
-                    "type": "Button",
-                    "id": "6fca549b-1e68-4f97-bb08-c925fd8e1221",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "Press(behavior=2)",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Voobar",
-                    "type": "Button",
-                    "id": "df4a987b-12ec-44b2-b50d-482713cddbc5",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Teleport",
-                    "type": "Button",
-                    "id": "d3075410-8b62-4edf-8b0b-65e29c3b2ab2",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Delta",
                     "type": "PassThrough",
                     "id": "7ad5b969-748a-407d-86af-125de33d9d22",
@@ -42,49 +15,70 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "MoveMode",
+                    "name": "ModeMoving",
                     "type": "Button",
                     "id": "597a7904-2027-4a32-8233-997ba6cb11f3",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ModeTurning",
+                    "type": "Button",
+                    "id": "4e42e6ab-9717-4a6e-9a05-70a3b2daf819",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModeTeleporting",
+                    "type": "Button",
+                    "id": "95d34da0-d909-42c9-b4d6-880a8cb6ac0e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModeGroping",
+                    "type": "Button",
+                    "id": "ff630674-6e49-4602-8bb0-b8f61eec8702",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TeleportGo",
+                    "type": "Button",
+                    "id": "d3075410-8b62-4edf-8b0b-65e29c3b2ab2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TeleportHome",
+                    "type": "Button",
+                    "id": "17aeb438-76c9-4806-b9d1-2844575452dd",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GropingTouch",
+                    "type": "Button",
+                    "id": "e42742c7-891d-47c0-bd58-ab8c59ff57b7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "b56f4d9b-c5aa-425f-a7de-6a3c526de205",
-                    "path": "<Keyboard>/f",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "FoobarMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "38a3af20-edf0-4865-b38a-8fa7718a5dbe",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "FoobarMode",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8976a725-44ba-49ee-9960-ac23258fc60e",
-                    "path": "<Keyboard>/v",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "Voobar",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "3767fff6-2413-4926-a68a-f4244cea3fee",
@@ -109,34 +103,12 @@
                 },
                 {
                     "name": "",
-                    "id": "cfd8b097-281c-4571-95e1-ec9522be8d06",
-                    "path": "<Keyboard>/t",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "Teleport",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "da0365f2-de9f-4890-8e7e-d489a6626552",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Teleport",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
+                    "path": "<Keyboard>/space",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "MoveMode",
+                    "action": "ModeMoving",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -147,7 +119,84 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "Negate",
                     "groups": "Joystick",
-                    "action": "MoveMode",
+                    "action": "ModeMoving",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b039b1c0-491e-4830-99d0-869b4433e21a",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModeTeleporting",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModeTurning",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afc9153a-c0da-4a6e-b2b3-5823aa1c8fc3",
+                    "path": "<Keyboard>/0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "TeleportHome",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "248e13c6-f29b-4cba-bd57-0ce4105af421",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModeGroping",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cfd8b097-281c-4571-95e1-ec9522be8d06",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "TeleportGo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "da0365f2-de9f-4890-8e7e-d489a6626552",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "TeleportGo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79ee03e9-a8b5-4c9b-b73c-61b8eaad3df4",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "GropingTouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

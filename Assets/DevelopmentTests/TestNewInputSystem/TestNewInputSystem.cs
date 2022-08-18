@@ -38,11 +38,19 @@ public class TestNewInputSystem : MonoBehaviour
 
     [Tooltip("Show key presses and mouse moves")]
     public bool showKeyboardMouse = false;
-    [Tooltip("Virtual position after move/teleport")]
+    [Tooltip("Virtual position")]
     public Vector2 virtualPosition = new Vector2(0, 0);
+    [Tooltip("Turning destination")]
+    public Vector2 turnPosition = new Vector2(0, 0);
+    [Tooltip("Teleport destination")]
+    public Vector2 teleportPosition = new Vector2(0, 0);
+    [Tooltip("Grope destination")]
+    public Vector2 gropePosition = new Vector2(0, 0);
 
-    public bool moveModeActive = false;
-    public bool foobarModeActive = false;
+    public bool modeMovingActive = false;
+    public bool modeTurningActive = false;
+    public bool modeGropingActive = false;
+    public bool modeTeleportingActive = false;
 
     void Start()
     {
@@ -53,37 +61,76 @@ public class TestNewInputSystem : MonoBehaviour
     public void OnDelta(InputValue value)
     {
         Vector2 delta = value.Get<Vector2>();
-        if (moveModeActive)
+        if (modeMovingActive)
         {
             virtualPosition += delta;
             Debug.Log($"OnDelta: Move({delta}) to {virtualPosition}");
         }
-        if (foobarModeActive)
+        if (modeTurningActive)
         {
-            Debug.Log($"OnDelta: Foobar({delta})");
+            turnPosition += delta;
+            Debug.Log($"OnDelta: Turn({delta}) to {virtualPosition}");
+        }
+        if (modeGropingActive)
+        {
+            gropePosition += delta;
+        }
+        if (modeTeleportingActive)
+        {
+            teleportPosition += delta;
         }
     }
 
-    public void OnTeleport()
+    public void OnTeleportGo()
     {
+        if (!modeTeleportingActive) return;
+        virtualPosition = teleportPosition;
+        Debug.Log($"Teleported to {virtualPosition}");
+    }
+
+    public void OnTeleportHome()
+    {
+        if (!modeTeleportingActive) return;
         virtualPosition = new Vector2(0, 0);
-        Debug.Log($"Teleport to {virtualPosition}");
+        Debug.Log($"Teleported to {virtualPosition}");
     }
 
-    public void OnFoobarMode(InputValue value)
+    public void OnGropingTouch()
+    {
+        if (!modeGropingActive) return;
+        Debug.Log($"Touched: {gropePosition}");
+    }
+
+
+    public void OnModeMoving(InputValue value)
     {
         bool onOff = value.Get<float>() != 0;
-        foobarModeActive = onOff;
-        Debug.Log($"FoobarMode({onOff})");
+        modeMovingActive = onOff;
+        Debug.Log($"ModeMoving({onOff})");
     }
 
-    public void OnMoveMode(InputValue value)
+    public void OnModeTurning(InputValue value)
     {
         bool onOff = value.Get<float>() != 0;
-        moveModeActive = onOff;
-        Debug.Log($"MoveMode({onOff})");
+        modeTurningActive = onOff;
+        Debug.Log($"ModeTurning({onOff})");
     }
 
+    public void OnModeGroping(InputValue value)
+    {
+        bool onOff = value.Get<float>() != 0;
+        modeGropingActive = onOff;
+        Debug.Log($"ModeGroping({onOff})");
+        gropePosition = virtualPosition;
+    }
+
+    public void OnModeTeleporting(InputValue value)
+    {
+        bool onOff = value.Get<float>() != 0;
+        modeTeleportingActive = onOff;
+        Debug.Log($"ModeTeleporting({onOff})");
+        teleportPosition = virtualPosition;
+    }
 
     // Update is called once per frame
     void Update()
