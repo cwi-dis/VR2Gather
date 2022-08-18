@@ -148,7 +148,7 @@
                 {
                     "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
-                    "path": "<Mouse>/rightButton",
+                    "path": "<Keyboard>/alt",
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
