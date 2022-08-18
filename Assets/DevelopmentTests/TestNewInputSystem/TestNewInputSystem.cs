@@ -107,6 +107,10 @@ public class TestNewInputSystem : MonoBehaviour
         bool onOff = value.Get<float>() != 0;
         modeMovingActive = onOff;
         Debug.Log($"ModeMoving({onOff})");
+        if (modeMovingActive)
+        {
+            modeTurningActive = modeGropingActive = modeTeleportingActive = false;
+        }
     }
 
     public void OnModeTurning(InputValue value)
@@ -114,6 +118,10 @@ public class TestNewInputSystem : MonoBehaviour
         bool onOff = value.Get<float>() != 0;
         modeTurningActive = onOff;
         Debug.Log($"ModeTurning({onOff})");
+        if (modeTurningActive)
+        {
+            modeMovingActive = modeGropingActive = modeTeleportingActive = false;
+        }
     }
 
     public void OnModeGroping(InputValue value)
@@ -122,6 +130,10 @@ public class TestNewInputSystem : MonoBehaviour
         modeGropingActive = onOff;
         Debug.Log($"ModeGroping({onOff})");
         gropePosition = virtualPosition;
+        if (modeGropingActive)
+        {
+            modeTurningActive = modeMovingActive = modeTeleportingActive = false;
+        }
     }
 
     public void OnModeTeleporting(InputValue value)
@@ -130,6 +142,10 @@ public class TestNewInputSystem : MonoBehaviour
         modeTeleportingActive = onOff;
         Debug.Log($"ModeTeleporting({onOff})");
         teleportPosition = virtualPosition;
+        if (modeTeleportingActive)
+        {
+            modeTurningActive = modeMovingActive = modeGropingActive = false;
+        }
     }
 
     // Update is called once per frame
