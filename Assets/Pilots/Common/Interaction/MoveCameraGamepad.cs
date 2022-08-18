@@ -37,7 +37,6 @@ namespace VRT.Pilots.Common
                     return;
                 }
             }
-#endif
             if (heightAxisName != "")
             {
                 float deltaHeight = 0;
@@ -61,6 +60,7 @@ namespace VRT.Pilots.Common
             cameraTransformToControl.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
             adjustBodyHead(x, y);
+#endif
 
         }
     }

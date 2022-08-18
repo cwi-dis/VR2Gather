@@ -34,17 +34,19 @@ public class NegateProcessor : InputProcessor<float>
 
 public class InputSystemHandling : MonoBehaviour
 {
+    [Tooltip("The character controller for the thing to be moved")]
+    public CharacterController controller;
+    [Tooltip("How fast moves go")]
+    public float moveSpeed = 1f;
+
+
     Vector2 oldMousePosition;
 
-    [Tooltip("Show key presses and mouse moves")]
-    public bool showKeyboardMouse = false;
-    [Tooltip("Virtual position")]
-    public Vector2 virtualPosition = new Vector2(0, 0);
-    [Tooltip("Turning destination")]
+    [Tooltip("xxxjack Turning destination")]
     public Vector2 turnPosition = new Vector2(0, 0);
-    [Tooltip("Teleport destination")]
+    [Tooltip("xxxjack Teleport destination")]
     public Vector2 teleportPosition = new Vector2(0, 0);
-    [Tooltip("Grope destination")]
+    [Tooltip("xxxjack Grope destination")]
     public Vector2 gropePosition = new Vector2(0, 0);
 
     public bool modeMovingActive = false;
@@ -63,13 +65,16 @@ public class InputSystemHandling : MonoBehaviour
         Vector2 delta = value.Get<Vector2>();
         if (modeMovingActive)
         {
-            virtualPosition += delta;
-            Debug.Log($"OnDelta: Move({delta}) to {virtualPosition}");
+    
+            Vector3 move = transform.right * delta.x + transform.forward * delta.y;
+            move = move * moveSpeed * Time.deltaTime;
+            Debug.Log($"InputSystemHandling: move {move}");
+            controller.Move(move);
         }
         if (modeTurningActive)
         {
             turnPosition += delta;
-            Debug.Log($"OnDelta: Turn({delta}) to {virtualPosition}");
+            Debug.Log($"OnDelta: Turn({delta}) to {turnPosition}");
         }
         if (modeGropingActive)
         {
@@ -84,21 +89,19 @@ public class InputSystemHandling : MonoBehaviour
     public void OnTeleportGo()
     {
         if (!modeTeleportingActive) return;
-        virtualPosition = teleportPosition;
-        Debug.Log($"Teleported to {virtualPosition}");
+        Debug.Log($"InputSystemHandling: Teleported to {teleportPosition}");
     }
 
     public void OnTeleportHome()
     {
         if (!modeTeleportingActive) return;
-        virtualPosition = new Vector2(0, 0);
-        Debug.Log($"Teleported to {virtualPosition}");
+        Debug.Log($"InputSystemHandling: Teleported to home");
     }
 
     public void OnGropingTouch()
     {
         if (!modeGropingActive) return;
-        Debug.Log($"Touched: {gropePosition}");
+        Debug.Log($"InputSystemHandling: Touched: {gropePosition}");
     }
 
 
@@ -106,7 +109,7 @@ public class InputSystemHandling : MonoBehaviour
     {
         bool onOff = value.Get<float>() != 0;
         modeMovingActive = onOff;
-        Debug.Log($"ModeMoving({onOff})");
+        Debug.Log($"InputSystemHandling: ModeMoving({onOff})");
         if (modeMovingActive)
         {
             modeTurningActive = modeGropingActive = modeTeleportingActive = false;
@@ -117,7 +120,7 @@ public class InputSystemHandling : MonoBehaviour
     {
         bool onOff = value.Get<float>() != 0;
         modeTurningActive = onOff;
-        Debug.Log($"ModeTurning({onOff})");
+        Debug.Log($"InputSystemHandling: ModeTurning({onOff})");
         if (modeTurningActive)
         {
             modeMovingActive = modeGropingActive = modeTeleportingActive = false;
@@ -128,8 +131,8 @@ public class InputSystemHandling : MonoBehaviour
     {
         bool onOff = value.Get<float>() != 0;
         modeGropingActive = onOff;
-        Debug.Log($"ModeGroping({onOff})");
-        gropePosition = virtualPosition;
+        Debug.Log($"InputSystemHandling: ModeGroping({onOff})");
+        gropePosition = new Vector2(0,0);
         if (modeGropingActive)
         {
             modeTurningActive = modeMovingActive = modeTeleportingActive = false;
@@ -141,7 +144,7 @@ public class InputSystemHandling : MonoBehaviour
         bool onOff = value.Get<float>() != 0;
         modeTeleportingActive = onOff;
         Debug.Log($"ModeTeleporting({onOff})");
-        teleportPosition = virtualPosition;
+        teleportPosition = new Vector2(0,0);
         if (modeTeleportingActive)
         {
             modeTurningActive = modeMovingActive = modeGropingActive = false;
@@ -151,18 +154,6 @@ public class InputSystemHandling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(showKeyboardMouse)
-        {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
-            if (mousePosition != oldMousePosition)
-            {
-                Debug.Log($"Mouse was moved from {oldMousePosition} to {mousePosition}");
-                oldMousePosition = mousePosition;
-            }
-            if (Keyboard.current.anyKey.wasPressedThisFrame)
-            {
-                Debug.Log("A key was pressed");
-            }
-        }
+        
     }
 }
