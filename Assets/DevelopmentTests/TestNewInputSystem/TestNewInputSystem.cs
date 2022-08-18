@@ -17,17 +17,17 @@ public class TestNewInputSystem : MonoBehaviour
 
     public void OnMove()
     {
-        
+        Debug.Log($"Move");
     }
 
     public void OnTeleport()
     {
-
+        Debug.Log("Teleport");
     }
 
     public void OnFoobar()
     {
-
+        Debug.Log("Foobar");
     }
 
     // Update is called once per frame

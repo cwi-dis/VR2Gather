@@ -1,0 +1,71 @@
+{
+    "name": "TestNewInputSystemControls",
+    "maps": [
+        {
+            "name": "TestNewInputSystem",
+            "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
+            "actions": [
+                {
+                    "name": "Foobar",
+                    "type": "Button",
+                    "id": "6fca549b-1e68-4f97-bb08-c925fd8e1221",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Voobar",
+                    "type": "Button",
+                    "id": "df4a987b-12ec-44b2-b50d-482713cddbc5",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b56f4d9b-c5aa-425f-a7de-6a3c526de205",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Foobar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8976a725-44ba-49ee-9960-ac23258fc60e",
+                    "path": "<Keyboard>/v",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Voobar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "KeyboardMouse",
+            "bindingGroup": "KeyboardMouse",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
