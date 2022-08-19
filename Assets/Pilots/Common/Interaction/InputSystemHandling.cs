@@ -93,10 +93,11 @@ public class InputSystemHandling : MonoBehaviour
             float xRotation = delta.x * xySensitivity * Time.deltaTime;
             float yRotation = delta.y * xySensitivity * Time.deltaTime;
 
-            Debug.Log($"OnDelta: Turn({delta}) to {turnPosition}");
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            cameraTransformToControl.localRotation = cameraTransformToControl.localRotation*Quaternion.Euler(xRotation, 0f, 0f);
+            Debug.Log($"OnDelta: Turn({delta}) to x={xRotation}, y={yRotation}");
+
+            cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
             adjustBodyHead(xRotation, -yRotation);
         }
         if (modeGropingActive)
@@ -113,17 +114,19 @@ public class InputSystemHandling : MonoBehaviour
     {
         float deltaHeight = value.Get<float>();
 
-        // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
-        // with the current implementation all users have this ability, which may or may not be a good idea.
-        if (deltaHeight != 0)
+        if (modeTurningActive)
         {
-            // Do Camera movement for up/down.
-            cameraTransformToControl.localPosition = new Vector3(
-                cameraTransformToControl.localPosition.x,
-                cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
-                cameraTransformToControl.localPosition.z);
+            // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
+            // with the current implementation all users have this ability, which may or may not be a good idea.
+            if (deltaHeight != 0)
+            {
+                // Do Camera movement for up/down.
+                cameraTransformToControl.localPosition = new Vector3(
+                    cameraTransformToControl.localPosition.x,
+                    cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
+                    cameraTransformToControl.localPosition.z);
+            }
         }
-
     }
 
     public void OnTeleportGo()

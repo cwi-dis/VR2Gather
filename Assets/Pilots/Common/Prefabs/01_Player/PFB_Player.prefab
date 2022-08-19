@@ -347,7 +347,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6323211897013407460
 Transform:
   m_ObjectHideFlags: 0
@@ -1318,7 +1318,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1062106735551160753
 Transform:
   m_ObjectHideFlags: 0
@@ -1790,8 +1790,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
-  showKeyboardMouse: 0
-  virtualPosition: {x: 0, y: 0}
+  moveSpeed: 1
+  cameraTransformToControl: {fileID: 0}
+  playerBody: {fileID: 5131421326051842284}
+  avatarHead: {fileID: 4311645287905124984}
+  xySensitivity: 1
+  heightSensitivity: 1
   turnPosition: {x: 0, y: 0}
   teleportPosition: {x: 0, y: 0}
   gropePosition: {x: 0, y: 0}
@@ -1927,8 +1931,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
-  showKeyboardMouse: 0
-  virtualPosition: {x: 0, y: 0}
+  moveSpeed: 1
+  cameraTransformToControl: {fileID: 0}
+  playerBody: {fileID: 5131421326051842284}
+  avatarHead: {fileID: 4311645287905124984}
+  xySensitivity: 1
+  heightSensitivity: 1
   turnPosition: {x: 0, y: 0}
   teleportPosition: {x: 0, y: 0}
   gropePosition: {x: 0, y: 0}

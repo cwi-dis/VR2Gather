@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "HeightDelta",
+                    "type": "Button",
+                    "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ModeMoving",
                     "type": "Button",
                     "id": "597a7904-2027-4a32-8233-997ba6cb11f3",
@@ -252,6 +261,28 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "GropingTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47c7ae96-5b08-4435-9095-c3efca5abe4a",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.002)",
+                    "groups": "KeyboardMouse",
+                    "action": "HeightDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ad0d1c62-839a-4394-b2ee-af460b668848",
+                    "path": "<Joystick>/rz",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "HeightDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
