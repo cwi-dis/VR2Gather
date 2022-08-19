@@ -50,10 +50,6 @@ public class InputSystemHandling : MonoBehaviour
     [Tooltip("How fast the viewpoint moves up/down")]
     public float heightSensitivity = 1; // 5 Centimeters
 
-    Vector2 oldMousePosition;
-
-    [Tooltip("xxxjack Turning destination")]
-    public Vector2 turnPosition = new Vector2(0, 0);
     [Tooltip("xxxjack Teleport destination")]
     public Vector2 teleportPosition = new Vector2(0, 0);
     [Tooltip("xxxjack Grope destination")]
