@@ -32,174 +32,182 @@ public class NegateProcessor : InputProcessor<float>
     }
 }
 
-public class InputSystemHandling : MonoBehaviour
+namespace VRT.Pilots.Common
 {
-    [Tooltip("The character controller for the thing to be moved")]
-    public CharacterController controller;
-    [Tooltip("How fast moves go")]
-    public float moveSpeed = 1f;
-
-    [Tooltip("The camera attached to the head that turns (Usually found automatically)")]
-    public Transform cameraTransformToControl = null;
-    [Tooltip("The player body that turns horizontally")]
-    public Transform playerBody;
-    [Tooltip("The player head that tilts")]
-    public Transform avatarHead;
-    [Tooltip("How fast the viewpoint turns")]
-    public float xySensitivity = 1;
-    [Tooltip("How fast the viewpoint moves up/down")]
-    public float heightSensitivity = 1; // 5 Centimeters
-
-    [Tooltip("xxxjack Teleport destination")]
-    public Vector2 teleportPosition = new Vector2(0, 0);
-    [Tooltip("xxxjack Grope destination")]
-    public Vector2 gropePosition = new Vector2(0, 0);
-
-    public bool modeMovingActive = false;
-    public bool modeTurningActive = false;
-    public bool modeGropingActive = false;
-    public bool modeTeleportingActive = false;
-
-    private void Awake()
+    public class InputSystemHandling : MonoBehaviour
     {
-        if (cameraTransformToControl != null) return;
-        PlayerManager player = GetComponentInParent<PlayerManager>();
-        cameraTransformToControl = player.getCameraTransform();
-    }
+        [Tooltip("The character controller for the thing to be moved")]
+        public CharacterController controller;
+        [Tooltip("How fast moves go")]
+        public float moveSpeed = 1f;
 
-    void Start()
-    {
- 
-    }
+        [Tooltip("The camera attached to the head that turns (Usually found automatically)")]
+        public Transform cameraTransformToControl = null;
+        [Tooltip("The player body that turns horizontally")]
+        public Transform playerBody;
+        [Tooltip("The player head that tilts")]
+        public Transform avatarHead;
+        [Tooltip("How fast the viewpoint turns")]
+        public float xySensitivity = 1;
+        [Tooltip("How fast the viewpoint moves up/down")]
+        public float heightSensitivity = 1; // 5 Centimeters
 
-  
-    public void OnDelta(InputValue value)
-    {
-        Vector2 delta = value.Get<Vector2>();
-        if (modeMovingActive)
+        [Tooltip("Object responsible for implementing touching and teleporting")]
+        public HandInteractionEmulation handInteraction;
+        [Tooltip("xxxjack Teleport destination")]
+        public Vector2 teleportPosition = new Vector2(0, 0);
+        [Tooltip("xxxjack Grope destination")]
+        public Vector2 gropePosition = new Vector2(0, 0);
+
+        public bool modeMovingActive = false;
+        public bool modeTurningActive = false;
+        public bool modeGropingActive = false;
+        public bool modeTeleportingActive = false;
+
+        private void Awake()
         {
-    
-            Vector3 move = transform.right * delta.x + transform.forward * delta.y;
-            move = move * moveSpeed * Time.deltaTime;
-            Debug.Log($"InputSystemHandling: move {move}");
-            controller.Move(move);
+            if (cameraTransformToControl != null) return;
+            PlayerManager player = GetComponentInParent<PlayerManager>();
+            cameraTransformToControl = player.getCameraTransform();
         }
-        if (modeTurningActive)
+
+        void Start()
         {
-            float xRotation = delta.x * xySensitivity * Time.deltaTime;
-            float yRotation = delta.y * xySensitivity * Time.deltaTime;
 
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-            Debug.Log($"OnDelta: Turn({delta}) to x={xRotation}, y={yRotation}");
-
-            cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
-            adjustBodyHead(xRotation, -yRotation);
         }
-        if (modeGropingActive)
-        {
-            gropePosition += delta;
-        }
-        if (modeTeleportingActive)
-        {
-            teleportPosition += delta;
-        }
-    }
 
-    public void OnHeightDelta(InputValue value)
-    {
-        float deltaHeight = value.Get<float>();
 
-        if (modeTurningActive)
+        public void OnDelta(InputValue value)
         {
-            // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
-            // with the current implementation all users have this ability, which may or may not be a good idea.
-            if (deltaHeight != 0)
+            Vector2 delta = value.Get<Vector2>();
+            if (modeMovingActive)
             {
-                // Do Camera movement for up/down.
-                cameraTransformToControl.localPosition = new Vector3(
-                    cameraTransformToControl.localPosition.x,
-                    cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
-                    cameraTransformToControl.localPosition.z);
+
+                Vector3 move = transform.right * delta.x + transform.forward * delta.y;
+                move = move * moveSpeed * Time.deltaTime;
+                Debug.Log($"InputSystemHandling: move {move}");
+                controller.Move(move);
+            }
+            if (modeTurningActive)
+            {
+                float xRotation = delta.x * xySensitivity * Time.deltaTime;
+                float yRotation = delta.y * xySensitivity * Time.deltaTime;
+
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+                Debug.Log($"OnDelta: Turn({delta}) to x={xRotation}, y={yRotation}");
+
+                cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
+                adjustBodyHead(xRotation, -yRotation);
+            }
+            if (modeGropingActive)
+            {
+                handInteraction?.InputModeUpdate(delta);
+            }
+            if (modeTeleportingActive)
+            {
+                handInteraction?.InputModeUpdate(delta);
             }
         }
-    }
 
-    public void OnTeleportGo()
-    {
-        if (!modeTeleportingActive) return;
-        Debug.Log($"InputSystemHandling: Teleported to {teleportPosition}");
-    }
-
-    public void OnTeleportHome()
-    {
-        if (!modeTeleportingActive) return;
-        Debug.Log($"InputSystemHandling: Teleported to home");
-    }
-
-    public void OnGropingTouch()
-    {
-        if (!modeGropingActive) return;
-        Debug.Log($"InputSystemHandling: Touched: {gropePosition}");
-    }
-
-
-    public void OnModeMoving(InputValue value)
-    {
-        bool onOff = value.Get<float>() != 0;
-        modeMovingActive = onOff;
-        Debug.Log($"InputSystemHandling: ModeMoving({onOff})");
-        if (modeMovingActive)
+        public void OnHeightDelta(InputValue value)
         {
-            modeTurningActive = modeGropingActive = modeTeleportingActive = false;
+            float deltaHeight = value.Get<float>();
+
+            if (modeTurningActive)
+            {
+                // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
+                // with the current implementation all users have this ability, which may or may not be a good idea.
+                if (deltaHeight != 0)
+                {
+                    // Do Camera movement for up/down.
+                    cameraTransformToControl.localPosition = new Vector3(
+                        cameraTransformToControl.localPosition.x,
+                        cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
+                        cameraTransformToControl.localPosition.z);
+                }
+            }
+        }
+
+        public void OnTeleportGo()
+        {
+            if (!modeTeleportingActive) return;
+            handInteraction?.InputModeTeleportGo();
+        }
+
+        public void OnTeleportHome()
+        {
+            if (!modeTeleportingActive) return;
+            handInteraction?.InputModeTeleportHome();
+        }
+
+        public void OnGropingTouch()
+        {
+            if (!modeGropingActive) return;
+            handInteraction?.InputModeGropingTouch();
+        }
+
+
+        public void OnModeMoving(InputValue value)
+        {
+            bool onOff = value.Get<float>() != 0;
+            modeMovingActive = onOff;
+            Debug.Log($"InputSystemHandling: ModeMoving({onOff})");
+            if (modeMovingActive)
+            {
+                modeTurningActive = modeGropingActive = modeTeleportingActive = false;
+            }
+            handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
+        }
+
+        public void OnModeTurning(InputValue value)
+        {
+            bool onOff = value.Get<float>() != 0;
+            modeTurningActive = onOff;
+            Debug.Log($"InputSystemHandling: ModeTurning({onOff})");
+            if (modeTurningActive)
+            {
+                modeMovingActive = modeGropingActive = modeTeleportingActive = false;
+            }
+            handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
+        }
+
+        public void OnModeGroping(InputValue value)
+        {
+            bool onOff = value.Get<float>() != 0;
+            modeGropingActive = onOff;
+            Debug.Log($"InputSystemHandling: ModeGroping({onOff})");
+            gropePosition = new Vector2(0, 0);
+            if (modeGropingActive)
+            {
+                modeTurningActive = modeMovingActive = modeTeleportingActive = false;
+            }
+            handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
+        }
+
+        public void OnModeTeleporting(InputValue value)
+        {
+            bool onOff = value.Get<float>() != 0;
+            modeTeleportingActive = onOff;
+            Debug.Log($"ModeTeleporting({onOff})");
+            teleportPosition = new Vector2(0, 0);
+            if (modeTeleportingActive)
+            {
+                modeTurningActive = modeMovingActive = modeGropingActive = false;
+            }
+            handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        protected void adjustBodyHead(float hAngle, float vAngle)
+        {
+            playerBody.Rotate(Vector3.up, hAngle);
+            avatarHead.Rotate(Vector3.right, vAngle);
         }
     }
-
-    public void OnModeTurning(InputValue value)
-    {
-        bool onOff = value.Get<float>() != 0;
-        modeTurningActive = onOff;
-        Debug.Log($"InputSystemHandling: ModeTurning({onOff})");
-        if (modeTurningActive)
-        {
-            modeMovingActive = modeGropingActive = modeTeleportingActive = false;
-        }
-    }
-
-    public void OnModeGroping(InputValue value)
-    {
-        bool onOff = value.Get<float>() != 0;
-        modeGropingActive = onOff;
-        Debug.Log($"InputSystemHandling: ModeGroping({onOff})");
-        gropePosition = new Vector2(0,0);
-        if (modeGropingActive)
-        {
-            modeTurningActive = modeMovingActive = modeTeleportingActive = false;
-        }
-    }
-
-    public void OnModeTeleporting(InputValue value)
-    {
-        bool onOff = value.Get<float>() != 0;
-        modeTeleportingActive = onOff;
-        Debug.Log($"ModeTeleporting({onOff})");
-        teleportPosition = new Vector2(0,0);
-        if (modeTeleportingActive)
-        {
-            modeTurningActive = modeMovingActive = modeGropingActive = false;
-        }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    protected void adjustBodyHead(float hAngle, float vAngle)
-    {
-        playerBody.Rotate(Vector3.up, hAngle);
-        avatarHead.Rotate(Vector3.right, vAngle);
-    }
-
 }

@@ -75,6 +75,31 @@ namespace VRT.Pilots.Common
             stopGroping();
         }
 
+        public void InputModeChange(bool groping, bool teleporting)
+        {
+            Debug.Log($"HandInteractionEmulation: groping={groping}, teleporting={teleporting}");
+        }
+
+        public void InputModeUpdate(Vector2 magnitude)
+        {
+            Debug.Log($"HandInteractionEmulation: update {magnitude}");
+        }
+
+        public void InputModeTeleportGo()
+        {
+            Debug.Log("HandInteractionEmulation: Teleport go");
+        }
+
+        public void InputModeTeleportHome()
+        {
+            Debug.Log("HandInteractionEmulation: Teleport home");
+        }
+
+        public void InputModeGropingTouch()
+        {
+            Debug.Log("HandInteractionEmulation: groping touch");
+        }
+
         bool _isKeyPressed(string controlPath)
         {
             if (controlPath == null || controlPath == "") return false;
@@ -181,7 +206,6 @@ namespace VRT.Pilots.Common
 
         protected virtual void startGroping()
         {
-            hideCursor();
         }
 
         protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
@@ -237,22 +261,11 @@ namespace VRT.Pilots.Common
             {
                 _Line.enabled = false;
             }
-            showCursor();
         }
 
         private void hideHand()
         {
             hand.SetActive(false);
-        }
-
-        protected virtual void showCursor()
-        {
-            Cursor.visible = true;
-        }
-
-        protected virtual void hideCursor()
-        {
-            Cursor.visible = false;
         }
 
         protected void UpdateAnimation(string state)

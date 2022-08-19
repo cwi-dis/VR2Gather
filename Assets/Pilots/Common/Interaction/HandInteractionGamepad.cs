@@ -32,14 +32,7 @@ namespace VRT.Pilots.Common
             xHand = yHand = 0f;
         }
 
-        protected override void showCursor()
-        {
-        }
-
-        protected override void hideCursor()
-        {
-        }
-
+      
         protected override Vector3 getRayDestination()
         {
             float x = Input.GetAxis(leftRightAxisName);
