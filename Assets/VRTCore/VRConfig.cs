@@ -31,13 +31,19 @@ namespace VRT.Core
         {
             if (_Instance != null && _Instance != this)
             {
-                Debug.LogWarning("VRConfig: duplicate instance, destroying this (new) instance");
+                Debug.LogError("VRConfig: duplicate instance, destroying this (new) instance");
                 Destroy(gameObject);
                 return;
             }
             _Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
             _InitVR();
+        }
+
+        private void OnDestroy()
+        {
+            XRSettings.enabled = false;
+            _Instance = null;
         }
 
         public static void InitVR()
