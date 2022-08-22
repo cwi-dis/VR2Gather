@@ -14,6 +14,11 @@ namespace VRT.Core
         private bool initializing = false;
         private bool initialized = false;
        
+        public bool isInitialized()
+        {
+            return initialized;
+        }
+
         static VRConfig _Instance;
         public static VRConfig Instance
         {
