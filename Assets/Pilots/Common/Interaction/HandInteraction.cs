@@ -47,6 +47,30 @@ namespace VRT.Pilots.Common
 		private NetworkPlayer _Player;
 		private HandController _Controller;
 
+		void OnModeTeleporting(InputValue value)
+		{
+			bool onOff = value.Get<float>() != 0;
+			Debug.Log("xxxjack HandInteraction: OnModeTeleporting");
+		}
+
+		void OnModePointing(InputValue value)
+		{
+			bool onOff = value.Get<float>() != 0;
+			Debug.Log("xxxjack HandInteraction: OnModePointing");
+		}
+
+		void OnModeGrabbing(InputValue value)
+		{
+			bool onOff = value.Get<float>() != 0;
+			Debug.Log("xxxjack HandInteraction: OnModeGrabbing");
+
+		}
+
+		void OnTeleportHome(InputValue value)
+		{
+			Debug.Log("xxxjack HandInteraction: OnTeleportHome");
+		}
+
 		bool _isKeyPressed(string controlPath)
 		{
 			if (controlPath == null || controlPath == "") return false;

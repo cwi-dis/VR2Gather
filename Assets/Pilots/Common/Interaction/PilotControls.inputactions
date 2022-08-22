@@ -1,8 +1,8 @@
 {
-    "name": "InputSystemControls",
+    "name": "PilotControls",
     "maps": [
         {
-            "name": "InputSystemControls",
+            "name": "PilotControls",
             "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
             "actions": [
                 {
