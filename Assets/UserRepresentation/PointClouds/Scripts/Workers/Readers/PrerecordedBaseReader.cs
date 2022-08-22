@@ -292,7 +292,7 @@ namespace VRT.UserRepresentation.PointCloud
                 pc = cwipc.readdump(nextFilename);
             }
             if (pc == null) return;
-            if (parent.newTimestamps) {
+            if (parent.newTimestamps) { //xxxNacho Not entering here so we are not logging timestamp/filename
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp timestamp = (Timestamp)sinceEpoch.TotalMilliseconds;
                 BaseStats.Output(Name(), "Mapping " + nextFilename + "with timestamp=" + timestamp);

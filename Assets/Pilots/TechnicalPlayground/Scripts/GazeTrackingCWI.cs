@@ -7,10 +7,12 @@ using UnityEngine.Assertions;
 
 public class GazeTrackingCWI : MonoBehaviour
 {
+    public bool renderRay = false;
     public int LengthOfRay = 25;
     [SerializeField] private LineRenderer GazeRayRenderer;
     private static EyeData_v2 eyeData = new EyeData_v2();
     private bool eye_callback_registered = false;
+    public bool renderEyes = false;
     public GameObject EyeR;
     public GameObject EyeL;
     public GameObject EyeCombi;
@@ -22,20 +24,28 @@ public class GazeTrackingCWI : MonoBehaviour
     int instanceNumber = instanceCounter++;
     private void Start()
     {
+        //launch calibration?
+        //SRanipal_Eye_API.LaunchEyeCalibration(System.IntPtr.Zero);
+        EyeL.SetActive(renderEyes);
+        EyeR.SetActive(renderEyes);
+        EyeCombi.SetActive(renderEyes);
         if (!SRanipal_Eye_Framework.Instance.EnableEye)
         {
             enabled = false;
             return;
         }
         Assert.IsNotNull(GazeRayRenderer);
-
         stats = new Stats(Name(), interval);
     }
 
     private void Update()
     {
         if (SRanipal_Eye_Framework.Status != SRanipal_Eye_Framework.FrameworkStatus.WORKING &&
-            SRanipal_Eye_Framework.Status != SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT) return;
+            SRanipal_Eye_Framework.Status != SRanipal_Eye_Framework.FrameworkStatus.NOT_SUPPORT)
+        {
+            Debug.LogWarning(Name() + " Eye tracking framework not working or not supported");
+            return;
+        }
 
         if (SRanipal_Eye_Framework.Instance.EnableEyeDataCallback == true && eye_callback_registered == false)
         {

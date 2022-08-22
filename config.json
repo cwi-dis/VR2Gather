@@ -17,12 +17,12 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "test",
-  	"sessionScenario" : "EyeTrackingExp",
+  	"sessionScenario" : "Development",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
   	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
@@ -85,7 +85,7 @@
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
       "voxelSize": 0.005,
-      "frameRate": 15,
+      "frameRate": 30,
       "tiled": false,
       "Encoders": [
 		
