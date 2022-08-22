@@ -68,7 +68,7 @@
                 {
                     "name": "",
                     "id": "0f4fe486-6dd9-47d9-b493-ec11f2e12a3a",
-                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
+                    "path": "<OculusTouchController>{RightHand}/thumbstickClicked",
                     "interactions": "",
                     "processors": "",
                     "groups": "OculusRight",
@@ -79,7 +79,7 @@
                 {
                     "name": "",
                     "id": "60b05399-fb5c-4ad5-8d0f-d108b31ef63a",
-                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "path": "<OculusTouchController>{LeftHand}/thumbstickclicked",
                     "interactions": "",
                     "processors": "",
                     "groups": "OculusLeft",
@@ -92,7 +92,7 @@
                     "id": "c391b391-a269-41f1-aa64-035e5a5b067d",
                     "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{RightHand}/triggertouched",
                     "interactions": "",
-                    "processors": "Negate",
+                    "processors": "",
                     "groups": "OculusRight",
                     "action": "ModePointing",
                     "isComposite": false,
@@ -101,9 +101,9 @@
                 {
                     "name": "",
                     "id": "b478b22f-2a9b-4e13-862f-758039947777",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{LeftHand}/triggertouched",
+                    "path": "<OculusTouchController>{LeftHand}/triggertouched",
                     "interactions": "",
-                    "processors": "Negate",
+                    "processors": "",
                     "groups": "OculusLeft",
                     "action": "ModePointing",
                     "isComposite": false,
@@ -112,7 +112,7 @@
                 {
                     "name": "",
                     "id": "ed34074e-c700-4858-9b50-c82549cc40c6",
-                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "OculusRight",
@@ -140,7 +140,7 @@
             "bindingGroup": "OculusRight",
             "devices": [
                 {
-                    "devicePath": "<OculusTouchController>",
+                    "devicePath": "<XRController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
@@ -149,7 +149,13 @@
         {
             "name": "OculusLeft",
             "bindingGroup": "OculusLeft",
-            "devices": []
+            "devices": [
+                {
+                    "devicePath": "<XRController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
         }
     ]
 }

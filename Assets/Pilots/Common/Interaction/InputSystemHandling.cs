@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEditor;
 
+#if XXXJACK_DOES_NOT_WORK
 #if UNITY_EDITOR
 [InitializeOnLoad]
 #endif
@@ -33,6 +34,7 @@ public class NegateProcessor : InputProcessor<float>
         return 1-value;
     }
 }
+#endif
 
 namespace VRT.Pilots.Common
 {

@@ -10,11 +10,6 @@ namespace VRT.Pilots.Common
 	public class HandInteraction : MonoBehaviour
 	{
 
-		[Tooltip("When this key is pressed we are in teleporting mode, using a ray from this hand")]
-		public KeyCode teleportModeKey = KeyCode.None;
-		
-		[Tooltip("When this key is pressed while in teleporting mode we teleport home")]
-		public KeyCode teleportHomeKey = KeyCode.None;
 		
 		[Tooltip("Teleporter to use")]
 		public VRT.Teleporter.BaseTeleporter teleporter;
@@ -22,30 +17,25 @@ namespace VRT.Pilots.Common
 		[Tooltip("Arc length for curving teleporters")]
 		public float teleportStrength = 10.0f;
 
-		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
-		public string pointingModeAxis = "";
-		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
-		public KeyCode pointingModeKey = KeyCode.None;
 		[Tooltip("Invert meaning of PointingModeAxis or Key")]
 		public bool pointingModeAxisInvert = false;
 
-		[Tooltip("When this axis is active (or inactive depending on invert) we are in grabbing mode")]
-		public string grabbingModeAxis = "";
-		[Tooltip("When this Key is active (or inactive depending on invert) we are in grabbing mode")]
-		public KeyCode grabbingModeKey = KeyCode.None;
 		[Tooltip("Invert meaning of grabbingModeAxis")]
 		public bool grabbingModeAxisInvert = false;
 
+		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
 		public GameObject Hand;
+		[Tooltip("Collider to use for grabbing")]
 		public GameObject GrabCollider;
+		[Tooltip("Collider to use for touching")]
 		public GameObject TouchCollider;
 
 		private NetworkPlayer _Player;
 		private HandController _Controller;
 
-		private bool inTeleportMode = false;
-		private bool inPointingMode = false;
-		private bool inGrabbingMode = false;
+		public bool inTeleportMode = false;
+		public bool inPointingMode = false;
+		public bool inGrabbingMode = false;
 
 		void OnModeTeleporting(InputValue value)
 		{
@@ -66,6 +56,7 @@ namespace VRT.Pilots.Common
 		void OnModePointing(InputValue value)
 		{
 			bool onOff = value.Get<float>() > 0.5;
+			if (pointingModeAxisInvert) onOff = !onOff;
 			Debug.Log($"xxxjack HandInteraction: OnModePointing {onOff}");
 			inPointingMode = onOff;
 			UpdateHandState();
@@ -74,6 +65,7 @@ namespace VRT.Pilots.Common
 		void OnModeGrabbing(InputValue value)
 		{
 			bool onOff = value.Get<float>() > 0.5;
+			if (grabbingModeAxisInvert) onOff = !onOff;
 			Debug.Log($"xxxjack HandInteraction: OnModeGrabbing {onOff}");
 			inGrabbingMode = onOff;
 			UpdateHandState();
@@ -195,6 +187,8 @@ namespace VRT.Pilots.Common
 				GrabCollider.SetActive(true);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(false);
+				inPointingMode = false;
+				inTeleportMode = false;
 			}
 			else if (inPointingMode)
 			{
@@ -202,6 +196,7 @@ namespace VRT.Pilots.Common
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(true);
 				teleporter.SetActive(false);
+				inTeleportMode = false;
 			}
 			else if (inTeleportMode)
             {

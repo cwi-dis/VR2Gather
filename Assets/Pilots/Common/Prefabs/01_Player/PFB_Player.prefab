@@ -399,7 +399,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6076237778680395601
 Transform:
   m_ObjectHideFlags: 0
@@ -1192,19 +1192,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 333
-  teleportHomeKey: 331
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 344
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
-  grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &4450405697229691927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1638,19 +1635,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 338
-  teleportHomeKey: 339
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 344
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
-  grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &5704200592656136347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1751,7 +1745,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &388935389573275692
 Transform:
   m_ObjectHideFlags: 0
@@ -1892,7 +1886,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6195526648355536999
 Transform:
   m_ObjectHideFlags: 0
@@ -1983,7 +1977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6817198108956201397
 Transform:
   m_ObjectHideFlags: 0
@@ -2231,19 +2225,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 331
-  teleportHomeKey: 333
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 345
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
-  grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &8314240857473376918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2485,19 +2476,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 339
-  teleportHomeKey: 338
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 345
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
-  grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &8989305335192017463
 GameObject:
   m_ObjectHideFlags: 0
