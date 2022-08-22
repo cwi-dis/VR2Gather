@@ -399,7 +399,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6076237778680395601
 Transform:
   m_ObjectHideFlags: 0
@@ -1192,17 +1192,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKeyPath: 
   teleportModeKey: 333
-  teleportHomeKeyPath: 
   teleportHomeKey: 331
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxisPath: 
   pointingModeAxis: 
   pointingModeKey: 344
   pointingModeAxisInvert: 1
-  grabbingModeAxisPath: 
   grabbingModeAxis: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
@@ -1642,17 +1638,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKeyPath: 
   teleportModeKey: 338
-  teleportHomeKeyPath: 
   teleportHomeKey: 339
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxisPath: 
   pointingModeAxis: 
   pointingModeKey: 344
   pointingModeAxisInvert: 0
-  grabbingModeAxisPath: 
   grabbingModeAxis: 
   grabbingModeKey: 334
   grabbingModeAxisInvert: 0
@@ -1759,7 +1751,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &388935389573275692
 Transform:
   m_ObjectHideFlags: 0
@@ -1900,7 +1892,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6195526648355536999
 Transform:
   m_ObjectHideFlags: 0
@@ -1991,7 +1983,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6817198108956201397
 Transform:
   m_ObjectHideFlags: 0
@@ -2239,17 +2231,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKeyPath: 
   teleportModeKey: 331
-  teleportHomeKeyPath: 
   teleportHomeKey: 333
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxisPath: 
   pointingModeAxis: 
   pointingModeKey: 345
   pointingModeAxisInvert: 1
-  grabbingModeAxisPath: 
   grabbingModeAxis: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0
@@ -2497,17 +2485,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKeyPath: 
   teleportModeKey: 339
-  teleportHomeKeyPath: 
   teleportHomeKey: 338
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxisPath: 
   pointingModeAxis: 
   pointingModeKey: 345
   pointingModeAxisInvert: 0
-  grabbingModeAxisPath: 
   grabbingModeAxis: 
   grabbingModeKey: 335
   grabbingModeAxisInvert: 0

@@ -11,11 +11,9 @@ namespace VRT.Pilots.Common
 	{
 
 		[Tooltip("When this key is pressed we are in teleporting mode, using a ray from this hand")]
-		public string teleportModeKeyPath;
 		public KeyCode teleportModeKey = KeyCode.None;
 		
 		[Tooltip("When this key is pressed while in teleporting mode we teleport home")]
-		public string teleportHomeKeyPath;
 		public KeyCode teleportHomeKey = KeyCode.None;
 		
 		[Tooltip("Teleporter to use")]
@@ -25,7 +23,6 @@ namespace VRT.Pilots.Common
 		public float teleportStrength = 10.0f;
 
 		[Tooltip("When this axis is active (or inactive depending on invert) we are in pointing mode")]
-		public string pointingModeAxisPath;
 		public string pointingModeAxis = "";
 		[Tooltip("When this Key is active (or inactive depending on invert) we are in pointing mode")]
 		public KeyCode pointingModeKey = KeyCode.None;
@@ -33,7 +30,6 @@ namespace VRT.Pilots.Common
 		public bool pointingModeAxisInvert = false;
 
 		[Tooltip("When this axis is active (or inactive depending on invert) we are in grabbing mode")]
-		public string grabbingModeAxisPath;
 		public string grabbingModeAxis = "";
 		[Tooltip("When this Key is active (or inactive depending on invert) we are in grabbing mode")]
 		public KeyCode grabbingModeKey = KeyCode.None;
@@ -47,46 +43,51 @@ namespace VRT.Pilots.Common
 		private NetworkPlayer _Player;
 		private HandController _Controller;
 
+		private bool inTeleportMode = false;
+		private bool inPointingMode = false;
+		private bool inGrabbingMode = false;
+
 		void OnModeTeleporting(InputValue value)
 		{
-			bool onOff = value.Get<float>() != 0;
-			Debug.Log("xxxjack HandInteraction: OnModeTeleporting");
+			bool onOff = value.Get<float>() > 0.5;
+			Debug.Log($"xxxjack HandInteraction: OnModeTeleporting {onOff}");
+			// Releaseing the teleport key will execute the teleport
+			if (inTeleportMode && !onOff)
+            {
+				if (teleporter.canTeleport())
+				{
+					teleporter.Teleport();
+				}
+			}
+			inTeleportMode = onOff;
+			UpdateHandState();
 		}
 
 		void OnModePointing(InputValue value)
 		{
-			bool onOff = value.Get<float>() != 0;
-			Debug.Log("xxxjack HandInteraction: OnModePointing");
+			bool onOff = value.Get<float>() > 0.5;
+			Debug.Log($"xxxjack HandInteraction: OnModePointing {onOff}");
+			inPointingMode = onOff;
+			UpdateHandState();
 		}
 
 		void OnModeGrabbing(InputValue value)
 		{
-			bool onOff = value.Get<float>() != 0;
-			Debug.Log("xxxjack HandInteraction: OnModeGrabbing");
+			bool onOff = value.Get<float>() > 0.5;
+			Debug.Log($"xxxjack HandInteraction: OnModeGrabbing {onOff}");
+			inGrabbingMode = onOff;
+			UpdateHandState();
 
 		}
 
 		void OnTeleportHome(InputValue value)
 		{
 			Debug.Log("xxxjack HandInteraction: OnTeleportHome");
+			if (teleporter.teleporterActive) teleporter.TeleportHome();
+			inTeleportMode = false;
+			UpdateHandState();
 		}
 
-		bool _isKeyPressed(string controlPath)
-		{
-			if (controlPath == null || controlPath == "") return false;
-			var k = InputSystem.FindControl(controlPath) as ButtonControl;
-			if (k == null) Debug.LogWarning($"HandInteraction: {controlPath} is not a ButtonControl");
-			return k != null && k.isPressed;
-		}
-
-		bool _wasKeyPressedThisFrame(string controlPath)
-		{
-			if (controlPath == null || controlPath == "") return false;
-			var k = InputSystem.FindControl(controlPath) as ButtonControl;
-			if (k == null) Debug.LogWarning($"HandInteraction: {controlPath} is not a ButtonControl");
-			return k != null && k.wasPressedThisFrame;
-
-		}
 		public void Awake()
 		{
 		}
@@ -121,11 +122,9 @@ namespace VRT.Pilots.Common
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
 
-				bool inPointingMode = false;
-#if ENABLE_INPUT_SYSTEM
-				inPointingMode = _isKeyPressed(pointingModeAxisPath);
 
-#else
+#if !ENABLE_INPUT_SYSTEM
+
 				if (pointingModeKey != KeyCode.None)
 				{
 					inPointingMode = Input.GetKey(pointingModeKey);
@@ -134,13 +133,8 @@ namespace VRT.Pilots.Common
 				{
 					inPointingMode = Input.GetAxis(pointingModeAxis) >= 0.5f;
 				}
-#endif
 				if (pointingModeAxisInvert) inPointingMode = !inPointingMode;
 
-				bool inGrabbingMode = false;
-#if ENABLE_INPUT_SYSTEM
-				inGrabbingMode = _isKeyPressed(grabbingModeAxisPath);
-#else
 				if (pointingModeKey != KeyCode.None)
 				{
 					inGrabbingMode = Input.GetKey(grabbingModeKey);
@@ -149,30 +143,26 @@ namespace VRT.Pilots.Common
 				{
 					inGrabbingMode = Input.GetAxis(grabbingModeAxis) >= 0.5f;
 				}
-#endif
 				if (grabbingModeAxisInvert) inGrabbingMode = !inGrabbingMode;
+#endif
 
 #if ENABLE_INPUT_SYSTEM
-				if (teleportModeKeyPath != null && teleportModeKeyPath != "" && teleporter != null)
-				{
-					bool teleportModeKeyIsPressed = _isKeyPressed(teleportModeKeyPath);
-
+				if (inTeleportMode)
+                {
+					var touchTransform = TouchCollider.transform;
+					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+				}
 #else
 				if (teleportModeKey != KeyCode.None && teleporter != null)
 				{
-					bool teleportModeKeyIsPressed = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
-#endif
-					if (teleportModeKeyIsPressed)
+					inTeleportMode = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
+					if (inTeleportMode)
 					{
 						teleporter.SetActive(true);
 						var touchTransform = TouchCollider.transform;
 						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
 						// See if user wants to go to the home position
-#if ENABLE_INPUT_SYSTEM
-						if (_wasKeyPressedThisFrame(teleportHomeKeyPath))
-#else
 						if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
-#endif
 						{
 							teleporter.TeleportHome();
                         }
@@ -189,25 +179,47 @@ namespace VRT.Pilots.Common
 						teleporter.SetActive(false);
 					}
 				}
+#endif
+#if !ENABLE_INPUT_SYSTEM
+				UpdateHandState();
 
-				if (inGrabbingMode)
-				{
-					_Controller.SetHandState(HandController.State.Grabbing);
-					GrabCollider.SetActive(true);
-					TouchCollider.SetActive(false);
-				}
-				else if (inPointingMode)
-				{
-					_Controller.SetHandState(HandController.State.Pointing);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(true);
-				}
-				else
-				{
-					_Controller.SetHandState(HandController.State.Idle);
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(false);
-				}
+#endif
+			}
+		}
+
+		void UpdateHandState()
+        {
+			if (inGrabbingMode)
+			{
+				_Controller.SetHandState(HandController.State.Grabbing);
+				GrabCollider.SetActive(true);
+				TouchCollider.SetActive(false);
+				teleporter.SetActive(false);
+			}
+			else if (inPointingMode)
+			{
+				_Controller.SetHandState(HandController.State.Pointing);
+				GrabCollider.SetActive(false);
+				TouchCollider.SetActive(true);
+				teleporter.SetActive(false);
+			}
+			else if (inTeleportMode)
+            {
+				GrabCollider.SetActive(false);
+				TouchCollider.SetActive(false);
+				teleporter.SetActive(true);
+				teleporter.CustomUpdatePath(
+					TouchCollider.transform.position,
+					TouchCollider.transform.forward,
+					teleportStrength
+					);
+			}
+			else
+			{
+				_Controller.SetHandState(HandController.State.Idle);
+				GrabCollider.SetActive(false);
+				TouchCollider.SetActive(false);
+				teleporter.SetActive(false);
 			}
 		}
 	}

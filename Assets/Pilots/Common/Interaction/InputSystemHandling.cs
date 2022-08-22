@@ -16,6 +16,7 @@ public class NegateProcessor : InputProcessor<float>
 #if UNITY_EDITOR
     static NegateProcessor()
     {
+        Debug.Log("xxxjack NegateProcessor: static constructor called");
         Initialize();
     }
 #endif
@@ -23,6 +24,7 @@ public class NegateProcessor : InputProcessor<float>
     [RuntimeInitializeOnLoadMethod]
     static void Initialize()
     {
+        Debug.Log("xxxjack NegateProcessor: static initializer called");
         InputSystem.RegisterProcessor<NegateProcessor>();
     }
 
