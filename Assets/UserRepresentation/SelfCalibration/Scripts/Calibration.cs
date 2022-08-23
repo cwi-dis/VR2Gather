@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using VRT.Core;
 
 public class Calibration : MonoBehaviour {
+    private bool initialized = false;
     private enum State { Comfort, Mode, Translation, Rotation }
     private State       state = State.Comfort;
 
@@ -37,6 +38,14 @@ public class Calibration : MonoBehaviour {
     }
 
     private void Start() {
+        _Initialize();
+    }
+
+    private void _Initialize()
+    {
+        if (initialized) return;
+        if (!VRConfig.Instance.isInitialized()) return;
+        initialized = true;
         // Enable the correct set of controls (and only the correct set)
         if (VRConfig.Instance.useControllerEmulation()) controls = emulation;
         if (VRConfig.Instance.useControllerGamepad()) controls = gamepad;
@@ -56,6 +65,8 @@ public class Calibration : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        _Initialize();
+#if !ENABLE_INPUT_SYSTEM
         //
         // Enable current UI
         //
@@ -176,5 +187,6 @@ public class Calibration : MonoBehaviour {
             default:
                 break;
         }
+#endif
     }
 }
