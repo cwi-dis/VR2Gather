@@ -28,6 +28,11 @@ public class PlayerManager : MonoBehaviour {
 	//
     public void setupInputOutput(bool isLocalPlayer, bool disableInput=false)
     {
+		if (VRConfig.Instance == null || !VRConfig.Instance.isInitialized())
+        {
+			Debug.LogError("PlayerManager.setupInputOutput: called before VR initialization is complete.");
+			return;
+        }
 		// Unity has two types of null. We need the C# null.
 		if (holoCamera == null) holoCamera = null;
 		// Enable either the normal camera or the holodisplay camera for the local user.
