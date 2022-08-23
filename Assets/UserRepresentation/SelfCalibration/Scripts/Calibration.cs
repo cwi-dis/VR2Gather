@@ -16,11 +16,11 @@ public class Calibration : MonoBehaviour {
     public string        prefix = "pcs";
 
     [Header("Input controller support")]
-    public CalibrationInteraction emulation;
-    public CalibrationInteraction gamepad;
-    public CalibrationInteraction oculus;
-    public CalibrationInteraction openvr;
-    private CalibrationInteraction controls = null;
+    public GameObject emulation;
+    public GameObject gamepad;
+    public GameObject oculus;
+    public GameObject openvr;
+    private GameObject controls = null;
     [Header("UI Panel references")]
     public GameObject   ComfortUI;
     public GameObject   CalibrationModeUI;
@@ -51,10 +51,10 @@ public class Calibration : MonoBehaviour {
         if (VRConfig.Instance.useControllerGamepad()) controls = gamepad;
         if (VRConfig.Instance.useControllerOculus()) controls = oculus;
         if (VRConfig.Instance.useControllerOpenVR()) controls = openvr;
-        emulation.enabled = emulation == controls;
-        gamepad.enabled = gamepad == controls;
-        oculus.enabled = oculus == controls;
-        openvr.enabled = openvr == controls;
+        emulation.SetActive(emulation == controls);
+        gamepad.SetActive(gamepad == controls);
+        oculus.SetActive(oculus == controls);
+        openvr.SetActive(openvr == controls);
         // Get initial position/orientation from the preferences
         Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
