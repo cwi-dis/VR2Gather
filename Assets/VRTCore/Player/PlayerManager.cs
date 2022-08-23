@@ -20,7 +20,13 @@ public class PlayerManager : MonoBehaviour {
     public GameObject[] inputOpenVROnlyObjects;
     public GameObject[] inputNonHMDObjects;
 
-    public void setupInputOutput(bool isLocalPlayer)
+	//
+	// Enable camera (or camera-like object) and input handling.
+	// If not the local player most things will be disabled.
+	// If disableInput is true the input handling will be disabled (probably because we are in the calibration
+	// scene or some other place where input is handled differently than through the PFB_Player).
+	//
+    public void setupInputOutput(bool isLocalPlayer, bool disableInput=false)
     {
 		// Unity has two types of null. We need the C# null.
 		if (holoCamera == null) holoCamera = null;
@@ -52,25 +58,25 @@ public class PlayerManager : MonoBehaviour {
 			obj.SetActive(isLocalPlayer);
 		}
 		// Enable controller emulation (keyboard/mouse) objects only for the local user when using emulation
-		bool isLocalEmulationPlayer = isLocalPlayer && VRConfig.Instance.useControllerEmulation();
+		bool isLocalEmulationPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerEmulation();
 		foreach (var obj in inputEmulationOnlyObjects)
 		{
 			obj.SetActive(isLocalEmulationPlayer);
 		}
 		// Enable gamepad objects only for the local user when using gamepad
-		bool isLocalGamepadPlayer = isLocalPlayer && VRConfig.Instance.useControllerGamepad();
+		bool isLocalGamepadPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerGamepad();
 		foreach (var obj in inputGamepadOnlyObjects)
 		{
 			obj.SetActive(isLocalGamepadPlayer);
 		}
 		// Enable oculus objects only for the local user when using oculus
-		bool isLocalOculusPlayer = isLocalPlayer && VRConfig.Instance.useControllerOculus();
+		bool isLocalOculusPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOculus();
 		foreach (var obj in inputOculusOnlyObjects)
 		{
 			obj.SetActive(isLocalOculusPlayer);
 		}
 		// Enable gamepad objects only for the local user when using gamepad
-		bool isLocalOpenVRPlayer = isLocalPlayer && VRConfig.Instance.useControllerOpenVR();
+		bool isLocalOpenVRPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOpenVR();
 		foreach (var obj in inputOpenVROnlyObjects)
 		{
 			obj.SetActive(isLocalOpenVRPlayer);
