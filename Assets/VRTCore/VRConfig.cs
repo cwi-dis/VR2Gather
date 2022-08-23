@@ -134,7 +134,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+                Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
             return currentOutputDevice;
         }
@@ -143,7 +143,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+                Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
             bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
             return rv;
@@ -158,7 +158,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerEmulation() called too early");
+                Debug.LogError("VRConfig: useControllerEmulation() called too early");
             }
             return currentInputDevice == "emulation";
         }
@@ -167,7 +167,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerGamepad() called too early");
+                Debug.LogError("VRConfig: useControllerGamepad() called too early");
             }
             return currentInputDevice == "gamepad";
         }
@@ -176,7 +176,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerOpenVR() called too early");
+                Debug.LogError("VRConfig: useControllerOpenVR() called too early");
             }
             return currentInputDevice == "OpenVR";
         }
@@ -185,7 +185,7 @@ namespace VRT.Core
         {
             if (!initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerOculus() called too early");
+                Debug.LogError("VRConfig: useControllerOculus() called too early");
             }
             return currentInputDevice == "Oculus";
         }
