@@ -32,6 +32,7 @@ namespace VRT.Core
         public bool pilot3NavigationLogs = true;
         public double statsInterval = 10.0;
         public string statsOutputFile = "";
+        public string jstatsOutputFile = "";
         public bool allowControllerMovement = true;
         public bool statsOutputFileAppend = true;
         public string ffmpegDLLDir = "";

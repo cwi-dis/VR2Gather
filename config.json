@@ -11,6 +11,7 @@
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
   "statsOutputFile":  "",
+  "statsOutputFile":  "",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
