@@ -13,6 +13,9 @@ namespace VRT.Core
         private string currentInputDevice = null;
         private bool initializing = false;
         private bool initialized = false;
+
+        [Tooltip("Always run this scene without VR (for LoginManager scene, primarily")]
+        public bool disableVRforThisScene = false;
        
         public bool isInitialized()
         {
@@ -26,7 +29,7 @@ namespace VRT.Core
             {
                 if (_Instance == null)
                 {
-                    _Instance = new VRConfig();
+                    Debug.LogWarning("VRConfig: attempting to get Instance before it was created in the scene.");
                 }
                 return _Instance;
             }
@@ -59,6 +62,15 @@ namespace VRT.Core
         public void _InitVR()
         {
             if (initialized || initializing) return;
+            if (disableVRforThisScene)
+            {
+                Debug.Log("VRConfig: VR disabled for this scene");
+                currentInputDevice = "emulation";
+                currentInputDevice = "";
+                XRSettings.enabled = false;
+                initialized = true;
+                return;
+            }
             Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
             foreach(var d in XRSettings.supportedDevices)
             {
