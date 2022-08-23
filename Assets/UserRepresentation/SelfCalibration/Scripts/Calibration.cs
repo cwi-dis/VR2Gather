@@ -15,11 +15,11 @@ public class Calibration : MonoBehaviour {
     public string        prefix = "pcs";
 
     [Header("Input controller support")]
-    public CalibrationControls emulation;
-    public CalibrationControls gamepad;
-    public CalibrationControls oculus;
-    public CalibrationControls openvr;
-    private CalibrationControls controls = null;
+    public CalibrationInteraction emulation;
+    public CalibrationInteraction gamepad;
+    public CalibrationInteraction oculus;
+    public CalibrationInteraction openvr;
+    private CalibrationInteraction controls = null;
     [Header("UI Panel references")]
     public GameObject   ComfortUI;
     public GameObject   CalibrationModeUI;

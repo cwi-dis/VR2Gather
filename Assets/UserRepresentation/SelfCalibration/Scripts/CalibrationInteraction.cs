@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
-public class CalibrationControls : MonoBehaviour
+public class CalibrationInteraction : MonoBehaviour
 {
     [System.Serializable]
     public class KeyOrAxis
@@ -53,6 +55,50 @@ public class CalibrationControls : MonoBehaviour
     public AxisOrTwoKeys leftRight;
     public AxisOrTwoKeys downUp;
 
+    public void OnYes()
+    {
+        Debug.Log($"CalibrationControls: OnYes");
+    }
+    public void OnNo()
+    {
+        Debug.Log($"CalibrationControls: OnNo");
+    }
+    public void OnTranslate()
+    {
+        Debug.Log($"CalibrationControls: OnTranslate");
+    }
+    public void OnRotate()
+    {
+        Debug.Log($"CalibrationControls: OnRotate");
+
+    }
+    public void OnDone()
+    {
+        Debug.Log($"CalibrationControls: OnDone");
+
+    }
+    public void OnReset()
+    {
+        Debug.Log($"CalibrationControls: OnReset");
+    }
+    public void OnBackwardForward(InputValue value)
+    {
+        var delta = value.Get<float>();
+        Debug.Log($"CalibrationControls: OnBackwardForward: {delta}");
+
+    }
+    public void OnLeftRight(InputValue value)
+    {
+        var delta = value.Get<float>();
+        Debug.Log($"CalibrationControls: OnLeftRight: {delta}");
+
+    }
+    public void OnUpDown(InputValue value)
+    {
+        var delta = value.Get<float>();
+        Debug.Log($"CalibrationControls: OnUpDown: {delta}");
+
+    }
     // Start is called before the first frame update
     void Start()
     {

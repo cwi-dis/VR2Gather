@@ -1,0 +1,288 @@
+{
+    "name": "CalibrationControls",
+    "maps": [
+        {
+            "name": "CalibrationControls",
+            "id": "f0c81075-aa2c-458f-b4e2-d8cbc5fe367d",
+            "actions": [
+                {
+                    "name": "Yes",
+                    "type": "Button",
+                    "id": "acacf152-7245-4c79-a3d0-0768b4b0a391",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "No",
+                    "type": "Button",
+                    "id": "db31cee6-f9e7-4170-abc5-8a9be83e9501",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Translate",
+                    "type": "Button",
+                    "id": "1484ae47-433e-434b-9caa-03ad7fee3f43",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "afda85df-ef0f-4b29-a25f-7dc93edf45c8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Done",
+                    "type": "Button",
+                    "id": "d5cb7aa4-7152-4c20-9e92-fd59a8bcf72e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Reset",
+                    "type": "Button",
+                    "id": "50a9440d-ceee-4bd7-899f-87484cc5f399",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "BackwardForward",
+                    "type": "PassThrough",
+                    "id": "8623578d-2d67-4039-9a88-2805624df8de",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LeftRight",
+                    "type": "Button",
+                    "id": "1550e892-a94b-4bb6-a5ce-1568c507de5b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DownUp",
+                    "type": "Button",
+                    "id": "4636a15c-9ad5-4150-a2e1-fc9c3c5842a1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "18a38093-9a1d-44f4-bbd6-9d1f22000965",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "action": "Yes",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9ebbf6ba-7be2-4563-b0dd-b10e64457557",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "action": "No",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df7c9c68-dbf5-46f9-9b44-98620dcb5765",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f691a40e-53dc-4834-a1e9-3060ec2afa6b",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4f1a3b7f-b8b8-4134-8ea8-29a89871e75a",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Done",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "99a903d8-59b7-41b9-9754-ed3f2a0fc9ce",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "894f93dc-92d0-4805-846d-efa0724a4a70",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "BackwardForward",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "fbbbb3ad-9c51-4931-aa7a-d8dacd42d40c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "action": "BackwardForward",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "e40f16f8-7699-4658-a7ab-0a2d487e08c0",
+                    "path": "<Mouse>/delta/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "action": "BackwardForward",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "751a4da7-5743-4c0f-b481-7631a44c3b77",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftRight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "881ffc3d-d8d3-49c0-a8d0-8cbeabd79e6f",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "action": "LeftRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "611b6d33-dcf2-4d98-8c2e-c9caa8fdec93",
+                    "path": "<Mouse>/delta/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftRight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "79e8a9e8-32c7-4e97-8d0b-6fc219d5f049",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "action": "DownUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "KeyboardMouse",
+            "bindingGroup": "KeyboardMouse",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Joystick",
+            "bindingGroup": "Joystick",
+            "devices": [
+                {
+                    "devicePath": "<Joystick>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Oculus",
+            "bindingGroup": "Oculus",
+            "devices": [
+                {
+                    "devicePath": "<OculusTouchController>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Vive",
+            "bindingGroup": "Vive",
+            "devices": [
+                {
+                    "devicePath": "<ViveWand>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}
