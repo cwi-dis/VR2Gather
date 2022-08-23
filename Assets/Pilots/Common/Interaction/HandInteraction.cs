@@ -181,7 +181,22 @@ namespace VRT.Pilots.Common
 
 		void UpdateHandState()
         {
-			if (inGrabbingMode)
+			if (inTeleportMode)
+			{
+				// Teleport mode overrides the other modes, specifically pointing mode.
+				_Controller.SetHandState(HandController.State.Pointing);
+				GrabCollider.SetActive(false);
+				TouchCollider.SetActive(false);
+				teleporter.SetActive(true);
+				teleporter.CustomUpdatePath(
+					TouchCollider.transform.position,
+					TouchCollider.transform.forward,
+					teleportStrength
+					);
+				inGrabbingMode = false;
+				inPointingMode = false;
+			}
+			else if(inGrabbingMode)
 			{
 				_Controller.SetHandState(HandController.State.Grabbing);
 				GrabCollider.SetActive(true);
@@ -198,18 +213,7 @@ namespace VRT.Pilots.Common
 				teleporter.SetActive(false);
 				inTeleportMode = false;
 			}
-			else if (inTeleportMode)
-            {
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(true);
-				teleporter.CustomUpdatePath(
-					TouchCollider.transform.position,
-					TouchCollider.transform.forward,
-					teleportStrength
-					);
-			}
-			else
+			else 
 			{
 				_Controller.SetHandState(HandController.State.Idle);
 				GrabCollider.SetActive(false);
