@@ -138,7 +138,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -149,7 +149,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
