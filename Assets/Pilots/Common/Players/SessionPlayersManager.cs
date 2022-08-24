@@ -15,8 +15,6 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class SessionPlayersManager : MonoBehaviour
 	{
-		private bool initialized = false;
-
 		/// <summary>
 		/// Empty request message to ask the Master to inform us about the player locations
 		/// </summary>
@@ -104,25 +102,11 @@ namespace VRT.Pilots.Common
 
 		public void Start()
 		{
-			Initialize();
+			InstantiatePlayers();
 		}
-
-        private void Initialize()
-        {
-			if (!initialized && VRConfig.Instance.isInitialized())
-			{
-				InstantiatePlayers();
-			}
-		}
-
-        public void Update()
-        {
-			Initialize();
-        }
 
         public void InstantiatePlayers()
 		{
-			initialized = true;
 			var me = OrchestratorController.Instance.SelfUser;
 
 			// First tell the tilingConfigDistributor what our user ID is.

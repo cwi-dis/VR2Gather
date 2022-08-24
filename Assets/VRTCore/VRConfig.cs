@@ -13,15 +13,12 @@ namespace VRT.Core
         private string currentInputDevice = null;
         private static bool loaded = false;
         private bool initializing = false;
-        private bool initialized = false;
+        private bool _initialized = false;
 
         [Tooltip("Always run this scene without VR (for LoginManager scene, primarily")]
         public bool disableVRforThisScene = false;
        
-        public bool isInitialized()
-        {
-            return initialized;
-        }
+        public bool initialized {  get { return _initialized;  } }
 
         static VRConfig _Instance;
         public static VRConfig Instance
@@ -67,7 +64,7 @@ namespace VRT.Core
 
         public void _InitVR()
         {
-            if (initialized || initializing) return;
+            if (_initialized || initializing) return;
             if (!loaded)
             {
                 StartCoroutine(_LoadVR());
@@ -106,7 +103,7 @@ namespace VRT.Core
                 currentInputDevice = "emulation";
                 currentOutputDevice = "";
                 XRSettings.enabled = false;
-                initialized = true;
+                _initialized = true;
                 return;
             }
             currentOutputDevice = XRSettings.loadedDeviceName;
@@ -159,7 +156,7 @@ namespace VRT.Core
             {
                 initLookingGlass();
             }
-            initialized = true;
+            _initialized = true;
         }
 
         public string[] preferredDevices()
@@ -173,7 +170,7 @@ namespace VRT.Core
 
         public string outputDeviceName()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
@@ -182,7 +179,7 @@ namespace VRT.Core
 
         public bool useHMD()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
@@ -197,7 +194,7 @@ namespace VRT.Core
 
         public bool useControllerEmulation()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: useControllerEmulation() called too early");
             }
@@ -206,7 +203,7 @@ namespace VRT.Core
 
         public bool useControllerGamepad()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: useControllerGamepad() called too early");
             }
@@ -215,7 +212,7 @@ namespace VRT.Core
 
         public bool useControllerOpenVR()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: useControllerOpenVR() called too early");
             }
@@ -224,7 +221,7 @@ namespace VRT.Core
 
         public bool useControllerOculus()
         {
-            if (!initialized)
+            if (!_initialized)
             {
                 Debug.LogError("VRConfig: useControllerOculus() called too early");
             }

@@ -28,7 +28,7 @@ public class PlayerManager : MonoBehaviour {
 	//
     public void setupInputOutput(bool isLocalPlayer, bool disableInput=false)
     {
-		if (VRConfig.Instance == null || !VRConfig.Instance.isInitialized())
+		if (VRConfig.Instance == null || !VRConfig.Instance.initialized)
         {
 			Debug.LogError("PlayerManager.setupInputOutput: called before VR initialization is complete.");
 			return;
