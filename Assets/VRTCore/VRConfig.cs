@@ -11,6 +11,7 @@ namespace VRT.Core
     {
         private string currentOutputDevice = null;
         private string currentInputDevice = null;
+        private static bool loaded = false;
         private bool initializing = false;
         private bool initialized = false;
 
@@ -37,14 +38,19 @@ namespace VRT.Core
 
         private void Awake()
         {
-            if (_Instance != null && _Instance != this)
+            if (_Instance == this)
             {
-                Debug.LogError("VRConfig: duplicate instance, destroying this (new) instance");
-                Destroy(gameObject);
+                Debug.LogWarning("VRConfig: Awake called a second time");
+                return;
+            }
+            if (_Instance != null)
+            {
+                Debug.Log("VRConfig: new instance, deleting old one");
+                _Instance = null;
                 return;
             }
             _Instance = this;
-            //DontDestroyOnLoad(this.gameObject);
+            
             _InitVR();
         }
 
@@ -62,35 +68,58 @@ namespace VRT.Core
         public void _InitVR()
         {
             if (initialized || initializing) return;
-            if (disableVRforThisScene)
+            if (!loaded)
             {
-                Debug.Log("VRConfig: VR disabled for this scene");
-                currentInputDevice = "emulation";
-                currentInputDevice = "";
-                XRSettings.enabled = false;
-                initialized = true;
-                return;
+                StartCoroutine(_LoadVR());
+                initializing = true;
             }
-            Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
-            foreach(var d in XRSettings.supportedDevices)
+            else
             {
-                Debug.Log($"VRConfig: device={d}");
+                _InitVRDevices();
             }
-            StartCoroutine(_LoadVR());
-            initializing = true;
         }
 
         private IEnumerator _LoadVR()
         {
-            string[] devices = preferredDevices();
-            XRSettings.LoadDeviceByName(devices);
-            yield return null;
+            if (!loaded)
+            {
+                Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
+                foreach (var d in XRSettings.supportedDevices)
+                {
+                    Debug.Log($"VRConfig: device={d}");
+                }
+                string[] devices = preferredDevices();
+                Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
+                XRSettings.LoadDeviceByName(devices);
+                yield return null;
+            }
+            loaded = true;
+            Debug.Log($"VRConfig: loaded VR driver {XRSettings.loadedDeviceName}");
+            _InitVRDevices();
+        }
+
+        private void _InitVRDevices()
+        {
+            if (disableVRforThisScene)
+            {
+                Debug.Log("VRConfig: VR disabled for this scene");
+                currentInputDevice = "emulation";
+                currentOutputDevice = "";
+                XRSettings.enabled = false;
+                initialized = true;
+                return;
+            }
             currentOutputDevice = XRSettings.loadedDeviceName;
             if (currentOutputDevice != "")
             {
                 XRSettings.enabled = true;
+                Debug.Log($"VRConfig: VR enabled for this scene, device {currentOutputDevice}");
             }
-            yield return null;
+            else
+            {
+                Debug.Log($"VRConfig: VR could be enabled for this scene, but no VR driver loaded");
+            }
+
             if (!XRSettings.isDeviceActive && XRSettings.enabled) {
                 Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
                 currentOutputDevice = "";
