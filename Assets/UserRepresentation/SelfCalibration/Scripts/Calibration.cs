@@ -8,7 +8,6 @@ using UnityEngine.InputSystem.Controls;
 using VRT.Core;
 
 public class Calibration : MonoBehaviour {
-    private bool initialized = false;
     private enum State { CheckWithUser, SelectTranslationRotation, Translation, Rotation }
     private State       state = State.CheckWithUser;
 
@@ -38,15 +37,16 @@ public class Calibration : MonoBehaviour {
     }
 
     private void Start() {
-        _Initialize();
+        InitializePosition();
         ChangeModeUI();
     }
 
-    private void _Initialize()
+    private void InitializePosition()
     {
-        if (initialized) return;
-        if (!VRConfig.Instance.isInitialized()) return;
-        initialized = true;
+        if (!VRConfig.Instance.initialized)
+        {
+            Debug.LogError("Calibration: VR config not yet initialized");
+        }
         // Get initial position/orientation from the preferences
         Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
@@ -199,6 +199,7 @@ public class Calibration : MonoBehaviour {
     public void OnBackwardForward(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnBackwardForward: {delta}");
 
         if (state == State.Translation)
@@ -210,6 +211,7 @@ public class Calibration : MonoBehaviour {
     public void OnLeftRight(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnLeftRight: {delta}");
         if (state == State.Translation)
         {
@@ -225,6 +227,7 @@ public class Calibration : MonoBehaviour {
     public void OnUpDown(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnUpDown: {delta}");
         if (state == State.Translation)
         {
@@ -232,10 +235,6 @@ public class Calibration : MonoBehaviour {
         } 
     }
 
-    // Update is called once per frame
-    void Update() {
-        _Initialize();
-    }
 
     void ChangeModeUI()
     {

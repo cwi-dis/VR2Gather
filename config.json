@@ -34,7 +34,7 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"preferredDevices" : [""],
+	"_preferredDevices" : [""],
 	"preferredController" : ""
   },
   "Macintosh": {

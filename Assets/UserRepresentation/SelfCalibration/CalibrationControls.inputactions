@@ -94,7 +94,18 @@
                     "path": "<Keyboard>/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "groups": "KeyboardMouse",
+                    "action": "Yes",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a269f7e4-0a62-4ee4-811c-302a856edd88",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "Yes",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -105,7 +116,18 @@
                     "path": "<Keyboard>/n",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
+                    "action": "No",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8199de45-7810-4f3e-9fce-a553274d1033",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -116,7 +138,18 @@
                     "path": "<Keyboard>/t",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b680ee3-e5de-4dfb-a099-6522bfb13069",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -127,7 +160,18 @@
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dd817916-e90c-4b07-a2f4-d1b450aee783",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -138,7 +182,7 @@
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -149,7 +193,7 @@
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -171,7 +215,7 @@
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "groups": "KeyboardMouse",
                     "action": "BackwardForward",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -182,7 +226,7 @@
                     "path": "<Mouse>/delta/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "groups": "KeyboardMouse",
                     "action": "BackwardForward",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -204,7 +248,7 @@
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse;Joystick;Oculus;Vive",
+                    "groups": "KeyboardMouse",
                     "action": "LeftRight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -215,7 +259,7 @@
                     "path": "<Mouse>/delta/x",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "LeftRight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -226,7 +270,7 @@
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive;KeyboardMouse;Joystick;Oculus",
+                    "groups": "KeyboardMouse",
                     "action": "DownUp",
                     "isComposite": false,
                     "isPartOfComposite": false
