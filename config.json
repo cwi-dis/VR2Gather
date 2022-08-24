@@ -10,8 +10,8 @@
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
-  "statsOutputFile":  "",
-  "statsOutputFile":  "",
+  "statsOutputFile":  "stats-{host}-{ts}.txt",
+  "jstatsOutputFile":  "eyetrackingdata-{host}-{ts}.json",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  

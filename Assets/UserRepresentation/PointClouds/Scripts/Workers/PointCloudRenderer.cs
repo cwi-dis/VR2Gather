@@ -26,6 +26,7 @@ namespace VRT.UserRepresentation.PointCloud
         PointCloudPreparer preparer;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
+        public Timestamp currentTimestamp;
 
         public string Name()
         {
@@ -111,6 +112,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 pcMatrix = pcMatrix * Matrix4x4.Scale(new Vector3(-1, 1, 1));
             }
+            currentTimestamp = preparer.currentTimestamp;
             block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
             stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
