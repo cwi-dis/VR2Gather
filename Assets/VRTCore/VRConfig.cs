@@ -89,9 +89,9 @@ namespace VRT.Core
                 Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
                 XRSettings.LoadDeviceByName(devices);
                 yield return null;
-            }
+           }
             loaded = true;
-            Debug.Log($"VRConfig: loaded VR driver {XRSettings.loadedDeviceName}");
+            Debug.Log($"VRConfig: loaded VR driver \"{XRSettings.loadedDeviceName}\"");
             _InitVRDevices();
         }
 
