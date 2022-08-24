@@ -199,6 +199,7 @@ public class Calibration : MonoBehaviour {
     public void OnBackwardForward(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnBackwardForward: {delta}");
 
         if (state == State.Translation)
@@ -210,6 +211,7 @@ public class Calibration : MonoBehaviour {
     public void OnLeftRight(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnLeftRight: {delta}");
         if (state == State.Translation)
         {
@@ -225,6 +227,7 @@ public class Calibration : MonoBehaviour {
     public void OnUpDown(InputValue value)
     {
         var delta = value.Get<float>();
+        if (delta == 0) return;
         Debug.Log($"CalibrationControls: OnUpDown: {delta}");
         if (state == State.Translation)
         {
@@ -232,10 +235,6 @@ public class Calibration : MonoBehaviour {
         } 
     }
 
-    // Update is called once per frame
-    void Update() {
-        InitializePosition();
-    }
 
     void ChangeModeUI()
     {
