@@ -6,7 +6,7 @@
             "id": "f0c81075-aa2c-458f-b4e2-d8cbc5fe367d",
             "actions": [
                 {
-                    "name": "Yes",
+                    "name": "YesDone",
                     "type": "Button",
                     "id": "acacf152-7245-4c79-a3d0-0768b4b0a391",
                     "expectedControlType": "Button",
@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "No",
+                    "name": "NoBack",
                     "type": "Button",
                     "id": "db31cee6-f9e7-4170-abc5-8a9be83e9501",
                     "expectedControlType": "Button",
@@ -36,15 +36,6 @@
                     "name": "Rotate",
                     "type": "Button",
                     "id": "afda85df-ef0f-4b29-a25f-7dc93edf45c8",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Done",
-                    "type": "Button",
-                    "id": "d5cb7aa4-7152-4c20-9e92-fd59a8bcf72e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -79,9 +70,9 @@
                 },
                 {
                     "name": "DownUp",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "4636a15c-9ad5-4150-a2e1-fc9c3c5842a1",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -95,7 +86,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Yes",
+                    "action": "YesDone",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -106,7 +97,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
-                    "action": "Yes",
+                    "action": "YesDone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ca2a65c-23dd-43db-a668-4ba4f2efb6b1",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/triggerpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "YesDone",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -117,7 +119,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "No",
+                    "action": "NoBack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -128,7 +130,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
-                    "action": "No",
+                    "action": "NoBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e05661f-6115-43e3-b668-0389fcd5a03d",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/triggerpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "NoBack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -150,6 +163,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b095b7f4-91f3-46ba-88ab-fac50bf0087c",
+                    "path": "<ViveWand>{RightHand}/primary",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -178,12 +202,12 @@
                 },
                 {
                     "name": "",
-                    "id": "4f1a3b7f-b8b8-4134-8ea8-29a89871e75a",
-                    "path": "<Keyboard>/enter",
+                    "id": "f8a916a5-c4e5-4001-ab9f-d8901cc6fb5e",
+                    "path": "<ViveWand>{LeftHand}/primary",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "Done",
+                    "groups": "Vive",
+                    "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -269,7 +293,7 @@
                     "id": "79e8a9e8-32c7-4e97-8d0b-6fc219d5f049",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.01)",
                     "groups": "KeyboardMouse",
                     "action": "DownUp",
                     "isComposite": false,

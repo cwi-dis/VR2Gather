@@ -55,9 +55,10 @@ public class Calibration : MonoBehaviour {
         cameraReference.transform.localRotation = Quaternion.Euler(rot);
     }
 
-    public void OnYes()
+    public void OnYesDone(InputValue value)
     {
-        Debug.Log($"CalibrationControls: OnYes");
+        if (value.Get<float>() < 0.5) return;
+        Debug.Log($"Calibration: OnYesDone");
         if (state == State.CheckWithUser)
         {
             Debug.Log("Calibration: CheckWithUser: User is happy, return to LoginManager");
@@ -94,9 +95,10 @@ public class Calibration : MonoBehaviour {
         }
     }
 
-    public void OnNo()
+    public void OnNoBack(InputValue value)
     {
-        Debug.Log($"CalibrationControls: OnNo");
+        if (value.Get<float>() < 0.5) return;
+        Debug.Log($"Calibration: OnNoBack");
         if (state == State.CheckWithUser)
         {
             Debug.Log("Calibration: Comfort: Starting calibration process");
@@ -138,9 +140,10 @@ public class Calibration : MonoBehaviour {
         }
     }
 
-    public void OnTranslate()
+    public void OnTranslate(InputValue value)
     {
-        Debug.Log($"CalibrationControls: OnTranslate");
+        if (value.Get<float>() < 0.5) return;
+        Debug.Log($"Calibration: OnTranslate");
         if (state == State.SelectTranslationRotation)
         {
             Debug.Log("Calibration: Mode: Selected Translation Mode");
@@ -149,9 +152,10 @@ public class Calibration : MonoBehaviour {
         }
     }
 
-    public void OnRotate()
+    public void OnRotate(InputValue value)
     {
-        Debug.Log($"CalibrationControls: OnRotate");
+        if (value.Get<float>() < 0.5) return;
+        Debug.Log($"Calibration: OnRotate");
         if (state == State.SelectTranslationRotation)
         {
             Debug.Log("Calibration: Mode: Selected Rotation Mode");
@@ -161,21 +165,10 @@ public class Calibration : MonoBehaviour {
 
     }
 
-    public void OnDone()
+    public void OnReset(InputValue value)
     {
-        Debug.Log($"CalibrationControls: OnDone");
-
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: User is done");
-            state = State.CheckWithUser;
-            ChangeModeUI();
-        }
-    }
-
-    public void OnReset()
-    {
-        Debug.Log($"CalibrationControls: OnReset");
+        if (value.Get<float>() < 0.5) return;
+        Debug.Log($"Calibration: OnReset");
         if (state == State.SelectTranslationRotation)
         {
             Debug.Log("Calibration: Mode: Reset factory settings");
@@ -200,7 +193,7 @@ public class Calibration : MonoBehaviour {
     {
         var delta = value.Get<float>();
         if (delta == 0) return;
-        Debug.Log($"CalibrationControls: OnBackwardForward: {delta}");
+        Debug.Log($"Calibration: OnBackwardForward: {delta}");
 
         if (state == State.Translation)
         {
@@ -212,7 +205,7 @@ public class Calibration : MonoBehaviour {
     {
         var delta = value.Get<float>();
         if (delta == 0) return;
-        Debug.Log($"CalibrationControls: OnLeftRight: {delta}");
+        Debug.Log($"Calibration: OnLeftRight: {delta}");
         if (state == State.Translation)
         {
             cameraReference.transform.localPosition += new Vector3(delta, 0, 0) * _translationSlightStep;
@@ -224,11 +217,11 @@ public class Calibration : MonoBehaviour {
         }
     }
 
-    public void OnUpDown(InputValue value)
+    public void OnDownUp(InputValue value)
     {
         var delta = value.Get<float>();
         if (delta == 0) return;
-        Debug.Log($"CalibrationControls: OnUpDown: {delta}");
+        Debug.Log($"Calibration: OnDownUp: {delta}");
         if (state == State.Translation)
         {
             cameraReference.transform.localPosition += new Vector3(0, delta, 0) * _translationSlightStep;
