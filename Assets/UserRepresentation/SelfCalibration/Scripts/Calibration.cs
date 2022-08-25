@@ -6,13 +6,18 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using VRT.Core;
+using VRT.UserRepresentation.PointCloud;
+using VRT.Orchestrator.Wrapping;
 
 public class Calibration : MonoBehaviour {
     private enum State { CheckWithUser, SelectTranslationRotation, Translation, Rotation }
     private State       state = State.CheckWithUser;
 
+    [Tooltip("The player to control, for preview")]
+    public PlayerManager player;
     [Tooltip("The camera to control, for preview")]
     public GameObject   cameraReference;
+    
     [Tooltip("How fast to rotate")]
     public float        _rotationSlightStep = 1f;
     [Tooltip("How fast to translate")]
@@ -37,7 +42,15 @@ public class Calibration : MonoBehaviour {
     }
 
     private void Start() {
+        // Setup enough of the PFB_Player to allow viewing yourself as a pointcloud.
+        player.setupInputOutput(true, disableInput: true);
+        player.pc.gameObject.SetActive(true);
+        player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
+
+        // Initialize camera position/orientation from saved preferences
         InitializePosition();
+
+        // Initialize the UI screens
         ChangeModeUI();
     }
 
