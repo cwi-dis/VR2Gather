@@ -1692,8 +1692,6 @@ MonoBehaviour:
   xySensitivity: 1
   heightSensitivity: 1
   handInteraction: {fileID: 5072070730475040801}
-  teleportPosition: {x: 0, y: 0}
-  gropePosition: {x: 0, y: 0}
   modeMovingActive: 0
   modeTurningActive: 0
   modeGropingActive: 0
@@ -1783,8 +1781,6 @@ MonoBehaviour:
   xySensitivity: 1
   heightSensitivity: 1
   handInteraction: {fileID: 8100228094031343025}
-  teleportPosition: {x: 0, y: 0}
-  gropePosition: {x: 0, y: 0}
   modeMovingActive: 0
   modeTurningActive: 0
   modeGropingActive: 0
@@ -3220,8 +3216,18 @@ PrefabInstance:
       objectReference: {fileID: 1961873935331442330}
     - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
         type: 3}
+      propertyPath: sensitivity
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
+        type: 3}
       propertyPath: teleportKey
       value: 337
+      objectReference: {fileID: 0}
+    - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
+        type: 3}
+      propertyPath: invertUpDown
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
         type: 3}
