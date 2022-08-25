@@ -14,9 +14,14 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     [Tooltip("Panels to enable when using keyboard/mouse controller emulator")]
     public GameObject[] emulator;
 
-    
+
     // Start is called before the first frame update
     void Start()
+    {
+        InitializeXRDevices();
+    }
+
+    private void InitializeXRDevices()
     {
         bool isOculus = VRConfig.Instance.useControllerOculus();
         bool isVive = VRConfig.Instance.useControllerOpenVR();
@@ -47,9 +52,4 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
         foreach (var c in gamepad) c.SetActive(isGamepad);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

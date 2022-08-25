@@ -283,107 +283,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interval: 0
---- !u!1 &1008292572980766016
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4657799579478754689}
-  - component: {fileID: 7327130456457924420}
-  m_Layer: 0
-  m_Name: PlayerMovementGamepad
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4657799579478754689
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1008292572980766016}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6195526648355536999}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7327130456457924420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1008292572980766016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftRightAxis: Gamepad_Axis_3
-  forwardAxis: Gamepad_Axis_4
-  invertForwardAxis: 1
-  speed: 10
-  controller: {fileID: 3076079762117982612}
---- !u!1 &1063767371457575197
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6323211897013407460}
-  - component: {fileID: 5252894607578830425}
-  m_Layer: 0
-  m_Name: HeadMovementGamepad
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6323211897013407460
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1063767371457575197}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 6195526648355536999}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5252894607578830425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1063767371457575197}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1214c1344f998410c9b8aa62da25d437, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xySensitivity: 250
-  heightSensitivity: 0.1
-  allowHJKLforMouse: 0
-  spectator: 0
-  inhibitKeys: 4e0100004f0100005001000051010000
-  playerBody: {fileID: 5131421326051842284}
-  avatarHead: {fileID: 4311645287905124984}
-  leftRightAxisName: Gamepad_Axis_1
-  upDownAxisName: Gamepad_Axis_2
-  heightAxisName: Gamepad_Axis_6
 --- !u!1 &1207839261129455703
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,7 +781,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 388935389573275692}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &136980260111034875
 MonoBehaviour:
@@ -1126,6 +1025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 280599139246599801}
+  - component: {fileID: 4577825760084067668}
   - component: {fileID: 3083371993579628474}
   m_Layer: 0
   m_Name: LHInteractionOculus
@@ -1148,6 +1048,37 @@ Transform:
   m_Father: {fileID: 6076237778680395601}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4577825760084067668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4294445891769490535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: OculusLeft
+  m_DefaultActionMap: PilotControlsXR
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &3083371993579628474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1160,19 +1091,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 333
-  teleportHomeKey: 331
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 344
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
-  grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &4450405697229691927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1298,56 +1226,6 @@ Transform:
   m_Father: {fileID: 5131421326051842284}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4901211312643056833
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1062106735551160753}
-  - component: {fileID: 6671536968401267422}
-  m_Layer: 0
-  m_Name: HeadMovementEmulation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1062106735551160753
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4901211312643056833}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 388935389573275692}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6671536968401267422
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4901211312643056833}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3749ca8db505dbd4a85fb250835dc27f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  xySensitivity: 100
-  heightSensitivity: 0.05
-  allowHJKLforMouse: 1
-  spectator: 0
-  inhibitKeys: 3001000032010000
-  playerBody: {fileID: 5131421326051842284}
-  avatarHead: {fileID: 4311645287905124984}
 --- !u!1 &5131421326051842195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1424,10 +1302,10 @@ MonoBehaviour:
   inputOpenVROnlyObjects:
   - {fileID: 6673891989343794525}
   inputNonHMDObjects:
-  - {fileID: 1063767371457575197}
-  - {fileID: 4901211312643056833}
-  - {fileID: 1008292572980766016}
-  - {fileID: 6401055282619165495}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &1101617796011613554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1570,6 +1448,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2005234238787297971}
+  - component: {fileID: 4691054300199760770}
   - component: {fileID: 6250457016238168488}
   m_Layer: 0
   m_Name: LHInteractionOpenVR
@@ -1592,6 +1471,37 @@ Transform:
   m_Father: {fileID: 6817198108956201397}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4691054300199760770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5425817764442140490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: ViveLeft
+  m_DefaultActionMap: PilotControlsXR
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &6250457016238168488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1604,19 +1514,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 338
-  teleportHomeKey: 339
   teleporter: {fileID: 1354101091091999230}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 344
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
-  grabbingModeKey: 334
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &5704200592656136347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,6 +1616,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 388935389573275692}
+  - component: {fileID: 1803083798757742996}
+  - component: {fileID: 6430716245477488587}
   m_Layer: 0
   m_Name: interaction_Emulation
   m_TagString: Untagged
@@ -1728,60 +1637,67 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 529062839110024513}
-  - {fileID: 4246586071101923763}
-  - {fileID: 1062106735551160753}
   - {fileID: 6742807158298942943}
   m_Father: {fileID: 8928738529551039034}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6401055282619165495
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4246586071101923763}
-  - component: {fileID: 2801831349993136264}
-  m_Layer: 0
-  m_Name: PlayerMovementEmulation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4246586071101923763
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6401055282619165495}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 388935389573275692}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2801831349993136264
+--- !u!114 &1803083798757742996
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6401055282619165495}
+  m_GameObject: {fileID: 5747365182238593590}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ad4edf175534e942b53c186bd5a2f64, type: 3}
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftRightAxis: Horizontal
-  forwardAxis: Vertical
-  invertForwardAxis: 0
-  speed: 5
+  m_Actions: {fileID: -944628639613478452, guid: cb6820065ca6b43fdaa32f2fff48380d,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: KeyboardMouse
+  m_DefaultActionMap: PilotControls
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &6430716245477488587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5747365182238593590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95f52fba27f614fb1be947b23540f73c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
+  moveSpeed: 1
+  turnSpeed: 10
+  pitchSpeed: -10
+  heightSpeed: 1
+  cameraTransformToControl: {fileID: 0}
+  playerBody: {fileID: 5131421326051842284}
+  avatarHead: {fileID: 4311645287905124984}
+  pitchAngle: 0
+  handInteraction: {fileID: 5072070730475040801}
+  modeMovingActive: 0
+  modeTurningActive: 0
+  modeGropingActive: 0
+  modeTeleportingActive: 0
 --- !u!1 &6616697951003645928
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,6 +1707,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6195526648355536999}
+  - component: {fileID: 9045807699616019570}
+  - component: {fileID: 3462217843702666827}
   m_Layer: 0
   m_Name: interaction_Gamepad
   m_TagString: Untagged
@@ -1810,12 +1728,67 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9203539275360315780}
-  - {fileID: 4657799579478754689}
-  - {fileID: 6323211897013407460}
   - {fileID: 2481492254749308811}
   m_Father: {fileID: 8928738529551039034}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9045807699616019570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616697951003645928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: cb6820065ca6b43fdaa32f2fff48380d,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: Joystick
+  m_DefaultActionMap: PilotControls
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &3462217843702666827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6616697951003645928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 95f52fba27f614fb1be947b23540f73c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 3076079762117982612}
+  moveSpeed: 1
+  turnSpeed: 45
+  pitchSpeed: -45
+  heightSpeed: 0.04
+  cameraTransformToControl: {fileID: 0}
+  playerBody: {fileID: 5131421326051842284}
+  avatarHead: {fileID: 4311645287905124984}
+  pitchAngle: 0
+  handInteraction: {fileID: 8100228094031343025}
+  modeMovingActive: 0
+  modeTurningActive: 0
+  modeGropingActive: 0
+  modeTeleportingActive: 0
 --- !u!1 &6673891989343794525
 GameObject:
   m_ObjectHideFlags: 0
@@ -1878,7 +1851,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6195526648355536999}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1375201305881115324
 MonoBehaviour:
@@ -2013,6 +1986,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5618768977665803606}
+  - component: {fileID: 2874790318603932022}
   - component: {fileID: 5749126029866097312}
   m_Layer: 0
   m_Name: RHInteractionOculus
@@ -2035,6 +2009,37 @@ Transform:
   m_Father: {fileID: 6076237778680395601}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2874790318603932022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8198385342960450749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: OculusRight
+  m_DefaultActionMap: PilotControlsXR
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &5749126029866097312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2047,19 +2052,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 331
-  teleportHomeKey: 333
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 345
   pointingModeAxisInvert: 1
-  grabbingModeAxis: 
-  grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &8314240857473376918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2267,6 +2269,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4497761616678717941}
+  - component: {fileID: 1513401562189986747}
   - component: {fileID: 3181784303578220650}
   m_Layer: 0
   m_Name: RHInteractionOpenVR
@@ -2289,6 +2292,37 @@ Transform:
   m_Father: {fileID: 6817198108956201397}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1513401562189986747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8988288283282028055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 1
+  m_DefaultControlScheme: ViveRight
+  m_DefaultActionMap: PilotControlsXR
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &3181784303578220650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2301,19 +2335,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportModeKey: 339
-  teleportHomeKey: 338
   teleporter: {fileID: 567467944409836578}
   teleportStrength: 10
-  pointingModeAxis: 
-  pointingModeKey: 345
   pointingModeAxisInvert: 0
-  grabbingModeAxis: 
-  grabbingModeKey: 335
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  inTeleportMode: 0
+  inPointingMode: 0
+  inGrabbingMode: 0
 --- !u!1 &8989305335192017463
 GameObject:
   m_ObjectHideFlags: 0
@@ -2748,12 +2779,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5360771115650806226}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &350448258107461840 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5672356542551957762, guid: 21dad1a70fa0b7842afecfcdd199c370,
-    type: 3}
-  m_PrefabInstance: {fileID: 5360771115650806226}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1354101091091999230 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6390593757070989356, guid: 21dad1a70fa0b7842afecfcdd199c370,
@@ -2766,6 +2791,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4349f8e1606e9da4db15950b49e4b979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &350448258107461840 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5672356542551957762, guid: 21dad1a70fa0b7842afecfcdd199c370,
+    type: 3}
+  m_PrefabInstance: {fileID: 5360771115650806226}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5974039310228296263
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2785,6 +2816,26 @@ PrefabInstance:
       objectReference: {fileID: 136980260111034875}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: gropeKeyName
+      value: /<Keyboard>/leftShift
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: gropeKeyPath
+      value: /<Keyboard>/leftShift
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchKeyName
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: touchKeyPath
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: touchCollider
       value: 
       objectReference: {fileID: 5401827870845855719}
@@ -2795,9 +2846,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
+      propertyPath: teleportKeyName
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportKeyPath
+      value: /<Mouse>/leftButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportHomeKeyName
+      value: /<Keyboard>/0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportHomeKeyPath
+      value: /<Keyboard>/digit0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
       propertyPath: gropingCursorTexture
       value: 
       objectReference: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87, type: 3}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportGropeKeyName
+      value: /<Keyboard>/leftControl
+      objectReference: {fileID: 0}
+    - target: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+        type: 3}
+      propertyPath: teleportGropeKeyPath
+      value: /<Keyboard>/leftCtrl
+      objectReference: {fileID: 0}
     - target: {fileID: 3185680175615349953, guid: 945598f36f3144eadbcad70ad090c161,
         type: 3}
       propertyPath: m_Name
@@ -2866,6 +2947,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5974039310228296263}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5072070730475040801 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1480435700447732326, guid: 945598f36f3144eadbcad70ad090c161,
+    type: 3}
+  m_PrefabInstance: {fileID: 5974039310228296263}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42f76ee2d00d543a5b061e7aaf01ceae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6292121695506410230
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3127,8 +3220,18 @@ PrefabInstance:
       objectReference: {fileID: 1961873935331442330}
     - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
         type: 3}
+      propertyPath: sensitivity
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
+        type: 3}
       propertyPath: teleportKey
       value: 337
+      objectReference: {fileID: 0}
+    - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
+        type: 3}
+      propertyPath: invertUpDown
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
         type: 3}
@@ -3337,6 +3440,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: debfa4c00c4204d1797a9fcf3d2eb024, type: 3}
+--- !u!114 &8100228094031343025 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 840470400484362812, guid: debfa4c00c4204d1797a9fcf3d2eb024,
+    type: 3}
+  m_PrefabInstance: {fileID: 8917190933766301581}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c6f3e6749b3e41a8afb317f27574a9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &9203539275360315780 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 322486613614284297, guid: debfa4c00c4204d1797a9fcf3d2eb024,
