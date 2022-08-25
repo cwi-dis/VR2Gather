@@ -57,6 +57,8 @@ namespace VRT.Pilots.Common
         public Transform playerBody;
         [Tooltip("The player head that tilts")]
         public Transform avatarHead;
+        [Tooltip("Current tilt angle of the head")]
+        public float pitchAngle = 0;
        
 
         [Tooltip("Object responsible for implementing touching and teleporting")]
@@ -192,17 +194,16 @@ namespace VRT.Pilots.Common
             }
             if (modeTurningActive)
             {
-                float xRotation = delta.x * pitchSpeed * Time.deltaTime;
-                float yRotation = delta.y * turnSpeed * Time.deltaTime;
+                float turnRotation = delta.x * turnSpeed * Time.deltaTime;
+                float pitchRotation = delta.y * pitchSpeed * Time.deltaTime;
 
+                pitchAngle = pitchAngle - pitchRotation;
+                pitchAngle = Mathf.Clamp(pitchAngle, -90f, 90f);
 
-                xRotation = Mathf.Clamp(xRotation, -45f, 45f);
+                Debug.Log($"InputSystemHandling: Turn({delta}) to turn={turnRotation}, pitch={pitchRotation} to {pitchAngle}");
 
-                Debug.Log($"InputSystemHandling: Turn({delta}) to x={xRotation}, y={yRotation}");
-
-                var oldRotation = cameraTransformToControl.localRotation.x;
-                cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
-                adjustBodyHead(xRotation, -yRotation);
+                cameraTransformToControl.localRotation = Quaternion.Euler(pitchAngle, 0f, 0f);
+                adjustBodyHead(turnRotation, -pitchRotation);
             }
             
         }
