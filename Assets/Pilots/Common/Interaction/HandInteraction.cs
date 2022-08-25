@@ -37,6 +37,22 @@ namespace VRT.Pilots.Common
 		public bool inPointingMode = false;
 		public bool inGrabbingMode = false;
 
+		[Tooltip("Hack: disable and re-enable PlayerInput at startup. Seems to be needed for Oculus and Vive")]
+		public bool needToCycle = true;
+
+		public void OnControlsChanged(PlayerInput pi)
+		{
+			Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
+			if (needToCycle)
+            {
+				if (pi.enabled)
+                {
+					Debug.Log($"xxxjack OnControlsChanged: switching off");
+					pi.enabled = false;
+				}
+              
+			}
+		}
 		void OnModeTeleporting(InputValue value)
 		{
 			bool onOff = value.Get<float>() > 0.5;
@@ -103,6 +119,17 @@ namespace VRT.Pilots.Common
 		{
 			if (_Player.IsLocalPlayer)
 			{
+				if (needToCycle)
+				{
+					PlayerInput pi = GetComponent<PlayerInput>();
+					if (!pi.enabled)
+                    {
+						Debug.Log($"xxxjack OnControlsChanged: switching on again");
+						needToCycle = false;
+						pi.enabled = true;
+					}
+
+				}
 				//Prevent floor clipping when input tracking provides glitched results
 				//This could on occasion cause released grabbables to go throught he floor
 				if (transform.position.y <= 0.05f)
