@@ -16,11 +16,7 @@ namespace VRT.Pilots.Common
     //
     public class HandInteractionGamepad : HandInteractionEmulation
     {
-        [Tooltip("Axis that controls 2D horizontal position of hand")]
-        public string leftRightAxisName = "Gamepad_Axis_1";
-        [Tooltip("Axis that controls 2D vertical position of hand")]
-        public string upDownAxisName = "Gamepad_Axis_2";
-        [Tooltip("Use inverted upDownAxis value")]
+        [Tooltip("Use inverted upDown value")]
         public bool invertUpDown = true;
         [Tooltip("How fast hand moves with axis values")]
         public float sensitivity = 0.1f;
@@ -32,11 +28,10 @@ namespace VRT.Pilots.Common
             xHand = yHand = 0f;
         }
 
-      
-        protected override Vector3 getRayDestination()
+        public override void InputModeUpdate(Vector2 magnitude)
         {
-            float x = Input.GetAxis(leftRightAxisName);
-            float y = Input.GetAxis(upDownAxisName);
+            float x = magnitude.x;
+            float y = magnitude.y;
             if (invertUpDown) y = -y;
             xHand += x * sensitivity;
             yHand += y * sensitivity;
@@ -44,6 +39,11 @@ namespace VRT.Pilots.Common
             if (xHand > 1) xHand = 1;
             if (yHand < -1) yHand = -1;
             if (yHand > 1) yHand = 1;
+            Debug.Log($"HandInteractionGamepad: update {magnitude} to {xHand},{yHand}");
+        }
+
+        protected override Vector3 getRayDestination()
+        {
             float xPos = (xHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelWidth / 2;
             float yPos = (yHand + 1.0f) * VRConfig.Instance.getMainCamera().pixelHeight / 2;
             return new Vector3(xPos, yPos, 0);
