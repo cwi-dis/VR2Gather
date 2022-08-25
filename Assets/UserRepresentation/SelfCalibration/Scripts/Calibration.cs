@@ -189,31 +189,20 @@ public class Calibration : MonoBehaviour {
         }
     }
 
-    public void OnBackwardForward(InputValue value)
+    public void OnMove(InputValue value)
     {
-        var delta = value.Get<float>();
-        if (delta == 0) return;
+        var delta = value.Get<Vector2>();
+        if (delta.x == 0 && delta.y == 0) return;
         Debug.Log($"Calibration: OnBackwardForward: {delta}");
 
         if (state == State.Translation)
         {
-            cameraReference.transform.localPosition += new Vector3(0, 0, delta) * _translationSlightStep;
+            cameraReference.transform.localPosition += new Vector3(delta.x, 0, delta.y) * _translationSlightStep;
         }
-    }
-
-    public void OnLeftRight(InputValue value)
-    {
-        var delta = value.Get<float>();
-        if (delta == 0) return;
-        Debug.Log($"Calibration: OnLeftRight: {delta}");
-        if (state == State.Translation)
-        {
-            cameraReference.transform.localPosition += new Vector3(delta, 0, 0) * _translationSlightStep;
-
-        } else
+        else
         if (state == State.Rotation)
         {
-            cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * delta);
+            cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * delta.x);
         }
     }
 
@@ -227,7 +216,6 @@ public class Calibration : MonoBehaviour {
             cameraReference.transform.localPosition += new Vector3(0, delta, 0) * _translationSlightStep;
         } 
     }
-
 
     void ChangeModeUI()
     {
