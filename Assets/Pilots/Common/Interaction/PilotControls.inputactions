@@ -16,9 +16,9 @@
                 },
                 {
                     "name": "HeightDelta",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false

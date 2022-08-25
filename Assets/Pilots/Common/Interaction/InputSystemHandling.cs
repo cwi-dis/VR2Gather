@@ -43,7 +43,13 @@ namespace VRT.Pilots.Common
         [Tooltip("The character controller for the thing to be moved")]
         public CharacterController controller;
         [Tooltip("How fast moves go")]
-        public float moveSpeed = 1f;
+        public float moveSpeed = 0.1f;
+        [Tooltip("How fast the viewpoint turns")]
+        public float turnSpeed = 1;
+        [Tooltip("How fast the viewpoint turns up/down")]
+        public float pitchSpeed = 1;
+        [Tooltip("How fast the viewpoint moves up/down")]
+        public float heightSpeed = 1; // 5 Centimeters
 
         [Tooltip("The camera attached to the head that turns (Usually found automatically)")]
         public Transform cameraTransformToControl = null;
@@ -51,10 +57,7 @@ namespace VRT.Pilots.Common
         public Transform playerBody;
         [Tooltip("The player head that tilts")]
         public Transform avatarHead;
-        [Tooltip("How fast the viewpoint turns")]
-        public float xySensitivity = 1;
-        [Tooltip("How fast the viewpoint moves up/down")]
-        public float heightSensitivity = 1; // 5 Centimeters
+       
 
         [Tooltip("Object responsible for implementing touching and teleporting")]
         public HandInteractionEmulation handInteraction;
@@ -63,6 +66,9 @@ namespace VRT.Pilots.Common
         public bool modeTurningActive = false;
         public bool modeGropingActive = false;
         public bool modeTeleportingActive = false;
+
+        private Vector2 delta = new Vector2(0,0);
+        private float deltaHeight = 0;
 
         private void Awake()
         {
@@ -79,32 +85,9 @@ namespace VRT.Pilots.Common
 
         public void OnDelta(InputValue value)
         {
-            Vector2 delta = value.Get<Vector2>();
-            if (modeMovingActive)
-            {
-
-                Vector3 move = transform.right * delta.x + transform.forward * delta.y;
-                move = move * moveSpeed * Time.deltaTime;
-                Debug.Log($"InputSystemHandling: move {move}");
-                controller.Move(move);
-            }
-            if (modeTurningActive)
-            {
-                float xRotation = delta.x * xySensitivity * Time.deltaTime;
-                float yRotation = delta.y * xySensitivity * Time.deltaTime;
-
-                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-                Debug.Log($"OnDelta: Turn({delta}) to x={xRotation}, y={yRotation}");
-
-                cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
-                adjustBodyHead(xRotation, -yRotation);
-            }
-            if (modeGropingActive)
-            {
-                handInteraction?.InputModeUpdate(delta);
-            }
-            if (modeTeleportingActive)
+            delta = value.Get<Vector2>();
+          
+            if (modeGropingActive || modeTeleportingActive)
             {
                 handInteraction?.InputModeUpdate(delta);
             }
@@ -112,20 +95,16 @@ namespace VRT.Pilots.Common
 
         public void OnHeightDelta(InputValue value)
         {
-            float deltaHeight = value.Get<float>();
-
-            if (modeTurningActive)
+            deltaHeight = value.Get<float>();
+            Debug.Log($"xxxjack InputSystemHandling: deltaHeight={deltaHeight}");
+            if ((modeMovingActive || modeTurningActive) && deltaHeight != 0)
             {
-                // Note by Jack: spectators and no-representation users should be able to move their viewpoint up and down.
-                // with the current implementation all users have this ability, which may or may not be a good idea.
-                if (deltaHeight != 0)
-                {
-                    // Do Camera movement for up/down.
-                    cameraTransformToControl.localPosition = new Vector3(
-                        cameraTransformToControl.localPosition.x,
-                        cameraTransformToControl.localPosition.y + deltaHeight * heightSensitivity,
-                        cameraTransformToControl.localPosition.z);
-                }
+                // Do Camera movement for up/down.
+                Debug.Log($"InputSystemHandling: deltaHeight {deltaHeight}");
+                cameraTransformToControl.localPosition = new Vector3(
+                    cameraTransformToControl.localPosition.x,
+                    cameraTransformToControl.localPosition.y + deltaHeight * heightSpeed,
+                    cameraTransformToControl.localPosition.z);
             }
         }
 
@@ -152,6 +131,8 @@ namespace VRT.Pilots.Common
         {
             bool onOff = value.Get<float>() != 0;
             modeMovingActive = onOff;
+            delta = new Vector2(0, 0);
+            deltaHeight = 0;
             Debug.Log($"InputSystemHandling: ModeMoving({onOff})");
             if (modeMovingActive)
             {
@@ -164,6 +145,8 @@ namespace VRT.Pilots.Common
         {
             bool onOff = value.Get<float>() != 0;
             modeTurningActive = onOff;
+            delta = new Vector2(0, 0);
+            deltaHeight = 0;
             Debug.Log($"InputSystemHandling: ModeTurning({onOff})");
             if (modeTurningActive)
             {
@@ -199,7 +182,29 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
+            if (modeMovingActive)
+            {
 
+                Vector3 move = transform.right * delta.x * Time.deltaTime + transform.forward * delta.y * Time.deltaTime;
+                move = move * moveSpeed;
+                Debug.Log($"InputSystemHandling: move {move}");
+                controller.Move(move);
+            }
+            if (modeTurningActive)
+            {
+                float xRotation = delta.x * pitchSpeed * Time.deltaTime;
+                float yRotation = delta.y * turnSpeed * Time.deltaTime;
+
+
+                xRotation = Mathf.Clamp(xRotation, -45f, 45f);
+
+                Debug.Log($"InputSystemHandling: Turn({delta}) to x={xRotation}, y={yRotation}");
+
+                var oldRotation = cameraTransformToControl.localRotation.x;
+                cameraTransformToControl.localRotation = cameraTransformToControl.localRotation * Quaternion.Euler(xRotation, 0f, 0f);
+                adjustBodyHead(xRotation, -yRotation);
+            }
+            
         }
 
         protected void adjustBodyHead(float hAngle, float vAngle)

@@ -1686,11 +1686,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
   moveSpeed: 1
+  turnSpeed: 10
+  pitchSpeed: 0
+  heightSpeed: 1
   cameraTransformToControl: {fileID: 0}
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
-  xySensitivity: 1
-  heightSensitivity: 1
   handInteraction: {fileID: 5072070730475040801}
   modeMovingActive: 0
   modeTurningActive: 0
@@ -1775,11 +1776,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
   moveSpeed: 1
+  turnSpeed: 90
+  pitchSpeed: 0
+  heightSpeed: 0.04
   cameraTransformToControl: {fileID: 0}
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
-  xySensitivity: 1
-  heightSensitivity: 1
   handInteraction: {fileID: 8100228094031343025}
   modeMovingActive: 0
   modeTurningActive: 0
