@@ -5,9 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
-#endif
 using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
@@ -628,13 +626,8 @@ public class OrchestratorLogin : MonoBehaviour {
         Config._AutoStart config = Config.Instance.AutoStart;
         if (config == null) return;
         if (
-#if ENABLE_INPUT_SYSTEM
                 Keyboard.current.shiftKey.isPressed
 
-#else
-                Input.GetKey(KeyCode.LeftShift)
-
-#endif
             ) return;
         if (state == State.Play && autoState == AutoState.DidPlay)
         {
@@ -1022,11 +1015,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
     void TabShortcut() {
         if(
-#if ENABLE_INPUT_SYSTEM
         Keyboard.current.tabKey.wasPressedThisFrame
-#else
-        Input.GetKeyDown(KeyCode.Tab)
-#endif
             ) { 
         try {
                 Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
@@ -1292,13 +1281,8 @@ public class OrchestratorLogin : MonoBehaviour {
         if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
         {
             if (
-#if ENABLE_INPUT_SYSTEM
                 Keyboard.current.shiftKey.isPressed
 
-#else
-                Input.GetKey(KeyCode.LeftShift)
-
-#endif
                 ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
             autoState = AutoState.DidLogIn;
@@ -1423,13 +1407,8 @@ public class OrchestratorLogin : MonoBehaviour {
             )
         {
             if (
-#if ENABLE_INPUT_SYSTEM
                 Keyboard.current.shiftKey.isPressed
 
-#else
-                Input.GetKey(KeyCode.LeftShift)
-
-#endif
                 ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
             autoState = AutoState.DidPlay;

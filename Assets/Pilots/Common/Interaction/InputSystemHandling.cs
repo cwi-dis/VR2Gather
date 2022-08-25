@@ -58,11 +58,7 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Object responsible for implementing touching and teleporting")]
         public HandInteractionEmulation handInteraction;
-        [Tooltip("xxxjack Teleport destination")]
-        public Vector2 teleportPosition = new Vector2(0, 0);
-        [Tooltip("xxxjack Grope destination")]
-        public Vector2 gropePosition = new Vector2(0, 0);
-
+        
         public bool modeMovingActive = false;
         public bool modeTurningActive = false;
         public bool modeGropingActive = false;
@@ -181,7 +177,6 @@ namespace VRT.Pilots.Common
             bool onOff = value.Get<float>() != 0;
             modeGropingActive = onOff;
             Debug.Log($"InputSystemHandling: ModeGroping({onOff})");
-            gropePosition = new Vector2(0, 0);
             if (modeGropingActive)
             {
                 modeTurningActive = modeMovingActive = modeTeleportingActive = false;
@@ -194,7 +189,6 @@ namespace VRT.Pilots.Common
             bool onOff = value.Get<float>() != 0;
             modeTeleportingActive = onOff;
             Debug.Log($"ModeTeleporting({onOff})");
-            teleportPosition = new Vector2(0, 0);
             if (modeTeleportingActive)
             {
                 modeTurningActive = modeMovingActive = modeGropingActive = false;

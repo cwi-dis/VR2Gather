@@ -115,67 +115,13 @@ namespace VRT.Pilots.Common
 				//
 
 
-#if !ENABLE_INPUT_SYSTEM
 
-				if (pointingModeKey != KeyCode.None)
-				{
-					inPointingMode = Input.GetKey(pointingModeKey);
-				}
-				if (pointingModeAxis != "")
-				{
-					inPointingMode = Input.GetAxis(pointingModeAxis) >= 0.5f;
-				}
-				if (pointingModeAxisInvert) inPointingMode = !inPointingMode;
-
-				if (pointingModeKey != KeyCode.None)
-				{
-					inGrabbingMode = Input.GetKey(grabbingModeKey);
-				}
-				if (grabbingModeAxis != "")
-				{
-					inGrabbingMode = Input.GetAxis(grabbingModeAxis) >= 0.5f;
-				}
-				if (grabbingModeAxisInvert) inGrabbingMode = !inGrabbingMode;
-#endif
-
-#if ENABLE_INPUT_SYSTEM
 				if (inTeleportMode)
                 {
 					var touchTransform = TouchCollider.transform;
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
 				}
-#else
-				if (teleportModeKey != KeyCode.None && teleporter != null)
-				{
-					inTeleportMode = teleportModeKey != KeyCode.None && Input.GetKey(teleportModeKey);
-					if (inTeleportMode)
-					{
-						teleporter.SetActive(true);
-						var touchTransform = TouchCollider.transform;
-						teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
-						// See if user wants to go to the home position
-						if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
-						{
-							teleporter.TeleportHome();
-                        }
-					}
-					else if (teleporter.teleporterActive)
-					{
-						//
-						// Teleport key was released. See if we should teleport.
-						//
-						if (teleporter.canTeleport())
-						{
-							teleporter.Teleport();
-						}
-						teleporter.SetActive(false);
-					}
-				}
-#endif
-#if !ENABLE_INPUT_SYSTEM
-				UpdateHandState();
 
-#endif
 			}
 		}
 

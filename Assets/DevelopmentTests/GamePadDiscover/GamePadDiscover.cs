@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.XR;
-#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-#endif
 
 //
 // Note to self (or others):
@@ -37,7 +35,6 @@ public class GamePadDiscover : MonoBehaviour
         Debug.Log($"XRSettings.enabled={XRSettings.enabled}");
         Debug.Log($"XRSettings.isDeviceActive={XRSettings.isDeviceActive}");
         Debug.Log($"XRSettings.loadedDeviceName={XRSettings.loadedDeviceName}");
-#if ENABLE_INPUT_SYSTEM
         foreach(var d in InputSystem.devices)
         {
             Debug.Log($"InputSystem device: {d.path}");
@@ -46,19 +43,11 @@ public class GamePadDiscover : MonoBehaviour
         if (Mouse.current != null) Debug.Log($"Mouse: {Mouse.current.path}");
         if (Gamepad.current != null) Debug.Log($"Gamepad: {Gamepad.current.path}");
         if (Joystick.current != null) Debug.Log($"Joystick: {Joystick.current.path}");
-#else
-        var names = Input.GetJoystickNames();
-        foreach(var name in names)
-        {
-            Debug.Log($"Joystick or gamepad name: {name}");
-        }
-#endif
     }
 
     // Update is called once per frame
     void Update()
     {
-#if ENABLE_INPUT_SYSTEM
         foreach(Key keyCode in Enum.GetValues(typeof(Key)))
         {
             try
@@ -114,27 +103,5 @@ public class GamePadDiscover : MonoBehaviour
                     }
                 }
         }
-#else
-        foreach(var a in axes)
-        {
-            if (a.axisName != "")
-            {
-                float newValue = Input.GetAxis(a.axisName);
-                if (newValue != a.axisValue)
-                {
-                    //Debug.Log($"Axis {a.axisName} = {newValue}");
-                    a.axisValue = newValue;
-                }
-            }
-        }
-     
-        foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode)))
-        {
-            if (Input.GetKeyDown(kcode))
-            {
-                Debug.Log("KeyCode down: " + kcode);
-            }
-        }
-#endif
     }
 }
