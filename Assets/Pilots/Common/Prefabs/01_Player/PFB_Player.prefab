@@ -298,7 +298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6076237778680395601
 Transform:
   m_ObjectHideFlags: 0
@@ -1101,7 +1101,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needCyclePlayerInput: 1
+  needDevice: OculusTouchControllerLeft
 --- !u!1 &4450405697229691927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1521,7 +1521,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needCyclePlayerInput: 1
+  needDevice: leftBlabla
 --- !u!1 &5704200592656136347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1622,7 +1622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &388935389573275692
 Transform:
   m_ObjectHideFlags: 0
@@ -1713,7 +1713,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6195526648355536999
 Transform:
   m_ObjectHideFlags: 0
@@ -1802,7 +1802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6817198108956201397
 Transform:
   m_ObjectHideFlags: 0
@@ -2060,7 +2060,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needCyclePlayerInput: 1
+  needDevice: OculusTouchControllerRight
 --- !u!1 &8314240857473376918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2344,7 +2344,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needCyclePlayerInput: 1
+  needDevice: rightBlabla
 --- !u!1 &8989305335192017463
 GameObject:
   m_ObjectHideFlags: 0

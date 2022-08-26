@@ -37,21 +37,13 @@ namespace VRT.Pilots.Common
 		public bool inPointingMode = false;
 		public bool inGrabbingMode = false;
 
-		[Tooltip("Hack: disable and re-enable PlayerInput at startup. Seems to be needed for Oculus and Vive")]
-		public bool needToCycle = true;
+		[Tooltip("Hack: must have this input device, otherwise we try and force it")]
+		public string needDevice;
 
 		public void OnControlsChanged(PlayerInput pi)
 		{
 			Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
-			if (needToCycle)
-            {
-				if (pi.enabled)
-                {
-					Debug.Log($"xxxjack OnControlsChanged: switching off");
-					pi.enabled = false;
-				}
-              
-			}
+			EnsureDevice();
 		}
 		void OnModeTeleporting(InputValue value)
 		{
@@ -112,24 +104,47 @@ namespace VRT.Pilots.Common
 
 			GrabCollider.SetActive(false);
 			TouchCollider.SetActive(false);
-
+			EnsureDevice();
 		}
 
+		void EnsureDevice()
+        {
+			if (needDevice != null && needDevice != "")
+            {
+				PlayerInput pi = GetComponent<PlayerInput>();
+				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {pi.devices.Count}");
+
+				bool hasDevice;
+				hasDevice = false;
+				foreach (var d in pi.devices)
+				{
+					Debug.Log($"EnsureDevice: used name={d.name} path={d.path}");
+					if (d.name == needDevice) hasDevice = true;
+				}
+				if (hasDevice)
+				{
+					Debug.Log($"EnsureDevice: We apparently already use {needDevice}");
+				}
+				UnityEngine.InputSystem.InputDevice dev = null;
+				foreach (var d in InputSystem.devices)
+                {
+					Debug.Log($"EnsureDevice: available name={d.name} path={d.path}");
+					if (d.name == needDevice) dev = d;
+                }
+				if (dev == null)
+                {
+					Debug.Log($"EnsureDevice: {needDevice} does not exist");
+					Invoke("EnsureDevice", 2);
+					return;
+                }
+				pi.SwitchCurrentControlScheme(dev);		
+			}
+        }
 		void Update()
 		{
 			if (_Player.IsLocalPlayer)
 			{
-				if (needToCycle)
-				{
-					PlayerInput pi = GetComponent<PlayerInput>();
-					if (!pi.enabled)
-                    {
-						Debug.Log($"xxxjack OnControlsChanged: switching on again");
-						needToCycle = false;
-						pi.enabled = true;
-					}
-
-				}
+				
 				//Prevent floor clipping when input tracking provides glitched results
 				//This could on occasion cause released grabbables to go throught he floor
 				if (transform.position.y <= 0.05f)
