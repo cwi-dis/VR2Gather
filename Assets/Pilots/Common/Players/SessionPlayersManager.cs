@@ -105,7 +105,7 @@ namespace VRT.Pilots.Common
 			InstantiatePlayers();
 		}
 
-		public void InstantiatePlayers()
+        public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
 

@@ -1,3 +1,6 @@
 [submodule "Assets/PilotsExternal/mediaScape"]
 	path = Assets/PilotsExternal/mediaScape
 	url = ../VRTApp-mediaScape.git
+[submodule "Assets/ExternalAssets/VR2G-besthttp"]
+	path = Assets/ExternalAssets/VR2G-besthttp
+	url = ../VR2G-besthttp.git

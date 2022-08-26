@@ -1,0 +1,468 @@
+{
+    "name": "CalibrationControls",
+    "maps": [
+        {
+            "name": "CalibrationControls",
+            "id": "f0c81075-aa2c-458f-b4e2-d8cbc5fe367d",
+            "actions": [
+                {
+                    "name": "YesDone",
+                    "type": "Button",
+                    "id": "acacf152-7245-4c79-a3d0-0768b4b0a391",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "NoBack",
+                    "type": "Button",
+                    "id": "db31cee6-f9e7-4170-abc5-8a9be83e9501",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Translate",
+                    "type": "Button",
+                    "id": "1484ae47-433e-434b-9caa-03ad7fee3f43",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate",
+                    "type": "Button",
+                    "id": "afda85df-ef0f-4b29-a25f-7dc93edf45c8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Reset",
+                    "type": "Button",
+                    "id": "50a9440d-ceee-4bd7-899f-87484cc5f399",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Move",
+                    "type": "PassThrough",
+                    "id": "8623578d-2d67-4039-9a88-2805624df8de",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DownUp",
+                    "type": "PassThrough",
+                    "id": "4636a15c-9ad5-4150-a2e1-fc9c3c5842a1",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "18a38093-9a1d-44f4-bbd6-9d1f22000965",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "YesDone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a269f7e4-0a62-4ee4-811c-302a856edd88",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "YesDone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7ca2a65c-23dd-43db-a668-4ba4f2efb6b1",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/triggerpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "YesDone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dc357b1d-0b38-4d57-ad19-012573d0cf43",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YesDone",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9ebbf6ba-7be2-4563-b0dd-b10e64457557",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "NoBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8199de45-7810-4f3e-9fce-a553274d1033",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "NoBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e05661f-6115-43e3-b668-0389fcd5a03d",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/triggerpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "NoBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d7bcb94-c544-4c77-accf-b812355196cd",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "NoBack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df7c9c68-dbf5-46f9-9b44-98620dcb5765",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b680ee3-e5de-4dfb-a099-6522bfb13069",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b095b7f4-91f3-46ba-88ab-fac50bf0087c",
+                    "path": "<ViveWand>{RightHand}/primary",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4cf0448e-e179-454a-a271-1f6d240913cc",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f691a40e-53dc-4834-a1e9-3060ec2afa6b",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dd817916-e90c-4b07-a2f4-d1b450aee783",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8a916a5-c4e5-4001-ab9f-d8901cc6fb5e",
+                    "path": "<ViveWand>{LeftHand}/primary",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "739d40fc-98be-449a-836d-5afa3d432447",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "99a903d8-59b7-41b9-9754-ed3f2a0fc9ce",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b1a8c79-cb19-4e4d-a1fa-76ce2a780c69",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/grippressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e367b20c-3f58-4382-aa62-55ab6686c7ba",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "894f93dc-92d0-4805-846d-efa0724a4a70",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "fbbbb3ad-9c51-4931-aa7a-d8dacd42d40c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "e40f16f8-7699-4658-a7ab-0a2d487e08c0",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "9edab2af-9e69-416c-bbe2-64addf508fe7",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "73151602-1a14-4940-845f-bdb3d75e8ef2",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/trackpadpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "8c62ac74-dcd8-4c5e-aa74-b2f7be751274",
+                    "path": "<ViveWand>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "324f06c1-52b3-491d-bdbb-5748232b4f38",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79e8a9e8-32c7-4e97-8d0b-6fc219d5f049",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.01)",
+                    "groups": "KeyboardMouse",
+                    "action": "DownUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "cbe930b3-bb8d-49cc-8313-f4ea4770b9db",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DownUp",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "cedca479-799e-4c74-a2c0-5b34787c7467",
+                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/trackpadpressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "DownUp",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "fc706ca7-2d74-4906-b1a2-479584a73784",
+                    "path": "<ViveWand>{LeftHand}/trackpad/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "DownUp",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "f7c7ed0a-7c5c-4dfc-be9d-eaaaf8645119",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "DownUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "KeyboardMouse",
+            "bindingGroup": "KeyboardMouse",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<Mouse>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Joystick",
+            "bindingGroup": "Joystick",
+            "devices": [
+                {
+                    "devicePath": "<Joystick>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Oculus",
+            "bindingGroup": "Oculus",
+            "devices": [
+                {
+                    "devicePath": "<OculusTouchController>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Vive",
+            "bindingGroup": "Vive",
+            "devices": [
+                {
+                    "devicePath": "<ViveWand>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

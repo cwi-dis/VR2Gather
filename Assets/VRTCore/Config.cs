@@ -63,8 +63,8 @@ namespace VRT.Core
             // - automatically start a session when enough people have joined
             public bool autoLogin = false;
             public string sessionName = "";
-            public int sessionScenario = -1;
-            public int sessionTransportProtocol = -1;
+            public string sessionScenario = "";
+            public string sessionTransportProtocol = "";
             public bool sessionUncompressed = false;
             public bool sessionUncompressedAudio = false;
             public bool autoCreate = false;
