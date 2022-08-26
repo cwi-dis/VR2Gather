@@ -71,6 +71,10 @@ public class LoginController : PilotController {
                 Config.Instance.Voice.Codec = msg[5];
             }
             string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+            if (sceneName == null)
+            {
+                throw new System.Exception($"Selected scenario \"{sceneName}\" not implemented in this player");
+            }
             if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
         }
         else if (msg[0] == MessageType.READY) {

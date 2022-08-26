@@ -1,4 +1,6 @@
 Library/
+Logs/
+UserSettings/
 Temp/
 obj/
 dlls/
