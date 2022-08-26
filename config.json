@@ -75,7 +75,7 @@
         "configFilename": "./cameraconfig.xml"
       },
       "SynthReaderConfig": {
-        "nPoints": 160000
+        "nPoints": 16000
       },
       "ProxyReaderConfig": {
         "localIP": "",
