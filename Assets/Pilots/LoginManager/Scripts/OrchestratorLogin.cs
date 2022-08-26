@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
@@ -624,7 +625,10 @@ public class OrchestratorLogin : MonoBehaviour {
     {
         Config._AutoStart config = Config.Instance.AutoStart;
         if (config == null) return;
-        if (Input.GetKey(KeyCode.LeftShift)) return;
+        if (
+                Keyboard.current.shiftKey.isPressed
+
+            ) return;
         if (state == State.Play && autoState == AutoState.DidPlay)
         {
             if (config.autoCreate)
@@ -1010,8 +1014,10 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     void TabShortcut() {
-        if (Input.GetKeyDown(KeyCode.Tab)) {
-            try {
+        if(
+        Keyboard.current.tabKey.wasPressedThisFrame
+            ) { 
+        try {
                 Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
                 if (current != null) {
                     Selectable next = current.FindSelectableOnDown();
@@ -1274,7 +1280,10 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
         if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
         {
-            if (Input.GetKey(KeyCode.LeftShift)) return;
+            if (
+                Keyboard.current.shiftKey.isPressed
+
+                ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
             autoState = AutoState.DidLogIn;
             Login();
@@ -1397,7 +1406,10 @@ public class OrchestratorLogin : MonoBehaviour {
             && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
             )
         {
-            if (Input.GetKey(KeyCode.LeftShift)) return;
+            if (
+                Keyboard.current.shiftKey.isPressed
+
+                ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
             autoState = AutoState.DidPlay;
             StateButton(State.Play);

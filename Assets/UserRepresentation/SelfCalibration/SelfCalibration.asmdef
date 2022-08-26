@@ -5,7 +5,7 @@
         "Orchestrator",
         "Pilots",
         "PointClouds",
-        "TVM"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

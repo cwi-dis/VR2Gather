@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using VRT.Core;
 using VRT.Teleporter;
 
@@ -19,16 +21,6 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("Maximum distance of touchable objects")]
         public float maxDistance = Mathf.Infinity;
-        [Tooltip("Key to press to start looking for touchable items")]
-        public KeyCode gropeKey = KeyCode.LeftShift;
-        [Tooltip("Key to press to touch an item")]
-        public KeyCode touchKey = KeyCode.Mouse0;
-        [Tooltip("Key to press to start looking for teleportable locations")]
-        public KeyCode teleportGropeKey = KeyCode.LeftControl;
-        [Tooltip("Key to press to teleport (with teleportGropeKey also pressed)")]
-        public KeyCode teleportKey = KeyCode.Mouse0;
-        [Tooltip("Key to press to teleport home (with teleportGropeKey also pressed)")]
-        public KeyCode teleportHomeKey = KeyCode.Alpha0;
         [Tooltip("Teleporter to use")]
         public BaseTeleporter teleporter;
         [Tooltip("Where the hitpoint is in 3D space")]
@@ -41,8 +33,10 @@ namespace VRT.Pilots.Common
         public Transform handHomeTransform;
         [Tooltip("Collider that actually presses the button")]
         public GameObject touchCollider = null;
-        protected bool isGroping;
-        protected bool isTouchable;
+        protected bool isTeleporting = false;
+        protected bool isGroping = false;
+        protected bool isTouchable = false;
+        protected bool didTouch = false;
         protected Animator _Animator = null;
         private LineRenderer _Line;
 
@@ -50,6 +44,7 @@ namespace VRT.Pilots.Common
         const float handGropingDelta = 0.1f;  // Groping hand position is 20cm before touching point
         const float handTouchingDelta = 0f; // Touching hand position is 10cm before touching point
 
+        
         void Start()
         {
             _Animator = hand.GetComponentInChildren<Animator>();
@@ -66,96 +61,141 @@ namespace VRT.Pilots.Common
             stopGroping();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void InputModeChange(bool groping, bool teleporting)
         {
-            // First check teleporter, if enabled
-            if (teleporter != null && teleportGropeKey != KeyCode.None)
+            Debug.Log($"HandInteractionEmulation: groping={groping}, teleporting={teleporting}");
+            if (groping)
             {
-                bool isTeleportingNow = Input.GetKey(teleportGropeKey);
-                teleporter.SetActive(isTeleportingNow);
-                if (teleporter.teleporterActive)
+                if (!isGroping)
                 {
-                    Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
-                    // We have the ray starting at our "hand" going in the direction
-                    // of our gaze.
-                    Vector3 pos = transform.position;
-                    Vector3 dir = teleportRay.direction;
-                    teleporter.CustomUpdatePath(pos, dir, 10f);
-                    if (Input.GetKeyDown(teleportKey))
-                    {
-                        if (teleporter.canTeleport())
-                        {
-                            teleporter.Teleport();
-                        }
-                        teleporter.SetActive(false);
-                    }
-                    if (teleportHomeKey != KeyCode.None && Input.GetKeyDown(teleportHomeKey))
-                    {
-                        teleporter.TeleportHome();
-                    }
-                    return;
-                }
-            }
-            bool isGropingingNow = Input.GetKey(gropeKey);
-            if (isGroping != isGropingingNow)
-            {
-                isGroping = isGropingingNow;
-                if (isGroping)
-                {
+                    // Start Grope
                     touchCollider.SetActive(false);
                     isTouchable = false;
+                    didTouch = false;
                     startGroping();
                 }
-                else
+            } else
+            {
+                if (isGroping)
                 {
+                    // Stop groping
                     stopGroping();
                     touchCollider.SetActive(false);
                 }
             }
-            if (!isGroping) return;
+            isGroping = groping;
+            
+            isTeleporting = teleporting;
+            teleporter.SetActive(isTeleporting);
 
-            //
-            // Check whether we are hitting any elegible object.
-            // We look both for the first hit (where we show the hand) and
-            // the first touchable hit.
-            //
-            int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
-            int layerMask = LayerMask.GetMask("TouchableObject");
-            Ray ray = getRay();
-            Debug.DrawRay(ray.origin, ray.direction, Color.green);
-            RaycastHit firstHit = new RaycastHit();
-            RaycastHit correctHit = new RaycastHit();
-            Vector3 hitPoint;
-            float handDistance = maxDistance;
-            bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance, firstLayerMask);
-            bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
-            if (gotFirstHit)
+        }
+
+        virtual public void InputModeUpdate(Vector2 magnitude)
+        {
+            Debug.Log($"HandInteractionEmulation: update {magnitude} ignored");
+            if (isGroping)
             {
-                handDistance = firstHit.distance;
-                hitPoint = firstHit.point;
-            } else
-            {
-                hitPoint = ray.GetPoint(maxDistance);
+
             }
-            isTouchable = gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance;
-            //
-            // If hand is touching something check whether the left mouse is clicked and perform the action.
-            // Note that when isTouching is set the hand is moved so the TouchCollider (or grabcollider, when implemented)
-            // should do the touch magic.
-            //
-            bool isTouching = isTouchable && Input.GetKey(touchKey);
-            showGrope(hitPoint, isTouchable, isTouching);
-            if (isTouching)
+            if (isTeleporting)
             {
-                touchCollider.transform.position = hitPoint;
+
             }
-            touchCollider.SetActive(isTouching);
+        }
+
+        public void InputModeTeleportGo()
+        {
+            if (isTeleporting)
+            {
+                Debug.Log("HandInteractionEmulation: Teleport go");
+                if (teleporter.canTeleport())
+                {
+                    teleporter.Teleport();
+                }
+                teleporter.SetActive(false);
+                isTeleporting = false;
+            }
+        }
+
+        public void InputModeTeleportHome()
+        {
+            if (isTeleporting)
+            {
+                Debug.Log("HandInteractionEmulation: Teleport home");
+                teleporter.TeleportHome();
+                teleporter.SetActive(false);
+                isTeleporting = false;
+            }
+        }
+
+        public void InputModeGropingTouch()
+        {
+            if (isGroping)
+            {
+                Debug.Log("HandInteractionEmulation: groping touch");
+                didTouch = true;
+            }
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            // First check teleporter, if enabled
+            if (teleporter != null && teleporter.teleporterActive)
+            {
+                Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+                // We have the ray starting at our "hand" going in the direction
+                // of our gaze.
+                Vector3 pos = transform.position;
+                Vector3 dir = teleportRay.direction;
+                teleporter.CustomUpdatePath(pos, dir, 10f);
+            }
+            if (isGroping)
+            {
+                //
+                // Check whether we are hitting any elegible object.
+                // We look both for the first hit (where we show the hand) and
+                // the first touchable hit.
+                //
+                int firstLayerMask = Physics.DefaultRaycastLayers & ~LayerMask.GetMask("TouchCollider", "GrabCollider");
+                int layerMask = LayerMask.GetMask("TouchableObject");
+                Ray ray = getRay();
+                Debug.DrawRay(ray.origin, ray.direction, Color.green);
+                RaycastHit firstHit = new RaycastHit();
+                RaycastHit correctHit = new RaycastHit();
+                Vector3 hitPoint;
+                float handDistance = maxDistance;
+                bool gotFirstHit = Physics.Raycast(ray, out firstHit, maxDistance, firstLayerMask);
+                bool gotCorrectHit = Physics.Raycast(ray, out correctHit, maxDistance, layerMask);
+                if (gotFirstHit)
+                {
+                    handDistance = firstHit.distance;
+                    hitPoint = firstHit.point;
+                }
+                else
+                {
+                    hitPoint = ray.GetPoint(maxDistance);
+                }
+                isTouchable = gotFirstHit && gotCorrectHit && firstHit.distance >= correctHit.distance;
+                //
+                // If hand is touching something check whether the left mouse is clicked and perform the action.
+                // Note that when isTouching is set the hand is moved so the TouchCollider (or grabcollider, when implemented)
+                // should do the touch magic.
+                //
+                bool isTouchingNow = isTouchable && didTouch;
+                showGrope(hitPoint, isTouchable, isTouchingNow);
+                if (isTouchingNow)
+                {
+                    touchCollider.transform.position = hitPoint;
+                }
+                touchCollider.SetActive(isTouchingNow);
+            }
+            didTouch = false;
+
         }
 
         protected virtual void startGroping()
         {
-            hideCursor();
         }
 
         protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
@@ -211,22 +251,6 @@ namespace VRT.Pilots.Common
             {
                 _Line.enabled = false;
             }
-            showCursor();
-        }
-
-        private void hideHand()
-        {
-            hand.SetActive(false);
-        }
-
-        protected virtual void showCursor()
-        {
-            Cursor.visible = true;
-        }
-
-        protected virtual void hideCursor()
-        {
-            Cursor.visible = false;
         }
 
         protected void UpdateAnimation(string state)
@@ -238,7 +262,8 @@ namespace VRT.Pilots.Common
 
         protected virtual Vector3 getRayDestination()
         {
-            return Input.mousePosition;
+            var rv = Mouse.current.position.ReadValue();
+            return rv;
         }
 
         protected virtual Ray getRay()
