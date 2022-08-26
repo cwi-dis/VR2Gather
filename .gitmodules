@@ -1,3 +1,6 @@
 [submodule "Assets/PilotsExternal/CWI_cake"]
 	path = Assets/PilotsExternal/CWI_cake
 	url = ../VRTApp-CWI_cake.git
+[submodule "Assets/ExternalAssets/VR2G-besthttp"]
+	path = Assets/ExternalAssets/VR2G-besthttp
+	url = ../VR2G-besthttp.git

@@ -132,7 +132,7 @@ namespace VRT.Pilots.Pilot0
 
         #endregion
 
-#if UNITY_STANDALONE_WIN
+#if UNUSED_UNITY_STANDALONE_WIN
         void OnGUI()
         {
             if (GUI.Button(new Rect(Screen.width / 2, 5, 70, 20), "Open Log"))

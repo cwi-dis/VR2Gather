@@ -11,9 +11,15 @@ namespace VRT.Core
     {
         private string currentOutputDevice = null;
         private string currentInputDevice = null;
+        private static bool loaded = false;
         private bool initializing = false;
-        private bool initialized = false;
+        private bool _initialized = false;
+
+        [Tooltip("Always run this scene without VR (for LoginManager scene, primarily")]
+        public bool disableVRforThisScene = false;
        
+        public bool initialized {  get { return _initialized;  } }
+
         static VRConfig _Instance;
         public static VRConfig Instance
         {
@@ -21,7 +27,7 @@ namespace VRT.Core
             {
                 if (_Instance == null)
                 {
-                    _Instance = new VRConfig();
+                    Debug.LogWarning("VRConfig: attempting to get Instance before it was created in the scene.");
                 }
                 return _Instance;
             }
@@ -29,15 +35,26 @@ namespace VRT.Core
 
         private void Awake()
         {
-            if (_Instance != null && _Instance != this)
+            if (_Instance == this)
             {
-                Debug.LogWarning("VRConfig: duplicate instance, destroying this (new) instance");
-                Destroy(gameObject);
+                Debug.LogWarning("VRConfig: Awake called a second time");
+                return;
+            }
+            if (_Instance != null)
+            {
+                Debug.Log("VRConfig: new instance, deleting old one");
+                _Instance = null;
                 return;
             }
             _Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            
             _InitVR();
+        }
+
+        private void OnDestroy()
+        {
+            XRSettings.enabled = false;
+            _Instance = null;
         }
 
         public static void InitVR()
@@ -47,27 +64,59 @@ namespace VRT.Core
 
         public void _InitVR()
         {
-            if (initialized || initializing) return;
-            Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
-            foreach(var d in XRSettings.supportedDevices)
+            if (_initialized || initializing) return;
+            if (!loaded)
             {
-                Debug.Log($"VRConfig: device={d}");
+                StartCoroutine(_LoadVR());
+                initializing = true;
             }
-            StartCoroutine(_LoadVR());
-            initializing = true;
+            else
+            {
+                _InitVRDevices();
+            }
         }
 
         private IEnumerator _LoadVR()
         {
-            string[] devices = preferredDevices();
-            XRSettings.LoadDeviceByName(devices);
-            yield return null;
+            if (!loaded)
+            {
+                Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
+                foreach (var d in XRSettings.supportedDevices)
+                {
+                    Debug.Log($"VRConfig: device={d}");
+                }
+                string[] devices = preferredDevices();
+                Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
+                XRSettings.LoadDeviceByName(devices);
+                yield return null;
+           }
+            loaded = true;
+            Debug.Log($"VRConfig: loaded VR driver \"{XRSettings.loadedDeviceName}\"");
+            _InitVRDevices();
+        }
+
+        private void _InitVRDevices()
+        {
+            if (disableVRforThisScene)
+            {
+                Debug.Log("VRConfig: VR disabled for this scene");
+                currentInputDevice = "emulation";
+                currentOutputDevice = "";
+                XRSettings.enabled = false;
+                _initialized = true;
+                return;
+            }
             currentOutputDevice = XRSettings.loadedDeviceName;
             if (currentOutputDevice != "")
             {
                 XRSettings.enabled = true;
+                Debug.Log($"VRConfig: VR enabled for this scene, device {currentOutputDevice}");
             }
-            yield return null;
+            else
+            {
+                Debug.Log($"VRConfig: VR could be enabled for this scene, but no VR driver loaded");
+            }
+
             if (!XRSettings.isDeviceActive && XRSettings.enabled) {
                 Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
                 currentOutputDevice = "";
@@ -107,7 +156,7 @@ namespace VRT.Core
             {
                 initLookingGlass();
             }
-            initialized = true;
+            _initialized = true;
         }
 
         public string[] preferredDevices()
@@ -121,18 +170,18 @@ namespace VRT.Core
 
         public string outputDeviceName()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+                Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
             return currentOutputDevice;
         }
 
         public bool useHMD()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: outputDeviceName() called too early");
+                Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
             bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
             return rv;
@@ -145,36 +194,36 @@ namespace VRT.Core
 
         public bool useControllerEmulation()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerEmulation() called too early");
+                Debug.LogError("VRConfig: useControllerEmulation() called too early");
             }
             return currentInputDevice == "emulation";
         }
 
         public bool useControllerGamepad()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerGamepad() called too early");
+                Debug.LogError("VRConfig: useControllerGamepad() called too early");
             }
             return currentInputDevice == "gamepad";
         }
 
         public bool useControllerOpenVR()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerOpenVR() called too early");
+                Debug.LogError("VRConfig: useControllerOpenVR() called too early");
             }
             return currentInputDevice == "OpenVR";
         }
 
         public bool useControllerOculus()
         {
-            if (!initialized)
+            if (!_initialized)
             {
-                Debug.LogWarning("VRConfig: useControllerOculus() called too early");
+                Debug.LogError("VRConfig: useControllerOculus() called too early");
             }
             return currentInputDevice == "Oculus";
         }

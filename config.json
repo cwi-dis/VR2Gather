@@ -16,9 +16,9 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "test",
-  	"sessionScenario" : 0,
-  	"sessionTransportProtocol" : 1,
+  	"sessionName" : "",
+  	"sessionScenario" : "",
+  	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
@@ -34,7 +34,7 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : ["Oculus", "OpenVR", ""],
+	"_preferredDevices" : [""],
 	"preferredController" : ""
   },
   "Macintosh": {
@@ -75,7 +75,7 @@
         "configFilename": "./cameraconfig.xml"
       },
       "SynthReaderConfig": {
-        "nPoints": 160000
+        "nPoints": 16000
       },
       "ProxyReaderConfig": {
         "localIP": "",

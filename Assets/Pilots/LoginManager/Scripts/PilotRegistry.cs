@@ -18,7 +18,7 @@ public class PilotRegistry
 			case "Development":
                 return "CWI_cake";
             default:
-                throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
+                return null;
         }
     }
 
