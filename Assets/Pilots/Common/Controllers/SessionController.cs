@@ -6,11 +6,11 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 using VRT.Core;
 
-namespace VRT.Pilots.Pilot0
+namespace VRT.Pilots.Common
 {
-    public class OrchestratorPilot0 : MonoBehaviour
+    public class SessionController : MonoBehaviour
     {
-        public static OrchestratorPilot0 Instance { get; private set; }
+        public static SessionController Instance { get; private set; }
 
        
         // Start is called before the first frame update
