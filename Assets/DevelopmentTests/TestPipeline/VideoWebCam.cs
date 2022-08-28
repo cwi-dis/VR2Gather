@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VRT.Core;
 using VRT.Video;
 using VRT.Transport.SocketIO;
@@ -82,7 +83,7 @@ public class VideoWebCam : MonoBehaviour {
         preparer.Synchronize();
     }
     void LateUpdate() {
-        if (Input.GetKeyDown(KeyCode.V)){
+        if (Keyboard.current.vKey.wasPressedThisFrame){
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 

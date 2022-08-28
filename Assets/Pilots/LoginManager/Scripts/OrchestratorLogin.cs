@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
@@ -28,15 +29,18 @@ public class OrchestratorLogin : MonoBehaviour {
     #region GUI Components
 
     public bool developerOptions = true;
-    public bool usePresenter = false;
-    private int kindAudio = 2; // Set Dash as default
-    private int kindPresenter = 0;
+    private int kindAudio = 0; // Set SocketIO as default
+    const int kindPresenter = 0;
 
     [HideInInspector] public bool isMaster = false;
     [HideInInspector] public string userID = "";
 
     private State state = State.Offline;
     private AutoState autoState = AutoState.DidNone;
+
+    // Because we re-order the scenarios in the menu (to get usable ones near the top) we need to also keep
+    // a list in order of the menu.
+    private List<string> scenarioIDs;
 
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
@@ -304,9 +308,10 @@ public class OrchestratorLogin : MonoBehaviour {
 
     private void UpdateSessions(Transform container, Dropdown dd) {
         RemoveComponentsFromList(container.transform);
-        Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session element) {
-            AddTextComponentOnContent(container.transform, element.GetGuiRepresentation());
-        });
+        foreach(var session in OrchestratorController.Instance.AvailableSessions)
+        {
+            AddTextComponentOnContent(container.transform, session.GetGuiRepresentation());
+        }
 
         string selectedOption = "";
         // store selected option in dropdown
@@ -315,9 +320,10 @@ public class OrchestratorLogin : MonoBehaviour {
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        Array.ForEach(OrchestratorController.Instance.AvailableSessions, delegate (Session sess) {
+        foreach(var sess in OrchestratorController.Instance.AvailableSessions)
+        {
             options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
-        });
+        }
         dd.AddOptions(options);
         // re-assign selected option in dropdown
         if (dd.options.Count > 0) { 
@@ -332,9 +338,28 @@ public class OrchestratorLogin : MonoBehaviour {
         // update the dropdown
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        Array.ForEach(OrchestratorController.Instance.AvailableScenarios, delegate (Scenario scenario) {
-            options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-        });
+        // Add scenarios we have implemented first, others afterwards after a blank line
+        scenarioIDs = new List<string>();
+        foreach(var scenario in OrchestratorController.Instance.AvailableScenarios)
+        {
+
+            if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
+            {
+                options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+                scenarioIDs.Add(scenario.scenarioId);
+            }
+        }
+        options.Add(new Dropdown.OptionData(""));
+        scenarioIDs.Add("");
+        foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
+        {
+
+            if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
+            {
+                options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+                scenarioIDs.Add(scenario.scenarioId);
+            }
+        }
         dd.AddOptions(options);
     }
 
@@ -350,28 +375,28 @@ public class OrchestratorLogin : MonoBehaviour {
                     enumName = "No Representation";
                     break;
                 case "__2D__":
-                    enumName = "2D Video";
+                    enumName = "Video Avatar";
                     break;
                 case "__AVATAR__":
-                    enumName = "3D Avatar";
+                    enumName = "Avatar";
                     break;
                 case "__PCC_CWI_":
-                    enumName = "Simple PointCloud (RealSense)";
+                    enumName = "PointCloud (RealSense)";
                     break;
                 case "__PCC_CWIK4A_":
-                    enumName = "Simple PointCloud (Kinect)";
+                    enumName = "PointCloud (Kinect)";
                     break;
                 case "__PCC_PROXY__":
-                    enumName = "Simple PointCloud (5G phone proxy)";
+                    enumName = "PointCloud (5G phone)";
                     break;
                 case "__PCC_SYNTH__":
-                    enumName = "Synthetic PointCloud (development option)";
+                    enumName = "Synthetic PointCloud";
                     break;
                 case "__PCC_PRERECORDED__":
-                    enumName = "Prerecorded PointCloud (development option)";
+                    enumName = "Prerecorded PointCloud";
                     break;
                 case "__SPECTATOR__":
-                    enumName = "Spectator";
+                    enumName = "Voice-only Spectator";
                     break;
                 case "__CAMERAMAN__":
                     enumName = "Cameraman";
@@ -423,17 +448,17 @@ public class OrchestratorLogin : MonoBehaviour {
                 break;
             case UserRepresentationType.__2D__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                userRepresentationLobbyText.text = "2D VIDEO";
+                userRepresentationLobbyText.text = "VIDEO";
                 break;
             case UserRepresentationType.__AVATAR__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                userRepresentationLobbyText.text = "3D AVATAR";
+                userRepresentationLobbyText.text = "AVATAR";
                 break;
             case UserRepresentationType.__PCC_CWI_:
             case UserRepresentationType.__PCC_CWIK4A_:
             case UserRepresentationType.__PCC_PROXY__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                userRepresentationLobbyText.text = "SIMPLE PC";
+                userRepresentationLobbyText.text = "POINTCLOUD";
                 break;
             case UserRepresentationType.__PCC_SYNTH__:
                 userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
@@ -460,31 +485,31 @@ public class OrchestratorLogin : MonoBehaviour {
         // left change the icon 'userRepresentationLobbyImage'
         switch (_representationType) {
             case UserRepresentationType.__NONE__:
-                selfRepresentationDescription.text = "No visual representation, and no audio communication. The user can only listen.";
+                selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
                 break;
             case UserRepresentationType.__2D__:
-                selfRepresentationDescription.text = "2D video window from your camera, as in typical conferencing services.";
+                selfRepresentationDescription.text = "Avatar with video window from your camera.";
                 break;
             case UserRepresentationType.__AVATAR__:
                 selfRepresentationDescription.text = "3D Synthetic Avatar.";
                 break;
             case UserRepresentationType.__PCC_CWI_:
-                selfRepresentationDescription.text = "Realistic user representation, using a single RealSense RGB-D camera, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with RealSense cameras.";
                 break;
             case UserRepresentationType.__PCC_CWIK4A_:
-                selfRepresentationDescription.text = "Realistic user representation, using a single Azure Kinect RGB-D camera, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with Azure Kinect cameras.";
                 break;
             case UserRepresentationType.__PCC_PROXY__:
-                selfRepresentationDescription.text = "Realistic user representation, streamed from 5G telephone, as a PointCloud.";
+                selfRepresentationDescription.text = "Realistic point cloud user representation, captured with 5G phone camera.";
                 break;
             case UserRepresentationType.__PCC_SYNTH__:
-                selfRepresentationDescription.text = "3D Synthetic PointCloud.";
+                selfRepresentationDescription.text = "3D Synthetic point cloud avatar.";
                 break;
             case UserRepresentationType.__PCC_PRERECORDED__:
-                selfRepresentationDescription.text = "3D Pre-recorded PointCloud.";
+                selfRepresentationDescription.text = "3D Pre-recorded point cloud.";
                 break;
             case UserRepresentationType.__SPECTATOR__:
-                selfRepresentationDescription.text = "No visual representation, but audio communication.";
+                selfRepresentationDescription.text = "No visual representation, only audio communication.";
                 break;
             case UserRepresentationType.__CAMERAMAN__:
                 selfRepresentationDescription.text = "Local video recorder.";
@@ -608,7 +633,10 @@ public class OrchestratorLogin : MonoBehaviour {
     {
         Config._AutoStart config = Config.Instance.AutoStart;
         if (config == null) return;
-        if (Input.GetKey(KeyCode.LeftShift)) return;
+        if (
+                Keyboard.current.shiftKey.isPressed
+
+            ) return;
         if (state == State.Play && autoState == AutoState.DidPlay)
         {
             if (config.autoCreate)
@@ -631,32 +659,58 @@ public class OrchestratorLogin : MonoBehaviour {
             sessionNameIF.text = config.sessionName;
             uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
             uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
-            if (config.sessionTransportProtocol >= 0)
+            if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                 // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                 // on and then simulating a button callback works.
                 switch(config.sessionTransportProtocol)
                 {
-                    case 1:
+                    case "socketio":
                         socketProtocolToggle.isOn = true;
                         break;
-                    case 2:
+                    case "dash":
                         dashProtocolToggle.isOn = true;
                         break;
-                    case 3:
+                    case "tcp":
                         tcpProtocolToggle.isOn = true;
+                        break;
+                    default:
+                        Debug.LogError($"Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
                         break;
                 }
                 SetAudio(config.sessionTransportProtocol);
+            } else {
+                // No default set. Use socketio.
+                socketProtocolToggle.isOn = true;
+                SetAudio("socketio");
             }
             autoState = AutoState.DidPartialCreation;
         }
         if (state == State.Create && autoState == AutoState.DidPartialCreation && scenarioIdDrop.options.Count > 0) {
-            if (config.sessionScenario >= 0)
+            if (config.sessionScenario != null && config.sessionScenario != "")
             {
                 Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionScenario={config.sessionScenario}");
-                scenarioIdDrop.value = config.sessionScenario;
+                bool found = false;
+                int idx = 0;
+                foreach(var entry in scenarioIdDrop.options)
+                {
+                    if (entry.text.Contains(config.sessionScenario))
+                    {
+                        if (found)
+                        {
+                            Debug.LogError($"Multiple scenarios match {config.sessionScenario}");
+                        }
+                        found = true;
+                        scenarioIdDrop.value = idx;
+                    }
+                    idx++;
+                }
+                if (!found)
+                {
+                    Debug.LogError($"No scenarios match {config.sessionScenario}");
+
+                }
             }
             if (config.autoCreate)
             {
@@ -968,8 +1022,10 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     void TabShortcut() {
-        if (Input.GetKeyDown(KeyCode.Tab)) {
-            try {
+        if(
+        Keyboard.current.tabKey.wasPressedThisFrame
+            ) { 
+        try {
                 Selectable current = system.currentSelectedGameObject.GetComponent<Selectable>();
                 if (current != null) {
                     Selectable next = current.FindSelectableOnDown();
@@ -1093,9 +1149,9 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    public void SetAudio(int kind) {
-        switch (kind) {
-            case 1: // Socket
+    public void SetAudio(string proto) {
+        switch (proto) {
+            case "socketio": // Socket
                 if (socketProtocolToggle.isOn) {
                     // Set AudioType
                     Config.Instance.protocolType = Config.ProtocolType.SocketIO;
@@ -1104,7 +1160,7 @@ public class OrchestratorLogin : MonoBehaviour {
                     tcpProtocolToggle.isOn = false;
                 }
                 break;
-            case 2: // Dash
+            case "dash": // Dash
                 if (dashProtocolToggle.isOn)
                 {
                     // Set AudioType
@@ -1114,7 +1170,7 @@ public class OrchestratorLogin : MonoBehaviour {
                     tcpProtocolToggle.isOn = false;
                 }
                 break;
-            case 3: // Dash
+            case "tcp": // Dash
                 if (tcpProtocolToggle.isOn)
                 {
                     // Set AudioType
@@ -1232,7 +1288,10 @@ public class OrchestratorLogin : MonoBehaviour {
         PanelChanger();
         if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
         {
-            if (Input.GetKey(KeyCode.LeftShift)) return;
+            if (
+                Keyboard.current.shiftKey.isPressed
+
+                ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
             autoState = AutoState.DidLogIn;
             Login();
@@ -1355,7 +1414,10 @@ public class OrchestratorLogin : MonoBehaviour {
             && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
             )
         {
-            if (Input.GetKey(KeyCode.LeftShift)) return;
+            if (
+                Keyboard.current.shiftKey.isPressed
+
+                ) return;
             Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
             autoState = AutoState.DidPlay;
             StateButton(State.Play);
@@ -1414,7 +1476,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void AddSession() {
-        OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioId,
+        OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
                                                     sessionNameIF.text,
                                                     sessionDescriptionIF.text);
     }
@@ -1772,7 +1834,7 @@ public class OrchestratorLogin : MonoBehaviour {
 
 #endregion
 
-#if UNITY_STANDALONE_WIN
+#if NO_LONGER_USED_UNITY_STANDALONE_WIN
     void OnGUI() {
         if (GUI.Button(new Rect(Screen.width / 2, 5, 70, 20), "Open Log")) {
             var log_path = System.IO.Path.Combine(System.IO.Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "Player.log");

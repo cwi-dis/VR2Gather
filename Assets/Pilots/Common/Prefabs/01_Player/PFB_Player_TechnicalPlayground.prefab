@@ -206,6 +206,11 @@ PrefabInstance:
       propertyPath: teleporter
       value: 
       objectReference: {fileID: 8175363235545183003}
+    - target: {fileID: 6671536968401267422, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: inhibitKeyPaths.Array.data[0]
+      value: /<Keyboard>/leftShift
+      objectReference: {fileID: 0}
     - target: {fileID: 6690124169422001050, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: bodyTransforn
