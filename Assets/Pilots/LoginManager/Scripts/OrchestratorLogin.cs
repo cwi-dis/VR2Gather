@@ -38,6 +38,10 @@ public class OrchestratorLogin : MonoBehaviour {
     private State state = State.Offline;
     private AutoState autoState = AutoState.DidNone;
 
+    // Because we re-order the scenarios in the menu (to get usable ones near the top) we need to also keep
+    // a list in order of the menu.
+    private List<string> scenarioIDs;
+
     [SerializeField] private bool autoRetrieveOrchestratorDataOnConnect = true;
 
     [Header("Info")]
@@ -335,21 +339,25 @@ public class OrchestratorLogin : MonoBehaviour {
         dd.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
         // Add scenarios we have implemented first, others afterwards after a blank line
+        scenarioIDs = new List<string>();
         foreach(var scenario in OrchestratorController.Instance.AvailableScenarios)
         {
 
             if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
             {
                 options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+                scenarioIDs.Add(scenario.scenarioId);
             }
         }
         options.Add(new Dropdown.OptionData(""));
+        scenarioIDs.Add("");
         foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
         {
 
             if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
             {
                 options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
+                scenarioIDs.Add(scenario.scenarioId);
             }
         }
         dd.AddOptions(options);
@@ -1468,7 +1476,7 @@ public class OrchestratorLogin : MonoBehaviour {
     }
 
     private void AddSession() {
-        OrchestratorController.Instance.AddSession(OrchestratorController.Instance.AvailableScenarios[scenarioIdDrop.value].scenarioId,
+        OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
                                                     sessionNameIF.text,
                                                     sessionDescriptionIF.text);
     }
