@@ -6,20 +6,13 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 using VRT.Core;
 
-namespace VRT.Pilots.Pilot0
+namespace VRT.Pilots.Common
 {
-    public class OrchestratorPilot0 : MonoBehaviour
+    public class SessionController : MonoBehaviour
     {
-        public static OrchestratorPilot0 Instance { get; private set; }
+        public static SessionController Instance { get; private set; }
 
-        #region GUI components
-
-        [SerializeField] private Button exitButton = null;
-
-        #endregion
-
-        #region Unity
-
+       
         // Start is called before the first frame update
         void Start()
         {
@@ -27,9 +20,7 @@ namespace VRT.Pilots.Pilot0
             {
                 Instance = this;
             }
-            // Buttons listeners
-            exitButton.onClick.AddListener(delegate { LeaveButton(); });
-
+       
             InitialiseControllerEvents();
         }
 
@@ -37,19 +28,6 @@ namespace VRT.Pilots.Pilot0
         {
             TerminateControllerEvents();
         }
-
-        #endregion
-
-        #region Buttons
-
-        public void LeaveButton()
-        {
-            LeaveSession();
-        }
-
-        #endregion
-
-        #region Events listeners
 
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
@@ -75,12 +53,7 @@ namespace VRT.Pilots.Pilot0
             OrchestratorController.Instance.UnregisterMessageForwarder();
         }
 
-        #endregion
-
-        #region Commands
-
-        #region Sessions
-
+   
         private void OnGetSessionInfoHandler(Session session)
         {
             if (session != null)
@@ -98,7 +71,7 @@ namespace VRT.Pilots.Pilot0
 
         private void OnLeaveSessionHandler()
         {
-            Debug.Log("[OrchestratorPilot0][OnLeaveSessionHandler] Session Leaved");
+            Debug.Log("OrchestratorPilot0: left session, loading LoginManager scene");
             SceneManager.LoadScene("LoginManager");
         }
 
@@ -106,7 +79,7 @@ namespace VRT.Pilots.Pilot0
         {
             if (!string.IsNullOrEmpty(userID))
             {
-                Debug.Log("[OrchestratorPilot0][OnUserJoinedSessionHandler] User joined: " + userID);
+                Debug.Log($"OrchestratorPilot0: user joined session: {userID}");
             }
         }
 
@@ -114,34 +87,15 @@ namespace VRT.Pilots.Pilot0
         {
             if (!string.IsNullOrEmpty(userID))
             {
-                Debug.Log("[OrchestratorPilot0][OnUserLeftSessionHandler] User left: " + userID);
+                Debug.Log($"OrchestratorPilot0: user left session: {userID}");
             }
         }
 
-        #endregion
-
-        #region Errors
-
+  
         private void OnErrorHandler(ResponseStatus status)
         {
-            Debug.Log("[OrchestratorPilot0][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+            Debug.Log($"OrchestratorPilot0: OnErrorHandler: {status.Error}, Error message: {status.Message}");
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
-
-        #endregion
-
-        #endregion
-
-#if UNUSED_UNITY_STANDALONE_WIN
-        void OnGUI()
-        {
-            if (GUI.Button(new Rect(Screen.width / 2, 5, 70, 20), "Open Log"))
-            {
-                var log_path = System.IO.Path.Combine(System.IO.Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "Player.log");
-                Debug.Log(log_path);
-                Application.OpenURL(log_path);
-            }
-        }
-#endif
     }
 }
