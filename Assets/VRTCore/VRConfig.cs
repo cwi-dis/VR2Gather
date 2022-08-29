@@ -54,7 +54,7 @@ namespace VRT.Core
 
         private void OnDestroy()
         {
-            XRSettings.enabled = false;
+            _DeInitVR();
             _Instance = null;
         }
 
@@ -77,6 +77,15 @@ namespace VRT.Core
             }
         }
 
+        public void _DeInitVR()
+        {
+            if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                Debug.Log("VRConfig: Deinitializing VR");
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
+                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            }
+        }
         private IEnumerator _LoadVR()
         {
             if (!loaded)
@@ -91,6 +100,11 @@ namespace VRT.Core
                 Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
                 XRSettings.LoadDeviceByName(devices);
 #else
+                Debug.Log($"VRConfig: {XRGeneralSettings.Instance.Manager.activeLoaders.Count} active loaders");
+                foreach(var ldr in XRGeneralSettings.Instance.Manager.activeLoaders)
+                {
+                    Debug.Log($"VRConfig: active loader {ldr.name}");
+                }
 				Debug.Log("VRConfig: Initializing XR Loader...");
 				yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
 #endif
