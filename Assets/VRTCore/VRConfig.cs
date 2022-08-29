@@ -120,28 +120,35 @@ namespace VRT.Core
                 Debug.Log("VRConfig: No XR plugin could be loaded. Disabling XR.");
                 currentOutputDevice = "";
             }
+            else if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                Debug.LogError($"VRConfig: initialization incomplete for activeLoader {XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name}");
+                currentOutputDevice = "";
+            }
             else
             {
-                Debug.Log("VRConfig: Starting XR...");
+                Debug.Log($"VRConfig: Starting XR... {XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name}");
                 XRGeneralSettings.Instance.Manager.StartSubsystems();
-	            currentOutputDevice = XRSettings.loadedDeviceName;
+                // Find name of HMD subsystem. xxxjack there must be a better way...
+                string loaderName = XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name;
+                if (loaderName == "OculusLoader")
+                {
+                    currentOutputDevice = "Oculus";
+                }
+                else
+                if (loaderName == "OpenXRLoader")
+                {
+                    currentOutputDevice = "Vive";
+                }
+                else
+                {
+                    Debug.LogError($"VRConfig: unknown XR Loader {loaderName}. Disabling XR.");
+                    currentOutputDevice = "";
+                    XRSettings.enabled = false;
+                }
             }
 #endif
-            if (currentOutputDevice != "")
-            {
-                XRSettings.enabled = true;
-                Debug.Log($"VRConfig: VR enabled for this scene, device {currentOutputDevice}");
-            }
-            else
-            {
-                Debug.Log($"VRConfig: VR could be enabled for this scene, but no VR driver loaded");
-            }
 
-            if (!XRSettings.isDeviceActive && XRSettings.enabled) {
-                Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
-                currentOutputDevice = "";
-                XRSettings.enabled = false;
-            }
             if (Config.Instance.VR.preferredController != "")
             {
                 currentInputDevice = Config.Instance.VR.preferredController;
