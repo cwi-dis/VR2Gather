@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 67666cd371ed9e94fac99fca7647c6e1,
       type: 2}
