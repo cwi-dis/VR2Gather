@@ -83,7 +83,7 @@ namespace VRT.Core
             {
                 Debug.Log("VRConfig: Deinitializing VR");
                 XRGeneralSettings.Instance.Manager.StopSubsystems();
-                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+                //XRGeneralSettings.Instance.Manager.DeinitializeLoader();
             }
         }
         private IEnumerator _LoadVR()
@@ -100,15 +100,23 @@ namespace VRT.Core
                 Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
                 XRSettings.LoadDeviceByName(devices);
 #else
-                Debug.Log($"VRConfig: {XRGeneralSettings.Instance.Manager.activeLoaders.Count} active loaders");
+                Debug.Log($"VRConfig: {XRGeneralSettings.Instance.Manager.activeLoaders.Count} available loaders");
                 foreach(var ldr in XRGeneralSettings.Instance.Manager.activeLoaders)
                 {
-                    Debug.Log($"VRConfig: active loader {ldr.name}");
+                    Debug.Log($"VRConfig: available loader: {ldr.name}");
                 }
-				Debug.Log("VRConfig: Initializing XR Loader...");
-				yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+                if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+                {
+                    Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded");
+                    yield return null;
+                }
+                else
+                {
+                    Debug.Log("VRConfig: Initializing XR Loader...");
+                    yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+                }
 #endif
-                yield return null;
+                // xxxjack needed? yield return null;
            }
             loaded = true;
             Debug.Log($"VRConfig: loaded VR driver \"{XRSettings.loadedDeviceName}\"");
@@ -122,7 +130,7 @@ namespace VRT.Core
                 Debug.Log("VRConfig: VR disabled for this scene");
                 currentInputDevice = "emulation";
                 currentOutputDevice = "";
-                XRSettings.enabled = false;
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
                 _initialized = true;
                 return;
             }
@@ -158,7 +166,7 @@ namespace VRT.Core
                 {
                     Debug.LogError($"VRConfig: unknown XR Loader {loaderName}. Disabling XR.");
                     currentOutputDevice = "";
-                    XRSettings.enabled = false;
+                    XRGeneralSettings.Instance.Manager.StopSubsystems();
                 }
             }
 #endif
@@ -224,7 +232,7 @@ namespace VRT.Core
             {
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
-            bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
+            bool rv = XRGeneralSettings.Instance.Manager.isInitializationComplete && XRSettings.isDeviceActive;
             return rv;
         }
 
