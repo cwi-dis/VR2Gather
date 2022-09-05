@@ -9,17 +9,15 @@ TagManager:
   - Spectator
   - Plants
   - Teleportable
-  - SensorButton
-  - SensorLight
-  - Card
-  - CardDeck
-  - NumberOfPlayers
   - ColorLight
   - Tree
   - Snow
   - Ground
   - ColorWall
   - TVScreen
+  - Bus
+  - Bench
+  - Cafe
   layers:
   - Default
   - TransparentFX
