@@ -19,6 +19,8 @@ TagManager:
   - Bench
   - Cafe
   - Flower
+  - Picture
+  - MailBox
   layers:
   - Default
   - TransparentFX
