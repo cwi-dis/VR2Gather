@@ -18,6 +18,7 @@ TagManager:
   - Bus
   - Bench
   - Cafe
+  - Flower
   layers:
   - Default
   - TransparentFX
