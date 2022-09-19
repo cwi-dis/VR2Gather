@@ -26,7 +26,6 @@ namespace VRT.Pilots.Common
 		private bool _isKinematic = false;
 		private bool _useGravity = true;
 		private bool _IsSimulating = false;
-		private int newGrabbableID = 0;
 
 		private HandController _CurrentGrabber;
 
@@ -36,11 +35,11 @@ namespace VRT.Pilots.Common
 		}
 		public void OnEnable()
 		{	
-			// Any grabbable object needs a unique networkID, otherwise it will cause problems. If this are generated on the fly, we need a counter=newGrabbableID
+			// Any grabbable object needs a unique networkID, otherwise it will cause problems. If this are generated on the fly, we need a counter so we will use the number of grabbable objects +1
 			if (NetworkId == null || NetworkId == "")
 			{
-				NetworkId = "nid_0000_" + newGrabbableID;
-				newGrabbableID += 1;
+				Grabbable[] g_list = FindObjectsOfType<Grabbable>();
+				NetworkId = "nid_0000_" + (g_list.Length +1);
 			}
 
 			// we now register the object to the grabbableObjectManager
