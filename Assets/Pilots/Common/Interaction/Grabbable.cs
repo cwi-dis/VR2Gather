@@ -31,14 +31,18 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
-
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
-
 		}
 		public void OnEnable()
-		{
-			GrabbableObjectManager.RegisterGrabbable(this);
+		{	
+			// Any grabbable object needs a unique networkID, otherwise it will cause problems. This was the case for the pictures generated via code. so this if statement will fix it
+			if (NetworkId == null || NetworkId == "")
+			{
+				NetworkId = "nid_"+ Random.Range(0.0f,9999999999.0f) + "_" + Time.frameCount;
+			}
 
+			// we now register the object to the grabbableObjectManager
+			GrabbableObjectManager.RegisterGrabbable(this);
 			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
 
@@ -88,13 +92,13 @@ namespace VRT.Pilots.Common
 					_CurrentGrabber.HeldGrabbable = null;
 				}
 
-                if (Rigidbody != null)
-                {
-                    Rigidbody.isKinematic = true;
-                    Rigidbody.useGravity = false;
-                }
+				if (Rigidbody != null)
+				{
+					Rigidbody.isKinematic = true;
+					Rigidbody.useGravity = false;
+				}
 
-                transform.parent = handController.transform;
+				transform.parent = handController.transform;
 
 				if (UseOffsets)
 				{
@@ -124,9 +128,6 @@ namespace VRT.Pilots.Common
 
 				if (Rigidbody != null)
 				{
-					//Rigidbody.isKinematic = false;
-					//Rigidbody.useGravity = true;
-
 					//we return the original state
 					Rigidbody.isKinematic = _isKinematic;
 					Rigidbody.useGravity = _useGravity;
