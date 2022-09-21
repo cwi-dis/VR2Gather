@@ -8,9 +8,9 @@
   "memoryDamping": 1.2999999523162842,
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
-  "pilot3NavigationLogs": false,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
+  "pilot3NavigationLogs": true,
+  "statsInterval": 0.033,
+  "statsOutputFile":  "stats-{host}-{ts}.txt",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
@@ -84,7 +84,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.007,
+      "voxelSize": 0.005,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [
