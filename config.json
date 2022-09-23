@@ -17,7 +17,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "traction",
-  	"sessionScenario" : 2,
+  	"sessionScenario" : 5,
   	"sessionTransportProtocol" : 1,
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
