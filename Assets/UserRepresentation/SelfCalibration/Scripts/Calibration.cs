@@ -31,6 +31,17 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
+    [Header("Input Actions")]
+    public PlayerInput MyPlayerInput;
+    public string YesActionName;
+    public InputAction YesAction;
+    public string NoActionName;
+    public InputAction NoAction;
+    public string DoneActionName;
+    public InputAction DoneAction;
+    public string BackActionName;
+    public InputAction BackAction;
+
     public static void ResetFactorySettings()
     {
         PlayerPrefs.SetFloat("pcs_pos_x", 0);
@@ -52,6 +63,22 @@ public class Calibration : MonoBehaviour {
 
         // Initialize the UI screens
         ChangeModeUI();
+    }
+
+    public void Update()
+    {
+        if (MyPlayerInput == null)
+        {
+            MyPlayerInput = GetComponent<PlayerInput>();
+            YesAction = MyPlayerInput.actions[YesActionName];
+            NoAction = MyPlayerInput.actions[NoActionName];
+            DoneAction = MyPlayerInput.actions[DoneActionName];
+            BackAction = MyPlayerInput.actions[BackActionName];
+        }
+        if (YesAction.triggered) Debug.Log("xxxjack YesAction triggered");
+        if (NoAction.triggered) Debug.Log("xxxjack NoAction triggered");
+        if (DoneAction.triggered) Debug.Log("xxxjack DoneAction triggered");
+        if (BackAction.triggered) Debug.Log("xxxjack BackAction triggered");
     }
 
     private void InitializePosition()
