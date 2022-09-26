@@ -102,7 +102,7 @@
                 {
                     "name": "",
                     "id": "a269f7e4-0a62-4ee4-811c-302a856edd88",
-                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -157,7 +157,7 @@
                 {
                     "name": "",
                     "id": "8199de45-7810-4f3e-9fce-a553274d1033",
-                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -353,6 +353,17 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "",
+                    "id": "fc198ade-e87e-4d71-b7b7-5fb111f4eb7d",
+                    "path": "<OculusTouchController>{LeftHand}/primarybutton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "One Modifier",
                     "id": "894f93dc-92d0-4805-846d-efa0724a4a70",
                     "path": "OneModifier",
@@ -497,6 +508,17 @@
                 },
                 {
                     "name": "",
+                    "id": "ef55314a-ccf1-4a9d-a2d0-5dfae90835e2",
+                    "path": "<OculusTouchController>{RightHand}/thumbstick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "79e8a9e8-32c7-4e97-8d0b-6fc219d5f049",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
@@ -596,6 +618,17 @@
                 },
                 {
                     "name": "",
+                    "id": "b6e28eb4-a99c-4afb-9841-8096587a6370",
+                    "path": "<OculusTouchController>{LeftHand}/thumbstick/Y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Height",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3c0afe9a-dfaa-4f99-bf04-be413abd3777",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -608,7 +641,7 @@
                 {
                     "name": "",
                     "id": "e0654496-af57-4f51-ad72-bc20ec33aab2",
-                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -663,7 +696,7 @@
                 {
                     "name": "",
                     "id": "e94ec994-d8a6-4f0c-970c-f20836047250",
-                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
