@@ -134,6 +134,17 @@
                 },
                 {
                     "name": "",
+                    "id": "cc6df01d-4106-4897-aadd-cf6e36fc2dc9",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
+                    "action": "Yes",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "9ebbf6ba-7be2-4563-b0dd-b10e64457557",
                     "path": "<Keyboard>/n",
                     "interactions": "",
@@ -172,6 +183,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XBox Gamepad",
+                    "action": "No",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9034deff-f697-4b41-a092-4993aae57b50",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -222,6 +244,17 @@
                 },
                 {
                     "name": "",
+                    "id": "6d04e004-5eec-419b-b25c-cb6351788893",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
+                    "action": "Translate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "f691a40e-53dc-4834-a1e9-3060ec2afa6b",
                     "path": "<Keyboard>/r",
                     "interactions": "",
@@ -266,6 +299,17 @@
                 },
                 {
                     "name": "",
+                    "id": "73345e5d-8805-41c4-a4b7-3882c9cc0419",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
+                    "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "99a903d8-59b7-41b9-9754-ed3f2a0fc9ce",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
@@ -293,6 +337,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XBox Gamepad",
+                    "action": "Reset",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0439265d-bddb-40e4-afe9-7106a392fbaa",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -391,7 +446,7 @@
                     "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -402,7 +457,7 @@
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -413,7 +468,7 @@
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -425,6 +480,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XBox Gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47ed6e53-f91e-4768-b186-cba62bfdc3f8",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -490,7 +556,7 @@
                     "path": "<Keyboard>/l",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -501,7 +567,7 @@
                     "path": "<Keyboard>/h",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "KeyboardMouse",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -513,6 +579,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XBox Gamepad",
+                    "action": "Height",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3ea489a5-03e5-4ae9-9189-563d7971f16a",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -563,6 +640,17 @@
                 },
                 {
                     "name": "",
+                    "id": "43b8bc1f-a1a7-4540-a48b-5fbf8c735273",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
+                    "action": "Done",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d5e97fa5-c603-4e5e-8e3d-10b9dad4ff48",
                     "path": "<Keyboard>/n",
                     "interactions": "",
@@ -601,6 +689,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "XBox Gamepad",
+                    "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1c9cbb2-b12a-45ae-bfaf-7a2d2d8f2350",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Logitech Gamepad",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -653,6 +752,17 @@
             "devices": [
                 {
                     "devicePath": "<XInputController>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Logitech Gamepad",
+            "bindingGroup": "Logitech Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<HID::Logitech Logitech RumblePad 2 USB>",
                     "isOptional": false,
                     "isOR": false
                 }
