@@ -33,14 +33,22 @@ public class Calibration : MonoBehaviour {
 
     [Header("Input Actions")]
     public PlayerInput MyPlayerInput;
-    public string YesActionName;
+    public string YesActionName = "YesDone";
     public InputAction YesAction;
-    public string NoActionName;
+    public string NoActionName = "NoBack";
     public InputAction NoAction;
-    public string DoneActionName;
+    public string DoneActionName = "YesDone";
     public InputAction DoneAction;
-    public string BackActionName;
-    public InputAction BackAction;
+    public string ResetActionName = "NoBack";
+    public InputAction ResetAction;
+    public string RotateActionName = "Rotate";
+    public InputAction RotateAction;
+    public string TranslateActionName = "Translate";
+    public InputAction TranslateAction;
+    public string MoveActionName = "Move";
+    public InputAction MoveAction;
+    public string HeightActionName = "DownUp";
+    public InputAction HeightAction;
 
     public static void ResetFactorySettings()
     {
@@ -73,12 +81,24 @@ public class Calibration : MonoBehaviour {
             YesAction = MyPlayerInput.actions[YesActionName];
             NoAction = MyPlayerInput.actions[NoActionName];
             DoneAction = MyPlayerInput.actions[DoneActionName];
-            BackAction = MyPlayerInput.actions[BackActionName];
+            ResetAction = MyPlayerInput.actions[ResetActionName];
+            RotateAction = MyPlayerInput.actions[RotateActionName];
+            TranslateAction = MyPlayerInput.actions[TranslateActionName];
+            MoveAction = MyPlayerInput.actions[MoveActionName];
+            HeightAction = MyPlayerInput.actions[HeightActionName];
         }
+
         if (YesAction.triggered) Debug.Log("xxxjack YesAction triggered");
         if (NoAction.triggered) Debug.Log("xxxjack NoAction triggered");
         if (DoneAction.triggered) Debug.Log("xxxjack DoneAction triggered");
-        if (BackAction.triggered) Debug.Log("xxxjack BackAction triggered");
+        if (ResetAction.triggered) Debug.Log("xxxjack ResetAction triggered");
+        if (RotateAction.triggered) Debug.Log("xxxjack RotateAction triggered");
+        if (TranslateAction.triggered) Debug.Log("xxxjack TranslateAction triggered");
+
+        var curMove = MoveAction.ReadValue<Vector2>();
+        if (curMove != Vector2.zero) Debug.Log($"xxxjack MoveAction {curMove}");
+        var curHeight = HeightAction.ReadValue<float>();
+        if (curHeight != 0) Debug.Log($"xxxjack HeightAction {curHeight}");
     }
 
     private void InitializePosition()
