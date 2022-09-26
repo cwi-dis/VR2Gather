@@ -88,17 +88,17 @@ public class Calibration : MonoBehaviour {
             HeightAction = MyPlayerInput.actions[HeightActionName];
         }
 
-        if (YesAction.triggered) Debug.Log("xxxjack YesAction triggered");
-        if (NoAction.triggered) Debug.Log("xxxjack NoAction triggered");
-        if (DoneAction.triggered) Debug.Log("xxxjack DoneAction triggered");
-        if (ResetAction.triggered) Debug.Log("xxxjack ResetAction triggered");
-        if (RotateAction.triggered) Debug.Log("xxxjack RotateAction triggered");
-        if (TranslateAction.triggered) Debug.Log("xxxjack TranslateAction triggered");
+        if (YesAction.triggered) Debug.Log($"xxxjack YesAction triggered by {YesAction.activeControl.path}");
+        if (NoAction.triggered) Debug.Log($"xxxjack NoAction triggered by {NoAction.activeControl.path}");
+        if (DoneAction.triggered) Debug.Log($"xxxjack DoneAction triggered by {DoneAction.activeControl.path}");
+        if (ResetAction.triggered) Debug.Log($"xxxjack ResetAction triggered by {ResetAction.activeControl.path}");
+        if (RotateAction.triggered) Debug.Log($"xxxjack RotateAction triggered by {RotateAction.activeControl.path}");
+        if (TranslateAction.triggered) Debug.Log($"xxxjack TranslateAction triggered by {TranslateAction.activeControl.path}");
 
         var curMove = MoveAction.ReadValue<Vector2>();
-        if (curMove != Vector2.zero) Debug.Log($"xxxjack MoveAction {curMove}");
+        if (curMove != Vector2.zero) Debug.Log($"xxxjack MoveAction {curMove} by {MoveAction.activeControl.path}");
         var curHeight = HeightAction.ReadValue<float>();
-        if (curHeight != 0) Debug.Log($"xxxjack HeightAction {curHeight}");
+        if (curHeight != 0) Debug.Log($"xxxjack HeightAction {curHeight} by {HeightAction.activeControl.path}");
 
         ComfortUI.SetActive(state == State.CheckWithUser);
         CalibrationModeUI.SetActive(state == State.SelectTranslationRotation);
