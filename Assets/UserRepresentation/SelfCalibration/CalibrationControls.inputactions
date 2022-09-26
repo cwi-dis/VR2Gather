@@ -123,11 +123,11 @@
                 },
                 {
                     "name": "",
-                    "id": "dc357b1d-0b38-4d57-ad19-012573d0cf43",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "id": "783f626b-07f2-41ab-9f2f-c146d3fbbfcf",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "XBox Gamepad",
                     "action": "Yes",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -167,11 +167,11 @@
                 },
                 {
                     "name": "",
-                    "id": "3d7bcb94-c544-4c77-accf-b812355196cd",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "id": "6b0db89c-2034-49ea-b9fc-d820d299bf5c",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "XBox Gamepad",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -211,11 +211,11 @@
                 },
                 {
                     "name": "",
-                    "id": "4cf0448e-e179-454a-a271-1f6d240913cc",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "id": "b72b076c-a7ed-4e7e-b203-8784d2526829",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "XBox Gamepad",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -255,11 +255,11 @@
                 },
                 {
                     "name": "",
-                    "id": "739d40fc-98be-449a-836d-5afa3d432447",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "id": "a71c6242-339d-4a12-a311-bcc9fcccf34f",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "XBox Gamepad",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -288,11 +288,11 @@
                 },
                 {
                     "name": "",
-                    "id": "e367b20c-3f58-4382-aa62-55ab6686c7ba",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/trigger",
+                    "id": "6348e124-cc35-4dfe-a943-1dedf486f001",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "XBox Gamepad",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -364,17 +364,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "324f06c1-52b3-491d-bdbb-5748232b4f38",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "f8326de3-fe5c-4331-a88a-065a27d21f68",
                     "path": "2DVector",
@@ -431,6 +420,17 @@
                 },
                 {
                     "name": "",
+                    "id": "20fc444b-c3c4-4a18-aac7-d4e082448fbd",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XBox Gamepad",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "79e8a9e8-32c7-4e97-8d0b-6fc219d5f049",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
@@ -474,17 +474,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "f7c7ed0a-7c5c-4dfc-be9d-eaaaf8645119",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "Height",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "1D Axis",
                     "id": "10bf33a3-84dd-4cf8-a76d-b5b31b8c5c99",
                     "path": "1DAxis",
@@ -516,6 +505,17 @@
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "26111daa-a1e4-4f31-9b32-bd539d1c37d0",
+                    "path": "<Gamepad>/leftStick/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "XBox Gamepad",
+                    "action": "Height",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",
@@ -552,11 +552,11 @@
                 },
                 {
                     "name": "",
-                    "id": "28183a34-4ea0-473a-8f47-0caedc06e48e",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "id": "1a154d1b-5583-4fa9-818b-4e0abc56481d",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "XBox Gamepad",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -596,11 +596,11 @@
                 },
                 {
                     "name": "",
-                    "id": "85d28132-ba8b-46e4-ac6b-7c31f16b4933",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "id": "2b0978d9-f7ae-4094-be66-df65b61235b6",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "XBox Gamepad",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -626,17 +626,6 @@
             ]
         },
         {
-            "name": "Joystick",
-            "bindingGroup": "Joystick",
-            "devices": [
-                {
-                    "devicePath": "<Joystick>",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
             "name": "Oculus",
             "bindingGroup": "Oculus",
             "devices": [
@@ -653,6 +642,17 @@
             "devices": [
                 {
                     "devicePath": "<ViveWand>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "XBox Gamepad",
+            "bindingGroup": "XBox Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<XInputController>",
                     "isOptional": false,
                     "isOR": false
                 }

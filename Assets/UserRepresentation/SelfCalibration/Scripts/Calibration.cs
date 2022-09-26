@@ -143,9 +143,8 @@ public class Calibration : MonoBehaviour {
                     cameraReference.transform.localPosition = Vector3.zero;
                     cameraReference.transform.localRotation = Quaternion.Euler(Vector3.zero);
                 }
-                if (YesAction.triggered || NoAction.triggered || DoneAction.triggered)
+                if (DoneAction.triggered)
                 {
-                    Debug.Log("Calibration: Mode: User is done");
                     state = State.CheckWithUser;
                 }
                 break;
@@ -176,18 +175,7 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
                     state = State.CheckWithUser;
                 }
-                // Back
-                if (NoAction.triggered)
-                {
-                    cameraReference.transform.localPosition = new Vector3(
-                        PlayerPrefs.GetFloat(prefix + "_pos_x", 0),
-                        PlayerPrefs.GetFloat(prefix + "_pos_y", 0),
-                        PlayerPrefs.GetFloat(prefix + "_pos_z", 0)
-                    );
-                    var pos = cameraReference.transform.localPosition;
-                    Debug.Log($"Calibration: Translation: Reloaded to: {pos.x}, {pos.y}, {pos.z}");
-                    state = State.CheckWithUser;
-                }
+               
                 break;
             case State.Rotation:
                 // Rotation
@@ -203,7 +191,7 @@ public class Calibration : MonoBehaviour {
                     cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * yAxisR);
                 }
                 // Save Translation
-                if (YesAction.triggered)
+                if (YesAction.triggered || DoneAction.triggered)
                 {
                     var rot = cameraReference.transform.localRotation.eulerAngles;
                     PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
@@ -213,18 +201,7 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
                     state = State.CheckWithUser;
                 }
-                // Back
-                if (NoAction.triggered)
-                {
-                    cameraReference.transform.localRotation = Quaternion.Euler(
-                        PlayerPrefs.GetFloat(prefix + "_rot_x", 0),
-                        PlayerPrefs.GetFloat(prefix + "_rot_y", 0),
-                        PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
-                    );
-                    var rot = cameraReference.transform.localRotation;
-                    Debug.Log($"Calibration: Rotation: Reloaded to: {rot.x}, {rot.y}, {rot.z}");
-                    state = State.CheckWithUser;
-                }
+                
                 break;
             default:
                 Debug.LogError($"Calibration: unexpected state {state}");
