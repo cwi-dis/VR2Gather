@@ -83,7 +83,10 @@ namespace VRT.Core
             {
                 Debug.Log("VRConfig: Deinitializing VR");
                 XRGeneralSettings.Instance.Manager.StopSubsystems();
-                //XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+#if xxxjack_dont_unload
+                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+                loaded = false;
+#endif
             }
         }
         private IEnumerator _LoadVR()
@@ -107,10 +110,10 @@ namespace VRT.Core
                 }
                 if (XRGeneralSettings.Instance.Manager.activeLoader != null)
                 {
-                    Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded");
-                    yield return null;
+                    Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded, unloading...");
+                    XRGeneralSettings.Instance.Manager.StopSubsystems();
+                    XRGeneralSettings.Instance.Manager.DeinitializeLoader();
                 }
-                else
                 {
                     Debug.Log("VRConfig: Initializing XR Loader...");
                     yield return XRGeneralSettings.Instance.Manager.InitializeLoader();

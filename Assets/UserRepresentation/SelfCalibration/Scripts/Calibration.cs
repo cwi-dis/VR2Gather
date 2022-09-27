@@ -34,22 +34,14 @@ public class Calibration : MonoBehaviour {
     [Header("Input Actions")]
     private PlayerInput MyPlayerInput;
     const string YesActionName = "Yes";
-    private InputAction YesAction;
     const string NoActionName = "No";
-    private InputAction NoAction;
     const string DoneActionName = "Done";
-    private InputAction DoneAction;
     const string ResetActionName = "Reset";
-    private InputAction ResetAction;
     const string RotateActionName = "Rotate";
-    private InputAction RotateAction;
     const string TranslateActionName = "Translate";
-    private InputAction TranslateAction;
     const string MoveActionName = "Move";
-    private InputAction MoveAction;
     const string HeightActionName = "Height";
-    private InputAction HeightAction;
-
+  
     public static void ResetFactorySettings()
     {
         PlayerPrefs.SetFloat("pcs_pos_x", 0);
@@ -77,16 +69,46 @@ public class Calibration : MonoBehaviour {
     {
         if (MyPlayerInput == null)
         {
+            if (!VRConfig.Instance.initialized)
+            {
+                Debug.LogError("Calibration: Update: VR config not yet initialized");
+                return;
+            }
+
             MyPlayerInput = GetComponent<PlayerInput>();
-            YesAction = MyPlayerInput.actions[YesActionName];
-            NoAction = MyPlayerInput.actions[NoActionName];
-            DoneAction = MyPlayerInput.actions[DoneActionName];
-            ResetAction = MyPlayerInput.actions[ResetActionName];
-            RotateAction = MyPlayerInput.actions[RotateActionName];
-            TranslateAction = MyPlayerInput.actions[TranslateActionName];
-            MoveAction = MyPlayerInput.actions[MoveActionName];
-            HeightAction = MyPlayerInput.actions[HeightActionName];
+#if xxxjack_switch_control_scheme
+            if (VRConfig.Instance.useControllerEmulation())
+            {
+                MyPlayerInput.SwitchCurrentControlScheme("KeyboardMouse");
+            }
+            else
+            if (VRConfig.Instance.useControllerGamepad())
+            {
+                MyPlayerInput.SwitchCurrentControlScheme("XBox Gamepad");
+
+            }
+            else
+            if (VRConfig.Instance.useControllerOculus())
+            {
+                MyPlayerInput.SwitchCurrentControlScheme("Oculus");
+            }
+            else
+            if (VRConfig.Instance.useControllerOpenVR())
+            {
+                MyPlayerInput.SwitchCurrentControlScheme("Vive");
+            }
+            Debug.Log($"Calibration: control scheme {MyPlayerInput.currentControlScheme}");
+#endif
         }
+        InputAction YesAction = MyPlayerInput.actions[YesActionName];
+       
+        InputAction NoAction = MyPlayerInput.actions[NoActionName];
+        InputAction DoneAction = MyPlayerInput.actions[DoneActionName];
+        InputAction ResetAction = MyPlayerInput.actions[ResetActionName];
+        InputAction RotateAction = MyPlayerInput.actions[RotateActionName];
+        InputAction TranslateAction = MyPlayerInput.actions[TranslateActionName];
+        InputAction MoveAction = MyPlayerInput.actions[MoveActionName];
+        InputAction HeightAction = MyPlayerInput.actions[HeightActionName];
 
         if (YesAction.triggered) Debug.Log($"xxxjack YesAction triggered by {YesAction.activeControl.path}");
         if (NoAction.triggered) Debug.Log($"xxxjack NoAction triggered by {NoAction.activeControl.path}");

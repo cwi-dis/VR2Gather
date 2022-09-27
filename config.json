@@ -35,7 +35,7 @@
   },
   "VR" : {
 	"_preferredDevices" : [""],
-	"preferredController" : ""
+	"_preferredController" : ""
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
