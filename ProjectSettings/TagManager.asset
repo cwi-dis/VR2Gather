@@ -21,6 +21,7 @@ TagManager:
   - Flower
   - Picture
   - MailBox
+  - Fog
   layers:
   - Default
   - TransparentFX
