@@ -113,7 +113,7 @@
                 {
                     "name": "",
                     "id": "7ca2a65c-23dd-43db-a668-4ba4f2efb6b1",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/triggerpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -168,7 +168,7 @@
                 {
                     "name": "",
                     "id": "4e05661f-6115-43e3-b668-0389fcd5a03d",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/triggerpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -223,7 +223,7 @@
                 {
                     "name": "",
                     "id": "b095b7f4-91f3-46ba-88ab-fac50bf0087c",
-                    "path": "<ViveWand>{RightHand}/primary",
+                    "path": "<ViveController>{RightHand}/menu",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -278,7 +278,7 @@
                 {
                     "name": "",
                     "id": "f8a916a5-c4e5-4001-ab9f-d8901cc6fb5e",
-                    "path": "<ViveWand>{LeftHand}/primary",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/menu",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -322,7 +322,7 @@
                 {
                     "name": "",
                     "id": "0b1a8c79-cb19-4e4d-a1fa-76ce2a780c69",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/grippressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/grippressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -410,7 +410,7 @@
                 {
                     "name": "modifier",
                     "id": "73151602-1a14-4940-845f-bdb3d75e8ef2",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/trackpadpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/trackpadclicked",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -421,7 +421,7 @@
                 {
                     "name": "binding",
                     "id": "8c62ac74-dcd8-4c5e-aa74-b2f7be751274",
-                    "path": "<ViveWand>{RightHand}/trackpad",
+                    "path": "<ViveController>{RightHand}/trackpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -542,7 +542,7 @@
                 {
                     "name": "modifier",
                     "id": "cedca479-799e-4c74-a2c0-5b34787c7467",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/trackpadpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/trackpadclicked",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -553,7 +553,7 @@
                 {
                     "name": "binding",
                     "id": "fc706ca7-2d74-4906-b1a2-479584a73784",
-                    "path": "<ViveWand>{LeftHand}/trackpad/y",
+                    "path": "<ViveController>{LeftHand}/trackpad/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -652,7 +652,7 @@
                 {
                     "name": "",
                     "id": "c02236eb-ef40-4804-ac45-51f96e82a32a",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVRight>{RightHand}/triggerpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -707,7 +707,7 @@
                 {
                     "name": "",
                     "id": "d8642b31-022e-431d-b52c-469dbcc4b6f8",
-                    "path": "<XRInputV1::HTC::OpenVRControllerVIVEControllerProMVLeft>{LeftHand}/triggerpressed",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Vive",
@@ -778,7 +778,12 @@
             "bindingGroup": "Vive",
             "devices": [
                 {
-                    "devicePath": "<ViveWand>",
+                    "devicePath": "<XRController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<XRController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
