@@ -39,9 +39,8 @@ namespace VRT.Core
         [Serializable]
         public class _VR
         {
-            public string[] preferredDevices = { "Oculus", "OpenVR", "" };
+            public string preferredDevice = null;
             public string preferredController = "";
-            public bool useLookingGlass = false;
         }
         public _VR VR;
 
