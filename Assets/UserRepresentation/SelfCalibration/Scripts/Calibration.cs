@@ -16,7 +16,7 @@ public class Calibration : MonoBehaviour {
     [Tooltip("The player to control, for preview")]
     public PlayerManager player;
     [Tooltip("The camera to control, for preview")]
-    public GameObject   cameraReference;
+    public GameObject   cameraOffset;
     
     [Tooltip("How fast to rotate")]
     public float        _rotationSlightStep = 1f;
@@ -162,8 +162,8 @@ public class Calibration : MonoBehaviour {
                 {
                     Debug.Log("Calibration: Mode: Reset factory settings");
                     ResetFactorySettings();
-                    cameraReference.transform.localPosition = Vector3.zero;
-                    cameraReference.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                    cameraOffset.transform.localPosition = Vector3.zero;
+                    cameraOffset.transform.localRotation = Quaternion.Euler(Vector3.zero);
                 }
                 if (DoneAction.triggered)
                 {
@@ -174,7 +174,7 @@ public class Calibration : MonoBehaviour {
                 // Movement
                 if (ResetAction.triggered)
                 {
-                    cameraReference.transform.localPosition = new Vector3(0, 0, 0);
+                    cameraOffset.transform.localPosition = new Vector3(0, 0, 0);
                     Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
                 }
                 else
@@ -185,12 +185,12 @@ public class Calibration : MonoBehaviour {
                     if (zAxis != 0) Debug.Log($"xxxjack translation z={zAxis}");
                     if (xAxis != 0) Debug.Log($"xxxjack translation x={xAxis}");
                     if (yAxis != 0) Debug.Log($"xxxjack translation y={yAxis}");
-                    cameraReference.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
+                    cameraOffset.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 }
                 // Save Translation
                 if (YesAction.triggered || DoneAction.triggered)
                 {
-                    var pos = cameraReference.transform.localPosition;
+                    var pos = cameraOffset.transform.localPosition;
                     PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
                     PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
                     PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
@@ -204,18 +204,18 @@ public class Calibration : MonoBehaviour {
                 if (ResetAction.triggered)
                 {
                     Debug.Log("Calibration: Rotation: Reset to 0,0,0");
-                    cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);
+                    cameraOffset.transform.localEulerAngles = new Vector3(0, 0, 0);
                 }
                 else
                 {
                     float yAxisR = curMove.x;
                     if (yAxisR != 0) Debug.Log($"xxxjack rotation y={yAxisR}");
-                    cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * yAxisR);
+                    cameraOffset.transform.localRotation = Quaternion.Euler(cameraOffset.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * yAxisR);
                 }
                 // Save Translation
                 if (YesAction.triggered || DoneAction.triggered)
                 {
-                    var rot = cameraReference.transform.localRotation.eulerAngles;
+                    var rot = cameraOffset.transform.localRotation.eulerAngles;
                     PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
                     PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
                     PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
@@ -241,8 +241,8 @@ public class Calibration : MonoBehaviour {
         Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
         Debug.Log($"Calibration: initial pos={pos}, rot={rot}");
-        cameraReference.transform.localPosition = pos;
-        cameraReference.transform.localRotation = Quaternion.Euler(rot);
+        cameraOffset.transform.localPosition = pos;
+        cameraOffset.transform.localRotation = Quaternion.Euler(rot);
     }
 
     void ChangeModeUI()
