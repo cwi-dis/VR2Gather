@@ -95,7 +95,7 @@ public class Calibration : MonoBehaviour {
             else
             if (VRConfig.Instance.useControllerOpenVR())
             {
-                MyPlayerInput.SwitchCurrentControlScheme("Vive");
+                MyPlayerInput.SwitchCurrentControlScheme("OpenVR");
             }
             Debug.Log($"Calibration: control scheme {MyPlayerInput.currentControlScheme}");
 #endif

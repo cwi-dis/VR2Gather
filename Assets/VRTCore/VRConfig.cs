@@ -129,11 +129,11 @@ namespace VRT.Core
                     string wantedLoaderName = "";
                     if (Config.Instance.VR.preferredDevice == "Oculus")
                     {
-                        wantedLoaderName = "OculusLoader";
+                        wantedLoaderName = "Oculus Loader";
                     }
-                    else if (Config.Instance.VR.preferredDevice == "Vive")
+                    else if (Config.Instance.VR.preferredDevice == "OpenVR")
                     {
-                        wantedLoaderName = "OpenXRLoader";
+                        wantedLoaderName = "Open XR Loader";
                     }
                     else if (Config.Instance.VR.preferredDevice == "LookingGlass")
                     {
@@ -187,7 +187,10 @@ namespace VRT.Core
                 }
                 currentInputDevice = "emulation";
                 currentOutputDevice = "";
-                XRGeneralSettings.Instance.Manager.StopSubsystems();
+                if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+                {
+                    XRGeneralSettings.Instance.Manager.StopSubsystems();
+                }
                 _initialized = true;
                 return;
             }
@@ -209,15 +212,15 @@ namespace VRT.Core
                 Debug.Log($"VRConfig: Starting XR... {XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name}");
                 XRGeneralSettings.Instance.Manager.StartSubsystems();
                 // Find name of HMD subsystem. xxxjack there must be a better way...
-                string loaderName = XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name;
-                if (loaderName == "OculusLoader")
+                string loaderName = XRGeneralSettings.Instance.Manager.activeLoader.name;
+                if (loaderName == "Oculus Loader")
                 {
                     currentOutputDevice = "Oculus";
                 }
                 else
-                if (loaderName == "OpenXRLoader")
+                if (loaderName == "Open XR Loader")
                 {
-                    currentOutputDevice = "Vive";
+                    currentOutputDevice = "OpenVR";
                 }
                 else
                 {
