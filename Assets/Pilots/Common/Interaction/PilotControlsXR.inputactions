@@ -68,10 +68,10 @@
                 {
                     "name": "",
                     "id": "284c9c54-6e1a-4711-8470-fbaf66d765dd",
-                    "path": "<ViveWand>{LeftHand}/trackpad/y",
+                    "path": "*/{MenuButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveLeft",
+                    "groups": "OpenXRLeft",
                     "action": "ModeTeleporting",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -79,10 +79,10 @@
                 {
                     "name": "",
                     "id": "bbbc6087-117a-472b-af26-7a5533d7c630",
-                    "path": "<ViveWand>{RightHand}/trackpad/y",
+                    "path": "*/{MenuButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveRight",
+                    "groups": "OpenXRRight",
                     "action": "ModeTeleporting",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -105,28 +105,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "OculusLeft",
-                    "action": "TeleportHome",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f406f60b-fa00-49b1-8ef5-fa75255fc874",
-                    "path": "<ViveWand>{LeftHand}/trackpadPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "ViveLeft",
-                    "action": "TeleportHome",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7e198071-96b6-4c06-a3f9-9a075b2d77ee",
-                    "path": "<ViveWand>{RightHand}/trackpadPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "ViveRight",
                     "action": "TeleportHome",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -156,10 +134,10 @@
                 {
                     "name": "",
                     "id": "112c673f-a3cd-49d8-9ba0-78c1fb4aea3a",
-                    "path": "<ViveWand>{LeftHand}/triggerPressed",
+                    "path": "*/{TriggerButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveLeft",
+                    "groups": "OpenXRLeft",
                     "action": "ModePointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -167,10 +145,10 @@
                 {
                     "name": "",
                     "id": "d6ba688e-4b1e-47d9-9f43-da5968a076be",
-                    "path": "<ViveWand>{RightHand}/triggerPressed",
+                    "path": "*/{TriggerButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveRight",
+                    "groups": "OpenXRRight",
                     "action": "ModePointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -200,10 +178,10 @@
                 {
                     "name": "",
                     "id": "b894e03a-4b3d-4bfb-920e-733e6748a23e",
-                    "path": "<ViveWand>{LeftHand}/gripPressed",
+                    "path": "*/{GripButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveLeft",
+                    "groups": "OpenXRLeft",
                     "action": "ModeGrabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -211,10 +189,10 @@
                 {
                     "name": "",
                     "id": "ca06f2ea-4ccf-458a-ab4f-a403f976331c",
-                    "path": "<ViveWand>{RightHand}/gripPressed",
+                    "path": "*/{GripButton}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "ViveRight",
+                    "groups": "OpenXRRight",
                     "action": "ModeGrabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -246,22 +224,22 @@
             ]
         },
         {
-            "name": "ViveLeft",
-            "bindingGroup": "ViveLeft",
+            "name": "OpenXRLeft",
+            "bindingGroup": "OpenXRLeft",
             "devices": [
                 {
-                    "devicePath": "<ViveWand>{LeftHand}",
+                    "devicePath": "<XRController>{LeftHand}",
                     "isOptional": false,
                     "isOR": false
                 }
             ]
         },
         {
-            "name": "ViveRight",
-            "bindingGroup": "ViveRight",
+            "name": "OpenXRRight",
+            "bindingGroup": "OpenXRRight",
             "devices": [
                 {
-                    "devicePath": "<ViveWand>{RightHand}",
+                    "devicePath": "<XRController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }

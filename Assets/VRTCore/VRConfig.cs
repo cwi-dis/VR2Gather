@@ -131,7 +131,7 @@ namespace VRT.Core
                     {
                         wantedLoaderName = "Oculus Loader";
                     }
-                    else if (Config.Instance.VR.preferredDevice == "OpenVR")
+                    else if (Config.Instance.VR.preferredDevice == "OpenXR")
                     {
                         wantedLoaderName = "Open XR Loader";
                     }
@@ -220,7 +220,7 @@ namespace VRT.Core
                 else
                 if (loaderName == "Open XR Loader")
                 {
-                    currentOutputDevice = "OpenVR";
+                    currentOutputDevice = "OpenXR";
                 }
                 else
                 {
@@ -312,13 +312,13 @@ namespace VRT.Core
             return currentInputDevice == "gamepad";
         }
 
-        public bool useControllerOpenVR()
+        public bool useControllerOpenXR()
         {
             if (!_initialized)
             {
-                Debug.LogError("VRConfig: useControllerOpenVR() called too early");
+                Debug.LogError("VRConfig: useControllerOpenXR() called too early");
             }
-            return currentInputDevice == "OpenVR";
+            return currentInputDevice == "OpenXR";
         }
 
         public bool useControllerOculus()

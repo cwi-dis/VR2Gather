@@ -7,8 +7,8 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
 {
     [Tooltip("Panels to enable when using Oculus controllers")]
     public GameObject[] oculus;
-    [Tooltip("Panels to enable when using OpenVR controllers")]
-    public GameObject[] openvr;
+    [Tooltip("Panels to enable when using OpenXR controllers")]
+    public GameObject[] openxr;
     [Tooltip("Panels to enable when using gamepad controller")]
     public GameObject[] gamepad;
     [Tooltip("Panels to enable when using keyboard/mouse controller emulator")]
@@ -24,7 +24,7 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     private void InitializeXRDevices()
     {
         bool isOculus = VRConfig.Instance.useControllerOculus();
-        bool isOpenVR = VRConfig.Instance.useControllerOpenVR();
+        bool isOpenXR = VRConfig.Instance.useControllerOpenXR();
         bool isEmulation = VRConfig.Instance.useControllerEmulation();
         bool isGamepad = VRConfig.Instance.useControllerGamepad();
 
@@ -43,11 +43,11 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
             // if not HTC then we assume Oculus xxxjack hack
             if (!isOculus)
             {
-                isOpenVR = true;
+                isOpenXR = true;
             }
         }
         foreach (var c in oculus) c.SetActive(isOculus);
-        foreach (var c in openvr) c.SetActive(isOpenVR);
+        foreach (var c in openxr) c.SetActive(isOpenXR);
         foreach (var c in emulator) c.SetActive(isEmulation);
         foreach (var c in gamepad) c.SetActive(isGamepad);
     }

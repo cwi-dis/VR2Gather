@@ -93,9 +93,9 @@ public class Calibration : MonoBehaviour {
                 MyPlayerInput.SwitchCurrentControlScheme("Oculus");
             }
             else
-            if (VRConfig.Instance.useControllerOpenVR())
+            if (VRConfig.Instance.useControllerOpenXR())
             {
-                MyPlayerInput.SwitchCurrentControlScheme("OpenVR");
+                MyPlayerInput.SwitchCurrentControlScheme("OpenXR");
             }
             Debug.Log($"Calibration: control scheme {MyPlayerInput.currentControlScheme}");
 #endif

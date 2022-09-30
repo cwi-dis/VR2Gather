@@ -1536,8 +1536,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: ViveLeft
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: OpenXRLeft
   m_DefaultActionMap: PilotControlsXR
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -1563,7 +1563,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needDevice: leftBlabla
+  needDevice: 
 --- !u!1 &5704200592656136347
 GameObject:
   m_ObjectHideFlags: 0
@@ -2405,8 +2405,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: ViveRight
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: OpenXRRight
   m_DefaultActionMap: PilotControlsXR
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
@@ -2432,7 +2432,7 @@ MonoBehaviour:
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
-  needDevice: rightBlabla
+  needDevice: 
 --- !u!1 &8989305335192017463
 GameObject:
   m_ObjectHideFlags: 0

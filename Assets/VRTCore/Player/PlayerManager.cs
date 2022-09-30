@@ -17,8 +17,8 @@ public class PlayerManager : MonoBehaviour {
     public GameObject[] inputEmulationOnlyObjects;
     public GameObject[] inputGamepadOnlyObjects;
     public GameObject[] inputOculusOnlyObjects;
-    public GameObject[] inputOpenVROnlyObjects;
-    public GameObject[] inputNonHMDObjects;
+	public GameObject[] inputOpenVROnlyObjects;
+	public GameObject[] inputNonHMDObjects;
 
 	//
 	// Enable camera (or camera-like object) and input handling.
@@ -81,12 +81,12 @@ public class PlayerManager : MonoBehaviour {
 			obj.SetActive(isLocalOculusPlayer);
 		}
 		// Enable gamepad objects only for the local user when using gamepad
-		bool isLocalOpenVRPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOpenVR();
+		bool isLocalOpenXRPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOpenXR();
 		foreach (var obj in inputOpenVROnlyObjects)
 		{
-			obj.SetActive(isLocalOpenVRPlayer);
+			obj.SetActive(isLocalOpenXRPlayer);
 		}
-		if (!isLocalEmulationPlayer && !isLocalGamepadPlayer && !isLocalOculusPlayer && !isLocalOpenVRPlayer)
+		if (!isLocalEmulationPlayer && !isLocalGamepadPlayer && !isLocalOculusPlayer && !isLocalOpenXRPlayer)
         {
 			Debug.LogError("PlayerManager: no input device selected for local player");
         }
