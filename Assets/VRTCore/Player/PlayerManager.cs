@@ -86,6 +86,10 @@ public class PlayerManager : MonoBehaviour {
 		{
 			obj.SetActive(isLocalOpenVRPlayer);
 		}
+		if (!isLocalEmulationPlayer && !isLocalGamepadPlayer && !isLocalOculusPlayer && !isLocalOpenVRPlayer)
+        {
+			Debug.LogError("PlayerManager: no input device selected for local player");
+        }
 		// Disable objects that should not be used with an HMD (to forestall motion sickness)
 		if (VRConfig.Instance.useHMD())
 		{
