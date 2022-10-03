@@ -64,6 +64,8 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Name of (button) action that enables moving")]
         public string ModeMovingActionName;
+        [Tooltip("Name of (button) action that enables turning")]
+        public string ModeTurningActionName;
         [Tooltip("Name of (button) action that enables groping")]
         public string ModeGropingActionName;
         [Tooltip("Name of (button) action that enables teleporting")]
@@ -112,6 +114,7 @@ namespace VRT.Pilots.Common
             // Find all the actions that we need
             //
             InputAction MyModeMovingAction = MyPlayerInput.actions[ModeMovingActionName];
+            InputAction MyModeTurningAction = MyPlayerInput.actions.FindAction(ModeTurningActionName, false);
             InputAction MyModeGropingAction = MyPlayerInput.actions[ModeGropingActionName];
             InputAction MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
             InputAction MyTeleportGoAction = MyPlayerInput.actions[TeleportGoActionName];
@@ -143,6 +146,7 @@ namespace VRT.Pilots.Common
                 modeTeleportingActive = true;
             }
             else
+            if (MyModeTurningAction == null || MyModeTurningAction.IsPressed())
             {
                 modeTurningActive = true;
             }
