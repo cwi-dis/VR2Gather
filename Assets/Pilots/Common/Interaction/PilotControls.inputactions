@@ -6,7 +6,7 @@
             "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
             "actions": [
                 {
-                    "name": "Delta",
+                    "name": "MovingTurningDelta",
                     "type": "PassThrough",
                     "id": "7ad5b969-748a-407d-86af-125de33d9d22",
                     "expectedControlType": "Vector2",
@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "HeightDelta",
+                    "name": "MovingTurningHeight",
                     "type": "PassThrough",
                     "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
                     "expectedControlType": "Axis",
@@ -42,7 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ModeTeleporting",
+                    "name": "ModeTeleportingRightHand",
                     "type": "Button",
                     "id": "95d34da0-d909-42c9-b4d6-880a8cb6ac0e",
                     "expectedControlType": "Button",
@@ -51,7 +51,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ModeGroping",
+                    "name": "ModeGropingRightHand",
                     "type": "Button",
                     "id": "ff630674-6e49-4602-8bb0-b8f61eec8702",
                     "expectedControlType": "Button",
@@ -60,7 +60,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TeleportGo",
+                    "name": "TeleportGoRightHand",
                     "type": "Button",
                     "id": "d3075410-8b62-4edf-8b0b-65e29c3b2ab2",
                     "expectedControlType": "Button",
@@ -69,7 +69,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TeleportHome",
+                    "name": "TeleportHomeRightHand",
                     "type": "Button",
                     "id": "17aeb438-76c9-4806-b9d1-2844575452dd",
                     "expectedControlType": "Button",
@@ -78,9 +78,54 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "GropingTouch",
+                    "name": "GropingTouchRightHand",
                     "type": "Button",
                     "id": "e42742c7-891d-47c0-bd58-ab8c59ff57b7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModeTeleportingLeftHand",
+                    "type": "Button",
+                    "id": "b9466793-878c-4b3f-b0a4-b96a91c261f7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModeGropingLeftHand",
+                    "type": "Button",
+                    "id": "3022074d-6969-42c9-8cf2-6bd98423e154",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TeleportGoLeftHand",
+                    "type": "Button",
+                    "id": "005423c3-3073-4b17-8894-f802e5cf3711",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TeleportHomeLeftHand",
+                    "type": "Button",
+                    "id": "5cbb6783-11f4-4a45-a0b3-27872b7a7a6b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GropingTouchLeftHand",
+                    "type": "Button",
+                    "id": "ea5b96d3-64b4-4759-b8c4-356b5696d92a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -95,7 +140,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Delta",
+                    "action": "MovingTurningDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -106,7 +151,7 @@
                     "interactions": "",
                     "processors": "StickDeadzone",
                     "groups": "Joystick",
-                    "action": "Delta",
+                    "action": "MovingTurningDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -139,7 +184,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ModeTeleporting",
+                    "action": "ModeTeleportingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -150,7 +195,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "ModeTeleporting",
+                    "action": "ModeTeleportingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -183,7 +228,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "TeleportHome",
+                    "action": "TeleportHomeRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -194,7 +239,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "TeleportHome",
+                    "action": "TeleportHomeRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -205,7 +250,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ModeGroping",
+                    "action": "ModeGropingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -216,7 +261,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "ModeGroping",
+                    "action": "ModeGropingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -227,7 +272,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "TeleportGo",
+                    "action": "TeleportGoRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -238,7 +283,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "TeleportGo",
+                    "action": "TeleportGoRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -249,7 +294,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "GropingTouch",
+                    "action": "GropingTouchRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -260,7 +305,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "GropingTouch",
+                    "action": "GropingTouchRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -271,7 +316,7 @@
                     "interactions": "",
                     "processors": "Scale(factor=0.002)",
                     "groups": "KeyboardMouse",
-                    "action": "HeightDelta",
+                    "action": "MovingTurningHeight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -282,7 +327,62 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "HeightDelta",
+                    "action": "MovingTurningHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e80eb561-e048-42c4-a3ee-9fff721955b4",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModeTeleportingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "face774e-c042-4904-a7f7-25f0d41ecd49",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModeGropingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b50886ec-2ad9-43bc-9be6-5cea4e49cbe8",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TeleportGoLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d6996f55-c0de-4095-841c-58d7574476a7",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TeleportHomeLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "675e85ca-da31-4415-be3f-ff3f257f20eb",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GropingTouchLeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
