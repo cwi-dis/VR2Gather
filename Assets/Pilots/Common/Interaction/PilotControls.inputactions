@@ -15,21 +15,12 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "MovingTurningHeight",
-                    "type": "PassThrough",
-                    "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ModeMoving",
                     "type": "Button",
                     "id": "597a7904-2027-4a32-8233-997ba6cb11f3",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "Press",
                     "initialStateCheck": false
                 },
                 {
@@ -130,6 +121,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessMoveDelta",
+                    "type": "PassThrough",
+                    "id": "b3549125-c569-4974-a087-8c1272dd14fe",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessMoveHeight",
+                    "type": "PassThrough",
+                    "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessTurnDelta",
+                    "type": "Button",
+                    "id": "84d38cd8-a07a-48b6-bdc8-fd9694520810",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -211,10 +229,43 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "One Modifier",
+                    "id": "0b54742f-4d6c-4caf-9b3d-78b90711f37f",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MovingTurningDelta",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "cfc051fe-a381-4ef6-a521-6bb525ad8c7e",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "880cd288-751f-484d-bd13-3f10db2d701d",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "Press(behavior=2)",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "ModeMoving",
@@ -257,8 +308,8 @@
                 {
                     "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "Press(behavior=2)",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "ModeTurning",
@@ -366,61 +417,6 @@
                 },
                 {
                     "name": "",
-                    "id": "47c7ae96-5b08-4435-9095-c3efca5abe4a",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "Scale(factor=0.002)",
-                    "groups": "KeyboardMouse",
-                    "action": "MovingTurningHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ad0d1c62-839a-4394-b2ee-af460b668848",
-                    "path": "<Joystick>/rz",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "MovingTurningHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "1D Axis",
-                    "id": "ffe846d5-4f7c-4386-99fc-cc458b5d071f",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "MovingTurningHeight",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "5231bbf2-69bb-4522-b3ba-58d0ea53106b",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "MovingTurningHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "961323c3-283f-4928-9094-d4e049ee9557",
-                    "path": "<Keyboard>/u",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "MovingTurningHeight",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
                     "id": "e80eb561-e048-42c4-a3ee-9fff721955b4",
                     "path": "",
                     "interactions": "",
@@ -471,6 +467,127 @@
                     "processors": "",
                     "groups": "",
                     "action": "GropingTouchLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "7113ffe3-82b6-43c1-b348-60a542b6fe5c",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "e0c47bc9-b1a6-4428-bef2-9a7253544073",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "2e5503a6-c599-48cf-81b6-1ae3167d4af9",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "671f3878-bdf3-4904-be54-274c1c42c64e",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "4b4a3faf-4c21-4e01-8b31-567de479ca35",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "47c7ae96-5b08-4435-9095-c3efca5abe4a",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.002)",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ad0d1c62-839a-4394-b2ee-af460b668848",
+                    "path": "<Joystick>/rz",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "ffe846d5-4f7c-4386-99fc-cc458b5d071f",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "5231bbf2-69bb-4522-b3ba-58d0ea53106b",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "961323c3-283f-4928-9094-d4e049ee9557",
+                    "path": "<Keyboard>/u",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "8b1231e4-61a1-4fd2-83f5-98ddb917c552",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessTurnDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

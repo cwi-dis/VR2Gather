@@ -1737,6 +1737,7 @@ MonoBehaviour:
   avatarHead: {fileID: 4311645287905124984}
   pitchAngle: 0
   ModeMovingActionName: ModeMoving
+  ModeTurningActionName: ModeTurning
   ModeGropingActionName: ModeGropingRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportGoActionName: TeleportGoRightHand
@@ -1744,6 +1745,9 @@ MonoBehaviour:
   GropeTouchActionName: GropingTouchRightHand
   MovingTurningDeltaActionName: MovingTurningDelta
   MovingTurningHeightActionName: MovingTurningHeight
+  ModelessMoveActionName: ModelessMoveDelta
+  ModelessTurnActionName: 
+  ModelessMoveHeightActionName: ModelessMoveHeight
   handInteraction: {fileID: 5072070730475040801}
   MyPlayerInput: {fileID: 3844742245929821803}
   modeMovingActive: 0
@@ -1838,6 +1842,7 @@ MonoBehaviour:
   avatarHead: {fileID: 4311645287905124984}
   pitchAngle: 0
   ModeMovingActionName: 
+  ModeTurningActionName: 
   ModeGropingActionName: 
   ModeTeleportingActionName: 
   TeleportGoActionName: 
@@ -1845,6 +1850,9 @@ MonoBehaviour:
   GropeTouchActionName: 
   MovingTurningDeltaActionName: 
   MovingTurningHeightActionName: 
+  ModelessMoveActionName: 
+  ModelessTurnActionName: 
+  ModelessMoveHeightActionName: 
   handInteraction: {fileID: 8100228094031343025}
   MyPlayerInput: {fileID: 0}
   modeMovingActive: 0

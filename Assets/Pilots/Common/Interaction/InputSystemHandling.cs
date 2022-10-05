@@ -76,11 +76,14 @@ namespace VRT.Pilots.Common
         public string TeleportHomeActionName;
         [Tooltip("Name of action (button) that activates groping touch")]
         public string GropeTouchActionName;
-        [Tooltip("Name of action (2D) that moves player or hand")]
+        [Tooltip("Name of action (2D) that moves player or hand or head")]
         public string MovingTurningDeltaActionName;
-        [Tooltip("Name of action (axis) that moves player camera height")]
-        public string MovingTurningHeightActionName;
-
+        [Tooltip("Name of action (2D) that always moves")]
+        public string ModelessMoveActionName;
+        [Tooltip("Name of action (2D) that always moves player head")]
+        public string ModelessTurnActionName;
+        [Tooltip("Name of action (axis) that always moves camera height")]
+        public string ModelessMoveHeightActionName;
         [Tooltip("Object responsible for implementing touching and teleporting")]
         public HandInteractionEmulation handInteraction;
 
@@ -91,8 +94,6 @@ namespace VRT.Pilots.Common
         public bool modeGropingActive = false;
         public bool modeTeleportingActive = false;
 
-        private Vector2 delta = new Vector2(0,0);
-        private float deltaHeight = 0;
 
         private void Awake()
         {
@@ -121,7 +122,21 @@ namespace VRT.Pilots.Common
             InputAction MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
             InputAction MyGropeTouchAction = MyPlayerInput.actions[GropeTouchActionName];
             InputAction MyMovingTurningDeltaAction = MyPlayerInput.actions[MovingTurningDeltaActionName];
-            InputAction MyMovingTurningHeightAction = MyPlayerInput.actions[MovingTurningHeightActionName];
+            InputAction MyModelessMoveAction = MyPlayerInput.actions.FindAction(ModelessMoveActionName, false);
+            InputAction MyModelessTurnAction = MyPlayerInput.actions.FindAction(ModelessTurnActionName, false);
+            InputAction MyModelessMoveHeightAction = MyPlayerInput.actions.FindAction(ModelessMoveHeightActionName, false);
+
+            //
+            // Get move/height deltas
+            //
+            Vector2 delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
+            float deltaHeight = 0;
+            Vector2 modelessMoveDelta = Vector2.zero;
+            if (MyModelessMoveAction != null) modelessMoveDelta = MyModelessMoveAction.ReadValue<Vector2>();
+            Vector2 modelessTurnDelta = Vector2.zero;
+            if (MyModelessTurnAction != null) modelessTurnDelta = MyModelessTurnAction.ReadValue<Vector2>();
+            float modelessMoveDeltaHeight = 0;
+            if (MyModelessMoveHeightAction != null) modelessMoveDeltaHeight = MyModelessMoveHeightAction.ReadValue<float>();
 
             //
             // Determine what mode we are in
@@ -131,6 +146,19 @@ namespace VRT.Pilots.Common
             modeGropingActive = false;
             modeTeleportingActive = false;
 
+            if (modelessMoveDelta != Vector2.zero || modelessMoveDeltaHeight != 0)
+            {
+                modeMovingActive = true;
+                delta = modelessMoveDelta;
+                deltaHeight = modelessMoveDeltaHeight;
+            }
+            else
+            if (modelessTurnDelta != Vector2.zero)
+            {
+                modeTurningActive = true;
+                delta = modelessTurnDelta;
+            }
+            else
             if (MyModeMovingAction.IsPressed())
             {
                 modeMovingActive = true;
@@ -151,12 +179,6 @@ namespace VRT.Pilots.Common
                 modeTurningActive = true;
             }
             handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
-
-            //
-            // Get move/height deltas
-            //
-            delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
-            float deltaHeight = MyMovingTurningHeightAction.ReadValue<float>();
 
             //
             // Implement current mode
