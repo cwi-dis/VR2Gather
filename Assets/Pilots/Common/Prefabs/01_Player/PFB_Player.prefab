@@ -62,7 +62,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
+  m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: KeyboardMouse
   m_DefaultActionMap: PilotControls
   m_SplitScreenIndex: -1
@@ -1120,7 +1120,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4294445891769490535}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -1151,7 +1151,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4294445891769490535}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
@@ -1744,7 +1744,6 @@ MonoBehaviour:
   TeleportHomeActionName: TeleportHomeRightHand
   GropeTouchActionName: GropingTouchRightHand
   MovingTurningDeltaActionName: MovingTurningDelta
-  MovingTurningHeightActionName: MovingTurningHeight
   ModelessMoveActionName: ModelessMoveDelta
   ModelessTurnActionName: 
   ModelessMoveHeightActionName: ModelessMoveHeight
@@ -1849,7 +1848,6 @@ MonoBehaviour:
   TeleportHomeActionName: 
   GropeTouchActionName: 
   MovingTurningDeltaActionName: 
-  MovingTurningHeightActionName: 
   ModelessMoveActionName: 
   ModelessTurnActionName: 
   ModelessMoveHeightActionName: 
@@ -2091,7 +2089,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8198385342960450749}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -2122,7 +2120,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8198385342960450749}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 

@@ -428,11 +428,33 @@
                 },
                 {
                     "name": "",
+                    "id": "4e39b9d0-cc65-4699-a9ff-4cf09ae0a340",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/secondarybutton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTeleportingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "face774e-c042-4904-a7f7-25f0d41ecd49",
                     "path": "",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "ModeGropingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ebe00a50-8827-468f-ab7e-def699c2c02a",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/triggertouched",
+                    "interactions": "",
+                    "processors": "Invert",
+                    "groups": "Oculus",
                     "action": "ModeGropingLeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -617,6 +639,22 @@
             "devices": [
                 {
                     "devicePath": "<Joystick>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Oculus",
+            "bindingGroup": "Oculus",
+            "devices": [
+                {
+                    "devicePath": "<OculusTouchController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<OculusTouchController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
