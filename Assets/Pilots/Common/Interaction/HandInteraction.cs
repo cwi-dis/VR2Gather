@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.XR;
-using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
@@ -33,6 +29,20 @@ namespace VRT.Pilots.Common
 		private NetworkPlayer _Player;
 		private HandController _Controller;
 
+		[Header("Input Actions")]
+
+		[Tooltip("Name of (button) action that enables groping")]
+		public string ModeGropingActionName;
+		InputAction MyModeGropingAction;
+		[Tooltip("Name of (button) action that enables teleporting")]
+		public string ModeTeleportingActionName;
+		InputAction MyModeTeleportingAction;
+		[Tooltip("Name of action (button) that activates home teleport")]
+		public string TeleportHomeActionName;
+		InputAction MyTeleportHomeAction;
+
+		[Header("Introspection objects for debugging")]
+		public PlayerInput MyPlayerInput;
 		public bool inTeleportMode = false;
 		public bool inPointingMode = false;
 		public bool inGrabbingMode = false;
@@ -45,6 +55,8 @@ namespace VRT.Pilots.Common
 			Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
 			EnsureDevice();
 		}
+
+#if XXXJACK_OLD_INPUT
 		void OnModeTeleporting(InputValue value)
 		{
 			bool onOff = value.Get<float>() > 0.5;
@@ -87,7 +99,7 @@ namespace VRT.Pilots.Common
 			inTeleportMode = false;
 			UpdateHandState();
 		}
-
+#endif
 		public void Awake()
 		{
 		}
@@ -111,12 +123,12 @@ namespace VRT.Pilots.Common
         {
 			if (needDevice != null && needDevice != "")
             {
-				PlayerInput pi = GetComponent<PlayerInput>();
-				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {pi.devices.Count}");
+				MyPlayerInput = GetComponent<PlayerInput>();
+				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {MyPlayerInput.devices.Count}");
 
 				bool hasDevice;
 				hasDevice = false;
-				foreach (var d in pi.devices)
+				foreach (var d in MyPlayerInput.devices)
 				{
 					Debug.Log($"EnsureDevice: used name={d.name} path={d.path}");
 					if (d.name == needDevice) hasDevice = true;
@@ -137,9 +149,12 @@ namespace VRT.Pilots.Common
 					Invoke("EnsureDevice", 2);
 					return;
                 }
-				pi.SwitchCurrentControlScheme(dev);		
+				MyPlayerInput.SwitchCurrentControlScheme(dev);		
 			}
-        }
+			MyModeGropingAction = MyPlayerInput.actions[ModeGropingActionName];
+			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
+			MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
+		}
 		void Update()
 		{
 			if (_Player.IsLocalPlayer)
