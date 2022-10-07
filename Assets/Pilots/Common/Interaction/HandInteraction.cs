@@ -121,9 +121,13 @@ namespace VRT.Pilots.Common
 
 		void EnsureDevice()
         {
-			if (needDevice != null && needDevice != "")
+			if (MyPlayerInput == null)
             {
 				MyPlayerInput = GetComponent<PlayerInput>();
+			}
+			if (MyPlayerInput == null) Debug.LogError("HandInteraction: cannot find PlayerInput");
+			if (needDevice != null && needDevice != "")
+            {
 				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {MyPlayerInput.devices.Count}");
 
 				bool hasDevice;

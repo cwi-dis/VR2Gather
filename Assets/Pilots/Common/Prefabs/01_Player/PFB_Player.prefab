@@ -1089,7 +1089,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 280599139246599801}
-  - component: {fileID: 4577825760084067668}
   - component: {fileID: 3083371993579628474}
   m_Layer: 0
   m_Name: LHInteractionOculus
@@ -1113,37 +1112,6 @@ Transform:
   m_Father: {fileID: 6076237778680395601}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4577825760084067668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4294445891769490535}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: OculusLeft
-  m_DefaultActionMap: PilotControlsXR
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &3083371993579628474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1163,6 +1131,10 @@ MonoBehaviour:
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  ModeGropingActionName: ModeGropingLeftHand
+  ModeTeleportingActionName: ModeTeleportingLeftHand
+  TeleportHomeActionName: ModeTeleportingRightHand
+  MyPlayerInput: {fileID: 3844742245929821803}
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
@@ -1518,7 +1490,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2005234238787297971}
-  - component: {fileID: 4691054300199760770}
   - component: {fileID: 6250457016238168488}
   m_Layer: 0
   m_Name: LHInteractionOpenVR
@@ -1542,37 +1513,6 @@ Transform:
   m_Father: {fileID: 6817198108956201397}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4691054300199760770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5425817764442140490}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: OpenXRLeft
-  m_DefaultActionMap: PilotControlsXR
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &6250457016238168488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1592,6 +1532,10 @@ MonoBehaviour:
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
+  ModeGropingActionName: ModeGropingLeftHand
+  ModeTeleportingActionName: ModeTeleportingLeftHand
+  TeleportHomeActionName: ModeTeleportingRightHand
+  MyPlayerInput: {fileID: 3844742245929821803}
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
@@ -2058,7 +2002,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5618768977665803606}
-  - component: {fileID: 2874790318603932022}
   - component: {fileID: 5749126029866097312}
   m_Layer: 0
   m_Name: RHInteractionOculus
@@ -2082,37 +2025,6 @@ Transform:
   m_Father: {fileID: 6076237778680395601}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2874790318603932022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8198385342960450749}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: OculusRight
-  m_DefaultActionMap: PilotControlsXR
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &5749126029866097312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2132,6 +2044,10 @@ MonoBehaviour:
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  ModeGropingActionName: ModeGropingRightHand
+  ModeTeleportingActionName: ModeTeleportingRightHand
+  TeleportHomeActionName: ModeTeleportingLeftHand
+  MyPlayerInput: {fileID: 3844742245929821803}
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0
@@ -2379,7 +2295,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4497761616678717941}
-  - component: {fileID: 1513401562189986747}
   - component: {fileID: 3181784303578220650}
   m_Layer: 0
   m_Name: RHInteractionOpenVR
@@ -2403,37 +2318,6 @@ Transform:
   m_Father: {fileID: 6817198108956201397}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1513401562189986747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8988288283282028055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 9cd9a40964bbfe74cb6341e4ff367bb7,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: OpenXRRight
-  m_DefaultActionMap: PilotControlsXR
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &3181784303578220650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2453,6 +2337,10 @@ MonoBehaviour:
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
+  ModeGropingActionName: ModeGropingRightHand
+  ModeTeleportingActionName: ModeTeleportingRightHand
+  TeleportHomeActionName: ModeTeleportingLeftHand
+  MyPlayerInput: {fileID: 3844742245929821803}
   inTeleportMode: 0
   inPointingMode: 0
   inGrabbingMode: 0

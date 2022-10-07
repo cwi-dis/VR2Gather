@@ -307,6 +307,17 @@
                 },
                 {
                     "name": "",
+                    "id": "ff57d8ed-b290-42a9-a53b-03c74ae6a194",
+                    "path": "<XRController>{RightHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTeleportingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
                     "path": "<Keyboard>/t",
                     "interactions": "",
@@ -351,6 +362,17 @@
                 },
                 {
                     "name": "",
+                    "id": "0b15529c-c477-47b4-9899-c2970d7599d4",
+                    "path": "<XRController>{LeftHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "248e13c6-f29b-4cba-bd57-0ce4105af421",
                     "path": "<Keyboard>/shift",
                     "interactions": "Press(behavior=2)",
@@ -367,6 +389,17 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Joystick",
+                    "action": "ModeGropingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f59f5537-93f5-42fd-8507-15ba844b2beb",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
                     "action": "ModeGropingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -439,6 +472,17 @@
                 },
                 {
                     "name": "",
+                    "id": "65b6f862-bc64-4310-9a8c-ce8b18109b27",
+                    "path": "<XRController>{LeftHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTeleportingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "face774e-c042-4904-a7f7-25f0d41ecd49",
                     "path": "",
                     "interactions": "",
@@ -461,6 +505,17 @@
                 },
                 {
                     "name": "",
+                    "id": "f65357cb-611e-4137-b1c1-4435f342f197",
+                    "path": "<XRController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeGropingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "b50886ec-2ad9-43bc-9be6-5cea4e49cbe8",
                     "path": "",
                     "interactions": "",
@@ -477,6 +532,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
+                    "action": "TeleportHomeLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd6e495e-af63-4691-b177-db618a433614",
+                    "path": "<XRController>{RightHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
                     "action": "TeleportHomeLeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -655,6 +721,22 @@
                 },
                 {
                     "devicePath": "<OculusTouchController>{RightHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "OpenXR",
+            "bindingGroup": "OpenXR",
+            "devices": [
+                {
+                    "devicePath": "<XRController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<XRController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
