@@ -1131,12 +1131,13 @@ MonoBehaviour:
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
-  ModeGropingActionName: ModeGropingLeftHand
+  ModeTouchingActionName: ModeTouchingLeftHand
+  GrabbingGrabActionName: GrabbingGrabLeftHand
   ModeTeleportingActionName: ModeTeleportingLeftHand
   TeleportHomeActionName: ModeTeleportingRightHand
   MyPlayerInput: {fileID: 3844742245929821803}
-  inTeleportMode: 0
-  inPointingMode: 0
+  inTeleportingMode: 0
+  inTouchingMode: 0
   inGrabbingMode: 0
   needDevice: OculusTouchControllerLeft
 --- !u!1 &4450405697229691927
@@ -1532,12 +1533,13 @@ MonoBehaviour:
   Hand: {fileID: 1961873935331442330}
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
-  ModeGropingActionName: ModeGropingLeftHand
+  ModeTouchingActionName: ModeTouchingLeftHand
+  GrabbingGrabActionName: GrabbingGrabLeftHand
   ModeTeleportingActionName: ModeTeleportingLeftHand
   TeleportHomeActionName: ModeTeleportingRightHand
   MyPlayerInput: {fileID: 3844742245929821803}
-  inTeleportMode: 0
-  inPointingMode: 0
+  inTeleportingMode: 0
+  inTouchingMode: 0
   inGrabbingMode: 0
   needDevice: 
 --- !u!1 &5704200592656136347
@@ -1682,11 +1684,13 @@ MonoBehaviour:
   pitchAngle: 0
   ModeMovingActionName: ModeMoving
   ModeTurningActionName: ModeTurning
-  ModeGropingActionName: ModeGropingRightHand
+  ModeTouchingActionName: ModeTouchingRightHand
+  ModeGrabbingActionName: 
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportGoActionName: TeleportGoRightHand
   TeleportHomeActionName: TeleportHomeRightHand
-  GropeTouchActionName: GropingTouchRightHand
+  TouchingTouchActionName: TouchingTouchRightHand
+  GrabbingGrabActionName: 
   MovingTurningDeltaActionName: MovingTurningDelta
   ModelessMoveActionName: ModelessMoveDelta
   ModelessTurnActionName: 
@@ -1695,7 +1699,8 @@ MonoBehaviour:
   MyPlayerInput: {fileID: 3844742245929821803}
   modeMovingActive: 0
   modeTurningActive: 0
-  modeGropingActive: 0
+  modeTouchingActive: 0
+  modeGrabbingActive: 0
   modeTeleportingActive: 0
 --- !u!1 &6616697951003645928
 GameObject:
@@ -1706,7 +1711,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6195526648355536999}
-  - component: {fileID: 9045807699616019570}
   - component: {fileID: 3462217843702666827}
   m_Layer: 0
   m_Name: interaction_Gamepad
@@ -1732,37 +1736,6 @@ Transform:
   m_Father: {fileID: 8928738529551039034}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9045807699616019570
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6616697951003645928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: cb6820065ca6b43fdaa32f2fff48380d,
-    type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents: []
-  m_NeverAutoSwitchControlSchemes: 1
-  m_DefaultControlScheme: Joystick
-  m_DefaultActionMap: PilotControls
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &3462217843702666827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1784,22 +1757,25 @@ MonoBehaviour:
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
   pitchAngle: 0
-  ModeMovingActionName: 
-  ModeTurningActionName: 
-  ModeGropingActionName: 
-  ModeTeleportingActionName: 
-  TeleportGoActionName: 
-  TeleportHomeActionName: 
-  GropeTouchActionName: 
-  MovingTurningDeltaActionName: 
-  ModelessMoveActionName: 
-  ModelessTurnActionName: 
-  ModelessMoveHeightActionName: 
+  ModeMovingActionName: ModeMoving
+  ModeTurningActionName: ModeTurning
+  ModeTouchingActionName: ModeTouchingRightHand
+  ModeGrabbingActionName: 
+  ModeTeleportingActionName: ModeTeleportingRightHand
+  TeleportGoActionName: TeleportGoRightHand
+  TeleportHomeActionName: TeleportHomeRightHand
+  TouchingTouchActionName: TouchingTouchRightHand
+  GrabbingGrabActionName: 
+  MovingTurningDeltaActionName: MovingTurningDelta
+  ModelessMoveActionName: ModelessMoveDelta
+  ModelessTurnActionName: ModelessTurnDelta
+  ModelessMoveHeightActionName: ModelessMoveHeight
   handInteraction: {fileID: 8100228094031343025}
   MyPlayerInput: {fileID: 0}
   modeMovingActive: 0
   modeTurningActive: 0
-  modeGropingActive: 0
+  modeTouchingActive: 0
+  modeGrabbingActive: 0
   modeTeleportingActive: 0
 --- !u!1 &6673891989343794525
 GameObject:
@@ -2044,12 +2020,13 @@ MonoBehaviour:
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
-  ModeGropingActionName: ModeGropingRightHand
+  ModeTouchingActionName: ModeTouchingRightHand
+  GrabbingGrabActionName: GrabbingGrabRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportHomeActionName: ModeTeleportingLeftHand
   MyPlayerInput: {fileID: 3844742245929821803}
-  inTeleportMode: 0
-  inPointingMode: 0
+  inTeleportingMode: 0
+  inTouchingMode: 0
   inGrabbingMode: 0
   needDevice: OculusTouchControllerRight
 --- !u!1 &8314240857473376918
@@ -2337,12 +2314,13 @@ MonoBehaviour:
   Hand: {fileID: 792856020353786571}
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
-  ModeGropingActionName: ModeGropingRightHand
+  ModeTouchingActionName: ModeTouchingRightHand
+  GrabbingGrabActionName: GrabbingGrabRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportHomeActionName: ModeTeleportingLeftHand
   MyPlayerInput: {fileID: 3844742245929821803}
-  inTeleportMode: 0
-  inPointingMode: 0
+  inTeleportingMode: 0
+  inTouchingMode: 0
   inGrabbingMode: 0
   needDevice: 
 --- !u!1 &8989305335192017463

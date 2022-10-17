@@ -31,9 +31,12 @@ namespace VRT.Pilots.Common
 
 		[Header("Input Actions")]
 
-		[Tooltip("Name of (button) action that enables groping")]
-		public string ModeGropingActionName;
-		InputAction MyModeGropingAction;
+		[Tooltip("Name of (button) action that enables touching")]
+		public string ModeTouchingActionName;
+		InputAction MyModeTouchingAction;
+		[Tooltip("Name of (button) action that activates grab")]
+		public string GrabbingGrabActionName;
+		InputAction MyGrabbingGrabAction;
 		[Tooltip("Name of (button) action that enables teleporting")]
 		public string ModeTeleportingActionName;
 		InputAction MyModeTeleportingAction;
@@ -43,8 +46,8 @@ namespace VRT.Pilots.Common
 
 		[Header("Introspection objects for debugging")]
 		public PlayerInput MyPlayerInput;
-		public bool inTeleportMode = false;
-		public bool inPointingMode = false;
+		public bool inTeleportingMode = false;
+		public bool inTouchingMode = false;
 		public bool inGrabbingMode = false;
 
 		[Tooltip("Hack: must have this input device, otherwise we try and force it")]
@@ -155,7 +158,8 @@ namespace VRT.Pilots.Common
                 }
 				MyPlayerInput.SwitchCurrentControlScheme(dev);		
 			}
-			MyModeGropingAction = MyPlayerInput.actions[ModeGropingActionName];
+			MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
+			MyGrabbingGrabAction = MyPlayerInput.actions[GrabbingGrabActionName];
 			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
 			MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
 		}
@@ -174,10 +178,12 @@ namespace VRT.Pilots.Common
 				//
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
+				inTeleportingMode = false;
+				inTouchingMode = false;
+				inGrabbingMode = false;
 
 
-
-				if (inTeleportMode)
+				if (inTeleportingMode)
                 {
 					var touchTransform = TouchCollider.transform;
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
@@ -188,7 +194,7 @@ namespace VRT.Pilots.Common
 
 		void UpdateHandState()
         {
-			if (inTeleportMode)
+			if (inTeleportingMode)
 			{
 				// Teleport mode overrides the other modes, specifically pointing mode.
 				_Controller.SetHandState(HandController.State.Pointing);
@@ -201,7 +207,7 @@ namespace VRT.Pilots.Common
 					teleportStrength
 					);
 				inGrabbingMode = false;
-				inPointingMode = false;
+				inTouchingMode = false;
 			}
 			else if(inGrabbingMode)
 			{
@@ -209,16 +215,16 @@ namespace VRT.Pilots.Common
 				GrabCollider.SetActive(true);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(false);
-				inPointingMode = false;
-				inTeleportMode = false;
+				inTouchingMode = false;
+				inTeleportingMode = false;
 			}
-			else if (inPointingMode)
+			else if (inTouchingMode)
 			{
 				_Controller.SetHandState(HandController.State.Pointing);
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(true);
 				teleporter.SetActive(false);
-				inTeleportMode = false;
+				inTeleportingMode = false;
 			}
 			else 
 			{

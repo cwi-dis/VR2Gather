@@ -30,15 +30,15 @@ namespace VRT.Pilots.Common
         public Transform handHomeTransform;
         [Tooltip("Collider that actually presses the button")]
         public GameObject touchCollider = null;
-        protected bool isTeleporting = false;
-        protected bool isGroping = false;
+        protected bool inTeleportingMode = false;
+        protected bool inTouchingMode = false;
         protected bool isTouchable = false;
         protected bool didTouch = false;
         protected Animator _Animator = null;
         private LineRenderer _Line;
 
         const float handLineDelta = 0.25f;     // Hand line stops 20cm before touching point
-        const float handGropingDelta = 0.1f;  // Groping hand position is 20cm before touching point
+        const float handGrabbingDelta = 0.1f;  // Grabbing hand position is 20cm before touching point
         const float handTouchingDelta = 0f; // Touching hand position is 10cm before touching point
 
         
@@ -46,7 +46,7 @@ namespace VRT.Pilots.Common
         {
             _Animator = hand.GetComponentInChildren<Animator>();
             _Line = GetComponent<LineRenderer>();
-            stopGroping();
+            stopTouching();
             if (unusedHand != null)
             {
                 unusedHand.SetActive(false);
@@ -55,46 +55,46 @@ namespace VRT.Pilots.Common
 
         void OnDestroy()
         {
-            stopGroping();
+            stopTouching();
         }
 
-        public void InputModeChange(bool groping, bool teleporting)
+        public void InputModeChange(bool grabbing, bool teleporting)
         {
-            Debug.Log($"HandInteractionEmulation: groping={groping}, teleporting={teleporting}");
-            if (groping)
+            Debug.Log($"HandInteractionEmulation: grabbing={grabbing}, teleporting={teleporting}");
+            if (grabbing)
             {
-                if (!isGroping)
+                if (!inTouchingMode)
                 {
                     // Start Grope
                     touchCollider.SetActive(false);
                     isTouchable = false;
                     didTouch = false;
-                    startGroping();
+                    startTouching();
                 }
             } else
             {
-                if (isGroping)
+                if (inTouchingMode)
                 {
-                    // Stop groping
-                    stopGroping();
+                    // Stop touching mode (i.e. don't extend index finger)
+                    stopTouching();
                     touchCollider.SetActive(false);
                 }
             }
-            isGroping = groping;
+            inTouchingMode = grabbing;
             
-            isTeleporting = teleporting;
-            teleporter.SetActive(isTeleporting);
+            inTeleportingMode = teleporting;
+            teleporter.SetActive(inTeleportingMode);
 
         }
 
         virtual public void InputModeUpdate(Vector2 magnitude)
         {
             Debug.Log($"HandInteractionEmulation: update {magnitude} ignored");
-            if (isGroping)
+            if (inTouchingMode)
             {
 
             }
-            if (isTeleporting)
+            if (inTeleportingMode)
             {
 
             }
@@ -102,7 +102,7 @@ namespace VRT.Pilots.Common
 
         public void InputModeTeleportGo()
         {
-            if (isTeleporting)
+            if (inTeleportingMode)
             {
                 Debug.Log("HandInteractionEmulation: Teleport go");
                 if (teleporter.canTeleport())
@@ -110,26 +110,26 @@ namespace VRT.Pilots.Common
                     teleporter.Teleport();
                 }
                 teleporter.SetActive(false);
-                isTeleporting = false;
+                inTeleportingMode = false;
             }
         }
 
         public void InputModeTeleportHome()
         {
-            if (isTeleporting)
+            if (inTeleportingMode)
             {
                 Debug.Log("HandInteractionEmulation: Teleport home");
                 teleporter.TeleportHome();
                 teleporter.SetActive(false);
-                isTeleporting = false;
+                inTeleportingMode = false;
             }
         }
 
-        public void InputModeGropingTouch()
+        public void InputModeTouchingTouch()
         {
-            if (isGroping)
+            if (inTouchingMode)
             {
-                Debug.Log("HandInteractionEmulation: groping touch");
+                Debug.Log("HandInteractionEmulation: touching touch");
                 didTouch = true;
             }
         }
@@ -147,7 +147,7 @@ namespace VRT.Pilots.Common
                 Vector3 dir = teleportRay.direction;
                 teleporter.CustomUpdatePath(pos, dir, 10f);
             }
-            if (isGroping)
+            if (inTouchingMode)
             {
                 //
                 // Check whether we are hitting any elegible object.
@@ -191,7 +191,7 @@ namespace VRT.Pilots.Common
 
         }
 
-        protected virtual void startGroping()
+        protected virtual void startTouching()
         {
         }
 
@@ -209,7 +209,7 @@ namespace VRT.Pilots.Common
             }
             if (hand != null)
             {
-                var handPoint = homePoint + direction * (distance - (isTouching ? handTouchingDelta : handGropingDelta));
+                var handPoint = homePoint + direction * (distance - (isTouching ? handTouchingDelta : handGrabbingDelta));
                 hand.transform.position = handPoint;
                 hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
                 hand.SetActive(true);
@@ -224,7 +224,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        protected void stopGroping()
+        protected void stopTouching()
         {
             if (hotspot != null)
             {

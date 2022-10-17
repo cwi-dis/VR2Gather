@@ -66,16 +66,20 @@ namespace VRT.Pilots.Common
         public string ModeMovingActionName;
         [Tooltip("Name of (button) action that enables turning")]
         public string ModeTurningActionName;
-        [Tooltip("Name of (button) action that enables groping")]
-        public string ModeGropingActionName;
+        [Tooltip("Name of (button) action that enables touching")]
+        public string ModeTouchingActionName;
+        [Tooltip("Name of (button) action that enables grabbing (default: always enabled)")]
+        public string ModeGrabbingActionName;
         [Tooltip("Name of (button) action that enables teleporting")]
         public string ModeTeleportingActionName;
         [Tooltip("Name of action (button) that activates teleport")]
         public string TeleportGoActionName;
         [Tooltip("Name of action (button) that activates home teleport")]
         public string TeleportHomeActionName;
-        [Tooltip("Name of action (button) that activates groping touch")]
-        public string GropeTouchActionName;
+        [Tooltip("Name of action (button) that activates touch (default: automatic when in touch mode)")]
+        public string TouchingTouchActionName;
+        [Tooltip("Name of action (button) that activates grab (default: not implemented)")]
+        public string GrabbingGrabActionName;
         [Tooltip("Name of action (2D) that moves player or hand or head")]
         public string MovingTurningDeltaActionName;
         [Tooltip("Name of action (2D) that always moves")]
@@ -91,7 +95,8 @@ namespace VRT.Pilots.Common
         public PlayerInput MyPlayerInput;
         public bool modeMovingActive = false;
         public bool modeTurningActive = false;
-        public bool modeGropingActive = false;
+        public bool modeTouchingActive = false;
+        public bool modeGrabbingActive = false;
         public bool modeTeleportingActive = false;
 
 
@@ -114,14 +119,15 @@ namespace VRT.Pilots.Common
             //
             // Find all the actions that we need
             //
-            InputAction MyModeMovingAction = MyPlayerInput.actions[ModeMovingActionName];
+            InputAction MyModeMovingAction = MyPlayerInput.actions.FindAction(ModeMovingActionName, false);
             InputAction MyModeTurningAction = MyPlayerInput.actions.FindAction(ModeTurningActionName, false);
-            InputAction MyModeGropingAction = MyPlayerInput.actions[ModeGropingActionName];
+            InputAction MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
+            InputAction MyModeGrabbingAction = MyPlayerInput.actions.FindAction(ModeGrabbingActionName, false);
             InputAction MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
-            InputAction MyTeleportGoAction = MyPlayerInput.actions[TeleportGoActionName];
+            InputAction MyTeleportGoAction = MyPlayerInput.actions.FindAction(TeleportGoActionName, false);
             InputAction MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
-            InputAction MyGropeTouchAction = MyPlayerInput.actions[GropeTouchActionName];
-            InputAction MyMovingTurningDeltaAction = MyPlayerInput.actions[MovingTurningDeltaActionName];
+            InputAction MyTouchingTouchAction = MyPlayerInput.actions.FindAction(TouchingTouchActionName, false);
+            InputAction MyMovingTurningDeltaAction = MyPlayerInput.actions.FindAction(MovingTurningDeltaActionName, false);
             InputAction MyModelessMoveAction = MyPlayerInput.actions.FindAction(ModelessMoveActionName, false);
             InputAction MyModelessTurnAction = MyPlayerInput.actions.FindAction(ModelessTurnActionName, false);
             InputAction MyModelessMoveHeightAction = MyPlayerInput.actions.FindAction(ModelessMoveHeightActionName, false);
@@ -129,13 +135,14 @@ namespace VRT.Pilots.Common
             //
             // Get move/height deltas
             //
-            Vector2 delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
+            Vector2 delta = Vector2.zero;
             float deltaHeight = 0;
             Vector2 modelessMoveDelta = Vector2.zero;
-            if (MyModelessMoveAction != null) modelessMoveDelta = MyModelessMoveAction.ReadValue<Vector2>();
             Vector2 modelessTurnDelta = Vector2.zero;
-            if (MyModelessTurnAction != null) modelessTurnDelta = MyModelessTurnAction.ReadValue<Vector2>();
             float modelessMoveDeltaHeight = 0;
+            if (MyMovingTurningDeltaAction != null) delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
+            if (MyModelessMoveAction != null) modelessMoveDelta = MyModelessMoveAction.ReadValue<Vector2>();
+            if (MyModelessTurnAction != null) modelessTurnDelta = MyModelessTurnAction.ReadValue<Vector2>();
             if (MyModelessMoveHeightAction != null) modelessMoveDeltaHeight = MyModelessMoveHeightAction.ReadValue<float>();
 
             //
@@ -143,9 +150,15 @@ namespace VRT.Pilots.Common
             //
             modeMovingActive = false;
             modeTurningActive = false;
-            modeGropingActive = false;
+            modeTouchingActive = false;
             modeTeleportingActive = false;
+            modeGrabbingActive = false;
 
+            //
+            // First check whether any of the modeless move/turn are active.
+            // Then we check for any of the mode-activating buttons.
+            // Finally we go to the default mode, which is grabbing if that is enabled, otherwise turning.
+            //
             if (modelessMoveDelta != Vector2.zero || modelessMoveDeltaHeight != 0)
             {
                 modeMovingActive = true;
@@ -159,26 +172,35 @@ namespace VRT.Pilots.Common
                 delta = modelessTurnDelta;
             }
             else
-            if (MyModeMovingAction.IsPressed())
+            if (MyModeMovingAction != null && MyModeMovingAction.IsPressed())
             {
                 modeMovingActive = true;
             }
             else
-            if (MyModeGropingAction.IsPressed())
+            if (MyModeTouchingAction != null && MyModeTouchingAction.IsPressed())
             {
-                modeGropingActive = true;
+                modeTouchingActive = true;
             }
             else
-            if (MyModeTeleportingAction.IsPressed())
+            if (MyModeTeleportingAction != null && MyModeTeleportingAction.IsPressed())
             {
                 modeTeleportingActive = true;
             }
             else
-            if (MyModeTurningAction == null || MyModeTurningAction.IsPressed())
+            if (MyModeTurningAction != null && MyModeTurningAction.IsPressed())
+            {
+                modeTurningActive = true;
+            } 
+            else
+            if (MyModeGrabbingAction == null)
+            {
+                modeGrabbingActive = true; 
+            }
+            else
             {
                 modeTurningActive = true;
             }
-            handInteraction?.InputModeChange(modeGropingActive, modeTeleportingActive);
+            handInteraction?.InputModeChange(modeTouchingActive, modeTeleportingActive);
 
             //
             // Implement current mode
@@ -236,15 +258,23 @@ namespace VRT.Pilots.Common
                 }
             }
             else
-            if (modeGropingActive)
+            if (modeTouchingActive)
             {
                 if (delta != Vector2.zero)
                 {
                     handInteraction?.InputModeUpdate(delta);
                 }
-                if (MyGropeTouchAction.triggered)
+                if (MyTouchingTouchAction.triggered)
                 {
-                    handInteraction?.InputModeGropingTouch();
+                    handInteraction?.InputModeTouchingTouch();
+                }
+            }
+            else
+            if (modeGrabbingActive)
+            {
+                if (MyModeGrabbingAction.IsPressed())
+                {
+                    Debug.Log($"xxxjack grab not yet implemented");
                 }
             }
             
