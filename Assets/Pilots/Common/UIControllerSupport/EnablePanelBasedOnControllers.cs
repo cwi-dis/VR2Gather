@@ -21,14 +21,22 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InitializeXRDevices();
     }
 
     public void OnControlsChanged(PlayerInput pi)
     {
         Debug.Log($"EnablePanelBasedOnControllers: OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
+        bool isOculus = pi.currentControlScheme == "Oculus";
+        bool isOpenXR = pi.currentControlScheme == "OpenXR";
+        bool isEmulation = pi.currentControlScheme == "KeyboardMouse";
+        bool isGamepad = pi.currentControlScheme == "Gamepad" || pi.currentControlScheme == "Joystick";
+        foreach (var c in oculus) c.SetActive(isOculus);
+        foreach (var c in openxr) c.SetActive(isOpenXR);
+        foreach (var c in emulator) c.SetActive(isEmulation);
+        foreach (var c in gamepad) c.SetActive(isGamepad);
     }
 
+#if xxxjack_not
     private void InitializeXRDevices()
     {
         bool isOculus = VRConfig.Instance.useControllerOculus();
@@ -59,5 +67,5 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
         foreach (var c in emulator) c.SetActive(isEmulation);
         foreach (var c in gamepad) c.SetActive(isGamepad);
     }
-
+#endif
 }
