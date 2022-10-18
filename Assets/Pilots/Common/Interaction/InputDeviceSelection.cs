@@ -15,10 +15,15 @@ public class InputDeviceSelection : MonoBehaviour
     [Tooltip("Mapping of input scheme names to implementation objects")]
     public ControlSchemeNameToObject[] schemes;
 
+    [Header("Introspection (for debugging)")]
+    [Tooltip("Current control scheme")]
+    public string currentControlScheme;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        PlayerInput pi = GetComponentInParent<PlayerInput>();
+        OnControlsChanged(pi);
     }
 
     public void OnDisable()
@@ -34,6 +39,7 @@ public class InputDeviceSelection : MonoBehaviour
     public void OnControlsChanged(PlayerInput pi)
     {
         Debug.Log($"InputDeviceSelection: OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
+        currentControlScheme = pi.currentControlScheme;
         GameObject wanted = null;
         if (schemes == null)
         {

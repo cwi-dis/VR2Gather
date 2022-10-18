@@ -6,8 +6,6 @@ using VRT.Core;
 
 public class EnablePanelBasedOnControllers : MonoBehaviour
 {
-    [Tooltip("Our PlayerInput")]
-    public PlayerInput input;
     [Tooltip("Panels to enable when using Oculus control scheme")]
     public GameObject[] oculus;
     [Tooltip("Panels to enable when using OpenXR control scheme")]
@@ -16,16 +14,21 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     public GameObject[] gamepad;
     [Tooltip("Panels to enable when using KeyboardMouse control scheme")]
     public GameObject[] emulator;
-
+    [Header("Introspection (for debugging)")]
+    [Tooltip("Current control scheme")]
+    public string currentControlScheme;
 
     // Start is called before the first frame update
     void Start()
     {
+        PlayerInput pi = GetComponentInParent<PlayerInput>();
+        OnControlsChanged(pi);
     }
 
     public void OnControlsChanged(PlayerInput pi)
     {
-        Debug.Log($"EnablePanelBasedOnControllers: OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
+        Debug.Log($"EnablePanelBasedOnControllers({gameObject.name}): OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
+        currentControlScheme = pi.currentControlScheme;
         bool isOculus = pi.currentControlScheme == "Oculus";
         bool isOpenXR = pi.currentControlScheme == "OpenXR";
         bool isEmulation = pi.currentControlScheme == "KeyboardMouse";
