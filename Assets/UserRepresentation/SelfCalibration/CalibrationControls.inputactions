@@ -762,12 +762,7 @@
             "bindingGroup": "Oculus",
             "devices": [
                 {
-                    "devicePath": "<OculusTouchController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<OculusTouchController>{RightHand}",
+                    "devicePath": "<OculusTouchController>",
                     "isOptional": false,
                     "isOR": false
                 }
@@ -778,12 +773,7 @@
             "bindingGroup": "OpenXR",
             "devices": [
                 {
-                    "devicePath": "<XRController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<XRController>{RightHand}",
+                    "devicePath": "<ViveWand>",
                     "isOptional": false,
                     "isOR": false
                 }
