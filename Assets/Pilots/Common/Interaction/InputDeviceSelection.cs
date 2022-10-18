@@ -10,7 +10,6 @@ public class InputDeviceSelection : MonoBehaviour
     {
         public string name;
         public GameObject implementation;
-        public GameObject documentation;
     }
 
     [Tooltip("Mapping of input scheme names to implementation objects")]
@@ -54,7 +53,6 @@ public class InputDeviceSelection : MonoBehaviour
         {
             bool thisOneWanted = so.implementation == wanted;
             so.implementation.SetActive(thisOneWanted);
-            if (so.documentation != null) so.documentation.SetActive(thisOneWanted);
         }
     }
   
