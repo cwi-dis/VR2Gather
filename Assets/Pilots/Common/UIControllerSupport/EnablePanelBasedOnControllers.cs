@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using VRT.Core;
 
 public class EnablePanelBasedOnControllers : MonoBehaviour
 {
-    [Tooltip("Panels to enable when using Oculus controllers")]
+    [Tooltip("Our PlayerInput")]
+    public PlayerInput input;
+    [Tooltip("Panels to enable when using Oculus control scheme")]
     public GameObject[] oculus;
-    [Tooltip("Panels to enable when using OpenXR controllers")]
+    [Tooltip("Panels to enable when using OpenXR control scheme")]
     public GameObject[] openxr;
-    [Tooltip("Panels to enable when using gamepad controller")]
+    [Tooltip("Panels to enable when using Gamepad/Joystick control scheme")]
     public GameObject[] gamepad;
-    [Tooltip("Panels to enable when using keyboard/mouse controller emulator")]
+    [Tooltip("Panels to enable when using KeyboardMouse control scheme")]
     public GameObject[] emulator;
 
 
@@ -19,6 +22,11 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     void Start()
     {
         InitializeXRDevices();
+    }
+
+    public void OnControlsChanged(PlayerInput pi)
+    {
+        Debug.Log($"EnablePanelBasedOnControllers: OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
     }
 
     private void InitializeXRDevices()

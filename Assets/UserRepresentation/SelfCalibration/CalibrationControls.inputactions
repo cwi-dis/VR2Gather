@@ -116,7 +116,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Yes",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -127,7 +127,7 @@
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Yes",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -138,7 +138,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Yes",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -171,7 +171,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -182,7 +182,7 @@
                     "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -193,7 +193,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "No",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -226,7 +226,7 @@
                     "path": "<ViveController>{RightHand}/menu",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -237,7 +237,7 @@
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -248,7 +248,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Translate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -281,7 +281,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/menu",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -292,7 +292,7 @@
                     "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -303,7 +303,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Rotate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -325,7 +325,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/grippressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -336,7 +336,7 @@
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -347,7 +347,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Reset",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -413,7 +413,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/trackpadclicked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -424,7 +424,7 @@
                     "path": "<ViveController>{RightHand}/trackpad",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -490,7 +490,7 @@
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -501,7 +501,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -545,7 +545,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/trackpadclicked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -556,7 +556,7 @@
                     "path": "<ViveController>{LeftHand}/trackpad/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -600,7 +600,7 @@
                     "path": "<Gamepad>/leftStick/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -611,7 +611,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Height",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -655,7 +655,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -666,7 +666,7 @@
                     "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -677,7 +677,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Done",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -710,7 +710,7 @@
                     "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{LeftHand}/triggerpressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Vive",
+                    "groups": "OpenXR",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -721,7 +721,7 @@
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XBox Gamepad",
+                    "groups": "Gamepad",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -732,7 +732,7 @@
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Logitech Gamepad",
+                    "groups": "Joystick",
                     "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -774,8 +774,8 @@
             ]
         },
         {
-            "name": "Vive",
-            "bindingGroup": "Vive",
+            "name": "OpenXR",
+            "bindingGroup": "OpenXR",
             "devices": [
                 {
                     "devicePath": "<XRController>{LeftHand}",
@@ -790,8 +790,8 @@
             ]
         },
         {
-            "name": "XBox Gamepad",
-            "bindingGroup": "XBox Gamepad",
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
             "devices": [
                 {
                     "devicePath": "<XInputController>",
@@ -801,8 +801,8 @@
             ]
         },
         {
-            "name": "Logitech Gamepad",
-            "bindingGroup": "Logitech Gamepad",
+            "name": "Joystick",
+            "bindingGroup": "Joystick",
             "devices": [
                 {
                     "devicePath": "<HID::Logitech Logitech RumblePad 2 USB>",
