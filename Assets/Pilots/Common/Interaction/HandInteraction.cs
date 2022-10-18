@@ -178,17 +178,21 @@ namespace VRT.Pilots.Common
 				//
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
-				inTeleportingMode = false;
-				inTouchingMode = false;
-				inGrabbingMode = false;
+				inTeleportingMode = MyModeTeleportingAction.IsPressed();
+				inTouchingMode = MyModeTouchingAction.IsPressed();
+				inGrabbingMode = MyGrabbingGrabAction.IsPressed();
 
 
 				if (inTeleportingMode)
                 {
 					var touchTransform = TouchCollider.transform;
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+					if (MyTeleportHomeAction.IsPressed())
+                    {
+						teleporter.TeleportHome();
+                    }
 				}
-
+				UpdateHandState();
 			}
 		}
 
