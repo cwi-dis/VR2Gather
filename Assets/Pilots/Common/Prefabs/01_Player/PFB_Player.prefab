@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8928738529551039034}
-  - component: {fileID: 3844742245929821803}
   - component: {fileID: 5541405563497515926}
+  - component: {fileID: 3844742245929821803}
   m_Layer: 0
   m_Name: Interaction
   m_TagString: Untagged
@@ -37,6 +37,34 @@ Transform:
   m_Father: {fileID: 2476733253101752967}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5541405563497515926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 390524791051866390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf980478e3875c24ca559ca1b89a940c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  schemes:
+  - name: KeyboardMouse
+    implementation: {fileID: 5747365182238593590}
+    documentation: {fileID: 0}
+  - name: Joystick
+    implementation: {fileID: 6616697951003645928}
+    documentation: {fileID: 0}
+  - name: Gamepad
+    implementation: {fileID: 6616697951003645928}
+    documentation: {fileID: 0}
+  - name: Oculus
+    implementation: {fileID: 1207839261129455703}
+    documentation: {fileID: 0}
+  - name: OpenXR
+    implementation: {fileID: 6673891989343794525}
+    documentation: {fileID: 0}
 --- !u!114 &3844742245929821803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,18 +96,6 @@ MonoBehaviour:
   m_DefaultActionMap: PilotControls
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &5541405563497515926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 390524791051866390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf980478e3875c24ca559ca1b89a940c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &426937040433907628
 GameObject:
   m_ObjectHideFlags: 0
