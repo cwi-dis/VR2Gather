@@ -293,7 +293,7 @@ namespace VRT.Core
         {
             return Config.Instance.VR.preferredDevice == "Lookingglass";
         }
-
+#if xxxjack_nomore
         public bool useControllerEmulation()
         {
             if (!_initialized)
@@ -329,7 +329,7 @@ namespace VRT.Core
             }
             return currentInputDevice == "Oculus";
         }
-
+#endif
         public float cameraDefaultHeight()
         {
             if (useHMD()) return 0;

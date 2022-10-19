@@ -1796,7 +1796,7 @@ MonoBehaviour:
   ModelessTurnActionName: ModelessTurnDelta
   ModelessMoveHeightActionName: ModelessMoveHeight
   handInteraction: {fileID: 8100228094031343025}
-  MyPlayerInput: {fileID: 0}
+  MyPlayerInput: {fileID: 3844742245929821803}
   modeMovingActive: 0
   modeTurningActive: 0
   modeTouchingActive: 0

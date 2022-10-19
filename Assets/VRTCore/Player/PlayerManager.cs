@@ -62,6 +62,7 @@ public class PlayerManager : MonoBehaviour {
 		{
 			obj.SetActive(isLocalPlayer);
 		}
+#if xxxjack_nomore
 		// Enable controller emulation (keyboard/mouse) objects only for the local user when using emulation
 		bool isLocalEmulationPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerEmulation();
 		foreach (var obj in inputEmulationOnlyObjects)
@@ -90,6 +91,7 @@ public class PlayerManager : MonoBehaviour {
         {
 			Debug.LogError("PlayerManager: no input device selected for local player");
         }
+#endif
 		// Disable objects that should not be used with an HMD (to forestall motion sickness)
 		if (VRConfig.Instance.useHMD())
 		{
