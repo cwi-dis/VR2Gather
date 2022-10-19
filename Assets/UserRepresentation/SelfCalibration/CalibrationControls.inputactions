@@ -762,7 +762,12 @@
             "bindingGroup": "Oculus",
             "devices": [
                 {
-                    "devicePath": "<OculusTouchController>",
+                    "devicePath": "<OculusTouchController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<OculusTouchController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
