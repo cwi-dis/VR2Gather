@@ -321,6 +321,17 @@
                 },
                 {
                     "name": "",
+                    "id": "2cd06b74-efca-4fbd-b4f5-feca7a32b8e1",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTeleportingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
                     "path": "<Keyboard>/t",
                     "interactions": "",
@@ -370,6 +381,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "OpenXR",
+                    "action": "ModeTouchingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca7b2f4d-9c38-4d84-9a19-c0e6ded51d70",
+                    "path": "<OculusTouchController>{RightHand}/triggerTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "ModeTouchingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -555,7 +577,7 @@
                     "id": "ebe00a50-8827-468f-ab7e-def699c2c02a",
                     "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/triggertouched",
                     "interactions": "",
-                    "processors": "Invert",
+                    "processors": "",
                     "groups": "Oculus",
                     "action": "ModeTouchingLeftHand",
                     "isComposite": false,
@@ -607,11 +629,33 @@
                 },
                 {
                     "name": "",
+                    "id": "f8b1d36c-0093-477c-9564-d6a5955333cc",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "064d8c0f-00c8-4fc9-9f64-753d0d7be80a",
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "OpenXR",
+                    "action": "ModeGrabbingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f57fb285-67d9-45fb-9ef4-bd87bc70b7f2",
+                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "ModeGrabbingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -629,11 +673,33 @@
                 },
                 {
                     "name": "",
+                    "id": "436962df-3a9b-4707-97a3-57fa6643852b",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "TeleportHomeLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "c5ec502f-9c1c-405e-a3cc-89d506feda21",
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "OpenXR",
+                    "action": "ModeGrabbingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7bb2dca-b658-495a-8149-61815891de98",
+                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
                     "action": "ModeGrabbingLeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
