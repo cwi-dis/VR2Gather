@@ -38,37 +38,4 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
         foreach (var c in emulator) c.SetActive(isEmulation);
         foreach (var c in gamepad) c.SetActive(isGamepad);
     }
-
-#if xxxjack_not
-    private void InitializeXRDevices()
-    {
-        bool isOculus = VRConfig.Instance.useControllerOculus();
-        bool isOpenXR = VRConfig.Instance.useControllerOpenXR();
-        bool isEmulation = VRConfig.Instance.useControllerEmulation();
-        bool isGamepad = VRConfig.Instance.useControllerGamepad();
-
-        if (!isEmulation && !isGamepad)
-        {
-            // xxxjack this code needs to move to VRConfig.
-            var inputDevices = new List<UnityEngine.XR.InputDevice>();
-            UnityEngine.XR.InputDevices.GetDevices(inputDevices);
-            foreach (var device in inputDevices)
-            {
-                if (device.manufacturer == "HTC")
-                {
-                    isOculus = false;
-                }
-            }
-            // if not HTC then we assume Oculus xxxjack hack
-            if (!isOculus)
-            {
-                isOpenXR = true;
-            }
-        }
-        foreach (var c in oculus) c.SetActive(isOculus);
-        foreach (var c in openxr) c.SetActive(isOpenXR);
-        foreach (var c in emulator) c.SetActive(isEmulation);
-        foreach (var c in gamepad) c.SetActive(isGamepad);
-    }
-#endif
 }

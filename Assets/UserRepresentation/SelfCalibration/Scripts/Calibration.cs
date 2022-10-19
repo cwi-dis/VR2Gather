@@ -76,29 +76,7 @@ public class Calibration : MonoBehaviour {
             }
 
             MyPlayerInput = GetComponent<PlayerInput>();
-#if xxxjack_switch_control_scheme
-            if (VRConfig.Instance.useControllerEmulation())
-            {
-                MyPlayerInput.SwitchCurrentControlScheme("KeyboardMouse");
-            }
-            else
-            if (VRConfig.Instance.useControllerGamepad())
-            {
-                MyPlayerInput.SwitchCurrentControlScheme("XBox Gamepad");
 
-            }
-            else
-            if (VRConfig.Instance.useControllerOculus())
-            {
-                MyPlayerInput.SwitchCurrentControlScheme("Oculus");
-            }
-            else
-            if (VRConfig.Instance.useControllerOpenXR())
-            {
-                MyPlayerInput.SwitchCurrentControlScheme("OpenXR");
-            }
-            Debug.Log($"Calibration: control scheme {MyPlayerInput.currentControlScheme}");
-#endif
         }
         InputAction YesAction = MyPlayerInput.actions[YesActionName];
        
@@ -110,17 +88,9 @@ public class Calibration : MonoBehaviour {
         InputAction MoveAction = MyPlayerInput.actions[MoveActionName];
         InputAction HeightAction = MyPlayerInput.actions[HeightActionName];
 
-        if (YesAction.triggered) Debug.Log($"xxxjack YesAction triggered by {YesAction.activeControl.path}");
-        if (NoAction.triggered) Debug.Log($"xxxjack NoAction triggered by {NoAction.activeControl.path}");
-        if (DoneAction.triggered) Debug.Log($"xxxjack DoneAction triggered by {DoneAction.activeControl.path}");
-        if (ResetAction.triggered) Debug.Log($"xxxjack ResetAction triggered by {ResetAction.activeControl.path}");
-        if (RotateAction.triggered) Debug.Log($"xxxjack RotateAction triggered by {RotateAction.activeControl.path}");
-        if (TranslateAction.triggered) Debug.Log($"xxxjack TranslateAction triggered by {TranslateAction.activeControl.path}");
 
         var curMove = MoveAction.ReadValue<Vector2>();
-        if (curMove != Vector2.zero) Debug.Log($"xxxjack MoveAction {curMove} by {MoveAction.activeControl.path}");
         var curHeight = HeightAction.ReadValue<float>();
-        if (curHeight != 0) Debug.Log($"xxxjack HeightAction {curHeight} by {HeightAction.activeControl.path}");
 
         ComfortUI.SetActive(state == State.CheckWithUser);
         CalibrationModeUI.SetActive(state == State.SelectTranslationRotation);
@@ -182,9 +152,6 @@ public class Calibration : MonoBehaviour {
                     float zAxis = curMove.y;
                     float xAxis = curMove.x;
                     float yAxis = curHeight;
-                    if (zAxis != 0) Debug.Log($"xxxjack translation z={zAxis}");
-                    if (xAxis != 0) Debug.Log($"xxxjack translation x={xAxis}");
-                    if (yAxis != 0) Debug.Log($"xxxjack translation y={yAxis}");
                     cameraOffset.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
                 }
                 // Save Translation
@@ -209,7 +176,6 @@ public class Calibration : MonoBehaviour {
                 else
                 {
                     float yAxisR = curMove.x;
-                    if (yAxisR != 0) Debug.Log($"xxxjack rotation y={yAxisR}");
                     cameraOffset.transform.localRotation = Quaternion.Euler(cameraOffset.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * yAxisR);
                 }
                 // Save Translation

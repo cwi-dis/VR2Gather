@@ -8,6 +8,9 @@ using UnityEngine.InputSystem.Controls;
 using UnityEditor;
 
 #if XXXJACK_DOES_NOT_WORK
+// This InputProcessor should negate values, i.e. a range 0..1 will be mapped to 1..0.
+// This is different from inverting (which maps -1..1 to 1..-1).
+// But it doesn't work...
 #if UNITY_EDITOR
 [InitializeOnLoad]
 #endif
@@ -274,7 +277,7 @@ namespace VRT.Pilots.Common
             {
                 if (MyModeGrabbingAction != null && MyModeGrabbingAction.IsPressed())
                 {
-                    Debug.Log($"xxxjack grab not yet implemented");
+                    Debug.LogError($"xxxjack grab not yet implemented");
                 }
             }
             

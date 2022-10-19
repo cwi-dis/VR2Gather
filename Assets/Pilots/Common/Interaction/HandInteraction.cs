@@ -52,59 +52,13 @@ namespace VRT.Pilots.Common
 		public bool inTouchingMode = false;
 		public bool inGrabbingMode = false;
 
-		[Tooltip("Hack: must have this input device, otherwise we try and force it")]
-		public string needDevice;
-
 		public void OnControlsChanged(PlayerInput pi)
 		{
-			Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
+			// Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
 			EnsureDevice();
 		}
 
-#if XXXJACK_OLD_INPUT
-		void OnModeTeleporting(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			Debug.Log($"xxxjack HandInteraction: OnModeTeleporting {onOff}");
-			// Releaseing the teleport key will execute the teleport
-			if (inTeleportMode && !onOff)
-            {
-				if (teleporter.canTeleport())
-				{
-					teleporter.Teleport();
-				}
-			}
-			inTeleportMode = onOff;
-			UpdateHandState();
-		}
 
-		void OnModePointing(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			if (pointingModeAxisInvert) onOff = !onOff;
-			Debug.Log($"xxxjack HandInteraction: OnModePointing {onOff}");
-			inPointingMode = onOff;
-			UpdateHandState();
-		}
-
-		void OnModeGrabbing(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			if (grabbingModeAxisInvert) onOff = !onOff;
-			Debug.Log($"xxxjack HandInteraction: OnModeGrabbing {onOff}");
-			inGrabbingMode = onOff;
-			UpdateHandState();
-
-		}
-
-		void OnTeleportHome(InputValue value)
-		{
-			Debug.Log("xxxjack HandInteraction: OnTeleportHome");
-			if (teleporter.teleporterActive) teleporter.TeleportHome();
-			inTeleportMode = false;
-			UpdateHandState();
-		}
-#endif
 		public void Awake()
 		{
 		}
@@ -131,37 +85,7 @@ namespace VRT.Pilots.Common
 				MyPlayerInput = GetComponent<PlayerInput>();
 			}
 			if (MyPlayerInput == null) Debug.LogError("HandInteraction: cannot find PlayerInput");
-#if xxxjack_nomore
-			if (needDevice != null && needDevice != "")
-            {
-				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {MyPlayerInput.devices.Count}");
 
-				bool hasDevice;
-				hasDevice = false;
-				foreach (var d in MyPlayerInput.devices)
-				{
-					Debug.Log($"EnsureDevice: used name={d.name} path={d.path}");
-					if (d.name == needDevice) hasDevice = true;
-				}
-				if (hasDevice)
-				{
-					Debug.Log($"EnsureDevice: We apparently already use {needDevice}");
-				}
-				UnityEngine.InputSystem.InputDevice dev = null;
-				foreach (var d in InputSystem.devices)
-                {
-					Debug.Log($"EnsureDevice: available name={d.name} path={d.path}");
-					if (d.name == needDevice) dev = d;
-                }
-				if (dev == null)
-                {
-					Debug.Log($"EnsureDevice: {needDevice} does not exist");
-					Invoke("EnsureDevice", 2);
-					return;
-                }
-				MyPlayerInput.SwitchCurrentControlScheme(dev);		
-			}
-#endif
 			MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
 			MyGrabbingGrabAction = MyPlayerInput.actions[GrabbingGrabActionName];
 			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
@@ -201,7 +125,7 @@ namespace VRT.Pilots.Common
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
 					if (MyTeleportHomeAction.IsPressed())
                     {
-						Debug.Log("xxxjack teleport home");
+						// Debug.Log("xxxjack teleport home");
 						teleporter.TeleportHome();
                     }
 				}

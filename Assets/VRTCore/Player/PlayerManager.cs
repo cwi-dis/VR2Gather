@@ -14,11 +14,7 @@ public class PlayerManager : MonoBehaviour {
     public GameObject pc;
     public GameObject voice;
     public GameObject[] localPlayerOnlyObjects;
-    public GameObject[] inputEmulationOnlyObjects;
-    public GameObject[] inputGamepadOnlyObjects;
-    public GameObject[] inputOculusOnlyObjects;
-	public GameObject[] inputOpenVROnlyObjects;
-	public GameObject[] inputNonHMDObjects;
+    public GameObject[] inputNonHMDObjects;
 
 	//
 	// Enable camera (or camera-like object) and input handling.
@@ -62,36 +58,7 @@ public class PlayerManager : MonoBehaviour {
 		{
 			obj.SetActive(isLocalPlayer);
 		}
-#if xxxjack_nomore
-		// Enable controller emulation (keyboard/mouse) objects only for the local user when using emulation
-		bool isLocalEmulationPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerEmulation();
-		foreach (var obj in inputEmulationOnlyObjects)
-		{
-			obj.SetActive(isLocalEmulationPlayer);
-		}
-		// Enable gamepad objects only for the local user when using gamepad
-		bool isLocalGamepadPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerGamepad();
-		foreach (var obj in inputGamepadOnlyObjects)
-		{
-			obj.SetActive(isLocalGamepadPlayer);
-		}
-		// Enable oculus objects only for the local user when using oculus
-		bool isLocalOculusPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOculus();
-		foreach (var obj in inputOculusOnlyObjects)
-		{
-			obj.SetActive(isLocalOculusPlayer);
-		}
-		// Enable gamepad objects only for the local user when using gamepad
-		bool isLocalOpenXRPlayer = isLocalPlayer && !disableInput && VRConfig.Instance.useControllerOpenXR();
-		foreach (var obj in inputOpenVROnlyObjects)
-		{
-			obj.SetActive(isLocalOpenXRPlayer);
-		}
-		if (!isLocalEmulationPlayer && !isLocalGamepadPlayer && !isLocalOculusPlayer && !isLocalOpenXRPlayer)
-        {
-			Debug.LogError("PlayerManager: no input device selected for local player");
-        }
-#endif
+
 		// Disable objects that should not be used with an HMD (to forestall motion sickness)
 		if (VRConfig.Instance.useHMD())
 		{
