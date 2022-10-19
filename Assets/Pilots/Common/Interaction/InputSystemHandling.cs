@@ -102,14 +102,13 @@ namespace VRT.Pilots.Common
 
         private void Awake()
         {
-            if (cameraTransformToControl != null) return;
-            PlayerManager player = GetComponentInParent<PlayerManager>();
-            cameraTransformToControl = player.getCameraTransform();
         }
 
         void Start()
         {
-
+            if (cameraTransformToControl != null) return;
+            PlayerManager player = GetComponentInParent<PlayerManager>();
+            cameraTransformToControl = player.getCameraTransform();
         }
 
 
@@ -192,7 +191,7 @@ namespace VRT.Pilots.Common
                 modeTurningActive = true;
             } 
             else
-            if (MyModeGrabbingAction == null)
+            if (MyModeGrabbingAction != null)
             {
                 modeGrabbingActive = true; 
             }
@@ -272,7 +271,7 @@ namespace VRT.Pilots.Common
             else
             if (modeGrabbingActive)
             {
-                if (MyModeGrabbingAction.IsPressed())
+                if (MyModeGrabbingAction != null && MyModeGrabbingAction.IsPressed())
                 {
                     Debug.Log($"xxxjack grab not yet implemented");
                 }

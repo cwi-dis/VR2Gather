@@ -60,7 +60,7 @@ namespace VRT.Pilots.Common
 
         public void InputModeChange(bool grabbing, bool teleporting)
         {
-            Debug.Log($"HandInteractionEmulation: grabbing={grabbing}, teleporting={teleporting}");
+            //Debug.Log($"HandInteractionEmulation: grabbing={grabbing}, teleporting={teleporting}");
             if (grabbing)
             {
                 if (!inTouchingMode)
