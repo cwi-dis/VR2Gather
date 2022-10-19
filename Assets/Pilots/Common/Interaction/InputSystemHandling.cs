@@ -197,7 +197,7 @@ namespace VRT.Pilots.Common
             }
             else
             {
-                modeTurningActive = true;
+                // modeTurningActive = true;
             }
             handInteraction?.InputModeChange(modeTouchingActive, modeTeleportingActive);
 
