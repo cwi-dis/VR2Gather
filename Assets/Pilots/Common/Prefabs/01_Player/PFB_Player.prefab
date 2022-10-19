@@ -1157,7 +1157,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
   ModeTouchingActionName: ModeTouchingLeftHand
-  GrabbingGrabActionName: GrabbingGrabLeftHand
+  negateTouching: 1
+  GrabbingGrabActionName: ModeGrabbingLeftHand
   ModeTeleportingActionName: ModeTeleportingLeftHand
   TeleportHomeActionName: ModeTeleportingRightHand
   MyPlayerInput: {fileID: 3844742245929821803}
@@ -1559,6 +1560,7 @@ MonoBehaviour:
   GrabCollider: {fileID: 5429411007057071280}
   TouchCollider: {fileID: 350448258107461840}
   ModeTouchingActionName: ModeTouchingLeftHand
+  negateTouching: 0
   GrabbingGrabActionName: GrabbingGrabLeftHand
   ModeTeleportingActionName: ModeTeleportingLeftHand
   TeleportHomeActionName: ModeTeleportingRightHand
@@ -2046,7 +2048,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
   ModeTouchingActionName: ModeTouchingRightHand
-  GrabbingGrabActionName: GrabbingGrabRightHand
+  negateTouching: 1
+  GrabbingGrabActionName: ModeGrabbingRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportHomeActionName: ModeTeleportingLeftHand
   MyPlayerInput: {fileID: 3844742245929821803}
@@ -2340,6 +2343,7 @@ MonoBehaviour:
   GrabCollider: {fileID: 377988851985499562}
   TouchCollider: {fileID: 5401827870845855719}
   ModeTouchingActionName: ModeTouchingRightHand
+  negateTouching: 0
   GrabbingGrabActionName: GrabbingGrabRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportHomeActionName: ModeTeleportingLeftHand

@@ -57,7 +57,7 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ModeTouchingLeftHand",
@@ -66,7 +66,7 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ModeGrabbingRightHand",
@@ -75,7 +75,7 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "ModeGrabbingLeftHand",
@@ -84,7 +84,7 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "TeleportGoRightHand",
@@ -388,7 +388,7 @@
                 {
                     "name": "",
                     "id": "ca7b2f4d-9c38-4d84-9a19-c0e6ded51d70",
-                    "path": "<OculusTouchController>{RightHand}/triggerTouched",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{RightHand}/triggertouched",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -652,7 +652,7 @@
                 {
                     "name": "",
                     "id": "f57fb285-67d9-45fb-9ef4-bd87bc70b7f2",
-                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{RightHand}/grippressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -696,7 +696,7 @@
                 {
                     "name": "",
                     "id": "e7bb2dca-b658-495a-8149-61815891de98",
-                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/grippressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",

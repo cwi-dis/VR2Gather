@@ -31,6 +31,7 @@ public class NegateProcessor : InputProcessor<float>
 
     public override float Process(float value, InputControl control)
     {
+        Debug.Log($"Negate({control.name}): {value}->{1 - value}");
         return 1-value;
     }
 }

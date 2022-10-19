@@ -33,6 +33,8 @@ namespace VRT.Pilots.Common
 
 		[Tooltip("Name of (button) action that enables touching")]
 		public string ModeTouchingActionName;
+		[Tooltip("Negate the touching action button")]
+		public bool negateTouching;
 		InputAction MyModeTouchingAction;
 		[Tooltip("Name of (button) action that activates grab")]
 		public string GrabbingGrabActionName;
@@ -183,9 +185,16 @@ namespace VRT.Pilots.Common
 				//
 				inTeleportingMode = MyModeTeleportingAction.IsPressed();
 				inTouchingMode = MyModeTouchingAction.IsPressed();
+				if (negateTouching) inTouchingMode = !inTouchingMode;
 				inGrabbingMode = MyGrabbingGrabAction.IsPressed();
-
-
+				if (inTeleportingMode || inGrabbingMode)
+                {
+					inTouchingMode = false;
+                }
+				if (inTeleportingMode)
+                {
+					inGrabbingMode = false;
+                }
 				if (inTeleportingMode)
                 {
 					var touchTransform = TouchCollider.transform;
