@@ -129,6 +129,7 @@ namespace VRT.Pilots.Common
 				MyPlayerInput = GetComponent<PlayerInput>();
 			}
 			if (MyPlayerInput == null) Debug.LogError("HandInteraction: cannot find PlayerInput");
+#if xxxjack_nomore
 			if (needDevice != null && needDevice != "")
             {
 				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {MyPlayerInput.devices.Count}");
@@ -158,11 +159,13 @@ namespace VRT.Pilots.Common
                 }
 				MyPlayerInput.SwitchCurrentControlScheme(dev);		
 			}
+#endif
 			MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
 			MyGrabbingGrabAction = MyPlayerInput.actions[GrabbingGrabActionName];
 			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
 			MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
 		}
+		
 		void Update()
 		{
 			if (_Player.IsLocalPlayer)
