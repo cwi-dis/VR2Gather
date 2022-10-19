@@ -52,19 +52,15 @@ MonoBehaviour:
   schemes:
   - name: KeyboardMouse
     implementation: {fileID: 5747365182238593590}
-    documentation: {fileID: 0}
   - name: Joystick
     implementation: {fileID: 6616697951003645928}
-    documentation: {fileID: 0}
   - name: Gamepad
     implementation: {fileID: 6616697951003645928}
-    documentation: {fileID: 0}
   - name: Oculus
     implementation: {fileID: 1207839261129455703}
-    documentation: {fileID: 0}
   - name: OpenXR
     implementation: {fileID: 6673891989343794525}
-    documentation: {fileID: 0}
+  currentControlScheme: 
 --- !u!114 &3844742245929821803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,7 +75,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Actions: {fileID: -944628639613478452, guid: cb6820065ca6b43fdaa32f2fff48380d,
     type: 3}
-  m_NotificationBehavior: 0
+  m_NotificationBehavior: 1
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
     m_PersistentCalls:
