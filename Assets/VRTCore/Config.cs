@@ -40,7 +40,6 @@ namespace VRT.Core
         public class _VR
         {
             public string preferredDevice = null;
-            public string preferredController = "";
         }
         public _VR VR;
 
