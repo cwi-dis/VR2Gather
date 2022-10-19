@@ -201,9 +201,23 @@ namespace VRT.Pilots.Common
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
 					if (MyTeleportHomeAction.IsPressed())
                     {
+						Debug.Log("xxxjack teleport home");
 						teleporter.TeleportHome();
                     }
 				}
+				else
+                {
+					// If we are _not_ in teleporting mode, but the teleporter
+					// is active that means we have just gone out of teleporting mode.
+					// We teleport (if possible).
+					if (teleporter.teleporterActive)
+                    {
+						if (teleporter.canTeleport())
+                        {
+							teleporter.Teleport();
+                        }
+                    }
+                }
 				UpdateHandState();
 			}
 		}
