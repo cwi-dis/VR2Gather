@@ -235,7 +235,7 @@ namespace VRT.Pilots.Common
                     float turnRotation = delta.x * turnSpeed * Time.deltaTime;
                     float pitchRotation = delta.y * pitchSpeed * Time.deltaTime;
 
-                    pitchAngle = pitchAngle - pitchRotation;
+                    pitchAngle = pitchAngle + pitchRotation;
                     pitchAngle = Mathf.Clamp(pitchAngle, -90f, 90f);
 
                     Debug.Log($"InputSystemHandling: Turn({delta}) to turn={turnRotation}, pitch={pitchRotation} to {pitchAngle}");
