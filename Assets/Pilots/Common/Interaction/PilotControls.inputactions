@@ -703,6 +703,17 @@
                     "action": "ModeGrabbingLeftHand",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "045625ff-1f2d-4e68-889b-f75537aa724a",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "GrabbingGrabRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
