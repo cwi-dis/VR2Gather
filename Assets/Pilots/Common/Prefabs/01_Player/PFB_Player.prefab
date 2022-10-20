@@ -1165,7 +1165,6 @@ MonoBehaviour:
   inTeleportingMode: 0
   inTouchingMode: 0
   inGrabbingMode: 0
-  needDevice: OculusTouchControllerLeft
 --- !u!1 &4450405697229691927
 GameObject:
   m_ObjectHideFlags: 0
@@ -1364,14 +1363,6 @@ MonoBehaviour:
   localPlayerOnlyObjects:
   - {fileID: 8989305335192017463}
   - {fileID: 390524791051866390}
-  inputEmulationOnlyObjects:
-  - {fileID: 5747365182238593590}
-  inputGamepadOnlyObjects:
-  - {fileID: 6616697951003645928}
-  inputOculusOnlyObjects:
-  - {fileID: 1207839261129455703}
-  inputOpenVROnlyObjects:
-  - {fileID: 6673891989343794525}
   inputNonHMDObjects: []
 --- !u!114 &1101617796011613554
 MonoBehaviour:
@@ -1568,7 +1559,6 @@ MonoBehaviour:
   inTeleportingMode: 0
   inTouchingMode: 0
   inGrabbingMode: 0
-  needDevice: 
 --- !u!1 &5704200592656136347
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,7 +1702,7 @@ MonoBehaviour:
   ModeMovingActionName: ModeMoving
   ModeTurningActionName: ModeTurning
   ModeTouchingActionName: ModeTouchingRightHand
-  ModeGrabbingActionName: 
+  ModeGrabbingActionName: GrabbingGrabRightHand
   ModeTeleportingActionName: ModeTeleportingRightHand
   TeleportGoActionName: TeleportGoRightHand
   TeleportHomeActionName: TeleportHomeRightHand
@@ -2056,7 +2046,6 @@ MonoBehaviour:
   inTeleportingMode: 0
   inTouchingMode: 0
   inGrabbingMode: 0
-  needDevice: OculusTouchControllerRight
 --- !u!1 &8314240857473376918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2351,7 +2340,6 @@ MonoBehaviour:
   inTeleportingMode: 0
   inTouchingMode: 0
   inGrabbingMode: 0
-  needDevice: 
 --- !u!1 &8989305335192017463
 GameObject:
   m_ObjectHideFlags: 0
