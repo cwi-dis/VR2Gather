@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
 
         protected float xHand, yHand;
 
-        protected override void startGroping()
+        protected override void startTouching()
         {
             xHand = yHand = 0f;
         }

@@ -34,8 +34,7 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : [""],
-	"preferredController" : ""
+	"_preferredDevice" : "Oculus"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"

@@ -16,7 +16,7 @@ public class Calibration : MonoBehaviour {
     [Tooltip("The player to control, for preview")]
     public PlayerManager player;
     [Tooltip("The camera to control, for preview")]
-    public GameObject   cameraReference;
+    public GameObject   cameraOffset;
     
     [Tooltip("How fast to rotate")]
     public float        _rotationSlightStep = 1f;
@@ -31,6 +31,17 @@ public class Calibration : MonoBehaviour {
     public GameObject   TransalationUI;
     public GameObject   RotationUI;
 
+    [Header("Input Actions")]
+    private PlayerInput MyPlayerInput;
+    const string YesActionName = "Yes";
+    const string NoActionName = "No";
+    const string DoneActionName = "Done";
+    const string ResetActionName = "Reset";
+    const string RotateActionName = "Rotate";
+    const string TranslateActionName = "Translate";
+    const string MoveActionName = "Move";
+    const string HeightActionName = "Height";
+  
     public static void ResetFactorySettings()
     {
         PlayerPrefs.SetFloat("pcs_pos_x", 0);
@@ -54,6 +65,138 @@ public class Calibration : MonoBehaviour {
         ChangeModeUI();
     }
 
+    public void Update()
+    {
+        if (MyPlayerInput == null)
+        {
+            if (!VRConfig.Instance.initialized)
+            {
+                Debug.LogError("Calibration: Update: VR config not yet initialized");
+                return;
+            }
+
+            MyPlayerInput = GetComponent<PlayerInput>();
+
+        }
+        InputAction YesAction = MyPlayerInput.actions[YesActionName];
+       
+        InputAction NoAction = MyPlayerInput.actions[NoActionName];
+        InputAction DoneAction = MyPlayerInput.actions[DoneActionName];
+        InputAction ResetAction = MyPlayerInput.actions[ResetActionName];
+        InputAction RotateAction = MyPlayerInput.actions[RotateActionName];
+        InputAction TranslateAction = MyPlayerInput.actions[TranslateActionName];
+        InputAction MoveAction = MyPlayerInput.actions[MoveActionName];
+        InputAction HeightAction = MyPlayerInput.actions[HeightActionName];
+
+
+        var curMove = MoveAction.ReadValue<Vector2>();
+        var curHeight = HeightAction.ReadValue<float>();
+
+        ComfortUI.SetActive(state == State.CheckWithUser);
+        CalibrationModeUI.SetActive(state == State.SelectTranslationRotation);
+        TransalationUI.SetActive(state == State.Translation);
+        RotationUI.SetActive(state == State.Rotation);
+
+        switch (state)
+        {
+            case State.CheckWithUser:
+                // I'm Comfortable
+                if (YesAction.triggered)
+                {
+                    Debug.Log("Calibration: Comfort: User is happy, return to LoginManager");
+                    //Application.Quit();
+                    SceneManager.LoadScene("LoginManager");
+                }
+                // I'm not comfortable
+                if (NoAction.triggered)
+                {
+                    Debug.Log("Calibration: Comfort: Starting calibration process");
+                    state = State.SelectTranslationRotation;
+                }
+                break;
+            case State.SelectTranslationRotation:
+                //Activate Translation
+                if (TranslateAction.triggered)
+                {
+                    Debug.Log("Calibration: Mode: Selected Translation Mode");
+                    state = State.Translation;
+                }
+                //Activate Rotation (UpAxis)
+                if (RotateAction.triggered)
+                {
+                    Debug.Log("Calibration: Mode: Selected Rotation Mode");
+                    state = State.Rotation;
+                }
+                // Reset everything to factory settings
+                if (ResetAction.triggered)
+                {
+                    Debug.Log("Calibration: Mode: Reset factory settings");
+                    ResetFactorySettings();
+                    cameraOffset.transform.localPosition = Vector3.zero;
+                    cameraOffset.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                }
+                if (DoneAction.triggered)
+                {
+                    state = State.CheckWithUser;
+                }
+                break;
+            case State.Translation:
+                // Movement
+                if (ResetAction.triggered)
+                {
+                    cameraOffset.transform.localPosition = new Vector3(0, 0, 0);
+                    Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
+                }
+                else
+                {
+                    float zAxis = curMove.y;
+                    float xAxis = curMove.x;
+                    float yAxis = curHeight;
+                    cameraOffset.transform.localPosition += new Vector3(xAxis, yAxis, zAxis) * _translationSlightStep;
+                }
+                // Save Translation
+                if (YesAction.triggered || DoneAction.triggered)
+                {
+                    var pos = cameraOffset.transform.localPosition;
+                    PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
+                    PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
+                    PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
+                    Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
+                    state = State.CheckWithUser;
+                }
+               
+                break;
+            case State.Rotation:
+                // Rotation
+                if (ResetAction.triggered)
+                {
+                    Debug.Log("Calibration: Rotation: Reset to 0,0,0");
+                    cameraOffset.transform.localEulerAngles = new Vector3(0, 0, 0);
+                }
+                else
+                {
+                    float yAxisR = curMove.x;
+                    cameraOffset.transform.localRotation = Quaternion.Euler(cameraOffset.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * yAxisR);
+                }
+                // Save Translation
+                if (YesAction.triggered || DoneAction.triggered)
+                {
+                    var rot = cameraOffset.transform.localRotation.eulerAngles;
+                    PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
+                    PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
+                    PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
+
+                    Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
+                    state = State.CheckWithUser;
+                }
+                
+                break;
+            default:
+                Debug.LogError($"Calibration: unexpected state {state}");
+                break;
+        }
+    }
+
     private void InitializePosition()
     {
         if (!VRConfig.Instance.initialized)
@@ -64,170 +207,8 @@ public class Calibration : MonoBehaviour {
         Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
         Debug.Log($"Calibration: initial pos={pos}, rot={rot}");
-        cameraReference.transform.localPosition = pos;
-        cameraReference.transform.localRotation = Quaternion.Euler(rot);
-    }
-
-    public void OnYesDone(InputValue value)
-    {
-        if (value.Get<float>() < 0.5) return;
-        Debug.Log($"Calibration: OnYesDone");
-        if (state == State.CheckWithUser)
-        {
-            Debug.Log("Calibration: CheckWithUser: User is happy, return to LoginManager");
-            SceneManager.LoadScene("LoginManager");
-        } else
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: User is done");
-            state = State.CheckWithUser;
-            ChangeModeUI();
-        }
-        else
-        if (state == State.Translation)
-        {
-            var pos = cameraReference.transform.localPosition;
-            PlayerPrefs.SetFloat(prefix + "_pos_x", pos.x);
-            PlayerPrefs.SetFloat(prefix + "_pos_y", pos.y);
-            PlayerPrefs.SetFloat(prefix + "_pos_z", pos.z);
-            Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
-            state = State.SelectTranslationRotation;
-            ChangeModeUI();
-        }
-        else
-        if (state == State.Rotation)
-        {
-            var rot = cameraReference.transform.localRotation.eulerAngles;
-            PlayerPrefs.SetFloat(prefix + "_rot_x", rot.x);
-            PlayerPrefs.SetFloat(prefix + "_rot_y", rot.y);
-            PlayerPrefs.SetFloat(prefix + "_rot_z", rot.z);
-
-            Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
-            state = State.SelectTranslationRotation;
-            ChangeModeUI();
-        }
-    }
-
-    public void OnNoBack(InputValue value)
-    {
-        if (value.Get<float>() < 0.5) return;
-        Debug.Log($"Calibration: OnNoBack");
-        if (state == State.CheckWithUser)
-        {
-            Debug.Log("Calibration: Comfort: Starting calibration process");
-            state = State.SelectTranslationRotation;
-            ChangeModeUI();
-        }
-        else
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: User is done");
-            state = State.CheckWithUser;
-            ChangeModeUI();
-        }
-        else
-        if (state == State.Translation)
-        {
-            cameraReference.transform.localPosition = new Vector3(
-                        PlayerPrefs.GetFloat(prefix + "_pos_x", 0),
-                        PlayerPrefs.GetFloat(prefix + "_pos_y", 0),
-                        PlayerPrefs.GetFloat(prefix + "_pos_z", 0)
-                    );
-            var pos = cameraReference.transform.localPosition;
-            Debug.Log($"Calibration: Translation: Reloaded to: {pos.x}, {pos.y}, {pos.z}");
-            state = State.SelectTranslationRotation;
-            ChangeModeUI();
-        }
-        else
-        if (state == State.Rotation)
-        {
-            cameraReference.transform.localRotation = Quaternion.Euler(
-                 PlayerPrefs.GetFloat(prefix + "_rot_x", 0),
-                 PlayerPrefs.GetFloat(prefix + "_rot_y", 0),
-                 PlayerPrefs.GetFloat(prefix + "_rot_z", 0)
-             );
-            var rot = cameraReference.transform.localRotation;
-            Debug.Log($"Calibration: Rotation: Reloaded to: {rot.x}, {rot.y}, {rot.z}");
-            state = State.SelectTranslationRotation;
-            ChangeModeUI();
-        }
-    }
-
-    public void OnTranslate(InputValue value)
-    {
-        if (value.Get<float>() < 0.5) return;
-        Debug.Log($"Calibration: OnTranslate");
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: Selected Translation Mode");
-            state = State.Translation;
-            ChangeModeUI();
-        }
-    }
-
-    public void OnRotate(InputValue value)
-    {
-        if (value.Get<float>() < 0.5) return;
-        Debug.Log($"Calibration: OnRotate");
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: Selected Rotation Mode");
-            state = State.Rotation;
-            ChangeModeUI();
-        }
-
-    }
-
-    public void OnReset(InputValue value)
-    {
-        if (value.Get<float>() < 0.5) return;
-        Debug.Log($"Calibration: OnReset");
-        if (state == State.SelectTranslationRotation)
-        {
-            Debug.Log("Calibration: Mode: Reset factory settings");
-            ResetFactorySettings();
-            cameraReference.transform.localPosition = Vector3.zero;
-            cameraReference.transform.localRotation = Quaternion.Euler(Vector3.zero);
-
-        } else
-        if (state == State.Translation)
-        {
-            cameraReference.transform.localPosition = new Vector3(0, 0, 0);
-            Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
-        } else
-        if (state == State.Rotation)
-        {
-            Debug.Log("Calibration: Rotation: Reset to 0,0,0");
-            cameraReference.transform.localEulerAngles = new Vector3(0, 0, 0);
-        }
-    }
-
-    public void OnMove(InputValue value)
-    {
-        var delta = value.Get<Vector2>();
-        if (delta.x == 0 && delta.y == 0) return;
-        Debug.Log($"Calibration: OnBackwardForward: {delta}");
-
-        if (state == State.Translation)
-        {
-            cameraReference.transform.localPosition += new Vector3(delta.x, 0, delta.y) * _translationSlightStep;
-        }
-        else
-        if (state == State.Rotation)
-        {
-            cameraReference.transform.localRotation = Quaternion.Euler(cameraReference.transform.localRotation.eulerAngles + Vector3.up * -_rotationSlightStep * delta.x);
-        }
-    }
-
-    public void OnDownUp(InputValue value)
-    {
-        var delta = value.Get<float>();
-        if (delta == 0) return;
-        Debug.Log($"Calibration: OnDownUp: {delta}");
-        if (state == State.Translation)
-        {
-            cameraReference.transform.localPosition += new Vector3(0, delta, 0) * _translationSlightStep;
-        } 
+        cameraOffset.transform.localPosition = pos;
+        cameraOffset.transform.localRotation = Quaternion.Euler(rot);
     }
 
     void ChangeModeUI()

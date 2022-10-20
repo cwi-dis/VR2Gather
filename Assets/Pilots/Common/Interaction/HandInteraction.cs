@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Controls;
-using UnityEngine.XR;
-using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
@@ -33,60 +29,35 @@ namespace VRT.Pilots.Common
 		private NetworkPlayer _Player;
 		private HandController _Controller;
 
-		public bool inTeleportMode = false;
-		public bool inPointingMode = false;
-		public bool inGrabbingMode = false;
+		[Header("Input Actions")]
 
-		[Tooltip("Hack: must have this input device, otherwise we try and force it")]
-		public string needDevice;
+		[Tooltip("Name of (button) action that enables touching")]
+		public string ModeTouchingActionName;
+		[Tooltip("Negate the touching action button")]
+		public bool negateTouching;
+		InputAction MyModeTouchingAction;
+		[Tooltip("Name of (button) action that activates grab")]
+		public string GrabbingGrabActionName;
+		InputAction MyGrabbingGrabAction;
+		[Tooltip("Name of (button) action that enables teleporting")]
+		public string ModeTeleportingActionName;
+		InputAction MyModeTeleportingAction;
+		[Tooltip("Name of action (button) that activates home teleport")]
+		public string TeleportHomeActionName;
+		InputAction MyTeleportHomeAction;
+
+		[Header("Introspection objects for debugging")]
+		public PlayerInput MyPlayerInput;
+		public bool inTeleportingMode = false;
+		public bool inTouchingMode = false;
+		public bool inGrabbingMode = false;
 
 		public void OnControlsChanged(PlayerInput pi)
 		{
-			Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
+			// Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
 			EnsureDevice();
 		}
-		void OnModeTeleporting(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			Debug.Log($"xxxjack HandInteraction: OnModeTeleporting {onOff}");
-			// Releaseing the teleport key will execute the teleport
-			if (inTeleportMode && !onOff)
-            {
-				if (teleporter.canTeleport())
-				{
-					teleporter.Teleport();
-				}
-			}
-			inTeleportMode = onOff;
-			UpdateHandState();
-		}
 
-		void OnModePointing(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			if (pointingModeAxisInvert) onOff = !onOff;
-			Debug.Log($"xxxjack HandInteraction: OnModePointing {onOff}");
-			inPointingMode = onOff;
-			UpdateHandState();
-		}
-
-		void OnModeGrabbing(InputValue value)
-		{
-			bool onOff = value.Get<float>() > 0.5;
-			if (grabbingModeAxisInvert) onOff = !onOff;
-			Debug.Log($"xxxjack HandInteraction: OnModeGrabbing {onOff}");
-			inGrabbingMode = onOff;
-			UpdateHandState();
-
-		}
-
-		void OnTeleportHome(InputValue value)
-		{
-			Debug.Log("xxxjack HandInteraction: OnTeleportHome");
-			if (teleporter.teleporterActive) teleporter.TeleportHome();
-			inTeleportMode = false;
-			UpdateHandState();
-		}
 
 		public void Awake()
 		{
@@ -109,37 +80,18 @@ namespace VRT.Pilots.Common
 
 		void EnsureDevice()
         {
-			if (needDevice != null && needDevice != "")
+			if (MyPlayerInput == null)
             {
-				PlayerInput pi = GetComponent<PlayerInput>();
-				Debug.Log($"EnsureDevice: available {InputSystem.devices.Count} used {pi.devices.Count}");
-
-				bool hasDevice;
-				hasDevice = false;
-				foreach (var d in pi.devices)
-				{
-					Debug.Log($"EnsureDevice: used name={d.name} path={d.path}");
-					if (d.name == needDevice) hasDevice = true;
-				}
-				if (hasDevice)
-				{
-					Debug.Log($"EnsureDevice: We apparently already use {needDevice}");
-				}
-				UnityEngine.InputSystem.InputDevice dev = null;
-				foreach (var d in InputSystem.devices)
-                {
-					Debug.Log($"EnsureDevice: available name={d.name} path={d.path}");
-					if (d.name == needDevice) dev = d;
-                }
-				if (dev == null)
-                {
-					Debug.Log($"EnsureDevice: {needDevice} does not exist");
-					Invoke("EnsureDevice", 2);
-					return;
-                }
-				pi.SwitchCurrentControlScheme(dev);		
+				MyPlayerInput = GetComponent<PlayerInput>();
 			}
-        }
+			if (MyPlayerInput == null) Debug.LogError("HandInteraction: cannot find PlayerInput");
+
+			MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
+			MyGrabbingGrabAction = MyPlayerInput.actions[GrabbingGrabActionName];
+			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
+			MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
+		}
+		
 		void Update()
 		{
 			if (_Player.IsLocalPlayer)
@@ -155,21 +107,48 @@ namespace VRT.Pilots.Common
 				//
 				// See whether we are pointing, grabbing, teleporting or idle
 				//
-
-
-
-				if (inTeleportMode)
+				inTeleportingMode = MyModeTeleportingAction.IsPressed();
+				inTouchingMode = MyModeTouchingAction.IsPressed();
+				if (negateTouching) inTouchingMode = !inTouchingMode;
+				inGrabbingMode = MyGrabbingGrabAction.IsPressed();
+				if (inTeleportingMode || inGrabbingMode)
+                {
+					inTouchingMode = false;
+                }
+				if (inTeleportingMode)
+                {
+					inGrabbingMode = false;
+                }
+				if (inTeleportingMode)
                 {
 					var touchTransform = TouchCollider.transform;
 					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+					if (MyTeleportHomeAction.IsPressed())
+                    {
+						// Debug.Log("xxxjack teleport home");
+						teleporter.TeleportHome();
+                    }
 				}
-
+				else
+                {
+					// If we are _not_ in teleporting mode, but the teleporter
+					// is active that means we have just gone out of teleporting mode.
+					// We teleport (if possible).
+					if (teleporter.teleporterActive)
+                    {
+						if (teleporter.canTeleport())
+                        {
+							teleporter.Teleport();
+                        }
+                    }
+                }
+				UpdateHandState();
 			}
 		}
 
 		void UpdateHandState()
         {
-			if (inTeleportMode)
+			if (inTeleportingMode)
 			{
 				// Teleport mode overrides the other modes, specifically pointing mode.
 				_Controller.SetHandState(HandController.State.Pointing);
@@ -182,7 +161,7 @@ namespace VRT.Pilots.Common
 					teleportStrength
 					);
 				inGrabbingMode = false;
-				inPointingMode = false;
+				inTouchingMode = false;
 			}
 			else if(inGrabbingMode)
 			{
@@ -190,16 +169,16 @@ namespace VRT.Pilots.Common
 				GrabCollider.SetActive(true);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(false);
-				inPointingMode = false;
-				inTeleportMode = false;
+				inTouchingMode = false;
+				inTeleportingMode = false;
 			}
-			else if (inPointingMode)
+			else if (inTouchingMode)
 			{
 				_Controller.SetHandState(HandController.State.Pointing);
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(true);
 				teleporter.SetActive(false);
-				inTeleportMode = false;
+				inTeleportingMode = false;
 			}
 			else 
 			{

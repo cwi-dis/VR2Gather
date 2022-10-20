@@ -39,15 +39,18 @@ namespace VRT.Pilots.Common
 		{
 			public string LocationNetworkId;
 		}
-
+		[Tooltip("Prefab used to create players")]
 		public GameObject PlayerPrefab;
-
+		[Tooltip("Locations where players will be instantiated")]
 		public List<PlayerLocation> PlayerLocations;
+		[Tooltip("Location where no-representation players will be instantiated")]
 		public Transform NonPlayersLocation;
 
 		[Tooltip("If true, the players will be put on the available locations in order of appearance in the Player Locations list")]
 		public bool AutoSpawnOnLocation = false;
-
+		[Tooltip("Debugging: the local player")]
+		public GameObject localPlayer;
+		[Tooltip("All players")]
 		public List<NetworkPlayer> AllUsers;
 
 		public Dictionary<string, NetworkPlayer> Players;
@@ -134,6 +137,10 @@ namespace VRT.Pilots.Common
 				NetworkPlayer networkPlayer = player.GetComponent<NetworkPlayer>();
 				networkPlayer.UserId = user.userId;
 				networkPlayer.SetIsLocalPlayer(me.userId == user.userId);
+				if (me.userId == user.userId)
+                {
+					localPlayer = player;
+                }
 
 				AllUsers.Add(networkPlayer);
 				if (representationType != UserRepresentationType.__NONE__ && representationType != UserRepresentationType.__SPECTATOR__ && representationType != UserRepresentationType.__CAMERAMAN__)
