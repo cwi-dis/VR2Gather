@@ -40,6 +40,11 @@ public class InputDeviceSelection : MonoBehaviour
     {
         Debug.Log($"InputDeviceSelection: OnControlsChanged({pi.name}): enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, actionMap={pi.currentActionMap.name}, controlScheme={pi.currentControlScheme}");
         currentControlScheme = pi.currentControlScheme;
+        if (currentControlScheme == null || currentControlScheme == "")
+        {
+            Debug.Log("InputDeviceSelection: empty scheme");
+            return;
+        }
         GameObject wanted = null;
         if (schemes == null)
         {
