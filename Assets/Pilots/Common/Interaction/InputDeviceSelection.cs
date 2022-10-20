@@ -48,11 +48,11 @@ public class InputDeviceSelection : MonoBehaviour
         }
         foreach(var so in schemes)
         {
-            if (so.name == pi.currentControlScheme) wanted = so.implementation;
+            if (so.name == currentControlScheme) wanted = so.implementation;
         }
         if (wanted == null)
         {
-            Debug.LogError($"InputDeviceSelection: no implementation object for control scheme {pi.currentControlScheme}");
+            Debug.LogError($"InputDeviceSelection: no implementation object for control scheme \"{currentControlScheme}\"");
             return;
         }
         foreach(var so in schemes)
