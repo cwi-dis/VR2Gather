@@ -778,7 +778,12 @@
             "bindingGroup": "OpenXR",
             "devices": [
                 {
-                    "devicePath": "<ViveWand>",
+                    "devicePath": "<ViveController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<ViveController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }

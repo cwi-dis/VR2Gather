@@ -34,7 +34,7 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevice" : "Oculus"
+	"preferredDevice" : "OpenXR"
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
