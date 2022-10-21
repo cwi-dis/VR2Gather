@@ -36,7 +36,8 @@ public class Calibration : MonoBehaviour {
     const string YesActionName = "Yes";
     const string NoActionName = "No";
     const string DoneActionName = "Done";
-    const string ResetActionName = "Reset";
+    const string ResetRotationActionName = "ResetRotation";
+    const string ResetTranslationActionName = "ResetTranslation";
     const string RotateActionName = "Rotate";
     const string TranslateActionName = "Translate";
     const string MoveActionName = "Move";
@@ -82,9 +83,10 @@ public class Calibration : MonoBehaviour {
        
         InputAction NoAction = MyPlayerInput.actions[NoActionName];
         InputAction DoneAction = MyPlayerInput.actions[DoneActionName];
-        InputAction ResetAction = MyPlayerInput.actions[ResetActionName];
         InputAction RotateAction = MyPlayerInput.actions[RotateActionName];
         InputAction TranslateAction = MyPlayerInput.actions[TranslateActionName];
+        InputAction ResetRotationAction = MyPlayerInput.actions[ResetRotationActionName];
+        InputAction ResetTranslationAction = MyPlayerInput.actions[ResetTranslationActionName];
         InputAction MoveAction = MyPlayerInput.actions[MoveActionName];
         InputAction HeightAction = MyPlayerInput.actions[HeightActionName];
 
@@ -127,14 +129,7 @@ public class Calibration : MonoBehaviour {
                     Debug.Log("Calibration: Mode: Selected Rotation Mode");
                     state = State.Rotation;
                 }
-                // Reset everything to factory settings
-                if (ResetAction.triggered)
-                {
-                    Debug.Log("Calibration: Mode: Reset factory settings");
-                    ResetFactorySettings();
-                    cameraOffset.transform.localPosition = Vector3.zero;
-                    cameraOffset.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                }
+                
                 if (DoneAction.triggered)
                 {
                     state = State.CheckWithUser;
@@ -142,7 +137,7 @@ public class Calibration : MonoBehaviour {
                 break;
             case State.Translation:
                 // Movement
-                if (ResetAction.triggered)
+                if (ResetTranslationAction.triggered)
                 {
                     cameraOffset.transform.localPosition = new Vector3(0, 0, 0);
                     Debug.Log($"Calibration: Translation: reset to 0, 0, 0");
@@ -168,7 +163,7 @@ public class Calibration : MonoBehaviour {
                 break;
             case State.Rotation:
                 // Rotation
-                if (ResetAction.triggered)
+                if (ResetRotationAction.triggered)
                 {
                     Debug.Log("Calibration: Rotation: Reset to 0,0,0");
                     cameraOffset.transform.localEulerAngles = new Vector3(0, 0, 0);

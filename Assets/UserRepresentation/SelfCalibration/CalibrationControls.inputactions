@@ -60,9 +60,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Reset",
+                    "name": "ResetRotation",
                     "type": "Button",
                     "id": "50a9440d-ceee-4bd7-899f-87484cc5f399",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ResetTranslation",
+                    "type": "Button",
+                    "id": "0c248932-8a02-40d5-a6cb-10ce1a57160e",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -315,7 +324,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Reset",
+                    "action": "ResetRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -326,7 +335,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "OpenXR",
-                    "action": "Reset",
+                    "action": "ResetRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -337,7 +346,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Reset",
+                    "action": "ResetRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -348,18 +357,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "Reset",
+                    "action": "ResetRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "fc198ade-e87e-4d71-b7b7-5fb111f4eb7d",
-                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
-                    "action": "Reset",
+                    "action": "ResetRotation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -734,6 +743,61 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76102987-9191-4915-bd30-2955f035766a",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ResetTranslation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23f1ca4f-dfcb-4228-bf95-434e1cf48c37",
+                    "path": "<XRInputV1::HTC::HTCViveControllerOpenXR>{RightHand}/grippressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ResetTranslation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d1c285ec-c3a7-4ccd-8a3e-3ae6fd194fd1",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ResetTranslation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c6995201-6d8c-4cf6-8682-39549bf216b6",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/trigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ResetTranslation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "00d0c439-80b5-4e68-9895-7d37f5a24529",
+                    "path": "<OculusTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ResetTranslation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
