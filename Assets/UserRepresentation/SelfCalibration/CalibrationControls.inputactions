@@ -94,6 +94,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "LookUpDown",
+                    "type": "Value",
+                    "id": "ac912a43-2fd9-41e8-93bf-d89e442acbec",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -606,7 +615,7 @@
                 {
                     "name": "",
                     "id": "26111daa-a1e4-4f31-9b32-bd539d1c37d0",
-                    "path": "<Gamepad>/leftStick/y",
+                    "path": "<Gamepad>/dpad/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -798,6 +807,17 @@
                     "processors": "",
                     "groups": "Oculus",
                     "action": "ResetTranslation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c35e103a-3079-4bd8-b9fc-6b61cfeef06d",
+                    "path": "<Gamepad>/leftStick/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "LookUpDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
