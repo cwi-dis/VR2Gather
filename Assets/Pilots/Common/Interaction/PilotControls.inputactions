@@ -388,7 +388,7 @@
                 {
                     "name": "",
                     "id": "ca7b2f4d-9c38-4d84-9a19-c0e6ded51d70",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{RightHand}/triggertouched",
+                    "path": "<OculusTouchController>{RightHand}/triggerTouched",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -553,7 +553,7 @@
                 {
                     "name": "",
                     "id": "4e39b9d0-cc65-4699-a9ff-4cf09ae0a340",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/secondarybutton",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -575,7 +575,7 @@
                 {
                     "name": "",
                     "id": "ebe00a50-8827-468f-ab7e-def699c2c02a",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/triggertouched",
+                    "path": "<OculusTouchController>{LeftHand}/triggerTouched",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -652,7 +652,7 @@
                 {
                     "name": "",
                     "id": "f57fb285-67d9-45fb-9ef4-bd87bc70b7f2",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerRight>{RightHand}/grippressed",
+                    "path": "<OculusTouchController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
@@ -696,7 +696,7 @@
                 {
                     "name": "",
                     "id": "e7bb2dca-b658-495a-8149-61815891de98",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerLeft>{LeftHand}/grippressed",
+                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
