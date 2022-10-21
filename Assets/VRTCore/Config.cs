@@ -39,7 +39,7 @@ namespace VRT.Core
         [Serializable]
         public class _VR
         {
-            public string preferredDevice = null;
+            public string loader = null;
         }
         public _VR VR;
 
