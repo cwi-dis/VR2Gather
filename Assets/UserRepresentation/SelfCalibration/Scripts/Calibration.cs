@@ -42,6 +42,7 @@ public class Calibration : MonoBehaviour {
     const string TranslateActionName = "Translate";
     const string MoveActionName = "Move";
     const string HeightActionName = "Height";
+    const string LookUpDownActionName = "LookUpDown";
   
     public static void ResetFactorySettings()
     {
@@ -89,8 +90,16 @@ public class Calibration : MonoBehaviour {
         InputAction ResetTranslationAction = MyPlayerInput.actions[ResetTranslationActionName];
         InputAction MoveAction = MyPlayerInput.actions[MoveActionName];
         InputAction HeightAction = MyPlayerInput.actions[HeightActionName];
+        InputAction LookUpDownAction = MyPlayerInput.actions[LookUpDownActionName];
 
-
+        // First tilt the camera, if needed
+        var cameraTilt = LookUpDownAction.ReadValue<float>();
+        if (cameraTilt != 0)
+        {
+            Quaternion rot = Quaternion.Euler(cameraTilt, 0, 0);
+            //Debug.Log($"xxxjack cameraTilt {cameraTilt}, euler {rot}");
+            cameraOffset.transform.localRotation = cameraOffset.transform.localRotation * rot;
+        }
         var curMove = MoveAction.ReadValue<Vector2>();
         var curHeight = HeightAction.ReadValue<float>();
 
