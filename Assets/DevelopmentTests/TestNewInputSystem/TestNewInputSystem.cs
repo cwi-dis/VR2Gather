@@ -24,7 +24,7 @@ public class TestNewInputSystem : MonoBehaviour
 
     public bool modeMovingActive = false;
     public bool modeTurningActive = false;
-    public bool modeGropingActive = false;
+    public bool modeTouchingActive = false;
     public bool modeTeleportingActive = false;
 
     void Start()
@@ -46,7 +46,7 @@ public class TestNewInputSystem : MonoBehaviour
             turnPosition += delta;
             Debug.Log($"OnDelta: Turn({delta}) to {virtualPosition}");
         }
-        if (modeGropingActive)
+        if (modeTouchingActive)
         {
             gropePosition += delta;
         }
@@ -70,9 +70,9 @@ public class TestNewInputSystem : MonoBehaviour
         Debug.Log($"Teleported to {virtualPosition}");
     }
 
-    public void OnGropingTouch()
+    public void OnTouchingTouch()
     {
-        if (!modeGropingActive) return;
+        if (!modeTouchingActive) return;
         Debug.Log($"Touched: {gropePosition}");
     }
 
@@ -84,7 +84,7 @@ public class TestNewInputSystem : MonoBehaviour
         Debug.Log($"ModeMoving({onOff})");
         if (modeMovingActive)
         {
-            modeTurningActive = modeGropingActive = modeTeleportingActive = false;
+            modeTurningActive = modeTouchingActive = modeTeleportingActive = false;
         }
     }
 
@@ -95,17 +95,17 @@ public class TestNewInputSystem : MonoBehaviour
         Debug.Log($"ModeTurning({onOff})");
         if (modeTurningActive)
         {
-            modeMovingActive = modeGropingActive = modeTeleportingActive = false;
+            modeMovingActive = modeTouchingActive = modeTeleportingActive = false;
         }
     }
 
-    public void OnModeGroping(InputValue value)
+    public void OnModeTouching(InputValue value)
     {
         bool onOff = value.Get<float>() != 0;
-        modeGropingActive = onOff;
-        Debug.Log($"ModeGroping({onOff})");
+        modeTouchingActive = onOff;
+        Debug.Log($"ModeTouching({onOff})");
         gropePosition = virtualPosition;
-        if (modeGropingActive)
+        if (modeTouchingActive)
         {
             modeTurningActive = modeMovingActive = modeTeleportingActive = false;
         }
@@ -119,7 +119,7 @@ public class TestNewInputSystem : MonoBehaviour
         teleportPosition = virtualPosition;
         if (modeTeleportingActive)
         {
-            modeTurningActive = modeMovingActive = modeGropingActive = false;
+            modeTurningActive = modeMovingActive = modeTouchingActive = false;
         }
     }
 
