@@ -142,7 +142,7 @@
                 {
                     "name": "",
                     "id": "783f626b-07f2-41ab-9f2f-c146d3fbbfcf",
-                    "path": "<Gamepad>/rightShoulder",
+                    "path": "<Gamepad>/rightTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -153,7 +153,7 @@
                 {
                     "name": "",
                     "id": "cc6df01d-4106-4897-aadd-cf6e36fc2dc9",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button6",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -197,7 +197,7 @@
                 {
                     "name": "",
                     "id": "6b0db89c-2034-49ea-b9fc-d820d299bf5c",
-                    "path": "<Gamepad>/leftShoulder",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -208,7 +208,7 @@
                 {
                     "name": "",
                     "id": "9034deff-f697-4b41-a092-4993aae57b50",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button5",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
@@ -505,7 +505,7 @@
                 {
                     "name": "",
                     "id": "20fc444b-c3c4-4a18-aac7-d4e082448fbd",
-                    "path": "<Gamepad>/rightStick",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -813,7 +813,7 @@
                 {
                     "name": "",
                     "id": "c35e103a-3079-4bd8-b9fc-6b61cfeef06d",
-                    "path": "<Gamepad>/leftStick/y",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/rz",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
