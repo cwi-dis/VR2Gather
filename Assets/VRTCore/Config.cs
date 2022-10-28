@@ -23,7 +23,7 @@ namespace VRT.Core
         public string orchestratorURL = "";
         public string orchestratorLogURL = "";
         public bool openLogOnExit = true;
-        public int targetFrameRate = 90;
+        public int targetFrameRate = -1; // system default framerate
         public float memoryDamping = 1.3f;
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
@@ -217,7 +217,14 @@ namespace VRT.Core
                 {
                     string file = ConfigFilename();
                     _Instance = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(file));
-                    Application.targetFrameRate = _Instance.targetFrameRate;
+                    if (_Instance.targetFrameRate != 0)
+                    {
+                        Application.targetFrameRate = _Instance.targetFrameRate;
+                        Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+                    } else
+                    {
+                        Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
+                    }
                 }
                 return _Instance;
             }
