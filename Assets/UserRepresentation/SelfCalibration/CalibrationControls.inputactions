@@ -507,7 +507,7 @@
                     "id": "20fc444b-c3c4-4a18-aac7-d4e082448fbd",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.5,y=0.5)",
                     "groups": "Gamepad",
                     "action": "Move",
                     "isComposite": false,
@@ -518,7 +518,7 @@
                     "id": "47ed6e53-f91e-4768-b186-cba62bfdc3f8",
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.5,y=0.5)",
                     "groups": "Joystick",
                     "action": "Move",
                     "isComposite": false,
@@ -617,7 +617,7 @@
                     "id": "26111daa-a1e4-4f31-9b32-bd539d1c37d0",
                     "path": "<Gamepad>/dpad/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.2)",
                     "groups": "Gamepad",
                     "action": "Height",
                     "isComposite": false,
@@ -628,7 +628,7 @@
                     "id": "3ea489a5-03e5-4ae9-9189-563d7971f16a",
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.2)",
                     "groups": "Joystick",
                     "action": "Height",
                     "isComposite": false,
@@ -815,8 +815,8 @@
                     "id": "c35e103a-3079-4bd8-b9fc-6b61cfeef06d",
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/rz",
                     "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
+                    "processors": "Scale(factor=0.5)",
+                    "groups": "Joystick",
                     "action": "LookUpDown",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -826,7 +826,7 @@
                     "id": "37410a17-4122-4394-80ae-c6a53443bdfb",
                     "path": "1DAxis",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.1)",
                     "groups": "",
                     "action": "LookUpDown",
                     "isComposite": true,
@@ -853,6 +853,17 @@
                     "action": "LookUpDown",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "1091d009-1d84-48f1-a956-9341a3e95b06",
+                    "path": "<Gamepad>/rightStick/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.5)",
+                    "groups": "Gamepad",
+                    "action": "LookUpDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
