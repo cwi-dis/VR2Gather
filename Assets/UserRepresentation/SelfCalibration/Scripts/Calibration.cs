@@ -36,6 +36,7 @@ public class Calibration : MonoBehaviour {
     const string YesActionName = "Yes";
     const string NoActionName = "No";
     const string DoneActionName = "Done";
+    const string BackActionName = "Back";
     const string ResetRotationActionName = "ResetRotation";
     const string ResetTranslationActionName = "ResetTranslation";
     const string RotateActionName = "Rotate";
@@ -84,6 +85,7 @@ public class Calibration : MonoBehaviour {
        
         InputAction NoAction = MyPlayerInput.actions[NoActionName];
         InputAction DoneAction = MyPlayerInput.actions[DoneActionName];
+        InputAction BackAction = MyPlayerInput.actions[BackActionName];
         InputAction RotateAction = MyPlayerInput.actions[RotateActionName];
         InputAction TranslateAction = MyPlayerInput.actions[TranslateActionName];
         InputAction ResetRotationAction = MyPlayerInput.actions[ResetRotationActionName];
@@ -139,7 +141,7 @@ public class Calibration : MonoBehaviour {
                     state = State.Rotation;
                 }
                 
-                if (DoneAction.triggered)
+                if (BackAction.triggered)
                 {
                     state = State.CheckWithUser;
                 }
@@ -168,6 +170,12 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Translation: Saved: {pos.x}, {pos.y}, {pos.z}");
                     state = State.CheckWithUser;
                 }
+                if (BackAction.triggered)
+                {
+                    Debug.Log("Calibration: Back");
+                    InitializePosition();
+                    state = State.CheckWithUser;
+                }
                
                 break;
             case State.Rotation:
@@ -193,7 +201,13 @@ public class Calibration : MonoBehaviour {
                     Debug.Log($"Calibration: Rotation: Saved: {rot.x}, {rot.y}, {rot.z}");
                     state = State.CheckWithUser;
                 }
-                
+                if (BackAction.triggered)
+                {
+                    Debug.Log("Calibration: Back");
+                    InitializePosition();
+                    state = State.CheckWithUser;
+                }
+
                 break;
             default:
                 Debug.LogError($"Calibration: unexpected state {state}");
