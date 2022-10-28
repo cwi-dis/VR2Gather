@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.XR;
+using UnityEngine.XR.Management;
 
 namespace VRT.Core
 {
     public class VRConfig : MonoBehaviour
     {
-        private string currentOutputDevice = null;
-        private string currentInputDevice = null;
-        private static bool loaded = false;
+        private static bool loaderInitialized = false;
         private bool initializing = false;
         private bool _initialized = false;
 
@@ -33,139 +32,165 @@ namespace VRT.Core
             }
         }
 
+        private void OnApplicationQuit()
+        {
+            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            loaderInitialized = false;
+        }
+
         private void Awake()
         {
-            if (_Instance == this)
+            if (_Instance == null)
             {
-                Debug.LogWarning("VRConfig: Awake called a second time");
-                return;
+                _Instance = this;
+                initializing = true;
+                StartCoroutine(_LoadAndStartVR());
             }
-            if (_Instance != null)
+            else
             {
-                Debug.Log("VRConfig: new instance, deleting old one");
-                _Instance = null;
-                return;
+                Debug.LogWarning("VRConfig: Awake called a second time, ignored");
             }
-            _Instance = this;
-            
-            _InitVR();
         }
 
         private void OnDestroy()
         {
-            XRSettings.enabled = false;
+            _StopVR();
             _Instance = null;
         }
 
-        public static void InitVR()
+        public void _StopVR()
         {
-            Instance._InitVR();
+            if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                Debug.Log("VRConfig: Deinitializing VR");
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
+            }
+            _initialized = false;
         }
 
-        public void _InitVR()
+        private IEnumerator _LoadAndStartVR()
         {
-            if (_initialized || initializing) return;
-            if (!loaded)
+            if (!loaderInitialized)
             {
-                StartCoroutine(_LoadVR());
-                initializing = true;
-            }
-            else
-            {
-                _InitVRDevices();
-            }
-        }
-
-        private IEnumerator _LoadVR()
-        {
-            if (!loaded)
-            {
-                Debug.Log($"VRConfig: {XRSettings.supportedDevices.Length} XR devices supported:");
-                foreach (var d in XRSettings.supportedDevices)
+                // First time we get here (during this application run or editor play).
+                // We load the loader wanted.
+                if (XRGeneralSettings.Instance.Manager.activeLoader != null)
                 {
-                    Debug.Log($"VRConfig: device={d}");
+                    Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded, stopping and unloading...");
+                    XRGeneralSettings.Instance.Manager.StopSubsystems();
+                    XRGeneralSettings.Instance.Manager.DeinitializeLoader();
                 }
-                string[] devices = preferredDevices();
-                Debug.Log($"VRConfig: preferred load order: {string.Join(", ", devices)}");
-                XRSettings.LoadDeviceByName(devices);
-                yield return null;
-           }
-            loaded = true;
+                if (Config.Instance.VR.loader == "")
+                {
+                    // We prefer not to use VR during this whole run.
+                    loaderInitialized = true;
+                    Debug.Log($"VRConfig: VR disabled by config.json setting");
+                    yield break;
+                }
+                else
+                {
+#if xxxjack_debug_vr_loaders
+                    Debug.Log($"VRConfig: {XRGeneralSettings.Instance.Manager.activeLoaders.Count} available loaders");
+                    foreach (var ldr in XRGeneralSettings.Instance.Manager.activeLoaders)
+                    {
+                        Debug.Log($"VRConfig: available loader: {ldr.name}");
+                    }
+#endif
+                    if (Config.Instance.VR.loader != null)
+                    {
+                        // We prefer a specific VR loader. Re-order loaders so the correct one is first.
+                        // First find the name of the loader.
+                        if (Config.Instance.VR.loader == "LookingGlass")
+                        {
+                            Debug.LogError("VRConfig: LookingGlass not yet implemented");
+                        }
+                        // Now try and find the loader itself.
+                        UnityEngine.XR.Management.XRLoader wantedLoader = null;
+                        foreach (var ldr in XRGeneralSettings.Instance.Manager.activeLoaders)
+                        {
+                            if (ldr.name == Config.Instance.VR.loader)
+                            {
+                                wantedLoader = ldr;
+                            }
+                        }
+                        if (wantedLoader == null)
+                        {
+                            Debug.LogError($"VRConfig: cannot find loader {Config.Instance.VR.loader}");
+                        }
+                        else
+                        {
+                            XRGeneralSettings.Instance.Manager.TryRemoveLoader(wantedLoader);
+                            XRGeneralSettings.Instance.Manager.TryAddLoader(wantedLoader, 0);
+                        }
+                    }
+                    // The loaders are now in the correct order (if we have overrided through a config.json
+                    // setting). We simply load the first one that works.
+                    Debug.Log("VRConfig: Initializing XR Loader...");
+                    yield return XRGeneralSettings.Instance.Manager.InitializeLoader();
+                }
+            }
+            loaderInitialized = true;
             Debug.Log($"VRConfig: loaded VR driver \"{XRSettings.loadedDeviceName}\"");
-            _InitVRDevices();
-        }
-
-        private void _InitVRDevices()
-        {
             if (disableVRforThisScene)
             {
+                // We don't want VR in this scene. Stop it (if it has been loaded).
                 Debug.Log("VRConfig: VR disabled for this scene");
-                currentInputDevice = "emulation";
-                currentOutputDevice = "";
-                XRSettings.enabled = false;
+                XRGeneralSettings.Instance.Manager.StopSubsystems();
                 _initialized = true;
-                return;
+                yield break;
             }
-            currentOutputDevice = XRSettings.loadedDeviceName;
-            if (currentOutputDevice != "")
+            if (Config.Instance.VR.loader != "")
             {
-                XRSettings.enabled = true;
-                Debug.Log($"VRConfig: VR enabled for this scene, device {currentOutputDevice}");
+                // We want VR, if available. Ensure we have a loader, and it has been initialized.
+                if (XRGeneralSettings.Instance.Manager.activeLoader == null)
+                {
+                    Debug.Log("VRConfig: No XR plugin could be loaded. XR not enabled.");
+                }
+                else if (!XRGeneralSettings.Instance.Manager.isInitializationComplete)
+                {
+                    Debug.LogError($"VRConfig: initialization incomplete for activeLoader {XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name}");
+                }
             }
-            else
+            if (XRGeneralSettings.Instance.Manager.activeLoader != null)
             {
-                Debug.Log($"VRConfig: VR could be enabled for this scene, but no VR driver loaded");
+                Debug.Log($"VRConfig: Starting XR... {XRGeneralSettings.Instance.Manager.activeLoader.GetType().Name}");
+                XRGeneralSettings.Instance.Manager.StartSubsystems();
             }
-
-            if (!XRSettings.isDeviceActive && XRSettings.enabled) {
-                Debug.LogWarning($"VRConfig: could not load {currentOutputDevice}");
-                currentOutputDevice = "";
-                XRSettings.enabled = false;
-            }
-            if (Config.Instance.VR.preferredController != "")
-            {
-                currentInputDevice = Config.Instance.VR.preferredController;
-            }
-            else
-            {
-                // if no controller override was specified
-                // we use the controller corresponding to the output
-                // device
-                currentInputDevice = currentOutputDevice;
-                if (currentInputDevice == "") currentInputDevice = "emulation";
-            }
+#if xxxjack_needs_fixing
             // Cater for holographic displays
             if (currentOutputDevice == "" && Config.Instance.VR.useLookingGlass)
             {
                 currentOutputDevice = "lookingglass";
             }
-            // xxxjack should we check that the selected input device is actually available?
-            string prInputName = currentInputDevice.Replace(' ', '_');
-            string prOutputName = currentOutputDevice.Replace(' ', '_');
+#endif
+            _initialized = true;
+            
+            string prOutputName = outputDeviceName();
+            prOutputName = prOutputName.Replace(' ', '_');
             if (prOutputName == "") prOutputName = "none";
-            BaseStats.Output("VRConfig", $"xrInput={prInputName}, xrOutput={prOutputName}");
+            BaseStats.Output("VRConfig", $"xrOutput={prOutputName}");
+            
             // Do device-dependent initializations
-            if (currentOutputDevice == "")
+            if (prOutputName == "none")
             {
                 initScreen();
             }
-            else if (currentOutputDevice == "Oculus")
+            else if (prOutputName == "Oculus")
             {
                 initOculus();
-            } else if (currentOutputDevice == "lookingglass")
+            }
+            else if (prOutputName == "lookingglass")
             {
                 initLookingGlass();
             }
-            _initialized = true;
-        }
-
-        public string[] preferredDevices()
-        {
-            if (Config.Instance.VR.useLookingGlass)
+            else if (prOutputName == "OpenXR_Display")
             {
-                return new string[] { "" };
+                // Nothing to do.
             }
-            return Config.Instance.VR.preferredDevices;
+            else
+            {
+                Debug.LogWarning($"VRConfig: unknown device \"{prOutputName}\", no initialization performed.");
+            }
         }
 
         public string outputDeviceName()
@@ -174,7 +199,7 @@ namespace VRT.Core
             {
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
-            return currentOutputDevice;
+            return XRSettings.loadedDeviceName;
         }
 
         public bool useHMD()
@@ -183,49 +208,13 @@ namespace VRT.Core
             {
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
-            bool rv = XRSettings.enabled && XRSettings.isDeviceActive;
+            bool rv = XRGeneralSettings.Instance.Manager.isInitializationComplete && XRSettings.isDeviceActive;
             return rv;
         }
 
         public bool useHoloDisplay()
         {
-            return Config.Instance.VR.useLookingGlass;
-        }
-
-        public bool useControllerEmulation()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: useControllerEmulation() called too early");
-            }
-            return currentInputDevice == "emulation";
-        }
-
-        public bool useControllerGamepad()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: useControllerGamepad() called too early");
-            }
-            return currentInputDevice == "gamepad";
-        }
-
-        public bool useControllerOpenVR()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: useControllerOpenVR() called too early");
-            }
-            return currentInputDevice == "OpenVR";
-        }
-
-        public bool useControllerOculus()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: useControllerOculus() called too early");
-            }
-            return currentInputDevice == "Oculus";
+            return Config.Instance.VR.loader == "Lookingglass";
         }
 
         public float cameraDefaultHeight()
