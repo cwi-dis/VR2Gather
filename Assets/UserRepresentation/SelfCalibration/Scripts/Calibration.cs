@@ -55,17 +55,21 @@ public class Calibration : MonoBehaviour {
         PlayerPrefs.SetFloat("pcs_rot_z", 0);
     }
 
+    public void OnDisable()
+    {
+        //
+        // Workaround for a bug seen in October 2022:
+        // https://forum.unity.com/threads/type-of-instance-in-array-does-not-match-expected-type.1320564/
+        //
+        MyPlayerInput.actions = null;
+    }
+
     private void Start() {
         // Setup enough of the PFB_Player to allow viewing yourself as a pointcloud.
-        player.setupInputOutput(true, disableInput: true);
         player.pc.gameObject.SetActive(true);
         player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
 
-        // Initialize camera position/orientation from saved preferences
-        InitializePosition();
-
-        // Initialize the UI screens
-        ChangeModeUI();
+       
     }
 
     public void Update()
@@ -74,10 +78,15 @@ public class Calibration : MonoBehaviour {
         {
             if (!VRConfig.Instance.initialized)
             {
-                Debug.LogError("Calibration: Update: VR config not yet initialized");
+                Debug.Log("Calibration: Update: VR config not yet initialized");
                 return;
             }
+            player.setupInputOutput(true, disableInput: true);
+            // Initialize camera position/orientation from saved preferences
+            InitializePosition();
 
+            // Initialize the UI screens
+            ChangeModeUI();
             MyPlayerInput = GetComponent<PlayerInput>();
 
         }
