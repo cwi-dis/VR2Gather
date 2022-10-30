@@ -18,6 +18,8 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
     [Header("Introspection (for debugging)")]
     [Tooltip("Current control scheme")]
     public string currentControlScheme;
+    [Tooltip("PlayerInput to track for controller change (if not one of our ancestors)")]
+    public PlayerInput playerInput;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +36,7 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
                 if (localPlayer != null)
                 {
                     pi = localPlayer.GetComponentInChildren<PlayerInput>();
+                    playerInput = pi;
                 }
             }
         }
@@ -57,5 +60,17 @@ public class EnablePanelBasedOnControllers : MonoBehaviour
         foreach (var c in openxr) c.SetActive(isOpenXR);
         foreach (var c in emulator) c.SetActive(isEmulation);
         foreach (var c in gamepad) c.SetActive(isGamepad);
+    }
+
+    public void Update()
+    {
+        if (playerInput != null)
+        {
+            string newControlScheme = playerInput.currentControlScheme;
+            if (newControlScheme != currentControlScheme)
+            {
+                OnControlsChanged(playerInput);
+            }
+        }
     }
 }
