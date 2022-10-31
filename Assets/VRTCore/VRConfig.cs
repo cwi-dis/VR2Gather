@@ -213,28 +213,6 @@ namespace VRT.Core
             return XRSettings.loadedDeviceName;
         }
 
-        public bool useHMD()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: outputDeviceName() called too early");
-            }
-            bool rv = XRGeneralSettings.Instance.Manager.isInitializationComplete && XRSettings.isDeviceActive;
-            return rv;
-        }
-
-        public bool useHoloDisplay()
-        {
-            return Config.Instance.VR.loader == "Lookingglass";
-        }
-
-        public float cameraDefaultHeight()
-        {
-            if (useHMD()) return 0;
-            return 1.7f;    // Default camera height for non-HMD users
-
-        }
-
         public void initScreen()
         {
             Resolution[] resolutions = Screen.resolutions;

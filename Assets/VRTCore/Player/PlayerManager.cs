@@ -14,8 +14,7 @@ public class PlayerManager : MonoBehaviour {
     public GameObject pc;
     public GameObject voice;
     public GameObject[] localPlayerOnlyObjects;
-    public GameObject[] inputNonHMDObjects;
-
+   
 	//
 	// Enable camera (or camera-like object) and input handling.
 	// If not the local player most things will be disabled.
@@ -24,28 +23,24 @@ public class PlayerManager : MonoBehaviour {
 	//
     public void setupInputOutput(bool isLocalPlayer, bool disableInput=false)
     {
-		if (VRConfig.Instance == null || !VRConfig.Instance.initialized)
-        {
-			Debug.LogError("PlayerManager.setupInputOutput: called before VR initialization is complete.");
-			return;
-        }
+		
 		// Unity has two types of null. We need the C# null.
 		if (holoCamera == null) holoCamera = null;
 		// Enable either the normal camera or the holodisplay camera for the local user.
 		// Enable various other objects only for the local user
-		bool useLocalHoloDisplay = isLocalPlayer && VRConfig.Instance.useHoloDisplay();
-		bool useLocalNormalCam = isLocalPlayer && !VRConfig.Instance.useHoloDisplay();
+		// xxxjack This currentaly always enables the normal camera and disables the holoCamera.
+		// xxxjack to be fixed at some point.
+		bool useLocalHoloDisplay = isLocalPlayer && false;
+		bool useLocalNormalCam = isLocalPlayer && true;
 		if (useLocalNormalCam)
         {
 			cam.gameObject.SetActive(true);
-			cam.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
 			holoCamera?.SetActive(false);
 		}
 		else if (useLocalHoloDisplay)
         {
 			cam.gameObject.SetActive(false);
 			holoCamera.SetActive(true);
-			holoCamera.transform.localPosition = Vector3.up * VRConfig.Instance.cameraDefaultHeight();
 		}
 		else
         {
@@ -58,25 +53,16 @@ public class PlayerManager : MonoBehaviour {
 		{
 			obj.SetActive(isLocalPlayer);
 		}
-
-		// Disable objects that should not be used with an HMD (to forestall motion sickness)
-		if (VRConfig.Instance.useHMD())
-		{
-			foreach (var obj in inputNonHMDObjects)
-			{
-				obj.SetActive(false);
-			}
-		}
 	}
 
 	public Transform getCameraTransform()
     {
-		if (VRConfig.Instance.useHoloDisplay())
+		if (holoCamera != null && holoCamera.activeSelf)
         {
 			return holoCamera.transform;
 		}
 		else
-        {
+		{
 			return cam.transform;
 		}
 	}
