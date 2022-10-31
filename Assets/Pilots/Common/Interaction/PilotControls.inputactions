@@ -178,12 +178,30 @@
                 },
                 {
                     "name": "ModelessTurnDelta",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "84d38cd8-a07a-48b6-bdc8-fd9694520810",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessTurnDeltaX",
+                    "type": "Value",
+                    "id": "13f8be4a-fddc-41cb-a0ea-d44dcfe071cc",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ModelessTurnDeltaY",
+                    "type": "Value",
+                    "id": "20201515-4bf8-4a22-b834-412f1f4c066f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -203,7 +221,7 @@
                     "id": "877d7c5c-97b4-42ae-b3fd-477f2e6ae564",
                     "path": "<Joystick>/stick",
                     "interactions": "",
-                    "processors": "StickDeadzone",
+                    "processors": "StickDeadzone,ScaleVector2(x=0.1,y=0.1)",
                     "groups": "Joystick",
                     "action": "MovingTurningDelta",
                     "isComposite": false,
@@ -509,9 +527,9 @@
                 {
                     "name": "",
                     "id": "ad0d1c62-839a-4394-b2ee-af460b668848",
-                    "path": "<Joystick>/rz",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Scale(factor=0.1)",
                     "groups": "Joystick",
                     "action": "ModelessMoveHeight",
                     "isComposite": false,
@@ -712,6 +730,28 @@
                     "processors": "",
                     "groups": "KeyboardMouse",
                     "action": "GrabbingGrabRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aaf55edb-e674-48ad-b546-2d628eee622c",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModelessTurnDeltaX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27b08735-aa89-403e-8723-5eaab3beeb3b",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/rz",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModelessTurnDeltaY",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
