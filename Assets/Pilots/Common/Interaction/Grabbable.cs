@@ -31,14 +31,19 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
-
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
-
 		}
 		public void OnEnable()
-		{
-			GrabbableObjectManager.RegisterGrabbable(this);
+		{	
+			// Any grabbable object needs a unique networkID, otherwise it will cause problems. If this are generated on the fly, we need a counter so we will use the number of grabbable objects +1
+			if (NetworkId == null || NetworkId == "")
+			{
+				Grabbable[] g_list = FindObjectsOfType<Grabbable>();
+				NetworkId = "nid_0000_" + (g_list.Length +1);
+			}
 
+			// we now register the object to the grabbableObjectManager
+			GrabbableObjectManager.RegisterGrabbable(this);
 			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
 
@@ -88,13 +93,13 @@ namespace VRT.Pilots.Common
 					_CurrentGrabber.HeldGrabbable = null;
 				}
 
-                if (Rigidbody != null)
-                {
-                    Rigidbody.isKinematic = true;
-                    Rigidbody.useGravity = false;
-                }
+				if (Rigidbody != null)
+				{
+					Rigidbody.isKinematic = true;
+					Rigidbody.useGravity = false;
+				}
 
-                transform.parent = handController.transform;
+				transform.parent = handController.transform;
 
 				if (UseOffsets)
 				{
@@ -124,9 +129,6 @@ namespace VRT.Pilots.Common
 
 				if (Rigidbody != null)
 				{
-					//Rigidbody.isKinematic = false;
-					//Rigidbody.useGravity = true;
-
 					//we return the original state
 					Rigidbody.isKinematic = _isKinematic;
 					Rigidbody.useGravity = _useGravity;

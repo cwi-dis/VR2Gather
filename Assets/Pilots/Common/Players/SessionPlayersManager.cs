@@ -125,6 +125,7 @@ namespace VRT.Pilots.Common
 				var player = Instantiate(PlayerPrefab);
 				player.SetActive(true);
 				player.name = $"Player_{user.userId}";
+				player.tag = "Player";	// we tag it as player so its easier to find it in the scene
 
 				PlayerManager playerManager = player.GetComponent<PlayerManager>();
 				var representationType = user.userData.userRepresentationType;
