@@ -284,22 +284,22 @@
                 },
                 {
                     "name": "",
-                    "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
-                    "path": "<Keyboard>/m",
+                    "id": "3505c675-1c15-4a73-9c03-be3b9b621369",
+                    "path": "<Gamepad>/leftStick",
                     "interactions": "",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "ModeMoving",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": "Gamepad",
+                    "action": "MovingTurningDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "5056fa4e-b690-4019-9ec9-549fbecca277",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
-                    "interactions": "Press(behavior=2)",
+                    "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "KeyboardMouse",
                     "action": "ModeMoving",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -350,22 +350,22 @@
                 },
                 {
                     "name": "",
-                    "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
-                    "path": "<Keyboard>/t",
+                    "id": "b35370c8-2c34-462f-abb3-05f5387448d8",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "ModeTurning",
+                    "groups": "Gamepad",
+                    "action": "ModeTeleportingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "c6fa61f3-fc51-4c76-9648-04c7b8c5c1c1",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
-                    "interactions": "Press(behavior=2)",
+                    "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
                     "processors": "",
-                    "groups": "Joystick",
+                    "groups": "KeyboardMouse",
                     "action": "ModeTurning",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -416,6 +416,17 @@
                 },
                 {
                     "name": "",
+                    "id": "03772b10-077b-4a8a-b94c-238816f23f5a",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ModeTouchingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "cfd8b097-281c-4571-95e1-ec9522be8d06",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -438,6 +449,17 @@
                 },
                 {
                     "name": "",
+                    "id": "9eb82a41-2e53-49da-b68c-e9309acafc2f",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "TeleportGoRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "79ee03e9-a8b5-4c9b-b73c-61b8eaad3df4",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
@@ -454,6 +476,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
+                    "action": "TouchingTouchRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "194236b6-7fa1-4b4b-98c0-8f56030e32c5",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "TouchingTouchRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -570,6 +603,17 @@
                 },
                 {
                     "name": "",
+                    "id": "63014168-9d44-4553-af6a-eedcfde77038",
+                    "path": "<Gamepad>/dpad/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.1)",
+                    "groups": "Gamepad",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "4e39b9d0-cc65-4699-a9ff-4cf09ae0a340",
                     "path": "<OculusTouchController>{LeftHand}/secondaryButton",
                     "interactions": "",
@@ -652,6 +696,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "45686803-53b2-4e4c-9611-8557fa0d2091",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
                     "action": "TeleportHomeRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -746,11 +801,33 @@
                 },
                 {
                     "name": "",
+                    "id": "648fc344-f207-4117-b1c1-c8abffac4b46",
+                    "path": "<Gamepad>/rightStick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ModelessTurnDeltaX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "27b08735-aa89-403e-8723-5eaab3beeb3b",
                     "path": "<HID::Logitech Logitech RumblePad 2 USB>/rz",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
+                    "action": "ModelessTurnDeltaY",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "791c67a5-1a0a-40e3-a325-2cd6d51ab7b3",
+                    "path": "<Gamepad>/rightStick/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "ModelessTurnDeltaY",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -813,6 +890,17 @@
                 },
                 {
                     "devicePath": "<XRController>{RightHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<XInputController>",
                     "isOptional": false,
                     "isOR": false
                 }
