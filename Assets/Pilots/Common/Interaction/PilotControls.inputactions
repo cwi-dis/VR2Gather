@@ -826,7 +826,7 @@
                     "id": "791c67a5-1a0a-40e3-a325-2cd6d51ab7b3",
                     "path": "<Gamepad>/rightStick/y",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Invert",
                     "groups": "",
                     "action": "ModelessTurnDeltaY",
                     "isComposite": false,
