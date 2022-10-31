@@ -43,12 +43,23 @@ namespace VRT.Core
             if (_Instance == null)
             {
                 _Instance = this;
-                initializing = true;
-                StartCoroutine(_LoadAndStartVR());
             }
             else
             {
                 Debug.LogWarning("VRConfig: Awake called a second time, ignored");
+            }
+        }
+
+        private void Start()
+        {
+         }
+
+        private void Update()
+        {
+            if(!initialized && !initializing)
+            {
+                initializing = true;
+                StartCoroutine(_LoadAndStartVR());
             }
         }
 
