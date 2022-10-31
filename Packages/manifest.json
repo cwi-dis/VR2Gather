@@ -1,13 +1,14 @@
 {
   "dependencies": {
+    "com.unity.ide.visualstudio": "2.0.16",
     "com.unity.inputsystem": "1.4.2",
     "com.unity.postprocessing": "3.2.2",
-    "com.unity.recorder": "2.5.7",
-    "com.unity.textmeshpro": "2.1.6",
+    "com.unity.recorder": "3.0.3",
+    "com.unity.textmeshpro": "3.0.6",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.legacyinputhelpers": "2.1.9",
-    "com.unity.xr.oculus.standalone": "2.38.4",
-    "com.unity.xr.openvr.standalone": "2.0.5",
+    "com.unity.xr.management": "4.2.1",
+    "com.unity.xr.oculus": "3.0.2",
+    "com.unity.xr.openxr": "1.4.2",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
@@ -16,7 +17,6 @@
     "com.unity.modules.terrain": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
-    "com.unity.modules.video": "1.0.0",
-    "com.unity.modules.vr": "1.0.0"
+    "com.unity.modules.video": "1.0.0"
   }
 }

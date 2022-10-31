@@ -6,19 +6,10 @@
             "id": "d302294e-9573-4855-ac1b-a564eb55cedc",
             "actions": [
                 {
-                    "name": "Delta",
+                    "name": "MovingTurningDelta",
                     "type": "PassThrough",
                     "id": "7ad5b969-748a-407d-86af-125de33d9d22",
                     "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "HeightDelta",
-                    "type": "PassThrough",
-                    "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
-                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -29,7 +20,7 @@
                     "id": "597a7904-2027-4a32-8233-997ba6cb11f3",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "Press",
                     "initialStateCheck": false
                 },
                 {
@@ -42,7 +33,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ModeTeleporting",
+                    "name": "ModeTeleportingRightHand",
                     "type": "Button",
                     "id": "95d34da0-d909-42c9-b4d6-880a8cb6ac0e",
                     "expectedControlType": "Button",
@@ -51,16 +42,52 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ModeGroping",
+                    "name": "ModeTeleportingLeftHand",
                     "type": "Button",
-                    "id": "ff630674-6e49-4602-8bb0-b8f61eec8702",
+                    "id": "b9466793-878c-4b3f-b0a4-b96a91c261f7",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TeleportGo",
+                    "name": "ModeTouchingRightHand",
+                    "type": "Button",
+                    "id": "ff630674-6e49-4602-8bb0-b8f61eec8702",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ModeTouchingLeftHand",
+                    "type": "Button",
+                    "id": "3022074d-6969-42c9-8cf2-6bd98423e154",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ModeGrabbingRightHand",
+                    "type": "Button",
+                    "id": "5e0da2e3-e5fe-47d9-8789-1b9946777b65",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ModeGrabbingLeftHand",
+                    "type": "Button",
+                    "id": "064dd04f-127c-44df-9412-cd8ee46a5b0e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TeleportGoRightHand",
                     "type": "Button",
                     "id": "d3075410-8b62-4edf-8b0b-65e29c3b2ab2",
                     "expectedControlType": "Button",
@@ -69,7 +96,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "TeleportHome",
+                    "name": "TeleportHomeRightHand",
                     "type": "Button",
                     "id": "17aeb438-76c9-4806-b9d1-2844575452dd",
                     "expectedControlType": "Button",
@@ -78,13 +105,103 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "GropingTouch",
+                    "name": "TeleportGoLeftHand",
+                    "type": "Button",
+                    "id": "005423c3-3073-4b17-8894-f802e5cf3711",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TeleportHomeLeftHand",
+                    "type": "Button",
+                    "id": "5cbb6783-11f4-4a45-a0b3-27872b7a7a6b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TouchingTouchRightHand",
                     "type": "Button",
                     "id": "e42742c7-891d-47c0-bd58-ab8c59ff57b7",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "TouchingTouchLeftHand",
+                    "type": "Button",
+                    "id": "ea5b96d3-64b4-4759-b8c4-356b5696d92a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GrabbingGrabRightHand",
+                    "type": "Button",
+                    "id": "9046ca48-5429-48b5-b1a4-3562d4892434",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GrabbingGrabLeftHand",
+                    "type": "Button",
+                    "id": "336f5fc9-e404-4adc-9aa4-8ffc16e0f54b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessMoveDelta",
+                    "type": "PassThrough",
+                    "id": "b3549125-c569-4974-a087-8c1272dd14fe",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessMoveHeight",
+                    "type": "PassThrough",
+                    "id": "f9598aaf-f51c-4bfe-8441-8859f7023982",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessTurnDelta",
+                    "type": "PassThrough",
+                    "id": "84d38cd8-a07a-48b6-bdc8-fd9694520810",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ModelessTurnDeltaX",
+                    "type": "Value",
+                    "id": "13f8be4a-fddc-41cb-a0ea-d44dcfe071cc",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "ModelessTurnDeltaY",
+                    "type": "Value",
+                    "id": "20201515-4bf8-4a22-b834-412f1f4c066f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -95,7 +212,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "Delta",
+                    "action": "MovingTurningDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -104,30 +221,85 @@
                     "id": "877d7c5c-97b4-42ae-b3fd-477f2e6ae564",
                     "path": "<Joystick>/stick",
                     "interactions": "",
-                    "processors": "StickDeadzone",
+                    "processors": "StickDeadzone,ScaleVector2(x=0.1,y=0.1)",
                     "groups": "Joystick",
-                    "action": "Delta",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "c518ae0d-8578-4a10-9a61-1aabd40fd295",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MovingTurningDelta",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "ef0a4e6a-1005-48c5-a7ea-ca101a0c85af",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "6721c89e-ea52-4518-a8ef-ee2033cd28e9",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "af82bfec-f9b5-4530-938f-47dff09e083c",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "89ac0943-5e2f-4b7a-bc7a-ec1e35858b9a",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "MovingTurningDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "3505c675-1c15-4a73-9c03-be3b9b621369",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": "Gamepad",
+                    "action": "MovingTurningDelta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "016dbc11-f9de-4d75-960d-1b165d9995c4",
-                    "path": "<Keyboard>/space",
-                    "interactions": "Press(behavior=2)",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ModeMoving",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "5056fa4e-b690-4019-9ec9-549fbecca277",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "Joystick",
                     "action": "ModeMoving",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -139,7 +311,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ModeTeleporting",
+                    "action": "ModeTeleportingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -150,51 +322,51 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "ModeTeleporting",
+                    "action": "ModeTeleportingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ff57d8ed-b290-42a9-a53b-03c74ae6a194",
+                    "path": "<XRController>{RightHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTeleportingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2cd06b74-efca-4fbd-b4f5-feca7a32b8e1",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTeleportingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b35370c8-2c34-462f-abb3-05f5387448d8",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ModeTeleportingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "3ac64abb-cf23-44cc-afa2-df3c6fb5b1dd",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "KeyboardMouse",
-                    "action": "ModeTurning",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c6fa61f3-fc51-4c76-9648-04c7b8c5c1c1",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "ModeTurning",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "afc9153a-c0da-4a6e-b2b3-5823aa1c8fc3",
-                    "path": "<Keyboard>/0",
+                    "path": "<Keyboard>/t",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "TeleportHome",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "27792203-2210-45f6-8bc2-f62fcb09ac72",
-                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button2",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Joystick",
-                    "action": "TeleportHome",
+                    "action": "ModeTurning",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -205,7 +377,7 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ModeGroping",
+                    "action": "ModeTouchingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -216,7 +388,40 @@
                     "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "ModeGroping",
+                    "action": "ModeTouchingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f59f5537-93f5-42fd-8507-15ba844b2beb",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTouchingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca7b2f4d-9c38-4d84-9a19-c0e6ded51d70",
+                    "path": "<OculusTouchController>{RightHand}/triggerTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTouchingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "03772b10-077b-4a8a-b94c-238816f23f5a",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ModeTouchingRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -227,7 +432,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "TeleportGo",
+                    "action": "TeleportGoRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -238,7 +443,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "TeleportGo",
+                    "action": "TeleportGoRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9eb82a41-2e53-49da-b68c-e9309acafc2f",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "TeleportGoRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -249,7 +465,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "GropingTouch",
+                    "action": "TouchingTouchRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -260,9 +476,75 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "GropingTouch",
+                    "action": "TouchingTouchRightHand",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "194236b6-7fa1-4b4b-98c0-8f56030e32c5",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "TouchingTouchRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "7113ffe3-82b6-43c1-b348-60a542b6fe5c",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "e0c47bc9-b1a6-4428-bef2-9a7253544073",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "2e5503a6-c599-48cf-81b6-1ae3167d4af9",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "671f3878-bdf3-4904-be54-274c1c42c64e",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "4b4a3faf-4c21-4e01-8b31-567de479ca35",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveDelta",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 },
                 {
                     "name": "",
@@ -271,18 +553,282 @@
                     "interactions": "",
                     "processors": "Scale(factor=0.002)",
                     "groups": "KeyboardMouse",
-                    "action": "HeightDelta",
+                    "action": "ModelessMoveHeight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "ad0d1c62-839a-4394-b2ee-af460b668848",
-                    "path": "<Joystick>/rz",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.1)",
+                    "groups": "Joystick",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "ffe846d5-4f7c-4386-99fc-cc458b5d071f",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "5231bbf2-69bb-4522-b3ba-58d0ea53106b",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "961323c3-283f-4928-9094-d4e049ee9557",
+                    "path": "<Keyboard>/u",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "63014168-9d44-4553-af6a-eedcfde77038",
+                    "path": "<Gamepad>/dpad/y",
+                    "interactions": "",
+                    "processors": "Scale(factor=0.1)",
+                    "groups": "Gamepad",
+                    "action": "ModelessMoveHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e39b9d0-cc65-4699-a9ff-4cf09ae0a340",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTeleportingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "65b6f862-bc64-4310-9a8c-ce8b18109b27",
+                    "path": "<XRController>{LeftHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTeleportingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ebe00a50-8827-468f-ab7e-def699c2c02a",
+                    "path": "<OculusTouchController>{LeftHand}/triggerTouched",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeTouchingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f65357cb-611e-4137-b1c1-4435f342f197",
+                    "path": "<XRController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeTouchingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "afc9153a-c0da-4a6e-b2b3-5823aa1c8fc3",
+                    "path": "<Keyboard>/0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27792203-2210-45f6-8bc2-f62fcb09ac72",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button2",
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "HeightDelta",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b15529c-c477-47b4-9899-c2970d7599d4",
+                    "path": "<XRController>{LeftHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8b1d36c-0093-477c-9564-d6a5955333cc",
+                    "path": "<OculusTouchController>{LeftHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "45686803-53b2-4e4c-9611-8557fa0d2091",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "TeleportHomeRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "064d8c0f-00c8-4fc9-9f64-753d0d7be80a",
+                    "path": "<XRController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeGrabbingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f57fb285-67d9-45fb-9ef4-bd87bc70b7f2",
+                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeGrabbingRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd6e495e-af63-4691-b177-db618a433614",
+                    "path": "<XRController>{RightHand}/menu",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "TeleportHomeLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "436962df-3a9b-4707-97a3-57fa6643852b",
+                    "path": "<OculusTouchController>{RightHand}/secondaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "TeleportHomeLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c5ec502f-9c1c-405e-a3cc-89d506feda21",
+                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "OpenXR",
+                    "action": "ModeGrabbingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7bb2dca-b658-495a-8149-61815891de98",
+                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ModeGrabbingLeftHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "045625ff-1f2d-4e68-889b-f75537aa724a",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "GrabbingGrabRightHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "aaf55edb-e674-48ad-b546-2d628eee622c",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModelessTurnDeltaX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "648fc344-f207-4117-b1c1-c8abffac4b46",
+                    "path": "<Gamepad>/rightStick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ModelessTurnDeltaX",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27b08735-aa89-403e-8723-5eaab3beeb3b",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/rz",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ModelessTurnDeltaY",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "791c67a5-1a0a-40e3-a325-2cd6d51ab7b3",
+                    "path": "<Gamepad>/rightStick/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ModelessTurnDeltaY",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -312,6 +858,49 @@
             "devices": [
                 {
                     "devicePath": "<Joystick>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Oculus",
+            "bindingGroup": "Oculus",
+            "devices": [
+                {
+                    "devicePath": "<OculusTouchController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<OculusTouchController>{RightHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "OpenXR",
+            "bindingGroup": "OpenXR",
+            "devices": [
+                {
+                    "devicePath": "<XRController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<XRController>{RightHand}",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Gamepad",
+            "bindingGroup": "Gamepad",
+            "devices": [
+                {
+                    "devicePath": "<XInputController>",
                     "isOptional": false,
                     "isOR": false
                 }
