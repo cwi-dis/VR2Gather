@@ -64,7 +64,18 @@ namespace VRT.Pilots.Common
         [Tooltip("Current tilt angle of the head")]
         public float pitchAngle = 0;
 
-        [Header("Input Actions")]
+        public enum Mode
+        {
+            ModeNone,
+            ModeMoving,
+            ModeTurning,
+            ModeTouching,
+            ModeGrabbing,
+            ModeTeleporting,
+
+        };
+        [Tooltip("Default mode (if none of the next buttons pressed")]
+        public Mode defaultMode = Mode.ModeNone;
 
         [Tooltip("Name of (button) action that enables moving")]
         public string ModeMovingActionName;
@@ -90,20 +101,20 @@ namespace VRT.Pilots.Common
         public string ModelessMoveActionName;
         [Tooltip("Name of action (2D) that always moves player head")]
         public string ModelessTurnActionName;
+        public string ModelessTurnXActionName;
+        public string ModelessTurnYActionName;
         [Tooltip("Name of action (axis) that always moves camera height")]
         public string ModelessMoveHeightActionName;
         [Tooltip("Object responsible for implementing touching and teleporting")]
         public HandInteractionEmulation handInteraction;
 
         [Header("Introspection objects for debugging")]
+        [Tooltip("The PlayerInput")]
         public PlayerInput MyPlayerInput;
-        public bool modeMovingActive = false;
-        public bool modeTurningActive = false;
-        public bool modeTouchingActive = false;
-        public bool modeGrabbingActive = false;
-        public bool modeTeleportingActive = false;
-
-
+        
+        [Tooltip("Current mode")]
+        public Mode currentMode = Mode.ModeNone;
+      
         private void Awake()
         {
         }
@@ -133,153 +144,159 @@ namespace VRT.Pilots.Common
             InputAction MyMovingTurningDeltaAction = MyPlayerInput.actions.FindAction(MovingTurningDeltaActionName, false);
             InputAction MyModelessMoveAction = MyPlayerInput.actions.FindAction(ModelessMoveActionName, false);
             InputAction MyModelessTurnAction = MyPlayerInput.actions.FindAction(ModelessTurnActionName, false);
+            InputAction MyModelessTurnXAction = MyPlayerInput.actions.FindAction(ModelessTurnXActionName, false);
+            InputAction MyModelessTurnYAction = MyPlayerInput.actions.FindAction(ModelessTurnYActionName, false);
             InputAction MyModelessMoveHeightAction = MyPlayerInput.actions.FindAction(ModelessMoveHeightActionName, false);
 
             //
-            // Get move/height deltas
+            // Get move/height/turn deltas, if we received any.
+            // If any of the modeless values has been received this will be used below to set delta
+            // and enforce a specific mode.
             //
             Vector2 delta = Vector2.zero;
             float deltaHeight = 0;
             Vector2 modelessMoveDelta = Vector2.zero;
             Vector2 modelessTurnDelta = Vector2.zero;
             float modelessMoveDeltaHeight = 0;
-            if (MyMovingTurningDeltaAction != null) delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
-            if (MyModelessMoveAction != null) modelessMoveDelta = MyModelessMoveAction.ReadValue<Vector2>();
-            if (MyModelessTurnAction != null) modelessTurnDelta = MyModelessTurnAction.ReadValue<Vector2>();
-            if (MyModelessMoveHeightAction != null) modelessMoveDeltaHeight = MyModelessMoveHeightAction.ReadValue<float>();
+            if (MyMovingTurningDeltaAction != null)
+            {
+                delta = MyMovingTurningDeltaAction.ReadValue<Vector2>();
+            }
+            if (MyModelessMoveAction != null)
+            {
+                modelessMoveDelta = MyModelessMoveAction.ReadValue<Vector2>();
+            }
+            if (MyModelessTurnAction != null)
+            {
+                modelessTurnDelta = MyModelessTurnAction.ReadValue<Vector2>();
+            }
+            if (MyModelessTurnXAction != null && MyModelessTurnYAction != null)
+            {
+                float x = MyModelessTurnXAction.ReadValue<float>();
+                float y = MyModelessTurnYAction.ReadValue<float>();
+                modelessTurnDelta = new Vector2(x, y);
+            }
+            if (MyModelessMoveHeightAction != null)
+            {
+                modelessMoveDeltaHeight = MyModelessMoveHeightAction.ReadValue<float>();
+            }
 
             //
             // Determine what mode we are in
             //
-            modeMovingActive = false;
-            modeTurningActive = false;
-            modeTouchingActive = false;
-            modeTeleportingActive = false;
-            modeGrabbingActive = false;
-
+            currentMode = defaultMode;
+          
             //
-            // First check whether any of the modeless move/turn are active.
+            // First check whether any of the modeless move/turn actions returned a nonzero value.
             // Then we check for any of the mode-activating buttons.
             // Finally we go to the default mode, which is grabbing if that is enabled, otherwise turning.
             //
             if (modelessMoveDelta != Vector2.zero || modelessMoveDeltaHeight != 0)
             {
-                modeMovingActive = true;
+                currentMode = Mode.ModeMoving;
                 delta = modelessMoveDelta;
                 deltaHeight = modelessMoveDeltaHeight;
             }
             else
             if (modelessTurnDelta != Vector2.zero)
             {
-                modeTurningActive = true;
+                currentMode = Mode.ModeTurning;
                 delta = modelessTurnDelta;
             }
             else
             if (MyModeMovingAction != null && MyModeMovingAction.IsPressed())
             {
-                modeMovingActive = true;
+                currentMode = Mode.ModeMoving;
             }
             else
             if (MyModeTouchingAction != null && MyModeTouchingAction.IsPressed())
             {
-                modeTouchingActive = true;
+                currentMode = Mode.ModeTouching;
             }
             else
             if (MyModeTeleportingAction != null && MyModeTeleportingAction.IsPressed())
             {
-                modeTeleportingActive = true;
+                currentMode = Mode.ModeTeleporting;
             }
             else
             if (MyModeTurningAction != null && MyModeTurningAction.IsPressed())
             {
-                modeTurningActive = true;
-            } 
-            else
-            if (MyModeGrabbingAction != null)
-            {
-                modeGrabbingActive = true; 
+                currentMode = Mode.ModeTurning;
             }
-            else
-            {
-                // modeTurningActive = true;
-            }
-            handInteraction?.InputModeChange(modeTouchingActive, modeTeleportingActive);
+            handInteraction?.InputModeChange(currentMode == Mode.ModeTouching, currentMode == Mode.ModeTeleporting);
 
             //
             // Implement current mode
             //
-            if (modeMovingActive)
+            switch(currentMode)
             {
-                if (delta != Vector2.zero)
-                {
-                    Vector3 move = transform.right * delta.x * Time.deltaTime + transform.forward * delta.y * Time.deltaTime;
-                    move = move * moveSpeed;
-                    Debug.Log($"InputSystemHandling: move {move}");
-                    controller.Move(move);
-                }
-                if (deltaHeight != 0)
-                {
-                    // Do Camera movement for up/down.
-                    Debug.Log($"InputSystemHandling: deltaHeight {deltaHeight}");
-                    cameraTransformToControl.localPosition = new Vector3(
-                        cameraTransformToControl.localPosition.x,
-                        cameraTransformToControl.localPosition.y + deltaHeight * heightSpeed,
-                        cameraTransformToControl.localPosition.z);
-                }
-            }
-            else
-            if (modeTurningActive)
-            {
-                if (delta != Vector2.zero)
-                {
-                    float turnRotation = delta.x * turnSpeed * Time.deltaTime;
-                    float pitchRotation = delta.y * pitchSpeed * Time.deltaTime;
+                case Mode.ModeMoving:
+                    if (delta != Vector2.zero)
+                    {
+                        Vector3 move = transform.right * delta.x * Time.deltaTime + transform.forward * delta.y * Time.deltaTime;
+                        move = move * moveSpeed;
+                        Debug.Log($"InputSystemHandling: move {move}");
+                        controller.Move(move);
+                    }
+                    if (deltaHeight != 0)
+                    {
+                        // Do Camera movement for up/down.
+                        Debug.Log($"InputSystemHandling: deltaHeight {deltaHeight}");
+                        cameraTransformToControl.localPosition = new Vector3(
+                            cameraTransformToControl.localPosition.x,
+                            cameraTransformToControl.localPosition.y + deltaHeight * heightSpeed,
+                            cameraTransformToControl.localPosition.z);
+                    }
+                    break;
+                case Mode.ModeTurning:
+                    if (delta != Vector2.zero)
+                    {
+                        float turnRotation = delta.x * turnSpeed * Time.deltaTime;
+                        float pitchRotation = delta.y * pitchSpeed * Time.deltaTime;
 
-                    pitchAngle = pitchAngle + pitchRotation;
-                    pitchAngle = Mathf.Clamp(pitchAngle, -90f, 90f);
+                        pitchAngle = pitchAngle + pitchRotation;
+                        pitchAngle = Mathf.Clamp(pitchAngle, -90f, 90f);
 
-                    Debug.Log($"InputSystemHandling: Turn({delta}) to turn={turnRotation}, pitch={pitchRotation} to {pitchAngle}");
+                        Debug.Log($"InputSystemHandling: Turn({delta}) to turn={turnRotation}, pitch={pitchRotation} to {pitchAngle}");
 
-                    cameraTransformToControl.localRotation = Quaternion.Euler(pitchAngle, 0f, 0f);
-                    adjustBodyHead(turnRotation, -pitchRotation);
-                }
+                        cameraTransformToControl.localRotation = Quaternion.Euler(pitchAngle, 0f, 0f);
+                        adjustBodyHead(turnRotation, -pitchRotation);
+                    }
+                    break;
+                case Mode.ModeTeleporting:
+                    if (delta != Vector2.zero)
+                    {
+                        handInteraction?.InputModeUpdate(delta);
+                    }
+                    if (MyTeleportGoAction.triggered)
+                    {
+                        handInteraction?.InputModeTeleportGo();
+                    }
+                    if (MyTeleportHomeAction.triggered)
+                    {
+                        handInteraction?.InputModeTeleportHome();
+                    }
+                    break;
+                case Mode.ModeTouching:
+                    if (delta != Vector2.zero)
+                    {
+                        handInteraction?.InputModeUpdate(delta);
+                    }
+                    if (MyTouchingTouchAction.triggered)
+                    {
+                        handInteraction?.InputModeTouchingTouch();
+                    }
+                    break;
+                case Mode.ModeGrabbing:
+                    if (MyModeGrabbingAction != null && MyModeGrabbingAction.IsPressed())
+                    {
+                        Debug.LogError($"xxxjack grab not yet implemented");
+                    }
+                    break;
+                default:
+                    break;
             }
-            else
-            if (modeTeleportingActive)
-            {
-                if (delta != Vector2.zero)
-                {
-                    handInteraction?.InputModeUpdate(delta);
-                }
-                if (MyTeleportGoAction.triggered)
-                {
-                    handInteraction?.InputModeTeleportGo();
-                }
-                if (MyTeleportHomeAction.triggered)
-                {
-                    handInteraction?.InputModeTeleportHome();
-                }
-            }
-            else
-            if (modeTouchingActive)
-            {
-                if (delta != Vector2.zero)
-                {
-                    handInteraction?.InputModeUpdate(delta);
-                }
-                if (MyTouchingTouchAction.triggered)
-                {
-                    handInteraction?.InputModeTouchingTouch();
-                }
-            }
-            else
-            if (modeGrabbingActive)
-            {
-                if (MyModeGrabbingAction != null && MyModeGrabbingAction.IsPressed())
-                {
-                    Debug.LogError($"xxxjack grab not yet implemented");
-                }
-            }
+        
             
         }
 

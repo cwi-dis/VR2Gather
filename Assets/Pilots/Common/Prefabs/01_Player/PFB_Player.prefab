@@ -1699,6 +1699,7 @@ MonoBehaviour:
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
   pitchAngle: 0
+  defaultMode: 0
   ModeMovingActionName: ModeMoving
   ModeTurningActionName: ModeTurning
   ModeTouchingActionName: ModeTouchingRightHand
@@ -1711,14 +1712,12 @@ MonoBehaviour:
   MovingTurningDeltaActionName: MovingTurningDelta
   ModelessMoveActionName: ModelessMoveDelta
   ModelessTurnActionName: 
+  ModelessTurnXActionName: 
+  ModelessTurnYActionName: 
   ModelessMoveHeightActionName: ModelessMoveHeight
   handInteraction: {fileID: 5072070730475040801}
   MyPlayerInput: {fileID: 3844742245929821803}
-  modeMovingActive: 0
-  modeTurningActive: 0
-  modeTouchingActive: 0
-  modeGrabbingActive: 0
-  modeTeleportingActive: 0
+  currentMode: 0
 --- !u!1 &6616697951003645928
 GameObject:
   m_ObjectHideFlags: 0
@@ -1766,7 +1765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3076079762117982612}
-  moveSpeed: 1
+  moveSpeed: 10
   turnSpeed: 45
   pitchSpeed: -45
   heightSpeed: 0.04
@@ -1774,8 +1773,9 @@ MonoBehaviour:
   playerBody: {fileID: 5131421326051842284}
   avatarHead: {fileID: 4311645287905124984}
   pitchAngle: 0
-  ModeMovingActionName: ModeMoving
-  ModeTurningActionName: ModeTurning
+  defaultMode: 1
+  ModeMovingActionName: 
+  ModeTurningActionName: 
   ModeTouchingActionName: ModeTouchingRightHand
   ModeGrabbingActionName: 
   ModeTeleportingActionName: ModeTeleportingRightHand
@@ -1785,15 +1785,13 @@ MonoBehaviour:
   GrabbingGrabActionName: 
   MovingTurningDeltaActionName: MovingTurningDelta
   ModelessMoveActionName: ModelessMoveDelta
-  ModelessTurnActionName: ModelessTurnDelta
+  ModelessTurnActionName: 
+  ModelessTurnXActionName: ModelessTurnDeltaX
+  ModelessTurnYActionName: ModelessTurnDeltaY
   ModelessMoveHeightActionName: ModelessMoveHeight
   handInteraction: {fileID: 8100228094031343025}
   MyPlayerInput: {fileID: 3844742245929821803}
-  modeMovingActive: 0
-  modeTurningActive: 0
-  modeTouchingActive: 0
-  modeGrabbingActive: 0
-  modeTeleportingActive: 0
+  currentMode: 0
 --- !u!1 &6673891989343794525
 GameObject:
   m_ObjectHideFlags: 0
