@@ -4,7 +4,7 @@
 	"orchestratorLogURL" : "http://192.16.197.145:8081/",
 	"openLogOnExit" : false,
 
-  "targetFrameRate": 30,
+  "targetFrameRate": 0,
   "memoryDamping": 1.2999999523162842,
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
@@ -34,8 +34,7 @@
   	"screenshotTargetDirectory" : "../session_screenshots"
   },
   "VR" : {
-	"_preferredDevices" : [""],
-	"preferredController" : ""
+	"_loader" : ""
   },
   "Macintosh": {
     "SIGNALS_SMD_PATH": "/Users/jack/lib"
