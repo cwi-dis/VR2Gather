@@ -28,6 +28,8 @@ namespace VRT.Pilots.Common
         public GameObject unusedHand;
         [Tooltip("The transform that governs the hand's idle position")]
         public Transform handHomeTransform;
+        [Tooltip("The transform that governs the hand's touching direction")]
+        public Transform handTouchTransform;
         [Tooltip("Collider that actually presses the button")]
         public GameObject touchCollider = null;
         protected bool inTeleportingMode = false;
@@ -205,7 +207,8 @@ namespace VRT.Pilots.Common
 
         protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
         {
-            Vector3 homePoint = handHomeTransform.position;
+            Vector3 homePoint = handTouchTransform.position;
+            Quaternion handForward = handTouchTransform.rotation;
             Vector3 distance3 = touchPoint - homePoint;
             float distance = distance3.magnitude;
             Vector3 direction = distance3 / distance;
@@ -219,14 +222,15 @@ namespace VRT.Pilots.Common
             {
                 var handPoint = homePoint + direction * (distance - (isTouching ? handTouchingDelta : handGrabbingDelta));
                 hand.transform.position = handPoint;
-                hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                //hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                hand.transform.rotation = handForward;
                 hand.SetActive(true);
                 UpdateAnimation(isTouchable ? "IsPointing" : "");
             }
             if (HandLineRenderer != null)
             {
                 var linePoint = homePoint + direction * (distance - handLineDelta);
-                var points = new Vector3[2] { handHomeTransform.position, linePoint };
+                var points = new Vector3[2] { homePoint, linePoint };
                 HandLineRenderer.SetPositions(points);
                 HandLineRenderer.enabled = true;
             }

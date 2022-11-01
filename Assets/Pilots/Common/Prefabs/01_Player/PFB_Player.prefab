@@ -1150,7 +1150,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleporter: {fileID: 1602928185896423273}
-  teleportStrength: 10
   pointingModeAxisInvert: 1
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -1543,7 +1542,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleporter: {fileID: 1602928185896423273}
-  teleportStrength: 10
   pointingModeAxisInvert: 0
   grabbingModeAxisInvert: 0
   Hand: {fileID: 1961873935331442330}
@@ -2028,7 +2026,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleporter: {fileID: 6690124169422001050}
-  teleportStrength: 10
   pointingModeAxisInvert: 1
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
@@ -2322,7 +2319,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teleporter: {fileID: 6690124169422001050}
-  teleportStrength: 10
   pointingModeAxisInvert: 0
   grabbingModeAxisInvert: 0
   Hand: {fileID: 792856020353786571}
@@ -2759,6 +2755,11 @@ PrefabInstance:
       propertyPath: adjustForPositionOfCamera
       value: 
       objectReference: {fileID: 2476733253101752967}
+    - target: {fileID: 7931379300683449576, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21dad1a70fa0b7842afecfcdd199c370, type: 3}
 --- !u!1 &350448258107461840 stripped
