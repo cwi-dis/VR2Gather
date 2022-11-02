@@ -171,9 +171,10 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 7859600157304724526, guid: 07b89c69e2e80b649aca926d85d21f2f, type: 2}
   - {fileID: 0}
-  - {fileID: 6869665334008911177, guid: 67666cd371ed9e94fac99fca7647c6e1, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -194,7 +195,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: nl.cwi.dis.vr2gather
-    Standalone: com.oculus.UnitySample
+    Standalone: nl.cwi.dis.vr2gather
   buildNumber:
     Standalone: 0.1
     iPhone: 0
@@ -770,6 +771,7 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
+    Standalone: 1
   il2cppCompilerConfiguration: {}
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
