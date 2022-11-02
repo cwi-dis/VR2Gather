@@ -267,6 +267,9 @@ namespace VRT.Core
             {
                 // For the Mac player, the config file is in the Contents directory, which is dataPath
                 dataPath = Application.dataPath;
+            } else if (Application.platform == RuntimePlatform.Android)
+            {
+                dataPath = Application.persistentDataPath; // xxxjack for debugging
             } else
             {
                 // For Windos/Linux player, the config file is in the same directory as the executable

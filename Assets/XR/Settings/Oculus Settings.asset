@@ -24,6 +24,6 @@ MonoBehaviour:
   LateLatching: 0
   LateLatchingDebug: 0
   SpaceWarp: 0
-  TargetQuest: 1
+  TargetQuest: 0
   TargetQuest2: 1
-  SystemSplashScreen: {fileID: 0}
+  SystemSplashScreen: {fileID: 2800000, guid: 66f20aa4bf4c52740954d55e7d00009c, type: 3}
