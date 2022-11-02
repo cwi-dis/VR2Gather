@@ -16,18 +16,18 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "",
-  	"sessionScenario" : "",
+  	"sessionName" : "oculusTest",
+  	"sessionScenario" : "Technical Playground",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
-  	"autoLeaveAfter" : 0,
-  	"autoStopAfterLeave" : false
+  	"autoLeaveAfter" : 60,
+  	"autoStopAfterLeave" : true
   },
   "ScreenshotTool" : {
   	"takeScreenshot" : false,
