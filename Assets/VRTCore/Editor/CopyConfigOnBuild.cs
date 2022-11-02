@@ -14,6 +14,11 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
         string srcDir = VRT.Core.Config.ConfigFilename("") + "/";
         string dstDir;
         
+        if (report.summary.platform == BuildTarget.Android)
+        {
+            Debug.LogWarning("Including config files not supported for Android builds");
+            return;
+        }
         if (report.summary.platform == BuildTarget.StandaloneOSX)
         {
             // For Mac the outputPath is the application bundle path. We want to store config files inside the Contens folder.
