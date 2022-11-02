@@ -85,7 +85,7 @@ namespace VRT.Core
             {
                 // First time we get here (during this application run or editor play).
                 // We load the loader wanted.
-                if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+                if (XRGeneralSettings.Instance.Manager != null && XRGeneralSettings.Instance.Manager.activeLoader != null)
                 {
                     Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded, stopping and unloading...");
                     XRGeneralSettings.Instance.Manager.StopSubsystems();
