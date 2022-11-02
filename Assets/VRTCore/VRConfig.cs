@@ -43,12 +43,23 @@ namespace VRT.Core
             if (_Instance == null)
             {
                 _Instance = this;
-                initializing = true;
-                StartCoroutine(_LoadAndStartVR());
             }
             else
             {
                 Debug.LogWarning("VRConfig: Awake called a second time, ignored");
+            }
+        }
+
+        private void Start()
+        {
+         }
+
+        private void Update()
+        {
+            if(!initialized && !initializing)
+            {
+                initializing = true;
+                StartCoroutine(_LoadAndStartVR());
             }
         }
 
@@ -74,7 +85,7 @@ namespace VRT.Core
             {
                 // First time we get here (during this application run or editor play).
                 // We load the loader wanted.
-                if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+                if (XRGeneralSettings.Instance.Manager != null && XRGeneralSettings.Instance.Manager.activeLoader != null)
                 {
                     Debug.Log($"VRConfig: VR driver {XRGeneralSettings.Instance.Manager.activeLoader} already loaded, stopping and unloading...");
                     XRGeneralSettings.Instance.Manager.StopSubsystems();
@@ -200,28 +211,6 @@ namespace VRT.Core
                 Debug.LogError("VRConfig: outputDeviceName() called too early");
             }
             return XRSettings.loadedDeviceName;
-        }
-
-        public bool useHMD()
-        {
-            if (!_initialized)
-            {
-                Debug.LogError("VRConfig: outputDeviceName() called too early");
-            }
-            bool rv = XRGeneralSettings.Instance.Manager.isInitializationComplete && XRSettings.isDeviceActive;
-            return rv;
-        }
-
-        public bool useHoloDisplay()
-        {
-            return Config.Instance.VR.loader == "Lookingglass";
-        }
-
-        public float cameraDefaultHeight()
-        {
-            if (useHMD()) return 0;
-            return 1.7f;    // Default camera height for non-HMD users
-
         }
 
         public void initScreen()
