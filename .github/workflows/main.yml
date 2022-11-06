@@ -10,8 +10,8 @@ jobs:
     name: Build for Windows
     runs-on: windows-2019
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         unityVersion:
           - 2021.3.11f1
         targetPlatform:
@@ -78,8 +78,8 @@ jobs:
     name: Build for Linux
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         unityVersion:
           - 2021.3.11f1
         targetPlatform:
@@ -147,8 +147,8 @@ jobs:
     name: Build for MacOS
     runs-on: windows-2019
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         unityVersion:
           - 2021.3.11f1
         targetPlatform:
