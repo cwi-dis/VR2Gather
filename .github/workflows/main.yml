@@ -146,6 +146,7 @@ jobs:
   buildForMacos:
     name: Build for MacOS
     runs-on: windows-2019
+    strategy:
       matrix:
         fail-fast: false
         unityVersion:
