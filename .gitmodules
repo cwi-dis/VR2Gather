@@ -1,6 +1,6 @@
 [submodule "Assets/ExternalAssets/VR2G-besthttp"]
 	path = Assets/ExternalAssets/VR2G-besthttp
 	url = ../VR2G-besthttp.git
-[submodule "EgoHTCView"]
-	path = EgoHTCView
+[submodule "Assets/ExternalAssets/EgoHTCView"]
+	path = Assets/ExternalAssets/EgoHTCView
 	url = C:\\Users\\VRGrande\\Documents\\VR2Gather\\Assets\\ExternalAssets\\EgoHTCView
