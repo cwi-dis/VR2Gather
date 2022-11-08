@@ -26,7 +26,7 @@ jobs:
     steps:
       # Checkout (without LFS)
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
@@ -36,7 +36,7 @@ jobs:
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
       - name: Restore LFS cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: lfs-cache
         with:
           path: .git/lfs
@@ -49,7 +49,7 @@ jobs:
           git reset --hard
 
       # Cache
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -77,10 +77,11 @@ jobs:
           buildName: VR2Gather
 
       # Output
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Build-${{ matrix.targetPlatform }}
           path: build
+          retention-days: 4
 
 #   buildForLinux:
 #     name: Build for Linux
@@ -96,7 +97,7 @@ jobs:
 #     steps:
 #       # Checkout (without LFS)
 #       - name: Checkout repository
-#         uses: actions/checkout@v2
+#         uses: actions/checkout@v3
 #         with:
 #           submodules: true
 #           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
@@ -106,7 +107,7 @@ jobs:
 #         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 # 
 #       - name: Restore LFS cache
-#         uses: actions/cache@v2
+#         uses: actions/cache@v3
 #         id: lfs-cache
 #         with:
 #           path: .git/lfs
@@ -119,7 +120,7 @@ jobs:
 #           git reset --hard
 # 
 #       # Cache
-#       - uses: actions/cache@v2
+#       - uses: actions/cache@v3
 #         with:
 #           path: Library
 #           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -146,10 +147,11 @@ jobs:
 #           targetPlatform: ${{ matrix.targetPlatform }}
 # 
 #       # Output
-#       - uses: actions/upload-artifact@v2
+#       - uses: actions/upload-artifact@v3
 #         with:
 #           name: Build-${{ matrix.targetPlatform }}
 #           path: build
+#           retention-days: 4
 # 
 #   buildForMacos:
 #     name: Build for MacOS
@@ -174,7 +176,7 @@ jobs:
 #         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 # 
 #       - name: Restore LFS cache
-#         uses: actions/cache@v2
+#         uses: actions/cache@v3
 #         id: lfs-cache
 #         with:
 #           path: .git/lfs
@@ -187,7 +189,7 @@ jobs:
 #           git reset --hard
 # 
 #       # Cache
-#       - uses: actions/cache@v2
+#       - uses: actions/cache@v3
 #         with:
 #           path: Library
 #           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -214,7 +216,8 @@ jobs:
 #           targetPlatform: ${{ matrix.targetPlatform }}
 # 
 #       # Output
-#       - uses: actions/upload-artifact@v2
+#       - uses: actions/upload-artifact@v3
 #         with:
 #           name: Build-${{ matrix.targetPlatform }}
 #           path: build
+#           retention-days: 4
