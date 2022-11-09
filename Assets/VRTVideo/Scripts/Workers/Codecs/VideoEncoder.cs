@@ -12,7 +12,7 @@ namespace VRT.Video
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public unsafe class VideoEncoder : BaseWorker
+    public unsafe class VideoEncoder : AsyncWorker
     {
 
         public struct Setup

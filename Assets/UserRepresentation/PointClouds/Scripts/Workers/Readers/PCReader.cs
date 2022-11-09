@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PCReader : TiledWorker
+    public class PCReader : AsyncTiledWorker
     {
         protected cwipc.source reader;
         protected float voxelSize;

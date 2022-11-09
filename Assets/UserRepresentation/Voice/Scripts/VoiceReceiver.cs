@@ -26,7 +26,7 @@ namespace VRT.UserRepresentation.Voice
         ToneGenerator debugToneGenerator = null;
 #endif
         BaseReader reader;
-        BaseWorker codec;
+        AsyncWorker codec;
         VoicePreparer preparer;
 
         [Tooltip("Object responsible for synchronizing playout")]

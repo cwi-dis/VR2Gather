@@ -28,10 +28,10 @@ namespace VRT.UserRepresentation.WebCam
 
 
         WebCamReader webReader;
-        BaseWorker reader;
-        BaseWorker encoder;
+        AsyncWorker reader;
+        AsyncWorker encoder;
         VideoDecoder decoder;
-        BaseWorker writer;
+        AsyncWorker writer;
         VideoPreparer preparer;
 
         QueueThreadSafe encoderQueue;

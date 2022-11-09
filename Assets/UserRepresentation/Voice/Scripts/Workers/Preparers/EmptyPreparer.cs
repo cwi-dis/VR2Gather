@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class EmptyPreparer : BasePreparer
+    public class EmptyPreparer : AsyncPreparer
     {
         float[] circularBuffer;
         int bufferSize;

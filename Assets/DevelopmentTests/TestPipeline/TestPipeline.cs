@@ -48,18 +48,18 @@ public class TestPipeline : MonoBehaviour
     string URL = "";
     public string remoteStream = "";
 
-    BaseWorker reader;
-    BaseWorker[] encoder;
+    AsyncWorker reader;
+    AsyncWorker[] encoder;
     [Tooltip("Use multiple decoders in parallel (untested)")]
     public int decoders = 1;
     [Tooltip("Use multiple encoders in parallel (untested)")]
     public int encoders = 1;
-    BaseWorker[] decoder;
-    BaseWorker pointcloudsWriter;
-    BaseWorker pointcloudsReader;
+    AsyncWorker[] decoder;
+    AsyncWorker pointcloudsWriter;
+    AsyncWorker pointcloudsReader;
 
     [Tooltip("Debugging: preparer created")]
-    public BaseWorker preparer;
+    public AsyncWorker preparer;
     QueueThreadSafe preparerQueue;
     QueueThreadSafe encoderQueue;
     QueueThreadSafe writerQueue;

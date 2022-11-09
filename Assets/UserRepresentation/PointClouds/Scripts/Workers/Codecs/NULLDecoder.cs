@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class NULLDecoder : BaseWorker
+    public class NULLDecoder : AsyncWorker
     {
         protected QueueThreadSafe inQueue;
         protected QueueThreadSafe outQueue;

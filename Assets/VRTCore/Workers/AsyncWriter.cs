@@ -1,8 +1,8 @@
 namespace VRT.Core
 {
-    public class BaseWriter : BaseWorker
+    public class AsyncWriter : AsyncWorker
     {
-        public BaseWriter() : base()
+        public AsyncWriter() : base()
         {
         }
 

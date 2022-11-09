@@ -14,8 +14,8 @@ public class VideoWebCam : MonoBehaviour {
 
     WebCamReader    recorder;
     VideoEncoder    encoder;
-    BaseWorker      writer;
-    BaseWorker      reader;
+    AsyncWorker      writer;
+    AsyncWorker      reader;
 
     VideoDecoder    decoder;
     VideoPreparer   preparer;

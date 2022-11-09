@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class EmptyReader : BaseWorker
+    public class EmptyReader : AsyncWorker
     {
         Coroutine coroutine;
 

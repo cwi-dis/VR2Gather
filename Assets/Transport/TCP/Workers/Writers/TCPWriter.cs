@@ -13,7 +13,7 @@ namespace VRT.Transport.TCP
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class TCPWriter : BaseWriter
+    public class TCPWriter : AsyncWriter
     {
         public struct TCPStreamDescription
         {

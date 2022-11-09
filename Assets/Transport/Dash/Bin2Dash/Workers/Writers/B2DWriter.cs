@@ -11,7 +11,7 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class B2DWriter : BaseWriter
+    public class B2DWriter : AsyncWriter
     {
         public struct DashStreamDescription
         {

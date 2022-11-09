@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace VRT.Core
 {
-    public class TiledWorker : BaseWorker
+    public class AsyncTiledWorker : AsyncWorker
     {
         [Serializable]
         public struct TileInfo
@@ -14,7 +14,7 @@ namespace VRT.Core
             public int cameraMask;
         }
 
-        public TiledWorker() : base()
+        public AsyncTiledWorker() : base()
         {
         }
 

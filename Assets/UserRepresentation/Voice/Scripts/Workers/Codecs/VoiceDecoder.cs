@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.Voice
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class VoiceDecoder : BaseWorker
+    public class VoiceDecoder : AsyncWorker
     {
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;

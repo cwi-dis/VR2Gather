@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.Voice
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class VoicePreparer : BasePreparer
+    public class VoicePreparer : AsyncPreparer
     {
         const bool debugBuffering = false;
         const bool debugBufferingMore = false;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRT.Core
 {
-    public class BaseWorker
+    public class AsyncWorker
     {
         
         public bool isRunning { get; private set; }
@@ -13,7 +13,7 @@ namespace VRT.Core
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
         protected const bool debugThreading = true;
 
-        public BaseWorker()
+        public AsyncWorker()
         {
         }
 

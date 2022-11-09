@@ -21,11 +21,11 @@ namespace VRT.UserRepresentation.PointCloud
         public Synchronizer synchronizer = null;
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
-        protected BaseWorker reader;
-        BaseWorker encoder;
-        List<BaseWorker> decoders = new List<BaseWorker>();
-        BaseWorker writer;
-        List<BaseWorker> preparers = new List<BaseWorker>();
+        protected AsyncWorker reader;
+        AsyncWorker encoder;
+        List<AsyncWorker> decoders = new List<AsyncWorker>();
+        AsyncWorker writer;
+        List<AsyncWorker> preparers = new List<AsyncWorker>();
         List<MonoBehaviour> renderers = new List<MonoBehaviour>();
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
@@ -103,7 +103,7 @@ namespace VRT.UserRepresentation.PointCloud
                         tileSelector.gameObject.SetActive(false);
                         tileSelector = null;
                     }
-                    TiledWorker pcReader;
+                    AsyncTiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
                     BaseStats.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
@@ -179,7 +179,7 @@ namespace VRT.UserRepresentation.PointCloud
                         Vector3[] tileNormals = null;
                         if (PCSelfConfig.tiled)
                         {
-                            TiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
+                            AsyncTiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
                             if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                             {
                                 minTileNum = 1;
@@ -340,7 +340,7 @@ namespace VRT.UserRepresentation.PointCloud
                     // and the correct number of qualities, and the qualities are organized so that earlier
                     // ones have lower utility and lower bandwidth than later ones.
                     //
-                    TiledWorker.TileInfo[] tileInfos = _reader.getTiles();
+                    AsyncTiledWorker.TileInfo[] tileInfos = _reader.getTiles();
                     if (tileInfos.Length != nTiles)
                     {
                         Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
@@ -421,7 +421,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                BaseWorker decoder = null;
+                AsyncWorker decoder = null;
                 if (pointcloudCodec == "cwi1")
                 {
                     decoder = new PCDecoder(decoderQueue, preparerQueue);
@@ -681,7 +681,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            if (writer is BaseWriter pcWriter)
+            if (writer is AsyncWriter pcWriter)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
             }

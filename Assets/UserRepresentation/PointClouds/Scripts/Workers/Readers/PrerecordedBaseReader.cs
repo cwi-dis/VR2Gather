@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
     // - PrerecordedPlaybackReader reads a multilevel directory structure, with each tile and quality
     // level is a distinct directory. It is meant for playback, not self-representation, for the
     // quality-assessment experiments.
-    public class PrerecordedBaseReader : TiledWorker
+    public class PrerecordedBaseReader : AsyncTiledWorker
     {
         [Serializable]
         public class _PrerecordedReaderConfig
@@ -28,7 +28,7 @@ namespace VRT.UserRepresentation.PointCloud
             public string[] qualities; // Only for prerecordedPlaybackReader: subsubdirectory names per quality
             public bool ply;    // True when using .ply files, false when using .cwipcdump files
             public bool preferBest; // Start reading best (last) quality (default is first/worst) until instructed otherwise
-            public TiledWorker.TileInfo[] tileInfos; // Only for PrerecordedLiveReader: list of tile definitions
+            public AsyncTiledWorker.TileInfo[] tileInfos; // Only for PrerecordedLiveReader: list of tile definitions
         };
         protected string baseDirectory;
         List<_SingleDirectoryReader> tileReaders = new List<_SingleDirectoryReader>();
@@ -38,7 +38,7 @@ namespace VRT.UserRepresentation.PointCloud
         public int numberOfFilesPerReader = 0;
         protected string[] qualitySubdirs;
         protected string[] tileSubdirs;
-        TiledWorker.TileInfo[] tileInfos;
+        AsyncTiledWorker.TileInfo[] tileInfos;
         bool preferBest;
         // Next variables are shared (readonly) among _SingleDirectoryReader children.
         // I don't think C# has a way to say this without using public.
@@ -71,9 +71,9 @@ namespace VRT.UserRepresentation.PointCloud
             preferBest = config.preferBest;
             qualitySubdirs = config.qualities ?? new string[1] { "" };
             tileSubdirs = config.tiles; // can be null
-            tileInfos = config.tileInfos ?? new TiledWorker.TileInfo[1]
+            tileInfos = config.tileInfos ?? new AsyncTiledWorker.TileInfo[1]
             {
-                new TiledWorker.TileInfo {
+                new AsyncTiledWorker.TileInfo {
                     normal = new Vector3 {x=0, y=0, z=0},
                     cameraName = "all",
                     cameraMask = 0
@@ -155,7 +155,7 @@ namespace VRT.UserRepresentation.PointCloud
     // switching of representations (and therefore quality levels) for the PrerecordedPlaybackReader,
     // which is needed for the quality assessment trial.
     //
-    public class _SingleDirectoryReader : TiledWorker
+    public class _SingleDirectoryReader : AsyncTiledWorker
     {
         string dirname;
         string subdir;

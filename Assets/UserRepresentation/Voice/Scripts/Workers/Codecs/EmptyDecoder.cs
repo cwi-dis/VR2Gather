@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class EmptyDecoder : BaseWorker
+    public class EmptyDecoder : AsyncWorker
     {
         public EmptyDecoder() : base()
         {

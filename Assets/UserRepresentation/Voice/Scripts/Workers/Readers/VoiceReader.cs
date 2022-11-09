@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.Voice
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using FrameInfo = Cwipc.FrameInfo;
 
-    public class VoiceReader : BaseWorker
+    public class VoiceReader : AsyncWorker
     {
 #if VRT_AUDIO_DEBUG
         //

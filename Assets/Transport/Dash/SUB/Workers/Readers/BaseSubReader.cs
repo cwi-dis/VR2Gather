@@ -9,7 +9,7 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class BaseReader : BaseWorker
+    public class BaseReader : AsyncWorker
     {
         public BaseReader() : base() { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)

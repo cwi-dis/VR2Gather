@@ -14,7 +14,7 @@ namespace VRT.Video
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class WebCamReader : BaseWorker
+    public class WebCamReader : AsyncWorker
     {
         MonoBehaviour monoBehaviour;
         Coroutine coroutine;

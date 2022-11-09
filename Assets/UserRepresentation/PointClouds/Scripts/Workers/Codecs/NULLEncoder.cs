@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class NULLEncoder : BaseWorker
+    public class NULLEncoder : AsyncWorker
     {
         cwipc.encodergroup encoderGroup;
         System.IntPtr encoderBuffer;

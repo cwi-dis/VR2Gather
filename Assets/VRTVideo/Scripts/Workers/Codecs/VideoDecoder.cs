@@ -15,7 +15,7 @@ namespace VRT.Video
         int width;
         int height;
     }
-    public unsafe class VideoDecoder : BaseWorker
+    public unsafe class VideoDecoder : AsyncWorker
     {
         public string url;
         AVCodec* codecVideo;
