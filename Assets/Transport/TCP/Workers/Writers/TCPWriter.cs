@@ -11,6 +11,7 @@ namespace VRT.Transport.TCP
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
     public class TCPWriter : BaseWriter
     {

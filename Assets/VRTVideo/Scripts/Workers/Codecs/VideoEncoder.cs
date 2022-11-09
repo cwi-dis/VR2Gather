@@ -6,9 +6,12 @@ using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using System;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Video
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public unsafe class VideoEncoder : BaseWorker
     {
 

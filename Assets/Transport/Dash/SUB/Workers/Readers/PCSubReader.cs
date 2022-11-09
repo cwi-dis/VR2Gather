@@ -4,6 +4,8 @@ using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public class PCSubReader : BaseSubReader
     {
 

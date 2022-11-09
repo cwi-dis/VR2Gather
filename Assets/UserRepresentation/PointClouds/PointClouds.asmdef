@@ -1,14 +1,15 @@
 {
     "name": "PointClouds",
+    "rootNamespace": "",
     "references": [
         "VRTCore",
         "Dash",
         "Orchestrator",
         "Voice",
-        "RabbitMQ",
         "SocketIO",
         "Pilots",
-        "TCP"
+        "TCP",
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

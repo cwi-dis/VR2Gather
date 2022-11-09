@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Video
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public class VideoPreparer : BasePreparer
     {
         float[] circularAudioBuffer;

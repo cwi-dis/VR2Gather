@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Transport.Dash
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
     public class B2DWriter : BaseWriter
     {

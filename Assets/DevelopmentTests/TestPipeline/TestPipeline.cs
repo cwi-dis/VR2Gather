@@ -11,6 +11,8 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
+using Cwipc;
+using PointCloudRenderer = VRT.UserRepresentation.PointCloud.PointCloudRenderer;
 
 public class TestPipeline : MonoBehaviour
 {

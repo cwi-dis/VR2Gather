@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using VRT.Core;
 using System.Collections.Generic;
+using Cwipc;
 
 namespace VRT.Transport.Dash
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
     public class BaseReader : BaseWorker
     {

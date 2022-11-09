@@ -13,6 +13,8 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.WebCam
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    
     public class WebCamPipeline : BasePipeline
     {
         public int width = 1280;
@@ -244,7 +246,6 @@ namespace VRT.UserRepresentation.WebCam
             writer?.StopAndWait();
             preparer?.StopAndWait();
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
-            BaseMemoryChunkReferences.ShowTotalRefCount();
         }
 
 

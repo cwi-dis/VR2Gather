@@ -1,10 +1,12 @@
 {
     "name": "VRTCore",
+    "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
         "Unity.Recorder",
         "Unity.Recorder.Editor",
-        "Unity.XR.Management"
+        "Unity.XR.Management",
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

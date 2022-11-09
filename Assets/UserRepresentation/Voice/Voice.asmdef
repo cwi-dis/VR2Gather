@@ -1,11 +1,13 @@
 {
     "name": "Voice",
+    "rootNamespace": "",
     "references": [
         "VRTCore",
         "Dash",
         "Orchestrator",
         "SocketIO",
-        "TCP"
+        "TCP",
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

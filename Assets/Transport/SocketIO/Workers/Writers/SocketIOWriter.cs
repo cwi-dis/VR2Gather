@@ -11,6 +11,7 @@ namespace VRT.Transport.SocketIO
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
     public class SocketIOWriter : BaseWriter
     {

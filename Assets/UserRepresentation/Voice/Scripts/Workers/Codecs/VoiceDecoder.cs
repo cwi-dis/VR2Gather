@@ -7,6 +7,8 @@ namespace VRT.UserRepresentation.Voice
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
     public class VoiceDecoder : BaseWorker
     {

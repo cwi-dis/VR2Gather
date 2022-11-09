@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Cwipc;
 
 namespace VRT.Core
 {
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     public class FloatMemoryChunk : NativeMemoryChunk
     {
         public int elements { get; private set; }

@@ -136,6 +136,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "nl.cwi.dis.cwipc": {
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ced7e3f6964f5249dbc132c8aa389597fac8e0e1"
+    },
     "com.unity.modules.animation": {
       "version": "1.0.0",
       "depth": 2,

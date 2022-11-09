@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {

@@ -1,8 +1,12 @@
 using UnityEngine;
 using VRT.Core;
 using System.Collections.Generic;
+using Cwipc;
+
 namespace VRT.Transport.Dash
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public class AVSubReader : BaseSubReader
     {
         public enum CCCC : uint

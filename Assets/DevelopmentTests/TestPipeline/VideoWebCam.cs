@@ -6,6 +6,7 @@ using VRT.Video;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using Cwipc;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;

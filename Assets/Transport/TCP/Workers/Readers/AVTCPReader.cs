@@ -3,6 +3,8 @@ using VRT.Core;
 
 namespace VRT.Transport.TCP
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public class AVTCPReader : BaseTCPReader
     {
         public enum CCCC : uint

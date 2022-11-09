@@ -9,6 +9,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+
     public class VoiceSender : MonoBehaviour
     {
         VoiceReader reader;

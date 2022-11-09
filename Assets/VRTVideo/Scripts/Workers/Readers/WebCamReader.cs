@@ -6,11 +6,13 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Video
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
     public class WebCamReader : BaseWorker
     {

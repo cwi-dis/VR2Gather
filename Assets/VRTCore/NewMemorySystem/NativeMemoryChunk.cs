@@ -1,7 +1,10 @@
 ﻿using System;
+using Cwipc;
 
 namespace VRT.Core
 {
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+
     public class NativeMemoryChunk : BaseMemoryChunk
     {
         public NativeMemoryChunk(int len) : base(AllocMemory(len))

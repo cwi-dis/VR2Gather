@@ -8,6 +8,8 @@ using VRT.Core;
 // TODO(FPA): Fix new Queue mode.
 namespace VRT.Video
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+
     public class VideoFrame
     {
         int width;
