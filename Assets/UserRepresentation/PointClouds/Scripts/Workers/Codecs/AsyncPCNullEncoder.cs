@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncNULLEncoder : AsyncWorker
+    public class AsyncPCNullEncoder : AsyncWorker
     {
         cwipc.encodergroup encoderGroup;
         System.IntPtr encoderBuffer;
@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         AsyncPCEncoder.EncoderStreamDescription[] outputs;
 
-        public AsyncNULLEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base()
+        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {

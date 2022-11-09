@@ -9,13 +9,13 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncNULLDecoder : AsyncWorker
+    public class AsyncPCNullDecoder : AsyncWorker
     {
         protected QueueThreadSafe inQueue;
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        public AsyncNULLDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             if (_inQueue == null)
             {

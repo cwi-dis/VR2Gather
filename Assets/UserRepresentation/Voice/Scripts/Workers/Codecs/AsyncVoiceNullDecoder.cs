@@ -5,9 +5,9 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class AsyncEmptyDecoder : AsyncWorker
+    public class AsyncVoiceNullDecoder : AsyncWorker
     {
-        public AsyncEmptyDecoder() : base()
+        public AsyncVoiceNullDecoder() : base()
         {
             Start();
         }
@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.Voice
         public override void OnStop()
         {
             base.OnStop();
-            Debug.Log("EmptyDecoder Sopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
         protected override void Update()

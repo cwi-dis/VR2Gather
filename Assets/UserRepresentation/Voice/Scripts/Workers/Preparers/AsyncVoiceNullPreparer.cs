@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.Voice
 {
-    public class AsyncEmptyPreparer : AsyncPreparer
+    public class AsyncVoiceNullPreparer : AsyncPreparer
     {
         float[] circularBuffer;
         int bufferSize;
@@ -13,7 +13,7 @@ namespace VRT.UserRepresentation.Voice
         int readPosition;
 
 
-        public AsyncEmptyPreparer() : base(null)
+        public AsyncVoiceNullPreparer() : base(null)
         {
             Start();
         }
@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.Voice
         {
             base.OnStop();
             //            if (byteArray.Length != 0) byteArray.Dispose();
-            Debug.Log("EmptyPreparer Sopped");
+            Debug.Log($"{Name()}: Stopped");
         }
         public override bool LatchFrame()
         {

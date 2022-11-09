@@ -266,7 +266,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             try
                             {
-                                encoder = new AsyncNULLEncoder(encoderQueue, encoderStreamDescriptions);
+                                encoder = new AsyncPCNullEncoder(encoderQueue, encoderStreamDescriptions);
                             }
                             catch (System.EntryPointNotFoundException)
                             {
@@ -429,7 +429,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 else if (pointcloudCodec == "cwi0")
                 {
-                    decoder = new AsyncNULLDecoder(decoderQueue, preparerQueue);
+                    decoder = new AsyncPCNullDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 } else
                 {
