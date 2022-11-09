@@ -470,7 +470,7 @@ namespace VRT.UserRepresentation.PointCloud
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);
-            PointCloudPreparer preparer = new PointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
+            AsyncPointCloudPreparer preparer = new AsyncPointCloudPreparer(preparerQueue, PCs.defaultCellSize, PCs.cellSizeFactor);
             preparer.SetSynchronizer(synchronizer); 
             preparers.Add(preparer);
             PointCloudRenderer render = gameObject.AddComponent<PointCloudRenderer>();

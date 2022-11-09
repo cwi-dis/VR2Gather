@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PointCloudPreparer : AsyncPreparer
+    public class AsyncPointCloudPreparer : AsyncPreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         float defaultCellSize;
         float cellSizeFactor;
 
-        public PointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(_InQueue)
+        public AsyncPointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(_InQueue)
         {
             stats = new Stats(Name());
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;

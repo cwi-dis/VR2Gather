@@ -104,9 +104,9 @@ public class TestPipeline : MonoBehaviour
         }
 
         Config config = Config.Instance;
-        preparer = new PointCloudPreparer(preparerQueue);
+        preparer = new AsyncPointCloudPreparer(preparerQueue);
         render = gameObject.AddComponent<PointCloudRenderer>();
-        ((PointCloudRenderer)render).SetPreparer((PointCloudPreparer)preparer);
+        ((PointCloudRenderer)render).SetPreparer((AsyncPointCloudPreparer)preparer);
 
         if (usePointClouds) {
 			if (localPCs) {

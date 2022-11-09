@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.Voice
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class VoicePreparer : AsyncPreparer
+    public class AsyncVoicePreparer : AsyncPreparer
     {
         const bool debugBuffering = false;
         const bool debugBufferingMore = false;
@@ -44,7 +44,7 @@ namespace VRT.UserRepresentation.Voice
         // If we do need to drop frames to catch up it may be better to do a single drop of multiple
         // frames than multiple drops of a single frame. We need to cater for that.
         
-        public VoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
+        public AsyncVoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
             if (Config.Instance.Voice.maxPlayoutAhead != 0)
             {

@@ -9,7 +9,7 @@ namespace VRT.Video
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class VideoPreparer : AsyncPreparer
+    public class AsyncVideoPreparer : AsyncPreparer
     {
         float[] circularAudioBuffer;
         int audioBufferSize;
@@ -28,7 +28,7 @@ namespace VRT.Video
 
         public int videFrameSize;
 
-        public VideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(_inVideoQueue)
+        public AsyncVideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(_inVideoQueue)
         {
             inAudioQueue = _inAudioQueue;
 

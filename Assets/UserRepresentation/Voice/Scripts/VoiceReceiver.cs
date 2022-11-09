@@ -27,7 +27,7 @@ namespace VRT.UserRepresentation.Voice
 #endif
         BaseReader reader;
         AsyncWorker codec;
-        VoicePreparer preparer;
+        AsyncVoicePreparer preparer;
 
         [Tooltip("Object responsible for synchronizing playout")]
         public Synchronizer synchronizer = null;
@@ -93,7 +93,7 @@ namespace VRT.UserRepresentation.Voice
             }
 
 
-            preparer = new VoicePreparer(preparerQueue);
+            preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.enabled)
             {
@@ -145,7 +145,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = preparerQueue;
             }
 
-            preparer = new VoicePreparer(_readerOutputQueue);
+            preparer = new AsyncVoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
             BaseStats.Output(Name(), $"encoded={audioIsEncoded}");
         }

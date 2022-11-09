@@ -18,7 +18,7 @@ public class VideoWebCam : MonoBehaviour {
     AsyncWorker      reader;
 
     VideoDecoder    decoder;
-    VideoPreparer   preparer;
+    AsyncVideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
     QueueThreadSafe         writerQueue = new QueueThreadSafe("VideoWebCamWriter");
@@ -70,7 +70,7 @@ public class VideoWebCam : MonoBehaviour {
 //            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
             decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
-            preparer = new VideoPreparer(videoPreparerQueue, null);
+            preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
             Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");

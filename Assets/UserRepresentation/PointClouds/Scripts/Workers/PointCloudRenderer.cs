@@ -23,7 +23,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Private clone of Material used by this renderer instance")]
         public Material material;
         MaterialPropertyBlock block;
-        PointCloudPreparer preparer;
+        AsyncPointCloudPreparer preparer;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.PointCloud
             pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
         }
 
-        public void SetPreparer(PointCloudPreparer _preparer)
+        public void SetPreparer(AsyncPointCloudPreparer _preparer)
         {
             if (preparer != null)
             {

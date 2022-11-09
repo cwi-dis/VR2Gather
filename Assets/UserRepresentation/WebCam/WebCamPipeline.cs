@@ -32,7 +32,7 @@ namespace VRT.UserRepresentation.WebCam
         AsyncWorker encoder;
         VideoDecoder decoder;
         AsyncWorker writer;
-        VideoPreparer preparer;
+        AsyncVideoPreparer preparer;
 
         QueueThreadSafe encoderQueue;
         QueueThreadSafe writerQueue = new QueueThreadSafe("WebCamPipelineWriter");
@@ -175,7 +175,7 @@ namespace VRT.UserRepresentation.WebCam
                     //
                     // Create video preparer.
                     //
-                    preparer = new VideoPreparer(videoPreparerQueue, null);
+                    preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
                     // xxxjack should set Synchronizer here
                    
                     ready = true;
