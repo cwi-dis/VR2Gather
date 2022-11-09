@@ -74,8 +74,8 @@ public class TestPipeline : MonoBehaviour
         encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
         writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
         decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
-        PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
-            new PCSubReader.TileDescriptor() {
+        AsyncSubPCReader.TileDescriptor[] tiles = new AsyncSubPCReader.TileDescriptor[1] {
+            new AsyncSubPCReader.TileDescriptor() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }
@@ -97,7 +97,7 @@ public class TestPipeline : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
-                pointcloudsReader = new SocketIOReader(user, remoteStream, "cwi1", tiles);
+                pointcloudsReader = new AsyncSocketIOReader(user, remoteStream, "cwi1", tiles);
                 pointcloudsWriter = new AsyncSocketIOWriter(user, remoteStream, "cwi1", streams);
 
             };
@@ -118,19 +118,19 @@ public class TestPipeline : MonoBehaviour
                 }
                 else
                 {
-                    reader = new PCReader(targetFPS, numPoints, pcQueue);
+                    reader = new AsyncPCReader(targetFPS, numPoints, pcQueue);
                 }
                 if (useCompression) {
-					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
 					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
-					encoder = new PCEncoder[encoders];
+					encoder = new AsyncPCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
-                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
-                    decoder = new PCDecoder[decoders];
+                        encoder[i] = new AsyncPCEncoder(encoderQueue, encStreams);
+                    decoder = new AsyncPCDecoder[decoders];
 					for (int i = 0; i < decoders; ++i)
-						decoder[i] = new PCDecoder(writerQueue, preparerQueue);
+						decoder[i] = new AsyncPCDecoder(writerQueue, preparerQueue);
 				}
 			} else {
 				if (!useRemoteStream) {
@@ -140,16 +140,16 @@ public class TestPipeline : MonoBehaviour
                     }
                     else
                     {
-                        reader = new PCReader(targetFPS, numPoints, encoderQueue);
+                        reader = new AsyncPCReader(targetFPS, numPoints, encoderQueue);
                     }
-                    PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+                    AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
 					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
 
-                    encoder = new PCEncoder[encoders];
+                    encoder = new AsyncPCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
-                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
+                        encoder[i] = new AsyncPCEncoder(encoderQueue, encStreams);
 
                     string uuid = System.Guid.NewGuid().ToString();
 					URL = $"{remoteURL}/{uuid}/pcc/";
@@ -159,11 +159,11 @@ public class TestPipeline : MonoBehaviour
 					URL = remoteURL;
 
 				if (!useSocketIO)
-					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", tiles);
+					pointcloudsReader = new AsyncSubPCReader(URL, remoteStream, "cwi1", tiles);
 
-				decoder = new PCDecoder[decoders];
+				decoder = new AsyncPCDecoder[decoders];
 				for (int i = 0; i < decoders; ++i)
-					decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
+					decoder[i] = new AsyncPCDecoder(decoderQueue, preparerQueue);
 			}
         }
         

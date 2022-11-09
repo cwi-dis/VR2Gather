@@ -14,13 +14,13 @@ namespace VRT.Transport.SocketIO
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class SocketIOReader : BaseReader, ISocketReader
+    public class AsyncSocketIOReader : AsyncReader, ISocketReader
     {
-        PCSubReader.TileDescriptor[] descriptors;
+        AsyncSubPCReader.TileDescriptor[] descriptors;
 
         User user;
 
-        public SocketIOReader(User user, string remoteStream, string fourcc, PCSubReader.TileDescriptor[] descriptors) : base()
+        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, AsyncSubPCReader.TileDescriptor[] descriptors) : base()
         {
             this.user = user;
             if (descriptors == null)
@@ -48,13 +48,13 @@ namespace VRT.Transport.SocketIO
             }
         }
 
-        public SocketIOReader(User user, string remoteStream, string fourcc, QueueThreadSafe outQueue)
+        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, QueueThreadSafe outQueue)
         : this(user,
             remoteStream,
             fourcc,
-              new PCSubReader.TileDescriptor[]
+              new AsyncSubPCReader.TileDescriptor[]
               {
-                  new PCSubReader.TileDescriptor()
+                  new AsyncSubPCReader.TileDescriptor()
                   {
                       outQueue = outQueue
                   }

@@ -10,7 +10,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PCEncoder : AsyncWorker
+    public class AsyncPCEncoder : AsyncWorker
     {
         cwipc.encodergroup encoderGroup;
         cwipc.encoder[] encoderOutputs;
@@ -34,14 +34,14 @@ namespace VRT.UserRepresentation.PointCloud
 
         public class PCEncoderOutputPusher
         {
-            PCEncoder parent;
+            AsyncPCEncoder parent;
             int stream_number;
             cwipc.encoder encoder;
             QueueThreadSafe outQueue;
             NativeMemoryChunk curBuffer = null;
             Timedelta curEncodeDuration;
 
-            public PCEncoderOutputPusher(PCEncoder _parent, int _stream_number)
+            public PCEncoderOutputPusher(AsyncPCEncoder _parent, int _stream_number)
             {
                 parent = _parent;
                 stream_number = _stream_number;
@@ -120,7 +120,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public PCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
+        public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             nParallel = VRT.Core.Config.Instance.PCs.encoderParallelism;
             if (_inQueue == null)

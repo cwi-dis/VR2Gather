@@ -7,9 +7,9 @@ using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
-    public class PCTCPReader : BaseTCPReader
+    public class AsyncTCPPCReader : AsyncTCPReader
     {
-        public PCTCPReader(string _url, string fourcc, PCSubReader.TileDescriptor[] _tileDescriptors)
+        public AsyncTCPPCReader(string _url, string fourcc, AsyncSubPCReader.TileDescriptor[] _tileDescriptors)
         : base(_url)
         {
             lock (this)
@@ -22,7 +22,7 @@ namespace VRT.Transport.TCP
                     ri.tileNumber = ti;
                     ri.host = url.Host;
                     ri.port = url.Port + _tileDescriptors[ti].tileNumber;
-                    PCSubReader.TileDescriptor td = _tileDescriptors[ti];
+                    AsyncSubPCReader.TileDescriptor td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
                     ri.fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);

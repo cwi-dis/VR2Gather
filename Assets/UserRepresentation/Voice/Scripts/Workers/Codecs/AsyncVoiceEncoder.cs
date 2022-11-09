@@ -11,7 +11,7 @@ namespace VRT.UserRepresentation.Voice
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class VoiceEncoder : AsyncWorker
+    public class AsyncVoiceEncoder : AsyncWorker
     {
         public int minSamplesPerFrame { get; private set; }
         int frames;
@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.Voice
 
         QueueThreadSafe inQueue;
         QueueThreadSafe outQueue;
-        public VoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
+        public AsyncVoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
         {
             stats = new Stats(Name());
             inQueue = _inQueue;

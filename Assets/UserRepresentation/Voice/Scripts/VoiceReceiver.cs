@@ -25,7 +25,7 @@ namespace VRT.UserRepresentation.Voice
         const bool debugAddTone = false;
         ToneGenerator debugToneGenerator = null;
 #endif
-        BaseReader reader;
+        AsyncReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
 
@@ -57,7 +57,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
             }
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;
@@ -74,22 +74,22 @@ namespace VRT.UserRepresentation.Voice
             if (audioIsEncoded)
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
-                codec = new VoiceDecoder(decoderQueue, preparerQueue);
+                codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
 
             if (proto == Config.ProtocolType.Dash)
             {
-                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+                reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
             }
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                reader = new BaseTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
+                reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
             }
             else
             {
-                reader = new SocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
+                reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
             }
 
 
@@ -124,7 +124,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
             }
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;
@@ -141,7 +141,7 @@ namespace VRT.UserRepresentation.Voice
             if (audioIsEncoded)
             {
                 preparerQueue = new QueueThreadSafe("voicePreparer", 4, true);
-                codec = new VoiceDecoder(queue, preparerQueue);
+                codec = new AsyncVoiceDecoder(queue, preparerQueue);
                 _readerOutputQueue = preparerQueue;
             }
 

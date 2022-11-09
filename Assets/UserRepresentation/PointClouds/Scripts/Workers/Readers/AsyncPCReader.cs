@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PCReader : AsyncTiledWorker
+    public class AsyncPCReader : AsyncTiledWorker
     {
         protected cwipc.source reader;
         protected float voxelSize;
@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected bool dontWait = false;
         protected float[] bbox;
 
-        protected PCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
+        protected AsyncPCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             if (_outQueue == null)
             {
@@ -31,7 +31,7 @@ namespace VRT.UserRepresentation.PointCloud
             stats = new Stats(Name());
         }
 
-        public PCReader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
+        public AsyncPCReader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
         {
             voxelSize = 0;
             if (_frameRate > 0)

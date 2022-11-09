@@ -9,19 +9,9 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class BaseReader : AsyncWorker
-    {
-        public BaseReader() : base() { }
-        public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
-        {
-            if (_clockCorrespondence.streamClockTime != _clockCorrespondence.wallClockTime)
-            {
-                Debug.LogWarning($"{Name()}: SetSyncInfo({_clockCorrespondence.wallClockTime}={_clockCorrespondence.streamClockTime}) called but not implemented in this reader");
-            }
-        }
-    }
+   
 
-    public class BaseSubReader : BaseReader
+    public class AsyncSubReader : AsyncReader
     {
 
         public delegate bool NeedsSomething();
@@ -49,13 +39,13 @@ namespace VRT.Transport.Dash
 
         public class TileOrMediaHandler
         {
-            BaseSubReader parent;
+            AsyncSubReader parent;
             int handler_index;
             TileOrMediaInfo receiverInfo;
             public Timestamp mostRecentDashTimestamp;
 
 
-            public TileOrMediaHandler(BaseSubReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
+            public TileOrMediaHandler(AsyncSubReader _parent, int _handler_index, TileOrMediaInfo _receiverInfo)
             {
                 parent = _parent;
                 handler_index = _handler_index;
@@ -185,7 +175,7 @@ namespace VRT.Transport.Dash
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
         bool clockCorrespondenceReceived = false;
 
-        protected BaseSubReader(string _url, string _streamName) : base()
+        protected AsyncSubReader(string _url, string _streamName) : base()
         { // Orchestrator Based SUB
             // closing the SUB may take long. Cater for that.
             lock (this)
@@ -207,7 +197,7 @@ namespace VRT.Transport.Dash
             }
         }
 
-        public BaseSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue) : this(_url, _streamName)
+        public AsyncSubReader(string _url, string _streamName, int streamIndex, string fourcc, QueueThreadSafe outQueue) : this(_url, _streamName)
         {
             lock (this)
             {

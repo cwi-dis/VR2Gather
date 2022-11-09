@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
     // - PrerecordedPlaybackReader reads a multilevel directory structure, with each tile and quality
     // level is a distinct directory. It is meant for playback, not self-representation, for the
     // quality-assessment experiments.
-    public class PrerecordedBaseReader : AsyncTiledWorker
+    public class AsyncPrerecordedBaseReader : AsyncTiledWorker
     {
         [Serializable]
         public class _PrerecordedReaderConfig
@@ -49,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
         public bool loop = true;
         public bool multireader = false;
         
-        public PrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
+        public AsyncPrerecordedBaseReader(string directory, float _voxelSize, float _frameRate) : base()
         {
             voxelSize = _voxelSize;
             frameRate = _frameRate;
@@ -166,9 +166,9 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe outQueue;
         QueueThreadSafe out2Queue;
         int thread_index;
-        PrerecordedBaseReader parent;
+        AsyncPrerecordedBaseReader parent;
 
-        public _SingleDirectoryReader(PrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
+        public _SingleDirectoryReader(AsyncPrerecordedBaseReader _parent, int _index,  string _dirname, string _subdir, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             dirname = _dirname;
             subdir = _subdir;

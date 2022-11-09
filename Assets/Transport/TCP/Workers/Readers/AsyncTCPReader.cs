@@ -12,7 +12,7 @@ namespace VRT.Transport.TCP
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class BaseTCPReader : BaseReader
+    public class AsyncTCPReader : AsyncReader
     {
 
         protected Uri url;
@@ -33,14 +33,14 @@ namespace VRT.Transport.TCP
 
         public class TCPPullThread
         {
-            BaseTCPReader parent;
+            AsyncTCPReader parent;
             Socket socket = null;
             bool stopping = false;
             int thread_index;
             ReceiverInfo receiverInfo;
             System.Threading.Thread myThread;
             
-            public TCPPullThread(BaseTCPReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
+            public TCPPullThread(AsyncTCPReader _parent, int _thread_index, ReceiverInfo _receiverInfo)
             {
                 parent = _parent;
                 thread_index = _thread_index;
@@ -227,7 +227,7 @@ namespace VRT.Transport.TCP
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
-        protected BaseTCPReader(string _url) : base()
+        protected AsyncTCPReader(string _url) : base()
         {
             lock (this)
             {
@@ -251,7 +251,7 @@ namespace VRT.Transport.TCP
             }
         }
 
-        public BaseTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
+        public AsyncTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
         {
             lock (this)
             {

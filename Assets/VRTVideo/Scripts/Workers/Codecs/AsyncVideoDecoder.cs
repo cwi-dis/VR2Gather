@@ -15,7 +15,7 @@ namespace VRT.Video
         int width;
         int height;
     }
-    public unsafe class VideoDecoder : AsyncWorker
+    public unsafe class AsyncVideoDecoder : AsyncWorker
     {
         public string url;
         AVCodec* codecVideo;
@@ -47,7 +47,7 @@ namespace VRT.Video
         QueueThreadSafe outVideoQueue;
         QueueThreadSafe outAudioQueue;
 
-        public VideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
+        public AsyncVideoDecoder(AVCodecID codec, QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue, QueueThreadSafe _outVideoQueue, QueueThreadSafe _outAudioQueue) : base()
         {
             this.codec = codec;
             inVideoQueue = _inVideoQueue;

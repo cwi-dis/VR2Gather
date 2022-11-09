@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.Voice
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
     using FrameInfo = Cwipc.FrameInfo;
 
-    public class VoiceReader : AsyncWorker
+    public class AsyncVoiceReader : AsyncWorker
     {
 #if VRT_AUDIO_DEBUG
         //
@@ -27,7 +27,7 @@ namespace VRT.UserRepresentation.Voice
         Coroutine coroutine;
         QueueThreadSafe outQueue;
 
-        public VoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
+        public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
             stats = new Stats(Name());
             outQueue = _outQueue;

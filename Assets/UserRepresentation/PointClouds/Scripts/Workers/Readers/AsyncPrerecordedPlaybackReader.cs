@@ -5,7 +5,7 @@ using VRT.Core;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PrerecordedPlaybackReader : PrerecordedBaseReader
+    public class PrerecordedPlaybackReader : AsyncPrerecordedBaseReader
     {
 
         public PrerecordedPlaybackReader(string _dirname, float _voxelSize, float _frameRate)

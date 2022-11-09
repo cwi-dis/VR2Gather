@@ -30,7 +30,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
-        PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
+        AsyncPCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
         AsyncB2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
         TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
         User user;
@@ -149,7 +149,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nPoints = 0;
                         var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                         if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                        pcReader = new PCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                        pcReader = new AsyncPCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
@@ -206,7 +206,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nStream = nQuality * nTileToTransmit;
                         Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
-                        encoderStreamDescriptions = new PCEncoder.EncoderStreamDescription[nStream];
+                        encoderStreamDescriptions = new AsyncPCEncoder.EncoderStreamDescription[nStream];
                         dashStreamDescriptions = new AsyncB2DWriter.DashStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
@@ -228,7 +228,7 @@ namespace VRT.UserRepresentation.PointCloud
                                 int i = it * nQuality + iq;
                                 QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
                                 int octreeBits = Encoders[iq].octreeBits;
-                                encoderStreamDescriptions[i] = new PCEncoder.EncoderStreamDescription
+                                encoderStreamDescriptions[i] = new AsyncPCEncoder.EncoderStreamDescription
                                 {
                                     octreeBits = octreeBits,
                                     tileNumber = it + minTileNum,
@@ -254,7 +254,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             try
                             {
-                                encoder = new PCEncoder(encoderQueue, encoderStreamDescriptions);
+                                encoder = new AsyncPCEncoder(encoderQueue, encoderStreamDescriptions);
                             }
                             catch (System.EntryPointNotFoundException)
                             {
@@ -266,7 +266,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             try
                             {
-                                encoder = new NULLEncoder(encoderQueue, encoderStreamDescriptions);
+                                encoder = new AsyncNULLEncoder(encoderQueue, encoderStreamDescriptions);
                             }
                             catch (System.EntryPointNotFoundException)
                             {
@@ -406,7 +406,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Create the right number of rendering pipelines
             //
 
-            PCSubReader.TileDescriptor[] tilesToReceive = new PCSubReader.TileDescriptor[nTileToReceive];
+            AsyncSubPCReader.TileDescriptor[] tilesToReceive = new AsyncSubPCReader.TileDescriptor[nTileToReceive];
 
             for (int i = 0; i < nTileToReceive; i++)
             {
@@ -424,12 +424,12 @@ namespace VRT.UserRepresentation.PointCloud
                 AsyncWorker decoder = null;
                 if (pointcloudCodec == "cwi1")
                 {
-                    decoder = new PCDecoder(decoderQueue, preparerQueue);
+                    decoder = new AsyncPCDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 }
                 else if (pointcloudCodec == "cwi0")
                 {
-                    decoder = new NULLDecoder(decoderQueue, preparerQueue);
+                    decoder = new AsyncNULLDecoder(decoderQueue, preparerQueue);
                     decoders.Add(decoder);
                 } else
                 {
@@ -438,7 +438,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // And collect the relevant information for the Dash receiver
                 //
-                tilesToReceive[i] = new PCSubReader.TileDescriptor()
+                tilesToReceive[i] = new AsyncSubPCReader.TileDescriptor()
                 {
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]
@@ -447,14 +447,14 @@ namespace VRT.UserRepresentation.PointCloud
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
-                reader = new PCSubReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
+                reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
             } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
             {
-                reader = new PCTCPReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
+                reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
             }
             else
             {
-                reader = new SocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
+                reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.enabled)
@@ -535,7 +535,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetCrop called for pipeline that is not a source");
                 return;
             }
-            PCReader pcReader = reader as PCReader;
+            AsyncPCReader pcReader = reader as AsyncPCReader;
             if (pcReader == null)
             {
                 Debug.Log($"{Name()}: SetCrop: not a PCReader");
@@ -642,13 +642,13 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
             }
-            PrerecordedBaseReader _prreader = reader as PrerecordedBaseReader;
+            AsyncPrerecordedBaseReader _prreader = reader as AsyncPrerecordedBaseReader;
             if (_prreader != null)
             {
                 _prreader.SelectTileQualities(tileQualities);
                 return;
             }
-            PCSubReader _subreader = reader as PCSubReader;
+            AsyncSubPCReader _subreader = reader as AsyncSubPCReader;
             if (_subreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
@@ -659,7 +659,7 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 return;
             }
-            PCTCPReader _tcpreader = reader as PCTCPReader;
+            AsyncTCPPCReader _tcpreader = reader as AsyncTCPPCReader;
             if (_tcpreader != null)
             {
                 for (int tileIndex = 0; tileIndex < decoders.Count; tileIndex++)
@@ -708,7 +708,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             if (reader == null) return; // Too early
             Debug.Log($"{Name()}: SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
-            BaseReader pcReader = reader as BaseReader;
+            AsyncReader pcReader = reader as AsyncReader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);

@@ -27,10 +27,10 @@ namespace VRT.UserRepresentation.WebCam
         public WebCamTexture webCamTexture;
 
 
-        WebCamReader webReader;
+        AsyncWebCamReader webReader;
         AsyncWorker reader;
         AsyncWorker encoder;
-        VideoDecoder decoder;
+        AsyncVideoDecoder decoder;
         AsyncWorker writer;
         AsyncVideoPreparer preparer;
 
@@ -87,7 +87,7 @@ namespace VRT.UserRepresentation.WebCam
                     //
                     // Create reader
                     //
-                    webReader = new WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
+                    webReader = new AsyncWebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                     webCamTexture = webReader.webcamTexture;
                     if (!preview)
                     {
@@ -96,7 +96,7 @@ namespace VRT.UserRepresentation.WebCam
                         //
                         try
                         {
-                            encoder = new VideoEncoder(new VideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
+                            encoder = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -157,21 +157,21 @@ namespace VRT.UserRepresentation.WebCam
                     
                     if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                     {
-                        reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                        reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                     }
                     else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                     {
-                        reader = new BaseTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                        reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
                     }
                     else
                     {
-                        reader = new SocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                        reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
                     }
 
                     //
                     // Create video decoder.
                     //
-                    decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+                    decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
                     //
                     // Create video preparer.
                     //
@@ -276,7 +276,7 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = (PCSubReader)reader;
+            AsyncSubPCReader pcReader = (AsyncSubPCReader)reader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);

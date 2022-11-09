@@ -14,7 +14,7 @@ namespace VRT.Video
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class WebCamReader : AsyncWorker
+    public class AsyncWebCamReader : AsyncWorker
     {
         MonoBehaviour monoBehaviour;
         Coroutine coroutine;
@@ -32,7 +32,7 @@ namespace VRT.Video
         public int fps;
 
 
-        public WebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
+        public AsyncWebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
 
             if (Config.Instance.ffmpegDLLDir != "")

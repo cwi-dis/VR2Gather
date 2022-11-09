@@ -6,7 +6,7 @@ namespace VRT.Transport.Dash
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class PCSubReader : BaseSubReader
+    public class AsyncSubPCReader : AsyncSubReader
     {
 
         public struct TileDescriptor
@@ -19,7 +19,7 @@ namespace VRT.Transport.Dash
         protected TileDescriptor[] tileDescriptors;
         protected sub.StreamDescriptor[] allStreamDescriptors;
 
-        public PCSubReader(string _url, string _streamName, string fourcc, TileDescriptor[] _tileDescriptors)
+        public AsyncSubPCReader(string _url, string _streamName, string fourcc, TileDescriptor[] _tileDescriptors)
         : base(_url, _streamName)
         {
             lock (this)

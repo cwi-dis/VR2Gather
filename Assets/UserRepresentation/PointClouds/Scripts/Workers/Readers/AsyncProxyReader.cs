@@ -6,7 +6,7 @@ using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class ProxyReader : PCReader
+    public class ProxyReader : AsyncPCReader
     {
 
         public ProxyReader(string ip, int port, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)

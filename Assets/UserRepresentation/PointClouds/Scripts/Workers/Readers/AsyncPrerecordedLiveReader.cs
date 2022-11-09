@@ -5,7 +5,7 @@ using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PrerecordedLiveReader : PrerecordedBaseReader
+    public class PrerecordedLiveReader : AsyncPrerecordedBaseReader
     {
         TileInfo[] tileInfo;
         [Serializable]

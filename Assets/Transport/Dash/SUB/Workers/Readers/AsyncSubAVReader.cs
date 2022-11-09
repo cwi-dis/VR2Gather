@@ -1,11 +1,13 @@
 using UnityEngine;
 using VRT.Core;
+using System.Collections.Generic;
+using Cwipc;
 
-namespace VRT.Transport.TCP
+namespace VRT.Transport.Dash
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class AVTCPReader : BaseTCPReader
+    public class AsyncSubAVReader : AsyncSubReader
     {
         public enum CCCC : uint
         {
@@ -15,10 +17,9 @@ namespace VRT.Transport.TCP
             H264 = 0x34363268
         };
 
-        public AVTCPReader(string url, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
-         : base(url)
+        public AsyncSubAVReader(string url, string streamName, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue)
+         : base(url, streamName)
         {
-#if xxxjack_disabled
             lock (this)
             {
                 int videoStream = -1;
@@ -55,25 +56,24 @@ namespace VRT.Transport.TCP
                     Debug.Log($"{Name()}: could not find audio in {streamCount} streams in {url + streamName}");
                     Debug.LogError($"No audio stream in {streamName}");
                 }
-                receivers = new ReceiverInfo[]
+                perTileInfo = new TileOrMediaInfo[]
                 {
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _outQueue,
-                    curStreamIndex = videoStream
+                    streamIndexes = new List<int> {videoStream }
                 },
-                new ReceiverInfo()
+                new TileOrMediaInfo()
                 {
                     outQueue = _out2Queue,
-                    curStreamIndex = audioStream
+                    streamIndexes = new List<int> {audioStream}
                 },
                 };
 
 
-                InitThreads();
+                InitThread();
                 Start();
             }
-#endif
         }
     }
 }

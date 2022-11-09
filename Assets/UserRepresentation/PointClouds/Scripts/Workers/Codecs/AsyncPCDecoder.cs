@@ -9,7 +9,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class PCDecoder : AsyncWorker
+    public class AsyncPCDecoder : AsyncWorker
     {
         protected cwipc.decoder[] decoders;
         protected int nParallel = 1;
@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool debugColorize = true;
         System.DateTime[] mostRecentFeeds;
 
-        public PCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             nParallel = VRT.Core.Config.Instance.PCs.decoderParallelism;
             if (nParallel == 0) nParallel = 1;

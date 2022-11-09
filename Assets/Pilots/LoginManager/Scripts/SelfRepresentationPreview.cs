@@ -61,7 +61,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         StopMicrophone();
         currentMicrophoneName = microphoneName;
         if (currentMicrophoneName != "None") {
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
             readPosition = 0;
         }

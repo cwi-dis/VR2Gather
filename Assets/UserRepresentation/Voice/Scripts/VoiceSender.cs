@@ -14,8 +14,8 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoiceSender : MonoBehaviour
     {
-        VoiceReader reader;
-        VoiceEncoder codec;
+        AsyncVoiceReader reader;
+        AsyncVoiceEncoder codec;
         AsyncWriter writer;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
@@ -43,7 +43,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
+                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
                 minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
@@ -55,7 +55,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
@@ -105,7 +105,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = queue;
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
+                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
                 minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
@@ -117,7 +117,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {

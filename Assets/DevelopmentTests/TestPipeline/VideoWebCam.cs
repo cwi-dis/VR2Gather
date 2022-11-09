@@ -12,12 +12,12 @@ public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
     public Renderer rendererDst;
 
-    WebCamReader    recorder;
-    VideoEncoder    encoder;
+    AsyncWebCamReader    recorder;
+    AsyncVideoEncoder    encoder;
     AsyncWorker      writer;
     AsyncWorker      reader;
 
-    VideoDecoder    decoder;
+    AsyncVideoDecoder    decoder;
     AsyncVideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
@@ -54,8 +54,8 @@ public class VideoWebCam : MonoBehaviour {
         string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
         string remoteStream = "webcam";
         try {
-            recorder = new WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
-            encoder  = new VideoEncoder(new VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
+            recorder = new AsyncWebCamReader(deviceName, width, height, fps, this, videoDataQueue);
+            encoder  = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
             AsyncB2DWriter.DashStreamDescription[] b2dStreams = new AsyncB2DWriter.DashStreamDescription[1] {
                 new AsyncB2DWriter.DashStreamDescription() {
                     tileNumber = 0,
@@ -69,7 +69,7 @@ public class VideoWebCam : MonoBehaviour {
 //            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
-            decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+            decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
             preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
@@ -88,8 +88,8 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, "wcwc", videoCodecQueue);
-            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, "wcwc", videoCodecQueue);
+            if (useDash) reader = new AsyncSubReader(remoteURL, remoteStream, 1, "wcwc", videoCodecQueue);
+            else reader = new AsyncSocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, "wcwc", videoCodecQueue);
 
         }
 
