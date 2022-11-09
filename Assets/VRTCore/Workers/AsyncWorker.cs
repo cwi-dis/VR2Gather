@@ -4,17 +4,20 @@ using UnityEngine;
 
 namespace VRT.Core
 {
-    public class AsyncWorker
+    public abstract class AsyncWorker
     {
         
         public bool isRunning { get; private set; }
         System.Threading.Thread thread;
-        protected int loopInterval = 1; // How many milliseconds to sleep in the runloop
+        protected int loopInterval = 100; // How many milliseconds to sleep in the runloop
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
         protected const bool debugThreading = true;
 
-        public AsyncWorker()
+        public AsyncWorker(int _loopIntervalMS)
         {
+            if (_loopIntervalMS > 0) {
+                loopInterval = _loopIntervalMS;
+            }
         }
 
         public virtual string Name()
@@ -24,14 +27,16 @@ namespace VRT.Core
 
         protected virtual void Start()
         {
+            if (debugThreading) Debug.Log($"{Name()}: starting thread");
             isRunning = true;
-            thread = new System.Threading.Thread(new System.Threading.ThreadStart(_Update));
+            thread = new System.Threading.Thread(new System.Threading.ThreadStart(AsyncRunner));
             thread.Name = Name();
             thread.Start();
         }
 
         public virtual void Stop()
         {
+            if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             isRunning = false;
         }
 
@@ -42,7 +47,6 @@ namespace VRT.Core
                 Debug.LogWarning($"{Name()}: No thread");
                 return;
             }
-            if (debugThreading) Debug.Log($"{Name()}: stopping thread");
             Stop();
             if (debugThreading) Debug.Log($"{Name()}: joining thread");
             if (!thread.Join(joinTimeout))
@@ -56,19 +60,22 @@ namespace VRT.Core
                 Debug.LogError($"{Name()}: thread did not stop and could not be aborted. Please restart application.");
                 return;
             }
-            if (debugThreading) Debug.Log($"{Name()}: thread joined");
+            if (debugThreading) Debug.Log($"{Name()}: thread stopped and joined");
         }
 
-        public virtual void OnStop() { }
+        public virtual void AsyncOnStop()
+        {
+            if (debugThreading) Debug.Log($"{Name()}: thread stopped");
+        }
 
-        void _Update()
+        private void AsyncRunner()
         {
             if (debugThreading) Debug.Log($"{Name()}: thread started");
             try
             {
                 while (isRunning)
                 {
-                    Update();
+                    AsyncUpdate();
                     System.Threading.Thread.Sleep(loopInterval);
                 }
             }
@@ -82,10 +89,10 @@ namespace VRT.Core
                 Debug.LogError("Error encountered for representation of some participant. This participant will probably seem frozen from now on.");
 #endif
             }
-            if (debugThreading) Debug.Log($"{Name()}: thread stopping");
+            if (debugThreading) Debug.Log($"{Name()}: thread preparing to stop");
             try
             {
-                OnStop();
+                AsyncOnStop();
             }
 #pragma warning disable CS0168
             catch (System.Exception e)
@@ -93,12 +100,12 @@ namespace VRT.Core
 #if UNITY_EDITOR
                 throw;
 #else
-                Debug.Log($"{Name()}: OnStop(): Exception: {e}\n{e.StackTrace}");
+                Debug.Log($"{Name()}: AsyncOnStop(): Exception: {e}\n{e.StackTrace}");
                 Debug.LogError($"Error encountered while cleaning up {Name()}");
 #endif
             }
             if (debugThreading) Debug.Log($"{Name()}: thread stopped");
         }
-        protected virtual void Update() { }
+        protected abstract void AsyncUpdate();
     }
 }

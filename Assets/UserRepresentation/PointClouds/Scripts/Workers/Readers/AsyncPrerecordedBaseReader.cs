@@ -241,8 +241,8 @@ namespace VRT.UserRepresentation.PointCloud
             out2Queue = null;
         }
 
-        public override void OnStop() {
-            base.OnStop();
+        public override void AsyncOnStop() {
+            base.AsyncOnStop();
             filenames = null;
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             outQueue = null;
@@ -250,9 +250,9 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log($"{Name()}: Stopped.");
         }
 
-        protected override void Update() {
+        protected override void AsyncUpdate() {
 
-            base.Update();
+            base.AsyncUpdate();
             //
             // Limit framerate, if required
             //

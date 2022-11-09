@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace VRT.Core
 {
-    public class AsyncTiledWorker : AsyncWorker
+    public abstract class AsyncTiledWorker : AsyncWorker
     {
         [Serializable]
         public struct TileInfo

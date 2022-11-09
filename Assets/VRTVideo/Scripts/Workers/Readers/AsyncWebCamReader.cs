@@ -56,9 +56,9 @@ namespace VRT.Video
             Start();
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
             if (outQueue.IsClosed()) return;
             try
             {

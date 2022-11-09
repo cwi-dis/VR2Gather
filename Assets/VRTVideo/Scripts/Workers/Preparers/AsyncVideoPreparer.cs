@@ -50,9 +50,9 @@ namespace VRT.Video
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             Debug.Log($"{Name()}: Stopped");
         }
         public override void Synchronize()
@@ -63,7 +63,6 @@ namespace VRT.Video
         public override bool LatchFrame()
         {
             bool didReadData = false;
-            base.Update();
             if (InQueue != null && InQueue._CanDequeue())
             {
                 didReadData = true;

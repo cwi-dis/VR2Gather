@@ -32,18 +32,18 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             outQueue?.Close();
             outQueue = null;
             Debug.Log($"{Name()}: Stopped.");
         }
 
         byte[] sendBuffer;
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
             if (inQueue.IsClosed())
             {
                 if (outQueue != null && !outQueue.IsClosed())

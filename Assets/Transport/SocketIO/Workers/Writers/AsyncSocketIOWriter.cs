@@ -52,9 +52,9 @@ namespace VRT.Transport.SocketIO
         }
 
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             for (int i = 0; i < streams.Length; ++i)
             {
                 if (!streams[i].inQueue.IsClosed())
@@ -67,9 +67,8 @@ namespace VRT.Transport.SocketIO
             OrchestratorWrapper.instance.RemoveDataStream("AUDIO");
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
             if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.ConnectedToOrchestrator)
             {
                 for (int i = 0; i < streams.Length; ++i)

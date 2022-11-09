@@ -28,9 +28,9 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             outQueue.Close();
             Debug.Log($"{Name()}: Stopped");
         }
@@ -38,9 +38,9 @@ namespace VRT.UserRepresentation.Voice
         float[] temporalBuffer;
         float[] receiveBuffer2;
         NTPTools.NTPTime tempTime;
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
             // Wipe out the inQueue for initial burst.
             NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
             if(inQueue._Count > 100){

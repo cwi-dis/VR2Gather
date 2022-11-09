@@ -88,9 +88,9 @@ namespace VRT.UserRepresentation.PointCloud
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             reader?.free();
             reader = null;
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
@@ -98,9 +98,9 @@ namespace VRT.UserRepresentation.PointCloud
             Debug.Log($"{Name()}: Stopped.");
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
             //
             // Limit framerate, if required
             //

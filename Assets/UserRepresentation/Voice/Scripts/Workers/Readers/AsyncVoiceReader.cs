@@ -50,14 +50,14 @@ namespace VRT.UserRepresentation.Voice
             return (Timestamp)timestamp;
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             Debug.Log($"{Name()}: Stopped microphone {device}.");
             outQueue.Close();
         }

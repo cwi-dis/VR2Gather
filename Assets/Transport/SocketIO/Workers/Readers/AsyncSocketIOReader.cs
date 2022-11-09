@@ -114,11 +114,6 @@ namespace VRT.Transport.SocketIO
         {
         }
 
-        protected override void Update()
-        {
-            base.Update();
-        }
-
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }

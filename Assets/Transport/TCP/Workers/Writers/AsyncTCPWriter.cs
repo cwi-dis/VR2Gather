@@ -255,7 +255,7 @@ namespace VRT.Transport.TCP
             }
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             // Signal that no more data is forthcoming to every pusher
             for (int i = 0; i < descriptions.Length; i++)
@@ -268,7 +268,7 @@ namespace VRT.Transport.TCP
                 }
             }
             // Stop our thread
-            base.OnStop();
+            base.AsyncOnStop();
             // wait for pusherThreads to terminate
             foreach (var t in pusherThreads)
             {

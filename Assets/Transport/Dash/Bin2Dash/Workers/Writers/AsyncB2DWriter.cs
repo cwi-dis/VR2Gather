@@ -109,7 +109,7 @@ namespace VRT.Transport.Dash
             base.Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             // Signal that no more data is forthcoming to every pusher
             for (int i = 0; i < descriptions.Length; i++)
@@ -122,13 +122,13 @@ namespace VRT.Transport.Dash
                 }
             }
             // Stop our thread
-            base.OnStop();
+            base.AsyncOnStop();
             uploader?.free();
             uploader = null;
             Debug.Log($"{Name()} {url} Stopped");
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
             int nStreams = streamPushers.Length;
             for (int i = 0; i < nStreams; i++)

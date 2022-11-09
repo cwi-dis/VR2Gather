@@ -14,7 +14,7 @@ namespace VRT.Core
         protected Synchronizer synchronizer = null;
         protected QueueThreadSafe InQueue;
 
-        public AsyncPreparer(QueueThreadSafe _InQueue) : base()
+        public AsyncPreparer(QueueThreadSafe _InQueue) : base(1)
         {
             if (_InQueue == null)
             {
@@ -38,18 +38,7 @@ namespace VRT.Core
         public abstract void Synchronize();
 
         public abstract bool LatchFrame();
-        // Start is called before the first frame update
-        protected override void Start()
-        {
-            base.Start();
-        }
-
-        // Update is called once per frame
-        protected override void Update()
-        {
-            base.Update();
-        }
-
+        
         public Timedelta getQueueDuration()
         {
             if (InQueue == null) return 0;

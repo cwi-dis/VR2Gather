@@ -63,15 +63,15 @@ namespace VRT.Video
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             Debug.Log("{Name()}: Stopped");
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue())
             {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();

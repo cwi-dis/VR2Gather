@@ -18,9 +18,9 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             //            if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log($"{Name()}: Stopped");
         }
@@ -33,9 +33,9 @@ namespace VRT.UserRepresentation.Voice
         {
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
+            base.AsyncUpdate();
         }
     }
 }

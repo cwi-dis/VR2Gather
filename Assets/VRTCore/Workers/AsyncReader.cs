@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace VRT.Core
 {
-    public class AsyncReader : AsyncWorker
+    public abstract class AsyncReader : AsyncWorker
     {
-        public AsyncReader() : base() { }
         public virtual void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
         {
             if (_clockCorrespondence.streamClockTime != _clockCorrespondence.wallClockTime)

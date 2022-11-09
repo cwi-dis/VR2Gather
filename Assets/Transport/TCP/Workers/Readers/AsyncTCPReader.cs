@@ -288,7 +288,7 @@ namespace VRT.Transport.TCP
             InitThreads();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
             foreach(var t in threads)
@@ -296,7 +296,7 @@ namespace VRT.Transport.TCP
                 t.Stop();
                 t.Join();
             }
-            base.OnStop();
+            base.AsyncOnStop();
             if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 

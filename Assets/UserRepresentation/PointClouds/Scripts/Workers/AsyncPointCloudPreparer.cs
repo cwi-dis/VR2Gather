@@ -28,9 +28,9 @@ namespace VRT.UserRepresentation.PointCloud
             Start();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
             Debug.Log("PointCloudPreparer Stopped");
         }

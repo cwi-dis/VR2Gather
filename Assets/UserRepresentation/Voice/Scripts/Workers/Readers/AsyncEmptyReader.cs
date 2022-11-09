@@ -7,23 +7,10 @@ namespace VRT.UserRepresentation.Voice
 {
     public class AsyncEmptyReader : AsyncWorker
     {
-        Coroutine coroutine;
-
-        public AsyncEmptyReader() : base()
+ 
+        public AsyncEmptyReader() : base(0)
         {
             Start();
         }
-
-        protected override void Update()
-        {
-            base.Update();
-        }
-
-        public override void OnStop()
-        {
-            base.OnStop();
-            Debug.Log("EmptyReader Sopped");
-        }
-
     }
 }

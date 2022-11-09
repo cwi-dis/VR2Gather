@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         AsyncPCEncoder.EncoderStreamDescription[] outputs;
 
-        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base()
+        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base(1)
         {
             if (_inQueue == null)
             {
@@ -36,18 +36,17 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             for (int i=0; i<outputs.Length; i++) {
                 outputs[i].outQueue.Close();
                 outputs[i].outQueue = null;
             }
-            base.OnStop();
+            base.AsyncOnStop();
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
             cwipc.pointcloud pc = (cwipc.pointcloud)inQueue.TryDequeue(0);
             if (pc == null) return; // Terminating, or no pointcloud currently available
             for (int i=0; i<outputs.Length; i++)

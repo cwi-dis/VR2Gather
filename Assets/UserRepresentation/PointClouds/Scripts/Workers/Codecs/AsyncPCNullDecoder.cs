@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(1)
         {
             if (_inQueue == null)
             {
@@ -43,18 +43,17 @@ namespace VRT.UserRepresentation.PointCloud
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             lock (this)
             {
                 if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             }
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
             NativeMemoryChunk mc;
             lock (this)
             {

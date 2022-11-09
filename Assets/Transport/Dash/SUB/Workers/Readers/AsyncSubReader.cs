@@ -226,11 +226,11 @@ namespace VRT.Transport.Dash
             _closeQueues();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             if (debugThreading) Debug.Log($"{Name()}: Stopping");
             _DeinitDash(true);
-            base.OnStop();
+            base.AsyncOnStop();
             if (debugThreading) Debug.Log($"{Name()}: Stopped");
         }
 
@@ -362,9 +362,8 @@ namespace VRT.Transport.Dash
             }
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
             bool shouldStop = false;
             lock (this)
             {

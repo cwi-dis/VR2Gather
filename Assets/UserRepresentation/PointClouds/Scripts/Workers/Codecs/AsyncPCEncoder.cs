@@ -120,7 +120,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
+        public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(1)
         {
             nParallel = VRT.Core.Config.Instance.PCs.encoderParallelism;
             if (_inQueue == null)
@@ -184,7 +184,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
             // Signal end-of-data
             encoderGroup.close();
@@ -197,7 +197,7 @@ namespace VRT.UserRepresentation.PointCloud
             var tmp = encoderGroup;
             encoderGroup = null;
             // Stop the Update thread
-            base.OnStop();
+            base.AsyncOnStop();
             // Clear the encoderGroup including all of its encoders
             tmp?.free();
             foreach (var eo in encoderOutputs)
@@ -209,9 +209,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (encoderBuffer != System.IntPtr.Zero) { System.Runtime.InteropServices.Marshal.FreeHGlobal(encoderBuffer); encoderBuffer = System.IntPtr.Zero; }
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
             // If we do multi-threaded encoding we always try to obtain results
             // and we always try to feed.
             if(encodersAreBusy || nParallel > 1)

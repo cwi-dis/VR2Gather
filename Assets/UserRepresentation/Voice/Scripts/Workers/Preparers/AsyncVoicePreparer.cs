@@ -65,9 +65,9 @@ namespace VRT.UserRepresentation.Voice
             synchronizer = _synchronizer;
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             Debug.Log("VoicePreparer: Stopped");
         }
 

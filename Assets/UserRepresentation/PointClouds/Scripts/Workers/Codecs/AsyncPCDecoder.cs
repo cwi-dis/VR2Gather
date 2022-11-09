@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool debugColorize = true;
         System.DateTime[] mostRecentFeeds;
 
-        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
+        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(1)
         {
             nParallel = VRT.Core.Config.Instance.PCs.decoderParallelism;
             if (nParallel == 0) nParallel = 1;
@@ -75,9 +75,9 @@ namespace VRT.UserRepresentation.PointCloud
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
         }
 
-        public override void OnStop()
+        public override void AsyncOnStop()
         {
-            base.OnStop();
+            base.AsyncOnStop();
             lock (this)
             {
                 foreach(var d in decoders)
@@ -114,9 +114,8 @@ namespace VRT.UserRepresentation.PointCloud
             return true;
         }
 
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update(); 
             lock (this)
             {
                 // Feed data into the decoder, unless it already
