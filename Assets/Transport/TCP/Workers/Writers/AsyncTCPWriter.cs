@@ -13,7 +13,7 @@ namespace VRT.Transport.TCP
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class TCPWriter : AsyncWriter
+    public class AsyncTCPWriter : AsyncWriter
     {
         public struct TCPStreamDescription
         {
@@ -30,13 +30,13 @@ namespace VRT.Transport.TCP
 
         public class TCPPushThread
         {
-            TCPWriter parent;
+            AsyncTCPWriter parent;
             TCPStreamDescription description;
             System.Threading.Thread myThread;
             Socket listenSocket = null;
             Socket sendSocket = null;
 
-            public TCPPushThread(TCPWriter _parent, TCPStreamDescription _description)
+            public TCPPushThread(AsyncTCPWriter _parent, TCPStreamDescription _description)
             {
                 parent = _parent;
                 description = _description;
@@ -191,7 +191,7 @@ namespace VRT.Transport.TCP
  
         TCPPushThread[] pusherThreads;
 
-        public TCPWriter(string _url, string fourcc, B2DWriter.DashStreamDescription[] _descriptions) : base()
+        public AsyncTCPWriter(string _url, string fourcc, AsyncB2DWriter.DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {

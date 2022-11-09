@@ -62,20 +62,20 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
+            AsyncB2DWriter.DashStreamDescription[] b2dStreams = new AsyncB2DWriter.DashStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
 
             if (proto == Config.ProtocolType.Dash)
             {
-                writer = new B2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
+                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
             } 
             else if (proto == Config.ProtocolType.TCP)
             {
-                writer = new TCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
+                writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
             }
             else
             {
-                writer = new SocketIOWriter(user, _streamName, audioCodec, b2dStreams);
+                writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
             }
             string encoderName = "none";
             if (codec != null)

@@ -13,11 +13,11 @@ namespace VRT.Transport.SocketIO
     using Timedelta = System.Int64;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
-    public class SocketIOWriter : AsyncWriter
+    public class AsyncSocketIOWriter : AsyncWriter
     {
-        B2DWriter.DashStreamDescription[] streams;
+        AsyncB2DWriter.DashStreamDescription[] streams;
 
-        public SocketIOWriter(User user, string remoteStream, string fourcc, B2DWriter.DashStreamDescription[] streams) : base()
+        public AsyncSocketIOWriter(User user, string remoteStream, string fourcc, AsyncB2DWriter.DashStreamDescription[] streams) : base()
         {
             if (streams == null)
             {

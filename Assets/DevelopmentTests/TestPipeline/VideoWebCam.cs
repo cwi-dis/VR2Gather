@@ -56,15 +56,15 @@ public class VideoWebCam : MonoBehaviour {
         try {
             recorder = new WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
             encoder  = new VideoEncoder(new VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
-            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
-                new B2DWriter.DashStreamDescription() {
+            AsyncB2DWriter.DashStreamDescription[] b2dStreams = new AsyncB2DWriter.DashStreamDescription[1] {
+                new AsyncB2DWriter.DashStreamDescription() {
                     tileNumber = 0,
                     qualityIndex = 0,
                     inQueue = writerQueue
                 }
             };
-            if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, "wcss", b2dStreams);
+            if(useDash) writer = new AsyncB2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            else writer = new AsyncSocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, "wcss", b2dStreams);
 
 //            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);

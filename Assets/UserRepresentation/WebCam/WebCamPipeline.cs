@@ -111,8 +111,8 @@ namespace VRT.UserRepresentation.WebCam
                             throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            B2DWriter.DashStreamDescription[] dashStreamDescriptions = new B2DWriter.DashStreamDescription[1] {
-                                new B2DWriter.DashStreamDescription() {
+                            AsyncB2DWriter.DashStreamDescription[] dashStreamDescriptions = new AsyncB2DWriter.DashStreamDescription[1] {
+                                new AsyncB2DWriter.DashStreamDescription() {
                                 tileNumber = 0,
                                 qualityIndex = 0,
                                 inQueue = writerQueue
@@ -120,16 +120,16 @@ namespace VRT.UserRepresentation.WebCam
                             };
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
                              if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
+                                writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
                             }
                             else
                             {
-                                writer = new SocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
+                                writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
                             }
 
                         }
@@ -257,7 +257,7 @@ namespace VRT.UserRepresentation.WebCam
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            B2DWriter pcWriter = (B2DWriter)writer;
+            AsyncB2DWriter pcWriter = (AsyncB2DWriter)writer;
             if (pcWriter != null)
             {
                 rv.visuals = pcWriter.GetSyncInfo();

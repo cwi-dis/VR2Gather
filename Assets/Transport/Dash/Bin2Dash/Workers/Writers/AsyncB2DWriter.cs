@@ -11,7 +11,7 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class B2DWriter : AsyncWriter
+    public class AsyncB2DWriter : AsyncWriter
     {
         public struct DashStreamDescription
         {
@@ -31,7 +31,7 @@ namespace VRT.Transport.Dash
         B2DPusher[] streamPushers;
 
 
-        public B2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base()
+        public AsyncB2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -154,12 +154,12 @@ namespace VRT.Transport.Dash
 
         protected class B2DPusher
         {
-            B2DWriter parent;
+            AsyncB2DWriter parent;
             int stream_index;
             DashStreamDescription description;
             NativeMemoryChunk curBuffer = null;
 
-            public B2DPusher(B2DWriter _parent, int _stream_index, DashStreamDescription _description)
+            public B2DPusher(AsyncB2DWriter _parent, int _stream_index, DashStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;

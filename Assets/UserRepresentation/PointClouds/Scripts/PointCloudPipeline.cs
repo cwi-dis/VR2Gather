@@ -31,7 +31,7 @@ namespace VRT.UserRepresentation.PointCloud
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
         PCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
-        B2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+        AsyncB2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
         TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
         User user;
         const bool debugTiling = false;
@@ -207,7 +207,7 @@ namespace VRT.UserRepresentation.PointCloud
                         Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                         encoderStreamDescriptions = new PCEncoder.EncoderStreamDescription[nStream];
-                        dashStreamDescriptions = new B2DWriter.DashStreamDescription[nStream];
+                        dashStreamDescriptions = new AsyncB2DWriter.DashStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
                         // For the TCP connections we want legth 1 leaky queues. For
@@ -234,7 +234,7 @@ namespace VRT.UserRepresentation.PointCloud
                                     tileNumber = it + minTileNum,
                                     outQueue = thisQueue
                                 };
-                                dashStreamDescriptions[i] = new B2DWriter.DashStreamDescription
+                                dashStreamDescriptions[i] = new AsyncB2DWriter.DashStreamDescription
                                 {
                                     tileNumber = (uint)(it + minTileNum),
                                     // quality = (uint)(100 * octreeBits + 75),
@@ -289,16 +289,16 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new B2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(user.userData.userPCurl, pointcloudCodec, dashStreamDescriptions);
+                                writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, dashStreamDescriptions);
                             }
                             else
                             {
-                                writer = new SocketIOWriter(user, "pointcloud", pointcloudCodec, dashStreamDescriptions);
+                                writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, dashStreamDescriptions);
                             }
                         }
                         catch (System.EntryPointNotFoundException e)

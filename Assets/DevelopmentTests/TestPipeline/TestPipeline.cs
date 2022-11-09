@@ -81,8 +81,8 @@ public class TestPipeline : MonoBehaviour
             }
         };
 
-        B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
-            new B2DWriter.DashStreamDescription(){
+        AsyncB2DWriter.DashStreamDescription[] streams = new AsyncB2DWriter.DashStreamDescription[1] {
+            new AsyncB2DWriter.DashStreamDescription(){
                 tileNumber = 0,
                 qualityIndex = 0,
                 inQueue = writerQueue
@@ -98,7 +98,7 @@ public class TestPipeline : MonoBehaviour
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
                 pointcloudsReader = new SocketIOReader(user, remoteStream, "cwi1", tiles);
-                pointcloudsWriter = new SocketIOWriter(user, remoteStream, "cwi1", streams);
+                pointcloudsWriter = new AsyncSocketIOWriter(user, remoteStream, "cwi1", streams);
 
             };
         }
@@ -153,7 +153,7 @@ public class TestPipeline : MonoBehaviour
 
                     string uuid = System.Guid.NewGuid().ToString();
 					URL = $"{remoteURL}/{uuid}/pcc/";
-					pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+					pointcloudsWriter = new AsyncB2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
 				} 
 				else
 					URL = remoteURL;
