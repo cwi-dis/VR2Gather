@@ -29,7 +29,9 @@ namespace VRT.UserRepresentation.PointCloud
             outQueue = _outQueue;
             Start();
             Debug.Log($"{Name()} Inited");
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
         }
 
         public override string Name()
@@ -71,9 +73,12 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Timedelta queuedDuration = outQueue.QueuedDuration();
             bool dropped = !outQueue.Enqueue(pc);
+#if VRT_WITH_STATS
             stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
+#endif
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -112,6 +117,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
-
+#endif
     }
 }

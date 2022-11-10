@@ -82,7 +82,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderName = codec.Name();
             }
+#if VRT_WITH_STATS
             BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+#endif
         }
 
         public void Init(User user, QueueThreadSafe queue)
@@ -124,7 +126,9 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
+#if VRT_WITH_STATS
             BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+#endif
         }
 
         void OnDestroy()

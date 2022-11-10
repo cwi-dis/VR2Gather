@@ -34,7 +34,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 throw new System.Exception("PCDecoder: outQueue is null");
             }
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             try
             {
                 inQueue = _inQueue;
@@ -60,7 +62,6 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            stats = new Stats(Name());
             debugColorize = Config.Instance.PCs.debugColorize;
         }
 
@@ -153,11 +154,14 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 Timedelta queuedDuration = outQueue.QueuedDuration();
                 bool dropped = !outQueue.Enqueue(pc);
+#if VRT_WITH_STATS
                 stats.statsUpdate(pc.count(), dropped, inQueue.QueuedDuration(), decodeDuration, queuedDuration);
+#endif
                 _FeedDecoder();
             }
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -196,6 +200,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
-
+#endif
     }
 }

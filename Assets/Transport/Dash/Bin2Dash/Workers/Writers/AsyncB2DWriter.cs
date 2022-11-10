@@ -104,7 +104,9 @@ namespace VRT.Transport.Dash
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+#endif
             }
             base.Start();
         }
@@ -164,7 +166,9 @@ namespace VRT.Transport.Dash
                 parent = _parent;
                 stream_index = _stream_index;
                 description = _description;
+#if VRT_WITH_STATS
                 stats = new Stats(Name());
+#endif
             }
 
             public string Name()
@@ -191,13 +195,16 @@ namespace VRT.Transport.Dash
                 lock(this)
                 {
                     if (curBuffer == null) return;
+#if VRT_WITH_STATS
                     stats.statsUpdate(curBuffer.length);
+#endif
                     if (!parent.uploader.push_buffer(stream_index, curBuffer.pointer, (uint)curBuffer.length))
                         Debug.LogError($"{Name()}({parent.url}): ERROR sending data");
                 }
             }
 
- 
+
+#if VRT_WITH_STATS
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
@@ -224,8 +231,7 @@ namespace VRT.Transport.Dash
             }
 
             protected Stats stats;
+#endif
         }
- 
- 
     }
 }

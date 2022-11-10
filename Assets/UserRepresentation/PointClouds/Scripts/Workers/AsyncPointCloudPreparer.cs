@@ -22,7 +22,9 @@ namespace VRT.UserRepresentation.PointCloud
 
         public AsyncPointCloudPreparer(QueueThreadSafe _InQueue, float _defaultCellSize = 0, float _cellSizeFactor = 0) : base(_InQueue)
         {
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             defaultCellSize = _defaultCellSize != 0 ? _defaultCellSize : 0.01f;
             cellSizeFactor = _cellSizeFactor != 0 ? _cellSizeFactor : 1.0f;
             Start();
@@ -64,7 +66,9 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.Log($"{Name()}: no pointcloud available");
                     }
+#if VRT_WITH_STATS
                     stats.statsUpdate(0, true);
+#endif
                     return false;
                 }
                 // See if there are more pointclouds in the queue that are no later than bestTimestamp
@@ -102,7 +106,9 @@ namespace VRT.UserRepresentation.PointCloud
                     pc.free();
                     isReady = true;
                 }
+#if VRT_WITH_STATS
                 stats.statsUpdate(dropCount, false);
+#endif
             }
             return true;
         }
@@ -158,6 +164,7 @@ namespace VRT.UserRepresentation.PointCloud
             else return defaultCellSize * cellSizeFactor;
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -193,5 +200,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
+#endif
     }
 }

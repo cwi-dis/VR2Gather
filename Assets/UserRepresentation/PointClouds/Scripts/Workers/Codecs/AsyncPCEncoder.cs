@@ -81,7 +81,9 @@ namespace VRT.UserRepresentation.PointCloud
                     if (curBuffer == null) return;
                     Timedelta queuedDuration = outQueue.QueuedDuration();
                     bool dropped = !outQueue.Enqueue(curBuffer);
+#if VRT_WITH_STATS
                     parent.stats.statsUpdate(dropped, curEncodeDuration, queuedDuration);
+#endif
                     curBuffer = null;
                 }
             }
@@ -131,7 +133,9 @@ namespace VRT.UserRepresentation.PointCloud
             outputs = _outputs;
             int nOutputs = outputs.Length;
             encoderOutputs = new cwipc.encoder[nOutputs];
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             try
             {
                 encoderGroup = cwipc.new_encodergroup();
@@ -248,6 +252,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats {
             public Stats(string name) : base(name) { }
 
@@ -276,5 +281,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
+#endif
     }
 }

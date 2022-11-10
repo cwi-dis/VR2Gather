@@ -131,7 +131,9 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     statMsg += $", tile{i}={selectedTileQualities[i]}";
                 }
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), statMsg);
+#endif
             }
 #if XXXSHISHIR_REMOVED
             //

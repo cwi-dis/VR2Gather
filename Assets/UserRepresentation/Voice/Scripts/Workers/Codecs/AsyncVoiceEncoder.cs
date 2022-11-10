@@ -21,7 +21,9 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe outQueue;
         public AsyncVoiceEncoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue, int frames = 1) : base()
         {
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             inQueue = _inQueue;
             outQueue = _outQueue;
             this.frames = frames;
@@ -68,10 +70,13 @@ namespace VRT.UserRepresentation.Voice
             }
             Timedelta queuedDuration = outQueue.QueuedDuration();
             bool ok = outQueue.Enqueue(mcOut);
+#if VRT_WITH_STATS
             stats.statsUpdate(encodeDuration, queuedDuration, !ok);
+#endif
             mcIn.free();
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -102,5 +107,6 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+#endif
     }
 }

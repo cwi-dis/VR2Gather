@@ -28,7 +28,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             outQueue = _outQueue;
             out2Queue = _out2Queue;
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
         }
 
         public AsyncPCReader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
@@ -146,8 +148,10 @@ namespace VRT.UserRepresentation.PointCloud
                 pc = newPc;
             }
 
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             bool didDrop = false;
             bool didDropSelf = false;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
             Timedelta encoderQueuedDuration = 0;
             if (outQueue == null)
             {
@@ -175,10 +179,13 @@ namespace VRT.UserRepresentation.PointCloud
                     didDrop = true;
                 }
             }
+#if VRT_WITH_STATS
             stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDrop, didDropSelf, encoderQueuedDuration, pc.timestamp());
+#endif
             pc.free();
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -225,5 +232,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
+#endif
     }
 }

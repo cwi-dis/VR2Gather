@@ -165,12 +165,16 @@ namespace VRT.Core
             if (!currentFrameDesync && !stableStreamsDetected)
             {
                 Debug.Log($"{Name()}: First synchronized frame produced");
+#if VRT_WITH_STATS
                 Stats.Output(Name(), "synchronised=1");
+#endif
                 stableStreamsDetected = true;
             }
             _AdjustParameters();
 
+#if VRT_WITH_STATS
             stats.statsUpdate(true, false, utcMillisForCurrentFrame, bestTimestampForCurrentFrame);
+#endif
         }
 
         void _AdjustParameters()
@@ -213,7 +217,9 @@ namespace VRT.Core
             {
                 currentLatency = currentMinLatency = minLatency;
                 stableStreamsDetected = false;
+#if VRT_WITH_STATS
                 Stats.Output(Name(), "synchronised=0");
+#endif
                 Debug.LogWarning($"{Name()}: lost synchronization");
             }
             //
@@ -313,15 +319,18 @@ namespace VRT.Core
             acceptDesyncOnDataUnavailable = Config.Instance.Synchronizer.acceptDesyncOnDataUnavailable;
 
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
 
             stats = new Stats(Name());
-        }
+#endif
+            }
 
         // Update is called once per frame
         void Update()
         {
         }
+#if VRT_WITH_STATS
         protected class Stats : BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -352,5 +361,6 @@ namespace VRT.Core
         }
 
         protected Stats stats;
+#endif
     }
 }

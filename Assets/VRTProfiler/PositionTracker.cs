@@ -15,6 +15,12 @@ namespace VRT.Core
             return $"{GetType().Name}#{transform.parent.gameObject.name}.{instanceNumber}";
         }
 
+#if !VRT_WITH_STATS
+        private void Start()
+        {
+            Debug.LogError($"{Name()}: VRT_WITH_STATS not enabled, making this a bit pointless");
+        }
+#else
         // Start is called before the first frame update
         void Start()
         {
@@ -58,5 +64,6 @@ namespace VRT.Core
         }
 
         protected Stats stats;
+#endif
     }
 }

@@ -29,7 +29,9 @@ namespace VRT.Pilots.Common
                 Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
                 return;
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"output_dir={screenshotTargetDirectory}");
+#endif
             width = Screen.width;
             height = Screen.height;
             if (!Directory.Exists(screenshotTargetDirectory))

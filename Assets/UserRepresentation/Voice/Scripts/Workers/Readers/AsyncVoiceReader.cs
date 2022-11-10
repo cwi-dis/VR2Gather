@@ -30,7 +30,9 @@ namespace VRT.UserRepresentation.Voice
         public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
             NoUpdateCallsNeeded();
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             outQueue = _outQueue;
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName, sampleRate, fps, minBufferSize));
@@ -230,7 +232,9 @@ namespace VRT.UserRepresentation.Voice
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc.pointer", mc.pointer, mc.length);
 #endif
                                 bool ok = outQueue.Enqueue(mc);
+#if VRT_WITH_STATS
                                 stats.statsUpdate(timeRemainingInBuffer, nSamplesPerPacket, !ok, outQueue.QueuedDuration());
+#endif
                             }
                         }
                     }
@@ -263,6 +267,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogError("{Name()}: No Microphones detected.");
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -296,6 +301,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+#endif
     }
 
 }

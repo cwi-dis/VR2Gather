@@ -42,7 +42,9 @@ namespace VRT.Transport.TCP
                 description = _description;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
+#if VRT_WITH_STATS
                 stats = new Stats(Name());
+#endif
                 IPAddress[] all = Dns.GetHostAddresses(description.host);
                 all = Array.FindAll(all, a => a.AddressFamily == AddressFamily.InterNetwork);
                 IPAddress ipAddress = all[0];
@@ -94,11 +96,15 @@ namespace VRT.Transport.TCP
                         // Accept incoming connection
                         if (sendSocket == null)
                         {
+#if VRT_WITH_STATS
                             BaseStats.Output(Name(), $"open=0, listen=1");
+#endif
                             try
                             {
                                 sendSocket = listenSocket.Accept();
+#if VRT_WITH_STATS
                                 BaseStats.Output(Name(), $"open=1, remote={sendSocket.RemoteEndPoint.ToString()}");
+#endif
                             }
                             catch(SocketException e)
                             {
@@ -111,7 +117,9 @@ namespace VRT.Transport.TCP
                         }
                         NativeMemoryChunk mc = (NativeMemoryChunk)queue.Dequeue();
                         if (mc == null) continue; // Probably closing...
+#if VRT_WITH_STATS
                         stats.statsUpdate(mc.length);
+#endif
                         byte[] hdr = new byte[16];
                         var hdr1 = BitConverter.GetBytes((UInt32)description.fourcc);
                         hdr1.CopyTo(hdr, 0);
@@ -133,7 +141,9 @@ namespace VRT.Transport.TCP
                                 Debug.Log($"{Name()}: socket was closed by another thread");
                             }
                             sendSocket = null;
+#if VRT_WITH_STATS
                             BaseStats.Output(Name(), $"open=0");
+#endif
                         }
                         catch(SocketException e)
                         {
@@ -143,7 +153,9 @@ namespace VRT.Transport.TCP
                                 sendSocket.Close();
                                 sendSocket = null;
                             }
+#if VRT_WITH_STATS
                             BaseStats.Output(Name(), $"open=0");
+#endif
                         }
                     }
                     Debug.Log($"{Name()}: thread stopped");
@@ -161,6 +173,7 @@ namespace VRT.Transport.TCP
 
             }
 
+#if VRT_WITH_STATS
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
@@ -187,6 +200,7 @@ namespace VRT.Transport.TCP
             }
 
             protected Stats stats;
+#endif
         }
  
         TCPPushThread[] pusherThreads;
@@ -243,7 +257,9 @@ namespace VRT.Transport.TCP
                 // Note: we need to copy i to a new variable, otherwise the lambda expression capture will bite us
                 int stream_number = i;
                 pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
+#endif
             }
             foreach (var t in pusherThreads)
             {

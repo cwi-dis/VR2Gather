@@ -339,7 +339,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 statMsg += $", Tile{i}Orientationx={TileOrientation[i].x}, Tile{i}Orientationy={TileOrientation[i].y}, Tile{i}Orientationz={TileOrientation[i].z}, Tile{i}BBCentroidLocationx={tileLocations[i].x}, Tile{i}BBCentroidLocationy={tileLocations[i].y}, Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), statMsg);
+#endif
             //xxxshishir modified here for weighted hybrid tile selction
             hybridTileWeights = new float[nTiles];
             Array.Copy(hybridTileUtilities, hybridTileWeights, nTiles);

@@ -52,7 +52,9 @@ namespace VRT.UserRepresentation.Voice
                 debugToneGenerator = new ToneGenerator();
             }
 #endif
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
@@ -108,7 +110,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 decoderName = codec.Name();
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
+#endif
         }
 
         public void Init(User user, QueueThreadSafe queue)
@@ -119,7 +123,9 @@ namespace VRT.UserRepresentation.Voice
                 debugToneGenerator = new ToneGenerator();
             }
 #endif
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             if (synchronizer == null)
             {
                 synchronizer = FindObjectOfType<Synchronizer>();
@@ -147,7 +153,9 @@ namespace VRT.UserRepresentation.Voice
 
             preparer = new AsyncVoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"encoded={audioIsEncoded}");
+#endif
         }
 
         private void Update()
@@ -207,7 +215,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 data[i] += tmpBuffer[i / channels];
             }
+#if VRT_WITH_STATS
             stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.getCurrentTimestamp(), preparer.getQueueDuration());
+#endif
         }
 
         public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -215,6 +225,7 @@ namespace VRT.UserRepresentation.Voice
             reader.SetSyncInfo(_clockCorrespondence);
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -271,5 +282,6 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+#endif
     }
 }

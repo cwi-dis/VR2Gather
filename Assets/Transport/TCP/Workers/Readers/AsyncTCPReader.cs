@@ -47,7 +47,9 @@ namespace VRT.Transport.TCP
                 receiverInfo = _receiverInfo;
                 myThread = new System.Threading.Thread(run);
                 myThread.Name = Name();
+#if VRT_WITH_STATS
                 stats = new Stats(Name());
+#endif
             }
 
             public string Name()
@@ -111,7 +113,9 @@ namespace VRT.Transport.TCP
                             IPAddress ipAddress = all[0];
                             portOffset = receiverInfo.portOffset;
                             IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port + portOffset);
+#if VRT_WITH_STATS
                             BaseStats.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
+#endif
                             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                             try
                             {
@@ -124,7 +128,9 @@ namespace VRT.Transport.TCP
                                 System.Threading.Thread.Sleep(1000);
                                 continue;
                             }
+#if VRT_WITH_STATS
                             BaseStats.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
+#endif
                             Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
                         }
                         System.DateTime receiveStartTime = System.DateTime.Now;
@@ -164,7 +170,9 @@ namespace VRT.Transport.TCP
                         var buf = new byte[mc.length];
                         System.Runtime.InteropServices.Marshal.Copy(mc.pointer, buf, 0, mc.length);
                         bool ok = receiverInfo.outQueue.Enqueue(mc);
+#if VRT_WITH_STATS
                         stats.statsUpdate(dataSize, receiveDuration, !ok);
+#endif
                         // Close the socket if the portOffset (the quality index) has been changed in the mean time
                         if (socket != null && receiverInfo.portOffset != portOffset)
                         {
@@ -190,6 +198,7 @@ namespace VRT.Transport.TCP
 
             }
 
+#if VRT_WITH_STATS
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
@@ -221,7 +230,7 @@ namespace VRT.Transport.TCP
             }
 
             protected Stats stats;
-
+#endif
         }
         TCPPullThread[] threads;
 
@@ -312,7 +321,9 @@ namespace VRT.Transport.TCP
                     {
                         msg += $", tile={receivers[i].tileNumber}";
                     }
+#if VRT_WITH_STATS
                     BaseStats.Output(Name(), msg);
+#endif
                 }
                 foreach (var t in threads)
                 {

@@ -50,7 +50,9 @@ namespace VRT.Transport.Dash
                 parent = _parent;
                 handler_index = _handler_index;
                 receiverInfo = _receiverInfo;
+#if VRT_WITH_STATS
                 stats = new Stats(Name());
+#endif
             }
 
             public string Name()
@@ -88,7 +90,9 @@ namespace VRT.Transport.Dash
                 {
                     parent.clockCorrespondence.wallClockTime = now;
                     parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
+#if VRT_WITH_STATS
                     BaseStats.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
+#endif
                 }
                 // Convert clock values to wallclock
                 mostRecentDashTimestamp = frameInfo.timestamp;
@@ -101,8 +105,9 @@ namespace VRT.Transport.Dash
                 Timedelta network_latency_ms = now - frameInfo.timestamp;
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
+#if VRT_WITH_STATS
                 stats.statsUpdate(bytesRead, didDrop, mostRecentDashTimestamp, network_latency_ms, stream_index);
-
+#endif
             }
 
             public bool getDataForTile(sub.connection subHandle)
@@ -132,8 +137,7 @@ namespace VRT.Transport.Dash
                 return received_anything;
             }
 
-
-
+#if VRT_WITH_STATS
             protected class Stats : VRT.Core.BaseStats
             {
                 public Stats(string name) : base(name) { }
@@ -164,7 +168,7 @@ namespace VRT.Transport.Dash
             }
 
             protected Stats stats;
-
+#endif
         }
 
         TileOrMediaHandler[] perTileHandler;
@@ -317,12 +321,14 @@ namespace VRT.Transport.Dash
                 for (int i = 0; i < threadCount; i++)
                 {
                     perTileHandler[i] = new TileOrMediaHandler(this, i, perTileInfo[i]);
+#if VRT_WITH_STATS
                     string msg = $"pull_thread={perTileHandler[i].Name()}";
                     if (perTileInfo[i].tileNumber >= 0)
                     {
                         msg += $", tile={perTileInfo[i].tileNumber}";
                     }
                     BaseStats.Output(Name(), msg);
+#endif
                 }
                 myThread = new System.Threading.Thread(ingestThreadRunner);
                 myThread.Name = Name();
@@ -403,7 +409,9 @@ namespace VRT.Transport.Dash
                 delta = epoch - oldEpoch;
             }
             clockCorrespondenceReceived = true;
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
+#endif
         }
 
         protected void ingestThreadRunner()

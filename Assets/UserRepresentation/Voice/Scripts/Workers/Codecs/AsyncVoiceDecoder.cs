@@ -18,7 +18,9 @@ namespace VRT.UserRepresentation.Voice
         NSpeex.SpeexDecoder decoder;
         public AsyncVoiceDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             inQueue = _inQueue;
             outQueue = _outQueue;
             decoder = new NSpeex.SpeexDecoder(NSpeex.BandMode.Wide);
@@ -65,10 +67,13 @@ namespace VRT.UserRepresentation.Voice
             }
             Timedelta decodeDuration = (Timedelta)(System.DateTime.Now - decodeStartTime).TotalMilliseconds;
             bool dropped = !outQueue.Enqueue(mcOut);
+#if VRT_WITH_STATS
             stats.statsUpdate(decodeDuration, inQueue.QueuedDuration(), dropped);
+#endif
             mcIn.free();
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -99,5 +104,6 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+#endif
     }
 }

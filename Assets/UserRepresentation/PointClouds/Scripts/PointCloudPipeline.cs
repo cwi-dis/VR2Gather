@@ -106,7 +106,9 @@ namespace VRT.UserRepresentation.PointCloud
                     AsyncTiledWorker pcReader;
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
+#if VRT_WITH_STATS
                     BaseStats.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+#endif
                     //
                     // Create renderer and preparer for self-view.
                     //
@@ -306,7 +308,9 @@ namespace VRT.UserRepresentation.PointCloud
                             Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
+#if VRT_WITH_STATS
                         BaseStats.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
+#endif
                     }
                     break;
                 case "prerecorded":
@@ -369,7 +373,9 @@ namespace VRT.UserRepresentation.PointCloud
                     break;
 
                 case "remote":
+#if VRT_WITH_STATS
                     BaseStats.Output(Name(), $"self=0, userid={user.userId}");
+#endif
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need
                     //
@@ -443,7 +449,9 @@ namespace VRT.UserRepresentation.PointCloud
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]
                 };
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
+#endif
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
             {
@@ -461,7 +469,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 synchronizerName = synchronizer.Name();
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
+#endif
         }
 
         public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
@@ -479,7 +489,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 msg += $", tile={curTile}";
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), msg);
+#endif
             renderers.Add(render);
             render.SetPreparer(preparer);
             return preparerQueue;
@@ -524,7 +536,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 preparer?.StopAndWait();
             }
+#if VRT_WITH_STATS
             BaseStats.Output(Name(), $"finished=1");
+#endif
         }
 
         public void SetCrop(float[] _bbox)

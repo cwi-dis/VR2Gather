@@ -49,7 +49,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             material = new Material(baseMaterial);
             block = new MaterialPropertyBlock();
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             pointBuffer = new ComputeBuffer(1, sizeof(float) * 4);
         }
 
@@ -113,7 +115,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
+#if VRT_WITH_STATS
             stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
+#endif
         }
 
         public void OnDestroy()
@@ -123,6 +127,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -178,5 +183,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
+#endif
     }
 }

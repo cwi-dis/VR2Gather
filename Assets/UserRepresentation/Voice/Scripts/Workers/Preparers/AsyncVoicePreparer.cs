@@ -51,7 +51,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 audioMaxAheadMs = (Timedelta)(Config.Instance.Voice.maxPlayoutAhead * 1000);
             }
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             Debug.Log("VoicePreparer: Started.");
             Start();
         }
@@ -60,7 +62,9 @@ namespace VRT.UserRepresentation.Voice
         {
             if (_synchronizer != null && Config.Instance.Voice.ignoreSynchronizer)
             {
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), "unsynchronized=1");
+#endif
                 _synchronizer = null;
             }
             synchronizer = _synchronizer;
@@ -158,7 +162,9 @@ namespace VRT.UserRepresentation.Voice
                     {
                         Debug.Log($"{Name()}: no audio frame available");
                     }
+#if VRT_WITH_STATS
                     stats.statsUpdate(0, dropCount, true);
+#endif
                     return false;
                 }
 #if VRT_AUDIO_DEBUG
@@ -189,7 +195,9 @@ namespace VRT.UserRepresentation.Voice
 
                 }
                 int nSamples = currentAudioFrame.length / sizeof(float);
+#if VRT_WITH_STATS
                 stats.statsUpdate(nSamples, dropCount, false);
+#endif
                 break;
             }
             return true;
@@ -304,6 +312,7 @@ namespace VRT.UserRepresentation.Voice
             }
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -334,6 +343,6 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
-
+#endif
     }
 }

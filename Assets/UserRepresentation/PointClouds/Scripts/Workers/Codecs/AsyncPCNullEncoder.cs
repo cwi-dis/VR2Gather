@@ -27,7 +27,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             inQueue = _inQueue;
             outputs = _outputs;
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             Start();
         }
 
@@ -73,11 +75,14 @@ namespace VRT.UserRepresentation.PointCloud
                 QueueThreadSafe queue = outputs[i].outQueue;
                 Timedelta queuedDuration = queue.QueuedDuration();
                 bool dropped = !queue.Enqueue(mc);
+#if VRT_WITH_STATS
                 stats.statsUpdate(dropped, encodeDuration, queuedDuration);
+#endif
             }
             pc.free();
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -109,6 +114,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
-
+#endif
     }
 }

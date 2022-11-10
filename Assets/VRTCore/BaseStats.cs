@@ -3,6 +3,7 @@ using System;
 
 namespace VRT.Core
 {
+#if VRT_WITH_STATS
     public class BaseStats
     {
         protected string name;
@@ -108,4 +109,5 @@ namespace VRT.Core
             }
         }
     }
+#endif
 }

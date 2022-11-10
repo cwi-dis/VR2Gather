@@ -23,13 +23,16 @@ namespace VRT.Transport.SocketIO
             {
                 throw new System.Exception($"[FPA] {Name()}: outQueue is null");
             }
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             this.streams = streams;
             for (int i = 0; i < streams.Length; ++i)
             {
                 streams[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
-                Debug.Log($"[FPA] DeclareDataStream userId {user.userId} StreamType {streams[i].name}");
+#if VRT_WITH_STATS
                 BaseStats.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
+#endif
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
             try
@@ -80,7 +83,9 @@ namespace VRT.Transport.SocketIO
                     Array.Copy(hdr_timestamp, buf, sizeof(long));
                     System.Runtime.InteropServices.Marshal.Copy(chk.pointer, buf, sizeof(long), chk.length);
                     OrchestratorWrapper.instance.SendData(streams[i].name, buf);
+#if VRT_WITH_STATS
                     stats.statsUpdate(chk.length, i);
+#endif
                     chk.free();
 
                 }
@@ -93,6 +98,8 @@ namespace VRT.Transport.SocketIO
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             return new SyncConfig.ClockCorrespondence();
         }
+
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -117,5 +124,6 @@ namespace VRT.Transport.SocketIO
         }
 
         protected Stats stats;
+#endif
     }
 }

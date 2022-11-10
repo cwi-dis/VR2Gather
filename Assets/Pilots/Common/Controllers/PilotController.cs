@@ -18,7 +18,9 @@ namespace VRT.Pilots.Common
 
         private void OnApplicationQuit()
         {
+#if VRT_WITH_STATS
             BaseStats.Output("PilotController", $"quitting=1");
+#endif
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
             BaseMemoryChunkReferences.ShowTotalRefCount();
         }

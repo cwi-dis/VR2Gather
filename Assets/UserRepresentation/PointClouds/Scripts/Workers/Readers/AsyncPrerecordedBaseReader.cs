@@ -210,7 +210,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: Invalid framerate, the target framerate is set to 0, sync is disabled");
             }
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             Start();
         }
         public override string Name()
@@ -341,11 +343,14 @@ namespace VRT.UserRepresentation.PointCloud
                     didDropEncoder = true;
                 }
             }
-          
+
+#if VRT_WITH_STATS
             stats.statsUpdate(pc.count(), pc.cellsize(), downsampleDuration, didDropEncoder, didDropSelfView, encoderQueuedDuration, pc.timestamp(), subdir);
+#endif
             pc.free();
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -397,5 +402,6 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
         protected Stats stats;
+#endif
     }
 }

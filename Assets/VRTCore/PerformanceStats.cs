@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 namespace VRT.Core
 {
+#if VRT_WITH_STATS
     public class PerformanceStats : MonoBehaviour
     {
         // Start is called before the first frame update
@@ -48,4 +49,5 @@ namespace VRT.Core
 
         protected Stats stats;
     }
+#endif
 }

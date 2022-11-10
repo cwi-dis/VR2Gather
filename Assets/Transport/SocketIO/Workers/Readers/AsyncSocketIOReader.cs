@@ -38,7 +38,9 @@ namespace VRT.Transport.SocketIO
                     OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
+#if VRT_WITH_STATS
                 stats = new Stats(Name());
+#endif
                 Start();
                 Debug.Log($"{Name()}: Started {remoteStream}.");
             }
@@ -99,7 +101,9 @@ namespace VRT.Transport.SocketIO
                     {
                         // Debug.Log($"{Name()}: dropped packet, queuelength is {descriptors[i].outQueue.Count()}");
                     }
+#if VRT_WITH_STATS
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
+#endif
                     return;
                 }
             }
@@ -110,6 +114,7 @@ namespace VRT.Transport.SocketIO
         {
         }
 
+#if VRT_WITH_STATS
         protected class Stats : VRT.Core.BaseStats
         {
             public Stats(string name) : base(name) { }
@@ -137,7 +142,7 @@ namespace VRT.Transport.SocketIO
         }
 
         protected Stats stats;
-
+#endif
     }
 
 }
