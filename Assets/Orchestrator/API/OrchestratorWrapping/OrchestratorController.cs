@@ -27,6 +27,9 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.Orchestrator.Wrapping
 {

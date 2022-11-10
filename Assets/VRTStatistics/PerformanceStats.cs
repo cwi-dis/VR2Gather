@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 
-namespace VRT.Core
+namespace VRT.Statistics
 {
 #if VRT_WITH_STATS
     public class PerformanceStats : MonoBehaviour

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace VRT.Core
+namespace VRT.Statistics
 {
 #if VRT_WITH_STATS
     public class BaseStats
@@ -14,13 +14,23 @@ namespace VRT.Core
         private double statsInterval = 10;
         private static System.IO.StreamWriter statsStream;
         private bool usesDefaultInterval;
-        private static void Init()
+
+        public static void Initialize(double _defaultStatsInterval = -1, string statsOutputFile = null, bool append = false)
         {
-            if (initialized) return;
-            defaultStatsInterval = Config.Instance.statsInterval;
-            if (Config.Instance.statsOutputFile != "")
+            if (initialized)
             {
-                string sfn = Config.Instance.statsOutputFile;
+                if (_defaultStatsInterval >= 0 || statsOutputFile != null)
+                {
+                    Debug.LogWarning("BaseStats: call to Initialize() is too late");
+                }
+            }
+            if (defaultStatsInterval >= 0)
+            {
+                defaultStatsInterval = _defaultStatsInterval;
+            }
+            if (statsOutputFile != null && statsOutputFile != "")
+            {
+                string sfn = statsOutputFile;
                 string host = Environment.MachineName;
                 DateTime now = DateTime.Now;
                 globalStatsLastTime = now + System.TimeSpan.FromSeconds(defaultStatsInterval);
@@ -28,7 +38,7 @@ namespace VRT.Core
                 sfn = sfn.Replace("{host}", host);
                 sfn = sfn.Replace("{ts}", ts);
                 string statsFilename = $"{Application.persistentDataPath}/{sfn}";
-                statsStream = new System.IO.StreamWriter(statsFilename, Config.Instance.statsOutputFileAppend);
+                statsStream = new System.IO.StreamWriter(statsFilename, append);
                 //
                 // Write an identifying line to both the statsfile (so we can split runs) and the console (so we can find the stats file)
                 //
@@ -51,9 +61,9 @@ namespace VRT.Core
         {
             if (statsStream != null) statsStream.Flush();
         }
-        protected BaseStats(string _name, double interval=-1)
+        protected BaseStats(string _name, double interval = -1)
         {
-            if (!initialized) Init();
+            if (!initialized) Initialize();
             name = _name;
             usesDefaultInterval = interval < 0;
             statsInterval = usesDefaultInterval ? defaultStatsInterval : interval;
@@ -64,7 +74,7 @@ namespace VRT.Core
         {
             DeInit();
         }
-  
+
         protected void Clear()
         {
             statsLastTime = System.DateTime.Now;
@@ -92,7 +102,7 @@ namespace VRT.Core
         // statis method, for use when only one or two stats lines are produced.
         public static void Output(string name, string s)
         {
-            if (!initialized) Init();
+            if (!initialized) Initialize();
             lock (lockObj)
             {
                 seq++;

@@ -5,6 +5,9 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.Core
 {

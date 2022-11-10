@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VRT.Core
+namespace VRT.Profiler
 {
     public class PositionTracker : MonoBehaviour
     {

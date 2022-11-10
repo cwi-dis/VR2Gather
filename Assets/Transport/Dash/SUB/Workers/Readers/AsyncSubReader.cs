@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 using System.Collections.Generic;
 using Cwipc;
 

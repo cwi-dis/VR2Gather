@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 namespace VRT.Core
 {
     [Serializable]
@@ -225,6 +227,9 @@ namespace VRT.Core
                     {
                         Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
+#if VRT_WITH_STATS
+                    VRT.Statistics.BaseStats.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
+#endif
                 }
                 return _Instance;
             }
