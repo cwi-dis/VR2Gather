@@ -118,6 +118,5 @@ public class VideoWebCam : MonoBehaviour {
         preparer?.StopAndWait();
 
         Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} ");
-        BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }

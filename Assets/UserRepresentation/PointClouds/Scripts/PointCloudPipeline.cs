@@ -525,9 +525,8 @@ namespace VRT.UserRepresentation.PointCloud
                 preparer?.StopAndWait();
             }
             BaseStats.Output(Name(), $"finished=1");
-            // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
-            BaseMemoryChunkReferences.ShowTotalRefCount();
         }
+
         public void SetCrop(float[] _bbox)
         {
             if (!isSource)
