@@ -71,7 +71,6 @@ namespace VRT.Video
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
             if (inVideoQueue._CanDequeue() && outVideoQueue._CanEnqueue())
             {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();

@@ -14,7 +14,7 @@ namespace VRT.Core
         protected Synchronizer synchronizer = null;
         protected QueueThreadSafe InQueue;
 
-        public AsyncPreparer(QueueThreadSafe _InQueue) : base(1)
+        public AsyncPreparer(QueueThreadSafe _InQueue) : base()
         {
             if (_InQueue == null)
             {

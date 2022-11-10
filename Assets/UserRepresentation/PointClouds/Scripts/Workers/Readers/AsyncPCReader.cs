@@ -100,7 +100,6 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
             //
             // Limit framerate, if required
             //

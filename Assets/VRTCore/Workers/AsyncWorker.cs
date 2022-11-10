@@ -9,15 +9,18 @@ namespace VRT.Core
         
         public bool isRunning { get; private set; }
         System.Threading.Thread thread;
-        protected int loopInterval = 100; // How many milliseconds to sleep in the runloop
+        protected int loopInterval = 1; // How many milliseconds to sleep in the runloop
         protected int joinTimeout = 5000; // How many milliseconds to wait for thread completion before we abort it.
         protected const bool debugThreading = true;
 
-        public AsyncWorker(int _loopIntervalMS)
+        public AsyncWorker()
         {
-            if (_loopIntervalMS > 0) {
-                loopInterval = _loopIntervalMS;
-            }
+        }
+
+        protected void NoUpdateCallsNeeded()
+        {
+            loopInterval = 100;
+            Debug.Log($"xxxjack {Name()}: NoUpdateCallsNeeded()");
         }
 
         public virtual string Name()

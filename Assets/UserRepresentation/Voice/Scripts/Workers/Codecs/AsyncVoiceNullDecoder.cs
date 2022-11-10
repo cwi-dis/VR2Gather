@@ -9,18 +9,12 @@ namespace VRT.UserRepresentation.Voice
     {
         public AsyncVoiceNullDecoder() : base()
         {
+            NoUpdateCallsNeeded();
             Start();
-        }
-
-        public override void AsyncOnStop()
-        {
-            base.AsyncOnStop();
-            Debug.Log($"{Name()}: Stopped");
         }
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
         }
     }
 }

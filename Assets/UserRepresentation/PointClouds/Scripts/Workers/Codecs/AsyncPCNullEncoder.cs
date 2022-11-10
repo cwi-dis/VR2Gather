@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         AsyncPCEncoder.EncoderStreamDescription[] outputs;
 
-        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base(1)
+        public AsyncPCNullEncoder(QueueThreadSafe _inQueue, AsyncPCEncoder.EncoderStreamDescription[] _outputs) : base()
         {
             if (_inQueue == null)
             {
@@ -27,14 +27,9 @@ namespace VRT.UserRepresentation.PointCloud
             }
             inQueue = _inQueue;
             outputs = _outputs;
-            Start();
-            Debug.Log($"{Name()}: Inited");
             stats = new Stats(Name());
+            Start();
         }
-        public override string Name() {
-            return $"{GetType().Name}#{instanceNumber}";
-        }
-
 
         public override void AsyncOnStop()
         {

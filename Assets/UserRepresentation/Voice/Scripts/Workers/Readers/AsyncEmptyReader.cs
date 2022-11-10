@@ -8,9 +8,15 @@ namespace VRT.UserRepresentation.Voice
     public class AsyncEmptyReader : AsyncWorker
     {
  
-        public AsyncEmptyReader() : base(0)
+        public AsyncEmptyReader() : base()
         {
+            NoUpdateCallsNeeded();
             Start();
         }
+
+        protected override void AsyncUpdate()
+        {
+        }
+
     }
 }

@@ -46,6 +46,7 @@ namespace VRT.UserRepresentation.Voice
         
         public AsyncVoicePreparer(QueueThreadSafe _inQueue) : base(_inQueue)
         {
+            NoUpdateCallsNeeded();
             if (Config.Instance.Voice.maxPlayoutAhead != 0)
             {
                 audioMaxAheadMs = (Timedelta)(Config.Instance.Voice.maxPlayoutAhead * 1000);
@@ -69,6 +70,10 @@ namespace VRT.UserRepresentation.Voice
         {
             base.AsyncOnStop();
             Debug.Log("VoicePreparer: Stopped");
+        }
+
+        protected override void AsyncUpdate()
+        {
         }
 
         public Timestamp getCurrentTimestamp()

@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
         bool debugColorize = true;
         System.DateTime[] mostRecentFeeds;
 
-        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(1)
+        public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             nParallel = VRT.Core.Config.Instance.PCs.decoderParallelism;
             if (nParallel == 0) nParallel = 1;

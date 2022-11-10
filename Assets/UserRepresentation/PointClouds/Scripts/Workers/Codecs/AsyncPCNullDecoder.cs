@@ -15,7 +15,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base(1)
+        public AsyncPCNullDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
             if (_inQueue == null)
             {

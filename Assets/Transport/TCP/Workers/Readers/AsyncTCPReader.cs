@@ -229,6 +229,7 @@ namespace VRT.Transport.TCP
 
         protected AsyncTCPReader(string _url) : base()
         {
+            NoUpdateCallsNeeded();
             lock (this)
             {
                 joinTimeout = 20000;
@@ -270,14 +271,8 @@ namespace VRT.Transport.TCP
             }
         }
 
-        public override string Name()
-        {
-            return $"{GetType().Name}#{instanceNumber}";
-        }
-
         public override void Stop()
         {
-            if (debugThreading) Debug.Log($"{Name()}: Stop");
             base.Stop();
             _closeQueues();
         }
@@ -290,14 +285,17 @@ namespace VRT.Transport.TCP
 
         public override void AsyncOnStop()
         {
-            if (debugThreading) Debug.Log($"{Name()}: Stopping");
+            if (debugThreading) Debug.Log($"{Name()}: Stopping threads");
             foreach(var t in threads)
             {
                 t.Stop();
                 t.Join();
             }
             base.AsyncOnStop();
-            if (debugThreading) Debug.Log($"{Name()}: Stopped");
+        }
+
+        protected override void AsyncUpdate()
+        {
         }
 
         protected void InitThreads()

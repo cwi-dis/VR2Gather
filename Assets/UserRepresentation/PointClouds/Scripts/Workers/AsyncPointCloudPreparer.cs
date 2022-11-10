@@ -32,7 +32,10 @@ namespace VRT.UserRepresentation.PointCloud
         {
             base.AsyncOnStop();
             if (byteArray.Length != 0) byteArray.Dispose();
-            Debug.Log("PointCloudPreparer Stopped");
+        }
+
+        protected override void AsyncUpdate()
+        {
         }
 
         public override bool LatchFrame()

@@ -28,7 +28,6 @@ namespace VRT.UserRepresentation.Voice
             encoder = new NSpeex.SpeexEncoder(NSpeex.BandMode.Wide);
             minSamplesPerFrame = encoder.FrameSize * frames;
             encoder.Quality = 5;
-            Debug.Log($"{Name()}: Started.");
             Start();
         }
 
@@ -37,13 +36,11 @@ namespace VRT.UserRepresentation.Voice
             base.AsyncOnStop();
             outQueue?.Close();
             outQueue = null;
-            Debug.Log($"{Name()}: Stopped.");
         }
 
         byte[] sendBuffer;
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
             if (inQueue.IsClosed())
             {
                 if (outQueue != null && !outQueue.IsClosed())

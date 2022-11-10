@@ -193,6 +193,7 @@ namespace VRT.Transport.TCP
 
         public AsyncTCPWriter(string _url, string fourcc, AsyncB2DWriter.DashStreamDescription[] _descriptions) : base()
         {
+            NoUpdateCallsNeeded();
             if (_descriptions == null || _descriptions.Length == 0)
             {
                 throw new System.Exception($"{Name()}: descriptions is null or empty");
@@ -230,11 +231,6 @@ namespace VRT.Transport.TCP
             }
             descriptions = ourDescriptions;
             Start();
-        }
-
-        public override string Name()
-        {
-            return $"{GetType().Name}#{instanceNumber}";
         }
 
         protected override void Start()
@@ -278,13 +274,11 @@ namespace VRT.Transport.TCP
             Debug.Log($"{Name()} Stopped");
         }
 
-#if xxxjack_disabled
-        protected override void Update()
+        protected override void AsyncUpdate()
         {
-            base.Update();
-            // xxxjack anything to do?
-            System.Threading.Thread.Sleep(10);
         }
+
+#if xxxjack_disabled
 
         public override SyncConfig.ClockCorrespondence GetSyncInfo()
         {

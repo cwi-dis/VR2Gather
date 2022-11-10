@@ -30,6 +30,7 @@ namespace VRT.Video
 
         public AsyncVideoPreparer(QueueThreadSafe _inVideoQueue, QueueThreadSafe _inAudioQueue) : base(_inVideoQueue)
         {
+            NoUpdateCallsNeeded();
             inAudioQueue = _inAudioQueue;
 
             audioBufferSize = 24000 * 8;
@@ -50,11 +51,10 @@ namespace VRT.Video
             Start();
         }
 
-        public override void AsyncOnStop()
+        protected override void AsyncUpdate()
         {
-            base.AsyncOnStop();
-            Debug.Log($"{Name()}: Stopped");
         }
+
         public override void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
@@ -169,7 +169,7 @@ namespace VRT.Video
                     return true;
                 }
                 else
-                    Debug.Log($"{Name()}: Buffer audio sin datos.");
+                    Debug.Log($"{Name()}: GetAudioBuffer: want {len} bytes but only {availableAudio} available");
             }
             return false;
         }

@@ -58,7 +58,6 @@ namespace VRT.Video
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
             if (outQueue.IsClosed()) return;
             try
             {
@@ -79,7 +78,6 @@ namespace VRT.Video
         public override void Stop()
         {
             base.Stop();
-            UnityEngine.Debug.Log($"[FPA] -----> WebCamReader.Stop");
             webcamTexture?.Stop();
             outQueue.Close();
             isClosed.Cancel();

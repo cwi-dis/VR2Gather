@@ -15,15 +15,10 @@ namespace VRT.UserRepresentation.Voice
 
         public AsyncVoiceNullPreparer() : base(null)
         {
+            NoUpdateCallsNeeded();
             Start();
         }
 
-        public override void AsyncOnStop()
-        {
-            base.AsyncOnStop();
-            //            if (byteArray.Length != 0) byteArray.Dispose();
-            Debug.Log($"{Name()}: Stopped");
-        }
         public override bool LatchFrame()
         {
             return false;
@@ -35,7 +30,6 @@ namespace VRT.UserRepresentation.Voice
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
         }
     }
 }

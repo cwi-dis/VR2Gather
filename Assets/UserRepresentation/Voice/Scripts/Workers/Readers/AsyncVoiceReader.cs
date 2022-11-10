@@ -29,11 +29,12 @@ namespace VRT.UserRepresentation.Voice
 
         public AsyncVoiceReader(string deviceName, int sampleRate, int fps, int minBufferSize, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
+            NoUpdateCallsNeeded();
             stats = new Stats(Name());
             outQueue = _outQueue;
             device = deviceName;
             coroutine = monoBehaviour.StartCoroutine(MicroRecorder(deviceName, sampleRate, fps, minBufferSize));
-            Debug.Log($"{Name()}: Started bufferLength {nSamplesPerPacket}.");
+            Debug.Log($"{Name()}: Started with bufferLength {nSamplesPerPacket} samples");
             Start();
         }
 
@@ -52,13 +53,11 @@ namespace VRT.UserRepresentation.Voice
 
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
         }
 
         public override void AsyncOnStop()
         {
             base.AsyncOnStop();
-            Debug.Log($"{Name()}: Stopped microphone {device}.");
             outQueue.Close();
         }
 

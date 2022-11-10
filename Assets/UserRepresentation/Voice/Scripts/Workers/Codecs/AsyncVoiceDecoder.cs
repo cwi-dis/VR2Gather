@@ -23,8 +23,6 @@ namespace VRT.UserRepresentation.Voice
             outQueue = _outQueue;
             decoder = new NSpeex.SpeexDecoder(NSpeex.BandMode.Wide);
             // playerFrequency = decoder.SampleRate;
-            Debug.Log($"{Name()}: Started.");
-
             Start();
         }
 
@@ -32,7 +30,6 @@ namespace VRT.UserRepresentation.Voice
         {
             base.AsyncOnStop();
             outQueue.Close();
-            Debug.Log($"{Name()}: Stopped");
         }
 
         float[] temporalBuffer;
@@ -40,7 +37,6 @@ namespace VRT.UserRepresentation.Voice
         NTPTools.NTPTime tempTime;
         protected override void AsyncUpdate()
         {
-            base.AsyncUpdate();
             // Wipe out the inQueue for initial burst.
             NativeMemoryChunk mcIn = (NativeMemoryChunk)inQueue.Dequeue();
             if(inQueue._Count > 100){

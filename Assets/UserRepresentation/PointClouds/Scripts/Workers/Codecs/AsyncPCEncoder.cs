@@ -120,7 +120,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base(1)
+        public AsyncPCEncoder(QueueThreadSafe _inQueue, EncoderStreamDescription[] _outputs) : base()
         {
             nParallel = VRT.Core.Config.Instance.PCs.encoderParallelism;
             if (_inQueue == null)
@@ -131,6 +131,7 @@ namespace VRT.UserRepresentation.PointCloud
             outputs = _outputs;
             int nOutputs = outputs.Length;
             encoderOutputs = new cwipc.encoder[nOutputs];
+            stats = new Stats(Name());
             try
             {
                 encoderGroup = cwipc.new_encodergroup();
@@ -154,19 +155,14 @@ namespace VRT.UserRepresentation.PointCloud
 
                 }
                 Start();
-                Debug.Log($"{Name()}: Inited");
             }
             catch (System.Exception e)
             {
                 Debug.Log($"{Name()}: Exception during constructor: {e.Message}");
                 throw;
             }
-            stats = new Stats(Name());
         }
-        public override string Name() {
-            return $"{GetType().Name}#{instanceNumber}";
-        }
-
+      
         protected override void Start()
         {
             base.Start();

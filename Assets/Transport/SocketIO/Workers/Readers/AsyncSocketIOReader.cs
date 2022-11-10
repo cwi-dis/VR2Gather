@@ -22,6 +22,7 @@ namespace VRT.Transport.SocketIO
 
         public AsyncSocketIOReader(User user, string remoteStream, string fourcc, AsyncSubPCReader.TileDescriptor[] descriptors) : base()
         {
+            NoUpdateCallsNeeded();
             this.user = user;
             if (descriptors == null)
             {
@@ -61,14 +62,6 @@ namespace VRT.Transport.SocketIO
               }
             )
         {
-            stats = new Stats(Name());
-        }
-
-        static int instanceCounter = 0;
-        int instanceNumber = instanceCounter++;
-        public override string Name()
-        {
-            return $"{GetType().Name}#{instanceNumber}";
         }
 
         public override void Stop()
@@ -77,10 +70,13 @@ namespace VRT.Transport.SocketIO
             for (int i = 0; i < descriptors.Length; ++i)
             {
                 descriptors[i].outQueue?.Close();
-                Debug.Log($"[FPA] {Name()}: Stopped.");
                 if (OrchestratorWrapper.instance != null && OrchestratorController.Instance.SelfUser != null)
                     OrchestratorWrapper.instance.UnregisterFromDataStream(OrchestratorController.Instance.SelfUser.userId, descriptors[i].name);
             }
+        }
+
+        protected override void AsyncUpdate()
+        {
         }
 
         private void OnDataPacketReceived(UserDataStreamPacket pPacket)

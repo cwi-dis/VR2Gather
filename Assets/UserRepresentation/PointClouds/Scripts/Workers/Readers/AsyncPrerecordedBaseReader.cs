@@ -58,6 +58,10 @@ namespace VRT.UserRepresentation.PointCloud
             _InitFromConfigFile(directory);
         }
 
+        protected override void AsyncUpdate()
+        {
+        }
+
         protected bool _InitFromConfigFile(string directory)
         {
             var configFilename = System.IO.Path.Combine(directory, "tileconfig.json");
@@ -83,10 +87,6 @@ namespace VRT.UserRepresentation.PointCloud
             return true;
         }
 
-        public override string Name()
-        {
-            return $"{GetType().Name}#{instanceNumber}";
-        }
         public override TileInfo[] getTiles()
         {
             return tileInfos;
@@ -247,12 +247,10 @@ namespace VRT.UserRepresentation.PointCloud
             if (outQueue != null && !outQueue.IsClosed()) outQueue.Close();
             outQueue = null;
             if (out2Queue != null && !out2Queue.IsClosed()) out2Queue.Close();
-            Debug.Log($"{Name()}: Stopped.");
         }
 
         protected override void AsyncUpdate() {
 
-            base.AsyncUpdate();
             //
             // Limit framerate, if required
             //
