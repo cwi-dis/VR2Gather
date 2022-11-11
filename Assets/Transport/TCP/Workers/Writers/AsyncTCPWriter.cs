@@ -101,13 +101,13 @@ namespace VRT.Transport.TCP
                         if (sendSocket == null)
                         {
 #if VRT_WITH_STATS
-                            BaseStats.Output(Name(), $"open=0, listen=1");
+                            Statistics.Statistics.Output(Name(), $"open=0, listen=1");
 #endif
                             try
                             {
                                 sendSocket = listenSocket.Accept();
 #if VRT_WITH_STATS
-                                BaseStats.Output(Name(), $"open=1, remote={sendSocket.RemoteEndPoint.ToString()}");
+                                Statistics.Statistics.Output(Name(), $"open=1, remote={sendSocket.RemoteEndPoint.ToString()}");
 #endif
                             }
                             catch(SocketException e)
@@ -146,7 +146,7 @@ namespace VRT.Transport.TCP
                             }
                             sendSocket = null;
 #if VRT_WITH_STATS
-                            BaseStats.Output(Name(), $"open=0");
+                            Statistics.Statistics.Output(Name(), $"open=0");
 #endif
                         }
                         catch(SocketException e)
@@ -158,7 +158,7 @@ namespace VRT.Transport.TCP
                                 sendSocket = null;
                             }
 #if VRT_WITH_STATS
-                            BaseStats.Output(Name(), $"open=0");
+                            Statistics.Statistics.Output(Name(), $"open=0");
 #endif
                         }
                     }
@@ -178,7 +178,7 @@ namespace VRT.Transport.TCP
             }
 
 #if VRT_WITH_STATS
-            protected class Stats : BaseStats
+            protected class Stats : Statistics.Statistics
             {
                 public Stats(string name) : base(name) { }
 
@@ -262,7 +262,7 @@ namespace VRT.Transport.TCP
                 int stream_number = i;
                 pusherThreads[i] = new TCPPushThread(this, descriptions[i]);
 #if VRT_WITH_STATS
-                BaseStats.Output(Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
+                Statistics.Statistics.Output(base.Name(), $"pusher={pusherThreads[i].Name()}, stream={i}, port={descriptions[i].port}");
 #endif
             }
             foreach (var t in pusherThreads)

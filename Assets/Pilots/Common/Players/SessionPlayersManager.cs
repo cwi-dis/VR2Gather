@@ -200,7 +200,7 @@ namespace VRT.Pilots.Common
 			}
 
 #if VRT_WITH_STATS
-			BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+            Statistics.Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 #endif
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)

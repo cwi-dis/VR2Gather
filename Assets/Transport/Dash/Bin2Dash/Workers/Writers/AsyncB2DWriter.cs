@@ -109,7 +109,7 @@ namespace VRT.Transport.Dash
                 int stream_number = i;
                 streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
 #if VRT_WITH_STATS
-                BaseStats.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+                Statistics.Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
 #endif
             }
             base.Start();
@@ -209,7 +209,7 @@ namespace VRT.Transport.Dash
 
 
 #if VRT_WITH_STATS
-            protected class Stats : BaseStats
+            protected class Stats : Statistics.Statistics
             {
                 public Stats(string name) : base(name) { }
 

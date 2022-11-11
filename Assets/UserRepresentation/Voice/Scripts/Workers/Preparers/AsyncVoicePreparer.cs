@@ -67,7 +67,7 @@ namespace VRT.UserRepresentation.Voice
             if (_synchronizer != null && Config.Instance.Voice.ignoreSynchronizer)
             {
 #if VRT_WITH_STATS
-                BaseStats.Output(Name(), "unsynchronized=1");
+                Statistics.Statistics.Output(base.Name(), "unsynchronized=1");
 #endif
                 _synchronizer = null;
             }
@@ -317,7 +317,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : BaseStats
+        protected class Stats : Statistics.Statistics
         {
             public Stats(string name) : base(name) { }
 

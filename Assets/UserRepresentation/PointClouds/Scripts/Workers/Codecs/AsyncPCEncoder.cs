@@ -256,7 +256,7 @@ namespace VRT.UserRepresentation.PointCloud
 
 
 #if VRT_WITH_STATS
-        protected class Stats : BaseStats {
+        protected class Stats : Statistics.Statistics {
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;

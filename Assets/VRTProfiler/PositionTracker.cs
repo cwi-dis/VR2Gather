@@ -36,7 +36,7 @@ namespace VRT.Profiler
             stats.statsUpdate(transform.position, transform.eulerAngles);
         }
 
-        protected class Stats : BaseStats
+        protected class Stats : Statistics.Statistics
         {
             public Stats(string name, double interval) : base(name, interval)
             {

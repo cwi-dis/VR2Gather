@@ -33,7 +33,7 @@ namespace VRT.Pilots.Common
                 return;
             }
 #if VRT_WITH_STATS
-            BaseStats.Output(Name(), $"output_dir={screenshotTargetDirectory}");
+            Statistics.Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
 #endif
             width = Screen.width;
             height = Screen.height;

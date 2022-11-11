@@ -330,7 +330,7 @@ namespace VRT.Core
 
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
 #if VRT_WITH_STATS
-            BaseStats.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
+            Statistics.Statistics.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
 
             stats = new Stats(Name());
 #endif
@@ -341,7 +341,7 @@ namespace VRT.Core
         {
         }
 #if VRT_WITH_STATS
-        protected class Stats : BaseStats
+        protected class Stats : Statistics.Statistics
         {
             public Stats(string name) : base(name) { }
 

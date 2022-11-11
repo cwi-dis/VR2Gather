@@ -87,7 +87,7 @@ namespace VRT.UserRepresentation.Voice
                 encoderName = codec.Name();
             }
 #if VRT_WITH_STATS
-            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+            Statistics.Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
 #endif
         }
 
@@ -131,7 +131,7 @@ namespace VRT.UserRepresentation.Voice
             }
 
 #if VRT_WITH_STATS
-            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+            Statistics.Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
 #endif
         }
 

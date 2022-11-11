@@ -183,7 +183,7 @@ namespace VRT.Core
             prOutputName = prOutputName.Replace(' ', '_');
             if (prOutputName == "") prOutputName = "none";
 #if VRT_WITH_STATS
-            BaseStats.Output("VRConfig", $"xrOutput={prOutputName}");
+            Statistics.Statistics.Output("VRConfig", $"xrOutput={prOutputName}");
 #endif
             
             // Do device-dependent initializations

@@ -29,11 +29,11 @@ namespace VRT.Core
         {
 #if VRT_WITH_STATS
             if(Input.GetKeyDown(key1))
-                BaseStats.Output("ManualAnnotator", msg1);
+                Statistics.Statistics.Output("ManualAnnotator", msg1);
             if(Input.GetKeyDown(key2))
-                BaseStats.Output("ManualAnnotator", msg2);
+                Statistics.Statistics.Output("ManualAnnotator", msg2);
             if(Input.GetKeyDown(key3))
-                BaseStats.Output("ManualAnnotator", msg3);
+                Statistics.Statistics.Output("ManualAnnotator", msg3);
 #endif
         }
     }

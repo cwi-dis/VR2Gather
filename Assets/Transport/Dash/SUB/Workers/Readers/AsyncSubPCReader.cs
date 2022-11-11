@@ -66,7 +66,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                 foreach (var sd in allStreamDescriptors)
                 {
-                    BaseStats.Output(Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, orientation={sd.orientation}");
+                    Statistics.Statistics.Output(base.Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, orientation={sd.orientation}");
                 }
 #endif
                 _recomputeStreams();
@@ -89,7 +89,7 @@ namespace VRT.Transport.Dash
                 if (qualityIndex >= 0)
                 {
 #if VRT_WITH_STATS
-                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
+                    Statistics.Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
 #endif
                     bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
@@ -101,7 +101,7 @@ namespace VRT.Transport.Dash
                 else
                 {
 #if VRT_WITH_STATS
-                    BaseStats.Output(Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
+                    Statistics.Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
 #endif
                     bool ok = subHandle.disable_stream(tileIndex);
                     if (!ok)

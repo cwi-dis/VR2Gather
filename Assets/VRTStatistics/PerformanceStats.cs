@@ -21,7 +21,7 @@ namespace VRT.Statistics
         }
 
  
-        protected class Stats : BaseStats
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name)
             {

@@ -228,7 +228,7 @@ namespace VRT.Core
                         Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
 #if VRT_WITH_STATS
-                    VRT.Statistics.BaseStats.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
+                    VRT.Statistics.Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
 #endif
                 }
                 return _Instance;

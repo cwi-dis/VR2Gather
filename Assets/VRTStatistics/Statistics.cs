@@ -4,7 +4,25 @@ using System;
 namespace VRT.Statistics
 {
 #if VRT_WITH_STATS
-    public class BaseStats
+    /// <summary>
+    /// Gathering statistics during a run to allow later analysis.
+    /// All statistics records consist of lines starting with "stats:" followed by name=value pairs.
+    /// Each statistics record has some common fields: a field seqno= which gives the sequence number and a field ts= which
+    /// gives the number of seconds since midnight, on this machines clock. Most statistics records had
+    /// a component= field that gives the name of the object responsible for creating this statiscs record.
+    ///
+    /// Statistics records can be output every moment a new value is available (usually every Update call)
+    /// or aggregated over some period of time (default: 10 seconds).
+    ///
+    /// The Statistics class can be subclassed in an object implementation, and it is also possible to use
+    /// the 
+    ///
+    /// Statistics records are sent to the Unity Log by default, or written to a separate statistics file.
+    ///
+    /// Repository <https://github.com/cwi-dis/VRTstatistics> has various tools to collect and agregate the statistics, plot
+    /// them, etc.
+    /// </summary>
+    public class Statistics
     {
         protected string name;
         private System.DateTime statsLastTime;
@@ -15,6 +33,12 @@ namespace VRT.Statistics
         private static System.IO.StreamWriter statsStream;
         private bool usesDefaultInterval;
 
+        /// <summary>
+        /// Call this static method early during initialization to configure Statistics logger.
+        /// </summary>
+        /// <param name="_defaultStatsInterval">Number of seconds over which statistics are aggregated</param>
+        /// <param name="statsOutputFile">Output file name</param>
+        /// <param name="append">If true append to the output file, otherwise overwrite</param>
         public static void Initialize(double _defaultStatsInterval = -1, string statsOutputFile = null, bool append = false)
         {
             if (initialized)
@@ -61,7 +85,13 @@ namespace VRT.Statistics
         {
             if (statsStream != null) statsStream.Flush();
         }
-        protected BaseStats(string _name, double interval = -1)
+
+        /// <summary>
+        /// Base class constructor, called by subclasses.
+        /// </summary>
+        /// <param name="_name">Name of the component to which this instance pertains</param>
+        /// <param name="interval">Number of seconds over which this instance aggregates</param>
+        protected Statistics(string _name, double interval = -1)
         {
             if (!initialized) Initialize();
             name = _name;
@@ -70,27 +100,43 @@ namespace VRT.Statistics
             statsLastTime = globalStatsLastTime;
         }
 
-        ~BaseStats()
+        ~Statistics()
         {
             DeInit();
         }
 
+        /// <summary>
+        /// Clear the aggregation buffers after outputting a statistics record.
+        /// </summary>
         protected void Clear()
         {
             statsLastTime = System.DateTime.Now;
             globalStatsLastTime = statsLastTime;
         }
 
+        /// <summary>
+        /// Duration of seconds (actual) of the current interval.
+        /// </summary>
+        /// <returns></returns>
         protected double Interval()
         {
             return (System.DateTime.Now - statsLastTime).TotalSeconds;
         }
 
+        /// <summary>
+        /// Return true if our interval is over and the subclass should output a statistics record.
+        /// </summary>
+        /// <returns></returns>
         protected bool ShouldOutput()
         {
             return System.DateTime.Now > statsLastTime + System.TimeSpan.FromSeconds(statsInterval);
         }
 
+        /// <summary>
+        /// Output a single record for the Statistics object.
+        /// The parameter should only contain comma-separated name=value pairs, the common fields are automatically added.
+        /// </summary>
+        /// <param name="s">The statistics to output</param>
         protected void Output(string s)
         {
             Output(name, s);
@@ -99,7 +145,13 @@ namespace VRT.Statistics
         static object lockObj = new object();
         static int seq = 0;
 
-        // statis method, for use when only one or two stats lines are produced.
+        /// <summary>
+        /// Output a one-shot statistics line.
+        /// This is used most often to show mappings between things, for example how ts= timestamps map to NTP clocks,
+        /// or which renderer component uses which preparer component. The standard fields are automatically included.
+        /// </summary>
+        /// <param name="name">Name of the component outputting the record</param>
+        /// <param name="s">The name=value string</param>
         public static void Output(string name, string s)
         {
             if (!initialized) Initialize();
