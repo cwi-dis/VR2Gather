@@ -8,7 +8,7 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.UserRepresentation.Voice
@@ -115,7 +115,7 @@ namespace VRT.UserRepresentation.Voice
                 decoderName = codec.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
 #endif
         }
 
@@ -158,7 +158,7 @@ namespace VRT.UserRepresentation.Voice
             preparer = new AsyncVoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"encoded={audioIsEncoded}");
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}");
 #endif
         }
 
@@ -230,7 +230,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 

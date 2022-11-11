@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Core
@@ -183,7 +183,7 @@ namespace VRT.Core
             prOutputName = prOutputName.Replace(' ', '_');
             if (prOutputName == "") prOutputName = "none";
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("VRConfig", $"xrOutput={prOutputName}");
+            Statistics.Output("VRConfig", $"xrOutput={prOutputName}");
 #endif
             
             // Do device-dependent initializations

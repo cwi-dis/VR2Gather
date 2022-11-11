@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using System.Collections.Generic;
 using Cwipc;
@@ -94,7 +94,7 @@ namespace VRT.Transport.Dash
                     parent.clockCorrespondence.wallClockTime = now;
                     parent.clockCorrespondence.streamClockTime = frameInfo.timestamp;
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
+                    Statistics.Output(parent.Name(), $"guessed=1, stream_epoch={parent.clockCorrespondence.wallClockTime - parent.clockCorrespondence.streamClockTime}, stream_timestamp={parent.clockCorrespondence.streamClockTime}, wallclock_timestamp={parent.clockCorrespondence.wallClockTime}");
 #endif
                 }
                 // Convert clock values to wallclock
@@ -141,7 +141,7 @@ namespace VRT.Transport.Dash
             }
 
 #if VRT_WITH_STATS
-            protected class Stats : Statistics.Statistics
+            protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }
 
@@ -330,7 +330,7 @@ namespace VRT.Transport.Dash
                     {
                         msg += $", tile={perTileInfo[i].tileNumber}";
                     }
-                    Statistics.Statistics.Output(Name(), msg);
+                    Statistics.Output(Name(), msg);
 #endif
                 }
                 myThread = new System.Threading.Thread(ingestThreadRunner);
@@ -413,7 +413,7 @@ namespace VRT.Transport.Dash
             }
             clockCorrespondenceReceived = true;
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
+            Statistics.Output(Name(), $"guessed=0, stream_epoch_delta_ms={delta}, stream_epoch={epoch}, stream_timestamp={clockCorrespondence.streamClockTime}, wallclock_timestamp={clockCorrespondence.wallClockTime}");
 #endif
         }
 

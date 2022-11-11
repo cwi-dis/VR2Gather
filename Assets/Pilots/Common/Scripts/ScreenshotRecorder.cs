@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using System.IO;
 
@@ -33,7 +33,7 @@ namespace VRT.Pilots.Common
                 return;
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
+            Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
 #endif
             width = Screen.width;
             height = Screen.height;

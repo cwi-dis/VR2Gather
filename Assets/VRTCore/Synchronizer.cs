@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Core
@@ -176,7 +176,7 @@ namespace VRT.Core
             {
                 Debug.Log($"{Name()}: First synchronized frame produced");
 #if VRT_WITH_STATS
-                Stats.Output(Name(), "synchronised=1");
+                Statistics.Output(Name(), "synchronised=1");
 #endif
                 stableStreamsDetected = true;
             }
@@ -228,7 +228,7 @@ namespace VRT.Core
                 currentLatency = currentMinLatency = minLatency;
                 stableStreamsDetected = false;
 #if VRT_WITH_STATS
-                Stats.Output(Name(), "synchronised=0");
+                Statistics.Output(Name(), "synchronised=0");
 #endif
                 Debug.LogWarning($"{Name()}: lost synchronization");
             }
@@ -330,7 +330,7 @@ namespace VRT.Core
 
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
+            Statistics.Output(Name(), $"minLatency={minLatency}, maxLatency={maxLatency}, maxDecrease={latencyMaxDecrease}, maxIncrease={latencyMaxIncrease}, acceptDesync={acceptDesyncOnDataUnavailable}");
 
             stats = new Stats(Name());
 #endif
@@ -341,7 +341,7 @@ namespace VRT.Core
         {
         }
 #if VRT_WITH_STATS
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 

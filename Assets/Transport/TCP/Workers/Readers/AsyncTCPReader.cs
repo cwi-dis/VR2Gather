@@ -6,7 +6,7 @@ using UnityEngine;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Transport.Dash;
 
@@ -118,7 +118,7 @@ namespace VRT.Transport.TCP
                             portOffset = receiverInfo.portOffset;
                             IPEndPoint remoteEndpoint = new IPEndPoint(ipAddress, receiverInfo.port + portOffset);
 #if VRT_WITH_STATS
-                            Statistics.Statistics.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
+                            Statistics.Output(Name(), $"connected=0, destination={remoteEndpoint.ToString()}");
 #endif
                             socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                             try
@@ -133,7 +133,7 @@ namespace VRT.Transport.TCP
                                 continue;
                             }
 #if VRT_WITH_STATS
-                            Statistics.Statistics.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
+                            Statistics.Output(Name(), $"connected=1, destination={remoteEndpoint.ToString()}");
 #endif
                             Debug.Log($"{Name()}: Connect({remoteEndpoint}) succeeded");
                         }
@@ -203,7 +203,7 @@ namespace VRT.Transport.TCP
             }
 
 #if VRT_WITH_STATS
-            protected class Stats : Statistics.Statistics
+            protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }
 
@@ -326,7 +326,7 @@ namespace VRT.Transport.TCP
                         msg += $", tile={receivers[i].tileNumber}";
                     }
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(base.Name(), msg);
+                    Statistics.Output(base.Name(), msg);
 #endif
                 }
                 foreach (var t in threads)

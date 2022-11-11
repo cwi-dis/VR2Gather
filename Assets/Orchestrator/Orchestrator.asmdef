@@ -4,7 +4,7 @@
     "references": [
         "BestHTTP",
         "VRTCore",
-        "VRTStatistics"
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
 
@@ -82,7 +82,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 

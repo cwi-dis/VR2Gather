@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Core
@@ -29,11 +29,11 @@ namespace VRT.Core
         {
 #if VRT_WITH_STATS
             if(Input.GetKeyDown(key1))
-                Statistics.Statistics.Output("ManualAnnotator", msg1);
+                Statistics.Output("ManualAnnotator", msg1);
             if(Input.GetKeyDown(key2))
-                Statistics.Statistics.Output("ManualAnnotator", msg2);
+                Statistics.Output("ManualAnnotator", msg2);
             if(Input.GetKeyDown(key3))
-                Statistics.Statistics.Output("ManualAnnotator", msg3);
+                Statistics.Output("ManualAnnotator", msg3);
 #endif
         }
     }

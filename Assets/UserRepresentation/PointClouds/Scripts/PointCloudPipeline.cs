@@ -6,7 +6,7 @@ using UnityEngine;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
@@ -110,7 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
                     var PCSelfConfig = cfg.PCSelfConfig;
                     if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+                    Statistics.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
 #endif
                     //
                     // Create renderer and preparer for self-view.
@@ -312,7 +312,7 @@ namespace VRT.UserRepresentation.PointCloud
                             throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                         }
 #if VRT_WITH_STATS
-                        Statistics.Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
+                        Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
 #endif
                     }
                     break;
@@ -377,7 +377,7 @@ namespace VRT.UserRepresentation.PointCloud
 
                 case "remote":
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(Name(), $"self=0, userid={user.userId}");
+                    Statistics.Output(Name(), $"self=0, userid={user.userId}");
 #endif
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need
@@ -453,7 +453,7 @@ namespace VRT.UserRepresentation.PointCloud
                     tileNumber = tileNumbers[i]
                 };
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
+                Statistics.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
 #endif
             };
             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
@@ -473,7 +473,7 @@ namespace VRT.UserRepresentation.PointCloud
                 synchronizerName = synchronizer.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
+            Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
 #endif
         }
 
@@ -493,7 +493,7 @@ namespace VRT.UserRepresentation.PointCloud
                 msg += $", tile={curTile}";
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), msg);
+            Statistics.Output(Name(), msg);
 #endif
             renderers.Add(render);
             render.SetPreparer(preparer);
@@ -540,7 +540,7 @@ namespace VRT.UserRepresentation.PointCloud
                 preparer?.StopAndWait();
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output(Name(), $"finished=1");
+            Statistics.Output(Name(), $"finished=1");
 #endif
         }
 

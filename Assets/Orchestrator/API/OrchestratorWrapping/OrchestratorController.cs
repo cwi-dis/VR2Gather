@@ -28,7 +28,7 @@ using System.Text;
 using UnityEngine;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Orchestrator.Wrapping
@@ -195,7 +195,7 @@ namespace VRT.Orchestrator.Wrapping
             if (mySession != null) {
                 Collect_SFU_Logs(mySession.sessionId);
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
+                Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
 #endif
             }
             _OptionalStopOnLeave();
@@ -381,7 +381,7 @@ namespace VRT.Orchestrator.Wrapping
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
+            Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
 #endif
             if (OnGetNTPTimeEvent == null) Debug.LogWarning("OrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
@@ -427,7 +427,7 @@ namespace VRT.Orchestrator.Wrapping
 
             Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
 #endif
             // success
             mySession = session;
@@ -854,12 +854,12 @@ namespace VRT.Orchestrator.Wrapping
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
 #endif
                 if (Config.Instance.AutoStart.autoLeaveAfter > 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
 #endif
                     Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
                 }

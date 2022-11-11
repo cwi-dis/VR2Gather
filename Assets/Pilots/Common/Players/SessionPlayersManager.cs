@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
@@ -200,7 +200,7 @@ namespace VRT.Pilots.Common
 			}
 
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+            Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 #endif
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)

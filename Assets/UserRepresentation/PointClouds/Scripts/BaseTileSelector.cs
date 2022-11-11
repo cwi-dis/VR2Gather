@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using System;
 using System.Linq;
@@ -135,7 +135,7 @@ namespace VRT.UserRepresentation.PointCloud
                     statMsg += $", tile{i}={selectedTileQualities[i]}";
                 }
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output(Name(), statMsg);
+                Statistics.Output(Name(), statMsg);
 #endif
             }
 #if XXXSHISHIR_REMOVED

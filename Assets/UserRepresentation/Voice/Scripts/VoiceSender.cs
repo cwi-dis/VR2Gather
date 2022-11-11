@@ -8,7 +8,7 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.UserRepresentation.Voice
@@ -87,7 +87,7 @@ namespace VRT.UserRepresentation.Voice
                 encoderName = codec.Name();
             }
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
 #endif
         }
 
@@ -131,7 +131,7 @@ namespace VRT.UserRepresentation.Voice
             }
 
 #if VRT_WITH_STATS
-            Statistics.Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
 #endif
         }
 

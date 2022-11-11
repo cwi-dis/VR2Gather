@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Profiler
@@ -36,7 +36,7 @@ namespace VRT.Profiler
             stats.statsUpdate(transform.position, transform.eulerAngles);
         }
 
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name, double interval) : base(name, interval)
             {

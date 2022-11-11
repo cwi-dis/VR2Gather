@@ -4,7 +4,7 @@ using System.IO;
 using UnityEngine;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
 
@@ -109,7 +109,7 @@ namespace VRT.Transport.Dash
                 int stream_number = i;
                 streamPushers[i] = new B2DPusher(this, i, descriptions[i]);
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
+                Statistics.Output(Name(), $"pusher={streamPushers[i].Name()}, tile={descriptions[i].tileNumber}, orientation={descriptions[i].orientation}");
 #endif
             }
             base.Start();
@@ -209,7 +209,7 @@ namespace VRT.Transport.Dash
 
 
 #if VRT_WITH_STATS
-            protected class Stats : Statistics.Statistics
+            protected class Stats : Statistics
             {
                 public Stats(string name) : base(name) { }
 

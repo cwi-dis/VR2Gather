@@ -5,7 +5,7 @@ using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
 

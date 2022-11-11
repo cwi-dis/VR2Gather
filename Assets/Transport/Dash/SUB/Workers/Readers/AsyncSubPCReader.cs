@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using VRT.Core;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 namespace VRT.Transport.Dash
 {
@@ -66,7 +66,7 @@ namespace VRT.Transport.Dash
 #if VRT_WITH_STATS
                 foreach (var sd in allStreamDescriptors)
                 {
-                    Statistics.Statistics.Output(base.Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, orientation={sd.orientation}");
+                    Statistics.Output(base.Name(), $"stream_index={sd.streamIndex}, tile={sd.tileNumber}, orientation={sd.orientation}");
                 }
 #endif
                 _recomputeStreams();
@@ -89,7 +89,7 @@ namespace VRT.Transport.Dash
                 if (qualityIndex >= 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
+                    Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=1, tileIndex={tileIndex}, qualityIndex={qualityIndex}");
 #endif
                     bool ok = subHandle.enable_stream(tileIndex, qualityIndex);
                     if (!ok)
@@ -101,7 +101,7 @@ namespace VRT.Transport.Dash
                 else
                 {
 #if VRT_WITH_STATS
-                    Statistics.Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
+                    Statistics.Output(base.Name(), $"tile={tileNumber}, reader_enabled=0, tileIndex={tileIndex}");
 #endif
                     bool ok = subHandle.disable_stream(tileIndex);
                     if (!ok)

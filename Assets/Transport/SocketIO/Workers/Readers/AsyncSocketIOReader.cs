@@ -8,7 +8,7 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Transport.SocketIO
@@ -119,7 +119,7 @@ namespace VRT.Transport.SocketIO
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 namespace VRT.Core
 {
@@ -228,7 +228,7 @@ namespace VRT.Core
                         Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
 #if VRT_WITH_STATS
-                    VRT.Statistics.Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
+                    Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
 #endif
                 }
                 return _Instance;

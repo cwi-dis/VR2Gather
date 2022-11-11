@@ -8,7 +8,7 @@ using VRT.Orchestrator.Wrapping;
 using VRT.Core;
 using Cwipc;
 #if VRT_WITH_STATS
-using VRT.Statistics;
+using Statistics = Cwipc.Statistics;
 #endif
 
 namespace VRT.Transport.SocketIO
@@ -35,7 +35,7 @@ namespace VRT.Transport.SocketIO
             {
                 streams[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
 #if VRT_WITH_STATS
-                Statistics.Statistics.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
+                Statistics.Output(Name(), $"streamid={i}, tile={streams[i].tileNumber}, orientation={streams[i].orientation}, streamname={streams[i].name}");
 #endif
                 OrchestratorWrapper.instance.DeclareDataStream(streams[i].name);
             }
@@ -104,7 +104,7 @@ namespace VRT.Transport.SocketIO
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : Statistics.Statistics
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
-namespace VRT.Statistics
+namespace VRT.Core
 {
 #if VRT_WITH_STATS
     public class PerformanceStats : MonoBehaviour
