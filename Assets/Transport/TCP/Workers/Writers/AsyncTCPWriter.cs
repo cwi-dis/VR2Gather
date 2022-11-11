@@ -4,7 +4,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -17,9 +16,16 @@ namespace VRT.Transport.TCP
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
+    /// <summary>
+    /// Class that writes frames over TCP using a very simple protocol.
+    /// This object (the writer) is the server side, <seealso cref="AsyncTCPReader"/> for
+    /// the receiver side and for a description of the no-frills protocol used.
+    ///
+    /// The class supports sending tiled streams, by creating multiple servers (on increasing port numbers).
+    /// </summary>
     public class AsyncTCPWriter : AsyncWriter
     {
-        public struct TCPStreamDescription
+        protected struct TCPStreamDescription
         {
             public string host;
             public int port;
@@ -32,7 +38,7 @@ namespace VRT.Transport.TCP
 
         TCPStreamDescription[] descriptions;
 
-        public class TCPPushThread
+        protected class TCPPushThread
         {
             AsyncTCPWriter parent;
             TCPStreamDescription description;
@@ -209,6 +215,14 @@ namespace VRT.Transport.TCP
  
         TCPPushThread[] pusherThreads;
 
+        /// <summary>
+        /// Create a frame server (or a set of frame server for multi-tile usage).
+        /// The URL should be of the form tcp://host:port with host being the name of the local
+        /// interface on which the server should serve. Can be 0.0.0.0 on most operating systems.
+        /// </summary>
+        /// <param name="_url">Where the server should ser on</param>
+        /// <param name="fourcc">4CC media type</param>
+        /// <param name="_descriptions">Array of stream descriptions</param>
         public AsyncTCPWriter(string _url, string fourcc, AsyncB2DWriter.DashStreamDescription[] _descriptions) : base()
         {
             NoUpdateCallsNeeded();

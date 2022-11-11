@@ -16,11 +16,18 @@ namespace VRT.Transport.TCP
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
+    /// <summary>
+    /// Implementation of AsyncReader that connects to a TCP socket on a remote machine and receives
+    /// frames from that socket using a very simple protocol:
+    /// Each frame starts with a 16-byte header: 4 bytes 4CC, 4 bytes frame data length and 8 bytes timestamp. No
+    /// endianness conversion is done. After that we simply transmit the frame data bytes.
+    /// <seealso cref="AsyncTCPWriter"/>
+    /// </summary>
     public class AsyncTCPReader : AsyncReader
     {
 
         protected Uri url;
-        public class ReceiverInfo
+        protected class ReceiverInfo
         {
             public QueueThreadSafe outQueue;
             public string host;
@@ -35,7 +42,7 @@ namespace VRT.Transport.TCP
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        public class TCPPullThread
+        protected class TCPPullThread
         {
             AsyncTCPReader parent;
             Socket socket = null;
@@ -240,6 +247,12 @@ namespace VRT.Transport.TCP
 
         SyncConfig.ClockCorrespondence clockCorrespondence; // Allows mapping stream clock to wall clock
 
+        /// <summary>
+        /// Constructor that can be used by subclasses to create a multi-tile receiver.
+        /// The URL should be of the form tcp://host:port. Subsequent streams will increment the port number.
+        /// The subclass could initialize the receivers array and call Start().
+        /// </summary>
+        /// <param name="_url">The base URL for the streams</param>
         protected AsyncTCPReader(string _url) : base()
         {
             NoUpdateCallsNeeded();
@@ -265,6 +278,13 @@ namespace VRT.Transport.TCP
             }
         }
 
+        /// <summary>
+        /// Create a TCP reader (client).
+        /// The URL should be of the form tcp://host:post.
+        /// </summary>
+        /// <param name="_url">The server to connect to</param>
+        /// <param name="fourcc">The 4CC of the frames expected on the stream</param>
+        /// <param name="outQueue">The queue into which received frames will be deposited</param>
         public AsyncTCPReader(string _url, string fourcc, QueueThreadSafe outQueue) : this(_url)
         {
             lock (this)
