@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 #if VRT_WITH_STATS
 using VRT.Statistics;
 #endif

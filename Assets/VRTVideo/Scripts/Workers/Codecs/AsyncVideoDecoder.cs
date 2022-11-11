@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using VRT.Core;
-// TODO(FPA): Fix new Queue mode.
+using Cwipc;
 namespace VRT.Video
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;

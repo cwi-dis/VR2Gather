@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 #if VRT_WITH_STATS
 using VRT.Statistics;
 #endif

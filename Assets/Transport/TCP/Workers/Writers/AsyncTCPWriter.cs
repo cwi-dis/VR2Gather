@@ -8,6 +8,7 @@ using VRT.Core;
 #if VRT_WITH_STATS
 using VRT.Statistics;
 #endif
+using Cwipc;
 using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP

@@ -6,6 +6,7 @@ using UnityEngine;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+using Cwipc;
 #if VRT_WITH_STATS
 using VRT.Statistics;
 #endif
