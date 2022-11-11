@@ -10,6 +10,7 @@ using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
+using Cwipc;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame

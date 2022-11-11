@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using VRT.Core;
+using Cwipc;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
+using PointCloudRenderer = VRT.UserRepresentation.PointCloud.PointCloudRenderer;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }

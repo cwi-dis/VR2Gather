@@ -13,6 +13,7 @@ namespace VRT.Transport.Dash
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using SyncConfig = Cwipc.SyncConfig;
 
     public class AsyncB2DWriter : AsyncWriter
     {
