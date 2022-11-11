@@ -66,7 +66,7 @@ namespace VRT.UserRepresentation.Voice
                 Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            AsyncB2DWriter.DashStreamDescription[] b2dStreams = new AsyncB2DWriter.DashStreamDescription[1];
+            OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
 
             if (proto == Config.ProtocolType.Dash)

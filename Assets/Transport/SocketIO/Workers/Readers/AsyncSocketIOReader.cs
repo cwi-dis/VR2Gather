@@ -20,11 +20,11 @@ namespace VRT.Transport.SocketIO
 
     public class AsyncSocketIOReader : AsyncReader, ISocketReader
     {
-        AsyncSubPCReader.TileDescriptor[] descriptors;
+        IncomingTileDescriptor[] descriptors;
 
         User user;
 
-        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, AsyncSubPCReader.TileDescriptor[] descriptors) : base()
+        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, IncomingTileDescriptor[] descriptors) : base()
         {
             NoUpdateCallsNeeded();
             this.user = user;
@@ -59,9 +59,9 @@ namespace VRT.Transport.SocketIO
         : this(user,
             remoteStream,
             fourcc,
-              new AsyncSubPCReader.TileDescriptor[]
+              new IncomingTileDescriptor[]
               {
-                  new AsyncSubPCReader.TileDescriptor()
+                  new IncomingTileDescriptor()
                   {
                       outQueue = outQueue
                   }

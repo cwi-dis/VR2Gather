@@ -10,18 +10,10 @@ namespace VRT.Transport.Dash
 
     public class AsyncSubPCReader : AsyncSubReader
     {
+        protected IncomingTileDescriptor[] tileDescriptors;
+        protected IncomingStreamDescription[] allStreamDescriptors;
 
-        public struct TileDescriptor
-        {
-            public string name;
-            public QueueThreadSafe outQueue;
-            public int tileNumber;
-            public sub.StreamDescriptor[] streamDescriptors; // streams for this tile only
-        }
-        protected TileDescriptor[] tileDescriptors;
-        protected sub.StreamDescriptor[] allStreamDescriptors;
-
-        public AsyncSubPCReader(string _url, string _streamName, string fourcc, TileDescriptor[] _tileDescriptors)
+        public AsyncSubPCReader(string _url, string _streamName, string fourcc, IncomingTileDescriptor[] _tileDescriptors)
         : base(_url, _streamName)
         {
             lock (this)
@@ -33,7 +25,7 @@ namespace VRT.Transport.Dash
                 for (int ti = 0; ti < nTiles; ti++)
                 {
                     TileOrMediaInfo ri = new TileOrMediaInfo();
-                    TileDescriptor td = tileDescriptors[ti];
+                    IncomingTileDescriptor td = tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.tileNumber = td.tileNumber;
                     ri.outQueue = tileDescriptors[ti].outQueue;
@@ -126,10 +118,10 @@ namespace VRT.Transport.Dash
                 }
                 for (int i = 0; i < tileDescriptors.Length; i++)
                 {
-                    TileDescriptor td = tileDescriptors[i];
+                    IncomingTileDescriptor td = tileDescriptors[i];
                     TileOrMediaInfo ri = perTileInfo[i];
 
-                    List<sub.StreamDescriptor> streamDescriptorsPerTile = new List<sub.StreamDescriptor>();
+                    List<IncomingStreamDescription> streamDescriptorsPerTile = new List<IncomingStreamDescription>();
                     Debug.Log($"{Name()}: _recomputeStreams: tile {i}: tileNumber={td.tileNumber}: examine streamDescriptors for {allStreamDescriptors.Length} streams");
                     foreach (var sd in allStreamDescriptors)
                     {

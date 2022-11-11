@@ -112,8 +112,8 @@ namespace VRT.UserRepresentation.WebCam
                             throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            AsyncB2DWriter.DashStreamDescription[] dashStreamDescriptions = new AsyncB2DWriter.DashStreamDescription[1] {
-                                new AsyncB2DWriter.DashStreamDescription() {
+                            OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {
+                                new OutgoingStreamDescription() {
                                 tileNumber = 0,
                                 qualityIndex = 0,
                                 inQueue = writerQueue

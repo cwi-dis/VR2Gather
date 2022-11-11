@@ -56,8 +56,8 @@ public class VideoWebCam : MonoBehaviour {
         try {
             recorder = new AsyncWebCamReader(deviceName, width, height, fps, this, videoDataQueue);
             encoder  = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
-            AsyncB2DWriter.DashStreamDescription[] b2dStreams = new AsyncB2DWriter.DashStreamDescription[1] {
-                new AsyncB2DWriter.DashStreamDescription() {
+            OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1] {
+                new OutgoingStreamDescription() {
                     tileNumber = 0,
                     qualityIndex = 0,
                     inQueue = writerQueue

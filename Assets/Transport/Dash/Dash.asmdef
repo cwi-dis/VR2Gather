@@ -3,8 +3,7 @@
     "rootNamespace": "",
     "references": [
         "VRTCore",
-        "Cwipc",
-        "VRTStatistics"
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

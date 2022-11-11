@@ -34,7 +34,7 @@ namespace VRT.UserRepresentation.PointCloud
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
         AsyncPCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
-        AsyncB2DWriter.DashStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+        OutgoingStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
         TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
         User user;
         const bool debugTiling = false;
@@ -212,7 +212,7 @@ namespace VRT.UserRepresentation.PointCloud
                         Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                         encoderStreamDescriptions = new AsyncPCEncoder.EncoderStreamDescription[nStream];
-                        dashStreamDescriptions = new AsyncB2DWriter.DashStreamDescription[nStream];
+                        dashStreamDescriptions = new OutgoingStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
                         // For the TCP connections we want legth 1 leaky queues. For
@@ -239,7 +239,7 @@ namespace VRT.UserRepresentation.PointCloud
                                     tileNumber = it + minTileNum,
                                     outQueue = thisQueue
                                 };
-                                dashStreamDescriptions[i] = new AsyncB2DWriter.DashStreamDescription
+                                dashStreamDescriptions[i] = new OutgoingStreamDescription
                                 {
                                     tileNumber = (uint)(it + minTileNum),
                                     // quality = (uint)(100 * octreeBits + 75),
@@ -415,7 +415,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Create the right number of rendering pipelines
             //
 
-            AsyncSubPCReader.TileDescriptor[] tilesToReceive = new AsyncSubPCReader.TileDescriptor[nTileToReceive];
+            IncomingTileDescriptor[] tilesToReceive = new IncomingTileDescriptor[nTileToReceive];
 
             for (int i = 0; i < nTileToReceive; i++)
             {
@@ -447,7 +447,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // And collect the relevant information for the Dash receiver
                 //
-                tilesToReceive[i] = new AsyncSubPCReader.TileDescriptor()
+                tilesToReceive[i] = new IncomingTileDescriptor()
                 {
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]

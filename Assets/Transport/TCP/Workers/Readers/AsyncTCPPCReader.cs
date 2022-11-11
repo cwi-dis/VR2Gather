@@ -3,13 +3,12 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using VRT.Core;
-using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
     public class AsyncTCPPCReader : AsyncTCPReader
     {
-        public AsyncTCPPCReader(string _url, string fourcc, AsyncSubPCReader.TileDescriptor[] _tileDescriptors)
+        public AsyncTCPPCReader(string _url, string fourcc, IncomingTileDescriptor[] _tileDescriptors)
         : base(_url)
         {
             lock (this)
@@ -22,10 +21,10 @@ namespace VRT.Transport.TCP
                     ri.tileNumber = ti;
                     ri.host = url.Host;
                     ri.port = url.Port + _tileDescriptors[ti].tileNumber;
-                    AsyncSubPCReader.TileDescriptor td = _tileDescriptors[ti];
+                    IncomingTileDescriptor td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
-                    ri.fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+                    ri.fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
                     receivers[ti] = ri;
                 }
                 Start();

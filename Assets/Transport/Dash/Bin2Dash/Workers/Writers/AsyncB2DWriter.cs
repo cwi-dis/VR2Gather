@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
 using Cwipc;
+using VRT.Core;
 
 namespace VRT.Transport.Dash
 {
@@ -14,28 +14,21 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using SyncConfig = Cwipc.SyncConfig;
+    using OutgoingStreamDescription = VRT.Core.OutgoingStreamDescription;
 
     public class AsyncB2DWriter : AsyncWriter
     {
-        public struct DashStreamDescription
-        {
-            public string name;
-            public uint tileNumber;
-            public int qualityIndex;
-            public Vector3 orientation;
-            public QueueThreadSafe inQueue;
-        };
 
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
         public bin2dash.connection uploader;
         public string url;
-        DashStreamDescription[] descriptions;
+        OutgoingStreamDescription[] descriptions;
         B2DPusher[] streamPushers;
 
 
-        public AsyncB2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, DashStreamDescription[] _descriptions) : base()
+        public AsyncB2DWriter(string _url, string _streamName, string fourcc, int _segmentSize, int _segmentLife, OutgoingStreamDescription[] _descriptions) : base()
         {
             if (_descriptions == null || _descriptions.Length == 0)
             {
@@ -45,7 +38,7 @@ namespace VRT.Transport.Dash
             {
                 throw new System.Exception($"{Name()}: 4CC is \"{fourcc}\" which is not exactly 4 characters");
             }
-            uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+            uint fourccInt = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             descriptions = _descriptions;
             try
             {
@@ -162,10 +155,10 @@ namespace VRT.Transport.Dash
         {
             AsyncB2DWriter parent;
             int stream_index;
-            DashStreamDescription description;
+            OutgoingStreamDescription description;
             NativeMemoryChunk curBuffer = null;
 
-            public B2DPusher(AsyncB2DWriter _parent, int _stream_index, DashStreamDescription _description)
+            public B2DPusher(AsyncB2DWriter _parent, int _stream_index, OutgoingStreamDescription _description)
             {
                 parent = _parent;
                 stream_index = _stream_index;

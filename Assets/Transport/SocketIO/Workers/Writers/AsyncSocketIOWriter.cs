@@ -19,9 +19,9 @@ namespace VRT.Transport.SocketIO
 
     public class AsyncSocketIOWriter : AsyncWriter
     {
-        AsyncB2DWriter.DashStreamDescription[] streams;
+        OutgoingStreamDescription[] streams;
 
-        public AsyncSocketIOWriter(User user, string remoteStream, string fourcc, AsyncB2DWriter.DashStreamDescription[] streams) : base()
+        public AsyncSocketIOWriter(User user, string remoteStream, string fourcc, OutgoingStreamDescription[] streams) : base()
         {
             if (streams == null)
             {

@@ -102,10 +102,5 @@ namespace VRT.Transport.Dash
                 return null;
             return new connection(obj);
         }
-
-        static public uint VRT_4CC(char a, char b, char c, char d)
-        {
-            return (uint)(a << 24 | b << 16 | c << 8 | d);
-        }
     }
 }

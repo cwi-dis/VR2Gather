@@ -8,7 +8,6 @@ using Cwipc;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
@@ -296,7 +295,7 @@ namespace VRT.Transport.TCP
                         outQueue = outQueue,
                         host = url.Host,
                         port = url.Port,
-                        fourcc = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
+                        fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3])
                     },
                 };
                 Start();

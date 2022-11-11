@@ -74,15 +74,15 @@ public class TestPipeline : MonoBehaviour
         encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
         writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
         decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
-        AsyncSubPCReader.TileDescriptor[] tiles = new AsyncSubPCReader.TileDescriptor[1] {
-            new AsyncSubPCReader.TileDescriptor() {
+        IncomingTileDescriptor[] tiles = new IncomingTileDescriptor[1] {
+            new IncomingTileDescriptor() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }
         };
 
-        AsyncB2DWriter.DashStreamDescription[] streams = new AsyncB2DWriter.DashStreamDescription[1] {
-            new AsyncB2DWriter.DashStreamDescription(){
+        OutgoingStreamDescription[] streams = new OutgoingStreamDescription[1] {
+            new OutgoingStreamDescription(){
                 tileNumber = 0,
                 qualityIndex = 0,
                 inQueue = writerQueue

@@ -8,6 +8,8 @@ using Cwipc;
 
 namespace VRT.Transport.Dash
 {
+    using IncomingStreamDescription = VRT.Core.IncomingStreamDescription;
+
     public class sub
     {
         const int MAX_SUB_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
@@ -24,13 +26,7 @@ namespace VRT.Transport.Dash
             public uint totalHeight;
         }
 
-        public struct StreamDescriptor
-        {
-            public int streamIndex;
-            public int tileNumber;
-            public Vector3 orientation;
-        }
-
+      
         protected class _API
         {
 
@@ -144,14 +140,14 @@ namespace VRT.Transport.Dash
                 return streamDesc.MP4_4CC;
             }
 
-            public StreamDescriptor[] get_streams()
+            public IncomingStreamDescription[] get_streams()
             {
                 if (pointer == IntPtr.Zero)
                 {
                     UnityEngine.Debug.LogAssertion("sub.get_streams: called with pointer==null");
                 }
                 int nStreams = _API.sub_get_stream_count(pointer);
-                StreamDescriptor[] rv = new StreamDescriptor[nStreams];
+                IncomingStreamDescription[] rv = new IncomingStreamDescription[nStreams];
                 for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
                 {
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();

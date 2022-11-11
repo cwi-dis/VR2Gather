@@ -7,8 +7,8 @@ using UnityEngine;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
+using VRT.Core;
 using Cwipc;
-using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
 {
@@ -25,6 +25,8 @@ namespace VRT.Transport.TCP
     /// </summary>
     public class AsyncTCPWriter : AsyncWriter
     {
+   
+
         protected struct TCPStreamDescription
         {
             public string host;
@@ -223,7 +225,7 @@ namespace VRT.Transport.TCP
         /// <param name="_url">Where the server should ser on</param>
         /// <param name="fourcc">4CC media type</param>
         /// <param name="_descriptions">Array of stream descriptions</param>
-        public AsyncTCPWriter(string _url, string fourcc, AsyncB2DWriter.DashStreamDescription[] _descriptions) : base()
+        public AsyncTCPWriter(string _url, string fourcc, OutgoingStreamDescription[] _descriptions) : base()
         {
             NoUpdateCallsNeeded();
             if (_descriptions == null || _descriptions.Length == 0)
@@ -234,7 +236,7 @@ namespace VRT.Transport.TCP
             {
                 throw new System.Exception($"{Name()}: 4CC is \"{fourcc}\" which is not exactly 4 characters");
             }
-            uint fourccInt = bin2dash.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+            uint fourccInt = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
             Uri url = new Uri(_url);
             if (url.Scheme != "tcp" || url.Host == "" || url.Port <= 0)
             {
