@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.PointCloud
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPointCloudPreparer : AsyncPreparer, IPointcloudPreparer
+    public class AsyncPointCloudPreparer : AsyncPreparer, VRT.Core.IPointcloudPreparer
     {
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
