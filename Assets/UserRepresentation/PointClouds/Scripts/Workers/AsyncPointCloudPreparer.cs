@@ -119,7 +119,7 @@ namespace VRT.UserRepresentation.PointCloud
         public override void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
-            if (synchronizer)
+            if (synchronizer != null)
             {
                 Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();

@@ -11,7 +11,7 @@ namespace VRT.Core
 
     public abstract class AsyncPreparer : AsyncWorker, IPreparer
     {
-        protected Synchronizer synchronizer = null;
+        protected ISynchronizer synchronizer = null;
         protected QueueThreadSafe InQueue;
 
         public AsyncPreparer(QueueThreadSafe _InQueue) : base()
@@ -30,7 +30,7 @@ namespace VRT.Core
             return $"{GetType().Name}#{instanceNumber}";
         }
 
-        public virtual void SetSynchronizer(Synchronizer _synchronizer)
+        public virtual void SetSynchronizer(ISynchronizer _synchronizer)
         {
             synchronizer = _synchronizer;
        }

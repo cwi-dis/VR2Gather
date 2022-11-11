@@ -34,7 +34,7 @@ namespace VRT.UserRepresentation.Voice
         AsyncVoicePreparer preparer;
 
         [Tooltip("Object responsible for synchronizing playout")]
-        public Synchronizer synchronizer = null;
+        public ISynchronizer synchronizer = null;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
@@ -61,7 +61,7 @@ namespace VRT.UserRepresentation.Voice
 #endif
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<Synchronizer>();
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
             AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
@@ -101,7 +101,7 @@ namespace VRT.UserRepresentation.Voice
 
             preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";
-            if (synchronizer != null && synchronizer.enabled)
+            if (synchronizer != null && synchronizer.isEnabled())
             {
                 preparer.SetSynchronizer(synchronizer);
                 if (!Config.Instance.Voice.ignoreSynchronizer)
@@ -132,7 +132,7 @@ namespace VRT.UserRepresentation.Voice
 #endif
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<Synchronizer>();
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
             AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();

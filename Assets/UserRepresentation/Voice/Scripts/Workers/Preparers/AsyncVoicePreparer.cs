@@ -61,7 +61,7 @@ namespace VRT.UserRepresentation.Voice
             Start();
         }
 
-        public override void SetSynchronizer(Synchronizer _synchronizer)
+        public override void SetSynchronizer(ISynchronizer _synchronizer)
         {
             if (_synchronizer != null && Config.Instance.Voice.ignoreSynchronizer)
             {
@@ -94,7 +94,7 @@ namespace VRT.UserRepresentation.Voice
         public override void Synchronize()
         {
             // Synchronize playout for the current frame with other preparers (if needed)
-            if (synchronizer)
+            if (synchronizer != null)
             {
                 Timestamp earliestTimestamp = currentTimestamp;
                 if (earliestTimestamp == 0) earliestTimestamp = InQueue._PeekTimestamp();

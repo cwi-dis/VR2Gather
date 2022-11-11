@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Object responsible for tile quality adaptation algorithm")]
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
-        public Synchronizer synchronizer = null;
+        public ISynchronizer synchronizer = null;
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
         protected AsyncWorker reader;
@@ -78,7 +78,7 @@ namespace VRT.UserRepresentation.PointCloud
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<Synchronizer>();
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
             // xxxjack this links tileSelector for all instances, including self. Is that correct?
             // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
@@ -95,7 +95,7 @@ namespace VRT.UserRepresentation.PointCloud
                         // We disable the synchronizer for self. It serves
                         // no practical purpose and emits confusing stats: lines.
                         Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
-                        synchronizer.gameObject.SetActive(false);
+                        synchronizer.disable();
                         synchronizer = null;
                     }
                     if (tileSelector != null)
@@ -468,7 +468,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
             }
             string synchronizerName = "none";
-            if (synchronizer != null && synchronizer.enabled)
+            if (synchronizer != null && synchronizer.isEnabled())
             {
                 synchronizerName = synchronizer.Name();
             }
