@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.UserRepresentation.Voice
 {
