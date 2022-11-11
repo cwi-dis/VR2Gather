@@ -9,7 +9,7 @@ namespace VRT.Video
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public class AsyncVideoPreparer : AsyncPreparer
+    public class AsyncVideoPreparer : AsyncPreparer, IVideoPreparer
     {
         float[] circularAudioBuffer;
         int audioBufferSize;
@@ -132,13 +132,13 @@ namespace VRT.Video
             return didReadData;
         }
 
-        public int availableAudio { get; private set; }
+        private int availableAudio { get; set; }
         public int availableVideo { get; private set; }
-        public int freeAudio { get { return audioBufferSize - availableAudio; } }
-        public int freeVideo { get { return videoBufferSize - availableVideo; } }
+        private int freeAudio { get { return audioBufferSize - availableAudio; } }
+        private int freeVideo { get { return videoBufferSize - availableVideo; } }
 
         bool firstTime = true;
-        public bool GetAudioBuffer(float[] dst, int len)
+        public int GetAudioBuffer(float[] dst, int len)
         {
             if (firstTime && availableAudio >= len || !firstTime)
             {
@@ -166,12 +166,12 @@ namespace VRT.Video
                         readAudioPosition += len;
                     }
                     lock (this) { availableAudio -= len; }
-                    return true;
+                    return 0;
                 }
                 else
                     Debug.Log($"{Name()}: GetAudioBuffer: want {len} bytes but only {availableAudio} available");
             }
-            return false;
+            return len;
         }
 
         public System.IntPtr GetVideoPointer(int len)

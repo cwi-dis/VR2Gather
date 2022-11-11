@@ -9,7 +9,7 @@ namespace VRT.Core
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
 
-    public abstract class AsyncPreparer : AsyncWorker
+    public abstract class AsyncPreparer : AsyncWorker, IPreparer
     {
         protected Synchronizer synchronizer = null;
         protected QueueThreadSafe InQueue;
