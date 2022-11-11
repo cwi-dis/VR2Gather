@@ -6,6 +6,9 @@ using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.UserRepresentation.Voice
 {
@@ -226,7 +229,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : VRT.Core.BaseStats
+        protected class Stats : BaseStats
         {
             public Stats(string name) : base(name) { }
 

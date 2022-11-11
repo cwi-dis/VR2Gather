@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using VRT.Orchestrator.Wrapping;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.Pilots.Common
 {
@@ -52,7 +55,7 @@ namespace VRT.Pilots.Common
 			{
 				OnTrigger.Invoke();
 #if VRT_WITH_STATS
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+				BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
 #endif
 				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
 			}
@@ -63,7 +66,7 @@ namespace VRT.Pilots.Common
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
 #if VRT_WITH_STATS
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+				BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
 #endif
 
 				OnTrigger.Invoke();

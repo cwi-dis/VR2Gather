@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;

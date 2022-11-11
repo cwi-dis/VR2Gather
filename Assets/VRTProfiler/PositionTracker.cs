@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.Profiler
 {

@@ -4,7 +4,9 @@ using UnityEngine;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
 using VRT.Core;
+#if VRT_WITH_STATS
 using VRT.Statistics;
+#endif
 using Cwipc;
 
 public class VRTInitializer : MonoBehaviour

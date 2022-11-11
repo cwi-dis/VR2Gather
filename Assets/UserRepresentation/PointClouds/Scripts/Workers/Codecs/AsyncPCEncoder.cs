@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
@@ -253,7 +256,7 @@ namespace VRT.UserRepresentation.PointCloud
 
 
 #if VRT_WITH_STATS
-        protected class Stats : VRT.Core.BaseStats {
+        protected class Stats : BaseStats {
             public Stats(string name) : base(name) { }
 
             double statsTotalPointclouds = 0;

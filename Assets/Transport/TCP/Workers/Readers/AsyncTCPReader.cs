@@ -4,6 +4,9 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 using VRT.Transport.Dash;
 
 namespace VRT.Transport.TCP
@@ -199,7 +202,7 @@ namespace VRT.Transport.TCP
             }
 
 #if VRT_WITH_STATS
-            protected class Stats : VRT.Core.BaseStats
+            protected class Stats : BaseStats
             {
                 public Stats(string name) : base(name) { }
 

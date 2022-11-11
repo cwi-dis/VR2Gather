@@ -6,7 +6,8 @@
         "Dash",
         "VRTCore",
         "Orchestrator",
-        "Cwipc"
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -10,7 +10,8 @@
         "UnityEngine.SpatialTracking",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
-        "Cwipc"
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

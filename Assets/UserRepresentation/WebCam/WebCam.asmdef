@@ -9,7 +9,8 @@
         "Orchestrator",
         "Voice",
         "VRTVideo",
-        "Cwipc"
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

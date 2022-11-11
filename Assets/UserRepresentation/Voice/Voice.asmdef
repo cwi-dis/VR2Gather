@@ -7,7 +7,8 @@
         "Orchestrator",
         "SocketIO",
         "TCP",
-        "Cwipc"
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

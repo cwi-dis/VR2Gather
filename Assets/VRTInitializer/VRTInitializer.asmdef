@@ -4,7 +4,9 @@
     "references": [
         "VRTCore",
         "VRTStatistics",
-        "Cwipc"
+        "Cwipc",
+        "PointClouds",
+        "WebCam"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

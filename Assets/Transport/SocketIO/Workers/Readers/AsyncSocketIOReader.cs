@@ -6,6 +6,9 @@ using UnityEngine;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.Transport.SocketIO
 {
@@ -115,7 +118,7 @@ namespace VRT.Transport.SocketIO
         }
 
 #if VRT_WITH_STATS
-        protected class Stats : VRT.Core.BaseStats
+        protected class Stats : BaseStats
         {
             public Stats(string name) : base(name) { }
 

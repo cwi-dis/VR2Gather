@@ -141,7 +141,7 @@ namespace VRT.Transport.Dash
             }
 
 #if VRT_WITH_STATS
-            protected class Stats : VRT.Core.BaseStats
+            protected class Stats : BaseStats
             {
                 public Stats(string name) : base(name) { }
 

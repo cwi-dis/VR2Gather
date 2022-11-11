@@ -6,6 +6,9 @@ using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+#if VRT_WITH_STATS
+using VRT.Statistics;
+#endif
 
 namespace VRT.UserRepresentation.Voice
 {
