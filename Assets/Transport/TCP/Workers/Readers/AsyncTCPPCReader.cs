@@ -3,10 +3,11 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Transport.TCP
 {
-    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+    using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
     public class AsyncTCPPCReader : AsyncTCPReader
     {

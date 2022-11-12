@@ -8,7 +8,7 @@ using Cwipc;
 
 namespace VRT.Transport.Dash
 {
-    using IncomingStreamDescription = VRT.Core.StreamSupport.IncomingStreamDescription;
+    using IncomingStreamDescription = Cwipc.StreamSupport.IncomingStreamDescription;
 
     public class sub
     {

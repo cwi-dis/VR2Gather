@@ -7,8 +7,8 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Transport.Dash
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
-    using IncomingStreamDescription = VRT.Core.StreamSupport.IncomingStreamDescription;
-    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+    using IncomingStreamDescription = Cwipc.StreamSupport.IncomingStreamDescription;
+    using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
     public class AsyncSubPCReader : AsyncSubReader
     {

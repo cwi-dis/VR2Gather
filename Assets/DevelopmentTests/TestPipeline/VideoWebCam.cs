@@ -7,7 +7,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
-using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
+using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;

@@ -13,8 +13,8 @@ using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 using Cwipc;
 using PointCloudRenderer = VRT.UserRepresentation.PointCloud.PointCloudRenderer;
-using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
-using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
+using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
 public class TestPipeline : MonoBehaviour
 {

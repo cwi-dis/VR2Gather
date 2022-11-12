@@ -16,8 +16,8 @@ using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
-    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+    using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
+    using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
     public class PointCloudPipeline : BasePipeline
     {

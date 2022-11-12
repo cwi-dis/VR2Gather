@@ -17,7 +17,7 @@ namespace VRT.Transport.SocketIO
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
-    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+    using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
     public class AsyncSocketIOReader : AsyncReader, ISocketReader
     {
