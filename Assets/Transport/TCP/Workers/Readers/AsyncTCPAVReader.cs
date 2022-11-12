@@ -1,9 +1,11 @@
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Transport.TCP
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using AsyncTCPReader = Cwipc.AsyncTCPReader;
 
     public class AsyncTCPAVReader : AsyncTCPReader
     {
