@@ -16,6 +16,9 @@ using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
+    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+
     public class PointCloudPipeline : BasePipeline
     {
         [Tooltip("Object responsible for tile quality adaptation algorithm")]
@@ -415,7 +418,7 @@ namespace VRT.UserRepresentation.PointCloud
             // Create the right number of rendering pipelines
             //
 
-            IncomingTileDescriptor[] tilesToReceive = new IncomingTileDescriptor[nTileToReceive];
+            IncomingTileDescription[] tilesToReceive = new IncomingTileDescription[nTileToReceive];
 
             for (int i = 0; i < nTileToReceive; i++)
             {
@@ -447,7 +450,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // And collect the relevant information for the Dash receiver
                 //
-                tilesToReceive[i] = new IncomingTileDescriptor()
+                tilesToReceive[i] = new IncomingTileDescription()
                 {
                     outQueue = decoderQueue,
                     tileNumber = tileNumbers[i]

@@ -16,6 +16,7 @@ namespace VRT.Transport.SocketIO
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
 
     public class AsyncSocketIOWriter : AsyncWriter
     {

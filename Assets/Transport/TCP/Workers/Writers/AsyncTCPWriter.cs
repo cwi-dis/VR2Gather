@@ -15,6 +15,7 @@ namespace VRT.Transport.TCP
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
 
     /// <summary>
     /// Class that writes frames over TCP using a very simple protocol.

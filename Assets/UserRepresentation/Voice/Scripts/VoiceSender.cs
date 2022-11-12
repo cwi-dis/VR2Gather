@@ -15,6 +15,7 @@ namespace VRT.UserRepresentation.Voice
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
 
     public class VoiceSender : MonoBehaviour
     {

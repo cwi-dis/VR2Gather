@@ -15,7 +15,8 @@ using VRT.Orchestrator.Wrapping;
 namespace VRT.UserRepresentation.WebCam
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
-    
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
+
     public class WebCamPipeline : BasePipeline
     {
         public int width = 1280;

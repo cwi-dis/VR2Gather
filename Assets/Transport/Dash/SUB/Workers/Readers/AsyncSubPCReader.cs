@@ -7,13 +7,15 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Transport.Dash
 {
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using IncomingStreamDescription = VRT.Core.StreamSupport.IncomingStreamDescription;
+    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
 
     public class AsyncSubPCReader : AsyncSubReader
     {
-        protected IncomingTileDescriptor[] tileDescriptors;
+        protected IncomingTileDescription[] tileDescriptors;
         protected IncomingStreamDescription[] allStreamDescriptors;
 
-        public AsyncSubPCReader(string _url, string _streamName, string fourcc, IncomingTileDescriptor[] _tileDescriptors)
+        public AsyncSubPCReader(string _url, string _streamName, string fourcc, IncomingTileDescription[] _tileDescriptors)
         : base(_url, _streamName)
         {
             lock (this)
@@ -25,7 +27,7 @@ namespace VRT.Transport.Dash
                 for (int ti = 0; ti < nTiles; ti++)
                 {
                     TileOrMediaInfo ri = new TileOrMediaInfo();
-                    IncomingTileDescriptor td = tileDescriptors[ti];
+                    IncomingTileDescription td = tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.tileNumber = td.tileNumber;
                     ri.outQueue = tileDescriptors[ti].outQueue;
@@ -118,7 +120,7 @@ namespace VRT.Transport.Dash
                 }
                 for (int i = 0; i < tileDescriptors.Length; i++)
                 {
-                    IncomingTileDescriptor td = tileDescriptors[i];
+                    IncomingTileDescription td = tileDescriptors[i];
                     TileOrMediaInfo ri = perTileInfo[i];
 
                     List<IncomingStreamDescription> streamDescriptorsPerTile = new List<IncomingStreamDescription>();

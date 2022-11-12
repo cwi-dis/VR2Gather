@@ -13,6 +13,8 @@ using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 using Cwipc;
 using PointCloudRenderer = VRT.UserRepresentation.PointCloud.PointCloudRenderer;
+using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
+using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
 
 public class TestPipeline : MonoBehaviour
 {
@@ -74,8 +76,8 @@ public class TestPipeline : MonoBehaviour
         encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
         writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
         decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
-        IncomingTileDescriptor[] tiles = new IncomingTileDescriptor[1] {
-            new IncomingTileDescriptor() {
+        IncomingTileDescription[] tiles = new IncomingTileDescription[1] {
+            new IncomingTileDescription() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }

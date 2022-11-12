@@ -17,14 +17,15 @@ namespace VRT.Transport.SocketIO
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
 
     public class AsyncSocketIOReader : AsyncReader, ISocketReader
     {
-        IncomingTileDescriptor[] descriptors;
+        IncomingTileDescription[] descriptors;
 
         User user;
 
-        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, IncomingTileDescriptor[] descriptors) : base()
+        public AsyncSocketIOReader(User user, string remoteStream, string fourcc, IncomingTileDescription[] descriptors) : base()
         {
             NoUpdateCallsNeeded();
             this.user = user;
@@ -59,9 +60,9 @@ namespace VRT.Transport.SocketIO
         : this(user,
             remoteStream,
             fourcc,
-              new IncomingTileDescriptor[]
+              new IncomingTileDescription[]
               {
-                  new IncomingTileDescriptor()
+                  new IncomingTileDescription()
                   {
                       outQueue = outQueue
                   }

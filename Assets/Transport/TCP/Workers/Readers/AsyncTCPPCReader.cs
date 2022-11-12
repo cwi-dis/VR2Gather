@@ -6,9 +6,11 @@ using VRT.Core;
 
 namespace VRT.Transport.TCP
 {
+    using IncomingTileDescription = VRT.Core.StreamSupport.IncomingTileDescription;
+
     public class AsyncTCPPCReader : AsyncTCPReader
     {
-        public AsyncTCPPCReader(string _url, string fourcc, IncomingTileDescriptor[] _tileDescriptors)
+        public AsyncTCPPCReader(string _url, string fourcc, IncomingTileDescription[] _tileDescriptors)
         : base(_url)
         {
             lock (this)
@@ -21,7 +23,7 @@ namespace VRT.Transport.TCP
                     ri.tileNumber = ti;
                     ri.host = url.Host;
                     ri.port = url.Port + _tileDescriptors[ti].tileNumber;
-                    IncomingTileDescriptor td = _tileDescriptors[ti];
+                    IncomingTileDescription td = _tileDescriptors[ti];
                     ri.tileDescriptor = td;
                     ri.outQueue = _tileDescriptors[ti].outQueue;
                     ri.fourcc = StreamSupport.VRT_4CC(fourcc[0], fourcc[1], fourcc[2], fourcc[3]);

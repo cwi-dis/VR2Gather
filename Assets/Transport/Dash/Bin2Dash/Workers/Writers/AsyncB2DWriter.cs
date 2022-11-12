@@ -14,7 +14,7 @@ namespace VRT.Transport.Dash
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using SyncConfig = Cwipc.SyncConfig;
-    using OutgoingStreamDescription = VRT.Core.OutgoingStreamDescription;
+    using OutgoingStreamDescription = VRT.Core.StreamSupport.OutgoingStreamDescription;
 
     public class AsyncB2DWriter : AsyncWriter
     {
