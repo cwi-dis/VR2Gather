@@ -10,7 +10,6 @@ using Statistics = Cwipc.Statistics;
 #endif
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
-using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 
@@ -73,10 +72,10 @@ namespace VRT.UserRepresentation.PointCloud
         {
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
             // tile (because it would mean that the other tiles with the same timestamp become useless)
-            if (Config.Instance.PCs.decoderQueueSizeOverride > 0) pcDecoderQueueSize = Config.Instance.PCs.decoderQueueSizeOverride;
+            if (CwipcConfig.Instance.decoderQueueSizeOverride > 0) pcDecoderQueueSize = CwipcConfig.Instance.decoderQueueSizeOverride;
             // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
             // largest conceivable latency needed by the Synchronizer.
-            if (Config.Instance.PCs.preparerQueueSizeOverride > 0) pcPreparerQueueSize = Config.Instance.PCs.preparerQueueSizeOverride;
+            if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -180,7 +179,7 @@ namespace VRT.UserRepresentation.PointCloud
                         //
                         // allocate and initialize per-stream outgoing stream datastructures
                         //
-                        string pointcloudCodec = Config.Instance.PCs.Codec;
+                        string pointcloudCodec = CwipcConfig.Instance.Codec;
                         var Encoders = PCSelfConfig.Encoders;
                         int minTileNum = 0;
                         int nTileToTransmit = 1;
@@ -406,7 +405,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreatePointcloudReader(int[] tileNumbers)
         {
-            string pointcloudCodec = Config.Instance.PCs.Codec;
+            string pointcloudCodec = CwipcConfig.Instance.Codec;
 
             int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
             if (nTileToReceive == 0)
@@ -482,7 +481,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
-            Config._PCs PCs = Config.Instance.PCs;
+            CwipcConfig PCs = CwipcConfig.Instance;
             if (PCs == null) throw new System.Exception($"{Name()}: missing PCs config");
             QueueThreadSafe preparerQueue = new QueueThreadSafe("PCPreparerQueue", pcPreparerQueueSize, false);
             preparerQueues.Add(preparerQueue);

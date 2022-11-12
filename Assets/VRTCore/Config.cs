@@ -84,21 +84,7 @@ namespace VRT.Core
         };
         public _Macintosh Macintosh;
 
-        [Serializable]
-        public class _PCs
-        {
-            public string Codec = "cwi1";
-            public float defaultCellSize;
-            public float cellSizeFactor;
-            public bool debugColorize;
-            public float timeoutBeforeGhosting = 5.0f;
-            public int decoderQueueSizeOverride = 0;
-            public int preparerQueueSizeOverride = 0;
-            public int encoderParallelism = 0;
-            public int decoderParallelism = 0;
-
-        };
-        public _PCs PCs;
+        public Cwipc.CwipcConfig PCs;
 
         [Serializable]
         public class _Voice
@@ -227,9 +213,11 @@ namespace VRT.Core
                     {
                         Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
+                    // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
                     Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
 #endif
+                    Cwipc.CwipcConfig.SetInstance(_Instance.PCs);
                 }
                 return _Instance;
             }

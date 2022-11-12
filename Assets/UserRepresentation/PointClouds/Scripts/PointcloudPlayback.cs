@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.UserRepresentation.Voice;
 using VRT.Core;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud

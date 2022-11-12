@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -14,6 +13,10 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class AsyncPCDecoder : AsyncWorker
     {
+        /// <summary>
+        /// Set this to true to colorize all points, making it easier to see where each tile is displayed.
+        /// </summary>
+        static public bool debugColorize = false;
         protected cwipc.decoder[] decoders;
         protected int nParallel = 1;
         protected int inDecoderIndex = 0;
@@ -22,12 +25,11 @@ namespace VRT.UserRepresentation.PointCloud
         protected QueueThreadSafe outQueue;
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
-        bool debugColorize = true;
         System.DateTime[] mostRecentFeeds;
 
         public AsyncPCDecoder(QueueThreadSafe _inQueue, QueueThreadSafe _outQueue) : base()
         {
-            nParallel = VRT.Core.Config.Instance.PCs.decoderParallelism;
+            nParallel = CwipcConfig.Instance.decoderParallelism;
             if (nParallel == 0) nParallel = 1;
             if (_inQueue == null)
             {
@@ -65,7 +67,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.Log($"{Name()}: Exception: {e.Message}");
                 throw;
             }
-            debugColorize = Config.Instance.PCs.debugColorize;
+            debugColorize = CwipcConfig.Instance.debugColorize;
         }
 
         public override string Name()

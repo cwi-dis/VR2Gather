@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif

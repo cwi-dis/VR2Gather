@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif

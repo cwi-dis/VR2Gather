@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
+using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -100,9 +100,9 @@ namespace VRT.UserRepresentation.PointCloud
             } 
             else
             {
-                if (now > lastDataReceived + (int)(Config.Instance.PCs.timeoutBeforeGhosting*1000) && !dataIsMissing)
+                if (now > lastDataReceived + (int)(CwipcConfig.Instance.timeoutBeforeGhosting*1000) && !dataIsMissing)
                 {
-                    Debug.Log($"{Name()}: No data for {Config.Instance.PCs.timeoutBeforeGhosting}, set pointsize=0.2");
+                    Debug.Log($"{Name()}: No data for {CwipcConfig.Instance.timeoutBeforeGhosting}, set pointsize=0.2");
                     block.SetFloat("_PointSizeFactor", 0.2f);
                     dataIsMissing = true;
                 }
