@@ -7,13 +7,14 @@ using Cwipc;
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
     public class AsyncPointCloudPreparer : AsyncPreparer, VRT.Core.IPointcloudPreparer
     {
+        const float allocationFactor = 1.3f; // Must be >= 1: How much size to allocate. Bigger means fewer re-allocations.
         bool isReady = false;
         Unity.Collections.NativeArray<byte> byteArray;
         System.IntPtr currentBuffer;
@@ -139,26 +140,26 @@ namespace VRT.UserRepresentation.PointCloud
         }
         public int GetComputeBuffer(ref ComputeBuffer computeBuffer)
         {
-            // xxxjack I don't understand this computation of size, the sizeof(float)*4 below and the byteArray.Length below that.
-            int size = currentSize / 16; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
+            const int sizeofPoint = sizeof(float) * 4;
+            int nPoints = currentSize / sizeofPoint; // Because every Point is a 16bytes sized, so I need to divide the buffer size by 16 to know how many points are.
             lock (this)
             {
-                if (isReady && size != 0)
+                if (isReady && nPoints != 0)
                 {
                     unsafe
                     {
-                        int dampedSize = (int)(size * Config.Instance.memoryDamping);
-                        if (computeBuffer == null || computeBuffer.count < dampedSize)
+                        if (computeBuffer == null || computeBuffer.count < nPoints)
                         {
+                            int dampedSize = (int)(nPoints * allocationFactor);
                             if (computeBuffer != null) computeBuffer.Release();
-                            computeBuffer = new ComputeBuffer(dampedSize, sizeof(float) * 4);
+                            computeBuffer = new ComputeBuffer(dampedSize, sizeofPoint);
                         }
-                        computeBuffer.SetData(byteArray, 0, 0, byteArray.Length);
+                        computeBuffer.SetData(byteArray, 0, 0, currentSize);
                     }
                     isReady = false;
                 }
             }
-            return size;
+            return nPoints;
         }
 
         public float GetPointSize()

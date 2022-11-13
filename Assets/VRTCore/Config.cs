@@ -26,7 +26,6 @@ namespace VRT.Core
         public string orchestratorLogURL = "";
         public bool openLogOnExit = true;
         public int targetFrameRate = -1; // system default framerate
-        public float memoryDamping = 1.3f;
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public readonly int audioSampleRate = 48000;
