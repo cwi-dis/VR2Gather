@@ -12,7 +12,7 @@ using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
 using Cwipc;
-using PointCloudRenderer = VRT.UserRepresentation.PointCloud.PointCloudRenderer;
+using PointCloudRenderer = Cwipc.PointCloudRenderer;
 using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
 
