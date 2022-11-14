@@ -1,28 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
 
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    // PrerecordedBaseReader reads pointclouds from .ply or .cwipcdump files.
-    //
-    // It contains the common code for two distinct use cases (subclasses):
-    // - PrerecordedLiveReader reads a single directory full of files, where each file may contain
-    // a pointcloud with multiple tiles. It is used to simulate a users' self-representation
-    // from a prerecorded set of pointclouds.
-    // - PrerecordedPlaybackReader reads a multilevel directory structure, with each tile and quality
-    // level is a distinct directory. It is meant for playback, not self-representation, for the
-    // quality-assessment experiments.
-    public class AsyncPrerecordedBaseReader : AsyncTiledWorker
+    /// <summary>
+    /// AsyncPrerecordedBaseReader reads pointclouds from .ply or .cwipcdump files.
+    ///
+    /// It contains the common code for two distinct use cases (subclasses):
+    /// - AsyncPrerecordedReader reads a single directory full of files, where each file may contain
+    /// a pointcloud with multiple tiles. It is used to simulate a users' self-representation
+    /// from a prerecorded set of pointclouds.
+    /// - AsyncPrerecordedPlaybackReader reads a multilevel directory structure, with each tile and quality
+    /// level is a distinct directory. It is meant for playback, not self-representation, for the
+    /// quality-assessment experiments.
+    ///
+    /// </summary>
+    public abstract class AsyncPrerecordedBaseReader : AsyncTiledWorker
     {
         [Serializable]
         public class _PrerecordedReaderConfig
@@ -90,6 +91,10 @@ namespace VRT.UserRepresentation.PointCloud
             return true;
         }
 
+        /// <summary>
+        /// Return array of available tiles.
+        /// </summary>
+        /// <returns></returns>
         public override TileInfo[] getTiles()
         {
             return tileInfos;
@@ -115,6 +120,7 @@ namespace VRT.UserRepresentation.PointCloud
                 tileReaders[i].setSubDir(newSubDir);
             }
         }
+
         public override void Stop()
         {
             base.Stop();
@@ -123,6 +129,15 @@ namespace VRT.UserRepresentation.PointCloud
                 tr.Stop();
             }
         }
+
+        /// <summary>
+        /// Report current timestamp to subclass.
+        ///
+        /// This is a gross hack. The prerecorded reader needs this information to report to the
+        /// selection code for the quality assessment experiment. Does not need to be implemented except for this special case.
+        /// </summary>
+        /// <param name="curIndex"></param>
+        abstract public void ReportCurrentTimestamp(Timestamp curIndex);
     }
 
     public class SharedCounter
@@ -282,8 +297,7 @@ namespace VRT.UserRepresentation.PointCloud
             curIndex = curIndex % filenames.Length;
             var nextFilename = System.IO.Path.Combine(dirname, subdir, filenames[curIndex]);
 
-            //xxxshishir set current position for tile selection
-            PrerecordedTileSelector.curIndex = curIndex;
+            parent.ReportCurrentTimestamp(curIndex);
 
             cwipc.pointcloud pc;
             if (parent.readPlyFiles)

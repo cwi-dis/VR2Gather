@@ -116,11 +116,11 @@ public class TestPipeline : MonoBehaviour
                 if (useCompression) pcQueue = encoderQueue;
                 if (prerecordedPointclouds != "")
                 {
-                    reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
+                    reader = new AsyncPrerecordedReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
                 }
                 else
                 {
-                    reader = new AsyncPCReader(targetFPS, numPoints, pcQueue);
+                    reader = new AsyncSyntheticReader(targetFPS, numPoints, pcQueue);
                 }
                 if (useCompression) {
 					AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
@@ -138,11 +138,11 @@ public class TestPipeline : MonoBehaviour
 				if (!useRemoteStream) {
                     if (prerecordedPointclouds != "")
                     {
-                        reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, encoderQueue);
+                        reader = new AsyncPrerecordedReader(prerecordedPointclouds, 0, targetFPS, encoderQueue);
                     }
                     else
                     {
-                        reader = new AsyncPCReader(targetFPS, numPoints, encoderQueue);
+                        reader = new AsyncSyntheticReader(targetFPS, numPoints, encoderQueue);
                     }
                     AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;

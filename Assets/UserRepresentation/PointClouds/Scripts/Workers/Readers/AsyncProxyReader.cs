@@ -4,9 +4,9 @@ using UnityEngine;
 using VRT.Core;
 using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
-    public class ProxyReader : AsyncPCReader
+    public class ProxyReader : AsyncPointcloudReader
     {
 
         public ProxyReader(string ip, int port, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)

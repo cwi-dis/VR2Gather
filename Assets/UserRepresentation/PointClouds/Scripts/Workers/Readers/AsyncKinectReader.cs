@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
-using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
-    public class K4AReader : AsyncPCReader
+    public class AsyncKinectReader : AsyncPointcloudReader
     {
 
-        public K4AReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
+        public AsyncKinectReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
         {
             voxelSize = _voxelSize;
             if (_frameRate > 0)

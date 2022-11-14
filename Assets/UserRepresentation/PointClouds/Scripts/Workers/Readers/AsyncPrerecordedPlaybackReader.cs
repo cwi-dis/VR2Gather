@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
+using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using Timestamp = System.Int64;
+    using Timedelta = System.Int64;
+
     public class PrerecordedPlaybackReader : AsyncPrerecordedBaseReader
     {
 
@@ -23,6 +26,12 @@ namespace VRT.UserRepresentation.PointCloud
                 qualityNames = qualitySubdirs,
                 predictionFilename = "tiledescription.csv"
             };
+        }
+
+        public override void ReportCurrentTimestamp(Timestamp curIndex)
+        {
+            //xxxshishir set current position for tile selection
+            PrerecordedTileSelector.curIndex = curIndex;
         }
     }
 }

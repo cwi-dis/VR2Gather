@@ -1,11 +1,9 @@
 ﻿using System;
 using UnityEngine;
-using VRT.Core;
-using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
-    public class PrerecordedLiveReader : AsyncPrerecordedBaseReader
+    public class AsyncPrerecordedReader : AsyncPrerecordedBaseReader
     {
         TileInfo[] tileInfo;
         [Serializable]
@@ -14,7 +12,7 @@ namespace VRT.UserRepresentation.PointCloud
             public TileInfo[] tileInfo;
         }
 
-        public PrerecordedLiveReader(string _dirname, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
+        public AsyncPrerecordedReader(string _dirname, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null)
         : base(_dirname, _voxelSize, _frameRate)
         {
         	newTimestamps = true;
@@ -46,6 +44,11 @@ namespace VRT.UserRepresentation.PointCloud
         public override TileInfo[] getTiles()
         {
             return tileInfo;
+        }
+
+        public override void ReportCurrentTimestamp(long curIndex)
+        {
+            return;
         }
     }
   

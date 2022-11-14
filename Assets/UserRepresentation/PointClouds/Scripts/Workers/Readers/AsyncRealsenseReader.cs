@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
-using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
-    public class RS2Reader : AsyncPCReader
+    public class AsyncRealsenseReader : AsyncPointcloudReader
     {
 
-        public RS2Reader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
+        public AsyncRealsenseReader(string _configFilename, float _voxelSize, float _frameRate, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
         {
             voxelSize = _voxelSize;
             if (_frameRate > 0)

@@ -134,14 +134,14 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                         if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                        pcReader = new RS2Reader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_CWIK4A_)
                     {
                         var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
                         if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                        pcReader = new K4AReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new AsyncKinectReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PROXY__)
@@ -156,7 +156,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nPoints = 0;
                         var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                         if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                        pcReader = new AsyncPCReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                        pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
 					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
@@ -166,7 +166,7 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
                         }
-                        pcReader = new PrerecordedLiveReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                        pcReader = new AsyncPrerecordedReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                         reader = pcReader;
                     }
                     else
@@ -553,7 +553,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetCrop called for pipeline that is not a source");
                 return;
             }
-            AsyncPCReader pcReader = reader as AsyncPCReader;
+            AsyncPointcloudReader pcReader = reader as AsyncPointcloudReader;
             if (pcReader == null)
             {
                 Debug.Log($"{Name()}: SetCrop: not a PCReader");

@@ -1,18 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
-using Cwipc;
 
-namespace VRT.UserRepresentation.PointCloud
+namespace Cwipc
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
-    public class AsyncPCReader : AsyncTiledWorker
+    public abstract class AsyncPointcloudReader : AsyncTiledWorker
     {
         protected cwipc.source reader;
         protected float voxelSize;
@@ -23,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
         protected bool dontWait = false;
         protected float[] bbox;
 
-        protected AsyncPCReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
+        protected AsyncPointcloudReader(QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base()
         {
             if (_outQueue == null)
             {
@@ -36,30 +34,6 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
         }
 
-        public AsyncPCReader(float _frameRate, int nPoints, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : this(_outQueue, _out2Queue)
-        {
-            voxelSize = 0;
-            if (_frameRate > 0)
-            {
-                frameInterval = System.TimeSpan.FromSeconds(1 / _frameRate);
-            }
-            try
-            {
-                reader = cwipc.synthetic((int)_frameRate, nPoints);
-                if (reader != null)
-                {
-                    Start();
-                    Debug.Log("{Name()}: Started.");
-                }
-                else
-                    throw new System.Exception($"{Name()}: cwipc_synthetic could not be created"); // Should not happen, should throw exception
-            }
-            catch (System.Exception e)
-            {
-                Debug.Log($"{Name()}: Exception: {e.Message}");
-                throw;
-            }
-        }
 
         public override TileInfo[] getTiles()
         {
