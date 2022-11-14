@@ -553,7 +553,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetCrop called for pipeline that is not a source");
                 return;
             }
-            AsyncPointcloudReader pcReader = reader as AsyncPointcloudReader;
+            AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
             if (pcReader == null)
             {
                 Debug.Log($"{Name()}: SetCrop: not a PCReader");

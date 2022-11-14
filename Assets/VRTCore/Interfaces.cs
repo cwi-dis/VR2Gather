@@ -21,7 +21,7 @@ namespace VRT.Core
     /// <summary>
     /// Provide pointclouds to a renderer (or other consumer).
     /// </summary>
-    public interface IPointcloudPreparer : Cwipc.IPointcloudPreparer
+    public interface IPointCloudPreparer : Cwipc.IPointCloudPreparer
     {
      
     }

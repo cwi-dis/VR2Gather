@@ -5,7 +5,7 @@ using VRT.UserRepresentation.PointCloud;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-     public class PointcloudHeadFilter : MonoBehaviour
+     public class PointCloudHeadFilter : MonoBehaviour
     {
         public bool headOnly;
         public GameObject pc;

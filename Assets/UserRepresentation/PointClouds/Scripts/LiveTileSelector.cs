@@ -67,7 +67,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
-        protected override Vector3 getPointcloudPosition(long currentFrameNumber)
+        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }
