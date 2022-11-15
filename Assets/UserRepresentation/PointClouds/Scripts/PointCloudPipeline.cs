@@ -17,6 +17,7 @@ namespace VRT.UserRepresentation.PointCloud
 {
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
+    using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
 
     public class PointCloudPipeline : BasePipeline
     {
@@ -35,7 +36,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
-        AsyncPCEncoder.EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
+        EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
         OutgoingStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
         TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
         User user;
@@ -213,7 +214,7 @@ namespace VRT.UserRepresentation.PointCloud
                         int nStream = nQuality * nTileToTransmit;
                         Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
-                        encoderStreamDescriptions = new AsyncPCEncoder.EncoderStreamDescription[nStream];
+                        encoderStreamDescriptions = new EncoderStreamDescription[nStream];
                         dashStreamDescriptions = new OutgoingStreamDescription[nStream];
                         tilingConfig = new TilingConfig();
                         tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
@@ -235,7 +236,7 @@ namespace VRT.UserRepresentation.PointCloud
                                 int i = it * nQuality + iq;
                                 QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
                                 int octreeBits = Encoders[iq].octreeBits;
-                                encoderStreamDescriptions[i] = new AsyncPCEncoder.EncoderStreamDescription
+                                encoderStreamDescriptions[i] = new EncoderStreamDescription
                                 {
                                     octreeBits = octreeBits,
                                     tileNumber = it + minTileNum,

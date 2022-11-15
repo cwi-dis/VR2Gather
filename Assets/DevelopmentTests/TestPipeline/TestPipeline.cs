@@ -15,6 +15,7 @@ using Cwipc;
 using PointCloudRenderer = Cwipc.PointCloudRenderer;
 using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
+using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
 
 public class TestPipeline : MonoBehaviour
 {
@@ -123,7 +124,7 @@ public class TestPipeline : MonoBehaviour
                     reader = new AsyncSyntheticReader(targetFPS, numPoints, pcQueue);
                 }
                 if (useCompression) {
-					AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
+					EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
 					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
@@ -144,7 +145,7 @@ public class TestPipeline : MonoBehaviour
                     {
                         reader = new AsyncSyntheticReader(targetFPS, numPoints, encoderQueue);
                     }
-                    AsyncPCEncoder.EncoderStreamDescription[] encStreams = new AsyncPCEncoder.EncoderStreamDescription[1];
+                    EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
 					encStreams[0].tileNumber = tilenum;
 					encStreams[0].outQueue = writerQueue;
