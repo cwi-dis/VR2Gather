@@ -187,7 +187,7 @@ namespace VRT.UserRepresentation.PointCloud
                         Vector3[] tileNormals = null;
                         if (PCSelfConfig.tiled)
                         {
-                            AsyncTiledWorker.TileInfo[] tilesToTransmit = pcReader.getTiles();
+                            PointCloudTileDescription[] tilesToTransmit = pcReader.getTiles();
                             if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                             {
                                 minTileNum = 1;
@@ -350,7 +350,7 @@ namespace VRT.UserRepresentation.PointCloud
                     // and the correct number of qualities, and the qualities are organized so that earlier
                     // ones have lower utility and lower bandwidth than later ones.
                     //
-                    AsyncTiledWorker.TileInfo[] tileInfos = _reader.getTiles();
+                    PointCloudTileDescription[] tileInfos = _reader.getTiles();
                     if (tileInfos.Length != nTiles)
                     {
                         Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
