@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using VRT.UserRepresentation.PointCloud;
+﻿using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
