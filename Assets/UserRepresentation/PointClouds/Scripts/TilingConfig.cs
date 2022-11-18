@@ -4,22 +4,49 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    /// <summary>
+    /// Structure describing the available tiles, and what representations are available
+    /// for each tile, how "good" each representation is and how much bandwidth it uses.
+    /// </summary>
     [Serializable]
-    public struct TilingConfig
+    public struct PointCloudNetworkTileDescription
     {
+        /// <summary>
+        /// Structure describing a single tile.
+        /// </summary>
         [Serializable]
-        public struct TileInformation
+        public struct NetworkTileInformation
         {
-            public Vector3 orientation;     // relative to current position. (0,0,0) for directionless
+            /// <summary>
+            /// Orientation of the tile, relative to the centroid of the whole pointcloud.
+            /// (0,0,0) for directionless.
+            /// </summary>
+            public Vector3 orientation;
+            /// <summary>
+            /// Structure describing a single stream (within a tile).
+            /// </summary>
             [Serializable]
-            public struct QualityInformation
+            public struct NetworkQualityInformation
             {
-                public float bandwidthRequirement;     // How much bandwidth will this quality use?
-                public float representation;     // 0.0 is worst (nothing) 1.0 is best/
+                /// <summary>
+                /// Indication of how much bandwidth this stream requires.
+                /// </summary>
+                public float bandwidthRequirement;
+                /// <summary>
+                /// Indication of how "good" this stream is, visually. 0.0 is worst
+                /// quality, 1.0 is best quality. 
+                /// </summary>
+                public float representation;
             };
-            public QualityInformation[] qualities;     // At which qualities is this tile available?
+            /// <summary>
+            /// Streams available for this tile (at various quality levels)
+            /// </summary>
+            public NetworkQualityInformation[] qualities;
         };
-        public TileInformation[] tiles;
+        /// <summary>
+        /// All tiles for this aggregate pointcloud stream.
+        /// </summary>
+        public NetworkTileInformation[] tiles;
     };
 
     // Used only for Prerecorded: information allowing the tile selector to find

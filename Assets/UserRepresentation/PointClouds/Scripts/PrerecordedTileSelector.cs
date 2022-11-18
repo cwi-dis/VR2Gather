@@ -87,7 +87,7 @@ namespace VRT.UserRepresentation.PointCloud
             public float PCBBZCentroid;
         }
 
-        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, PointCloudNetworkTileDescription? tilingConfig)
         {
             if (tilingConfig != null)
             {

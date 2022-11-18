@@ -17,7 +17,7 @@ namespace VRT.UserRepresentation.PointCloud
         //
         double[][] guessedBandwidthUsageMatrix;
         
-        public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, PointCloudNetworkTileDescription _tilingConfig)
         {
 
             pipeline = _prerecordedPointcloud;

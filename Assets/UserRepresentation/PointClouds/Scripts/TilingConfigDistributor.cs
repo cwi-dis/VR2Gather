@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.PointCloud
         // in MessageForwarder that is part of the magic to make this work.
         public class TilingConfigMessage : BaseMessage
         {
-            public TilingConfig data;
+            public PointCloudNetworkTileDescription data;
         }
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
@@ -70,7 +70,7 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 return;
             }
-            TilingConfig tilingConfig = pipeline.GetTilingConfig();
+            PointCloudNetworkTileDescription tilingConfig = pipeline.GetTilingConfig();
             if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
             var data = new TilingConfigMessage { data = tilingConfig };
 
@@ -112,7 +112,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             // Give reveicedData.data to that PointCloudPipeline.
-            TilingConfig tilingConfig = receivedData.data;
+            PointCloudNetworkTileDescription tilingConfig = receivedData.data;
             if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
             pipeline.SetTilingConfig(tilingConfig);
         }

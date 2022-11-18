@@ -38,7 +38,7 @@ namespace VRT.UserRepresentation.PointCloud
         QueueThreadSafe encoderQueue;
         EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
         OutgoingStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
-        TilingConfig tilingConfig;  // Information on pointcloud tiling and quality levels
+        PointCloudNetworkTileDescription tilingConfig;  // Information on pointcloud tiling and quality levels
         User user;
         const bool debugTiling = false;
         // Mainly for debug messages:
@@ -187,7 +187,7 @@ namespace VRT.UserRepresentation.PointCloud
                         Vector3[] tileNormals = null;
                         if (PCSelfConfig.tiled)
                         {
-                            PointCloudTileDescription[] tilesToTransmit = pcReader.getTiles();
+                            Cwipc.PointCloudTileDescription[] tilesToTransmit = pcReader.getTiles();
                             if (tilesToTransmit != null && tilesToTransmit.Length > 1)
                             {
                                 minTileNum = 1;
@@ -216,8 +216,8 @@ namespace VRT.UserRepresentation.PointCloud
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                         encoderStreamDescriptions = new EncoderStreamDescription[nStream];
                         dashStreamDescriptions = new OutgoingStreamDescription[nStream];
-                        tilingConfig = new TilingConfig();
-                        tilingConfig.tiles = new TilingConfig.TileInformation[nTileToTransmit];
+                        tilingConfig = new PointCloudNetworkTileDescription();
+                        tilingConfig.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit];
                         // For the TCP connections we want legth 1 leaky queues. For
                         // DASH we want length 2 non-leaky queues.
                         bool e2tQueueDrop = false;
@@ -230,7 +230,7 @@ namespace VRT.UserRepresentation.PointCloud
                         for (int it = 0; it < nTileToTransmit; it++)
                         {
                             tilingConfig.tiles[it].orientation = tileNormals[it];
-                            tilingConfig.tiles[it].qualities = new TilingConfig.TileInformation.QualityInformation[nQuality];
+                            tilingConfig.tiles[it].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
                             for (int iq = 0; iq < nQuality; iq++)
                             {
                                 int i = it * nQuality + iq;
@@ -350,23 +350,23 @@ namespace VRT.UserRepresentation.PointCloud
                     // and the correct number of qualities, and the qualities are organized so that earlier
                     // ones have lower utility and lower bandwidth than later ones.
                     //
-                    PointCloudTileDescription[] tileInfos = _reader.getTiles();
+                    Cwipc.PointCloudTileDescription[] tileInfos = _reader.getTiles();
                     if (tileInfos.Length != nTiles)
                     {
                         Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
                     }
-                    tilingConfig = new TilingConfig();
-                    tilingConfig.tiles = new TilingConfig.TileInformation[nTiles];
+                    tilingConfig = new PointCloudNetworkTileDescription();
+                    tilingConfig.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
                     for (int i=0; i<nTiles; i++)
                     {
                         // Initialize per-tile information
-                        var ti = new TilingConfig.TileInformation();
+                        var ti = new PointCloudNetworkTileDescription.NetworkTileInformation();
                         tilingConfig.tiles[i] = ti;
                         ti.orientation = tileInfos[i].normal;
-                        ti.qualities = new TilingConfig.TileInformation.QualityInformation[nQualities];
+                        ti.qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQualities];
                         for (int j=0; j<nQualities; j++)
                         {
-                            ti.qualities[j] = new TilingConfig.TileInformation.QualityInformation();
+                            ti.qualities[j] = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation();
                             //
                             // Insert bullshit numbers: every next quality takes twice as much bandwidth
                             // and is more useful than the previous one
@@ -568,18 +568,18 @@ namespace VRT.UserRepresentation.PointCloud
             SetCrop(null);
         }
 
-        public TilingConfig GetTilingConfig()
+        public PointCloudNetworkTileDescription GetTilingConfig()
         {
             if (!isSource)
             {
                 Debug.LogError($"Programmer error: {Name()}: GetTilingConfig called for pipeline that is not a source");
-                return new TilingConfig();
+                return new PointCloudNetworkTileDescription();
             }
             // xxxjack we need to update the orientation vectors, or we need an extra call to get rotation parameters.
             return tilingConfig;
         }
 
-        public void SetTilingConfig(TilingConfig config)
+        public void SetTilingConfig(PointCloudNetworkTileDescription config)
         {
             if (isSource)
             {
