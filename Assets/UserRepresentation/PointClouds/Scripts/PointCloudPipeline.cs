@@ -18,6 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
     using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
 
     public class PointCloudPipeline : BasePipeline
     {

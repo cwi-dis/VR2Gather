@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using VRT.Core;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
+using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
+
     public class TilingConfigDistributor : BaseConfigDistributor
     {
         // Note there is an AddTypeIdMapping(420, typeof(TilingConfigDistributor.TilingConfigMessage))

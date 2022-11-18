@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-  
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
+
     public class LiveTileSelector : BaseTileSelector
     {
 

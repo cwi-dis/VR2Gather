@@ -20,6 +20,7 @@ using QualityAssesment;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
 
     public class PrerecordedTileSelector : BaseTileSelector
     {
