@@ -38,8 +38,8 @@ namespace VRT.UserRepresentation.PointCloud
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
         EncoderStreamDescription[] encoderStreamDescriptions; // octreeBits, tileNumber, queue encoder->writer
-        OutgoingStreamDescription[] dashStreamDescriptions;  // queue encoder->writer, tileNumber, quality
-        PointCloudNetworkTileDescription tilingConfig;  // Information on pointcloud tiling and quality levels
+        OutgoingStreamDescription[] outgoingStreamDescriptions;  // queue encoder->writer, tileNumber, quality
+        PointCloudNetworkTileDescription networkTileDescription;  // Information on pointcloud tiling and quality levels
         User user;
         const bool debugTiling = false;
         // Mainly for debug messages:
@@ -216,9 +216,11 @@ namespace VRT.UserRepresentation.PointCloud
                         Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
                         // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
                         encoderStreamDescriptions = new EncoderStreamDescription[nStream];
-                        dashStreamDescriptions = new OutgoingStreamDescription[nStream];
-                        tilingConfig = new PointCloudNetworkTileDescription();
-                        tilingConfig.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit];
+                        outgoingStreamDescriptions = new OutgoingStreamDescription[nStream];
+                        networkTileDescription = new PointCloudNetworkTileDescription()
+                        {
+                            tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit]
+                        };
                         // For the TCP connections we want legth 1 leaky queues. For
                         // DASH we want length 2 non-leaky queues.
                         bool e2tQueueDrop = false;
@@ -230,8 +232,8 @@ namespace VRT.UserRepresentation.PointCloud
                         }
                         for (int it = 0; it < nTileToTransmit; it++)
                         {
-                            tilingConfig.tiles[it].orientation = tileNormals[it];
-                            tilingConfig.tiles[it].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
+                            networkTileDescription.tiles[it].orientation = tileNormals[it];
+                            networkTileDescription.tiles[it].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
                             for (int iq = 0; iq < nQuality; iq++)
                             {
                                 int i = it * nQuality + iq;
@@ -243,7 +245,7 @@ namespace VRT.UserRepresentation.PointCloud
                                     tileNumber = it + minTileNum,
                                     outQueue = thisQueue
                                 };
-                                dashStreamDescriptions[i] = new OutgoingStreamDescription
+                                outgoingStreamDescriptions[i] = new OutgoingStreamDescription
                                 {
                                     tileNumber = (uint)(it + minTileNum),
                                     // quality = (uint)(100 * octreeBits + 75),
@@ -251,8 +253,8 @@ namespace VRT.UserRepresentation.PointCloud
                                     orientation = tileNormals[it],
                                     inQueue = thisQueue
                                 };
-                                tilingConfig.tiles[it].qualities[iq].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
-                                tilingConfig.tiles[it].qualities[iq].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
+                                networkTileDescription.tiles[it].qualities[iq].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
+                                networkTileDescription.tiles[it].qualities[iq].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
                             }
                         }
 
@@ -298,16 +300,16 @@ namespace VRT.UserRepresentation.PointCloud
                         {
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, outgoingStreamDescriptions);
                             }
                             else
                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, dashStreamDescriptions);
+                                writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
                             }
                             else
                             {
-                                writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, dashStreamDescriptions);
+                                writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                             }
                         }
                         catch (System.EntryPointNotFoundException e)
@@ -356,13 +358,13 @@ namespace VRT.UserRepresentation.PointCloud
                     {
                         Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
                     }
-                    tilingConfig = new PointCloudNetworkTileDescription();
-                    tilingConfig.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
+                    networkTileDescription = new PointCloudNetworkTileDescription();
+                    networkTileDescription.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
                     for (int i=0; i<nTiles; i++)
                     {
                         // Initialize per-tile information
                         var ti = new PointCloudNetworkTileDescription.NetworkTileInformation();
-                        tilingConfig.tiles[i] = ti;
+                        networkTileDescription.tiles[i] = ti;
                         ti.orientation = tileInfos[i].normal;
                         ti.qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQualities];
                         for (int j=0; j<nQualities; j++)
@@ -403,6 +405,11 @@ namespace VRT.UserRepresentation.PointCloud
             transform.localRotation = Quaternion.Euler(0, 0, 0);
 #endif
             return this;
+        }
+
+        private void _CreateDescriptionsForOutgoing(bool leaky)
+        {
+
         }
 
         private void _CreatePointcloudReader(int[] tileNumbers)
@@ -577,7 +584,7 @@ namespace VRT.UserRepresentation.PointCloud
                 return new PointCloudNetworkTileDescription();
             }
             // xxxjack we need to update the orientation vectors, or we need an extra call to get rotation parameters.
-            return tilingConfig;
+            return networkTileDescription;
         }
 
         public void SetTilingConfig(PointCloudNetworkTileDescription config)
@@ -587,22 +594,22 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
                 return;
             }
-            if (tilingConfig.tiles != null && tilingConfig.tiles.Length > 0)
+            if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
             {
                 //Debug.Log($"{Name()}: xxxjack ignoring second tilingConfig");
                 return;
             }
-            tilingConfig = config;
-            Debug.Log($"{Name()}: received tilingConfig with {tilingConfig.tiles.Length} tiles");
-            int[] tileNumbers = new int[tilingConfig.tiles.Length];
+            networkTileDescription = config;
+            Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
+            int[] tileNumbers = new int[networkTileDescription.tiles.Length];
             //
             // At some stage we made the decision that tilenumer 0 represents the whole untiled pointcloud.
             // So if we receive an untiled stream we want tile 0 only, and if we receive a tiled stream we
             // never want tile 0.
             //
-            int curTileNumber = tilingConfig.tiles.Length == 1 ? 0 : 1;
+            int curTileNumber = networkTileDescription.tiles.Length == 1 ? 0 : 1;
             int curTileIndex = 0;
-            foreach (var tile in tilingConfig.tiles)
+            foreach (var tile in networkTileDescription.tiles)
             {
                 tileNumbers[curTileIndex] = curTileNumber;
                 Debug.Log($"{Name()}: xxxjack tile: #qualities: {tile.qualities.Length}");
@@ -624,12 +631,12 @@ namespace VRT.UserRepresentation.PointCloud
                 //Debug.LogWarning($"{Name()}: no tileSelector");
                 return;
             }
-            if (tilingConfig.tiles == null || tilingConfig.tiles.Length == 0)
+            if (networkTileDescription.tiles == null || networkTileDescription.tiles.Length == 0)
             {
                 throw new System.Exception($"{Name()}: Programmer error: _initTileSelector with uninitialized tilingConfig");
             }
-            int nTiles = tilingConfig.tiles.Length;
-            int nQualities = tilingConfig.tiles[0].qualities.Length;
+            int nTiles = networkTileDescription.tiles.Length;
+            int nQualities = networkTileDescription.tiles[0].qualities.Length;
             if (nTiles <= 1 && nQualities <= 1)
             {
                 // Only single quality, single tile. Nothing to
@@ -639,7 +646,7 @@ namespace VRT.UserRepresentation.PointCloud
                 tileSelector = null;
             }
             // Sanity check: all tiles should have the same number of qualities
-            foreach (var t in tilingConfig.tiles)
+            foreach (var t in networkTileDescription.tiles)
             {
                 if (t.qualities.Length != nQualities)
                 {
@@ -653,14 +660,14 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError($"{Name()}: tileSelector is not a LiveTileSelector");
             }
-            ts?.Init(this, tilingConfig);
+            ts?.Init(this, networkTileDescription);
         }
 
         public void SelectTileQualities(int[] tileQualities)
         {
-            if (tileQualities.Length != tilingConfig.tiles.Length)
+            if (tileQualities.Length != networkTileDescription.tiles.Length)
             {
-                Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {tilingConfig.tiles.Length} tiles");
+                Debug.LogError($"{Name()}: SelectTileQualities: {tileQualities.Length} values but only {networkTileDescription.tiles.Length} tiles");
             }
             AsyncPrerecordedBaseReader _prreader = reader as AsyncPrerecordedBaseReader;
             if (_prreader != null)
