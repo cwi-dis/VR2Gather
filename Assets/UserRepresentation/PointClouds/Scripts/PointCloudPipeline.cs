@@ -19,6 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
+    using static VRT.Core.Config._User;
 
     public class PointCloudPipeline : BasePipeline
     {
@@ -72,13 +73,18 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
         public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
         {
+            //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
             // tile (because it would mean that the other tiles with the same timestamp become useless)
+            //
             if (CwipcConfig.Instance.decoderQueueSizeOverride > 0) pcDecoderQueueSize = CwipcConfig.Instance.decoderQueueSizeOverride;
+            //
             // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
             // largest conceivable latency needed by the Synchronizer.
+            //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
+
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
             {
@@ -92,295 +98,15 @@ namespace VRT.UserRepresentation.PointCloud
             }
             switch (cfg.sourceType)
             {
-                case "self": // old "rs2"
-                    isSource = true;
-                    if (synchronizer != null)
-                    {
-                        // We disable the synchronizer for self. It serves
-                        // no practical purpose and emits confusing stats: lines.
-                        Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
-                        synchronizer.disable();
-                        synchronizer = null;
-                    }
-                    if (tileSelector != null)
-                    {
-                        // We disable the tileSelector for self. It serves
-                        // no practical purpose.
-                        Debug.Log($"{Name()}: disabling {tileSelector.Name()} for self-view");
-                        tileSelector.gameObject.SetActive(false);
-                        tileSelector = null;
-                    }
-                    AsyncTiledWorker pcReader;
-                    var PCSelfConfig = cfg.PCSelfConfig;
-                    if (PCSelfConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig config");
+                case "self":
 #if VRT_WITH_STATS
-                    Statistics.Output(Name(),  $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+                    Statistics.Output(Name(), $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
 #endif
-                    //
-                    // Create renderer and preparer for self-view.
-                    //
-                    QueueThreadSafe selfPreparerQueue = _CreateRendererAndPreparer();
-
-                    //
-                    // Allocate queues we need for this sourceType
-                    //
-                    encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
-                    //
-                    // Ensure we can determine from the log file who this is.
-                    //
-
-                    //
-                    // Create reader
-                    //
-                    if (user.userData.userRepresentationType == UserRepresentationType.__PCC_CWI_) // PCSELF
-                    {
-                        var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
-                        if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                        pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                        reader = pcReader;
-                    }
-                    else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_CWIK4A_)
-                    {
-                        var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
-                        if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                        pcReader = new AsyncKinectReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                        reader = pcReader;
-                    }
-                    else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PROXY__)
-                    {
-                        var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
-                        if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
-                        pcReader = new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                        reader = pcReader;
-                    }
-                    else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_SYNTH__)
-                    {
-                        int nPoints = 0;
-                        var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
-                        if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
-                        pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
-                        reader = pcReader;
-                    }
-					else if (user.userData.userRepresentationType == UserRepresentationType.__PCC_PRERECORDED__)
-                    {
-                        var prConfig = PCSelfConfig.PrerecordedReaderConfig;
-                        if (prConfig.folder == null || prConfig.folder == "")
-                        {
-                            throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
-                        }
-                        pcReader = new AsyncPrerecordedReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
-                        reader = pcReader;
-                    }
-                    else
-                    {
-                        throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
-                    }
-
-                    if (!preview)
-                    {
-                        //
-                        // allocate and initialize per-stream outgoing stream datastructures
-                        //
-                        string pointcloudCodec = CwipcConfig.Instance.Codec;
-                        var Encoders = PCSelfConfig.Encoders;
-                        int minTileNum = 0;
-                        int nTileToTransmit = 1;
-                        Vector3[] tileNormals = null;
-                        if (PCSelfConfig.tiled)
-                        {
-                            Cwipc.PointCloudTileDescription[] tilesToTransmit = pcReader.getTiles();
-                            if (tilesToTransmit != null && tilesToTransmit.Length > 1)
-                            {
-                                minTileNum = 1;
-                                nTileToTransmit = tilesToTransmit.Length - 1;
-                                tileNormals = new Vector3[nTileToTransmit];
-                                for (int i = 0; i < tilesToTransmit.Length; i++)
-                                {
-                                    Debug.Log($"{Name()}: tiling sender: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
-                                    if (i >= minTileNum)
-                                    {
-                                        tileNormals[i - minTileNum] = tilesToTransmit[i].normal;
-                                    }
-                                }
-                            }
-                        }
-                        if (tileNormals == null)
-                        {
-                            tileNormals = new Vector3[1]
-                            {
-                            new Vector3(0, 0, 0)
-                            };
-                        }
-                        int nQuality = Encoders.Length;
-                        int nStream = nQuality * nTileToTransmit;
-                        Debug.Log($"{Name()}: tiling sender: minTile={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
-                        // xxxjack Unsure about C# array initialization: is what I do here and below in the loop correct?
-                        encoderStreamDescriptions = new EncoderStreamDescription[nStream];
-                        outgoingStreamDescriptions = new OutgoingStreamDescription[nStream];
-                        networkTileDescription = new PointCloudNetworkTileDescription()
-                        {
-                            tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit]
-                        };
-                        // For the TCP connections we want legth 1 leaky queues. For
-                        // DASH we want length 2 non-leaky queues.
-                        bool e2tQueueDrop = false;
-                        int e2tQueueSize = 2;
-                        if (Config.Instance.protocolType == Config.ProtocolType.TCP)
-                        {
-                            e2tQueueDrop = true;
-                            e2tQueueSize = 1;
-                        }
-                        for (int it = 0; it < nTileToTransmit; it++)
-                        {
-                            networkTileDescription.tiles[it].orientation = tileNormals[it];
-                            networkTileDescription.tiles[it].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
-                            for (int iq = 0; iq < nQuality; iq++)
-                            {
-                                int i = it * nQuality + iq;
-                                QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{it}_{iq}", e2tQueueSize, e2tQueueDrop);
-                                int octreeBits = Encoders[iq].octreeBits;
-                                encoderStreamDescriptions[i] = new EncoderStreamDescription
-                                {
-                                    octreeBits = octreeBits,
-                                    tileNumber = it + minTileNum,
-                                    outQueue = thisQueue
-                                };
-                                outgoingStreamDescriptions[i] = new OutgoingStreamDescription
-                                {
-                                    tileNumber = (uint)(it + minTileNum),
-                                    // quality = (uint)(100 * octreeBits + 75),
-                                    qualityIndex = iq,
-                                    orientation = tileNormals[it],
-                                    inQueue = thisQueue
-                                };
-                                networkTileDescription.tiles[it].qualities[iq].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
-                                networkTileDescription.tiles[it].qualities[iq].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
-                            }
-                        }
-
-                        //
-                        // Create encoders for transmission
-                        //
-                        if (pointcloudCodec == "cwi1")
-                        {
-                            try
-                            {
-                                encoder = new AsyncPCEncoder(encoderQueue, encoderStreamDescriptions);
-                            }
-                            catch (System.EntryPointNotFoundException)
-                            {
-                                Debug.Log($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                                throw new System.Exception($"{Name()}: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                            }
-                        }
-                        else if (pointcloudCodec == "cwi0")
-                        {
-                            try
-                            {
-                                encoder = new AsyncPCNullEncoder(encoderQueue, encoderStreamDescriptions);
-                            }
-                            catch (System.EntryPointNotFoundException)
-                            {
-                                Debug.Log($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                                throw new System.Exception($"{Name()}: NULLEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                            }
-
-                        } else
-                        {
-                            Debug.Log($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
-                            throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
-                        }
-                        //
-                        // Create bin2dash writer for PC transmission
-                        //
-                        var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                        if (Bin2Dash == null)
-                            throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.Bin2Dash config");
-                        try
-                        {
-                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-                            {
-                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, Bin2Dash.segmentSize, Bin2Dash.segmentLife, outgoingStreamDescriptions);
-                            }
-                            else
-                            if (Config.Instance.protocolType == Config.ProtocolType.TCP)
-                            {
-                                writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
-                            }
-                            else
-                            {
-                                writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
-                            }
-                        }
-                        catch (System.EntryPointNotFoundException e)
-                        {
-                            Debug.Log($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
-                            throw new System.Exception($"{Name()}: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
-                        }
-#if VRT_WITH_STATS
-                        Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={nTileToTransmit}, nquality={nQuality}, nStream={nStream}");
-#endif
-                    }
+                    _InitForSelfUser(cfg.PCSelfConfig, preview);
                     break;
                 case "prerecorded":
-                    var PrerecordedReaderConfig = cfg.PCSelfConfig.PrerecordedReaderConfig;
-                    if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
-                        throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-                     var _reader = new PrerecordedPlaybackReader(PrerecordedReaderConfig.folder, 0, cfg.PCSelfConfig.frameRate);
-                    StaticPredictionInformation info = _reader.GetStaticPredictionInformation();
-                    string[] tileSubdirs = info.tileNames;
-                    int nTiles = tileSubdirs.Length;
-                    int nQualities = info.qualityNames.Length;
-                    if (tileSubdirs == null || tileSubdirs.Length == 0)
-                    {
-                        // Untiled. 
-                        var _prepQueue = _CreateRendererAndPreparer();
-                        _reader.Add(null, _prepQueue);
-                    } else
-                    {
-                        int curTile = 0;
-                        foreach (var tileFolder in tileSubdirs)
-                        {
-                            var _prepQueue = _CreateRendererAndPreparer(curTile);
-                            _reader.Add(tileFolder, _prepQueue);
-                            curTile++;
-                        }
-
-                    }
-                    reader = _reader;
-                    //
-                    // Initialize tiling configuration. We invent this, but it has the correct number of tiles
-                    // and the correct number of qualities, and the qualities are organized so that earlier
-                    // ones have lower utility and lower bandwidth than later ones.
-                    //
-                    Cwipc.PointCloudTileDescription[] tileInfos = _reader.getTiles();
-                    if (tileInfos.Length != nTiles)
-                    {
-                        Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
-                    }
-                    networkTileDescription = new PointCloudNetworkTileDescription();
-                    networkTileDescription.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
-                    for (int i=0; i<nTiles; i++)
-                    {
-                        // Initialize per-tile information
-                        var ti = new PointCloudNetworkTileDescription.NetworkTileInformation();
-                        networkTileDescription.tiles[i] = ti;
-                        ti.orientation = tileInfos[i].normal;
-                        ti.qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQualities];
-                        for (int j=0; j<nQualities; j++)
-                        {
-                            ti.qualities[j] = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation();
-                            //
-                            // Insert bullshit numbers: every next quality takes twice as much bandwidth
-                            // and is more useful than the previous one
-                            //
-                            ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
-                            ti.qualities[j].representation = (float)j / (float)nQualities;
-                        }
-                    }
-
+                    _InitForPrerecordedPlayer(cfg.PCSelfConfig);
                     break;
-
                 case "remote":
 #if VRT_WITH_STATS
                     Statistics.Output(Name(), $"self=0, userid={user.userId}");
@@ -394,22 +120,292 @@ namespace VRT.UserRepresentation.PointCloud
                     Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
                     break;
             }
-#if XXXJACK_REMOVED
-            // Jack thinks this should go, and we use the transform supplied in the PFB_Player (or whereever)
-            //
-            // Finally we modify the reference parameter transform, which will put the pointclouds at the correct position
-            // in the scene.
-            //
-            //Position in the center
-            transform.localPosition = new Vector3(0, 0, 0);
-            transform.localRotation = Quaternion.Euler(0, 0, 0);
-#endif
             return this;
         }
 
-        private void _CreateDescriptionsForOutgoing(bool leaky)
+        private void _InitForSelfUser(Config._User._PCSelfConfig PCSelfConfig, bool preview)
         {
+            isSource = true;
+            if (synchronizer != null)
+            {
+                // We disable the synchronizer for self. It serves
+                // no practical purpose and emits confusing stats: lines.
+                Debug.Log($"{Name()}: disabling {synchronizer.Name()} for self-view");
+                synchronizer.disable();
+                synchronizer = null;
+            }
+            if (tileSelector != null)
+            {
+                // We disable the tileSelector for self. It serves
+                // no practical purpose.
+                Debug.Log($"{Name()}: disabling {tileSelector.Name()} for self-view");
+                tileSelector.gameObject.SetActive(false);
+                tileSelector = null;
+            }
+            AsyncPointCloudReader pcReader;
+            //
+            // Create renderer and preparer for self-view.
+            //
+            QueueThreadSafe selfPreparerQueue = _CreateRendererAndPreparer();
 
+            //
+            // Allocate queues we need for this sourceType
+            //
+            encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            //
+            // Ensure we can determine from the log file who this is.
+            //
+
+            //
+            // Create reader
+            //
+            switch(user.userData.userRepresentationType)
+            {
+                case UserRepresentationType.__PCC_CWI_:
+                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
+                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    break;
+                case UserRepresentationType.__PCC_CWIK4A_:
+                    var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
+                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    break;
+                case UserRepresentationType.__PCC_PROXY__:
+                    var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
+                    if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
+                    pcReader = new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    break;
+                case UserRepresentationType.__PCC_SYNTH__:
+                    int nPoints = 0;
+                    var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
+                    if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
+                    pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
+                    break;
+                case UserRepresentationType.__PCC_PRERECORDED__:
+                    var prConfig = PCSelfConfig.PrerecordedReaderConfig;
+                    if (prConfig.folder == null || prConfig.folder == "")
+                    {
+                        throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.PrerecordedReaderConfig.folder config");
+                    }
+                    pcReader = new AsyncPrerecordedReader(prConfig.folder, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    break;
+                default:
+                    throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
+
+            }
+       
+            reader = pcReader;
+
+            if (!preview)
+            {
+                // Which encoder do we want?
+                string pointcloudCodec = CwipcConfig.Instance.Codec;
+                // For TCP we want short queues and we want them leaky (so we don't hang)
+                bool leakyQueues = Config.Instance.protocolType == Config.ProtocolType.TCP;
+                //
+                // Determine tiles to transmit
+                //
+                Cwipc.PointCloudTileDescription[] tilesToTransmit = null;
+                if (PCSelfConfig.tiled)
+                {
+                    tilesToTransmit = pcReader.getTiles();
+                    if (tilesToTransmit != null && tilesToTransmit.Length > 1)
+                    {
+                        // Skip tile 0, it is the untiled cloud that has all points.
+                        tilesToTransmit = tilesToTransmit[1..];
+                        for (int i = 0; i < tilesToTransmit.Length; i++)
+                        {
+                            Debug.Log($"{Name()}: tiling sender: tile {i}: normal=({tilesToTransmit[i].normal.x}, {tilesToTransmit[i].normal.y}, {tilesToTransmit[i].normal.z}), camName={tilesToTransmit[i].cameraName}, mask={tilesToTransmit[i].cameraMask}");
+                        }
+                    }
+                }
+                if (tilesToTransmit == null)
+                {
+                    // If we don't want tiled sending, or the source isn't tiled, we invent a tile description
+                    tilesToTransmit = new PointCloudTileDescription[1]
+                    {
+                        new PointCloudTileDescription()
+                        {
+                            cameraMask=0,
+                            cameraName="untiled",
+                            normal=Vector3.zero
+                        }
+                    };
+                }
+                //
+                // allocate and initialize per-stream outgoing stream datastructures
+                //
+                _CreateDescriptionsForOutgoing(tilesToTransmit, PCSelfConfig.Encoders, leakyQueues);
+               
+
+                //
+                // Create encoders for transmission
+                //
+                switch(pointcloudCodec)
+                {
+                    case "cwi0":
+                        encoder = new AsyncPCNullEncoder(encoderQueue, encoderStreamDescriptions);
+                        break;
+                    case "cwi1":
+                        encoder = new AsyncPCEncoder(encoderQueue, encoderStreamDescriptions);
+                        break;
+                    default:
+                        throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
+                }
+        
+                //
+                // Create correct writer for PC transmission
+                //
+                switch(Config.Instance.protocolType)
+                {
+                    case Config.ProtocolType.Dash:
+                        writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
+                        break;
+                    case Config.ProtocolType.TCP:
+                        writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
+                        break;
+                    case Config.ProtocolType.None:
+                    case Config.ProtocolType.SocketIO:
+                        writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
+                        break;
+                    default:
+                        throw new System.Exception($"{Name()}: Unknown protocolType {Config.Instance.protocolType}");
+                }
+               
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), $"reader={reader.Name()}, encoder={encoder.Name()}, writer={writer.Name()}, ntile={tilesToTransmit.Length}, nquality={PCSelfConfig.Encoders.Length}, nStream={outgoingStreamDescriptions.Length}");
+#endif
+            }
+        }
+
+        private void _InitForPrerecordedPlayer(Config._User._PCSelfConfig PCSelfConfig)
+        {
+            var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
+            if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
+                throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
+            var _reader = new PrerecordedPlaybackReader(PrerecordedReaderConfig.folder, 0, PCSelfConfig.frameRate);
+            StaticPredictionInformation info = _reader.GetStaticPredictionInformation();
+            string[] tileSubdirs = info.tileNames;
+            int nTiles = tileSubdirs.Length;
+            int nQualities = info.qualityNames.Length;
+            if (tileSubdirs == null || tileSubdirs.Length == 0)
+            {
+                // Untiled. 
+                var _prepQueue = _CreateRendererAndPreparer();
+                _reader.Add(null, _prepQueue);
+            }
+            else
+            {
+                int curTile = 0;
+                foreach (var tileFolder in tileSubdirs)
+                {
+                    var _prepQueue = _CreateRendererAndPreparer(curTile);
+                    _reader.Add(tileFolder, _prepQueue);
+                    curTile++;
+                }
+
+            }
+            reader = _reader;
+            //
+            // Initialize tiling configuration. We invent this, but it has the correct number of tiles
+            // and the correct number of qualities, and the qualities are organized so that earlier
+            // ones have lower utility and lower bandwidth than later ones.
+            //
+            Cwipc.PointCloudTileDescription[] tileInfos = _reader.getTiles();
+            if (tileInfos.Length != nTiles)
+            {
+                Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
+            }
+            networkTileDescription = new PointCloudNetworkTileDescription();
+            networkTileDescription.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
+            for (int i = 0; i < nTiles; i++)
+            {
+                // Initialize per-tile information
+                var ti = new PointCloudNetworkTileDescription.NetworkTileInformation();
+                networkTileDescription.tiles[i] = ti;
+                ti.orientation = tileInfos[i].normal;
+                ti.qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQualities];
+                for (int j = 0; j < nQualities; j++)
+                {
+                    ti.qualities[j] = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation();
+                    //
+                    // Insert bullshit numbers: every next quality takes twice as much bandwidth
+                    // and is more useful than the previous one
+                    //
+                    ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
+                    ti.qualities[j].representation = (float)j / (float)nQualities;
+                }
+            }
+
+        }
+
+        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, Config._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
+        {
+            int nTileToTransmit = tilesToTransmit.Length;
+            int minTileNum = nTileToTransmit == 0 ? 0 : 1;
+            int nQuality = Encoders.Length;
+            int nStream = nQuality * nTileToTransmit;
+            Debug.Log($"{Name()}: tiling sender: minTileNum={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
+            //
+            // Create all three sets of descriptions needed.
+            //
+            encoderStreamDescriptions = new EncoderStreamDescription[nStream];
+            outgoingStreamDescriptions = new OutgoingStreamDescription[nStream];
+            networkTileDescription = new PointCloudNetworkTileDescription()
+            {
+                tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit]
+            };
+            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
+            {
+                var tileOrientation = tilesToTransmit[tileNum].normal;
+                networkTileDescription.tiles[tileNum].orientation = tileOrientation;
+                networkTileDescription.tiles[tileNum].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
+                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
+                {
+                    int streamNum = tileNum * nQuality + qualityNum;
+                    int octreeBits = Encoders[qualityNum].octreeBits;
+                    encoderStreamDescriptions[streamNum] = new EncoderStreamDescription
+                    {
+                        octreeBits = octreeBits,
+                        tileNumber = tileNum + minTileNum,
+                    };
+                    outgoingStreamDescriptions[streamNum] = new OutgoingStreamDescription
+                    {
+                        tileNumber = (uint)(tileNum + minTileNum),
+                        // quality = (uint)(100 * octreeBits + 75),
+                        qualityIndex = qualityNum,
+                        orientation = tileOrientation,
+                    };
+                    //
+                    // Invent a description of tile/quality bandwidth requirements and visual quality.
+                    //
+                    networkTileDescription.tiles[tileNum].qualities[qualityNum].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
+                    networkTileDescription.tiles[tileNum].qualities[qualityNum].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
+                }
+            }
+            //
+            // Create the queues and link the encoders and transmitters together through their individual queues.
+            //
+            // For the TCP connections we want legth 1 leaky queues. For
+            // DASH we want length 2 non-leaky queues.
+            bool e2tQueueDrop = false;
+            int e2tQueueSize = 2;
+            if (leakyQueues)
+            {
+                e2tQueueDrop = true;
+                e2tQueueSize = 1;
+            }
+            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
+            {
+                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
+                {
+                    int streamNum = tileNum * nQuality + qualityNum;
+                    QueueThreadSafe thisQueue = new QueueThreadSafe($"PCEncoder{tileNum}_{qualityNum}", e2tQueueSize, e2tQueueDrop);
+                    encoderStreamDescriptions[streamNum].outQueue = thisQueue;
+                    outgoingStreamDescriptions[streamNum].inQueue = thisQueue;
+                }
+            }
         }
 
         private void _CreatePointcloudReader(int[] tileNumbers)
@@ -442,19 +438,19 @@ namespace VRT.UserRepresentation.PointCloud
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
                 AsyncWorker decoder = null;
-                if (pointcloudCodec == "cwi1")
+                switch(pointcloudCodec)
                 {
-                    decoder = new AsyncPCDecoder(decoderQueue, preparerQueue);
-                    decoders.Add(decoder);
+                    case "cwi0":
+                        decoder = new AsyncPCNullDecoder(decoderQueue, preparerQueue);
+                        break;
+                    case "cwi1":
+                        decoder = new AsyncPCDecoder(decoderQueue, preparerQueue);
+                        break;
+                    default:
+                        throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
                 }
-                else if (pointcloudCodec == "cwi0")
-                {
-                    decoder = new AsyncPCNullDecoder(decoderQueue, preparerQueue);
-                    decoders.Add(decoder);
-                } else
-                {
-                    Debug.LogError($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
-                }
+                decoders.Add(decoder);
+                
                 //
                 // And collect the relevant information for the Dash receiver
                 //

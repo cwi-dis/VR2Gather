@@ -137,7 +137,7 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "file:C:/Users/VRTogether/VRTogether/cwipc/cwipc_unity/nl.cwi.dis.cwipc",
+      "version": "file:/Users/jack/src/VRTogether/cwipc/cwipc_unity/nl.cwi.dis.cwipc",
       "depth": 0,
       "source": "local",
       "dependencies": {}
