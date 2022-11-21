@@ -84,7 +84,7 @@
 	  },
       "voxelSize": 0.007,
       "frameRate": 15,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
 		
 		{

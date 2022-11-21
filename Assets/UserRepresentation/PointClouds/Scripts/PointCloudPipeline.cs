@@ -342,48 +342,22 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, Config._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
         {
+            int[] octreeBitsArray = new int[Encoders.Length];
+            for (int i=0; i<Encoders.Length; i++)
+            {
+                octreeBitsArray[i] = Encoders[i].octreeBits;
+            }
             int nTileToTransmit = tilesToTransmit.Length;
-            int minTileNum = nTileToTransmit == 0 ? 0 : 1;
+            int minTileNum = nTileToTransmit == 1 ? 0 : 1;
             int nQuality = Encoders.Length;
             int nStream = nQuality * nTileToTransmit;
             Debug.Log($"{Name()}: tiling sender: minTileNum={minTileNum}, nTile={nTileToTransmit}, nQuality={nQuality}, nStream={nStream}");
             //
             // Create all three sets of descriptions needed.
             //
-            encoderStreamDescriptions = new EncoderStreamDescription[nStream];
-            outgoingStreamDescriptions = new OutgoingStreamDescription[nStream];
-            networkTileDescription = new PointCloudNetworkTileDescription()
-            {
-                tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTileToTransmit]
-            };
-            for (int tileNum = 0; tileNum < nTileToTransmit; tileNum++)
-            {
-                var tileOrientation = tilesToTransmit[tileNum].normal;
-                networkTileDescription.tiles[tileNum].orientation = tileOrientation;
-                networkTileDescription.tiles[tileNum].qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQuality];
-                for (int qualityNum = 0; qualityNum < nQuality; qualityNum++)
-                {
-                    int streamNum = tileNum * nQuality + qualityNum;
-                    int octreeBits = Encoders[qualityNum].octreeBits;
-                    encoderStreamDescriptions[streamNum] = new EncoderStreamDescription
-                    {
-                        octreeBits = octreeBits,
-                        tileNumber = tileNum + minTileNum,
-                    };
-                    outgoingStreamDescriptions[streamNum] = new OutgoingStreamDescription
-                    {
-                        tileNumber = (uint)(tileNum + minTileNum),
-                        // quality = (uint)(100 * octreeBits + 75),
-                        qualityIndex = qualityNum,
-                        orientation = tileOrientation,
-                    };
-                    //
-                    // Invent a description of tile/quality bandwidth requirements and visual quality.
-                    //
-                    networkTileDescription.tiles[tileNum].qualities[qualityNum].bandwidthRequirement = octreeBits * octreeBits * octreeBits; // xxxjack
-                    networkTileDescription.tiles[tileNum].qualities[qualityNum].representation = (float)octreeBits / 20; // guessing octreedepth of 20 is completely ridiculously high
-                }
-            }
+            encoderStreamDescriptions = StreamSupport.CreateEncoderStreamDescription(tilesToTransmit, octreeBitsArray);
+            outgoingStreamDescriptions = StreamSupport.CreateOutgoingStreamDescription(tilesToTransmit, octreeBitsArray);
+            networkTileDescription = StreamSupport.CreateNetworkTileDescription(tilesToTransmit, octreeBitsArray);
             //
             // Create the queues and link the encoders and transmitters together through their individual queues.
             //
