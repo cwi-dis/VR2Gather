@@ -114,7 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
                     //
                     // Determine how many tiles (and therefore decode/render pipelines) we need
                     //
-                    Debug.Log($"{Name()} delay CreatePointcloudReader until tiling information received");
+                    Debug.Log($"{Name()}: delay _InitForOtherUser until tiling information received");
                     break;
                 default:
                     Debug.LogError($"Programmer error: {Name()}: unknown sourceType {cfg.sourceType}");
@@ -382,72 +382,67 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        private void _CreatePointcloudReader(int[] tileNumbers)
+        private void _InitForOtherUser()
         {
-            string pointcloudCodec = CwipcConfig.Instance.Codec;
-
-            int nTileToReceive = tileNumbers == null ? 0 : tileNumbers.Length;
-            if (nTileToReceive == 0)
+            // Dump tiles/qualities/bandwidth, for debugging.
+            for (int tileNum = 0; tileNum < networkTileDescription.tiles.Length; tileNum++)
             {
-                tileNumbers = new int[1] { 0 };
-                nTileToReceive = 1;
+                var tile = networkTileDescription.tiles[tileNum];
+                Debug.Log($"{Name()}: xxxjack tile {tileNum}: #qualities: {tile.qualities.Length}");
+                foreach (var quality in tile.qualities)
+                {
+                    Debug.Log($"{Name()}: xxxjack tile {tileNum} quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
+                }
             }
+            
             //
             // Create the right number of rendering pipelines
             //
 
-            IncomingTileDescription[] tilesToReceive = new IncomingTileDescription[nTileToReceive];
+            IncomingTileDescription[] tilesToReceive = StreamSupport.CreateIncomingTileDescription(networkTileDescription);
+            int nTileToReceive = tilesToReceive.Length;
 
-            for (int i = 0; i < nTileToReceive; i++)
+            string pointcloudCodec = CwipcConfig.Instance.Codec;
+            for (int tileIndex = 0; tileIndex < nTileToReceive; tileIndex++)
             {
                 //
                 // Allocate queues we need for this pipeline
                 //
-                QueueThreadSafe decoderQueue = new QueueThreadSafe("PCdecoderQueue", pcDecoderQueueSize, true);
+                QueueThreadSafe decoderQueue = new QueueThreadSafe($"PCdecoderQueue-{tileIndex}", pcDecoderQueueSize, true);
                 //
                 // Create renderer
                 //
-                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer(i);
+                QueueThreadSafe preparerQueue = _CreateRendererAndPreparer(tileIndex);
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                AsyncWorker decoder = null;
-                switch(pointcloudCodec)
-                {
-                    case "cwi0":
-                        decoder = new AsyncPCNullDecoder(decoderQueue, preparerQueue);
-                        break;
-                    case "cwi1":
-                        decoder = new AsyncPCDecoder(decoderQueue, preparerQueue);
-                        break;
-                    default:
-                        throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
-                }
+                AsyncWorker decoder = _CreateDecoder(pointcloudCodec, decoderQueue, preparerQueue);
                 decoders.Add(decoder);
-                
                 //
                 // And collect the relevant information for the Dash receiver
                 //
-                tilesToReceive[i] = new IncomingTileDescription()
-                {
-                    outQueue = decoderQueue,
-                    tileNumber = tileNumbers[i]
-                };
+                tilesToReceive[tileIndex].outQueue = decoderQueue;
 #if VRT_WITH_STATS
-                Statistics.Output(Name(), $"tile={i}, tile_number={tileNumbers[i]}, decoder={decoder.Name()}");
+                Statistics.Output(Name(), $"tile={tileIndex}, tile_number={tilesToReceive[tileIndex].tileNumber}, decoder={decoder.Name()}");
 #endif
             };
-            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+
+            switch (Config.Instance.protocolType)
             {
-                reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
-            } else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
-            {
-                reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
+                case Config.ProtocolType.None:
+                case Config.ProtocolType.SocketIO:
+                    reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
+                    break;
+                case Config.ProtocolType.Dash:
+                    reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
+                    break;
+                case Config.ProtocolType.TCP:
+                    reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
+                    break;
+                default:
+                    throw new System.Exception($"{Name()}: unknown protocolType {Config.Instance.protocolType}");
             }
-            else
-            {
-                reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
-            }
+           
             string synchronizerName = "none";
             if (synchronizer != null && synchronizer.isEnabled())
             {
@@ -456,6 +451,24 @@ namespace VRT.UserRepresentation.PointCloud
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
 #endif
+        }
+
+        AsyncWorker _CreateDecoder(string pointcloudCodec, QueueThreadSafe decoderQueue, QueueThreadSafe preparerQueue)
+        {
+            AsyncWorker decoder = null;
+            switch (pointcloudCodec)
+            {
+                case "cwi0":
+                    decoder = new AsyncPCNullDecoder(decoderQueue, preparerQueue);
+                    break;
+                case "cwi1":
+                    decoder = new AsyncPCDecoder(decoderQueue, preparerQueue);
+                    break;
+                default:
+                    throw new System.Exception($"{Name()}: Unknown pointcloudCodec \"{pointcloudCodec}\"");
+            }
+            return decoder;
+
         }
 
         public QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
@@ -571,26 +584,8 @@ namespace VRT.UserRepresentation.PointCloud
             }
             networkTileDescription = config;
             Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
-            int[] tileNumbers = new int[networkTileDescription.tiles.Length];
-            //
-            // At some stage we made the decision that tilenumer 0 represents the whole untiled pointcloud.
-            // So if we receive an untiled stream we want tile 0 only, and if we receive a tiled stream we
-            // never want tile 0.
-            //
-            int curTileNumber = networkTileDescription.tiles.Length == 1 ? 0 : 1;
-            int curTileIndex = 0;
-            foreach (var tile in networkTileDescription.tiles)
-            {
-                tileNumbers[curTileIndex] = curTileNumber;
-                Debug.Log($"{Name()}: xxxjack tile: #qualities: {tile.qualities.Length}");
-                foreach (var quality in tile.qualities)
-                {
-                    Debug.Log($"{Name()}: xxxjack quality: representation {quality.representation} bandwidth {quality.bandwidthRequirement}");
-                }
-                curTileNumber++;
-                curTileIndex++;
-            }
-            _CreatePointcloudReader(tileNumbers);
+           
+            _InitForOtherUser();
             _InitTileSelector();
         }
 

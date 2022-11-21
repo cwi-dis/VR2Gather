@@ -126,7 +126,7 @@ public class TestPipeline : MonoBehaviour
                 if (useCompression) {
 					EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
-					encStreams[0].tileNumber = tilenum;
+					encStreams[0].tileFilter = tilenum;
 					encStreams[0].outQueue = writerQueue;
 					encoder = new AsyncPCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
@@ -147,7 +147,7 @@ public class TestPipeline : MonoBehaviour
                     }
                     EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
-					encStreams[0].tileNumber = tilenum;
+					encStreams[0].tileFilter = tilenum;
 					encStreams[0].outQueue = writerQueue;
 
                     encoder = new AsyncPCEncoder[encoders];
