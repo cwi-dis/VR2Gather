@@ -680,11 +680,11 @@ public class OrchestratorLogin : MonoBehaviour {
                         Debug.LogError($"Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
                         break;
                 }
-                SetAudio(config.sessionTransportProtocol);
+                SetProtocol(config.sessionTransportProtocol);
             } else {
                 // No default set. Use socketio.
                 socketProtocolToggle.isOn = true;
-                SetAudio("socketio");
+                SetProtocol("socketio");
             }
             autoState = AutoState.DidPartialCreation;
         }
@@ -1150,7 +1150,7 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    public void SetAudio(string proto) {
+    public void SetProtocol(string proto) {
         switch (proto) {
             case "socketio": // Socket
                 if (socketProtocolToggle.isOn) {
