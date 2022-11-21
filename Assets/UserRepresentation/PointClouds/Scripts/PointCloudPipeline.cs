@@ -30,11 +30,11 @@ namespace VRT.UserRepresentation.PointCloud
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
         protected AsyncReader reader;
-        AsyncWorker encoder;
-        List<AsyncWorker> decoders = new List<AsyncWorker>();
-        AsyncWorker writer;
-        List<AsyncWorker> preparers = new List<AsyncWorker>();
-        List<MonoBehaviour> renderers = new List<MonoBehaviour>();
+        AbstractPointCloudEncoder encoder;
+        List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
+        AsyncWriter writer;
+        List<AsyncPointCloudPreparer> preparers = new List<AsyncPointCloudPreparer>();
+        List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
@@ -416,7 +416,7 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create pointcloud decoder, let it feed its pointclouds to the preparerQueue
                 //
-                AsyncWorker decoder = _CreateDecoder(pointcloudCodec, decoderQueue, preparerQueue);
+                AbstractPointCloudDecoder decoder = _CreateDecoder(pointcloudCodec, decoderQueue, preparerQueue);
                 decoders.Add(decoder);
                 //
                 // And collect the relevant information for the Dash receiver
@@ -453,9 +453,9 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
         }
 
-        AsyncWorker _CreateDecoder(string pointcloudCodec, QueueThreadSafe decoderQueue, QueueThreadSafe preparerQueue)
+        AbstractPointCloudDecoder _CreateDecoder(string pointcloudCodec, QueueThreadSafe decoderQueue, QueueThreadSafe preparerQueue)
         {
-            AsyncWorker decoder = null;
+            AbstractPointCloudDecoder decoder = null;
             switch (pointcloudCodec)
             {
                 case "cwi0":
