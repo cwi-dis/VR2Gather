@@ -29,7 +29,7 @@ namespace VRT.UserRepresentation.PointCloud
         public ISynchronizer synchronizer = null;
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
-        protected AsyncWorker reader;
+        protected AsyncReader reader;
         AsyncWorker encoder;
         List<AsyncWorker> decoders = new List<AsyncWorker>();
         AsyncWorker writer;
