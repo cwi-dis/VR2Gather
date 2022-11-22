@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using VRT.Core;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 using System;
 using System.Linq;
 using System.Collections;
@@ -84,7 +86,7 @@ namespace VRT.UserRepresentation.PointCloud
         // Get best known position for viewed pointcloud.
         // To be implemented by subclass.
         //
-        protected abstract Vector3 getPointcloudPosition(long currentFrameNumber);
+        protected abstract Vector3 getPointCloudPosition(long currentFrameNumber);
 
         private void Update()
         {
@@ -107,7 +109,7 @@ namespace VRT.UserRepresentation.PointCloud
             double budget = getBitrateBudget();
             if (budget == 0) budget = 100000;
             Vector3 cameraForward = getCameraForward();
-            Vector3 pointcloudPosition = getPointcloudPosition(currentFrameIndex);
+            Vector3 pointcloudPosition = getPointCloudPosition(currentFrameIndex);
             int[] selectedTileQualities = getTileQualities(bandwidthUsageMatrix, budget, cameraForward, pointcloudPosition);
             bool changed = previousSelectedTileQualities == null;
             if (!changed && selectedTileQualities != null)
@@ -131,7 +133,9 @@ namespace VRT.UserRepresentation.PointCloud
                 {
                     statMsg += $", tile{i}={selectedTileQualities[i]}";
                 }
-                BaseStats.Output(Name(), statMsg);
+#if VRT_WITH_STATS
+                Statistics.Output(Name(), statMsg);
+#endif
             }
 #if XXXSHISHIR_REMOVED
             //

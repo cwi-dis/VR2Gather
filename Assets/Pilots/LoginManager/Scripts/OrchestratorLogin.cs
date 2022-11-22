@@ -10,6 +10,7 @@ using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
+using Cwipc;
 
 public enum State {
     Offline, Online, Logged, Config, Play, Create, Join, Lobby, InGame
@@ -529,7 +530,7 @@ public class OrchestratorLogin : MonoBehaviour {
             instance = this;
         }
 
-        VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+        AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
 
         system = EventSystem.current;
 
@@ -679,11 +680,11 @@ public class OrchestratorLogin : MonoBehaviour {
                         Debug.LogError($"Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
                         break;
                 }
-                SetAudio(config.sessionTransportProtocol);
+                SetProtocol(config.sessionTransportProtocol);
             } else {
                 // No default set. Use socketio.
                 socketProtocolToggle.isOn = true;
-                SetAudio("socketio");
+                SetProtocol("socketio");
             }
             autoState = AutoState.DidPartialCreation;
         }
@@ -1149,7 +1150,7 @@ public class OrchestratorLogin : MonoBehaviour {
         }
     }
 
-    public void SetAudio(string proto) {
+    public void SetProtocol(string proto) {
         switch (proto) {
             case "socketio": // Socket
                 if (socketProtocolToggle.isOn) {

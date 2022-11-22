@@ -27,6 +27,9 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -191,16 +194,18 @@ namespace VRT.Orchestrator.Wrapping
         private void OnDestroy() {
             if (mySession != null) {
                 Collect_SFU_Logs(mySession.sessionId);
-                VRT.Core.BaseStats.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
+#if VRT_WITH_STATS
+                Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
+#endif
             }
             _OptionalStopOnLeave();
         }
 
-        #endregion
+#endregion
 
-        #region Commands
+#region Commands
 
-        #region Socket.io connect
+#region Socket.io connect
 
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
@@ -252,9 +257,9 @@ namespace VRT.Orchestrator.Wrapping
             OnConnectionEvent?.Invoke(false);
         }
 
-        #endregion
+#endregion
 
-        #region Orchestrator Logs
+#region Orchestrator Logs
 
         // Display the sent message in the logs
         public void OnOrchestratorRequest(string request) {
@@ -266,9 +271,9 @@ namespace VRT.Orchestrator.Wrapping
             OnOrchestratorResponseEvent?.Invoke(response);
         }
 
-        #endregion
+#endregion
 
-        #region Login/Logout
+#region Login/Logout
 
         public void Login(string pName, string pPassword) {
             orchestratorWrapper.Login(pName, pPassword);
@@ -349,9 +354,9 @@ namespace VRT.Orchestrator.Wrapping
             orchestratorWrapper.AddUser(pName, pPassword, false);
         }
 
-        #endregion
+#endregion
 
-        #region NTP clock
+#region NTP clock
 
         long timeOfGetNTPTimeRequest = 0;
 
@@ -375,14 +380,16 @@ namespace VRT.Orchestrator.Wrapping
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
-            VRT.Core.BaseStats.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs-localTimeMs}, uncertainty_interval_ms={uncertainty}");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"orchestrator_ntptime_ms={ntpTime.ntpTimeMs}, localtime_behind_ms={ntpTime.ntpTimeMs - localTimeMs}, uncertainty_interval_ms={uncertainty}");
+#endif
             if (OnGetNTPTimeEvent == null) Debug.LogWarning("OrchestratorController: NTP time response received but nothing listens");
             OnGetNTPTimeEvent?.Invoke(ntpTime);
         }
 
-        #endregion
+#endregion
 
-        #region Sessions
+#region Sessions
 
         public void GetSessions() {
             orchestratorWrapper.GetSessions();
@@ -419,7 +426,9 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-            VRT.Core.BaseStats.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
+#endif
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
@@ -595,9 +604,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Scenarios
+#region Scenarios
 
         public void GetScenarios() {
             orchestratorWrapper.GetScenarios();
@@ -621,9 +630,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Live
+#region Live
 
         public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData) {
             if (status.Error != 0) {
@@ -638,9 +647,9 @@ namespace VRT.Orchestrator.Wrapping
             orchestratorWrapper.GetRooms();
         }
 
-        #endregion
+#endregion
 
-        #region Users
+#region Users
 
         public void GetUsers() {
             orchestratorWrapper.GetUsers();
@@ -762,9 +771,9 @@ namespace VRT.Orchestrator.Wrapping
             orchestratorWrapper.GetUsers();
         }
 
-        #endregion
+#endregion
 
-        #region Rooms
+#region Rooms
 
         public void GetRooms() {
             orchestratorWrapper.GetRooms();
@@ -812,9 +821,9 @@ namespace VRT.Orchestrator.Wrapping
             OnLeaveRoomEvent?.Invoke();
         }
 
-        #endregion
+#endregion
 
-        #region Messages
+#region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
             orchestratorWrapper.SendMessage(pMessage, pUserID);
@@ -844,19 +853,23 @@ namespace VRT.Orchestrator.Wrapping
             {
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
-                VRT.Core.BaseStats.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+#if VRT_WITH_STATS
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+#endif
                 if (Config.Instance.AutoStart.autoLeaveAfter > 0)
                 {
-                    VRT.Core.BaseStats.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+#if VRT_WITH_STATS
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+#endif
                     Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
                 }
             }
             OnUserMessageReceivedEvent?.Invoke(userMessage);
         }
 
-        #endregion
+#endregion
 
-        #region Events
+#region Events
 
         public void SendEventToMaster(string pEventData) {
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
@@ -896,9 +909,9 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Data bit-stream
+#region Data bit-stream
 
         public void GetAvailableDataStreams(string pDataStreamUserId) {
             OrchestratorWrapper.instance.GetAvailableDataStreams(pDataStreamUserId);
@@ -924,9 +937,9 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log("[OrchestratorController][OnGetRegisteredDataStreams] Registered DataStream list count: " + dataStreams.Count);
         }
 
-        #endregion
+#endregion
 
-        #region Logics
+#region Logics
 
         public User GetUser(string masterUuid) {
             if (availableUserAccounts != null) {
@@ -971,9 +984,9 @@ namespace VRT.Orchestrator.Wrapping
             _OptionalStopOnLeave();
         }
 
-        #endregion
+#endregion
 
-        #region Utils
+#region Utils
 
         public string GetIPAddress() {
             var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
@@ -987,9 +1000,9 @@ namespace VRT.Orchestrator.Wrapping
             return "";
         }
 
-        #endregion
+#endregion
 
-        #region Logs
+#region Logs
 
         public void UpdateOrchestratorLogsDNS(string pDNS) {
             if (!string.IsNullOrEmpty(pDNS)) {
@@ -1007,9 +1020,9 @@ namespace VRT.Orchestrator.Wrapping
             Application.OpenURL(requestURL);
         }
 
-        #endregion
+#endregion
 
-        #region Errors
+#region Errors
 
         public void OnError(ResponseStatus status) {
             Debug.Log("[OrchestratorController][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
@@ -1017,8 +1030,8 @@ namespace VRT.Orchestrator.Wrapping
             OnErrorEvent?.Invoke(status);
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }

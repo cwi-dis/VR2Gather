@@ -1,7 +1,10 @@
 {
     "name": "VRTInitializer",
+    "rootNamespace": "",
     "references": [
         "VRTCore",
+        "VRTStatistics",
+        "Cwipc",
         "PointClouds",
         "WebCam"
     ],
