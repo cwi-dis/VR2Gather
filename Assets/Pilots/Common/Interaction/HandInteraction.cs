@@ -10,9 +10,6 @@ namespace VRT.Pilots.Common
 		[Tooltip("Teleporter to use")]
 		public VRT.Teleporter.BaseTeleporter teleporter;
 
-		[Tooltip("Arc length for curving teleporters")]
-		public float teleportStrength = 10.0f;
-
 		[Tooltip("Invert meaning of PointingModeAxis or Key")]
 		public bool pointingModeAxisInvert = false;
 
@@ -121,8 +118,7 @@ namespace VRT.Pilots.Common
                 }
 				if (inTeleportingMode)
                 {
-					var touchTransform = TouchCollider.transform;
-					teleporter.CustomUpdatePath(touchTransform.position, touchTransform.forward, teleportStrength);
+					teleporter.UpdatePath();
 					if (MyTeleportHomeAction.IsPressed())
                     {
 						// Debug.Log("xxxjack teleport home");
@@ -155,11 +151,7 @@ namespace VRT.Pilots.Common
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(true);
-				teleporter.CustomUpdatePath(
-					TouchCollider.transform.position,
-					TouchCollider.transform.forward,
-					teleportStrength
-					);
+				teleporter.UpdatePath();
 				inGrabbingMode = false;
 				inTouchingMode = false;
 			}

@@ -11,6 +11,11 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
+using Cwipc;
+using PointCloudRenderer = Cwipc.PointCloudRenderer;
+using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
+using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
+using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
 
 public class TestPipeline : MonoBehaviour
 {
@@ -46,18 +51,18 @@ public class TestPipeline : MonoBehaviour
     string URL = "";
     public string remoteStream = "";
 
-    BaseWorker reader;
-    BaseWorker[] encoder;
+    AsyncWorker reader;
+    AsyncWorker[] encoder;
     [Tooltip("Use multiple decoders in parallel (untested)")]
     public int decoders = 1;
     [Tooltip("Use multiple encoders in parallel (untested)")]
     public int encoders = 1;
-    BaseWorker[] decoder;
-    BaseWorker pointcloudsWriter;
-    BaseWorker pointcloudsReader;
+    AsyncWorker[] decoder;
+    AsyncWorker pointcloudsWriter;
+    AsyncWorker pointcloudsReader;
 
     [Tooltip("Debugging: preparer created")]
-    public BaseWorker preparer;
+    public AsyncWorker preparer;
     QueueThreadSafe preparerQueue;
     QueueThreadSafe encoderQueue;
     QueueThreadSafe writerQueue;
@@ -72,15 +77,15 @@ public class TestPipeline : MonoBehaviour
         encoderQueue = new QueueThreadSafe("EncoderQueue", 10, dropQueuesWhenFull);
         writerQueue = new QueueThreadSafe("WriterQueue", 10, dropQueuesWhenFull);
         decoderQueue = new QueueThreadSafe("DecoderQueue", 10, dropQueuesWhenFull);
-        PCSubReader.TileDescriptor[] tiles = new PCSubReader.TileDescriptor[1] {
-            new PCSubReader.TileDescriptor() {
+        IncomingTileDescription[] tiles = new IncomingTileDescription[1] {
+            new IncomingTileDescription() {
                 outQueue = decoderQueue,
                 tileNumber = 0
             }
         };
 
-        B2DWriter.DashStreamDescription[] streams = new B2DWriter.DashStreamDescription[1] {
-            new B2DWriter.DashStreamDescription(){
+        OutgoingStreamDescription[] streams = new OutgoingStreamDescription[1] {
+            new OutgoingStreamDescription(){
                 tileNumber = 0,
                 qualityIndex = 0,
                 inQueue = writerQueue
@@ -95,16 +100,16 @@ public class TestPipeline : MonoBehaviour
                 User user = OrchestratorController.Instance.SelfUser;
                 gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, Config.ProtocolType.SocketIO); //Audio Pipeline
                 gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, Config.ProtocolType.SocketIO); //Audio Pipeline
-                pointcloudsReader = new SocketIOReader(user, remoteStream, "cwi1", tiles);
-                pointcloudsWriter = new SocketIOWriter(user, remoteStream, "cwi1", streams);
+                pointcloudsReader = new AsyncSocketIOReader(user, remoteStream, "cwi1", tiles);
+                pointcloudsWriter = new AsyncSocketIOWriter(user, remoteStream, "cwi1", streams);
 
             };
         }
 
         Config config = Config.Instance;
-        preparer = new PointCloudPreparer(preparerQueue);
+        preparer = new AsyncPointCloudPreparer(preparerQueue);
         render = gameObject.AddComponent<PointCloudRenderer>();
-        ((PointCloudRenderer)render).SetPreparer((PointCloudPreparer)preparer);
+        ((PointCloudRenderer)render).SetPreparer((AsyncPointCloudPreparer)preparer);
 
         if (usePointClouds) {
 			if (localPCs) {
@@ -112,56 +117,56 @@ public class TestPipeline : MonoBehaviour
                 if (useCompression) pcQueue = encoderQueue;
                 if (prerecordedPointclouds != "")
                 {
-                    reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
+                    reader = new AsyncPrerecordedReader(prerecordedPointclouds, 0, targetFPS, pcQueue);
                 }
                 else
                 {
-                    reader = new PCReader(targetFPS, numPoints, pcQueue);
+                    reader = new AsyncSyntheticReader(targetFPS, numPoints, pcQueue);
                 }
                 if (useCompression) {
-					PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+					EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
-					encStreams[0].tileNumber = tilenum;
+					encStreams[0].tileFilter = tilenum;
 					encStreams[0].outQueue = writerQueue;
-					encoder = new PCEncoder[encoders];
+					encoder = new AsyncPCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
-                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
-                    decoder = new PCDecoder[decoders];
+                        encoder[i] = new AsyncPCEncoder(encoderQueue, encStreams);
+                    decoder = new AsyncPCDecoder[decoders];
 					for (int i = 0; i < decoders; ++i)
-						decoder[i] = new PCDecoder(writerQueue, preparerQueue);
+						decoder[i] = new AsyncPCDecoder(writerQueue, preparerQueue);
 				}
 			} else {
 				if (!useRemoteStream) {
                     if (prerecordedPointclouds != "")
                     {
-                        reader = new PrerecordedLiveReader(prerecordedPointclouds, 0, targetFPS, encoderQueue);
+                        reader = new AsyncPrerecordedReader(prerecordedPointclouds, 0, targetFPS, encoderQueue);
                     }
                     else
                     {
-                        reader = new PCReader(targetFPS, numPoints, encoderQueue);
+                        reader = new AsyncSyntheticReader(targetFPS, numPoints, encoderQueue);
                     }
-                    PCEncoder.EncoderStreamDescription[] encStreams = new PCEncoder.EncoderStreamDescription[1];
+                    EncoderStreamDescription[] encStreams = new EncoderStreamDescription[1];
 					encStreams[0].octreeBits = octree_bits;
-					encStreams[0].tileNumber = tilenum;
+					encStreams[0].tileFilter = tilenum;
 					encStreams[0].outQueue = writerQueue;
 
-                    encoder = new PCEncoder[encoders];
+                    encoder = new AsyncPCEncoder[encoders];
                     for (int i = 0; i < encoders; ++i)
-                        encoder[i] = new PCEncoder(encoderQueue, encStreams);
+                        encoder[i] = new AsyncPCEncoder(encoderQueue, encStreams);
 
                     string uuid = System.Guid.NewGuid().ToString();
 					URL = $"{remoteURL}/{uuid}/pcc/";
-					pointcloudsWriter = new B2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
+					pointcloudsWriter = new AsyncB2DWriter(URL, remoteStream, "cwi1", 2000, 10000, streams);
 				} 
 				else
 					URL = remoteURL;
 
 				if (!useSocketIO)
-					pointcloudsReader = new PCSubReader(URL, remoteStream, "cwi1", tiles);
+					pointcloudsReader = new AsyncSubPCReader(URL, remoteStream, "cwi1", tiles);
 
-				decoder = new PCDecoder[decoders];
+				decoder = new AsyncPCDecoder[decoders];
 				for (int i = 0; i < decoders; ++i)
-					decoder[i] = new PCDecoder(decoderQueue, preparerQueue);
+					decoder[i] = new AsyncPCDecoder(decoderQueue, preparerQueue);
 			}
         }
         

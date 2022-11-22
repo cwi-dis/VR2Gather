@@ -28,14 +28,18 @@ namespace VRT.Pilots.Common
         public GameObject unusedHand;
         [Tooltip("The transform that governs the hand's idle position")]
         public Transform handHomeTransform;
+        [Tooltip("The transform that governs the hand's touching direction")]
+        public Transform handTouchTransform;
         [Tooltip("Collider that actually presses the button")]
         public GameObject touchCollider = null;
         protected bool inTeleportingMode = false;
         protected bool inTouchingMode = false;
         protected bool isTouchable = false;
         protected bool didTouch = false;
-        protected Animator _Animator = null;
-        private LineRenderer _Line;
+        [Tooltip("Hand Animator (default: get from hand children)")]
+        public Animator HandAnimator = null;
+        [Tooltip("Line Renderer when hand is moving (default: on this GameObject)")]
+        public LineRenderer HandLineRenderer;
 
         const float handLineDelta = 0.25f;     // Hand line stops 20cm before touching point
         const float handGrabbingDelta = 0.1f;  // Grabbing hand position is 20cm before touching point
@@ -44,8 +48,14 @@ namespace VRT.Pilots.Common
         
         void Start()
         {
-            _Animator = hand.GetComponentInChildren<Animator>();
-            _Line = GetComponent<LineRenderer>();
+            if (HandAnimator == null)
+            {
+                HandAnimator = hand.GetComponentInChildren<Animator>();
+            }
+            if (HandLineRenderer == null)
+            {
+                HandLineRenderer = GetComponent<LineRenderer>();
+            }
             stopTouching();
             if (unusedHand != null)
             {
@@ -197,7 +207,8 @@ namespace VRT.Pilots.Common
 
         protected void showGrope(Vector3 touchPoint, bool isTouchable, bool isTouching)
         {
-            Vector3 homePoint = handHomeTransform.position;
+            Vector3 homePoint = handTouchTransform.position;
+            Quaternion handForward = handTouchTransform.rotation;
             Vector3 distance3 = touchPoint - homePoint;
             float distance = distance3.magnitude;
             Vector3 direction = distance3 / distance;
@@ -211,16 +222,17 @@ namespace VRT.Pilots.Common
             {
                 var handPoint = homePoint + direction * (distance - (isTouching ? handTouchingDelta : handGrabbingDelta));
                 hand.transform.position = handPoint;
-                hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                //hand.transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+                hand.transform.rotation = handForward;
                 hand.SetActive(true);
                 UpdateAnimation(isTouchable ? "IsPointing" : "");
             }
-            if (_Line != null)
+            if (HandLineRenderer != null)
             {
                 var linePoint = homePoint + direction * (distance - handLineDelta);
-                var points = new Vector3[2] { handHomeTransform.position, linePoint };
-                _Line.SetPositions(points);
-                _Line.enabled = true;
+                var points = new Vector3[2] { homePoint, linePoint };
+                HandLineRenderer.SetPositions(points);
+                HandLineRenderer.enabled = true;
             }
         }
 
@@ -244,17 +256,17 @@ namespace VRT.Pilots.Common
                     hand.transform.rotation = handHomeTransform.rotation;
                 }
             }
-            if (_Line != null)
+            if (HandLineRenderer != null)
             {
-                _Line.enabled = false;
+                HandLineRenderer.enabled = false;
             }
         }
 
         protected void UpdateAnimation(string state)
         {
-            if (_Animator == null) return;
-            _Animator.SetBool("IsGrabbing", state == "IsGrabbing");
-            _Animator.SetBool("IsPointing", state == "IsPointing");
+            if (HandAnimator == null) return;
+            HandAnimator.SetBool("IsGrabbing", state == "IsGrabbing");
+            HandAnimator.SetBool("IsPointing", state == "IsPointing");
         }
 
         protected virtual Vector3 getRayDestination()

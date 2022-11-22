@@ -6,14 +6,22 @@ using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+using Cwipc;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.UserRepresentation.Voice
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
+    using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
+
     public class VoiceSender : MonoBehaviour
     {
-        VoiceReader reader;
-        VoiceEncoder codec;
-        BaseWriter writer;
+        AsyncVoiceReader reader;
+        AsyncVoiceEncoder codec;
+        AsyncWriter writer;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe encoderQueue = null;
@@ -40,7 +48,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = new QueueThreadSafe("VoiceSenderSender");
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
+                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
                 minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
@@ -52,34 +60,36 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
                 Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1];
+            OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
 
             if (proto == Config.ProtocolType.Dash)
             {
-                writer = new B2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
+                writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
             } 
             else if (proto == Config.ProtocolType.TCP)
             {
-                writer = new TCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
+                writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
             }
             else
             {
-                writer = new SocketIOWriter(user, _streamName, audioCodec, b2dStreams);
+                writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
             }
             string encoderName = "none";
             if (codec != null)
             {
                 encoderName = codec.Name();
             }
-            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+#if VRT_WITH_STATS
+            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, reader={reader.Name()}, encoder={encoderName}, writer={writer.Name()}");
+#endif
         }
 
         public void Init(User user, QueueThreadSafe queue)
@@ -102,7 +112,7 @@ namespace VRT.UserRepresentation.Voice
             {
                 encoderQueue = new QueueThreadSafe("VoiceSenderEncoder", 4, true);
                 senderQueue = queue;
-                codec = new VoiceEncoder(encoderQueue, senderQueue);
+                codec = new AsyncVoiceEncoder(encoderQueue, senderQueue);
                 minBufferSize = codec.minSamplesPerFrame;
                 _readerOutputQueue = encoderQueue;
             }
@@ -114,14 +124,16 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new VoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
                 Debug.LogWarning($"VoiceSender: encoder wants {codec.minSamplesPerFrame} samples but we want {audioSamplesPerPacket}");
             }
 
-            BaseStats.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+#if VRT_WITH_STATS
+            Statistics.Output("VoiceSender", $"encoded={audioIsEncoded}, samples_per_buffer={audioSamplesPerPacket}, writer=none");
+#endif
         }
 
         void OnDestroy()

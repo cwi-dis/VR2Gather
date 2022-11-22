@@ -6,11 +6,17 @@ using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
 using VRT.Core;
+using Cwipc;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.UserRepresentation.Voice
 {
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
 
     public class VoiceReceiver : MonoBehaviour
     {
@@ -23,12 +29,12 @@ namespace VRT.UserRepresentation.Voice
         const bool debugAddTone = false;
         ToneGenerator debugToneGenerator = null;
 #endif
-        BaseReader reader;
-        BaseWorker codec;
-        VoicePreparer preparer;
+        AsyncReader reader;
+        AsyncWorker codec;
+        AsyncVoicePreparer preparer;
 
         [Tooltip("Object responsible for synchronizing playout")]
-        public Synchronizer synchronizer = null;
+        public ISynchronizer synchronizer = null;
 
         // xxxjack nothing is dropped here. Need to investigate what is the best idea.
         QueueThreadSafe decoderQueue;
@@ -50,12 +56,14 @@ namespace VRT.UserRepresentation.Voice
                 debugToneGenerator = new ToneGenerator();
             }
 #endif
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<Synchronizer>();
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;
@@ -72,28 +80,28 @@ namespace VRT.UserRepresentation.Voice
             if (audioIsEncoded)
             {
                 decoderQueue = new QueueThreadSafe("VoiceReceiverDecoder", 10, true);
-                codec = new VoiceDecoder(decoderQueue, preparerQueue);
+                codec = new AsyncVoiceDecoder(decoderQueue, preparerQueue);
                 _readerOutputQueue = decoderQueue;
             }
 
             if (proto == Config.ProtocolType.Dash)
             {
-                reader = new BaseSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
+                reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
             }
             else
             if (proto == Config.ProtocolType.TCP)
             {
-                reader = new BaseTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
+                reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
             }
             else
             {
-                reader = new SocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
+                reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
             }
 
 
-            preparer = new VoicePreparer(preparerQueue);
+            preparer = new AsyncVoicePreparer(preparerQueue);
             string synchronizerName = "none";
-            if (synchronizer != null && synchronizer.enabled)
+            if (synchronizer != null && synchronizer.isEnabled())
             {
                 preparer.SetSynchronizer(synchronizer);
                 if (!Config.Instance.Voice.ignoreSynchronizer)
@@ -106,7 +114,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 decoderName = codec.Name();
             }
-            BaseStats.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}, reader={reader.Name()}, decoder={decoderName}, preparer={preparer.Name()}, synchronizer={synchronizerName}");
+#endif
         }
 
         public void Init(User user, QueueThreadSafe queue)
@@ -117,12 +127,14 @@ namespace VRT.UserRepresentation.Voice
                 debugToneGenerator = new ToneGenerator();
             }
 #endif
+#if VRT_WITH_STATS
             stats = new Stats(Name());
+#endif
             if (synchronizer == null)
             {
-                synchronizer = FindObjectOfType<Synchronizer>();
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
             }
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             AudioSource audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.spatialize = true;
             audioSource.spatialBlend = 1.0f;
@@ -139,13 +151,15 @@ namespace VRT.UserRepresentation.Voice
             if (audioIsEncoded)
             {
                 preparerQueue = new QueueThreadSafe("voicePreparer", 4, true);
-                codec = new VoiceDecoder(queue, preparerQueue);
+                codec = new AsyncVoiceDecoder(queue, preparerQueue);
                 _readerOutputQueue = preparerQueue;
             }
 
-            preparer = new VoicePreparer(_readerOutputQueue);
+            preparer = new AsyncVoicePreparer(_readerOutputQueue);
             if (synchronizer != null) preparer.SetSynchronizer(synchronizer);
-            BaseStats.Output(Name(), $"encoded={audioIsEncoded}");
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"encoded={audioIsEncoded}");
+#endif
         }
 
         private void Update()
@@ -205,7 +219,9 @@ namespace VRT.UserRepresentation.Voice
             {
                 data[i] += tmpBuffer[i / channels];
             }
+#if VRT_WITH_STATS
             stats.statsUpdate(data.Length/channels, nZeroSamplesInserted, preparer.getCurrentTimestamp(), preparer.getQueueDuration());
+#endif
         }
 
         public void SetSyncInfo(SyncConfig.ClockCorrespondence _clockCorrespondence)
@@ -213,7 +229,8 @@ namespace VRT.UserRepresentation.Voice
             reader.SetSyncInfo(_clockCorrespondence);
         }
 
-        protected class Stats : VRT.Core.BaseStats
+#if VRT_WITH_STATS
+        protected class Stats : Statistics
         {
             public Stats(string name) : base(name) { }
 
@@ -269,5 +286,6 @@ namespace VRT.UserRepresentation.Voice
         }
 
         protected Stats stats;
+#endif
     }
 }

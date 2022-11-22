@@ -6,18 +6,20 @@ using VRT.Video;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
+using Cwipc;
+using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
 
 public class VideoWebCam : MonoBehaviour {
     public Renderer rendererOrg;
     public Renderer rendererDst;
 
-    WebCamReader    recorder;
-    VideoEncoder    encoder;
-    BaseWorker      writer;
-    BaseWorker      reader;
+    AsyncWebCamReader    recorder;
+    AsyncVideoEncoder    encoder;
+    AsyncWorker      writer;
+    AsyncWorker      reader;
 
-    VideoDecoder    decoder;
-    VideoPreparer   preparer;
+    AsyncVideoDecoder    decoder;
+    AsyncVideoPreparer   preparer;
 
     QueueThreadSafe         videoDataQueue = new QueueThreadSafe("VideoWebReader");
     QueueThreadSafe         writerQueue = new QueueThreadSafe("VideoWebCamWriter");
@@ -53,23 +55,23 @@ public class VideoWebCam : MonoBehaviour {
         string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
         string remoteStream = "webcam";
         try {
-            recorder = new WebCamReader(deviceName, width, height, fps, this, videoDataQueue);
-            encoder  = new VideoEncoder(new VideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
-            B2DWriter.DashStreamDescription[] b2dStreams = new B2DWriter.DashStreamDescription[1] {
-                new B2DWriter.DashStreamDescription() {
+            recorder = new AsyncWebCamReader(deviceName, width, height, fps, this, videoDataQueue);
+            encoder  = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec =  codec, width = width, height = height, fps = fps, bitrate = bitrate },  videoDataQueue, null, writerQueue, null);
+            OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1] {
+                new OutgoingStreamDescription() {
                     tileNumber = 0,
                     qualityIndex = 0,
                     inQueue = writerQueue
                 }
             };
-            if(useDash) writer = new B2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
-            else writer = new SocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, "wcss", b2dStreams);
+            if(useDash) writer = new AsyncB2DWriter(remoteURL, remoteStream, "wcss", 2000, 10000, b2dStreams);
+            else writer = new AsyncSocketIOWriter(OrchestratorController.Instance.SelfUser, remoteStream, "wcss", b2dStreams);
 
 //            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, 0, videoCodecQueue);
 //            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, videoCodecQueue);
 
-            decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
-            preparer = new VideoPreparer(videoPreparerQueue, null);
+            decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+            preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
         }
         catch (System.Exception e) {
             Debug.Log($"VideoWebCam.Init: Exception: {e.Message}");
@@ -87,8 +89,8 @@ public class VideoWebCam : MonoBehaviour {
             string remoteURL = OrchestratorController.Instance.SelfUser.sfuData.url_gen;
             string remoteStream = "webcam";
 
-            if (useDash) reader = new BaseSubReader(remoteURL, remoteStream, 1, "wcwc", videoCodecQueue);
-            else reader = new SocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, "wcwc", videoCodecQueue);
+            if (useDash) reader = new AsyncSubReader(remoteURL, remoteStream, 1, "wcwc", videoCodecQueue);
+            else reader = new AsyncSocketIOReader(OrchestratorController.Instance.SelfUser, remoteStream, "wcwc", videoCodecQueue);
 
         }
 
@@ -117,6 +119,5 @@ public class VideoWebCam : MonoBehaviour {
         preparer?.StopAndWait();
 
         Debug.Log($"VideoDashReceiver: Queues references counting: videoCodecQueue {videoCodecQueue._Count} videoPreparerQueue {videoPreparerQueue._Count} ");
-        BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 }
