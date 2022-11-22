@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-  
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
+
     public class LiveTileSelector : BaseTileSelector
     {
 
@@ -17,7 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
         //
         double[][] guessedBandwidthUsageMatrix;
         
-        public void Init(PointCloudPipeline _prerecordedPointcloud, TilingConfig _tilingConfig)
+        public void Init(PointCloudPipeline _prerecordedPointcloud, PointCloudNetworkTileDescription _tilingConfig)
         {
 
             pipeline = _prerecordedPointcloud;
@@ -67,7 +68,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         }
 
-        protected override Vector3 getPointcloudPosition(long currentFrameNumber)
+        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }

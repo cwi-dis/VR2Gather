@@ -1,8 +1,9 @@
 {
     "name": "VRTProfiler",
+    "rootNamespace": "",
     "references": [
         "VRTCore",
-        "TVM"
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

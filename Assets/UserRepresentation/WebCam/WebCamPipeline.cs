@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
+using Cwipc;
 using VRT.Video;
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
@@ -13,6 +14,9 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.WebCam
 {
+    using QueueThreadSafe = Cwipc.QueueThreadSafe;
+    using OutgoingStreamDescription = Cwipc.StreamSupport.OutgoingStreamDescription;
+
     public class WebCamPipeline : BasePipeline
     {
         public int width = 1280;
@@ -25,12 +29,12 @@ namespace VRT.UserRepresentation.WebCam
         public WebCamTexture webCamTexture;
 
 
-        WebCamReader webReader;
-        BaseWorker reader;
-        BaseWorker encoder;
-        VideoDecoder decoder;
-        BaseWorker writer;
-        VideoPreparer preparer;
+        AsyncWebCamReader webReader;
+        AsyncWorker reader;
+        AsyncWorker encoder;
+        AsyncVideoDecoder decoder;
+        AsyncWorker writer;
+        AsyncVideoPreparer preparer;
 
         QueueThreadSafe encoderQueue;
         QueueThreadSafe writerQueue = new QueueThreadSafe("WebCamPipelineWriter");
@@ -85,7 +89,7 @@ namespace VRT.UserRepresentation.WebCam
                     //
                     // Create reader
                     //
-                    webReader = new WebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
+                    webReader = new AsyncWebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
                     webCamTexture = webReader.webcamTexture;
                     if (!preview)
                     {
@@ -94,7 +98,7 @@ namespace VRT.UserRepresentation.WebCam
                         //
                         try
                         {
-                            encoder = new VideoEncoder(new VideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
+                            encoder = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
                         }
                         catch (System.EntryPointNotFoundException e)
                         {
@@ -109,8 +113,8 @@ namespace VRT.UserRepresentation.WebCam
                             throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
                         try
                         {
-                            B2DWriter.DashStreamDescription[] dashStreamDescriptions = new B2DWriter.DashStreamDescription[1] {
-                                new B2DWriter.DashStreamDescription() {
+                            OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {
+                                new OutgoingStreamDescription() {
                                 tileNumber = 0,
                                 qualityIndex = 0,
                                 inQueue = writerQueue
@@ -118,16 +122,16 @@ namespace VRT.UserRepresentation.WebCam
                             };
                             if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                             {
-                                writer = new B2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
+                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
                              if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                             {
-                                writer = new TCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
+                                writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
                             }
                             else
                             {
-                                writer = new SocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
+                                writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
                             }
 
                         }
@@ -155,25 +159,25 @@ namespace VRT.UserRepresentation.WebCam
                     
                     if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                     {
-                        reader = new BaseSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                        reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                     }
                     else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
                     {
-                        reader = new BaseTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                        reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
                     }
                     else
                     {
-                        reader = new SocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                        reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
                     }
 
                     //
                     // Create video decoder.
                     //
-                    decoder = new VideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+                    decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
                     //
                     // Create video preparer.
                     //
-                    preparer = new VideoPreparer(videoPreparerQueue, null);
+                    preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
                     // xxxjack should set Synchronizer here
                    
                     ready = true;
@@ -244,7 +248,6 @@ namespace VRT.UserRepresentation.WebCam
             writer?.StopAndWait();
             preparer?.StopAndWait();
             // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
-            BaseMemoryChunkReferences.ShowTotalRefCount();
         }
 
 
@@ -256,7 +259,7 @@ namespace VRT.UserRepresentation.WebCam
                 return new SyncConfig();
             }
             SyncConfig rv = new SyncConfig();
-            B2DWriter pcWriter = (B2DWriter)writer;
+            AsyncB2DWriter pcWriter = (AsyncB2DWriter)writer;
             if (pcWriter != null)
             {
                 rv.visuals = pcWriter.GetSyncInfo();
@@ -275,7 +278,7 @@ namespace VRT.UserRepresentation.WebCam
                 Debug.LogError("Programmer error: WebCamPipeline: SetSyncConfig called for pipeline that is a source");
                 return;
             }
-            PCSubReader pcReader = (PCSubReader)reader;
+            AsyncSubPCReader pcReader = (AsyncSubPCReader)reader;
             if (pcReader != null)
             {
                 pcReader.SetSyncInfo(config.visuals);

@@ -4,6 +4,7 @@ using UnityEngine;
 using VRT.Core;
 using VRT.UserRepresentation.Voice;
 using VRT.Orchestrator.Wrapping;
+using Cwipc;
 
 public class TestAudio : MonoBehaviour
 {

@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using VRT.Orchestrator.Wrapping;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Pilots.Common
 {
@@ -51,7 +54,9 @@ namespace VRT.Pilots.Common
 			else
 			{
 				OnTrigger.Invoke();
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#if VRT_WITH_STATS
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#endif
 				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
 			}
 		}
@@ -60,7 +65,9 @@ namespace VRT.Pilots.Common
 		{
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#if VRT_WITH_STATS
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#endif
 
 				OnTrigger.Invoke();
 

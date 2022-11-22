@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
-namespace VRT.Core
+namespace VRT.Profiler
 {
     public class PositionTracker : MonoBehaviour
     {
@@ -15,6 +18,12 @@ namespace VRT.Core
             return $"{GetType().Name}#{transform.parent.gameObject.name}.{instanceNumber}";
         }
 
+#if !VRT_WITH_STATS
+        private void Start()
+        {
+            Debug.LogError($"{Name()}: VRT_WITH_STATS not enabled, making this a bit pointless");
+        }
+#else
         // Start is called before the first frame update
         void Start()
         {
@@ -27,7 +36,7 @@ namespace VRT.Core
             stats.statsUpdate(transform.position, transform.eulerAngles);
         }
 
-        protected class Stats : BaseStats
+        protected class Stats : Statistics
         {
             public Stats(string name, double interval) : base(name, interval)
             {
@@ -58,5 +67,6 @@ namespace VRT.Core
         }
 
         protected Stats stats;
+#endif
     }
 }
