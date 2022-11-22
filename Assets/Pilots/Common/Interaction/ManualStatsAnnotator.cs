@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Core
 {
@@ -16,18 +19,22 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
-
+#if !VRT_WITH_STATS
+            Debug.LogWarning("ManualStatsAnnotator: VRT_WITH_STATS not defined, making this script a bit pointless...");
+#endif
         }
 
-        // Update is called once per frame
-        void Update()
+            // Update is called once per frame
+            void Update()
         {
+#if VRT_WITH_STATS
             if(Input.GetKeyDown(key1))
-                BaseStats.Output("ManualAnnotator", msg1);
+                Statistics.Output("ManualAnnotator", msg1);
             if(Input.GetKeyDown(key2))
-                BaseStats.Output("ManualAnnotator", msg2);
+                Statistics.Output("ManualAnnotator", msg2);
             if(Input.GetKeyDown(key3))
-                BaseStats.Output("ManualAnnotator", msg3);
+                Statistics.Output("ManualAnnotator", msg3);
+#endif
         }
     }
 }

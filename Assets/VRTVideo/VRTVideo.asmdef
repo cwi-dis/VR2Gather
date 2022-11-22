@@ -1,7 +1,10 @@
 {
     "name": "VRTVideo",
+    "rootNamespace": "",
     "references": [
-        "VRTCore"
+        "VRTCore",
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

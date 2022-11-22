@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 namespace VRT.Core
 {
     [Serializable]
@@ -24,7 +26,6 @@ namespace VRT.Core
         public string orchestratorLogURL = "";
         public bool openLogOnExit = true;
         public int targetFrameRate = -1; // system default framerate
-        public float memoryDamping = 1.3f;
         public float ntpSyncThreshold = 1.0f;
         public ProtocolType protocolType = ProtocolType.SocketIO;
         public readonly int audioSampleRate = 48000;
@@ -82,21 +83,7 @@ namespace VRT.Core
         };
         public _Macintosh Macintosh;
 
-        [Serializable]
-        public class _PCs
-        {
-            public string Codec = "cwi1";
-            public float defaultCellSize;
-            public float cellSizeFactor;
-            public bool debugColorize;
-            public float timeoutBeforeGhosting = 5.0f;
-            public int decoderQueueSizeOverride = 0;
-            public int preparerQueueSizeOverride = 0;
-            public int encoderParallelism = 0;
-            public int decoderParallelism = 0;
-
-        };
-        public _PCs PCs;
+        public Cwipc.CwipcConfig PCs;
 
         [Serializable]
         public class _Voice
@@ -225,6 +212,11 @@ namespace VRT.Core
                     {
                         Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
+                    // Initialize some other modules that have their own configuration.
+#if VRT_WITH_STATS
+                    Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
+#endif
+                    Cwipc.CwipcConfig.SetInstance(_Instance.PCs);
                 }
                 return _Instance;
             }
@@ -267,6 +259,9 @@ namespace VRT.Core
             {
                 // For the Mac player, the config file is in the Contents directory, which is dataPath
                 dataPath = Application.dataPath;
+            } else if (Application.platform == RuntimePlatform.Android)
+            {
+                dataPath = Application.persistentDataPath; // xxxjack for debugging
             } else
             {
                 // For Windos/Linux player, the config file is in the same directory as the executable
