@@ -35,6 +35,7 @@ namespace VRT.UserRepresentation.PointCloud
         AsyncWriter writer;
         List<AsyncPointCloudPreparer> preparers = new List<AsyncPointCloudPreparer>();
         List<PointCloudRenderer> renderers = new List<PointCloudRenderer>();
+        public bool paused = false;
 
         List<QueueThreadSafe> preparerQueues = new List<QueueThreadSafe>();
         QueueThreadSafe encoderQueue;
@@ -169,7 +170,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case UserRepresentationType.__PCC_CWIK4A_:
                     var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
                     if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                    pcReader = new AsyncKinectSkeletonReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, false, selfPreparerQueue, encoderQueue);
+                    pcReader = new AsyncKinectSkeletonReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, KinectReaderConfig.wantedSkeleton, selfPreparerQueue, encoderQueue);
                     break;
                 case UserRepresentationType.__PCC_PROXY__:
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
@@ -490,6 +491,7 @@ namespace VRT.UserRepresentation.PointCloud
             Statistics.Output(Name(), msg);
 #endif
             renderers.Add(render);
+            if (paused) PausePlayback(true);
             render.SetPreparer(preparer);
             return preparerQueue;
         }
@@ -557,6 +559,15 @@ namespace VRT.UserRepresentation.PointCloud
         public void ClearCrop()
         {
             SetCrop(null);
+        }
+
+        public void PausePlayback(bool _paused)
+        {
+            paused = _paused;
+            foreach (var r in renderers)
+            {
+                r.PausePlayback(paused);
+            }
         }
 
         public PointCloudNetworkTileDescription GetTilingConfig()
