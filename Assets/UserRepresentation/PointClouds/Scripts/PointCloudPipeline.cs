@@ -29,7 +29,7 @@ namespace VRT.UserRepresentation.PointCloud
         public ISynchronizer synchronizer = null;
         static int pcDecoderQueueSize = 10;  // Was: 2.
         static int pcPreparerQueueSize = 15; // Was: 2.
-        protected AsyncReader reader;
+        public AsyncReader reader;
         AbstractPointCloudEncoder encoder;
         List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
         AsyncWriter writer;
@@ -169,7 +169,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case UserRepresentationType.__PCC_CWIK4A_:
                     var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
                     if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                    pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    pcReader = new AsyncKinectSkeletonReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, false, selfPreparerQueue, encoderQueue);
                     break;
                 case UserRepresentationType.__PCC_PROXY__:
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
