@@ -1,18 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
+using Cwipc;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class K4AReader : PCReader
+    public class KinectPointCloudSkeletonReader : Cwipc.KinectPointCloudReader
     {
 
-        public cwipc.cwipc_skeleton mostRecentSkeleton;
+        public Cwipc.SkeletonSupport mostRecentSkeleton;
         bool wantedSkeleton = false;
         int count = 0;
 
-        public K4AReader(string _configFilename, float _voxelSize, float _frameRate, bool _wantedSkeleton, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
+        public KinectPointCloudSkeletonReader(string _configFilename, float _voxelSize, float _frameRate, bool _wantedSkeleton, QueueThreadSafe _outQueue, QueueThreadSafe _out2Queue = null) : base(_outQueue, _out2Queue)
         {
             voxelSize = _voxelSize;
             wantedSkeleton = _wantedSkeleton;
@@ -25,7 +25,7 @@ namespace VRT.UserRepresentation.PointCloud
                 reader = cwipc.kinect(_configFilename);
                 if (wantedSkeleton)
                 {
-                    BaseStats.Output(Name(), "skeleton=1");
+                    Statistics.Output(Name(), "skeleton=1");
                     bool result = reader.request_auxiliary_data("skeleton");
                     if (!result) throw new System.Exception($"{Name()}: cwipc_kinect skeleton tracker could not be initialized");
                     Debug.Log($"{Name()}: Requested Skeleton.");
@@ -49,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        override protected void optionalProcessing(cwipc.pointcloud pc) 
+        override protected void OptionalProcessing(cwipc.pointcloud pc) 
         {
             if (wantedSkeleton)
             {
