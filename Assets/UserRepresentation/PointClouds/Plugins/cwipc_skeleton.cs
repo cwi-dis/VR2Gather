@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using UnityEngine;
 using VRT.Core;
 
 namespace Cwipc
@@ -9,6 +10,10 @@ namespace Cwipc
     using Timestamp = System.Int64;
     using Timedelta = System.Int64;
 
+    /// <summary>
+    /// Support for skeleton data.
+    /// Modeled after Azure Kinect skeleton data, which is only the only type currently supported.
+    /// </summary>
     public class SkeletonSupport
     {
      
@@ -33,21 +38,51 @@ namespace Cwipc
             public _cwipc_skeleton_joint[] joints;
         };
 
+        /// <summary>
+        /// Information on a single joint.
+        /// </summary>
         public class cwipc_skeleton_joint
         {
-            public int confidence;      // 0=None, 1=Low, 2=Medium, 3=High
-            public float[] position;    // x, y, z
-            public float[] orientation; // q_w, q_x, q_y, q_z
+            /// <summary>
+            /// How confident the grabber was on this joint information:
+            /// 0=None, 1=Low, 2=Medium, 3=High
+            /// </summary>
+            public int confidence;
+            /// <summary>
+            /// Position of the joint. Point.
+            /// </summary>
+            public Vector3 position;    // x, y, z
+            /// <summary>
+            /// Rotation of the joint. Quaternion.
+            /// </summary>
+            public Quaternion orientation; // q_w, q_x, q_y, q_z
+            /// <summary>
+            /// Constructor, should only be used internally within SkeletonSupport.
+            /// </summary>
+            /// <param name="_confidence"></param>
+            /// <param name="_x"></param>
+            /// <param name="_y"></param>
+            /// <param name="_z"></param>
+            /// <param name="_q_w"></param>
+            /// <param name="_q_x"></param>
+            /// <param name="_q_y"></param>
+            /// <param name="_q_z"></param>
             public cwipc_skeleton_joint(int _confidence, float _x, float _y, float _z, float _q_w, float _q_x, float _q_y, float _q_z) 
             {
                 confidence = _confidence;
-                position = new float[] { _x, _y, _z };
-                orientation = new float[] { _q_w, _q_x, _q_y, _q_z };
+                position = new Vector3(_x, _y, _z);
+                orientation = new Quaternion(_q_w, _q_x, _q_y, _q_z);
             }
         }
 
+        /// <summary>
+        /// Information on a complete skeleton.
+        /// </summary>
         public class cwipc_skeleton
         {
+            /// <summary>
+            /// Indentity of joints. Must match Azure Kinect mapping.
+            /// </summary>
             public enum JointIndex
             {
                 PELVIS = 0,
@@ -87,6 +122,12 @@ namespace Cwipc
             public Timestamp timestamp;
             public List<cwipc_skeleton_joint> joints;
             public cwipc_skeleton() { }
+            /// <summary>
+            /// Construct a cwipc_skeleton from the low-level auxiliary data pointer and size.
+            /// </summary>
+            /// <param name="data_pointer"></param>
+            /// <param name="data_size"></param>
+            /// <param name="_timestamp"></param>
             public cwipc_skeleton(IntPtr data_pointer, int data_size, Timestamp _timestamp)
             {
                 timestamp = _timestamp;
@@ -107,6 +148,12 @@ namespace Cwipc
                 }
             }
 
+            /// <summary>
+            /// Fuse a second skeleton (from another camera) into an already existing skeleton.
+            /// </summary>
+            /// <param name="data_pointer"></param>
+            /// <param name="data_size"></param>
+            /// <returns></returns>
             public bool fuse_skeletons(IntPtr data_pointer, int data_size) 
             {
                 List<cwipc_skeleton_joint> new_joints = new List<cwipc_skeleton_joint>();
@@ -126,10 +173,8 @@ namespace Cwipc
                             cwipc_skeleton_joint new_joint = new cwipc_skeleton_joint(reader.ReadInt32(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                             if (joints[i].confidence == new_joint.confidence)  //average positions
                             {
-                                float x = (joints[i].position[0] + new_joint.position[0]) / 2;
-                                float y = (joints[i].position[0] + new_joint.position[0]) / 2;
-                                float z = (joints[i].position[0] + new_joint.position[0]) / 2;
-                                joints[i].position = new float[] { x, y, z };
+                                joints[i].position = (joints[i].position + new_joint.position)/2;
+                                // xxxjack Leave orientation as-is, unsure how to interpolate quaternions.
                             }
                             else if (joints[i].confidence < new_joint.confidence) //Use joint with higher coinfidence
                             {
