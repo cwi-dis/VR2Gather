@@ -1,15 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using VRT.UserRepresentation.Voice;
 using VRT.Core;
-using VRT.Transport.SocketIO;
-using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PointcloudPlayback : PointCloudPipeline
+    public class PointCloudPlayback : PointCloudPipeline
     {
         [Tooltip("Overrides PrerecordedReaderConfig setting: directory to read")]
         public string folder;

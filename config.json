@@ -6,7 +6,6 @@
 	"openLogOnExit" : false,
 
   "targetFrameRate": 0,
-  "memoryDamping": 1.2999999523162842,
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
@@ -49,8 +48,8 @@
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
     "timeoutBeforeGhosting" : 5,
-    "encoderParallelism" : 4,
-    "decoderParallelism" : 8
+    "encoderParallelism" : 0,
+    "decoderParallelism" : 0
   },
   "Voice": {
   	"Codec": "VR2A",
@@ -91,7 +90,7 @@
 	  },
       "voxelSize": 0.007,
       "frameRate": 15,
-      "tiled": false,
+      "tiled": true,
       "Encoders": [
 		
 		{

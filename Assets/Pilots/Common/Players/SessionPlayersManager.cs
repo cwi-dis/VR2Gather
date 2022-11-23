@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using VRT.Core;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 
@@ -199,7 +202,9 @@ namespace VRT.Pilots.Common
 				cameraTransform = playerManager.getCameraTransform();
 			}
 
-			VRT.Core.BaseStats.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+#if VRT_WITH_STATS
+            Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
+#endif
 
 			if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
 			{
@@ -362,7 +367,7 @@ namespace VRT.Pilots.Common
 			Destroy(player.gameObject);
 		}
 
-		#region Player Locations
+#region Player Locations
 		private void SendPlayerLocationData(string userId = null)
 		{
 			PlayerLocationData data = new PlayerLocationData(Players.Count);
@@ -522,6 +527,6 @@ namespace VRT.Pilots.Common
 			playerLocation = null;
 			return false;
 		}
-		#endregion
+#endregion
 	}
 }

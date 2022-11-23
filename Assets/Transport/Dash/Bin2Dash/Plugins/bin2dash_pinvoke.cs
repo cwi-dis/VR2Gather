@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Transport.Dash
 {
@@ -100,11 +101,6 @@ namespace VRT.Transport.Dash
             if (obj == IntPtr.Zero)
                 return null;
             return new connection(obj);
-        }
-
-        static public uint VRT_4CC(char a, char b, char c, char d)
-        {
-            return (uint)(a << 24 | b << 16 | c << 8 | d);
         }
     }
 }
