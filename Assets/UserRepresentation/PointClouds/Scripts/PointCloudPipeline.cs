@@ -170,7 +170,12 @@ namespace VRT.UserRepresentation.PointCloud
                 case UserRepresentationType.__PCC_CWIK4A_:
                     var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
                     if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                    pcReader = new AsyncKinectSkeletonReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, KinectReaderConfig.wantedSkeleton, selfPreparerQueue, encoderQueue);
+                    var kinectReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                    if (kinectReader != null && KinectReaderConfig.wantedSkeleton)
+                    {
+                        kinectReader.SetWantSkeleton(true);
+                    }
+                    pcReader = kinectReader;
                     break;
                 case UserRepresentationType.__PCC_PROXY__:
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
