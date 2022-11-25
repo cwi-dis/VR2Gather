@@ -136,21 +136,12 @@
       },
       "url": "https://packages.unity.com"
     },
-    "com.valvesoftware.unity.openvr": {
-      "version": "file:../Assets/SteamVR/OpenVRUnityXRPackage/Editor/com.valvesoftware.unity.openvr-1.1.4.tgz",
+    "nl.cwi.dis.cwipc": {
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
-      "source": "local-tarball",
-      "dependencies": {
-        "com.unity.xr.management": "3.2.13",
-        "com.unity.ugui": "1.0.0",
-        "com.unity.xr.legacyinputhelpers": "2.1.4"
-      }
-    },
-    "com.unity.modules.ai": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "f65abb28d1c351a59ddfaa9ae909cd3975d9341b"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",
@@ -255,14 +246,6 @@
       "depth": 1,
       "source": "builtin",
       "dependencies": {}
-    },
-    "com.unity.modules.vehicles": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.physics": "1.0.0"
-      }
     },
     "com.unity.modules.video": {
       "version": "1.0.0",

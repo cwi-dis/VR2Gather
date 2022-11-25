@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using VRT.Core;
+using Cwipc;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
+using PointCloudRenderer = Cwipc.PointCloudRenderer;
 
 public class SelfRepresentationPreview : MonoBehaviour{
     public static SelfRepresentationPreview Instance { get; private set; }
@@ -61,7 +63,7 @@ public class SelfRepresentationPreview : MonoBehaviour{
         StopMicrophone();
         currentMicrophoneName = microphoneName;
         if (currentMicrophoneName != "None") {
-            VoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
             recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
             readPosition = 0;
         }

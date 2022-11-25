@@ -1,10 +1,13 @@
 {
     "name": "SocketIO",
+    "rootNamespace": "",
     "references": [
         "BestHTTP",
         "Dash",
         "VRTCore",
-        "Orchestrator"
+        "Orchestrator",
+        "Cwipc",
+        "VRTStatistics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
