@@ -18,7 +18,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "test",
-  	"sessionScenario" : "Development",
+  	"sessionScenario" : "Development ",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
@@ -85,7 +85,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.005,
+      "voxelSize": 0,
       "frameRate": 30,
       "tiled": false,
       "Encoders": [
