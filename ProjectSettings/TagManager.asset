@@ -30,12 +30,12 @@ TagManager:
   - 
   - 
   - 
+  - MaskGeneratorLayer
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - RenderPlane (Right)
+  - RenderPlane (Left)
+  - DualCamera (Left)
+  - DualCamera (Right)
   - SelfView
   - PlayerLocation
   - TouchableObject
