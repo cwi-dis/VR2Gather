@@ -10,6 +10,7 @@
     "com.unity.xr.oculus": "3.0.2",
     "com.unity.xr.openxr": "1.4.2",
     "nl.cwi.dis.cwipc": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
+    "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
@@ -18,6 +19,7 @@
     "com.unity.modules.terrain": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
+    "com.unity.modules.vehicles": "1.0.0",
     "com.unity.modules.video": "1.0.0"
   }
 }

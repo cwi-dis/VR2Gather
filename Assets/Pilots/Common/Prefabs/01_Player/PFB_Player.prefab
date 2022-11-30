@@ -609,7 +609,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 291867005512789998}
+  m_Camera: {fileID: 0}
   m_PlaneDistance: 0.3
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1600,7 +1600,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee302642fd02ab43846844518a16bfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugSynchronizer: 0
+  _debugSynchronizer: 0
   debugJitterBuffer: 0
   currentLatency: 0
   currentMinLatency: 0

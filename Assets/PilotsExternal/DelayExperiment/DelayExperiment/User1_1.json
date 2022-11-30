@@ -1,0 +1,228 @@
+{
+    "questionnaires": [
+        {
+            "items": [
+                {
+                    "scale": "exp",
+                    "tag": "RPQ.MS",
+                    "text": "Rate your expertise level with VR technologies"
+                },
+                {
+                    "scale": "acr",
+                    "tag": "RPQ.SQ",
+                    "text": "How reliable do you think your scores are?"
+                },
+                {
+                    "scale": "likert",
+                    "tag": "RPQ.AQ",
+                    "text": "'I have enjoyed using this tool'"
+                }
+            ],
+            "name": "rpq"
+        },
+        {
+            "items": [
+                {
+                    "scale": "acr",
+                    "tag": "DREQ.GQOE",
+                    "text": "'\u00bfC\u00f3mo valorar\u00eda la experiencia globalmente?'"
+                },
+                {
+                    "scale": "esfuerzo",
+                    "tag": "P920.INTERR",
+                    "text": "'\u00bfC\u00f3mo juzgar\u00eda el esfuerzo necesario para interrumpir a la otra persona?'"
+                },
+                {
+                    "scale": "esfuerzo",
+                    "tag": "P1305.Annoyance",
+                    "text": "'\u00bfPudo comunicarse utilizando el sistema?'"
+                },
+                {
+                    "scale": "consistente",
+                    "tag": "DREQ.INVO",
+                    "text": "'\u00bfEn qu\u00e9 medida sus experiencias en el juego parecen consistentes con sus experiencias del mundo real?'"
+                },
+                {
+                    "scale": "concentrarse",
+                    "tag": "DREQ.ADAP2",
+                    "text": "'\u00bfFue capaz de concentrarse en las tareas del juego m\u00e1s que en los mecanismos usados para realizarlas?'"
+                },
+                {
+                    "scale": "convencido",
+                    "tag": "DREQ.INVO2",
+                    "text": "'Estoy convencido de que los dos usuarios hemos completado la tarea correctamente.'"
+                },
+                {
+                    "scale": "unidad",
+                    "tag": "WANG.UNIT",
+                    "text": "'Me sent\u00ed unido a mi compa\u00f1ero.'"
+                },
+                {
+                    "scale": "esfuerzo",
+                    "tag": "WANG.UNDERS",
+                    "text": "'Fui capaz de comprender el mensaje de mi compa\u00f1ero.'"
+                },
+                {
+                    "scale": "esfuerzo",
+                    "tag": "WANG.TOGET",
+                    "text": "'Mi compa\u00f1ero y yo trabajamos bien juntos.'"
+                },
+                {
+                    "scale": "convencido",
+                    "tag": "WANG.CONVINC",
+                    "text": "'Estoy convencido de que la informaci\u00f3n de mi compa\u00f1ero me sirvi\u00f3 de ayuda.'"
+                }
+            ],
+            "name": "DREQ"
+        }
+    ],
+    "randomize": false,
+    "scales": [
+        {
+            "name": "exp",
+            "scores": [
+                "newbie",
+                "initiate",
+                "proficient",
+                "master",
+                "legend"
+            ]
+        },
+        {
+            "name": "natural",
+            "scores": [
+                "Muy artificial",
+                "Algo artificial",
+                "Neutro",
+                "Natural",
+                "Completamente\n natural"
+            ]
+        },
+        {
+            "name": "convencido",
+            "scores": [
+                "Nada en\n absoluto",
+                "Algo\n convencido",
+                "Moderadamente\n Convencido",
+                "Convencido",
+                "Muy\n convencido"
+            ]
+        },
+        {
+            "name": "unidad",
+            "scores": [
+                "Nada en\n absoluto",
+                "Algo\n unido",
+                "Moderadamente\n Unido",
+                "Unido",
+                "Muy\n Unido"
+            ]
+        },
+        {
+            "name": "convincente",
+            "scores": [
+                "Nada en\n absoluto",
+                "Algo\n convincente",
+                "Moderadamente\n Convincente",
+                "Convincente",
+                "Muy\n convincente"
+            ]
+        },
+        {
+            "name": "consistente",
+            "scores": [
+                "Nada\n consistentes",
+                "Algo\n consistentes",
+                "Moderadamente\n consistentes",
+                "Consistentes",
+                "Muy\n consistentes"
+            ]
+        },
+        {
+            "name": "esfuerzo",
+            "scores": [
+                "Nada en\n absoluto",
+                "Con mucho\n esfuerzo",
+                "Con esfuerzo",
+                "Apenas\n esfuerzo",
+                "Sin esfuerzo"
+            ]
+        },
+        {
+            "name": "adapta",
+            "scores": [
+                "No me adapt\u00e9\n en absoluto",
+                "Muy lentamente",
+                "Lentamente",
+                "Moderadamente",
+                "En menos\n de un minuto"
+            ]
+        },
+        {
+            "name": "concentrarse",
+            "scores": [
+                "Nada en\n absoluto",
+                "Poco",
+                "Algo",
+                "Bastante",
+                "Completamente"
+            ]
+        },
+        {
+            "name": "competente",
+            "scores": [
+                "Nada\n competente",
+                "Algo\n competente",
+                "Razonablemente\n Competente",
+                "Competente",
+                "Muy\n Competente"
+            ]
+        }
+    ],
+    "sequences": [
+        {
+            "duration": 2000,
+            "post_seq_questions": [
+                "DREQ"
+            ],
+            "post_sequence_timeout": 500,
+            "retardo_numerico": "400",
+            "src_id": "Bird",
+            "start": 0,
+            "uri": "Delay_400"
+        },
+        {
+            "duration": 2000,
+            "post_seq_questions": [
+                "DREQ"
+            ],
+            "post_sequence_timeout": 500,
+            "retardo_numerico": "1200",
+            "src_id": "Dog",
+            "start": 0,
+            "uri": "Delay_1200"
+        },
+        {
+            "duration": 2000,
+            "post_seq_questions": [
+                "DREQ"
+            ],
+            "post_sequence_timeout": 500,
+            "retardo_numerico": "800",
+            "src_id": "Rocket",
+            "start": 0,
+            "uri": "Delay_800"
+        },
+        {
+            "duration": 2000,
+            "post_seq_questions": [
+                "DREQ"
+            ],
+            "post_sequence_timeout": 500,
+            "retardo_numerico": "1600",
+            "src_id": "TREX",
+            "start": 0,
+            "uri": "Delay_1600"
+        }
+    ]
+}

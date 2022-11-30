@@ -1,0 +1,72 @@
+{
+"scales" : [{
+    "name": "exp",
+    "scores": ["newbie", "initiate", "proficient", "master", "legend"]
+  }],
+  "questionnaires": [{
+    "name": "rpq",
+    "items": [
+      {
+        "scale": "exp",
+        "text": "Rate your expertise level with VR technologies",
+        "tag": "RPQ.MS"
+      },
+      {
+        "scale": "acr",
+        "text": "How reliable do you think your scores are?",
+        "tag": "RPQ.SQ"
+      },
+      {
+        "scale": "likert",
+        "text": "'I have enjoyed using this tool'",
+        "tag": "RPQ.AQ"
+      }
+    ]
+  }],
+  "sequences": [
+{
+      "uri": "Delay_400",
+      "src_id": "Reno",
+      "start": 0,
+	  "retardo_numerico": 400,
+      "duration": 2000,
+      "post_sequence_timeout" : 50, 
+"post_seq_questions": [
+        "acr"
+      ]
+    },	{
+      "uri": "Delay_800",
+      "src_id": "Dog",
+      "start": 0,
+      "duration": 2000,
+	  "retardo_numerico": 800,
+      "post_sequence_timeout" : 500, 
+"post_seq_questions": [
+        "acr"
+      ]
+    },
+{
+      "uri": "Delay_1500",
+      "src_id": "TREX",
+      "start": 0,
+      "duration": 2000,
+	  "retardo_numerico": 1500,
+      "post_sequence_timeout" : 500, 
+"post_seq_questions": [
+        "acr"
+      ]
+    },
+	{
+      "uri": "Delay_1000",
+      "src_id": "Mazinger",
+      "start": 0,
+      "duration": 2000,
+	  "retardo_numerico": 1000,
+      "post_sequence_timeout" : 500, 
+"post_seq_questions": [
+        "acr"
+      ]
+    }
+	],
+   "randomize": false
+}
