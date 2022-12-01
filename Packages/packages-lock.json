@@ -141,7 +141,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "f65abb28d1c351a59ddfaa9ae909cd3975d9341b"
+      "hash": "e5002a8e9fb45a1f45dc4fe3acec37032f7b9613"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",
