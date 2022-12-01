@@ -2,113 +2,117 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraFader : MonoBehaviour
+namespace VRT.Pilots.Common
 {
-	public float FadeDuration = 1.0f;
-	public Image FadeImage;
-	public Text FadeText;
 
-	public bool StartFadedOut = false;
-
-	private Material _FadeMaterial;
-	private bool _Fading = false;
-	private float _Target;
-	private float _Value;
-	private float _Step;
-
-	private static CameraFader _Instance;
-	public static CameraFader Instance
-	{
-		get
-		{
-			if(_Instance == null)
-			{
-				_Instance = FindObjectOfType<CameraFader>();
-			}
-
-			return _Instance;
-		}
-	}
-
-	public void Awake()
-	{
-		_FadeMaterial = Instantiate(FadeImage.material);
-		FadeImage.material = _FadeMaterial;
-		_InitFade();
-
-	}
-
-	void _InitFade()
+    public class CameraFader : MonoBehaviour
     {
-		if (StartFadedOut)
-		{
-			_FadeMaterial.color = Color.black;
-			_Value = 1f;
-		}
-		else
-		{
-			_FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
-			_Value = 0f;
-		}
-	}
+        public float FadeDuration = 1.0f;
+        public Image FadeImage;
+        public Text FadeText;
 
-	public void SetText(string text)
-	{
-		FadeText.text = text;
-	}
+        public bool StartFadedOut = false;
 
-	public void ClearText()
-	{
-		FadeText.text = "";
-	}
+        private Material _FadeMaterial;
+        private bool _Fading = false;
+        private float _Target;
+        private float _Value;
+        private float _Step;
 
-	public IEnumerator FadeIn()
-	{
-		_InitFade();
-		yield return null;
+        private static CameraFader _Instance;
+        public static CameraFader Instance
+        {
+            get
+            {
+                if (_Instance == null)
+                {
+                    _Instance = FindObjectOfType<CameraFader>();
+                }
 
-		ClearText();
-		_Fading = true;
-		_Target = 0.0f;
-		_Step = -1.0f / FadeDuration;
+                return _Instance;
+            }
+        }
 
-		_Value = _FadeMaterial.color.a;
+        public void Awake()
+        {
+            _FadeMaterial = Instantiate(FadeImage.material);
+            FadeImage.material = _FadeMaterial;
+            _InitFade();
 
-		while (_Fading)
-		{
-			_Value += Time.deltaTime * _Step;
-			_Value = Mathf.Clamp01(_Value);
+        }
 
-			if (_Value == _Target)
-			{
-				_Fading = false;
-			}
+        void _InitFade()
+        {
+            if (StartFadedOut)
+            {
+                _FadeMaterial.color = Color.black;
+                _Value = 1f;
+            }
+            else
+            {
+                _FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
+                _Value = 0f;
+            }
+        }
 
-			_FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
-			yield return null;
-		}
-	}
+        public void SetText(string text)
+        {
+            FadeText.text = text;
+        }
 
-	public IEnumerator FadeOut()
-	{
-		_Fading = true;
-		_Target = 1.0f;
-		_Step = 1.0f / FadeDuration;
+        public void ClearText()
+        {
+            FadeText.text = "";
+        }
 
-		_Value = _FadeMaterial.color.a;
+        public IEnumerator FadeIn()
+        {
+            _InitFade();
+            yield return null;
 
-		while (_Fading)
-		{
-			_Value += Time.deltaTime * _Step;
-			_Value = Mathf.Clamp01(_Value);
+            ClearText();
+            _Fading = true;
+            _Target = 0.0f;
+            _Step = -1.0f / FadeDuration;
 
-			if (_Value == _Target)
-			{
-				_Fading = false;
-			}
+            _Value = _FadeMaterial.color.a;
 
-			_FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
-			yield return null;
-		}
-	}
+            while (_Fading)
+            {
+                _Value += Time.deltaTime * _Step;
+                _Value = Mathf.Clamp01(_Value);
+
+                if (_Value == _Target)
+                {
+                    _Fading = false;
+                }
+
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
+                yield return null;
+            }
+        }
+
+        public IEnumerator FadeOut()
+        {
+            _Fading = true;
+            _Target = 1.0f;
+            _Step = 1.0f / FadeDuration;
+
+            _Value = _FadeMaterial.color.a;
+
+            while (_Fading)
+            {
+                _Value += Time.deltaTime * _Step;
+                _Value = Mathf.Clamp01(_Value);
+
+                if (_Value == _Target)
+                {
+                    _Fading = false;
+                }
+
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
+                yield return null;
+            }
+        }
+    }
 }

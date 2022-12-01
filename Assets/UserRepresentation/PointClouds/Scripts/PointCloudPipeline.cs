@@ -12,6 +12,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
 {

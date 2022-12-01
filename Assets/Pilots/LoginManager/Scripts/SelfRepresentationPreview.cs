@@ -8,6 +8,8 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.WebCam;
 using VRT.UserRepresentation.Voice;
 using VRT.UserRepresentation.PointCloud;
+using VRT.Pilots.Common;
+
 using PointCloudRenderer = Cwipc.PointCloudRenderer;
 
 public class SelfRepresentationPreview : MonoBehaviour{

@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
 {

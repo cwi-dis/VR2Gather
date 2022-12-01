@@ -8,6 +8,7 @@ using UnityEngine.InputSystem.Controls;
 using VRT.Core;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Orchestrator.Wrapping;
+using VRT.Pilots.Common;
 
 public class Calibration : MonoBehaviour {
     private enum State { CheckWithUser, SelectTranslationRotation, Translation, Rotation }

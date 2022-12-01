@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Cwipc;
+using VRT.Core;
 
-namespace VRT.Core
+namespace VRT.Pilots.Common
 {
     abstract public class BasePipeline : MonoBehaviour
     {

@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Core;
+using VRT.Pilots.Common;
 
 public class OrchestratorCalibration : MonoBehaviour {
 
