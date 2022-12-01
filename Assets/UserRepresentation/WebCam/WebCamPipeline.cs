@@ -11,6 +11,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.WebCam
 {
