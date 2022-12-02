@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using VRT.Core;
 using VRT.Pilots.Common;
+using UnityEngine.InputSystem;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 
@@ -205,19 +207,19 @@ public class ExperimentController : MonoBehaviour
         }
 
         leftCameraMaterial.SetTexture("_MainTex2", MaskTexture);
-        if (Input.GetKeyDown("f1"))
+        if (Keyboard.current[Key.F1].wasPressedThisFrame)
         {
             OrchControllerDelayExp.SendMessageToAll("ENDCON_");
             //SwitchToSceneVotation();START_
 
         }
-        if (Input.GetKeyDown("f2") )
+        if (Keyboard.current[Key.F2].wasPressedThisFrame)
         {
             if(OrchControllerDelayExp == null) OrchControllerDelayExp = GameObject.Find("OrchestratorController").GetComponent<OrchestratorController>();
             OrchControllerDelayExp.SendMessageToAll("ENDVOT_");
         }
        
-        if (Input.GetKeyDown("f8"))
+        if (Keyboard.current[Key.F8].wasPressedThisFrame)
         {
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isnotLocal).gameObject;
             AuxVar.GetComponentInChildren<PointCloudRenderer>().gameObject.transform.rotation = Quaternion.Euler(PCRotationoffset);

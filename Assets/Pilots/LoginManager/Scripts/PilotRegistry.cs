@@ -15,6 +15,8 @@ public class PilotRegistry
                 return "Pilot0";
             case "Technical Playground":
                 return "TechnicalPlayground";
+            case "Development":
+                return "UserDelayPilot0";
             default:
                 return null;
         }

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using UnityEngine.InputSystem;
 
 
-    public class WorldSwapper : MonoBehaviour
+public class WorldSwapper : MonoBehaviour
     {
     // Start is called before the first frame update
 
@@ -35,7 +36,7 @@ using Valve.VR;
 
         
 
-        if (gripbutton.GetStateDown(SteamVR_Input_Sources.Any) || Input.GetKeyDown("f3")) //GetStateDown takes as input argument the source (Righthand, Camera, Head, or whatever... )
+        if (gripbutton.GetStateDown(SteamVR_Input_Sources.Any) || Keyboard.current[Key.F3].wasPressedThisFrame) //GetStateDown takes as input argument the source (Righthand, Camera, Head, or whatever... )
         {
             Debug.Log(IsVirtualWorld.ToString());
             IsVirtualWorld = (IsVirtualWorld+1)%2;

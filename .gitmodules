@@ -3,4 +3,4 @@
 	url = ../VR2G-besthttp.git
 [submodule "Assets/ExternalAssets/EgoHTCView"]
 	path = Assets/ExternalAssets/EgoHTCView
-	url = C:\\Users\\VRGrande\\Documents\\VR2Gather\\Assets\\ExternalAssets\\EgoHTCView
+url=../VR2G-EgoViewHTCPro.git

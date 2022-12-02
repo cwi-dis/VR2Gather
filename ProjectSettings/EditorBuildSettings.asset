@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
+  - enabled: 1
+    path: Assets/PilotsExternal/DelayTestScene/DelayExperiment/DelayExperiment/Scenes/UserDelayPilot0.unity
+    guid: 5735614017014f148a72d4785d44f43a
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}

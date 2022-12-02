@@ -28,6 +28,7 @@ Shader "Custom/ChromaKeyRemove" {
 			ColorMask[_ColorMask]
 		CGPROGRAM
 #pragma surface surf Lambert alpha
+#include "UnityCG.cginc"
 
 	sampler2D _MainTex;
 	sampler2D _MainTex2;
@@ -64,10 +65,10 @@ Shader "Custom/ChromaKeyRemove" {
 		
 		//if (color2.g < 0.01f) return;
 		half4 color = tex2D(_MainTex, IN.uv_MainTex);
+		//float4 color=GammaToLinearSpace(tex2D(_MainTex, IN.uv_MainTex).rgb), 1);
 		float finalpha;
 		float2 screenUV = IN.screenPos.xy / IN.screenPos.w;
 		
-		o.Emission = color.rgb;
 		if (screenUV.x > MarginXLow && screenUV.x < MarginXHigh && screenUV.y > MarginYLow && screenUV.y < MarginYHigh) {
 			cr = 0.5 * color.r + -0.418688 * color.g + -0.081312 * color.b;
 			if (other.a > 0.01) {
@@ -89,7 +90,7 @@ Shader "Custom/ChromaKeyRemove" {
 		else {
 			finalpha = 0;
 		}
-
+		o.Emission = color.rgb;// GammaToLinearSpace(color, 1).rgb;
 		o.Alpha = finalpha;
 
 
