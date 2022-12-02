@@ -218,7 +218,12 @@ public class ExperimentController : MonoBehaviour
             if(OrchControllerDelayExp == null) OrchControllerDelayExp = GameObject.Find("OrchestratorController").GetComponent<OrchestratorController>();
             OrchControllerDelayExp.SendMessageToAll("ENDVOT_");
         }
-       
+        if (Keyboard.current[Key.F6].wasPressedThisFrame)
+        {
+            SetNewCondition(playlist.secuencias[0]);
+
+        }
+
         if (Keyboard.current[Key.F8].wasPressedThisFrame)
         {
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isnotLocal).gameObject;

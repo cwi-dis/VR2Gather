@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/DelayTestScene/DelayExperiment/DelayExperiment/Scenes/UserDelayPilot0.unity
     guid: 5735614017014f148a72d4785d44f43a
+  - enabled: 1
+    path: Assets/PilotsExternal/DelayExperiment/DelayExperiment/Scenes/escena_votar_CWI.unity
+    guid: 53617ca26784afe48827a3af46e202ac
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}

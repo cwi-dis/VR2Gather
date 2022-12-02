@@ -7,6 +7,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.InputSystem;
 using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -151,10 +152,10 @@ namespace Interactive360.Utils
             while (true)
             {
                 
-                if (/*GvrControllerInput.GetDevice(GvrControllerHand.Right).GetButtonDown(GvrControllerButton.TouchPadButton) ||*/ Input.GetKeyDown("space") || clicButton.GetStateDown(SteamVR_Input_Sources.Any))//&& modofullscreen == false)
+                if (/*GvrControllerInput.GetDevice(GvrControllerHand.Right).GetButtonDown(GvrControllerButton.TouchPadButton) ||*/ Keyboard.current[Key.Space].wasPressedThisFrame || clicButton.GetStateDown(SteamVR_Input_Sources.Any))//&& modofullscreen == false)
                 {
 
-                    while (!Input.GetKeyDown("space") && !clicButton.GetStateDown(SteamVR_Input_Sources.Any)) // !Input.GetButtonUp("Button1") // !GvrControllerInput.GetDevice(GvrControllerHand.Right).GetButtonUp(GvrControllerButton.TouchPadButton) ||
+                    while (!Keyboard.current[Key.Space].wasPressedThisFrame && !clicButton.GetStateDown(SteamVR_Input_Sources.Any)) // !Input.GetButtonUp("Button1") // !GvrControllerInput.GetDevice(GvrControllerHand.Right).GetButtonUp(GvrControllerButton.TouchPadButton) ||
                     { 
                         Debug.Log("Button pressed, stuck on a deadloop??"); 
                         yield return null; 

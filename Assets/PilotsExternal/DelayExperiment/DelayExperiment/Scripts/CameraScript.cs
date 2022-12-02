@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Interactive360.Utils;
+using UnityEngine.InputSystem;
 
 public class CameraScript : MonoBehaviour
 {
