@@ -4,7 +4,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class NetworkPlayer : MonoBehaviour
+	public class PlayerNetworkController : MonoBehaviour
 	{
 		#region NetworkPlayerData
 		/// <summary>

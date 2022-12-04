@@ -19,7 +19,7 @@ namespace VRT.Pilots.LoginManager
         public static SelfRepresentationPreview Instance { get; private set; }
         public float MicrophoneLevel { get; private set; }
 
-        public PlayerManager player;
+        public PlayerControllerBase player;
         string currentMicrophoneName = "None";
         AudioClip recorder;
         float[] buffer = new float[320 * 3];

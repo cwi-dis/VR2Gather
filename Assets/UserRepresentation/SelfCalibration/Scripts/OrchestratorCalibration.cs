@@ -17,7 +17,7 @@ public class OrchestratorCalibration : MonoBehaviour {
 
     #region GUI components
 
-    [SerializeField] private PlayerManager player = null;
+    [SerializeField] private PlayerControllerBase player = null;
     [SerializeField] private Button exitButton = null;
 
     #endregion

@@ -81,7 +81,7 @@ namespace VRT.Pilots.Common
                 return new ViewerInformation();
             }
             // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {

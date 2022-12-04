@@ -261,7 +261,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         protected override Vector3 getCameraForward()
         {
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {
@@ -274,7 +274,7 @@ namespace VRT.UserRepresentation.PointCloud
         public Vector3 getCameraPosition()
         {
             // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {

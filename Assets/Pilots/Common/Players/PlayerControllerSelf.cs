@@ -6,7 +6,7 @@ using UnityEngine;
 namespace VRT.Pilots.Common
 {
 
-    public class PlayerManagerSelf : PlayerManager
+    public class PlayerControllerSelf : PlayerControllerBase
     {
 
     }

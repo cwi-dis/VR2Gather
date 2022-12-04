@@ -10,9 +10,9 @@ namespace VRT.DevelopmentTests
         public bool enableFade;
 
         [Tooltip("The user (for enabling isLocal)")]
-        public VRT.Pilots.Common.NetworkPlayer player;
+        public VRT.Pilots.Common.PlayerNetworkController player;
         [Tooltip("The user (for setup camera position and input/output)")]
-        public PlayerManager playerManager;
+        public PlayerControllerBase playerManager;
 
         bool pmSetupDone = false;
         public static TestInteractionController Instance { get; private set; }

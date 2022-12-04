@@ -4,7 +4,7 @@ using VRT.Core;
 namespace VRT.Pilots.Common
 {
 
-    public class PlayerManager : MonoBehaviour
+    public class PlayerControllerBase : MonoBehaviour
     {
         public int id;
         public string orchestratorId;
