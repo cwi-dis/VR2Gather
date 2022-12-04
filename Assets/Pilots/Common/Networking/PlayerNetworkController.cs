@@ -67,9 +67,10 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void SetIsLocalPlayer(bool local)
+		public void SetupPlayerNetworkControllerPlayer(bool local, string _userId)
 		{
 			_IsLocalPlayer = local;
+			UserId = _userId;
 			LeftHandPoseDriver.enabled = _IsLocalPlayer;
 			RightHandPoseDriver.enabled = _IsLocalPlayer;
 		}

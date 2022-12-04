@@ -32,7 +32,7 @@ namespace VRT.DevelopmentTests
         // Start is called before the first frame update
         public void Start()
         {
-            player.SetIsLocalPlayer(true);
+            player.SetupPlayerNetworkControllerPlayer(true, "no-userid");
             if (enableFade)
             {
                 CameraFader.Instance.StartFadedOut = true;
