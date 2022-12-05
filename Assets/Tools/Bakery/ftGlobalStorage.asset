@@ -506,7 +506,67 @@ MonoBehaviour:
   - Assets/Pilots/Common/Prefabs/04_Props/PhoneFinder/Models/Phone Finder.fbx
   - Assets/Pilots/Common/Prefabs/02_Objects/Models/sphere.fbx
   - Assets/Pilots/Common/Props/UserBasePosition.fbx
-  uvOverlapAssetList: 00000000ffffffff0000000001010000000000000101000000000000010100000101000001010000000000000101000000000000010100000101000001010000000000000101000001010000000000000101000001010000000000000101000000000000000000000101000001010000000000000000000000000000010100000000000000000000010100000000000000000000000000000101000001010000
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidRunTurn.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidMidAir.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidJumpAndFall.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidWalk.fbx
+  - Assets/SteamVR/Models/vr_glove_model.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/BuggyBuddy/Buggy Controller.fbx
+  - Assets/SteamVR/InteractionSystem/SnapTurn/snapTurnFX.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidRunTurnSharp.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/BuggyBuddy/Lightcone.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/Models/Flower.FBX
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/JJHat.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/Models/Target.fbx
+  - Assets/SteamVR/Models/vr_glove_right_model_slim.fbx
+  - Assets/ViveSR/Prefabs/Cylinder.fbx
+  - Assets/SteamVR/Models/vr_alien_hand.fbx
+  - Assets/SteamVR/Models/vr_glove_left_model_slim.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/JoeJeff.fbx
+  - Assets/SteamVR/InteractionSystem/Longbow/Models/Arrow.fbx
+  - Assets/SteamVR/InteractionSystem/Longbow/Models/Longbow.fbx
+  - Assets/SteamVR/InteractionSystem/Teleport/Models/TeleportDestination.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/JoeJeffController.fbx
+  - Assets/SteamVR/InteractionSystem/Teleport/Models/TeleportPlayAreaPieces.fbx
+  - Assets/SteamVR/Models/vr_floppyHand.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/BuggyBuddy/Buggy.fbx
+  - Assets/SteamVR/Models/vr_hand_grabposes.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/Squishy/Squishy.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidWalkTurnSharp.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidWalkTurn.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidRun.fbx
+  - Assets/SteamVR/InteractionSystem/Longbow/Models/Balloon.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidIdleJumpUp.fbx
+  - Assets/SteamVR/InteractionSystem/Teleport/Models/TeleportMarker.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/Models/Furniture.fbx
+  - Assets/SteamVR/InteractionSystem/Teleport/Models/TeleportDestinationInvalid.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/Grenade/Grenade.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidStandTurn.fbx
+  - Assets/SteamVR/InteractionSystem/Samples/JoeJeff/Animation/HumanoidIdle.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/ViveDeer_Doll.fbx
+  - Assets/PilotsExternal/DelayExperiment/Prefabs/mesa_de_trabajo.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud1.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/Fairy.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/VIVE_Logo.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud5.fbx
+  - Assets/PilotsExternal/DelayExperiment/Models/DinoRED.obj
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud4.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/DirectionalSign.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Controller_Plane.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/Hint.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/DiscoScene/Models/jukebox.fbx
+  - Assets/PilotsExternal/DelayExperiment/Models/MazingerRED.obj
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud2.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Cloud3.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/DiscoScene/Models/volumeLight.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/Skeleton.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/EffectBall.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Segmentation/VIVE_Mesh.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Sword.fbx
+  - Assets/PilotsExternal/DelayExperiment/ViveSR_Experience/Models/Dart.fbx
+  - Assets/PilotsExternal/DelayExperiment/Models/Aircraft.obj
+  uvOverlapAssetList: 00000000ffffffff00000000010100000000000001010000000000000101000001010000010100000000000001010000000000000101000001010000010100000000000001010000010100000000000001010000010100000000000001010000000000000000000001010000010100000000000000000000000000000101000000000000000000000101000000000000000000000000000001010000010100000000000000000000000000000000000000000000000000000000000000000000ffffffff010100000000000000000000000000000000000000000000000000000000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000000000000010100000000000000000000000000000101000001010000000000000000000000000000000000000000000000000000010100000000000001010000000000000000000001010000000000000000000000000000000000000101000000000000010100000101000000000000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
   rtSceneViewPreviewOn: 0

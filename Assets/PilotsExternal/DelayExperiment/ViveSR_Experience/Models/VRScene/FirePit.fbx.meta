@@ -1,0 +1,191 @@
+fileFormatVersion: 2
+guid: e59d3922c62752f42a8a3365c09cc128
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: CookingPot
+    100004: Pit
+    100006: Rope
+    100008: Twig1
+    100010: Twig2
+    100012: Twig3
+    100014: Wire
+    100016: Ground
+    100018: Rocks
+    100020: rock01
+    100022: rock02
+    100024: rock03
+    100026: rock04
+    100028: rock05
+    100030: rock06
+    100032: rock07
+    100034: rock08
+    100036: rock09
+    100038: rock10
+    100040: rock11
+    400000: //RootNode
+    400002: CookingPot
+    400004: Pit
+    400006: Rope
+    400008: Twig1
+    400010: Twig2
+    400012: Twig3
+    400014: Wire
+    400016: Ground
+    400018: Rocks
+    400020: rock01
+    400022: rock02
+    400024: rock03
+    400026: rock04
+    400028: rock05
+    400030: rock06
+    400032: rock07
+    400034: rock08
+    400036: rock09
+    400038: rock10
+    400040: rock11
+    2300000: //RootNode
+    2300002: CookingPot
+    2300004: Pit
+    2300006: Rope
+    2300008: Twig1
+    2300010: Twig2
+    2300012: Twig3
+    2300014: Wire
+    2300016: Ground
+    2300018: Rocks
+    2300020: rock01
+    2300022: rock02
+    2300024: rock03
+    2300026: rock04
+    2300028: rock05
+    2300030: rock06
+    2300032: rock07
+    2300034: rock08
+    2300036: rock09
+    2300038: rock10
+    2300040: rock11
+    3300000: //RootNode
+    3300002: CookingPot
+    3300004: Pit
+    3300006: Rope
+    3300008: Twig1
+    3300010: Twig2
+    3300012: Twig3
+    3300014: Wire
+    3300016: Ground
+    3300018: Rocks
+    3300020: rock01
+    3300022: rock02
+    3300024: rock03
+    3300026: rock04
+    3300028: rock05
+    3300030: rock06
+    3300032: rock07
+    3300034: rock08
+    3300036: rock09
+    3300038: rock10
+    3300040: rock11
+    4300000: Fire
+    4300002: Twig1
+    4300004: Twig3
+    4300006: Twig2
+    4300008: Pit
+    4300010: Rope
+    4300012: Wire
+    4300014: CookingPot
+    4300016: Ground
+    4300018: Rocks
+    4300020: rock01
+    4300022: rock02
+    4300024: rock03
+    4300026: rock04
+    4300028: rock05
+    4300030: rock06
+    4300032: rock07
+    4300034: rock08
+    4300036: rock09
+    4300038: rock10
+    4300040: rock11
+    9500000: //RootNode
+  externalObjects: {}
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 0
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
