@@ -50,11 +50,17 @@ namespace VRT.UserRepresentation.PointCloud
 
         public static void Register()
         {
-            RegisterPipelineClass(UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
+
+            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
         }
 
         public static BasePipeline AddPointCloudPipelineComponent(GameObject dst, UserRepresentationType i)

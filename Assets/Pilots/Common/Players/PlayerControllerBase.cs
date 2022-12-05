@@ -44,7 +44,7 @@ namespace VRT.Pilots.Common
                         // FER: Implementacion representacion de webcam.
                         webcam.SetActive(true);
                         Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType);
+                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
                         wcPipeline?.Init(isLocalPlayer, user, userCfg);
                         break;
                     case UserRepresentationType.__AVATAR__:
@@ -65,7 +65,7 @@ namespace VRT.Pilots.Common
                             cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
                         }
                         userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                        BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType);
+                        BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType, isLocalPlayer);
                         pcPipeline?.Init(isLocalPlayer, user, userCfg);
                         if (configDistributors == null || configDistributors.Length == 0)
                         {

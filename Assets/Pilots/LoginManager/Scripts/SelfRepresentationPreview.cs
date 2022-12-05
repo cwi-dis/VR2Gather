@@ -110,7 +110,7 @@ namespace VRT.Pilots.LoginManager
                     player.webcam.SetActive(true);
                     if (webcamName != "None")
                     {
-                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(player.webcam, representation);
+                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(player.webcam, representation, true);
                         wcPipeline.Init(true, new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, true);
                     }
 
@@ -124,7 +124,7 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.__PCC_SYNTH__:
                 case UserRepresentationType.__PCC_PRERECORDED__:
                     player.pc.SetActive(true);
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation);
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation, true);
                     pcPipeline.Init(true, new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
                     break;
                 case UserRepresentationType.__SPECTATOR__:

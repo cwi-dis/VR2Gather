@@ -24,17 +24,25 @@ namespace VRT.Pilots.Common
         /// <returns></returns>
         public delegate BasePipeline AddPipelineComponentDelegate(GameObject dst, UserRepresentationType i);
 
-        private static Dictionary<UserRepresentationType, AddPipelineComponentDelegate> PipelineTypeMapping = new Dictionary<UserRepresentationType, AddPipelineComponentDelegate>();
+        private static Dictionary<UserRepresentationType, AddPipelineComponentDelegate> SelfPipelineTypeMapping = new Dictionary<UserRepresentationType, AddPipelineComponentDelegate>();
+        private static Dictionary<UserRepresentationType, AddPipelineComponentDelegate> OtherPipelineTypeMapping = new Dictionary<UserRepresentationType, AddPipelineComponentDelegate>();
 
         /// <summary>
         /// Register a constructor for a BasePipeline subclass that handles a specific UserRepresentationType.
         /// </summary>
         /// <param name="i">The representation type</param>
         /// <param name="ctor">The constructor to call to create a new instance</param>
-        protected static void RegisterPipelineClass(UserRepresentationType i, AddPipelineComponentDelegate ctor)
+        protected static void RegisterPipelineClass(bool isLocalPlayer, UserRepresentationType i, AddPipelineComponentDelegate ctor)
         {
-            Debug.Log($"BasePipeline: register Pipeline constructor for {i}");
-            PipelineTypeMapping[i] = ctor;
+            Debug.Log($"BasePipeline: register Pipeline constructor for {i}, self={isLocalPlayer}");
+            if (isLocalPlayer)
+            {
+                SelfPipelineTypeMapping[i] = ctor;
+            }
+            else
+            {
+                OtherPipelineTypeMapping[i] = ctor;
+            }
         }
 
         /// <summary>
@@ -43,14 +51,15 @@ namespace VRT.Pilots.Common
         /// <param name="dst">The GameObject to which the component is added.</param>
         /// <param name="i">The UserRepresentationType wanted</param>
         /// <returns>The object created</returns>
-        public static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
+        public static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i, bool isLocalPlayer)
         {
-            if (!PipelineTypeMapping.ContainsKey(i))
+            var map = isLocalPlayer ? SelfPipelineTypeMapping : OtherPipelineTypeMapping;
+            if (!map.ContainsKey(i))
             {
-                Debug.LogError($"BasePipeline: programmer error: no constructor for {i}");
+                Debug.LogError($"BasePipeline: programmer error: no constructor for {i}, self={isLocalPlayer}");
                 return null;
             }
-            return PipelineTypeMapping[i](dst, i);
+            return map[i](dst, i);
         }
 
         /// <summary>
