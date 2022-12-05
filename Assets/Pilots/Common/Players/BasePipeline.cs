@@ -5,20 +5,44 @@ using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
+    /// <summary>
+    /// Abstract base class for MonoBehaviour that is responsible for capture/transmission/reception/rendering of a media stream
+    /// for a participant. Concrete subclasses exist for each UserRepresentationType.
+    ///
+    /// The base class also has static members that maintain the mapping of UserRepresentationType to the method that adds
+    /// an component of the correct type to a gameobject (the factory function for that implementation subclass of BasePipeline).
+    /// </summary>
     abstract public class BasePipeline : MonoBehaviour
     {
         protected bool isSource = false;
 
+        /// <summary>
+        /// Function pointer to a creation method for BasePipeline subclass objects.
+        /// </summary>
+        /// <param name="dst">The GameObject on which the component will be created.</param>
+        /// <param name="i">The UserRepresentationType for which we want a pipeline.</param>
+        /// <returns></returns>
         public delegate BasePipeline AddPipelineComponentDelegate(GameObject dst, UserRepresentationType i);
 
         private static Dictionary<UserRepresentationType, AddPipelineComponentDelegate> PipelineTypeMapping = new Dictionary<UserRepresentationType, AddPipelineComponentDelegate>();
 
+        /// <summary>
+        /// Register a constructor for a BasePipeline subclass that handles a specific UserRepresentationType.
+        /// </summary>
+        /// <param name="i">The representation type</param>
+        /// <param name="ctor">The constructor to call to create a new instance</param>
         protected static void RegisterPipelineClass(UserRepresentationType i, AddPipelineComponentDelegate ctor)
         {
             Debug.Log($"BasePipeline: register Pipeline constructor for {i}");
             PipelineTypeMapping[i] = ctor;
         }
 
+        /// <summary>
+        /// Add a component (BasePipeline subclass) for a specific user representation.
+        /// </summary>
+        /// <param name="dst">The GameObject to which the component is added.</param>
+        /// <param name="i">The UserRepresentationType wanted</param>
+        /// <returns>The object created</returns>
         public static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
         {
             if (!PipelineTypeMapping.ContainsKey(i))
@@ -29,6 +53,13 @@ namespace VRT.Pilots.Common
             return PipelineTypeMapping[i](dst, i);
         }
 
+        /// <summary>
+        /// Initialize a pipeline instance.
+        /// </summary>
+        /// <param name="_user">The structure with the parameters describing the user for which this pieline is created</param>
+        /// <param name="cfg">The configration data for this pipeline</param>
+        /// <param name="preview">Set to true if the pipeline should not transmit, only render locally.</param>
+        /// <returns></returns>
         abstract public BasePipeline Init(object _user, Config._User cfg, bool preview = false);
 
         virtual public string Name()
@@ -36,18 +67,30 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
+        /// <summary>
+        /// Return synchronization information. Should only be called on sending pipelines.
+        /// </summary>
+        /// <returns></returns>
         virtual public SyncConfig GetSyncConfig()
         {
             Debug.LogError("Programmer error: BasePipeline: GetSyncConfig should be overriden in subclass");
             return new SyncConfig();
         }
 
+        /// <summary>
+        /// Set the synchronization information for this pipeline. Should only be called on receiving pipelines.
+        /// </summary>
+        /// <param name="config"></param>
         virtual public void SetSyncConfig(SyncConfig config)
         {
             Debug.LogError("Programmer error: BasePipeline: SetSyncConfig should be overriden in subclass");
 
         }
 
+        /// <summary>
+        /// Get position in world coordinates. Should only be called on sending pipelines.
+        /// </summary>
+        /// <returns></returns>
         virtual public Vector3 GetPosition()
         {
             if (isSource)
@@ -58,6 +101,10 @@ namespace VRT.Pilots.Common
             return transform.position;
         }
 
+        /// <summary>
+        /// Get rotation in world coordinates. Should only be called on sending pipelines.
+        /// </summary>
+        /// <returns></returns>
         virtual public Vector3 GetRotation()
         {
             if (isSource)
@@ -68,11 +115,19 @@ namespace VRT.Pilots.Common
             return transform.rotation * Vector3.forward;
         }
 
+        /// <summary>
+        /// Returns bandwidth budget. Unused?
+        /// </summary>
+        /// <returns></returns>
         virtual public float GetBandwidthBudget()
         {
             return 999999.0f;
         }
 
+        /// <summary>
+        /// Return position and rotation of this user.  Should only be called on sending pipelines.
+        /// </summary>
+        /// <returns></returns>
         virtual public ViewerInformation GetViewerInformation()
         {
             if (!isSource)
