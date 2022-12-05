@@ -72,7 +72,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
         {
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
@@ -100,6 +100,7 @@ namespace VRT.UserRepresentation.PointCloud
             switch (cfg.sourceType)
             {
                 case "self":
+                    if (!isLocalPlayer) Debug.LogError($"{Name()}: sourceType==self but not isLocalPlayer");
 #if VRT_WITH_STATS
                     Statistics.Output(Name(), $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
 #endif
@@ -109,6 +110,7 @@ namespace VRT.UserRepresentation.PointCloud
                     _InitForPrerecordedPlayer(cfg.PCSelfConfig);
                     break;
                 case "remote":
+                    if (isLocalPlayer) Debug.LogError($"{Name()}: sourceType!=self but isLocalPlayer==true");
 #if VRT_WITH_STATS
                     Statistics.Output(Name(), $"self=0, userid={user.userId}");
 #endif

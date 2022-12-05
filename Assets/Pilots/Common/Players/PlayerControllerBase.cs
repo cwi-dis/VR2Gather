@@ -45,7 +45,7 @@ namespace VRT.Pilots.Common
                         webcam.SetActive(true);
                         Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                         BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType);
-                        wcPipeline?.Init(user, userCfg);
+                        wcPipeline?.Init(isLocalPlayer, user, userCfg);
                         break;
                     case UserRepresentationType.__AVATAR__:
                         avatar.SetActive(true);
@@ -66,7 +66,7 @@ namespace VRT.Pilots.Common
                         }
                         userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                         BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType);
-                        pcPipeline?.Init(user, userCfg);
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg);
                         if (configDistributors == null || configDistributors.Length == 0)
                         {
                             Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");

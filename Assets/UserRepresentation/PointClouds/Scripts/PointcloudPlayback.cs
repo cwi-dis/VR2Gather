@@ -53,7 +53,7 @@ namespace VRT.UserRepresentation.PointCloud
             cfg.PCSelfConfig.frameRate = realUser.PCSelfConfig.frameRate;
             try
             {
-                Init(dummyUser, cfg, true);
+                Init(false, dummyUser, cfg, true);
             }
             catch (System.Exception e)
             {

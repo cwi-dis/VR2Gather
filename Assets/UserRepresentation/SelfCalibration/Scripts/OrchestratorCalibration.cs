@@ -38,7 +38,7 @@ public class OrchestratorCalibration : MonoBehaviour {
         InitialiseControllerEvents();
 
         player.pc.gameObject.SetActive(true);
-        player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
+        player.pc.AddComponent<PointCloudPipeline>().Init(true, OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
     }
 
     private void OnDestroy() {

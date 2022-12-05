@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)
@@ -83,6 +83,7 @@ namespace VRT.UserRepresentation.WebCam
             switch (cfg.sourceType)
             {
                 case "self": // Local
+                    if (!isLocalPlayer) Debug.LogError($"{Name()}: sourceType==self but not isLocalPlayer");
                     //
                     // Allocate queues we need for this sourceType
                     //
@@ -157,7 +158,8 @@ namespace VRT.UserRepresentation.WebCam
                     }
                     break;
                 case "remote": // Remoto
-                    
+                    if (isLocalPlayer) Debug.LogError($"{Name()}: sourceType!=self but isLocalPlayer is true");
+
                     if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                     {
                         reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
