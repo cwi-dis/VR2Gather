@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
+using System;
 using VRT.Core;
 using VRT.Pilots.Common;
 using VRT.UserRepresentation.PointCloud;
@@ -55,6 +56,14 @@ public class ExperimentController : MonoBehaviour
         //timer.setTimer(sequence.duration); //timeout for the current experience
         State = "Sync";
         //here should be a method related to the experiment conditions
+        System.Diagnostics.ProcessStartInfo processStartInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c C:/Users/vrtogether/go/bin/obs-cli.exe recording start --port 4455"); // same as "netsh interface ip delete arpcache"
+        processStartInfo.CreateNoWindow = true;
+        processStartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+        processStartInfo.UseShellExecute = false;
+        //processStartInfo.Verb = "runas";
+
+        System.Diagnostics.Process.Start(processStartInfo);
+        //Start recording audio self left channel, remote right channel
         if (ToDisable.ContainsKey("OuterPlayer"))
         {
             try
@@ -127,6 +136,10 @@ public class ExperimentController : MonoBehaviour
         if (userMessage.message.Substring(0, 7) == "ENDCON_")
         {
             Debug.Log("Experience Finished, Voting time!");
+            System.Diagnostics.ProcessStartInfo processStartInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c C:/Users/vrtogether/go/bin/obs-cli.exe recording stop --port 4455"); // same as "netsh interface ip delete arpcache"
+            processStartInfo.CreateNoWindow = true;
+            processStartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+            processStartInfo.UseShellExecute = false;
             SwitchToSceneVotation();
             State = "Voting";
         }
@@ -140,8 +153,7 @@ public class ExperimentController : MonoBehaviour
         else if ((userMessage.message.Substring(0, 7) == "NEWCON_"))
                 {
                     SetNewCondition(playlist.secuencias[0]);
-
-                }
+        }
             }
 
         
