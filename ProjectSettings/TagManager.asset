@@ -9,6 +9,8 @@ TagManager:
   - Spectator
   - Plants
   - Teleportable
+  - projectile
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -31,11 +33,11 @@ TagManager:
   - 
   - 
   - 
+  - RenderPlane (Right)
+  - RenderPlane (Left)
   - 
-  - 
-  - 
-  - 
-  - 
+  - DualCamera (Right)
+  - DualCamera (Left)
   - SelfView
   - PlayerLocation
   - TouchableObject

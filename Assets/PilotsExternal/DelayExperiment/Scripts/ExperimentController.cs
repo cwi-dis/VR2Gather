@@ -35,7 +35,7 @@ public class ExperimentController : MonoBehaviour
         // Should check if the Scene is in the build list - https://docs.unity3d.com/ScriptReference/SceneManagement.Scene-buildIndex.html
         if (ToDisable.ContainsKey("OuterPlayer"))
         {
-            ToDisable["OuterPlayer"].GetComponentInChildren<PointBufferRenderer>().material.shader = Shaderclean;
+            ToDisable["OuterPlayer"].GetComponentInChildren<PointCloudRenderer>().material.shader = Shaderclean;
             ToDisable["OuterPlayer"].GetComponentInChildren<AudioSource>().mute = true;
         }
         SceneManager.LoadScene(VotationScene, LoadSceneMode.Additive);
@@ -60,8 +60,8 @@ public class ExperimentController : MonoBehaviour
             try
             {
                 ToDisable["OuterPlayer"].GetComponentInChildren<AudioSource>().mute = false;
-                ToDisable["OuterPlayer"].GetComponentInChildren<PointBufferRenderer>().material.shader = shaderAuxSave;
-                ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minPreferredLatency = (long)sequence.retardo_numerico;
+                ToDisable["OuterPlayer"].GetComponentInChildren<PointCloudRenderer>().material.shader = shaderAuxSave;
+                ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minLatency = (long)sequence.retardo_numerico;
             }
             catch (System.Exception)
             {
@@ -81,7 +81,7 @@ public class ExperimentController : MonoBehaviour
 
 
         playlist = GetComponent<Randomizer>();
-        playlist.Create_Playlist(new StreamReader("Assets/PilotsExternal/DelayExperiment/DelayExperiment/" + nameJSON));
+        playlist.Create_Playlist(new StreamReader("Assets/PilotsExternal/DelayExperiment/" + nameJSON));
     }
     void Start()
     {
@@ -106,7 +106,7 @@ public class ExperimentController : MonoBehaviour
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isLocal).gameObject;
 
             AuxVar.GetComponentInChildren<Camera>().enabled = false;
-            AuxVar.GetComponentInChildren<PointBufferRenderer>().material.shader = Shaderclean;
+            AuxVar.GetComponentInChildren<PointCloudRenderer>().material.shader = Shaderclean;
             ToDisable.Add("SelfPlayer", AuxVar);
 
         }
@@ -152,11 +152,11 @@ public class ExperimentController : MonoBehaviour
         {
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isnotLocal).gameObject;
 
-            AuxVar.GetComponentInChildren<PointBufferRenderer>().transform.localRotation = Quaternion.Euler(PCRotationoffset);
-            AuxVar.GetComponentInChildren<PointBufferRenderer>().transform.localPosition = PCTranslationoffset;
+            AuxVar.GetComponentInChildren<PointCloudRenderer>().transform.localRotation = Quaternion.Euler(PCRotationoffset);
+            AuxVar.GetComponentInChildren<PointCloudRenderer>().transform.localPosition = PCTranslationoffset;
             ToDisable.Add("OuterPlayer", AuxVar);
-            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minPreferredLatency = (long)playlist.secuencias[0].retardo_numerico;
-            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().latencyCatchup = 100;
+            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minLatency = (long)playlist.secuencias[0].retardo_numerico;
+            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().latencyMaxIncrease = 100;
 
         }
         catch (System.Exception)
@@ -208,7 +208,13 @@ public class ExperimentController : MonoBehaviour
         if (Input.GetKeyDown("f1"))
         {
             OrchControllerDelayExp.SendMessageToAll("ENDCON_");
-            //SwitchToSceneVotation();START_
+            //SwitchToSceneVotation();
+
+        }
+        if (Input.GetKeyDown("f8")) // just for try without the other user
+        {
+            //OrchControllerDelayExp.SendMessageToAll("ENDCON_");
+            SwitchToSceneVotation();
 
         }
         if (Input.GetKeyDown("f2") )
@@ -220,10 +226,10 @@ public class ExperimentController : MonoBehaviour
         if (Input.GetKeyDown("f8"))
         {
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isnotLocal).gameObject;
-            AuxVar.GetComponentInChildren<PointBufferRenderer>().gameObject.transform.rotation = Quaternion.Euler(PCRotationoffset);
-            AuxVar.GetComponentInChildren<PointBufferRenderer>().gameObject.transform.position = PCTranslationoffset;
+            AuxVar.GetComponentInChildren<PointCloudRenderer>().gameObject.transform.rotation = Quaternion.Euler(PCRotationoffset);
+            AuxVar.GetComponentInChildren<PointCloudRenderer>().gameObject.transform.position = PCTranslationoffset;
         }
-        Debug.Log("Distance between rendercamera and trackedcamera is " + (Vector3.Distance(CameraRendererRight.transform.position, CameraRight.transform.position).ToString()));
+        //Debug.Log("Distance between rendercamera and trackedcamera is " + (Vector3.Distance(CameraRendererRight.transform.position, CameraRight.transform.position).ToString()));
 
     }
 }

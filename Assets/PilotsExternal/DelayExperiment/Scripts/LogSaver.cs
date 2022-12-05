@@ -75,7 +75,7 @@ public class LogSaver : MonoBehaviour {
         state = (synchronizer == null) ? "waiting" : "session";
         head = UserCamera.transform.eulerAngles;
         position = UserCamera.transform.position;
-        delayValue = (state == "waiting") ? 0: synchronizer.currentPreferredLatency;
+        delayValue = (state == "waiting") ? 0: synchronizer.currentLatency;
 
         //state = ExperimentController.;
         //state = (GetComponent<VideoPlayer>().isPlaying ? "Sync" : "IDLE");

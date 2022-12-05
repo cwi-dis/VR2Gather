@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
+  - enabled: 1
+    path: Assets/PilotsExternal/DelayExperiment/Scenes/UserDelayPilot0.unity
+    guid: c684a7e48db342a4093d9a402929231c
+  - enabled: 1
+    path: Assets/PilotsExternal/DelayExperiment/Scenes/escena_votar_CWI.unity
+    guid: 53617ca26784afe48827a3af46e202ac
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 676d83946b579674b816e0f4f4e6638d,
       type: 2}

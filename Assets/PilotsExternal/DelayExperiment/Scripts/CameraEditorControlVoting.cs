@@ -38,10 +38,10 @@ namespace Interactive360.Utils
         Transform vrCamera;
         Camera Rulecamera;
         GameObject[] Displays;
-        SteamVR_Action_Boolean clicButton = SteamVR_Actions.srinput_touchpadclick;
+        SteamVR_Action_Boolean clicButton = SteamVR_Actions.default_GrabPinch;
         
 
-        public void LaunchApp(string uri)
+        /*public void LaunchApp(string uri)
         {
             string bundleId = "com.bell_labs.drs360player"; // your target bundle id
 
@@ -71,7 +71,7 @@ namespace Interactive360.Utils
             packageManager.Dispose();
 
             launchIntent.Dispose();
-        }
+        }*/
         string ChangeScene(int ncuestion,int nquestion_2)
         {
             string cuestionario = GameObject.Find("ExperimentController").GetComponent<Randomizer>().secuencias[0].post_seq_questions[ncuestion];
@@ -277,7 +277,7 @@ namespace Interactive360.Utils
                         {
                             while (!Input.GetButtonUp(adentrarse))
                                 yield return null;
-                            LaunchApp(selected.GetComponent<GetCloser>().URL);
+                           // LaunchApp(selected.GetComponent<GetCloser>().URL);
 
                         }
                         
