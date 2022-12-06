@@ -244,4 +244,14 @@ public class ExperimentController : MonoBehaviour
         //Debug.Log("Distance between rendercamera and trackedcamera is " + (Vector3.Distance(CameraRendererRight.transform.position, CameraRight.transform.position).ToString()));
 
     }
+
+    void OnApplicationQuit()
+    {
+        //stop the recording, this only sends the message, if there is no recording currently active in the OBS, the OBS just ignore this message
+        System.Diagnostics.ProcessStartInfo processStartInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", "/c C:/Users/vrtogether/go/bin/obs-cli.exe recording stop --port 4455");
+        processStartInfo.CreateNoWindow = true;
+        processStartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+        processStartInfo.UseShellExecute = false;
+        Debug.Log("Application has ended after " + Time.time + " seconds");
+    }
 }
