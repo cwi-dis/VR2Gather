@@ -96,33 +96,7 @@ namespace VRT.Pilots.Common
 
         }
 
-        /// <summary>
-        /// Get position in world coordinates. Should only be called on sending pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetPosition()
-        {
-            if (isSource)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetPosition called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.position;
-        }
-
-        /// <summary>
-        /// Get rotation in world coordinates. Should only be called on sending pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetRotation()
-        {
-            if (isSource)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetRotation called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.rotation * Vector3.forward;
-        }
+     
 
         /// <summary>
         /// Returns bandwidth budget. Unused?

@@ -67,6 +67,7 @@ public class Calibration : MonoBehaviour {
 
     private void Start() {
         // Setup enough of the PFB_Player to allow viewing yourself as a pointcloud.
+        player.SetUpPlayerController(true, OrchestratorController.Instance.SelfUser, null);
         player.pc.gameObject.SetActive(true);
         player.pc.AddComponent<PointCloudPipeline>().Init(true, OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
 
@@ -82,7 +83,7 @@ public class Calibration : MonoBehaviour {
                 Debug.Log("Calibration: Update: VR config not yet initialized");
                 return;
             }
-            player.setupInputOutput(true, disableInput: true);
+            player.setupInputOutput(disableInput: true);
             // Initialize camera position/orientation from saved preferences
             InitializePosition();
 

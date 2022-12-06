@@ -43,7 +43,6 @@ namespace VRT.UserRepresentation.PointCloud
         OutgoingStreamDescription[] outgoingStreamDescriptions;  // queue encoder->writer, tileNumber, quality
         PointCloudNetworkTileDescription networkTileDescription;  // Information on pointcloud tiling and quality levels
         User user;
-        const bool debugTiling = false;
         // Mainly for debug messages:
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
@@ -503,31 +502,6 @@ namespace VRT.UserRepresentation.PointCloud
             return preparerQueue;
         }
 
-        // Update is called once per frame
-        System.DateTime lastUpdateTime;
-        private void Update()
-        {
-#pragma warning disable CS0162
-            if (debugTiling)
-            {
-                // Debugging: print position/orientation of camera and others every 10 seconds.
-                if (lastUpdateTime == null || System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10))
-                {
-                    lastUpdateTime = System.DateTime.Now;
-                    if (isSource)
-                    {
-                        ViewerInformation vi = GetViewerInformation();
-                        Debug.Log($"xxxjack {Name()} self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
-                    }
-                    else
-                    {
-                        Vector3 position = GetPosition();
-                        Vector3 rotation = GetRotation();
-                        Debug.Log($"xxxjack {Name()} other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
-                    }
-                }
-            }
-        }
 
         void OnDestroy()
         {
@@ -729,26 +703,6 @@ namespace VRT.UserRepresentation.PointCloud
             }
             //Debug.Log($"{Name()}: xxxjack SetSyncConfig: visual {config.visuals.wallClockTime}={config.visuals.streamClockTime}, audio {config.audio.wallClockTime}={config.audio.streamClockTime}");
 
-        }
-
-        public new Vector3 GetPosition()
-        {
-            if (isSource)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetPosition called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.position;
-        }
-
-        public new Vector3 GetRotation()
-        {
-            if (isSource)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetRotation called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.rotation * Vector3.forward;
         }
 
         public new float GetBandwidthBudget()

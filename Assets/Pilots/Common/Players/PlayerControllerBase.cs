@@ -20,11 +20,18 @@ namespace VRT.Pilots.Common
         public GameObject pc;
         public GameObject voice;
         public GameObject[] localPlayerOnlyObjects;
+        public bool isLocalPlayer;
+        const bool debugTiling = false;
+
+        virtual public string Name()
+        {
+            return $"{GetType().Name}";
+        }
 
         //Looks like this could very well be internal to the PlayerManager? 
-        public void SetUpPlayerController(bool isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
-
+            isLocalPlayer = _isLocalPlayer;
             orchestratorId = user.userId;
             userName.text = user.userName;
 
@@ -88,7 +95,7 @@ namespace VRT.Pilots.Common
                 voice.SetActive(true);
                 try
                 {
-                    LoadAudio(isLocalPlayer, user);
+                    LoadAudio(user);
                 }
                 catch (Exception e)
                 {
@@ -99,7 +106,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void LoadAudio(bool isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
+        public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
             if (user.userData.microphoneName == "None")
             {
@@ -135,7 +142,7 @@ namespace VRT.Pilots.Common
         // If disableInput is true the input handling will be disabled (probably because we are in the calibration
         // scene or some other place where input is handled differently than through the PFB_Player).
         //
-        public void setupInputOutput(bool isLocalPlayer, bool disableInput = false)
+        public void setupInputOutput(bool disableInput = false)
         {
 
             // Unity has two types of null. We need the C# null.
@@ -171,6 +178,11 @@ namespace VRT.Pilots.Common
 
         public Transform getCameraTransform()
         {
+            if (!isLocalPlayer)
+            {
+                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
+                return null;
+            }
             if (holoCamera != null && holoCamera.activeSelf)
             {
                 return holoCamera.transform;
@@ -178,6 +190,87 @@ namespace VRT.Pilots.Common
             else
             {
                 return cam.transform;
+            }
+        }
+        /// <summary>
+        /// Get position in world coordinates. Should only be called on receiving pipelines.
+        /// </summary>
+        /// <returns></returns>
+        virtual public Vector3 GetPosition()
+        {
+            if (isLocalPlayer)
+            {
+                Debug.LogError("Programmer error: BasePipeline: GetPosition called for pipeline that is a source");
+                return new Vector3();
+            }
+            return transform.position;
+        }
+
+        /// <summary>
+        /// Get rotation in world coordinates. Should only be called on receiving pipelines.
+        /// </summary>
+        /// <returns></returns>
+        virtual public Vector3 GetRotation()
+        {
+            if (isLocalPlayer)
+            {
+                Debug.LogError("Programmer error: BasePipeline: GetRotation called for pipeline that is a source");
+                return new Vector3();
+            }
+            return transform.rotation * Vector3.forward;
+        }
+
+        /// <summary>
+        /// Return position and rotation of this user.  Should only be called on sending pipelines.
+        /// </summary>
+        /// <returns></returns>
+        virtual public ViewerInformation GetViewerInformation()
+        {
+            if (!isLocalPlayer)
+            {
+                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
+                return new ViewerInformation();
+            }
+            // The camera object is nested in another object on our parent object, so getting at it is difficult:
+            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
+            Transform cameraTransform = player?.getCameraTransform();
+            if (cameraTransform == null)
+            {
+                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
+                return new ViewerInformation();
+            }
+            Vector3 position = cameraTransform.position;
+            Vector3 forward = cameraTransform.rotation * Vector3.forward;
+            return new ViewerInformation()
+            {
+                position = position,
+                gazeForwardDirection = forward
+            };
+        }
+
+        // Update is called once per frame
+        System.DateTime lastUpdateTime;
+        private void Update()
+        {
+#pragma warning disable CS0162
+            if (debugTiling)
+            {
+                // Debugging: print position/orientation of camera and others every 10 seconds.
+                if (lastUpdateTime == null || System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10))
+                {
+                    lastUpdateTime = System.DateTime.Now;
+                    if (isLocalPlayer)
+                    {
+                        ViewerInformation vi = GetViewerInformation();
+                        Debug.Log($"xxxjack {Name()} self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
+                    }
+                    else
+                    {
+                        Vector3 position = GetPosition();
+                        Vector3 rotation = GetRotation();
+                        Debug.Log($"xxxjack {Name()} other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+                    }
+                }
             }
         }
     }
