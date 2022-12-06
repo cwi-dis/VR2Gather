@@ -16,15 +16,15 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "",
-  	"sessionScenario" : "",
+  	"sessionName" : "DelayTest",
+  	"sessionScenario" : "Development ",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
@@ -84,7 +84,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.007,
+      "voxelSize": 0.0,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [

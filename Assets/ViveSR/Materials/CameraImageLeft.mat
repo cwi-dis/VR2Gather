@@ -73,12 +73,12 @@ Material:
     - MarginYHigh: 1
     - MarginYLow: 0
     - _AlphaValue: 0.035
-    - _AlphaValue2: 0.005
+    - _AlphaValue2: 0.0102
     - _BumpScale: 1
     - _CullMode: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Distance_TH2: 0
+    - _Distance_TH2: 0.071
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
