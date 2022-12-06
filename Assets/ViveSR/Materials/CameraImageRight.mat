@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: CameraImageRight
-  m_Shader: {fileID: 4800000, guid: b2687aa1313a2b2418bbd32e5dde7fdb, type: 3}
+  m_Shader: {fileID: 4800000, guid: 850faf7a6f5c7674aa2cd3214ca1cc01, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
