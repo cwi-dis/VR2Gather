@@ -204,7 +204,7 @@ namespace VRT.Pilots.Common
         {
             if (!isLocalPlayer)
             {
-                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
+                Debug.LogError($"Programmer error: {Name()}: GetCameraTransform called but isLocalPlayer is false");
                 return null;
             }
             if (holoCamera != null && holoCamera.activeSelf)

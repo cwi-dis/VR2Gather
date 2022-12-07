@@ -114,7 +114,12 @@ namespace VRT.Pilots.Common
         
         [Tooltip("Current mode")]
         public Mode currentMode = Mode.ModeNone;
-      
+
+        virtual public string Name()
+        {
+            return $"{GetType().Name}";
+        }
+
         private void Awake()
         {
         }
@@ -124,6 +129,10 @@ namespace VRT.Pilots.Common
             if (cameraTransformToControl != null) return;
             PlayerControllerBase player = GetComponentInParent<PlayerControllerBase>();
             cameraTransformToControl = player.getCameraTransform();
+            if (cameraTransformToControl == null)
+            {
+                Debug.LogWarning($"{Name()}: Cannot find main player camera");
+            }
         }
 
 
