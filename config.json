@@ -18,7 +18,7 @@
   	"autoLogin" : true,
   	"sessionName" : "DelayTest",
   	"sessionScenario" : "Development ",
-  	"sessionTransportProtocol" : "",
+  	"sessionTransportProtocol" : "tcp",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",

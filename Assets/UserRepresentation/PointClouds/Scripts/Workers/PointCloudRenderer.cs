@@ -22,6 +22,8 @@ namespace VRT.UserRepresentation.PointCloud
         static Material baseMaterial;
         [Tooltip("Private clone of Material used by this renderer instance")]
         public Material material;
+        [Tooltip("Pointsize of most recent pointcloud (debug/introspection)")]
+        [SerializeField] private float lastPointSizeReceived = 0;
         MaterialPropertyBlock block;
         PointCloudPreparer preparer;
         static int instanceCounter = 0;
@@ -69,7 +71,6 @@ namespace VRT.UserRepresentation.PointCloud
         private void LateUpdate()
         {
             bool fresh = preparer.LatchFrame();
-            float pointSize = 0;
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
 
@@ -84,14 +85,14 @@ namespace VRT.UserRepresentation.PointCloud
                 }
                 dataIsMissing = false;
                 pointCount = preparer.GetComputeBuffer(ref pointBuffer);
-                pointSize = preparer.GetPointSize();
+                lastPointSizeReceived = preparer.GetPointSize();
                 if (pointBuffer == null || !pointBuffer.IsValid())
                 {
                     Debug.LogError($"{Name()}: Invalid pointBuffer");
                     return;
                 }
                 block.SetBuffer("_PointBuffer", pointBuffer);
-                block.SetFloat("_PointSize", pointSize);
+                block.SetFloat("_PointSize", lastPointSizeReceived);
             } 
             else
             {
@@ -113,7 +114,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             block.SetMatrix("_Transform", pcMatrix);
             Graphics.DrawProcedural(material, new Bounds(transform.position, Vector3.one * 2), MeshTopology.Points, pointCount, 1, null, block);
-            stats.statsUpdate(pointCount, pointSize, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
+            stats.statsUpdate(pointCount, lastPointSizeReceived, preparer.currentTimestamp, preparer.getQueueDuration(), fresh);
         }
 
         public void OnDestroy()
