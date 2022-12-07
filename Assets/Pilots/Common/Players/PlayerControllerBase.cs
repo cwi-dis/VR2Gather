@@ -36,60 +36,13 @@ namespace VRT.Pilots.Common
             userName.text = user.userName;
 
             setupInputOutput(isLocalPlayer);
-            Transform cameraTransform = null;
-            if (isLocalPlayer)
-            {
-                cameraTransform = getCameraTransform();
-            }
+          
+            SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
 
 
             if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
             {
-                switch (user.userData.userRepresentationType)
-                {
-                    case UserRepresentationType.__2D__:
-                        // FER: Implementacion representacion de webcam.
-                        webcam.SetActive(true);
-                        Config._User userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
-                        wcPipeline?.Init(isLocalPlayer, user, userCfg);
-                        break;
-                    case UserRepresentationType.__AVATAR__:
-                        avatar.SetActive(true);
-                        break;
-                    case UserRepresentationType.__PCC_SYNTH__:
-                    case UserRepresentationType.__PCC_PRERECORDED__:
-                    case UserRepresentationType.__PCC_CWIK4A_:
-                    case UserRepresentationType.__PCC_PROXY__:
-                    case UserRepresentationType.__PCC_CWI_: // PC
-                        pc.SetActive(true);
-                        if (cameraTransform)
-                        {
-                            Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                            Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-                            Debug.Log($"SessionPlayersManager: self-camera pos={pos}, rot={rot}");
-                            cam.gameObject.transform.parent.localPosition = pos;
-                            cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
-                        }
-                        userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                        BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType, isLocalPlayer);
-                        pcPipeline?.Init(isLocalPlayer, user, userCfg);
-                        if (configDistributors == null || configDistributors.Length == 0)
-                        {
-                            Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
-                        }
-                        // Register for distribution of tiling and sync configurations
-                        foreach (var cd in configDistributors)
-                        {
-                            cd?.RegisterPipeline(user.userId, pcPipeline);
-                        }
 
-                        break;
-                    default:
-                        break;
-
-
-                }
 
                 // Audio
                 voice.SetActive(true);
@@ -103,6 +56,74 @@ namespace VRT.Pilots.Common
                     Debug.LogError($"Cannot receive audio from participant {user.userName}");
                     throw;
                 }
+            }
+        }
+
+        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, Config._User userCfg, BaseConfigDistributor[] configDistributors=null)
+        {
+            // Delete old pipelines, if any   
+            if (webcam.TryGetComponent(out BasePipeline web))
+                Destroy(web);
+            if (pc.TryGetComponent(out BasePipeline pointcloud))
+                Destroy(pointcloud);
+            // Disable all representations
+            webcam.SetActive(false);
+            pc.SetActive(false);
+            avatar.SetActive(false);
+            // Enable and initialize the correct representation
+            switch (user.userData.userRepresentationType)
+            {
+                case UserRepresentationType.__2D__:
+                    webcam.SetActive(true);
+                    if (userCfg == null)
+                    {
+                        userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                    }
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
+                    wcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    break;
+                case UserRepresentationType.__AVATAR__:
+                    avatar.SetActive(true);
+                    break;
+                case UserRepresentationType.__PCC_SYNTH__:
+                case UserRepresentationType.__PCC_PRERECORDED__:
+                case UserRepresentationType.__PCC_CWIK4A_:
+                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.__PCC_CWI_: // PC
+                    pc.SetActive(true);
+                    Transform cameraTransform = null;
+                    if (isLocalPlayer)
+                    {
+                        cameraTransform = getCameraTransform();
+                    }
+                    if (cameraTransform)
+                    {
+                        Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
+                        Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
+                        Debug.Log($"{Name()}: self-camera pos={pos}, rot={rot}");
+                        cam.gameObject.transform.parent.localPosition = pos;
+                        cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
+                    }
+                    userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType, isLocalPlayer);
+                    pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    if (configDistributors != null)
+                    {
+                        if (configDistributors.Length == 0)
+                        {
+                            Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
+                        }
+                        // Register for distribution of tiling and sync configurations
+                        foreach (var cd in configDistributors)
+                        {
+                            cd?.RegisterPipeline(user.userId, pcPipeline);
+                        }
+                    }
+
+                    break;
+                default:
+                    // No error: there are representations that have no representation.
+                    break;
             }
         }
 

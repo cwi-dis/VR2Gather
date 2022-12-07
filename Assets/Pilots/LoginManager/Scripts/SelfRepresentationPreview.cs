@@ -16,10 +16,11 @@ namespace VRT.Pilots.LoginManager
 
     public class SelfRepresentationPreview : MonoBehaviour
     {
-        public static SelfRepresentationPreview Instance { get; private set; }
         public float MicrophoneLevel { get; private set; }
 
+        [Tooltip("Player used for this preview (capture and display only)")]
         public PlayerControllerBase player;
+        bool playerHasBeenInitialized = false;
         string currentMicrophoneName = "None";
         AudioClip recorder;
         float[] buffer = new float[320 * 3];
@@ -29,10 +30,6 @@ namespace VRT.Pilots.LoginManager
         // Start is called before the first frame update
         void Start()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
         }
 
         void Update()
@@ -56,19 +53,6 @@ namespace VRT.Pilots.LoginManager
                     MicrophoneLevel = total / (float)buffer.Length;
                 }
             }
-        }
-
-        public void Stop()
-        {
-            player.avatar.SetActive(false);
-            if (player.webcam.TryGetComponent(out WebCamPipeline web))
-                Destroy(web);
-            player.webcam.SetActive(false);
-            if (player.pc.TryGetComponent(out PointCloudPipeline pointcloud))
-                Destroy(pointcloud);
-            if (player.pc.TryGetComponent(out PointCloudRenderer renderer))
-                Destroy(renderer);
-            player.pc.SetActive(false);
         }
 
         public void ChangeMicrophone(string microphoneName)
@@ -96,11 +80,27 @@ namespace VRT.Pilots.LoginManager
         public void ChangeRepresentation(UserRepresentationType representation, string webcamName)
         {
             if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
-            player.userName.text = OrchestratorController.Instance.SelfUser.userName;
-            player.gameObject.SetActive(true);
-            //player.setupInputOutput(true); // xxxjack needed for preview?
-            Stop();
+            User tmpSelfUser = new User()
+            {
+                userData = new UserData()
+                {
+                    microphoneName = "None",
+                    webcamName = webcamName,
+                    userRepresentationType = representation
+                }
+            };
+            if (!playerHasBeenInitialized)
+            {
+                player.SetUpPlayerController(true, tmpSelfUser, null);
+                //player.setupInputOutput(true); // xxxjack needed for preview?
+                player.userName.text = OrchestratorController.Instance.SelfUser.userName;
+                player.gameObject.SetActive(true);
+                playerHasBeenInitialized = true;
+            }
+            
 
+            player.SetRepresentation(representation, tmpSelfUser, Config.Instance.LocalUser);
+#if xxxjack
             switch (representation)
             {
                 case UserRepresentationType.__NONE__:
@@ -134,6 +134,7 @@ namespace VRT.Pilots.LoginManager
                 default:
                     break;
             }
+#endif
         }
     }
 }

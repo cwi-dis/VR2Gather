@@ -1163,7 +1163,6 @@ namespace VRT.Pilots.LoginManager
 
         public void SaveConfigButton()
         {
-            selfRepresentationPreview.Stop();
             selfRepresentationPreview.StopMicrophone();
             UpdateUserData();
             state = State.Logged;
@@ -1172,7 +1171,6 @@ namespace VRT.Pilots.LoginManager
 
         public void ExitConfigButton()
         {
-            selfRepresentationPreview.Stop();
             selfRepresentationPreview.StopMicrophone();
             GetUserInfo();
             state = State.Logged;
