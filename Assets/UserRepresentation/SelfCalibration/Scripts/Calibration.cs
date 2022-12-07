@@ -67,10 +67,14 @@ public class Calibration : MonoBehaviour {
 
     private void Start() {
         // Setup enough of the PFB_Player to allow viewing yourself as a pointcloud.
-        player.SetUpPlayerController(true, OrchestratorController.Instance.SelfUser, null);
+        var user = OrchestratorController.Instance.SelfUser;
+        var userConfig = Config.Instance.LocalUser;
+        player.SetUpPlayerController(true, user, null);
+        player.SetRepresentation(user.userData.userRepresentationType, user, null);
+#if xxxjack
         player.pc.gameObject.SetActive(true);
-        player.pc.AddComponent<PointCloudPipeline>().Init(true, OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
-
+        player.pc.AddComponent<PointCloudPipeline>().Init(true, user, userConfig, true);
+#endif
        
     }
 

@@ -91,10 +91,9 @@ namespace VRT.Pilots.LoginManager
             };
             if (!playerHasBeenInitialized)
             {
+                tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
                 player.SetUpPlayerController(true, tmpSelfUser, null);
                 //player.setupInputOutput(true); // xxxjack needed for preview?
-                player.userName.text = OrchestratorController.Instance.SelfUser.userName;
-                player.gameObject.SetActive(true);
                 playerHasBeenInitialized = true;
             }
             

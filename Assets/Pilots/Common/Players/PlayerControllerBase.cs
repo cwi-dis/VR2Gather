@@ -9,19 +9,24 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerBase : MonoBehaviour
     {
-        public int id;
-        public string orchestratorId;
-        public UserRepresentationType userRepresentationType;
-        public TMPro.TextMeshProUGUI userName;
-        public Camera cam;
-        public GameObject holoCamera;
-        public GameObject avatar;
-        public GameObject webcam;
-        public GameObject pc;
-        public GameObject voice;
-        public GameObject[] localPlayerOnlyObjects;
-        public bool isLocalPlayer;
-        const bool debugTiling = false;
+        [Tooltip("Main camera, if this is the local player and not using a holodisplay")]
+        [SerializeField] protected Camera cam;
+        [Tooltip("Main camera if this is the local user and we are using a holo display")]
+        [SerializeField] protected GameObject holoCamera;
+        [Tooltip("Avatar representation of this user")]
+        [SerializeField] protected GameObject avatar;
+        [Tooltip("Video webcam avator representation of this user")]
+        [SerializeField] protected GameObject webcam;
+        [Tooltip("Point cloud representation of this user")]
+        [SerializeField] protected GameObject pc;
+        [Tooltip("Audio representation of this user")]
+        [SerializeField] protected GameObject voice;
+        [Tooltip("Objects that are enabled if this is the local player, disabled otherwise")]
+        [SerializeField] protected GameObject[] localPlayerOnlyObjects;
+        [Tooltip("True if this is the local player (debug/introspection only)")]
+        [SerializeField] protected bool isLocalPlayer;
+        [Tooltip("Set to true to enable logging of position/orientation, for debugging tiling decisions")]
+        [SerializeField] protected bool debugTiling = false;
 
         virtual public string Name()
         {
@@ -32,9 +37,7 @@ namespace VRT.Pilots.Common
         public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             isLocalPlayer = _isLocalPlayer;
-            orchestratorId = user.userId;
-            userName.text = user.userName;
-
+          
             setupInputOutput(isLocalPlayer);
           
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
@@ -273,7 +276,6 @@ namespace VRT.Pilots.Common
         System.DateTime lastUpdateTime;
         private void Update()
         {
-#pragma warning disable CS0162
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -283,13 +285,13 @@ namespace VRT.Pilots.Common
                     if (isLocalPlayer)
                     {
                         ViewerInformation vi = GetViewerInformation();
-                        Debug.Log($"xxxjack {Name()} self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
+                        Debug.Log($"{Name()}: Tiling: self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
                     }
                     else
                     {
                         Vector3 position = GetPosition();
                         Vector3 rotation = GetRotation();
-                        Debug.Log($"xxxjack {Name()} other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
+                        Debug.Log($"{Name()}: Tiling: other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
                     }
                 }
             }
