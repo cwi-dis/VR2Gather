@@ -36,9 +36,7 @@ namespace VRT.Pilots.Common
 		public Transform HeadTransform;
 		public Transform LeftHandTransform;
 		public Transform RightHandTransform;
-		public TrackedPoseDriver LeftHandPoseDriver;
-		public TrackedPoseDriver RightHandPoseDriver;
-
+		
 		public int SendRate = 10; //Send out 10 "frames" per second
 		private float _SendDelta;
 		private float _LastSendTime;
@@ -71,8 +69,6 @@ namespace VRT.Pilots.Common
 		{
 			_IsLocalPlayer = local;
 			UserId = _userId;
-			LeftHandPoseDriver.enabled = _IsLocalPlayer;
-			RightHandPoseDriver.enabled = _IsLocalPlayer;
 		}
 
 		void SendPlayerData()

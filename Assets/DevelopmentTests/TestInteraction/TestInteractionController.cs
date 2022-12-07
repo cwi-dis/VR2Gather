@@ -45,7 +45,7 @@ namespace VRT.DevelopmentTests
             if (pmSetupDone) return;
             if (VRConfig.Instance == null || !VRConfig.Instance.initialized) return;
             pmSetupDone = true;
-            playerManager.setupInputOutput(true);
+            playerManager.setupCamera(true);
         }
     }
 }

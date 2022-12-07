@@ -1900,9 +1900,8 @@ MonoBehaviour:
   holoCamera: {fileID: 0}
   avatar: {fileID: 8457154900701074551}
   webcam: {fileID: 8303602249756084489}
-  pc: {fileID: 5240016629654404532}
+  pointcloud: {fileID: 5240016629654404532}
   voice: {fileID: 8861152703333866664}
-  localPlayerOnlyObjects: []
   isLocalPlayer: 1
   debugTiling: 0
 --- !u!4 &748432237038052084 stripped

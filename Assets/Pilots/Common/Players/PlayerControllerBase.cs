@@ -18,11 +18,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Video webcam avator representation of this user")]
         [SerializeField] protected GameObject webcam;
         [Tooltip("Point cloud representation of this user")]
-        [SerializeField] protected GameObject pc;
+        [SerializeField] protected GameObject pointcloud;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
-        [Tooltip("Objects that are enabled if this is the local player, disabled otherwise")]
-        [SerializeField] protected GameObject[] localPlayerOnlyObjects;
         [Tooltip("True if this is the local player (debug/introspection only)")]
         [SerializeField] protected bool isLocalPlayer;
         [Tooltip("Set to true to enable logging of position/orientation, for debugging tiling decisions")]
@@ -38,7 +36,7 @@ namespace VRT.Pilots.Common
         {
             isLocalPlayer = _isLocalPlayer;
           
-            setupInputOutput(isLocalPlayer);
+            setupCamera(isLocalPlayer);
           
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
 
@@ -65,13 +63,13 @@ namespace VRT.Pilots.Common
         public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, Config._User userCfg, BaseConfigDistributor[] configDistributors=null)
         {
             // Delete old pipelines, if any   
-            if (webcam.TryGetComponent(out BasePipeline web))
-                Destroy(web);
-            if (pc.TryGetComponent(out BasePipeline pointcloud))
-                Destroy(pointcloud);
+            if (webcam.TryGetComponent(out BasePipeline webpipeline))
+                Destroy(webpipeline);
+            if (pointcloud.TryGetComponent(out BasePipeline pcpipeline))
+                Destroy(pcpipeline);
             // Disable all representations
             webcam.SetActive(false);
-            pc.SetActive(false);
+            this.pointcloud.SetActive(false);
             avatar.SetActive(false);
             // Enable and initialize the correct representation
             switch (user.userData.userRepresentationType)
@@ -93,7 +91,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__PCC_CWIK4A_:
                 case UserRepresentationType.__PCC_PROXY__:
                 case UserRepresentationType.__PCC_CWI_: // PC
-                    pc.SetActive(true);
+                    this.pointcloud.SetActive(true);
                     Transform cameraTransform = null;
                     if (isLocalPlayer)
                     {
@@ -108,7 +106,7 @@ namespace VRT.Pilots.Common
                         cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
                     }
                     userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(pc, user.userData.userRepresentationType, isLocalPlayer);
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
                     if (configDistributors != null)
                     {
@@ -166,17 +164,14 @@ namespace VRT.Pilots.Common
         // If disableInput is true the input handling will be disabled (probably because we are in the calibration
         // scene or some other place where input is handled differently than through the PFB_Player).
         //
-        public void setupInputOutput(bool disableInput = false)
+        public void setupCamera(bool disableInput = false)
         {
-
+            if (!isLocalPlayer) return;
             // Unity has two types of null. We need the C# null.
             if (holoCamera == null) holoCamera = null;
             // Enable either the normal camera or the holodisplay camera for the local user.
-            // Enable various other objects only for the local user
-            // xxxjack This currentaly always enables the normal camera and disables the holoCamera.
-            // xxxjack to be fixed at some point.
-            bool useLocalHoloDisplay = isLocalPlayer && false;
-            bool useLocalNormalCam = isLocalPlayer && true;
+            bool useLocalHoloDisplay = false;
+            bool useLocalNormalCam = !disableInput;
             if (useLocalNormalCam)
             {
                 cam.gameObject.SetActive(true);
@@ -189,14 +184,8 @@ namespace VRT.Pilots.Common
             }
             else
             {
-                cam.gameObject.SetActive(false);
+                cam?.gameObject.SetActive(false);
                 holoCamera?.SetActive(false);
-            }
-
-            // Enable various other objects only for the local user
-            foreach (var obj in localPlayerOnlyObjects)
-            {
-                obj.SetActive(isLocalPlayer);
             }
         }
 
