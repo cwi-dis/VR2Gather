@@ -516,6 +516,10 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 preparer?.StopAndWait();
             }
+            foreach (var renderer in renderers)
+            {
+                Destroy(renderer);
+            }
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"finished=1");
 #endif
