@@ -45,6 +45,11 @@ namespace VRT.Pilots.Common
 		private NetworkPlayerData _LastReceivedData;
 		private float _LastReceiveTime;
 
+		virtual public string Name()
+		{
+			return $"{GetType().Name}";
+		}
+
 		private void Awake()
 		{
 			_SendDelta = 1.0f / SendRate;
@@ -73,6 +78,10 @@ namespace VRT.Pilots.Common
 
 		void SendPlayerData()
 		{
+			if (!_IsLocalPlayer)
+            {
+				Debug.LogError($"{Name()}: SendPlayerData called but not IsLocalPlayer");
+            }
 			//Send out 
 			var data = new NetworkPlayerData
 			{
@@ -115,11 +124,11 @@ namespace VRT.Pilots.Common
 					//Dirty dirty interpolation. We can/should do better. 
 					float t = Mathf.Clamp01((Time.realtimeSinceStartup - _LastReceiveTime) / (1.0f / SendRate));
 
-					HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+					if (HeadTransform != null) HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 					LeftHandTransform.position = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
 					RightHandTransform.position = Vector3.Lerp(_PreviousReceivedData.RightHandPosition, _LastReceivedData.RightHandPosition, t);
 
-					HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+					if (HeadTransform != null) HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					LeftHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
 					RightHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
 				}
