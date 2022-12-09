@@ -36,7 +36,7 @@ namespace VRT.Pilots.Common
         {
             isLocalPlayer = _isLocalPlayer;
           
-            setupCamera(isLocalPlayer);
+            setupCamera();
           
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
 

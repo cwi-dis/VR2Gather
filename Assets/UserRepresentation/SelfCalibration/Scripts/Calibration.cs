@@ -87,7 +87,7 @@ public class Calibration : MonoBehaviour {
                 Debug.Log("Calibration: Update: VR config not yet initialized");
                 return;
             }
-            player.setupCamera(disableInput: true);
+            player.setupCamera();
             // Initialize camera position/orientation from saved preferences
             InitializePosition();
 

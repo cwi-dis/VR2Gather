@@ -785,37 +785,6 @@ Transform:
   m_Father: {fileID: 191711544589689159}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4505876888561457826
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 739432150839533968}
-  m_Layer: 0
-  m_Name: LeftHandOculusInteraction
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &739432150839533968
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4505876888561457826}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3329774565194536360}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4871582384915844922
 GameObject:
   m_ObjectHideFlags: 0
@@ -1501,7 +1470,7 @@ PrefabInstance:
     - target: {fileID: 486857132194299548, guid: f321d9e0039d77947b9d50a1b7baa9ad,
         type: 3}
       propertyPath: m_Name
-      value: HMD_Outline
+      value: P_HMD_Outline
       objectReference: {fileID: 0}
     - target: {fileID: 486857132194299548, guid: f321d9e0039d77947b9d50a1b7baa9ad,
         type: 3}
@@ -1681,7 +1650,7 @@ PrefabInstance:
     - target: {fileID: 5862755559334039368, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_Name
-      value: PFB_LeftHand
+      value: P_Hand_Left
       objectReference: {fileID: 0}
     - target: {fileID: 6655183749742542523, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -1701,7 +1670,7 @@ PrefabInstance:
     - target: {fileID: 7931379300683449576, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21dad1a70fa0b7842afecfcdd199c370, type: 3}
@@ -2615,7 +2584,7 @@ PrefabInstance:
     - target: {fileID: 6652609405479520317, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_Name
-      value: PFB_RightHand
+      value: P_Hand_Right
       objectReference: {fileID: 0}
     - target: {fileID: 8540287806463370437, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
