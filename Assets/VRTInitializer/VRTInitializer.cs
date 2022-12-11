@@ -16,7 +16,7 @@ public class VRTInitializer : MonoBehaviour
     void Awake()
     {
         Debug.Log("Initializer: Registering pipelines");
-        PointCloudPipeline.Register();
+        PointCloudPipelineBase.Register();
         WebCamPipeline.Register();
         _ = Config.Instance;
     }

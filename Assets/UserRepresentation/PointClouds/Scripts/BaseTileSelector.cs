@@ -12,7 +12,7 @@ namespace VRT.UserRepresentation.PointCloud
     public abstract class BaseTileSelector : MonoBehaviour
     {
         // Object where we send our quality selection decisions. Initialized by subclass.
-        protected PointCloudPipeline pipeline;
+        protected PointCloudPipelineBase pipeline;
 
         // Number of tiles available. Initialized by subclass.
         protected int nTiles;

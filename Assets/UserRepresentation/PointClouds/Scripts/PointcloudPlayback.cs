@@ -4,7 +4,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.UserRepresentation.PointCloud
 {
-    public class PointCloudPlayback : PointCloudPipeline
+    public class PointCloudPlayback : PointCloudPipelineBase
     {
         [Tooltip("Overrides PrerecordedReaderConfig setting: directory to read")]
         public string folder;

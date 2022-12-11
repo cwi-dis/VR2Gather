@@ -22,7 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
     using static VRT.Core.Config._User;
 
-    public class PointCloudPipeline : BasePipeline
+    public class PointCloudPipelineBase : BasePipeline
     {
         [Tooltip("Object responsible for tile quality adaptation algorithm")]
         public BaseTileSelector tileSelector = null;
@@ -64,7 +64,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public static BasePipeline AddPointCloudPipelineComponent(GameObject dst, UserRepresentationType i)
         {
-            return dst.AddComponent<PointCloudPipeline>();
+            return dst.AddComponent<PointCloudPipelineBase>();
         }
 
         public override string Name()
