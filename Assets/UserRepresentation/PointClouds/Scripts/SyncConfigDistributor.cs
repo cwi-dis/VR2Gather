@@ -65,7 +65,7 @@ namespace VRT.UserRepresentation.PointCloud
             earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
             if (interval < 10) interval = interval * 2;
             // Find PointCloudPipeline belonging to self user.
-            PointCloudPipelineBase pipeline = (PointCloudPipelineBase)pipelines[selfUserId];
+            PointCloudPipelineSelf pipeline = (PointCloudPipelineSelf)pipelines[selfUserId];
             // Get data from self PointCloudPipeline.
             if (pipeline == null)
             {
@@ -107,7 +107,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"SyncConfigDistributor: received data for unknown userId {receivedData.SenderId}");
                 return;
             }
-            PointCloudPipelineBase pipeline = (PointCloudPipelineBase)pipelines[receivedData.SenderId];
+            PointCloudPipelineOther pipeline = (PointCloudPipelineOther)pipelines[receivedData.SenderId];
             if (pipeline == null)
             {
                 return;

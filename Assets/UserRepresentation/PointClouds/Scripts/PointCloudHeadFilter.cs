@@ -36,7 +36,7 @@ namespace VRT.UserRepresentation.PointCloud
                 headOnly = false;
                 return;
             }
-            PointCloudPipelineBase pipeline = pc?.GetComponent<PointCloudPipelineBase>();
+            PointCloudPipelineSelf pipeline = pc?.GetComponent<PointCloudPipelineSelf>();
             if (pipeline == null)
             {
                 headOnly = false;
