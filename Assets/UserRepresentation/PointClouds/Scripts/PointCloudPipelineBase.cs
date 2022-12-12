@@ -48,26 +48,6 @@ namespace VRT.UserRepresentation.PointCloud
         static int instanceCounter = 0;
         int instanceNumber = instanceCounter++;
 
-        public static void Register()
-        {
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
-
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWIK4A_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWI_, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PROXY__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PRERECORDED__, AddPointCloudPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_SYNTH__, AddPointCloudPipelineComponent);
-        }
-
-        public static BasePipeline AddPointCloudPipelineComponent(GameObject dst, UserRepresentationType i)
-        {
-            return dst.AddComponent<PointCloudPipelineBase>();
-        }
-
         public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";

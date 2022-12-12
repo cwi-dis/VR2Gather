@@ -23,6 +23,20 @@ namespace VRT.UserRepresentation.PointCloud
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase
     {
+        public static void Register()
+        {
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWIK4A_, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWI_, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_PROXY__, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_PRERECORDED__, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__PCC_SYNTH__, AddPipelineComponent);
+    }
+
+        protected static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
+        {
+            return dst.AddComponent<PointCloudPipelineSelf>();
+        }
+
         protected override void _InitForSelfUser(Config._User._PCSelfConfig PCSelfConfig, bool preview)
         {
             isSource = true;
