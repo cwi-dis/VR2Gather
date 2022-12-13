@@ -17,7 +17,7 @@ namespace VRT.Pilots.Common
 			public Quaternion HeadScreenRotation;
 		}
 
-		public NetworkPlayer Player;
+		public PlayerNetworkController Player;
 		public Transform BodyTransform;
 		public Transform HeadTransform;
 		public Transform HeadScreenTransform;

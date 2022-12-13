@@ -10,9 +10,9 @@ namespace VRT.DevelopmentTests
         public bool enableFade;
 
         [Tooltip("The user (for enabling isLocal)")]
-        public VRT.Pilots.Common.NetworkPlayer player;
+        public VRT.Pilots.Common.PlayerNetworkController player;
         [Tooltip("The user (for setup camera position and input/output)")]
-        public PlayerManager playerManager;
+        public PlayerControllerBase playerManager;
 
         bool pmSetupDone = false;
         public static TestInteractionController Instance { get; private set; }
@@ -32,7 +32,7 @@ namespace VRT.DevelopmentTests
         // Start is called before the first frame update
         public void Start()
         {
-            player.SetIsLocalPlayer(true);
+            player.SetupPlayerNetworkControllerPlayer(true, "no-userid");
             if (enableFade)
             {
                 CameraFader.Instance.StartFadedOut = true;
@@ -45,7 +45,7 @@ namespace VRT.DevelopmentTests
             if (pmSetupDone) return;
             if (VRConfig.Instance == null || !VRConfig.Instance.initialized) return;
             pmSetupDone = true;
-            playerManager.setupInputOutput(true);
+            playerManager.setupCamera(true);
         }
     }
 }

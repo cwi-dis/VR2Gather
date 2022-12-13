@@ -5,7 +5,6 @@
 	"openLogOnExit" : false,
 
   "targetFrameRate": 0,
-  "memoryDamping": 1.2999999523162842,
   "ntpSyncThreshold": 0.100,
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": true,
@@ -45,8 +44,8 @@
     "defaultCellSize": 0.0024,
     "cellSizeFactor": 1,
     "timeoutBeforeGhosting" : 5,
-    "encoderParallelism" : 4,
-    "decoderParallelism" : 8
+    "encoderParallelism" : 0,
+    "decoderParallelism" : 0
   },
   "Voice": {
   	"Codec": "VR2A",
@@ -84,7 +83,7 @@
 	  "PrerecordedReaderConfig" : {
 		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
 	  },
-      "voxelSize": 0.005,
+      "voxelSize": 0,
       "frameRate": 15,
       "tiled": false,
       "Encoders": [

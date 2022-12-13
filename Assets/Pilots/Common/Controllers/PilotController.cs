@@ -12,7 +12,6 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         public virtual void Start()
         {
-            var tmp = Config.Instance;
         }
 
         public abstract void MessageActivation(string message);
