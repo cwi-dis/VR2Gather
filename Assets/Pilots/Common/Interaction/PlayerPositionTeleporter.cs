@@ -39,7 +39,7 @@ namespace VRT.Pilots.Common
 		{
 			Vector3 newPosition = Vector3.zero;
 			// We search for our player by finding the PlayerManager
-			var playerManager = GetComponentInParent<PlayerManager>();
+			var playerManager = GetComponentInParent<PlayerControllerBase>();
 			var player = playerManager?.gameObject;
 			if (player != null)
             {

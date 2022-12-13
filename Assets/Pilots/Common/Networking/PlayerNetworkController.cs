@@ -4,7 +4,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class NetworkPlayer : MonoBehaviour
+	public class PlayerNetworkController : MonoBehaviour
 	{
 		#region NetworkPlayerData
 		/// <summary>
@@ -36,9 +36,7 @@ namespace VRT.Pilots.Common
 		public Transform HeadTransform;
 		public Transform LeftHandTransform;
 		public Transform RightHandTransform;
-		public TrackedPoseDriver LeftHandPoseDriver;
-		public TrackedPoseDriver RightHandPoseDriver;
-
+		
 		public int SendRate = 10; //Send out 10 "frames" per second
 		private float _SendDelta;
 		private float _LastSendTime;
@@ -46,6 +44,11 @@ namespace VRT.Pilots.Common
 		private NetworkPlayerData _PreviousReceivedData;
 		private NetworkPlayerData _LastReceivedData;
 		private float _LastReceiveTime;
+
+		virtual public string Name()
+		{
+			return $"{GetType().Name}";
+		}
 
 		private void Awake()
 		{
@@ -67,15 +70,18 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void SetIsLocalPlayer(bool local)
+		public void SetupPlayerNetworkControllerPlayer(bool local, string _userId)
 		{
 			_IsLocalPlayer = local;
-			LeftHandPoseDriver.enabled = _IsLocalPlayer;
-			RightHandPoseDriver.enabled = _IsLocalPlayer;
+			UserId = _userId;
 		}
 
 		void SendPlayerData()
 		{
+			if (!_IsLocalPlayer)
+            {
+				Debug.LogError($"{Name()}: SendPlayerData called but not IsLocalPlayer");
+            }
 			//Send out 
 			var data = new NetworkPlayerData
 			{
@@ -118,11 +124,11 @@ namespace VRT.Pilots.Common
 					//Dirty dirty interpolation. We can/should do better. 
 					float t = Mathf.Clamp01((Time.realtimeSinceStartup - _LastReceiveTime) / (1.0f / SendRate));
 
-					HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+					if (HeadTransform != null) HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 					LeftHandTransform.position = Vector3.Lerp(_PreviousReceivedData.LeftHandPosition, _LastReceivedData.LeftHandPosition, t);
 					RightHandTransform.position = Vector3.Lerp(_PreviousReceivedData.RightHandPosition, _LastReceivedData.RightHandPosition, t);
 
-					HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
+					if (HeadTransform != null) HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					LeftHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.LeftHandOrientation, _LastReceivedData.LeftHandOrientation, t);
 					RightHandTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.RightHandOrientation, _LastReceivedData.RightHandOrientation, t);
 				}
