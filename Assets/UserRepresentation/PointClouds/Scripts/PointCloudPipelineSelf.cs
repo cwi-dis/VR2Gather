@@ -30,14 +30,62 @@ namespace VRT.UserRepresentation.PointCloud
             RegisterPipelineClass(true, UserRepresentationType.__PCC_PROXY__, AddPipelineComponent);
             RegisterPipelineClass(true, UserRepresentationType.__PCC_PRERECORDED__, AddPipelineComponent);
             RegisterPipelineClass(true, UserRepresentationType.__PCC_SYNTH__, AddPipelineComponent);
-    }
+        }
 
         protected static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
         {
             return dst.AddComponent<PointCloudPipelineSelf>();
         }
 
-        protected override void _InitForSelfUser(Config._User._PCSelfConfig PCSelfConfig, bool preview)
+
+        /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
+        /// <param name="cfg"> Config file json </param>
+        /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
+        /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
+        /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
+        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        {
+            if (!isLocalPlayer)
+            {
+                Debug.LogError("${Name()}: Init() called with isLocalPlayer==false");
+            }
+            if (cfg.sourceType != "self")
+            {
+                Debug.LogError("{Name()}: Init() called with cfg.sourceType != self");
+            }
+            //
+            // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
+            // tile (because it would mean that the other tiles with the same timestamp become useless)
+            //
+            if (CwipcConfig.Instance.decoderQueueSizeOverride > 0) pcDecoderQueueSize = CwipcConfig.Instance.decoderQueueSizeOverride;
+            //
+            // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
+            // largest conceivable latency needed by the Synchronizer.
+            //
+            if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
+            user = (User)_user;
+
+            // xxxjack this links synchronizer for all instances, including self. Is that correct?
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
+            }
+            // xxxjack this links tileSelector for all instances, including self. Is that correct?
+            // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
+            if (tileSelector == null)
+            {
+                tileSelector = FindObjectOfType<LiveTileSelector>();
+            }
+           
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"self=1, userid={user.userId}, representation={(int)user.userData.userRepresentationType}");
+#endif
+            _InitForSelfUser(cfg.PCSelfConfig, preview);
+            
+            return this;
+        }
+
+        protected void _InitForSelfUser(Config._User._PCSelfConfig PCSelfConfig, bool preview)
         {
             isSource = true;
             if (synchronizer != null)

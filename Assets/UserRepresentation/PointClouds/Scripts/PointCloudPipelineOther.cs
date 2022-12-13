@@ -38,88 +38,59 @@ namespace VRT.UserRepresentation.PointCloud
             return dst.AddComponent<PointCloudPipelineOther>();
         }
 
-        protected override void _InitForPrerecordedPlayer(Config._User._PCSelfConfig PCSelfConfig)
-        {
-            var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
-            if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
-                throw new System.Exception($"{Name()}: missing PCSelfConfig.PrerecordedReaderConfig.folders");
-            var _reader = new PrerecordedPlaybackReader(PrerecordedReaderConfig.folder, 0, PCSelfConfig.frameRate);
-            StaticPredictionInformation info = _reader.GetStaticPredictionInformation();
-            string[] tileSubdirs = info.tileNames;
-            int nTiles = tileSubdirs.Length;
-            int nQualities = info.qualityNames.Length;
-            if (tileSubdirs == null || tileSubdirs.Length == 0)
-            {
-                // Untiled. 
-                var _prepQueue = _CreateRendererAndPreparer();
-                _reader.Add(null, _prepQueue);
-            }
-            else
-            {
-                int curTile = 0;
-                foreach (var tileFolder in tileSubdirs)
-                {
-                    var _prepQueue = _CreateRendererAndPreparer(curTile);
-                    _reader.Add(tileFolder, _prepQueue);
-                    curTile++;
-                }
 
-            }
-            reader = _reader;
-            //
-            // Initialize tiling configuration. We invent this, but it has the correct number of tiles
-            // and the correct number of qualities, and the qualities are organized so that earlier
-            // ones have lower utility and lower bandwidth than later ones.
-            //
-            Cwipc.PointCloudTileDescription[] tileInfos = _reader.getTiles();
-            if (tileInfos.Length != nTiles)
+        /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
+        /// <param name="cfg"> Config file json </param>
+        /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
+        /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
+        /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
+        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        {
+            if (isLocalPlayer)
             {
-                Debug.LogError($"{Name()}: Inconsistent number of tiles: {tileInfos.Length} vs {nTiles}");
+                Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
             }
-            networkTileDescription = new PointCloudNetworkTileDescription();
-            networkTileDescription.tiles = new PointCloudNetworkTileDescription.NetworkTileInformation[nTiles];
-            for (int i = 0; i < nTiles; i++)
+            if (cfg.sourceType != "remote")
             {
-                // Initialize per-tile information
-                var ti = new PointCloudNetworkTileDescription.NetworkTileInformation();
-                networkTileDescription.tiles[i] = ti;
-                ti.orientation = tileInfos[i].normal;
-                ti.qualities = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation[nQualities];
-                for (int j = 0; j < nQualities; j++)
-                {
-                    ti.qualities[j] = new PointCloudNetworkTileDescription.NetworkTileInformation.NetworkQualityInformation();
-                    //
-                    // Insert bullshit numbers: every next quality takes twice as much bandwidth
-                    // and is more useful than the previous one
-                    //
-                    ti.qualities[j].bandwidthRequirement = 10000 * Mathf.Pow(2, j);
-                    ti.qualities[j].representation = (float)j / (float)nQualities;
-                }
+                Debug.LogError("{Name()}: Init() called with cfg.sourceType != remote");
             }
+            //
+            // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
+            // tile (because it would mean that the other tiles with the same timestamp become useless)
+            //
+            if (CwipcConfig.Instance.decoderQueueSizeOverride > 0) pcDecoderQueueSize = CwipcConfig.Instance.decoderQueueSizeOverride;
+            //
+            // PreparerQueueSize needs to be large enough that there is enough storage in it to handle the
+            // largest conceivable latency needed by the Synchronizer.
+            //
+            if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
+            user = (User)_user;
+
+            // xxxjack this links synchronizer for all instances, including self. Is that correct?
+            if (synchronizer == null)
+            {
+                synchronizer = FindObjectOfType<VRTSynchronizer>();
+            }
+            // xxxjack this links tileSelector for all instances, including self. Is that correct?
+            // xxxjack also: it my also reuse tileSelector for all instances. That is definitely not correct.
+            if (tileSelector == null)
+            {
+                tileSelector = FindObjectOfType<LiveTileSelector>();
+            }
+            
+#if VRT_WITH_STATS
+                    Statistics.Output(Name(), $"self=0, userid={user.userId}");
+#endif
+            //
+            // Determine how many tiles (and therefore decode/render pipelines) we need
+            //
+            Debug.Log($"{Name()}: delay _InitForOtherUser until tiling information received");
+            
+            return this;
         }
 
-        public void SetTilingConfig(PointCloudNetworkTileDescription config)
-        {
-            if (isSource)
-            {
-                Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
-                return;
-            }
-            if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
-            {
-                //Debug.Log($"{Name()}: xxxjack ignoring second tilingConfig");
-                return;
-            }
-            networkTileDescription = config;
-            Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
 
-            _InitForOtherUser();
-            _InitTileSelector();
-        }
-
-      
-
-        protected override void _InitForOtherUser()
+        protected void _InitForOtherUser()
         {
             // Dump tiles/qualities/bandwidth, for debugging.
             for (int tileNum = 0; tileNum < networkTileDescription.tiles.Length; tileNum++)
@@ -188,6 +159,25 @@ namespace VRT.UserRepresentation.PointCloud
 #if VRT_WITH_STATS
             Statistics.Output(Name(), $"reader={reader.Name()}, synchronizer={synchronizerName}");
 #endif
+        }
+
+        public void SetTilingConfig(PointCloudNetworkTileDescription config)
+        {
+            if (isSource)
+            {
+                Debug.LogError($"Programmer error: {Name()}: SetTilingConfig called for pipeline that is a source");
+                return;
+            }
+            if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
+            {
+                //Debug.Log($"{Name()}: xxxjack ignoring second tilingConfig");
+                return;
+            }
+            networkTileDescription = config;
+            Debug.Log($"{Name()}: received tilingConfig with {networkTileDescription.tiles.Length} tiles");
+
+            _InitForOtherUser();
+            _InitTileSelector();
         }
 
         AbstractPointCloudDecoder _CreateDecoder(string pointcloudCodec, QueueThreadSafe decoderQueue, QueueThreadSafe preparerQueue)
