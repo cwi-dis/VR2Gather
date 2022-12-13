@@ -76,6 +76,14 @@ namespace VRT.UserRepresentation.PointCloud
             return preparerQueue;
         }
 
+        public void PausePlayback(bool paused)
+        {
+            foreach(var r in renderers)
+            {
+                r.PausePlayback(paused);
+            }
+        }
+
         void OnDestroy()
         {
             reader?.StopAndWait();
