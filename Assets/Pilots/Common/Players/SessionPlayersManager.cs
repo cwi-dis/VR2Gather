@@ -175,7 +175,7 @@ namespace VRT.Pilots.Common
                     if (me.userId == user.userId)
                     {
                         Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
-                        playerController.getCameraTransform().GetComponent<VRTCore.UnityRecorderController>().enabled = true;
+                        playerController.getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
                     }
 #endif
                 }
