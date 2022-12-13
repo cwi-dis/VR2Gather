@@ -37,7 +37,10 @@ namespace VRT.Core
 
         private void OnApplicationQuit()
         {
-            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            if (XRGeneralSettings.Instance.Manager.isInitializationComplete)
+            {
+                XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            }
             loaderInitialized = false;
         }
 

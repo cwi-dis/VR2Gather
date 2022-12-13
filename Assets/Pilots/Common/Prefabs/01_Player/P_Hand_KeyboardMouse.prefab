@@ -157,7 +157,7 @@ GameObject:
   - component: {fileID: 7582132487750933949}
   - component: {fileID: 1480435700447732326}
   m_Layer: 2
-  m_Name: PFB_HandEmulation
+  m_Name: P_Hand_KeyboardMouse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

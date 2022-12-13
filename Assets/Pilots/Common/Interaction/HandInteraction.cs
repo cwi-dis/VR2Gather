@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("Collider to use for touching")]
 		public GameObject TouchCollider;
 
-		private NetworkPlayer _Player;
+		private PlayerNetworkController _Player;
 		private HandController _Controller;
 
 		[Header("Input Actions")]
@@ -62,7 +62,7 @@ namespace VRT.Pilots.Common
 
 		void Start()
 		{
-			_Player = GetComponentInParent<NetworkPlayer>();
+			_Player = GetComponentInParent<PlayerNetworkController>();
 			if (Hand == null) Hand = gameObject;
 			_Controller = Hand.GetComponent<HandController>();
 			if (_Controller == null)

@@ -28,7 +28,7 @@ public class CloneMirror : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (trackEyePosition)
+        if (trackEyePosition && Camera.main != null)
         {
             float mainCamHeight = Camera.main.transform.position.y;
             Vector3 camPosition = mirrorCamera.transform.position;
