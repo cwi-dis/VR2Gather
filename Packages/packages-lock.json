@@ -8,7 +8,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.16",
+      "version": "2.0.17",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -141,7 +141,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e5002a8e9fb45a1f45dc4fe3acec37032f7b9613"
+      "hash": "c7d60921f826261d1c73cfcf339de977fbb81cd9"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",

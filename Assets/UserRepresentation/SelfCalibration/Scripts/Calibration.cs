@@ -8,13 +8,14 @@ using UnityEngine.InputSystem.Controls;
 using VRT.Core;
 using VRT.UserRepresentation.PointCloud;
 using VRT.Orchestrator.Wrapping;
+using VRT.Pilots.Common;
 
 public class Calibration : MonoBehaviour {
     private enum State { CheckWithUser, SelectTranslationRotation, Translation, Rotation }
     private State       state = State.CheckWithUser;
 
     [Tooltip("The player to control, for preview")]
-    public PlayerManager player;
+    public PlayerControllerBase player;
     [Tooltip("The camera to control, for preview")]
     public GameObject   cameraOffset;
     
@@ -66,9 +67,14 @@ public class Calibration : MonoBehaviour {
 
     private void Start() {
         // Setup enough of the PFB_Player to allow viewing yourself as a pointcloud.
+        var user = OrchestratorController.Instance.SelfUser;
+        var userConfig = Config.Instance.LocalUser;
+        player.SetUpPlayerController(true, user, null);
+        player.SetRepresentation(user.userData.userRepresentationType, user, null);
+#if xxxjack
         player.pc.gameObject.SetActive(true);
-        player.pc.AddComponent<PointCloudPipeline>().Init(OrchestratorController.Instance.SelfUser, Config.Instance.LocalUser, true);
-
+        player.pc.AddComponent<PointCloudPipeline>().Init(true, user, userConfig, true);
+#endif
        
     }
 
@@ -81,7 +87,7 @@ public class Calibration : MonoBehaviour {
                 Debug.Log("Calibration: Update: VR config not yet initialized");
                 return;
             }
-            player.setupInputOutput(true, disableInput: true);
+            player.setupCamera();
             // Initialize camera position/orientation from saved preferences
             InitializePosition();
 

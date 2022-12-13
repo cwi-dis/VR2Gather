@@ -11,6 +11,7 @@ using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Transport.TCP;
 using VRT.Orchestrator.Wrapping;
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.WebCam
 {
@@ -47,7 +48,8 @@ namespace VRT.UserRepresentation.WebCam
             {
                 FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
             }
-            RegisterPipelineClass(UserRepresentationType.__2D__, AddWebCamPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
         }
 
         public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)
@@ -59,7 +61,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)
@@ -82,6 +84,7 @@ namespace VRT.UserRepresentation.WebCam
             switch (cfg.sourceType)
             {
                 case "self": // Local
+                    if (!isLocalPlayer) Debug.LogError($"{Name()}: sourceType==self but not isLocalPlayer");
                     //
                     // Allocate queues we need for this sourceType
                     //
@@ -156,7 +159,8 @@ namespace VRT.UserRepresentation.WebCam
                     }
                     break;
                 case "remote": // Remoto
-                    
+                    if (isLocalPlayer) Debug.LogError($"{Name()}: sourceType!=self but isLocalPlayer is true");
+
                     if (Config.Instance.protocolType == Config.ProtocolType.Dash)
                     {
                         reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
@@ -290,53 +294,9 @@ namespace VRT.UserRepresentation.WebCam
 
         }
 
-        public new Vector3 GetPosition()
-        {
-            if (isSource)
-            {
-                Debug.LogError("Programmer error: WebCamPipeline: GetPosition called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.position;
-        }
-
-        public new Vector3 GetRotation()
-        {
-            if (isSource)
-            {
-                Debug.LogError("Programmer error: WebCamPipeline: GetRotation called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.rotation * Vector3.forward;
-        }
-
         public new float GetBandwidthBudget()
         {
             return 999999.0f;
-        }
-
-        public new ViewerInformation GetViewerInformation()
-        {
-            if (!isSource)
-            {
-                Debug.LogError("Programmer error: WebCamPipeline: GetViewerInformation called for pipeline that is not a source");
-                return new ViewerInformation();
-            }
-            // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
-            Transform cameraTransform = player?.getCameraTransform();
-            if (cameraTransform == null)
-            {
-                Debug.LogError("Programmer error: WebCamPipeline: no Camera object for self user");
-                return new ViewerInformation();
-            }
-            Vector3 position = cameraTransform.position;
-            Vector3 forward = cameraTransform.rotation * Vector3.forward;
-            return new ViewerInformation()
-            {
-                position = position,
-                gazeForwardDirection = forward
-            };
         }
     }
 }

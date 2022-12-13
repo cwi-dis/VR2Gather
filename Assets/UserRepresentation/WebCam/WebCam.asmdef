@@ -10,7 +10,7 @@
         "Voice",
         "VRTVideo",
         "Cwipc",
-        "VRTStatistics"
+        "Pilots"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

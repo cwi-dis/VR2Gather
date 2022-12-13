@@ -6,7 +6,8 @@
         "VRTStatistics",
         "Cwipc",
         "PointClouds",
-        "WebCam"
+        "WebCam",
+        "Pilots"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

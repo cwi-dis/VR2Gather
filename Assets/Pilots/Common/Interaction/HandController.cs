@@ -47,18 +47,18 @@ namespace VRT.Pilots.Common
 
 		private Animator _Animator;
 
-		private NetworkPlayer _Player;
+		private PlayerNetworkController _Player;
 
 		public void Awake()
 		{
-			_Player = GetComponentInParent<NetworkPlayer>();
+			_Player = GetComponentInParent<PlayerNetworkController>();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandController.HandControllerData));
 		}
 
 		void Start()
 		{
 			_Animator = GetComponentInChildren<Animator>();
-			_Player = GetComponentInParent<NetworkPlayer>();
+			_Player = GetComponentInParent<PlayerNetworkController>();
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
 		}

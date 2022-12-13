@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using VRT.Pilots.Common;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -18,7 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
         //
         double[][] guessedBandwidthUsageMatrix;
         
-        public void Init(PointCloudPipeline _prerecordedPointcloud, PointCloudNetworkTileDescription _tilingConfig)
+        public void Init(PointCloudPipelineOther _prerecordedPointcloud, PointCloudNetworkTileDescription _tilingConfig)
         {
 
             pipeline = _prerecordedPointcloud;
@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
             // but maybe camera position is better. Or both.
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
                 Debug.LogError($"{Name()}: Camera not found");
