@@ -10,7 +10,7 @@
   "nonHMDHeight": 1.5,
   "pilot3NavigationLogs": false,
   "statsInterval": 10,
-  "statsOutputFile":  "",
+  "statsOutputFile":  "stats-{host}-{ts}.txt",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
@@ -22,9 +22,9 @@
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : true,
-  	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoCreate" : false,
+  	"autoJoin" : true,
+  	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
@@ -61,7 +61,7 @@
   	"debugSynchronizer" : false,
   	"debugJitterBuffer" : false,
   	"minLatency" : 100,
-  	"maxLatency" : 5000,
+  	"maxLatency" : 2000,
   	"latencyMaxDecrease" : 1,
   	"latencyMaxIncrease" : 33,
   	"acceptDesyncOnDataUnavailable" : false

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2577945531316294153}
   - component: {fileID: 738220616296315696}
   - component: {fileID: 6266952536261118316}
-  m_Layer: 18
+  m_Layer: 20
   m_Name: ChromaTable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5204502333018140057}
-  m_LocalRotation: {x: 0.6436232, y: 0.29282975, z: -0.29282984, w: 0.6436232}
-  m_LocalPosition: {x: 1.19, y: 0, z: 1.28}
-  m_LocalScale: {x: 1.6524087, y: 1.9427235, z: 0.79699}
+  m_LocalRotation: {x: 0.70669144, y: 0.024233654, z: -0.02423361, w: 0.7066914}
+  m_LocalPosition: {x: 0.03, y: 0.65, z: 0.53}
+  m_LocalScale: {x: 0.99, y: 1.0200222, z: 0.79545736}
   m_Children: []
   m_Father: {fileID: 7308306141504975760}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 90.00001, y: 0, z: -48.928}
+  m_LocalEulerAnglesHint: {x: 90.00001, y: -45, z: -48.928}
 --- !u!33 &2577945531316294153
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -101,6 +101,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 390524791051866390, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4037853332143369839, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_IsActive
@@ -169,8 +174,13 @@ PrefabInstance:
     - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: localPlayerOnlyObjects.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: localPlayerOnlyObjects.Array.data[1]
+      value: 
+      objectReference: {fileID: 5204502333018140057}
     - target: {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: localPlayerOnlyObjects.Array.data[2]

@@ -71,6 +71,7 @@ public class ExperimentController : MonoBehaviour
                 ToDisable["OuterPlayer"].GetComponentInChildren<AudioSource>().mute = false;
                 ToDisable["OuterPlayer"].GetComponentInChildren<PointCloudRenderer>().material.shader = shaderAuxSave;
                 ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minLatency = (long)sequence.retardo_numerico;
+                ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().maxLatency = (long)sequence.retardo_numerico + 33;
             }
             catch (System.Exception)
             {
@@ -140,24 +141,25 @@ public class ExperimentController : MonoBehaviour
             processStartInfo.CreateNoWindow = true;
             processStartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
             processStartInfo.UseShellExecute = false;
+            System.Diagnostics.Process.Start(processStartInfo);
             SwitchToSceneVotation();
             State = "Voting";
         }
         else if ((userMessage.message.Substring(0, 7) == "ENDVOT_"))
         {
-            
-                nConditions = playlist.secuencias.Count;
-                OrchControllerDelayExp.SendMessageToAll("NEWCON_");
+
+            nConditions = playlist.secuencias.Count;
+            OrchControllerDelayExp.SendMessageToAll("NEWCON_");
 
         }
         else if ((userMessage.message.Substring(0, 7) == "NEWCON_"))
-                {
-                    SetNewCondition(playlist.secuencias[0]);
+        {
+            SetNewCondition(playlist.secuencias[0]);
         }
-            }
+    }
 
-        
-    
+
+
     private void findOuterUser()
     {
         try
@@ -168,7 +170,8 @@ public class ExperimentController : MonoBehaviour
             AuxVar.GetComponentInChildren<PointCloudRenderer>().transform.localPosition = PCTranslationoffset;
             ToDisable.Add("OuterPlayer", AuxVar);
             ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().minLatency = (long)playlist.secuencias[0].retardo_numerico;
-            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().latencyMaxIncrease = 100;
+            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().maxLatency = (long)playlist.secuencias[0].retardo_numerico + 33;
+            ToDisable["OuterPlayer"].GetComponentInChildren<Synchronizer>().latencyMaxIncrease = 33;
 
         }
         catch (System.Exception)
@@ -211,8 +214,8 @@ public class ExperimentController : MonoBehaviour
         if (ToDisable.ContainsKey("SelfPlayer") != true) findLocalUser();
         else
         {
-            CameraRendererRight.SetActive(false);
-            CameraRight.SetActive(false);
+           // CameraRendererRight.SetActive(false);
+           // CameraRight.SetActive(false);
 
         }
 
@@ -229,12 +232,12 @@ public class ExperimentController : MonoBehaviour
             SwitchToSceneVotation();
 
         }
-        if (Input.GetKeyDown("f2") )
+        if (Input.GetKeyDown("f2"))
         {
-            if(OrchControllerDelayExp == null) OrchControllerDelayExp = GameObject.Find("OrchestratorController").GetComponent<OrchestratorController>();
+            if (OrchControllerDelayExp == null) OrchControllerDelayExp = GameObject.Find("OrchestratorController").GetComponent<OrchestratorController>();
             OrchControllerDelayExp.SendMessageToAll("ENDVOT_");
         }
-       
+
         if (Input.GetKeyDown("f8"))
         {
             GameObject AuxVar = GameObject.Find("Pilot0Controller").GetComponent<SessionPlayersManager>().AllUsers.Find(isnotLocal).gameObject;
@@ -252,6 +255,7 @@ public class ExperimentController : MonoBehaviour
         processStartInfo.CreateNoWindow = true;
         processStartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
         processStartInfo.UseShellExecute = false;
+        System.Diagnostics.Process.Start(processStartInfo);
         Debug.Log("Application has ended after " + Time.time + " seconds");
     }
 }

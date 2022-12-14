@@ -272,31 +272,9 @@
             ],
             "post_sequence_timeout": 500,
             "retardo_numerico": "300",
-            "src_id": "Bird",
+            "src_id": "Training",
             "start": 0,
-            "uri": "Delay_300"
-        },
-        {
-            "duration": 2000,
-            "post_seq_questions": [
-                "DREQ"
-            ],
-            "post_sequence_timeout": 500,
-            "retardo_numerico": "1000",
-            "src_id": "Dog",
-            "start": 0,
-            "uri": "Delay_1000"
-        },
-        {
-            "duration": 2000,
-            "post_seq_questions": [
-                "DREQ"
-            ],
-            "post_sequence_timeout": 500,
-            "retardo_numerico": "600",
-            "src_id": "Rocket",
-            "start": 0,
-            "uri": "Delay_600"
+            "uri": "DelayTraining_300"
         },
         {
             "duration": 2000,
@@ -305,9 +283,9 @@
             ],
             "post_sequence_timeout": 500,
             "retardo_numerico": "1500",
-            "src_id": "TREX",
+            "src_id": "Training",
             "start": 0,
-            "uri": "Delay_1500"
+            "uri": "DelayTraining_1000"
         }
     ]
 }

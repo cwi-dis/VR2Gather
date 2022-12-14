@@ -35,7 +35,7 @@ TagManager:
   - MaskGeneratorLayer
   - RenderPlane (Right)
   - RenderPlane (Left)
-  - 
+  - VirtualWorldLayer
   - DualCamera (Right)
   - DualCamera (Left)
   - SelfView

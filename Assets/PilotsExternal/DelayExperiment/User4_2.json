@@ -60,7 +60,7 @@
                 {
                     "scale": "likert",
                     "tag": "WANG.UNDERS",
-                    "text": "'I was able to understand partner\u2019s message.'"
+                    "text": "'I was able to understand partner’s message.'"
                 },
                 {
                     "scale": "likert",
@@ -80,52 +80,52 @@
                 {
                     "scale": "acr_spa",
                     "tag": "DREQ.GQOE",
-                    "text": "'\u00bfC\u00f3mo valorar\u00eda la experiencia globalmente?'"
+                    "text": "'¿Cómo valoraría la experiencia globalmente?'"
                 },
                 {
                     "scale": "esfuerzo",
                     "tag": "P920.INTERR",
-                    "text": "'\u00bfC\u00f3mo juzgar\u00eda el esfuerzo necesario para interrumpir a la otra persona?'"
+                    "text": "'¿Cómo juzgaría el esfuerzo necesario para interrumpir a la otra persona?'"
                 },
                 {
                     "scale": "esfuerzo",
                     "tag": "P1305.Annoyance",
-                    "text": "'\u00bfPudo comunicarse utilizando el sistema?'"
+                    "text": "'¿Pudo comunicarse utilizando el sistema?'"
                 },
                 {
                     "scale": "unidad",
                     "tag": "WANG.UNIT",
-                    "text": "'Me sent\u00ed unido a mi compa\u00f1ero.'"
+                    "text": "'Me sentí unido a mi compañero.'"
                 },
                 {
                     "scale": "convencido",
-                    "tag": "DREQ.\u00c7OMPLETED",
+                    "tag": "DREQ.ÇOMPLETED",
                     "text": "'Estoy convencido de que los dos usuarios hemos completado la tarea correctamente.'"
                 },
                 {
                     "scale": "esfuerzo",
                     "tag": "WANG.UNDERS",
-                    "text": "'Fui capaz de comprender el mensaje de mi compa\u00f1ero.'"
+                    "text": "'Fui capaz de comprender el mensaje de mi compañero.'"
                 },
                 {
                     "scale": "esfuerzo",
                     "tag": "WANG.TOGET",
-                    "text": "'Mi compa\u00f1ero y yo trabajamos bien juntos.'"
+                    "text": "'Mi compañero y yo trabajamos bien juntos.'"
                 },
                 {
                     "scale": "convencido",
                     "tag": "WANG.CONVINC",
-                    "text": "'Estoy convencido de que la informaci\u00f3n de mi compa\u00f1ero me sirvi\u00f3 de ayuda.'"
+                    "text": "'Estoy convencido de que la información de mi compañero me sirvió de ayuda.'"
                 },
                 {
                     "scale": "consistente",
                     "tag": "DREQ.INVO",
-                    "text": "'\u00bfEn qu\u00e9 medida sus experiencias en el entorno parecen consistentes con sus experiencias del mundo real?'"
+                    "text": "'¿En qué medida sus experiencias en el entorno parecen consistentes con sus experiencias del mundo real?'"
                 },
                 {
                     "scale": "concentrarse",
                     "tag": "DREQ.ADAP2",
-                    "text": "'\u00bfFue capaz de concentrarse en las tareas del entorno m\u00e1s que en los mecanismos usados para realizarlas?'"
+                    "text": "'¿Fue capaz de concentrarse en las tareas del entorno más que en los mecanismos usados para realizarlas?'"
                 }
             ],
             "name": "DREQ_ES"
@@ -206,7 +206,7 @@
         {
             "name": "adapta",
             "scores": [
-                "No me adapt\u00e9\n en absoluto",
+                "No me adapté\n en absoluto",
                 "Muy lentamente",
                 "Lentamente",
                 "Moderadamente",
@@ -272,7 +272,7 @@
             ],
             "post_sequence_timeout": 500,
             "retardo_numerico": "300",
-            "src_id": "Bird",
+            "src_id": "Mazinger",
             "start": 0,
             "uri": "Delay_300"
         },
@@ -282,19 +282,8 @@
                 "DREQ"
             ],
             "post_sequence_timeout": 500,
-            "retardo_numerico": "1000",
-            "src_id": "Dog",
-            "start": 0,
-            "uri": "Delay_1000"
-        },
-        {
-            "duration": 2000,
-            "post_seq_questions": [
-                "DREQ"
-            ],
-            "post_sequence_timeout": 500,
             "retardo_numerico": "600",
-            "src_id": "Rocket",
+            "src_id": "Reno",
             "start": 0,
             "uri": "Delay_600"
         },
@@ -304,8 +293,19 @@
                 "DREQ"
             ],
             "post_sequence_timeout": 500,
+            "retardo_numerico": "1000",
+            "src_id": "Duck",
+            "start": 0,
+            "uri": "Delay_1000"
+        },
+        {
+            "duration": 2000,
+            "post_seq_questions": [
+                "DREQ"
+            ],
+            "post_sequence_timeout": 500,
             "retardo_numerico": "1500",
-            "src_id": "TREX",
+            "src_id": "Walrus",
             "start": 0,
             "uri": "Delay_1500"
         }
