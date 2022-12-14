@@ -15,3 +15,12 @@ It is a descendent from the `VRTApplication` created in the [VRTogether](https:/
 - open the toplevel directory in Unity.
 - select `LoginManager` scene
 - play
+
+## Re-installing nuget packages
+
+Mainly ffmpeg. Check whether newer versions are available on `nuget.org`. Do the following steps:
+
+- Update toplevel `packages.config`
+- Run `nuget restore`
+- `git rm` and `git add` of the subdirectories in `Assets/packages`.
+

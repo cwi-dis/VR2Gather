@@ -266,7 +266,7 @@ namespace VRT.Video
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "in_sample_fmt", (AVSampleFormat)audioFrame->format, 0); // Source sample format.
-                ffmpeg.av_opt_set_int(swrCtx, "out_channel_layout", ffmpeg.AV_CH_LAYOUT_MONO, 0); // Target layout
+                ffmpeg.av_opt_set_int(swrCtx, "out_channel_layout", (long)ffmpeg.AV_CH_LAYOUT_MONO, 0); // Target layout
                 ffmpeg.av_opt_set_int(swrCtx, "out_sample_rate", dst_rate, 0); // Target sample rate.
                 ffmpeg.av_opt_set_sample_fmt(swrCtx, "out_sample_fmt", AVSampleFormat.AV_SAMPLE_FMT_FLTP, 0); // Target sample format. // AV_SAMPLE_FMT_FLTP
                 int ret = 0;
