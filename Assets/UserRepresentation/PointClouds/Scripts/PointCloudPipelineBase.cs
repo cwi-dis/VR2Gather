@@ -31,7 +31,12 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
-        protected AsyncReader reader;
+        protected AsyncReader _reader;
+        public AsyncReader reader
+        {
+            get { return _reader; }
+            private set { _reader = value; }
+        }
         protected AbstractPointCloudEncoder encoder;
         protected List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
         protected AsyncWriter writer;
