@@ -75,7 +75,6 @@ namespace VRT.Video
             {
                 NativeMemoryChunk mc = (NativeMemoryChunk)inVideoQueue.Dequeue();
                 if (codecVideo == null) CreateVideoCodec(mc);
-                ffmpeg.av_init_packet(videoPacket);
                 videoPacket->data = (byte*)mc.pointer; // <-- Romain way
                 videoPacket->size = mc.length;
                 videoPacket->pts = mc.info.timestamp;
@@ -119,7 +118,6 @@ namespace VRT.Video
                 NativeMemoryChunk mc = (NativeMemoryChunk)inAudioQueue.Dequeue();
                 // Audio-
                 if (codecAudio == null) CreateAudioCodec(mc);
-                ffmpeg.av_init_packet(audioPacket);
                 audioPacket->data = (byte*)mc.pointer; // <-- Romain way2
                 audioPacket->size = mc.length;
                 audioPacket->pts = mc.info.timestamp; // token.info.timestamp;
