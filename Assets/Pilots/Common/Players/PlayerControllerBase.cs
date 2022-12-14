@@ -23,6 +23,27 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject voice;
         [Tooltip("True if this is the local player (debug/introspection only)")]
         [SerializeField] protected bool isLocalPlayer;
+        [Tooltip("True if this user has a visual representation")]
+        private bool _isVisible;
+        public bool isVisible
+        {
+            get => _isVisible;
+            protected set { _isVisible = value; }
+        }
+        [Tooltip("True if this user has an audio representation")]
+        private bool _isAudible;
+        public bool isAudible
+        {
+            get => _isAudible;
+            protected set { _isAudible = value; }
+        }
+        [Tooltip("Human-readable name of this user")]
+        private string _userName;
+        public string userName
+        {
+            get => _userName;
+            protected set { _userName = value; }
+        }
         [Tooltip("Set to true to enable logging of position/orientation, for debugging tiling decisions")]
         [SerializeField] protected bool debugTiling = false;
 
@@ -35,7 +56,9 @@ namespace VRT.Pilots.Common
         public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             isLocalPlayer = _isLocalPlayer;
-          
+
+            userName = user.userName;
+
             setupCamera();
           
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
@@ -43,7 +66,7 @@ namespace VRT.Pilots.Common
 
             if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
             {
-
+                isAudible = true;
 
                 // Audio
                 voice.SetActive(true);
@@ -75,6 +98,7 @@ namespace VRT.Pilots.Common
             switch (user.userData.userRepresentationType)
             {
                 case UserRepresentationType.__2D__:
+                    isVisible = true;
                     webcam.SetActive(true);
                     if (userCfg == null)
                     {
@@ -84,6 +108,7 @@ namespace VRT.Pilots.Common
                     wcPipeline?.Init(isLocalPlayer, user, userCfg);
                     break;
                 case UserRepresentationType.__AVATAR__:
+                    isVisible = true;
                     avatar.SetActive(true);
                     break;
                 case UserRepresentationType.__PCC_SYNTH__:
@@ -91,6 +116,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__PCC_CWIK4A_:
                 case UserRepresentationType.__PCC_PROXY__:
                 case UserRepresentationType.__PCC_CWI_: // PC
+                    isVisible = true;
                     this.pointcloud.SetActive(true);
                     Transform cameraTransform = null;
                     if (isLocalPlayer)
@@ -123,7 +149,7 @@ namespace VRT.Pilots.Common
 
                     break;
                 default:
-                    // No error: there are representations that have no representation.
+                    isVisible = false;
                     break;
             }
         }
