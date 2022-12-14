@@ -2431,6 +2431,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3465647491076436602, guid: ee5d58162f9a040f1a480826b51cf8c1,
+        type: 3}
+      propertyPath: head.vrTarget
+      value: 
+      objectReference: {fileID: 5080109550374738220}
+    - target: {fileID: 3465647491076436602, guid: ee5d58162f9a040f1a480826b51cf8c1,
+        type: 3}
+      propertyPath: leftHand.vrTarget
+      value: 
+      objectReference: {fileID: 6558017081238129702}
+    - target: {fileID: 3465647491076436602, guid: ee5d58162f9a040f1a480826b51cf8c1,
+        type: 3}
+      propertyPath: rightHand.vrTarget
+      value: 
+      objectReference: {fileID: 3940740750330980206}
     - target: {fileID: 4096314390306842770, guid: ee5d58162f9a040f1a480826b51cf8c1,
         type: 3}
       propertyPath: m_RootOrder
