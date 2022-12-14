@@ -5,7 +5,7 @@ using UnityEngine;
 using Statistics = Cwipc.Statistics;
 #endif
 
-namespace VRT.Core
+namespace VRT.Pilots.Common
 {
     public class ManualStatsAnnotator : MonoBehaviour
     {

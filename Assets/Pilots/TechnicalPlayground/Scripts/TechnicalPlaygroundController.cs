@@ -26,7 +26,7 @@ namespace VRT.Pilots.TechnicalPlayground
         public override void Start()
         {
             base.Start();
-            if (enableFade)
+            if (enableFade && CameraFader.Instance != null)
             {
                 CameraFader.Instance.StartFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());

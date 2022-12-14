@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5277065446859714878}
   m_Layer: 0
-  m_Name: HMD_Outline
+  m_Name: P_HMD_Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

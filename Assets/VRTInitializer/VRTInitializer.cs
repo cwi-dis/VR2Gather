@@ -4,6 +4,7 @@ using UnityEngine;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
 using VRT.Core;
+using VRT.Pilots.Common;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -15,7 +16,8 @@ public class VRTInitializer : MonoBehaviour
     void Awake()
     {
         Debug.Log("Initializer: Registering pipelines");
-        PointCloudPipeline.Register();
+        PointCloudPipelineSelf.Register();
+        PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
         _ = Config.Instance;
     }

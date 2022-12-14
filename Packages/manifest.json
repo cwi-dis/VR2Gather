@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.ide.visualstudio": "2.0.16",
+    "com.unity.ide.visualstudio": "2.0.17",
     "com.unity.inputsystem": "1.4.2",
     "com.unity.postprocessing": "3.2.2",
     "com.unity.recorder": "3.0.3",
