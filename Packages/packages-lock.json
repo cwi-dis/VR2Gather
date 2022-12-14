@@ -163,10 +163,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "file:/Users/jack/src/VRTogether/cwipc/cwipc_unity/nl.cwi.dis.cwipc",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "c7d60921f826261d1c73cfcf339de977fbb81cd9"
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",
