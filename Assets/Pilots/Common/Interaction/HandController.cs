@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
 	public class HandController : MonoBehaviour
 	{
+		ActionBasedController controller;
+		public Hand hand;
 		public class HandControllerData : BaseMessage
 		{
 			public Handedness HandHandedness;
@@ -57,7 +60,10 @@ namespace VRT.Pilots.Common
 
 		void Start()
 		{
+			controller = GetComponent<ActionBasedController>();
+#if xxxjack_old
 			_Animator = GetComponentInChildren<Animator>();
+#endif
 			_Player = GetComponentInParent<PlayerNetworkController>();
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
@@ -95,6 +101,12 @@ namespace VRT.Pilots.Common
 
 		private void Update()
 		{
+			float isGrabbing = controller.selectAction.action.ReadValue<float>();
+			float isPointing = controller.activateAction.action.ReadValue<float>();
+			Debug.Log($"xxxjack hand {HandHandedness} isGrabbing={isGrabbing} isPointing={isPointing}");
+			hand.SetGrab(isGrabbing > 0.5);
+			hand.SetPoint(isPointing > 0.5);
+#if xxxjack_old
 			if (HeldGrabbable != null && HandState != State.Grabbing)
 			{
 				HandGrabEvent handGrabEvent = new HandGrabEvent()
@@ -112,6 +124,7 @@ namespace VRT.Pilots.Common
 			{
 				_CanGrabAgain = true;
 			}
+#endif
 		}
 
 		private void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
@@ -180,6 +193,7 @@ namespace VRT.Pilots.Common
 
 		private void UpdateAnimation()
 		{
+#if xxxjack_old
 			if (HandState == State.Grabbing)
 			{
 				if (!_Animator.GetBool("IsGrabbing"))
@@ -201,6 +215,7 @@ namespace VRT.Pilots.Common
 				_Animator.SetBool("IsGrabbing", false);
 				_Animator.SetBool("IsPointing", false);
 			}
+#endif
 		}
 	}
 }
