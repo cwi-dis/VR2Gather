@@ -1,3 +1,6 @@
 [submodule "Assets/ExternalAssets/VR2G-besthttp"]
 	path = Assets/ExternalAssets/VR2G-besthttp
 	url = ../VR2G-besthttp.git
+[submodule "Assets/PilotsExternal/TransmiXR"]
+	path = Assets/PilotsExternal/TransmiXR
+	url = ../VRTApp-TransmiXR.git
