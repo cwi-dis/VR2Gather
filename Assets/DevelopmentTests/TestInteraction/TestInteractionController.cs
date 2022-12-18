@@ -43,9 +43,8 @@ namespace VRT.DevelopmentTests
         public void Update()
         {
             if (pmSetupDone) return;
-            if (VRConfig.Instance == null || !VRConfig.Instance.initialized) return;
-            pmSetupDone = true;
             playerManager.setupCamera(true);
+            pmSetupDone = true;
         }
     }
 }
