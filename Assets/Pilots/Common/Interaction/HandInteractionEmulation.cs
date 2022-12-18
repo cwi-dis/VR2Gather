@@ -150,7 +150,7 @@ namespace VRT.Pilots.Common
             // First check teleporter, if enabled
             if (teleporter != null && teleporter.teleporterActive)
             {
-                Ray teleportRay = VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+                Ray teleportRay = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
                 // We have the ray starting at our "hand" going in the direction
                 // of our gaze.
                 Vector3 pos = transform.position;
@@ -277,7 +277,7 @@ namespace VRT.Pilots.Common
 
         protected virtual Ray getRay()
         {
-            return VRConfig.Instance.getMainCamera().ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
+            return Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
         }
     }
 }
