@@ -5,9 +5,14 @@ using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
+    /// <summary>
+    /// Attach this component to a GameObject to make it stay centered in the users view in VR.
+    /// </summary>
     public class Splash : MonoBehaviour
     {
+        [Tooltip("How far away is this object from the users eyes?")]
         public float distance;
+        [Tooltip("How fast should it move when the user changes position/orientation?")]
         public float velocity;
         public float scaleVel;
         Vector3 scale;
