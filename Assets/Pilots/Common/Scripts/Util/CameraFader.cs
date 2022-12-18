@@ -4,13 +4,17 @@ using UnityEngine.UI;
 
 namespace VRT.Pilots.Common
 {
-
+    /// <summary>
+    /// Use this component in a scene to fade-in and fade-out the scene.
+    /// </summary>
     public class CameraFader : MonoBehaviour
     {
+        [Tooltip("How many seconds the fadein/fadeout takes")]
         public float FadeDuration = 1.0f;
         public Image FadeImage;
         public Text FadeText;
 
+        [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
         public bool StartFadedOut = false;
 
         private Material _FadeMaterial;

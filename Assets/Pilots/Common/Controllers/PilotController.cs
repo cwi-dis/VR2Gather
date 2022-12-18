@@ -7,8 +7,16 @@ namespace VRT.Pilots.Common
     abstract public class PilotController : MonoBehaviour
     {
 
-        [HideInInspector] public float timer = 0.0f;
+        [Tooltip("Fade in at start of scene (default only fadeout)")]
+        public bool enableFadeIn = false;
 
+        public void Awake()
+        {
+           if (CameraFader.Instance != null)
+            {
+                CameraFader.Instance.StartFadedOut = enableFadeIn;
+            }
+        }
         // Start is called before the first frame update
         public virtual void Start()
         {

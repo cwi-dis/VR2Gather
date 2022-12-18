@@ -82,11 +82,6 @@ public class Calibration : MonoBehaviour {
     {
         if (MyPlayerInput == null)
         {
-            if (!VRConfig.Instance.initialized)
-            {
-                Debug.Log("Calibration: Update: VR config not yet initialized");
-                return;
-            }
             player.setupCamera();
             // Initialize camera position/orientation from saved preferences
             InitializePosition();
@@ -232,10 +227,6 @@ public class Calibration : MonoBehaviour {
 
     private void InitializePosition()
     {
-        if (!VRConfig.Instance.initialized)
-        {
-            Debug.LogError("Calibration: VR config not yet initialized");
-        }
         // Get initial position/orientation from the preferences
         Vector3 pos = new Vector3(PlayerPrefs.GetFloat(prefix + "_pos_x", 0), PlayerPrefs.GetFloat(prefix + "_pos_y", 0), PlayerPrefs.GetFloat(prefix + "_pos_z", 0));
         Vector3 rot = new Vector3(PlayerPrefs.GetFloat(prefix + "_rot_x", 0), PlayerPrefs.GetFloat(prefix + "_rot_y", 0), PlayerPrefs.GetFloat(prefix + "_rot_z", 0));
