@@ -11,8 +11,11 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("How many seconds the fadein/fadeout takes")]
         public float FadeDuration = 1.0f;
+        [Tooltip("Fade GameObject (disabled when not fading in/out)")]
+        public GameObject FadeGO;
+        [Tooltip("Image in FadeGO, its material will be cloned and animated for fading")]
         public Image FadeImage;
-        public Text FadeText;
+        private Text FadeText;
 
         [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
         public bool startFadedOut = false;
@@ -56,22 +59,24 @@ namespace VRT.Pilots.Common
             {
                 _FadeMaterial.color = Color.black;
                 _Value = 1f;
+                FadeGO?.SetActive(true);
             }
             else
             {
                 _FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
                 _Value = 0f;
+                FadeGO?.SetActive(false);
             }
         }
 
         public void SetText(string text)
         {
-            FadeText.text = text;
+            if (FadeText != null) FadeText.text = text;
         }
 
         public void ClearText()
         {
-            FadeText.text = "";
+            if (FadeText != null) FadeText.text = "";
         }
 
         public IEnumerator FadeIn()
@@ -91,12 +96,13 @@ namespace VRT.Pilots.Common
                 _Value += Time.deltaTime * _Step;
                 _Value = Mathf.Clamp01(_Value);
 
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
                 if (_Value == _Target)
                 {
                     _Fading = false;
+                    FadeGO?.SetActive(false);
                 }
 
-                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
                 yield return null;
             }
         }
@@ -104,6 +110,7 @@ namespace VRT.Pilots.Common
         public IEnumerator FadeOut()
         {
             _Fading = true;
+            FadeGO?.SetActive(true);
             _Target = 1.0f;
             _Step = 1.0f / FadeDuration;
 
@@ -113,13 +120,14 @@ namespace VRT.Pilots.Common
             {
                 _Value += Time.deltaTime * _Step;
                 _Value = Mathf.Clamp01(_Value);
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
 
                 if (_Value == _Target)
                 {
                     _Fading = false;
+                    // FadeGO?.SetActive(false);
                 }
 
-                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
                 yield return null;
             }
         }

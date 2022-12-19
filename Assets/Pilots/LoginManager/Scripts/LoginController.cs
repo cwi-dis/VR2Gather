@@ -19,23 +19,12 @@ namespace VRT.Pilots.LoginManager
             public const string START = "START";
             public const string READY = "READY";
         }
-        private static LoginController instance;
-
-        public static LoginController Instance { get { return instance; } }
-
+      
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
 
-        public override void Start()
-        {
-            base.Start();
-            if (instance == null)
-            {
-                instance = this;
-            }
-        }
-
+       
         IEnumerator RefreshAndLoad(string scenary)
         {
             yield return null;
@@ -44,9 +33,9 @@ namespace VRT.Pilots.LoginManager
             LoadNewScene(scenary);
         }
 
-        public override void MessageActivation(string message)
+        public override void OnUserMessageReceived(string message)
         {
-            Debug.Log($"[FPA] MessageActivation {message}");
+            Debug.Log($"{Name()}: OnUserMessageReceived: {message}");
             string[] msg = message.Split(new char[] { '_' });
             if (msg[0] == MessageType.START)
             {
@@ -66,7 +55,7 @@ namespace VRT.Pilots.LoginManager
                         Config.Instance.protocolType = Config.ProtocolType.TCP;
                         break;
                     default:
-                        Debug.LogError($"LoginController: received unknown START audio type {msg[2]}");
+                        Debug.LogError($"{Name()}: received unknown START audio type {msg[2]}");
                         break;
                 }
                 string pilotName = msg[1];
@@ -83,7 +72,7 @@ namespace VRT.Pilots.LoginManager
                 string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
                 if (sceneName == null)
                 {
-                    throw new System.Exception($"Selected scenario \"{sceneName}\" not implemented in this player");
+                    throw new System.Exception($"{Name()}: Selected scenario \"{sceneName}\" not implemented in this player");
                 }
                 if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
             }

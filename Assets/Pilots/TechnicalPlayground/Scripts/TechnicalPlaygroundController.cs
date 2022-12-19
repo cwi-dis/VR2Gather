@@ -7,6 +7,5 @@ namespace VRT.Pilots.TechnicalPlayground
     {
        
        
-        public override void MessageActivation(string message) { }
     }
 }

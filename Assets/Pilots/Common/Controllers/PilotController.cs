@@ -24,6 +24,11 @@ namespace VRT.Pilots.Common
 
         public static PilotController Instance = null;
 
+        public string Name()
+        {
+            return $"{GetType().Name}";
+        }
+
         public void Awake()
         {
             if (Instance != null)
@@ -75,6 +80,9 @@ namespace VRT.Pilots.Common
             SceneManager.LoadScene(newScene);
         }
 
-        public abstract void MessageActivation(string message);
+        public virtual void OnUserMessageReceived(string message)
+        {
+            Debug.LogWarning($"{Name()}: OnUserMessageReceived: unexpected message: {message}");
+        }
     }
 }

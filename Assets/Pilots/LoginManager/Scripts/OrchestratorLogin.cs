@@ -1962,7 +1962,7 @@ namespace VRT.Pilots.LoginManager
             AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
             StartCoroutine(ScrollLogsToBottom());
 
-            LoginController.Instance.MessageActivation(userMessage.message);
+            LoginController.Instance.OnUserMessageReceived(userMessage.message);
         }
 
         #endregion
