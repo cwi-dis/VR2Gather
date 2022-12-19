@@ -15,7 +15,7 @@ namespace VRT.Pilots.Common
         public Text FadeText;
 
         [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
-        public bool StartFadedOut = false;
+        public bool startFadedOut = false;
 
         private Material _FadeMaterial;
         private bool _Fading = false;
@@ -39,6 +39,11 @@ namespace VRT.Pilots.Common
 
         public void Awake()
         {
+            PilotController ctrl = FindObjectOfType<PilotController>();
+            if (ctrl != null)
+            {
+                startFadedOut = ctrl.startFadedOut;
+            }
             _FadeMaterial = Instantiate(FadeImage.material);
             FadeImage.material = _FadeMaterial;
             _InitFade();
@@ -47,7 +52,7 @@ namespace VRT.Pilots.Common
 
         void _InitFade()
         {
-            if (StartFadedOut)
+            if (startFadedOut)
             {
                 _FadeMaterial.color = Color.black;
                 _Value = 1f;

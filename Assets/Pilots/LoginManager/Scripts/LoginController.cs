@@ -41,7 +41,7 @@ namespace VRT.Pilots.LoginManager
             yield return null;
             OrchestratorController.Instance.GetUsers();
             yield return new WaitForSeconds(0.5f);
-            SceneManager.LoadScene(scenary);
+            LoadNewScene(scenary);
         }
 
         public override void MessageActivation(string message)

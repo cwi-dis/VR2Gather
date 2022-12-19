@@ -11,6 +11,8 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using Cwipc;
+using VRT.Pilots.Common;
+
 namespace VRT.Pilots.LoginManager
 {
 
@@ -1201,7 +1203,7 @@ namespace VRT.Pilots.LoginManager
         {
             UpdateUserData();
             yield return new WaitForSeconds(0.5f);
-            SceneManager.LoadScene("SelfCalibration");
+            PilotController.LoadScene("SelfCalibration");
         }
 
 

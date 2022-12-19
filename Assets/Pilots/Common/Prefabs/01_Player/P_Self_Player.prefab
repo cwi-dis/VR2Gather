@@ -183,7 +183,7 @@ MonoBehaviour:
   FadeDuration: 1
   FadeImage: {fileID: 3225750462830404581}
   FadeText: {fileID: 297034690097747474}
-  StartFadedOut: 0
+  startFadedOut: 0
 --- !u!114 &2437271276384166004
 MonoBehaviour:
   m_ObjectHideFlags: 0

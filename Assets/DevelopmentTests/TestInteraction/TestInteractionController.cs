@@ -25,7 +25,7 @@ namespace VRT.DevelopmentTests
             }
             if (enableFade && CameraFader.Instance != null)
             {
-                CameraFader.Instance.StartFadedOut = true;
+                CameraFader.Instance.startFadedOut = true;
             }
         }
 
@@ -35,7 +35,7 @@ namespace VRT.DevelopmentTests
             player.SetupPlayerNetworkControllerPlayer(true, "no-userid");
             if (enableFade)
             {
-                CameraFader.Instance.StartFadedOut = true;
+                CameraFader.Instance.startFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());
             }
         }

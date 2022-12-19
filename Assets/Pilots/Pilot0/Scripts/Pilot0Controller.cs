@@ -7,8 +7,9 @@ namespace VRT.Pilots.Pilot0
     {
         public static Pilot0Controller Instance { get; private set; }
 
-        public void Awake()
+        public new void Awake()
         {
+            base.Awake();
             if (Instance == null)
             {
                 Instance = this;

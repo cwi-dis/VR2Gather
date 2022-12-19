@@ -128,7 +128,7 @@ public class Calibration : MonoBehaviour {
                 {
                     Debug.Log("Calibration: Comfort: User is happy, return to LoginManager");
                     //Application.Quit();
-                    SceneManager.LoadScene("LoginManager");
+                    PilotController.LoadScene("LoginManager");
                 }
                 // I'm not comfortable
                 if (NoAction.triggered)

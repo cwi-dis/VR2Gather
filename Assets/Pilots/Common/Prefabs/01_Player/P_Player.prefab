@@ -871,8 +871,6 @@ MonoBehaviour:
   HeadTransform: {fileID: 0}
   LeftHandTransform: {fileID: 395634977143772616}
   RightHandTransform: {fileID: 326265371718444427}
-  LeftHandPoseDriver: {fileID: 0}
-  RightHandPoseDriver: {fileID: 0}
   SendRate: 10
 --- !u!143 &3076079762117982612
 CharacterController:
@@ -1499,6 +1497,11 @@ PrefabInstance:
       propertyPath: adjustForPositionOfCamera
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6756273818463653689, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6758312797985080727, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_IsActive
@@ -1507,7 +1510,7 @@ PrefabInstance:
     - target: {fileID: 7931379300683449576, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21dad1a70fa0b7842afecfcdd199c370, type: 3}
