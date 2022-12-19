@@ -65,7 +65,7 @@ namespace VRT.Pilots.Common
             {
                 if (fadeOutText != null && fadeOutText != "") CameraFader.Instance.SetText(fadeOutText);
                 StartCoroutine(CameraFader.Instance.FadeOut());
-
+                StartCoroutine(LoadSceneAfterFade(CameraFader.Instance.FadeDuration, newScene));
             }
             else
             {

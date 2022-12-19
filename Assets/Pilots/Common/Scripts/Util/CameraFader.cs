@@ -59,13 +59,13 @@ namespace VRT.Pilots.Common
             {
                 _FadeMaterial.color = Color.black;
                 _Value = 1f;
-                FadeGO?.SetActive(true);
+                if (FadeGO != null) FadeGO.SetActive(true);
             }
             else
             {
                 _FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
                 _Value = 0f;
-                FadeGO?.SetActive(false);
+                if (FadeGO != null) FadeGO.SetActive(false);
             }
         }
 
@@ -100,7 +100,7 @@ namespace VRT.Pilots.Common
                 if (_Value == _Target)
                 {
                     _Fading = false;
-                    FadeGO?.SetActive(false);
+                    if (FadeGO != null) FadeGO.SetActive(false);
                 }
 
                 yield return null;
@@ -125,7 +125,7 @@ namespace VRT.Pilots.Common
                 if (_Value == _Target)
                 {
                     _Fading = false;
-                    // FadeGO?.SetActive(false);
+                    // if (FadeGO != null) FadeGO.SetActive(false);
                 }
 
                 yield return null;
