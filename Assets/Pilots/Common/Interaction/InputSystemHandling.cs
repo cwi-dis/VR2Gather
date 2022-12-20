@@ -127,7 +127,7 @@ namespace VRT.Pilots.Common
         void Start()
         {
             if (cameraTransformToControl != null) return;
-            PlayerControllerBase player = GetComponentInParent<PlayerControllerBase>();
+            PlayerControllerSelf player = GetComponentInParent<PlayerControllerSelf>();
             cameraTransformToControl = player.getCameraTransform();
             if (cameraTransformToControl == null)
             {

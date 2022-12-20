@@ -11,7 +11,7 @@ namespace VRT.Pilots.Common
     public class ViewAdjust : LocomotionProvider
     {
         [Tooltip("The player controller, for saving the view origin")]
-        [SerializeField] PlayerControllerBase playerController;
+        [SerializeField] PlayerControllerSelf playerController;
 
         [Tooltip("The object of which the height is adjusted, and that resetting origin will modify")]
         [SerializeField] GameObject cameraOffset;

@@ -19,7 +19,7 @@ namespace VRT.Pilots.LoginManager
         public float MicrophoneLevel { get; private set; }
 
         [Tooltip("Player used for this preview (capture and display only)")]
-        public PlayerControllerBase player;
+        public PlayerControllerSelf player;
         bool playerHasBeenInitialized = false;
         string currentMicrophoneName = "None";
         AudioClip recorder;

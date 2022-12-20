@@ -15,7 +15,7 @@ public class Calibration : MonoBehaviour {
     private State       state = State.CheckWithUser;
 
     [Tooltip("The player to control, for preview")]
-    public PlayerControllerBase player;
+    public PlayerControllerSelf player;
     [Tooltip("The camera to control, for preview")]
     public GameObject   cameraOffset;
     

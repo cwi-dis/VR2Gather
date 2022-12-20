@@ -7,7 +7,7 @@ using VRT.UserRepresentation.Voice;
 namespace VRT.Pilots.Common
 {
 
-    public class PlayerControllerBase : MonoBehaviour
+    abstract public class PlayerControllerBase : MonoBehaviour
     {
         [Tooltip("Main camera, if this is the local player and not using a holodisplay")]
         [SerializeField] protected Camera cam;
@@ -54,14 +54,13 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors);
+        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
-            isLocalPlayer = _isLocalPlayer;
-
+            
             userName = user.userName;
 
-            setupCamera();
-          
+            
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
 
 
@@ -81,10 +80,6 @@ namespace VRT.Pilots.Common
                     Debug.LogError($"Cannot receive audio from participant {user.userName}");
                     throw;
                 }
-            }
-            if (isLocalPlayer)
-            {
-                LoadCameraTransform();
             }
         }
 
@@ -147,44 +142,6 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void LoadCameraTransform()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"{Name()}: LoadCameraTransform called for non-local player");
-            }
-            if (cameraOffset == null)
-            {
-                Debug.LogError($"{Name()}: No cameraOffset");
-            }
-            Vector3 pos = new Vector3(PlayerPrefs.GetFloat("cam_pos_x", 0), PlayerPrefs.GetFloat("cam_pos_y", 0), PlayerPrefs.GetFloat("cam_pos_z", 0));
-            Vector3 rot = new Vector3(PlayerPrefs.GetFloat("cam_rot_x", 0), PlayerPrefs.GetFloat("cam_rot_y", 0), PlayerPrefs.GetFloat("cam_rot_z", 0));
-            Debug.Log($"{Name()}: loaded self-camera pos={pos}, rot={rot}");
-            cameraOffset.localPosition = pos;
-            cameraOffset.localRotation = Quaternion.Euler(rot);
-        }
-
-        public void SaveCameraTransform()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"{Name()}: LoadCameraTransform called for non-local player");
-            }
-            if (cameraOffset == null)
-            {
-                Debug.LogError($"{Name()}: No cameraOffset");
-            }
-            Vector3 pos = cameraOffset.localPosition;
-            Vector3 rot = cameraOffset.localRotation.eulerAngles;
-            Debug.Log($"{Name()}: Saving self-camera pos={pos}, rot={rot}");
-            PlayerPrefs.SetFloat("cam_pos_x", pos.x);
-            PlayerPrefs.SetFloat("cam_pos_y", pos.y);
-            PlayerPrefs.SetFloat("cam_pos_z", pos.z);
-            PlayerPrefs.SetFloat("cam_rot_x", rot.x);
-            PlayerPrefs.SetFloat("cam_rot_y", rot.y);
-            PlayerPrefs.SetFloat("cam_rot_z", rot.z);
-        }
-
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
             if (user.userData.microphoneName == "None")
@@ -215,132 +172,12 @@ namespace VRT.Pilots.Common
                 voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
             }
         }
-        //
-        // Enable camera (or camera-like object) and input handling.
-        // If not the local player most things will be disabled.
-        // If disableInput is true the input handling will be disabled (probably because we are in the calibration
-        // scene or some other place where input is handled differently than through the PFB_Player).
-        //
-        public void setupCamera(bool disableInput = false)
-        {
-            if (!isLocalPlayer) return;
-            // Unity has two types of null. We need the C# null.
-            if (holoCamera == null) holoCamera = null;
-            // Enable either the normal camera or the holodisplay camera for the local user.
-            bool useLocalHoloDisplay = false;
-            bool useLocalNormalCam = !disableInput;
-            if (useLocalNormalCam)
-            {
-                cam.gameObject.SetActive(true);
-                holoCamera?.SetActive(false);
-            }
-            else if (useLocalHoloDisplay)
-            {
-                cam.gameObject.SetActive(false);
-                holoCamera.SetActive(true);
-            }
-            else
-            {
-                cam?.gameObject.SetActive(false);
-                holoCamera?.SetActive(false);
-            }
-        }
+    
 
-        public Transform getCameraTransform()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetCameraTransform called but isLocalPlayer is false");
-                return null;
-            }
-            if (holoCamera != null && holoCamera.activeSelf)
-            {
-                return holoCamera.transform;
-            }
-            else
-            {
-                return cam.transform;
-            }
-        }
-        /// <summary>
-        /// Get position in world coordinates. Should only be called on receiving pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetPosition()
-        {
-            if (isLocalPlayer)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetPosition called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.position;
-        }
+    
 
-        /// <summary>
-        /// Get rotation in world coordinates. Should only be called on receiving pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetRotation()
-        {
-            if (isLocalPlayer)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetRotation called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.rotation * Vector3.forward;
-        }
+      
 
-        /// <summary>
-        /// Return position and rotation of this user.  Should only be called on sending pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public ViewerInformation GetViewerInformation()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
-                return new ViewerInformation();
-            }
-            // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
-            Transform cameraTransform = player?.getCameraTransform();
-            if (cameraTransform == null)
-            {
-                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
-                return new ViewerInformation();
-            }
-            Vector3 position = cameraTransform.position;
-            Vector3 forward = cameraTransform.rotation * Vector3.forward;
-            return new ViewerInformation()
-            {
-                position = position,
-                gazeForwardDirection = forward
-            };
-        }
-
-        // Update is called once per frame
-        System.DateTime lastUpdateTime;
-        private void Update()
-        {
-            if (debugTiling)
-            {
-                // Debugging: print position/orientation of camera and others every 10 seconds.
-                if (lastUpdateTime == null || System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10))
-                {
-                    lastUpdateTime = System.DateTime.Now;
-                    if (isLocalPlayer)
-                    {
-                        ViewerInformation vi = GetViewerInformation();
-                        Debug.Log($"{Name()}: Tiling: self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
-                    }
-                    else
-                    {
-                        Vector3 position = GetPosition();
-                        Vector3 rotation = GetRotation();
-                        Debug.Log($"{Name()}: Tiling: other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
-                    }
-                }
-            }
-        }
+    
     }
 }

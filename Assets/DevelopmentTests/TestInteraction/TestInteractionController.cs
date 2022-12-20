@@ -12,7 +12,7 @@ namespace VRT.DevelopmentTests
         [Tooltip("The user (for enabling isLocal)")]
         public VRT.Pilots.Common.PlayerNetworkController player;
         [Tooltip("The user (for setup camera position and input/output)")]
-        public PlayerControllerBase playerManager;
+        public PlayerControllerSelf playerManager;
 
         bool pmSetupDone = false;
         public static TestInteractionController Instance { get; private set; }
