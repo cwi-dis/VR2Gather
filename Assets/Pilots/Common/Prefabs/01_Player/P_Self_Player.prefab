@@ -181,8 +181,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FadeDuration: 1
+  FadeGO: {fileID: 0}
   FadeImage: {fileID: 3225750462830404581}
-  FadeText: {fileID: 297034690097747474}
   startFadedOut: 0
 --- !u!114 &2437271276384166004
 MonoBehaviour:
@@ -2064,6 +2064,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1790764940407382550}
   holoCamera: {fileID: 0}
+  cameraOffset: {fileID: 0}
   avatar: {fileID: 8457154900701074551}
   webcam: {fileID: 8303602249756084489}
   pointcloud: {fileID: 5240016629654404532}

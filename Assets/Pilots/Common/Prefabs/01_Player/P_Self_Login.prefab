@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_System: {fileID: 14888019085228124}
+  playerController: {fileID: 0}
   cameraOffset: {fileID: 7415202443380818563}
   player: {fileID: 5945265715699745243}
   playerCamera: {fileID: 4627791344939139398}

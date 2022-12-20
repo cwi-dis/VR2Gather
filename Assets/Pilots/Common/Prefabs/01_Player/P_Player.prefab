@@ -849,6 +849,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
   holoCamera: {fileID: 0}
+  cameraOffset: {fileID: 0}
   avatar: {fileID: 4037853332143369839}
   webcam: {fileID: 4497088204552090385}
   pointcloud: {fileID: 426937040433907628}

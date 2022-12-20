@@ -13,6 +13,8 @@ namespace VRT.Pilots.Common
         [SerializeField] protected Camera cam;
         [Tooltip("Main camera if this is the local user and we are using a holo display")]
         [SerializeField] protected GameObject holoCamera;
+        [Tooltip("CameraOffset of camera")]
+        [SerializeField] protected Transform cameraOffset;
         [Tooltip("Avatar representation of this user")]
         [SerializeField] protected GameObject avatar;
         [Tooltip("Video webcam avator representation of this user")]
@@ -52,7 +54,6 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        //Looks like this could very well be internal to the PlayerManager? 
         public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             isLocalPlayer = _isLocalPlayer;
@@ -80,6 +81,10 @@ namespace VRT.Pilots.Common
                     Debug.LogError($"Cannot receive audio from participant {user.userName}");
                     throw;
                 }
+            }
+            if (isLocalPlayer)
+            {
+                LoadCameraTransform();
             }
         }
 
@@ -118,19 +123,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__PCC_CWI_: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);
-                    Transform cameraTransform = null;
-                    if (isLocalPlayer)
-                    {
-                        cameraTransform = getCameraTransform();
-                    }
-                    if (cameraTransform)
-                    {
-                        Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                        Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-                        Debug.Log($"{Name()}: self-camera pos={pos}, rot={rot}");
-                        cam.gameObject.transform.parent.localPosition = pos;
-                        cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
-                    }
+           
                     userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
@@ -152,6 +145,44 @@ namespace VRT.Pilots.Common
                     isVisible = false;
                     break;
             }
+        }
+
+        public void LoadCameraTransform()
+        {
+            if (!isLocalPlayer)
+            {
+                Debug.LogError($"{Name()}: LoadCameraTransform called for non-local player");
+            }
+            if (cameraOffset == null)
+            {
+                Debug.LogError($"{Name()}: No cameraOffset");
+            }
+            Vector3 pos = new Vector3(PlayerPrefs.GetFloat("cam_pos_x", 0), PlayerPrefs.GetFloat("cam_pos_y", 0), PlayerPrefs.GetFloat("cam_pos_z", 0));
+            Vector3 rot = new Vector3(PlayerPrefs.GetFloat("cam_rot_x", 0), PlayerPrefs.GetFloat("cam_rot_y", 0), PlayerPrefs.GetFloat("cam_rot_z", 0));
+            Debug.Log($"{Name()}: loaded self-camera pos={pos}, rot={rot}");
+            cameraOffset.localPosition = pos;
+            cameraOffset.localRotation = Quaternion.Euler(rot);
+        }
+
+        public void SaveCameraTransform()
+        {
+            if (!isLocalPlayer)
+            {
+                Debug.LogError($"{Name()}: LoadCameraTransform called for non-local player");
+            }
+            if (cameraOffset == null)
+            {
+                Debug.LogError($"{Name()}: No cameraOffset");
+            }
+            Vector3 pos = cameraOffset.localPosition;
+            Vector3 rot = cameraOffset.localRotation.eulerAngles;
+            Debug.Log($"{Name()}: Saving self-camera pos={pos}, rot={rot}");
+            PlayerPrefs.SetFloat("cam_pos_x", pos.x);
+            PlayerPrefs.SetFloat("cam_pos_y", pos.y);
+            PlayerPrefs.SetFloat("cam_pos_z", pos.z);
+            PlayerPrefs.SetFloat("cam_rot_x", rot.x);
+            PlayerPrefs.SetFloat("cam_rot_y", rot.y);
+            PlayerPrefs.SetFloat("cam_rot_z", rot.z);
         }
 
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
