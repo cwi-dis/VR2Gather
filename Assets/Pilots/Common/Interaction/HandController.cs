@@ -103,7 +103,7 @@ namespace VRT.Pilots.Common
 		{
 			float isGrabbing = controller.selectAction.action.ReadValue<float>();
 			float isPointing = controller.activateAction.action.ReadValue<float>();
-			Debug.Log($"xxxjack hand {HandHandedness} isGrabbing={isGrabbing} isPointing={isPointing}");
+//			Debug.Log($"xxxjack hand {HandHandedness} isGrabbing={isGrabbing} isPointing={isPointing}");
 			hand.SetGrab(isGrabbing > 0.5);
 			hand.SetPoint(isPointing > 0.5);
 #if xxxjack_old
