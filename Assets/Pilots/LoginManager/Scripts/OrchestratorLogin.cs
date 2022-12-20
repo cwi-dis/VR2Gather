@@ -99,7 +99,6 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Dropdown webcamDropdown = null;
         [SerializeField] private Dropdown microphoneDropdown = null;
         [SerializeField] private RectTransform VUMeter = null;
-        [SerializeField] private Button calibButton = null;
         [SerializeField] private Button saveConfigButton = null;
         [SerializeField] private Button exitConfigButton = null;
         [SerializeField] private SelfRepresentationPreview selfRepresentationPreview = null;
@@ -593,8 +592,7 @@ namespace VRT.Pilots.LoginManager
             });
             saveConfigButton.onClick.AddListener(delegate { SaveConfigButton(); });
             exitConfigButton.onClick.AddListener(delegate { ExitConfigButton(); });
-            calibButton.onClick.AddListener(delegate { GoToCalibration(); });
-            refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
+           refreshSessionsButton.onClick.AddListener(delegate { GetSessions(); });
             backPlayButton.onClick.AddListener(delegate { StateButton(State.Logged); });
             createButton.onClick.AddListener(delegate { StateButton(State.Create); });
             joinButton.onClick.AddListener(delegate { StateButton(State.Join); });
@@ -1039,24 +1037,9 @@ namespace VRT.Pilots.LoginManager
         {
             // Dropdown Logic
             webcamInfoGO.SetActive(false);
-            calibButton.gameObject.SetActive(false);
-            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWI_)
-            {
-                calibButton.gameObject.SetActive(true);
-            }
-            else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_CWIK4A_)
-            {
-                calibButton.gameObject.SetActive(true);
-            }
-            else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_PROXY__)
-            {
-                calibButton.gameObject.SetActive(true);
-            }
-            else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__PCC_SYNTH__)
-            {
-                calibButton.gameObject.SetActive(true);
-            }
-            else if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__)
+          
+         
+            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__)
             {
                 webcamInfoGO.SetActive(true);
             }
@@ -1194,18 +1177,7 @@ namespace VRT.Pilots.LoginManager
             SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.PCs.Codec + "_" + Config.Instance.Voice.Codec);
         }
 
-        public void GoToCalibration()
-        {
-            StartCoroutine(CalibRoutine());
-        }
-
-        IEnumerator CalibRoutine()
-        {
-            UpdateUserData();
-            yield return new WaitForSeconds(0.5f);
-            PilotController.LoadScene("SelfCalibration");
-        }
-
+     
 
         #endregion
 
