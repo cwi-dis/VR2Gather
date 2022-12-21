@@ -1870,6 +1870,39 @@
                 },
                 {
                     "name": "One Modifier",
+                    "id": "0b298c7d-c914-4e6a-8d11-fbd13e2eae46",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "55116f6f-8fc9-4ad5-912e-5143f53882aa",
+                    "path": "<ViveController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "0ef08785-0165-4c99-808b-ffaa65a55914",
+                    "path": "<ViveController>{LeftHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
                     "id": "8592de02-a212-4579-b926-547362b63f6d",
                     "path": "OneModifier",
                     "interactions": "",
@@ -1897,6 +1930,39 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "72fe19a5-13dc-4742-8e6e-a4427b31b79f",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewHeight",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "d54d6170-e919-4d4c-9380-ae4c147b4f50",
+                    "path": "<ViveController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "30027232-7835-41f3-b2b3-de0bd7649d27",
+                    "path": "<ViveController>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "StickDeadzone(min=0.5,max=1)",
+                    "groups": "Vive",
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2013,6 +2079,50 @@
                 },
                 {
                     "name": "Two Modifiers",
+                    "id": "184a51ec-1df6-4c72-9d92-aa70cd41dc37",
+                    "path": "TwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewReset",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "c6da39d5-ab45-45dd-a8fa-05d87116602f",
+                    "path": "<ViveController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "8c587fcd-6efe-4d19-9b09-f26183e81d45",
+                    "path": "<ViveController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "d25e7d29-fbbc-4401-9727-b3aab8707338",
+                    "path": "<ViveController>{LeftHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Two Modifiers",
                     "id": "2200aadc-9414-41d1-8c4f-3163700c41df",
                     "path": "TwoModifiers",
                     "interactions": "",
@@ -2039,7 +2149,7 @@
                     "path": "<OculusTouchController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": "Oculus",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2051,6 +2161,50 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Oculus",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Two Modifiers",
+                    "id": "483d7bbc-5212-44a1-a1a1-655e427921bd",
+                    "path": "TwoModifiers",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "ViewReset",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier1",
+                    "id": "d7637f43-cb2b-4241-9b23-6a72bc24d61c",
+                    "path": "<ViveController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "modifier2",
+                    "id": "f61b88d6-8ae4-4fbc-a9c6-0d303a343201",
+                    "path": "<ViveController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "ViewReset",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "355137df-dab6-4d8a-9826-4352c28722ad",
+                    "path": "<ViveController>{RightHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
