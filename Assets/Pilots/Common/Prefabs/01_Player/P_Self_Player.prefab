@@ -2149,6 +2149,18 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
+--- !u!114 &629774664923120268 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5037811773562763412, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 5572236579125443096}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &748432237038051979 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5131421326051842195, guid: 21abad33e8196954b8f19e6b888a67a4,
@@ -2174,6 +2186,7 @@ MonoBehaviour:
   webcam: {fileID: 8303602249756084489}
   pointcloud: {fileID: 5240016629654404532}
   voice: {fileID: 8861152703333866664}
+  userNameText: {fileID: 629774664923120268}
   isLocalPlayer: 1
   debugTiling: 0
 --- !u!114 &4736957743163071257

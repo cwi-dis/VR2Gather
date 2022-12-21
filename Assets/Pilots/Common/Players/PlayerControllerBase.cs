@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Reflection;
+using TMPro;
 using VRT.Core;
 using System;
 using VRT.UserRepresentation.Voice;
@@ -23,6 +24,8 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject pointcloud;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
+        [Tooltip("User name is filled into this TMPro field")]
+        [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
         [SerializeField] protected bool isLocalPlayer;
         [Tooltip("True if this user has a visual representation")]
@@ -59,6 +62,10 @@ namespace VRT.Pilots.Common
         {
             
             userName = user.userName;
+            if (userNameText != null)
+            {
+                userNameText.text = userName;
+            }
 
             
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
