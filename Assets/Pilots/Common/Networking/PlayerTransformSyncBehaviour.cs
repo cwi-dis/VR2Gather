@@ -3,6 +3,13 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
+	/// <summary>
+	/// Component responsible for ensuring that position and orientation of a player is shared with the other players.
+	/// 
+	/// For the local player the positions and orientations are captured in Update() and broadcast to the other
+	/// instances of the game through the orchestrator.
+	/// For non-local players we listen to these messages and reflect them locally.
+	/// </summary>
 	public class PlayerTransformSyncBehaviour : MonoBehaviour
 	{
 		public class PlayerTransformSyncData : BaseMessage
@@ -17,9 +24,13 @@ namespace VRT.Pilots.Common
 			public Quaternion HeadScreenRotation;
 		}
 
+		[Tooltip("The network controller for this player (used to send/receive messages)")]
 		public PlayerNetworkController Player;
+		[Tooltip("Toplevel GameObject for this player (used to get body position/rotation)")]
 		public Transform BodyTransform;
+		[Tooltip("Visible object representing head (used to get head position/rotation)")]
 		public Transform HeadTransform;
+		[Tooltip("Visible object representing another head (same as above, for the webcam representation)")]
 		public Transform HeadScreenTransform;
 		[Tooltip("Number of times to sync per second")]
 		public float UpdateFrequency = 10;
