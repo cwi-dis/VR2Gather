@@ -23,6 +23,10 @@ namespace VRT.Pilots.Common
         [SerializeField] GameObject MessagesGO;
         [Tooltip("Button that toggles error messages")]
         [SerializeField] Toggle MessagesToggle;
+        [Tooltip("Canvas element: help")]
+        [SerializeField] GameObject HelpGO;
+        [Tooltip("Button that toggles error messages")]
+        [SerializeField] Toggle HelpToggle;
         [Tooltip("How far away is the HMD from the users eyes?")]
         public float distance = 1;
         [Tooltip("How far up/down from the center is the HMD?")]
@@ -64,8 +68,10 @@ namespace VRT.Pilots.Common
             canvas.SetActive(false);
             UserInterfaceGO.SetActive(true);
             MessagesGO.SetActive(false);
+            HelpGO.SetActive(false);
             UserInterfaceToggle.isOn = true;
             MessagesToggle.isOn = false;
+            HelpToggle.isOn = false;
         }
 
         public void ToggleChanged()
@@ -74,9 +80,13 @@ namespace VRT.Pilots.Common
             {
                 ShowCommands();
             }
-            else
+            else if (MessagesToggle.isOn)
             {
                 ShowMessages();
+            }
+            else
+            {
+                ShowHelp();
             }
         }
 
@@ -84,8 +94,10 @@ namespace VRT.Pilots.Common
         {
             UserInterfaceGO.SetActive(true);
             MessagesGO.SetActive(false);
+            HelpGO.SetActive(false);
             UserInterfaceToggle.isOn = true;
             MessagesToggle.isOn = false;
+            HelpToggle.isOn = false;
             canvas.SetActive(true);
         }
 
@@ -93,8 +105,21 @@ namespace VRT.Pilots.Common
         {
             UserInterfaceGO.SetActive(false);
             MessagesGO.SetActive(true);
+            HelpGO.SetActive(false);
             UserInterfaceToggle.isOn = false;
             MessagesToggle.isOn = true;
+            HelpToggle.isOn = false;
+            canvas.SetActive(true);
+        }
+
+        public void ShowHelp()
+        {
+            UserInterfaceGO.SetActive(false);
+            MessagesGO.SetActive(false);
+            HelpGO.SetActive(true);
+            UserInterfaceToggle.isOn = false;
+            MessagesToggle.isOn = false;
+            HelpToggle.isOn = true;
             canvas.SetActive(true);
         }
     }
