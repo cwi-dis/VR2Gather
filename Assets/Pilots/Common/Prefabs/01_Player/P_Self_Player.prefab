@@ -432,7 +432,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 1010738217276881514, guid: d348712bda248c246b8c49b3db54643f,
+    m_Reference: {fileID: 1010738217276881514, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_RightHandSnapTurnAction:
     m_UseReference: 1
@@ -1884,17 +1884,17 @@ PrefabInstance:
     - target: {fileID: 1790983422348413134, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1790983422348413134, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1790983422348413134, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 1790983422348413134, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
