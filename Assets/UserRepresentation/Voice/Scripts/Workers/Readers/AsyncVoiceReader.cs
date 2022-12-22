@@ -14,7 +14,6 @@ namespace VRT.UserRepresentation.Voice
     using Timedelta = System.Int64;
     using QueueThreadSafe = Cwipc.QueueThreadSafe;
     using BaseMemoryChunk = Cwipc.BaseMemoryChunk;
-    using FrameInfo = Cwipc.FrameInfo;
 
     public class AsyncVoiceReader : AsyncWorker
     {
@@ -224,12 +223,11 @@ namespace VRT.UserRepresentation.Voice
                                 //
                                 readPosition = (readPosition + nSamplesPerPacket) % nSamplesInCircularBuffer;
                                 available -= nSamplesPerPacket;
-                                mc.info = new FrameInfo();
                                 //
                                 // We need to compute timestamp of this audio frame
                                 // by using system clock and adjusting with "available".
                                 //
-                                mc.info.timestamp = sampleTimestamp(available);
+                                mc.metadata.timestamp = sampleTimestamp(available);
                                 timeRemainingInBuffer = (float)available / wantedSampleRate;
 #if VRT_AUDIO_DEBUG
                                 ToneGenerator.checkToneBuffer("VoiceReader.outQueue.mc", mc.buffer);
