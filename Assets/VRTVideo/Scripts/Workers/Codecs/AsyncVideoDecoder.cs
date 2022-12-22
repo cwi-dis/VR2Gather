@@ -77,7 +77,7 @@ namespace VRT.Video
                 if (codecVideo == null) CreateVideoCodec(mc);
                 videoPacket->data = (byte*)mc.pointer; // <-- Romain way
                 videoPacket->size = mc.length;
-                videoPacket->pts = mc.info.timestamp;
+                videoPacket->pts = mc.metadata.timestamp;
                 if (videoPacket->size > 0)
                 {
                     int ret2 = ffmpeg.avcodec_send_packet(codecVideo_ctx, videoPacket);
@@ -97,7 +97,7 @@ namespace VRT.Video
                                 videoDataSize = tmpLineSizeArray[0] * videoFrame->height;
                                 NativeMemoryChunk videoData = new NativeMemoryChunk(tmpLineSizeArray[0] * videoFrame->height);
                                 System.Buffer.MemoryCopy(tmpDataArray[0], (byte*)videoData.pointer, videoData.length, videoData.length);
-                                videoData.info.timestamp = videoFrame->pts;
+                                videoData.metadata.timestamp = videoFrame->pts;
                                 outVideoQueue.Enqueue(videoData);
                             }
                             else
@@ -120,7 +120,7 @@ namespace VRT.Video
                 if (codecAudio == null) CreateAudioCodec(mc);
                 audioPacket->data = (byte*)mc.pointer; // <-- Romain way2
                 audioPacket->size = mc.length;
-                audioPacket->pts = mc.info.timestamp; // token.info.timestamp;
+                audioPacket->pts = mc.metadata.timestamp; // token.info.timestamp;
                 if (audioPacket->size > 0)
                 {
                     int ret2 = ffmpeg.avcodec_send_packet(codecAudio_ctx, audioPacket);
@@ -173,8 +173,8 @@ namespace VRT.Video
                     {
                         //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         //copy decoder specific info
-                        var info = mc.info;
-                        if (info.dsi_size != 0)
+                        var info = mc.metadata;
+                        if (info != null && info.dsi_size != 0)
                         {
                             codecVideo_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
                             Marshal.Copy(info.dsi, 0, (System.IntPtr)codecVideo_ctx->extradata, info.dsi_size);
@@ -233,7 +233,7 @@ namespace VRT.Video
                     {
                         //XX Romain FIX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
                         //copy decoder specific info
-                        var info = mc.info;
+                        var info = mc.metadata;
                         codecAudio_ctx->extradata = (byte*)ffmpeg.av_calloc(1, (ulong)info.dsi_size + ffmpeg.AV_INPUT_BUFFER_PADDING_SIZE);
                         Marshal.Copy(info.dsi, 0, (System.IntPtr)codecAudio_ctx->extradata, info.dsi_size);
                         codecAudio_ctx->extradata_size = info.dsi_size;

@@ -66,7 +66,7 @@ namespace VRT.UserRepresentation.Voice
             Marshal.Copy(sendBuffer, 0, mcOut.pointer, len);
             Timedelta encodeDuration = (Timedelta)(System.DateTime.Now - encodeStartTime).TotalMilliseconds;
 
-            mcOut.info.timestamp = mcIn.info.timestamp;
+            mcOut.metadata = mcIn.metadata;
             if (outQueue.IsClosed())
             {
                 mcOut.free();

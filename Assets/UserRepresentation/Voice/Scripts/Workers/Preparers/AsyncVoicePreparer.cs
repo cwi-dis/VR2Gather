@@ -174,9 +174,9 @@ namespace VRT.UserRepresentation.Voice
 #if VRT_AUDIO_DEBUG
                 ToneGenerator.checkToneBuffer("VoicePreparer.InQueue.currentAudioFrame", currentAudioFrame.pointer, currentAudioFrame.length);
 #endif
-                currentTimestamp = currentAudioFrame.info.timestamp;
+                currentTimestamp = currentAudioFrame.metadata.timestamp;
 #pragma warning disable CS0162
-                if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.info.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
+                if (debugBuffering) Debug.Log($"{Name()}: xxxjack got audioFrame ts={currentAudioFrame.metadata.timestamp}, bytecount={currentAudioFrame.length}, queue={InQueue.Name()}");
                 if (minTimestamp > 0)
                 {
                     bool canSkipForward = currentTimestamp < minTimestamp - audioMaxAheadMs;
@@ -254,7 +254,7 @@ namespace VRT.UserRepresentation.Voice
             }
             audioBuffer = new float[availableLen];
             System.Runtime.InteropServices.Marshal.Copy(currentAudioFrame.pointer, audioBuffer, 0, availableLen);
-            audioBufferHeadTimestamp = currentAudioFrame.info.timestamp;
+            audioBufferHeadTimestamp = currentAudioFrame.metadata.timestamp;
             currentAudioFrame.free();
             currentAudioFrame = null;
             return true;
