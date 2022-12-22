@@ -17,6 +17,10 @@ namespace VRT.Pilots.LoginManager
                     return "Pilot0";
                 case "Technical Playground":
                     return "TechnicalPlayground";
+                case "Development":
+                    return "TransmiXR";
+                case "Development2":
+                    return "TransmiXR-Museum";
                 default:
                     return null;
             }

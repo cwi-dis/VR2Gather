@@ -17,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
+  - enabled: 1
+    path: Assets/PilotsExternal/TransmiXR/Scenes/TransmiXR.unity
+    guid: 507cffdde0bc6ac4db4c493c31e7f23f
+  - enabled: 1
+    path: Assets/PilotsExternal/TransmiXR/Scenes/TransmiXR-Museum.unity
+    guid: d8ff6f61ef1c456488323f14c4c63ae4
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}

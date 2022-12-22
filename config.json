@@ -15,13 +15,13 @@
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "",
-  	"sessionScenario" : "",
+  	"sessionName" : "TransmiXR-test",
+  	"sessionScenario" : "Development ",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : false,
+  	"autoCreate" : true,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
