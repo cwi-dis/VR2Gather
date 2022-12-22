@@ -4,6 +4,11 @@ using UnityEngine.UI;
 
 namespace VRT.Core
 {
+    public interface ErrorManagerSink
+    {
+        void FillError(string title, string message);
+    }
+
     public class ErrorManager : MonoBehaviour
     {
 
@@ -11,11 +16,18 @@ namespace VRT.Core
 
         public static ErrorManager Instance { get { return instance; } }
 
+        [Tooltip("Prefab of dialog to use, if no errorManagerSink registered")]
         public GameObject myPrefab;
+
+        ErrorManagerSink mySink = null;
 
         List<string[]> queue = new List<string[]>();
         private object thisLock = new object();
 
+        public void RegisterSink(ErrorManagerSink sink)
+        {
+            mySink = sink;
+        }
         private void Awake()
         {
             if (instance == null)
@@ -38,17 +50,26 @@ namespace VRT.Core
                 {
                     foreach (string[] error in queue)
                     {
-                        bool instantiate = true;
-                        ErrorPopup[] prevErrors = gameObject.GetComponentsInChildren<ErrorPopup>();
-                        foreach (ErrorPopup item in prevErrors)
+                        if (mySink != null)
                         {
-                            if (item.ErrorMessage == error[1])
-                                instantiate = false;
+                            mySink.FillError(error[0], error[1]);
                         }
-                        if (instantiate)
+                        else
                         {
-                            GameObject popup = Instantiate(myPrefab, gameObject.transform);
-                            popup.GetComponent<ErrorPopup>().FillError(error[0], error[1]);
+                            // Show  dialog
+                            bool instantiate = true;
+                            ErrorPopup[] prevErrors = gameObject.GetComponentsInChildren<ErrorPopup>();
+                            foreach (ErrorPopup item in prevErrors)
+                            {
+                                if (item.ErrorMessage == error[1])
+                                    instantiate = false;
+                            }
+                            if (instantiate)
+                            {
+                                GameObject popup = Instantiate(myPrefab, gameObject.transform);
+                                popup.GetComponent<ErrorPopup>().FillError(error[0], error[1]);
+                            }
+
                         }
                     }
                     queue.Clear();

@@ -6,10 +6,11 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;
+using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
-    public class HeadsUpDisplay : MonoBehaviour
+    public class HeadsUpDisplay : MonoBehaviour, ErrorManagerSink
     {
         [Tooltip("The Input System Action that will show/hide the HUD")]
         [SerializeField] InputActionProperty m_ShowHideAction;
@@ -33,11 +34,15 @@ namespace VRT.Pilots.Common
         public float height = 0;
         [Tooltip("How fast should it move when the user changes position/orientation?")]
         public float velocity = 0.01f;
-
+        [Tooltip("Should this HUD intercept and display error messages?")]
+        [SerializeField] bool interceptErrors = true;
+        [Tooltip("Prefab for error messages")]
+        [SerializeField] GameObject errorPrefab;
         // Start is called before the first frame update
         void Start()
         {
             Hide();
+            if (interceptErrors) ErrorManager.Instance.RegisterSink(this);
         }
 
         // Update is called once per frame
@@ -61,6 +66,16 @@ namespace VRT.Pilots.Common
             transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
             transform.position = Vector3.Lerp(transform.position, position, velocity);
             //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
+        }
+
+        public void FillError(string title, string message)
+        {
+            Debug.Log($"FillError title={title} message={message}");
+            var popupGO = Instantiate(errorPrefab, MessagesGO.transform);
+            popupGO.SetActive(true);
+            ErrorPopup errorPopup = popupGO.GetComponent<ErrorPopup>();
+            errorPopup.FillError(title, message);
+            ShowMessages();
         }
 
         public void Hide()
