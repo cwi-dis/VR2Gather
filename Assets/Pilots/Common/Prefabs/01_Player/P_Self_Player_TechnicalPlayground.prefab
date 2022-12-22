@@ -1555,7 +1555,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3043869464702903
 Transform:
   m_ObjectHideFlags: 0
@@ -2482,6 +2482,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5127822485866080460}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7316747686442953770 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2496085049302648038, guid: 5acfca99a628e4deda1d0b813a050445,
+    type: 3}
+  m_PrefabInstance: {fileID: 5127822485866080460}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7446087213609503789 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2340886365858374881, guid: 5acfca99a628e4deda1d0b813a050445,
@@ -2502,12 +2514,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 312661722457849578}
   holoCamera: {fileID: 0}
-  cameraOffset: {fileID: 0}
+  cameraOffset: {fileID: 2531728961202084191}
   avatar: {fileID: 1759498339359046353}
   webcam: {fileID: 2164953486163699631}
   pointcloud: {fileID: 2706488164963308306}
   voice: {fileID: 1715313553326109198}
-  userNameText: {fileID: 0}
+  userNameText: {fileID: 7316747686442953770}
   isLocalPlayer: 1
   debugTiling: 0
 --- !u!4 &7446087213609503826 stripped
