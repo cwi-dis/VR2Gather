@@ -1668,8 +1668,15 @@ namespace VRT.Pilots.LoginManager
             Debug.Log("[OrchestratorLogin][OnDeleteSessionHandler] Not implemented");
         }
 
+        float joinSessionTime;
         private void JoinSession()
         {
+            if (Time.time < joinSessionTime + 1)
+            {
+                Debug.Log("OrchestratorLogin: ignore spurious joinSession");
+                return;
+            }
+            joinSessionTime = Time.time;
             if (sessionIdDrop.options.Count <= 0)
                 Debug.LogError($"[JoinSession] There are no sessions to join.");
             else
