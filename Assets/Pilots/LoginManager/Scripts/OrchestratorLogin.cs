@@ -1573,8 +1573,16 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
+        float lastAddSessionTime = 0;
+
         private void AddSession()
         {
+            if (Time.time < lastAddSessionTime + 1)
+            {
+                Debug.Log("OrchestratorLogin: ignore spurious second AddSession");
+                return;
+            }
+            lastAddSessionTime = Time.time;
             OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text);
