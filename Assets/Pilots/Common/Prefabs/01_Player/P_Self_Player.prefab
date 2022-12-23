@@ -1961,7 +1961,17 @@ PrefabInstance:
       propertyPath: pointingModeAxisInvert
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3826831324969394881, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5049709656428843189, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5259551501275097229, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -1975,6 +1985,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_Hand_Left
+      objectReference: {fileID: 0}
+    - target: {fileID: 5975491139360818632, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6655183749742542523, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -2000,6 +2015,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8924444475721129896, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21dad1a70fa0b7842afecfcdd199c370, type: 3}
@@ -2834,6 +2854,11 @@ PrefabInstance:
       propertyPath: adjustForPositionOfCamera
       value: 
       objectReference: {fileID: 191711544589689159}
+    - target: {fileID: 939502583703246257, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1573086616002105275, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_RootOrder
@@ -2924,10 +2949,20 @@ PrefabInstance:
       propertyPath: pointingModeAxisInvert
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2043474420532068379, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2570092843053569987, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5099274962082597038, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6652609405479520317, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
@@ -2935,6 +2970,11 @@ PrefabInstance:
       value: P_Hand_Right
       objectReference: {fileID: 0}
     - target: {fileID: 8540287806463370437, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570236333877644203, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_Enabled
       value: 0
