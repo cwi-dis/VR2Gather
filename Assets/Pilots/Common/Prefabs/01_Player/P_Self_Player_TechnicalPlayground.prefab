@@ -1386,7 +1386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FadeDuration: 1
-  FadeGO: {fileID: 0}
+  FadeGO: {fileID: 1333683627818489342}
   FadeImage: {fileID: 821043824413280420}
   startFadedOut: 0
 --- !u!114 &1558510311375604660
@@ -2522,6 +2522,23 @@ MonoBehaviour:
   userNameText: {fileID: 7316747686442953770}
   isLocalPlayer: 1
   debugTiling: 0
+--- !u!114 &5896193761475959846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7446087213609503789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0cb9aa70a22847b5925ee5f067c10a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Camera: {fileID: 312661722457849578}
+  m_OriginBaseGameObject: {fileID: 7446087213609503789}
+  m_CameraFloorOffsetObject: {fileID: 8097497374613896006}
+  m_RequestedTrackingOriginMode: 0
+  m_CameraYOffset: 1.85
 --- !u!4 &7446087213609503826 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2340886365858374814, guid: 5acfca99a628e4deda1d0b813a050445,
@@ -2658,7 +2675,7 @@ PrefabInstance:
     - target: {fileID: 6756273818463653689, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7931379300683449576, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
