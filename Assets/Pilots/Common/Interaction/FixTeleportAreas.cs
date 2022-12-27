@@ -24,13 +24,20 @@ namespace VRT.Pilots.Common
             if (teleportationProvider == null) teleportationProvider = GetComponent<TeleportationProvider>();
             if (interactionManager != null && teleportationProvider != null)
             {
-                Debug.Log($"FixTeleportationAreas: installing");
+                Debug.Log($"FixTeleportationAreas: installing teleportation");
                 var allAreas = FindObjectsOfType<BaseTeleportationInteractable>();
                 foreach(var ta in allAreas)
                 {
                     ta.interactionManager = interactionManager;
                     ta.teleportationProvider = teleportationProvider;
                     Debug.Log($"FixTeleportationAreas: installed into {ta.name}");
+                }
+                Debug.Log($"FixTeleportationAreas: installing grabbables");
+                var allGrabbables = FindObjectsOfType<XRGrabInteractable>();
+                foreach(var go in allGrabbables)
+                {
+                    go.interactionManager = interactionManager;
+                    Debug.Log($"FixTeleportationAreas: installed into {go.name}");
                 }
             }
         }
