@@ -32,19 +32,27 @@ namespace VRT.DevelopmentTests
         // Start is called before the first frame update
         public void Start()
         {
-            player.SetupPlayerNetworkControllerPlayer(true, "no-userid");
+            Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
+            {
+                userId = "no-userid",
+                userName = "TestInteractionUser",
+                userData = new Orchestrator.Wrapping.UserData()
+                {
+                    microphoneName = "None",
+                    userRepresentationType = UserRepresentationType.__AVATAR__
+                }
+            };
+            player.SetupPlayerNetworkControllerPlayer(true, user.userId);
             if (enableFade)
             {
                 CameraFader.Instance.startFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());
             }
+           
+            
+            playerManager.SetUpPlayerController(true, user, null);
         }
 
-        public void Update()
-        {
-            if (pmSetupDone) return;
-            playerManager.setupCamera(true);
-            pmSetupDone = true;
-        }
+  
     }
 }

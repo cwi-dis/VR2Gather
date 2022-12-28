@@ -57,6 +57,11 @@ namespace VRT.Pilots.Common
 
         void LateUpdate()
         {
+            if (Camera.main == null)
+            {
+                // Self player has not initialized yet.
+                return;
+            }
             Vector3 forward = Camera.main.transform.forward;
             forward.y = height;
             forward = forward.normalized;

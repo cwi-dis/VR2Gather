@@ -1509,6 +1509,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5156253158036226266, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5620560447519614534, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_IsActive
@@ -1523,6 +1528,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PFB_LeftHand
+      objectReference: {fileID: 0}
+    - target: {fileID: 6406071257070513933, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6655183749742542523, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -1552,7 +1562,7 @@ PrefabInstance:
     - target: {fileID: 7931379300683449576, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8898004554876615990, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
