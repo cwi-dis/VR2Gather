@@ -515,12 +515,12 @@ GameObject:
   m_Component:
   - component: {fileID: 3093521855537840509}
   m_Layer: 0
-  m_Name: Ray based interaction
+  m_Name: Non-XR Ray based interaction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3093521855537840509
 Transform:
   m_ObjectHideFlags: 0
