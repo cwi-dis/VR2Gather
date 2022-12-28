@@ -2808,6 +2808,7 @@ MonoBehaviour:
   voice: {fileID: 7656253769967137944}
   userNameText: {fileID: 1730563041212197564}
   isLocalPlayer: 1
+  _isVisible: 0
   debugTiling: 0
 --- !u!114 &4736957743163071257
 MonoBehaviour:

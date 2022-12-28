@@ -856,6 +856,7 @@ MonoBehaviour:
   voice: {fileID: 4012052827202430640}
   userNameText: {fileID: 5037811773562763412}
   isLocalPlayer: 0
+  _isVisible: 0
   debugTiling: 0
 --- !u!114 &1101617796011613554
 MonoBehaviour:
@@ -874,6 +875,7 @@ MonoBehaviour:
   LeftHandTransform: {fileID: 395634977143772616}
   RightHandTransform: {fileID: 326265371718444427}
   SendRate: 10
+  _IsLocalPlayer: 1
 --- !u!143 &3076079762117982612
 CharacterController:
   m_ObjectHideFlags: 0
