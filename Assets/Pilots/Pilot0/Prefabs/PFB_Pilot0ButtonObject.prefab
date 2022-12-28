@@ -324,6 +324,7 @@ GameObject:
   - component: {fileID: 2236286903113979342}
   - component: {fileID: 2236286903113979328}
   - component: {fileID: 6858270817136547864}
+  - component: {fileID: 2162240661057732598}
   m_Layer: 29
   m_Name: PFB_Pilot0ButtonObject
   m_TagString: Untagged
@@ -544,3 +545,19 @@ MonoBehaviour:
   m_ForceGravityOnDetach: 0
   m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
+--- !u!114 &2162240661057732598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2986471831455026930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb42fafcd0a49eb4382d952c1caa3bac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NetworkId: 
+  Rigidbody: {fileID: 2236286903113979342}
+  UpdateFrequency: 10
+  isGrabbed: 0

@@ -45,6 +45,7 @@ namespace VRT.Pilots.Common
 				Undo.RecordObject(this, "Added GUID");
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
+				Debug.Log($"xxxjack NetworkIdBehaviour: invented {NetworkId} for {name}");
 
 #if UNITY_EDITOR
 				if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))

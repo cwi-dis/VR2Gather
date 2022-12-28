@@ -52,6 +52,10 @@ namespace VRT.Pilots.Common
 
 		private void RegisterGrabbableInternal(Grabbable grabbable)
 		{
+			if (_GrabbableObjects.ContainsKey(grabbable.NetworkId) && _GrabbableObjects[grabbable.NetworkId] != grabbable)
+            {
+				Debug.LogWarning($"GrabbableObjectManager: RegisterGrabbable: NetworkID={grabbable.NetworkId} registered to Grabbable={grabbable}, overriding old Grabbable={_GrabbableObjects[grabbable.NetworkId]}");
+            }
 			_GrabbableObjects[grabbable.NetworkId] = grabbable;
 		}
 
@@ -73,11 +77,11 @@ namespace VRT.Pilots.Common
 
 			if (handGrabEvent.EventType == HandController.HandInteractionEventType.Grab)
 			{
-				grabbable.OnGrab(handController);
+				// xxxjack grabbable.OnGrab(handController);
 			}
 			else
 			{
-				grabbable.OnRelease(handController);
+				// xxxjack grabbable.OnRelease(handController);
 			}
 
 			if (OrchestratorController.Instance.UserIsMaster)
