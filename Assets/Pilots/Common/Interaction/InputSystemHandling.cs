@@ -110,10 +110,10 @@ namespace VRT.Pilots.Common
 
         [Header("Introspection objects for debugging")]
         [Tooltip("The PlayerInput")]
-        public PlayerInput MyPlayerInput;
+        [DisableEditing] public PlayerInput MyPlayerInput;
         
         [Tooltip("Current mode")]
-        public Mode currentMode = Mode.ModeNone;
+        [DisableEditing] public Mode currentMode = Mode.ModeNone;
 
         virtual public string Name()
         {

@@ -27,9 +27,9 @@ namespace VRT.Pilots.Common
         [Tooltip("User name is filled into this TMPro field")]
         [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
-        [SerializeField] protected bool isLocalPlayer;
+        [DisableEditing] [SerializeField] protected bool isLocalPlayer;
         [Tooltip("True if this user has a visual representation")]
-        private bool _isVisible;
+        [DisableEditing] [SerializeField] private bool _isVisible;
         public bool isVisible
         {
             get => _isVisible;

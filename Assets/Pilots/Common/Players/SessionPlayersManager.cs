@@ -54,9 +54,9 @@ namespace VRT.Pilots.Common
 		public bool AutoSpawnOnLocation = false;
 		[Header("Introspection/debugging")]
 		[Tooltip("Debugging: the local player")]
-		public GameObject localPlayer;
+		[DisableEditing] public GameObject localPlayer;
 		[Tooltip("All players")]
-		public List<PlayerNetworkController> AllUsers;
+		[DisableEditing] public List<PlayerNetworkController> AllUsers;
 
 		public Dictionary<string, PlayerNetworkController> Players;
 		private Dictionary<string, PlayerLocation> _PlayerIdToLocation;

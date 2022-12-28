@@ -19,7 +19,7 @@ namespace VRT.Pilots.Common
 
         [Header("Introspection (for debugging)")]
         [Tooltip("Current control scheme")]
-        public string currentControlScheme;
+        [DisableEditing] public string currentControlScheme;
 
         // Start is called before the first frame update
         void Start()

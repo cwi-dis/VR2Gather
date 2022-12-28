@@ -21,7 +21,17 @@ namespace VRT.Pilots.Common
 		}
 		#endregion
 
-		private bool _IsLocalPlayer;
+		[DisableEditing]
+		public string UserId;
+
+		public Transform HeadTransform;
+		public Transform LeftHandTransform;
+		public Transform RightHandTransform;
+
+		public int SendRate = 10; //Send out 10 "frames" per second
+
+		[Header("Introspection/debugging")]
+		[DisableEditing][SerializeField] private bool _IsLocalPlayer = true;
 		public bool IsLocalPlayer
 		{
 			get
@@ -30,14 +40,6 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		[DisableEditing]
-		public string UserId;
-
-		public Transform HeadTransform;
-		public Transform LeftHandTransform;
-		public Transform RightHandTransform;
-		
-		public int SendRate = 10; //Send out 10 "frames" per second
 		private float _SendDelta;
 		private float _LastSendTime;
 

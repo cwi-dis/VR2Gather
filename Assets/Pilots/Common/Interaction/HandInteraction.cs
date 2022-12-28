@@ -44,10 +44,10 @@ namespace VRT.Pilots.Common
 		InputAction MyTeleportHomeAction;
 
 		[Header("Introspection objects for debugging")]
-		public PlayerInput MyPlayerInput;
-		public bool inTeleportingMode = false;
-		public bool inTouchingMode = false;
-		public bool inGrabbingMode = false;
+		[DisableEditing] public PlayerInput MyPlayerInput;
+		[DisableEditing] public bool inTeleportingMode = false;
+		[DisableEditing] public bool inTouchingMode = false;
+		[DisableEditing] public bool inGrabbingMode = false;
 
 		public void OnControlsChanged(PlayerInput pi)
 		{
