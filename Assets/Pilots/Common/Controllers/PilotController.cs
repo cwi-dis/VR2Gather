@@ -22,6 +22,15 @@ namespace VRT.Pilots.Common
         [Tooltip("Text to show during fadeout (default: nothing)")]
         [SerializeField] protected string fadeOutText;
 
+        [Tooltip("Allow direct interaction in this scene (default: ray-based and keyboard/mouse")]
+        [SerializeField] protected bool allowDirectInteractionInScene;
+
+        [Tooltip("Direct interaction disabled now because of UI visible (introspection/debug)")]
+        [DisableEditing] [SerializeField] protected bool m_directInteractionDisabled;
+        /// <summary>
+        /// Return true if direct interaction can currently be enabled.
+        /// </summary>
+        public bool directInteractionAllowed { get => allowDirectInteractionInScene && !m_directInteractionDisabled; }
         public static PilotController Instance = null;
 
         public string Name()
@@ -38,6 +47,10 @@ namespace VRT.Pilots.Common
             Instance = this;
         }
 
+        /// <summary>
+        /// Call this method to load a new scene (optionally after fading out the current scene).
+        /// </summary>
+        /// <param name="newScene"></param>
         public static void LoadScene(string newScene)
         {
             if (Instance != null)
@@ -48,6 +61,22 @@ namespace VRT.Pilots.Common
             {
                 SceneManager.LoadScene(newScene);
             }
+        }
+
+        /// <summary>
+        /// Call this method when showing a UI or other object that requires ray interaction.
+        /// </summary>
+        public void DisableDirectInteraction()
+        {
+            m_directInteractionDisabled = true;
+        }
+
+        /// <summary>
+        /// Call this method when a UI is hidden, so ray interaction is no longer required.
+        /// </summary>
+        public void EnableDirectInteraction()
+        {
+            m_directInteractionDisabled = false;
         }
 
         // Start is called before the first frame update
@@ -80,6 +109,11 @@ namespace VRT.Pilots.Common
             SceneManager.LoadScene(newScene);
         }
 
+        /// <summary>
+        /// Called by orchestrator stubs when a user-message has been received. Should be
+        /// overridden by controllers for scenes that support user messages.
+        /// </summary>
+        /// <param name="message"></param>
         public virtual void OnUserMessageReceived(string message)
         {
             Debug.LogWarning($"{Name()}: OnUserMessageReceived: unexpected message: {message}");

@@ -52,6 +52,14 @@ namespace VRT.Pilots.Common
             {
                 canvas.SetActive(!canvas.activeSelf);
                 Debug.Log($"xxxjack toggle HUD, now {canvas.activeSelf}");
+                if (canvas.activeSelf)
+                {
+                    PilotController.Instance.DisableDirectInteraction();
+                }
+                else
+                {
+                    PilotController.Instance.EnableDirectInteraction();
+                }
             }
         }
 
@@ -85,6 +93,7 @@ namespace VRT.Pilots.Common
 
         public void Hide()
         {
+            PilotController.Instance.EnableDirectInteraction();
             canvas.SetActive(false);
             UserInterfaceGO.SetActive(true);
             MessagesGO.SetActive(false);
@@ -119,6 +128,7 @@ namespace VRT.Pilots.Common
             MessagesToggle.isOn = false;
             HelpToggle.isOn = false;
             canvas.SetActive(true);
+            PilotController.Instance.DisableDirectInteraction();
         }
 
         public void ShowMessages()
@@ -130,6 +140,7 @@ namespace VRT.Pilots.Common
             MessagesToggle.isOn = true;
             HelpToggle.isOn = false;
             canvas.SetActive(true);
+            PilotController.Instance.DisableDirectInteraction();
         }
 
         public void ShowHelp()
@@ -141,6 +152,7 @@ namespace VRT.Pilots.Common
             MessagesToggle.isOn = false;
             HelpToggle.isOn = true;
             canvas.SetActive(true);
+            PilotController.Instance.DisableDirectInteraction();
         }
     }
 

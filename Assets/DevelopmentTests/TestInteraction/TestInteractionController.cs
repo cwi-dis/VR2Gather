@@ -14,8 +14,7 @@ namespace VRT.DevelopmentTests
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
 
-        bool pmSetupDone = false;
-        public static TestInteractionController Instance { get; private set; }
+         public static TestInteractionController Instance { get; private set; }
 
         public void Awake()
         {
