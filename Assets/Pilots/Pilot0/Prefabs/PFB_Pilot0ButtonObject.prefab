@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a95615ea91f4334e865a3c5ff2b3a0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noAutoCreateNetworkId: 0
   NetworkId: 
   MasterOnlyTrigger: 0
   OnTrigger:
@@ -339,7 +340,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2986471831455026930}
-  m_LocalRotation: {x: -0, y: -0.70710576, z: -0, w: 0.70710784}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0.007, y: 1.0397, z: 0.213}
   m_LocalScale: {x: 2.0338, y: 2.0338, z: 2.0338}
   m_ConstrainProportionsScale: 0
@@ -348,7 +349,7 @@ Transform:
   - {fileID: 9215170193201088296}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90.00001, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!33 &7093815003547928279
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -581,6 +582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb42fafcd0a49eb4382d952c1caa3bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noAutoCreateNetworkId: 0
   NetworkId: 
   Rigidbody: {fileID: 2236286903113979342}
   UpdateFrequency: 10
