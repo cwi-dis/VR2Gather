@@ -161,6 +161,16 @@ namespace VRT.Orchestrator.Wrapping
         public Action<UserEvent> OnUserEventReceivedEvent;
 
         // Orchestrator Accessors
+        public void LocalUserSessionForDevelopmentTests()
+        {
+            userIsMaster = true;
+            mySession = new Session()
+            {
+                scenarioId = "LocalDevelopmentTest",
+                sessionId = "0000"
+            };
+        }
+
         public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }

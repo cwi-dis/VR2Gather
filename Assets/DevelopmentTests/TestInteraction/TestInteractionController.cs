@@ -32,6 +32,7 @@ namespace VRT.DevelopmentTests
         // Start is called before the first frame update
         public void Start()
         {
+            Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
             Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
             {
                 userId = "no-userid",
