@@ -10,15 +10,16 @@ namespace VRT.Pilots.Common
 		public Hand hand;
 		public class HandControllerData : BaseMessage
 		{
-			public Handedness HandHandedness;
-			public State HandState;
+			public Handedness handHandedness;
+			public HandState handState;
 		}
 
-		public enum State
+		public enum HandState
 		{
 			Idle,
 			Pointing,
-			Grabbing
+			Grabbing,
+			Teleporting
 		}
 
 		public enum Handedness
@@ -27,8 +28,8 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
-		public State HandState;
-		public Handedness HandHandedness;
+		public HandState handState;
+		public Handedness handHandedness;
 
 		public enum HandInteractionEventType
 		{
@@ -77,7 +78,7 @@ namespace VRT.Pilots.Common
 
 		private void OnTriggerStay(Collider other)
 		{
-			if (HandState == State.Grabbing && _CanGrabAgain && HeldGrabbable == null)
+			if (handState == HandState.Grabbing && _CanGrabAgain && HeldGrabbable == null)
 			{
 				var grabbable = other.GetComponent<Grabbable>();
 				if (grabbable == null)
@@ -89,7 +90,7 @@ namespace VRT.Pilots.Common
 				{
 					GrabbableObjectId = grabbable.NetworkId,
 					UserId = _Player.UserId,
-					Handedness = HandHandedness,
+					Handedness = handHandedness,
 					EventType = HandInteractionEventType.Grab,
 				};
 
@@ -154,19 +155,19 @@ namespace VRT.Pilots.Common
 					OrchestratorController.Instance.SendTypeEventToAll(data, true);
 				}
 
-				if (data.HandHandedness == HandHandedness)
+				if (data.handHandedness == handHandedness)
 				{
-					SetHandState(data.HandState);
+					SetHandState(data.handState);
 				}
 			}
 		}
 
-		public void SetHandState(State handState)
+		public void SetHandState(HandState handState)
 		{
-			if (HandState != handState)
+			if (this.handState != handState)
 			{
-				HandState = handState;
-				UpdateAnimation();
+				this.handState = handState;
+                UpdateAnimation();
 				//
 				// If we are a hand of the local player we forward the state change,
 				// so other players can see it too.
@@ -174,18 +175,18 @@ namespace VRT.Pilots.Common
 				if (_Player.IsLocalPlayer)
 				{
 					var data = new HandControllerData
-					{
-						HandHandedness = HandHandedness,
-						HandState = HandState
+                    {
+						handHandedness = handHandedness,
+						handState = this.handState
 					};
 
 					if (OrchestratorController.Instance.UserIsMaster)
 					{
-						OrchestratorController.Instance.SendTypeEventToAll(data);
+                        OrchestratorController.Instance.SendTypeEventToAll(data);
 					}
 					else
 					{
-						OrchestratorController.Instance.SendTypeEventToMaster(data);
+                        OrchestratorController.Instance.SendTypeEventToMaster(data);
 					}
 				}
 			}

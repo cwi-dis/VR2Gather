@@ -8,6 +8,13 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerSelf : PlayerControllerBase
     {
+        [Tooltip("Objects that handle XR ray-based input")]
+        [SerializeField] private GameObject[] rayBasedInputObjects;
+        [Tooltip("Objects that handle input based on XR direct interaction")]
+        [SerializeField] private GameObject[] directInteractionInputObjects;
+        [Tooltip("Introspection/debug: is direct interaction currently enabled")]
+        [DisableEditing] [SerializeField] private bool directInteractionIsEnabled;
+
         public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             if (!_isLocalPlayer)
@@ -18,6 +25,7 @@ namespace VRT.Pilots.Common
             _SetupCommon(user, configDistributors);
             setupCamera();
             LoadCameraTransform();
+            SetDirectInteraction(PilotController.Instance.directInteractionAllowed);
         }
 
         public void LoadCameraTransform()
@@ -126,6 +134,10 @@ namespace VRT.Pilots.Common
         
         private void Update()
         {
+            if (PilotController.Instance.directInteractionAllowed != directInteractionIsEnabled)
+            {
+                SetDirectInteraction(PilotController.Instance.directInteractionAllowed);
+            }
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -137,6 +149,19 @@ namespace VRT.Pilots.Common
                     Debug.Log($"{Name()}: Tiling: self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
                 }
             }
+        }
+
+        private void SetDirectInteraction(bool enabled)
+        {
+            foreach (var go in directInteractionInputObjects)
+            {
+                go.SetActive(enabled);
+            }
+            foreach (var go in rayBasedInputObjects)
+            {
+                go.SetActive(!enabled);
+            }
+            directInteractionIsEnabled = enabled;
         }
     }
 }

@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 namespace VRT.Pilots.Common
 {
+	using HandState = HandController.HandState;
+
 	public class HandInteraction : MonoBehaviour
 	{
 
@@ -10,50 +12,35 @@ namespace VRT.Pilots.Common
 		[Tooltip("Teleporter to use")]
 		public VRT.Teleporter.BaseTeleporter teleporter;
 
-		[Tooltip("Invert meaning of PointingModeAxis or Key")]
-		public bool pointingModeAxisInvert = false;
-
-		[Tooltip("Invert meaning of grabbingModeAxis")]
-		public bool grabbingModeAxisInvert = false;
-
 		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
 		public GameObject Hand;
+		[Tooltip("Controller for the hand (default: gotten from Hand)")]
+		[SerializeField] private HandController handController;
+		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
+		[SerializeField] private PlayerNetworkController playerNetworkController;
+		
 		[Tooltip("Collider to use for grabbing")]
 		public GameObject GrabCollider;
 		[Tooltip("Collider to use for touching")]
 		public GameObject TouchCollider;
 
-		private PlayerNetworkController _Player;
-		private HandController _Controller;
+		[Tooltip("The Input System Action that determines whether we are grabbing (if > 0.5)")]
+		[SerializeField] InputActionProperty m_grabbingAction;
+		[Tooltip("The Input System Action that determines whether we are pointing (if > 0.5)")]
+		[SerializeField] InputActionProperty m_pointingAction;
 
+
+		[Tooltip("The Input System Action that determines whether we are teleporting (if > 0.5)")]
+		[SerializeField] InputActionProperty m_teleportingAction;
+	
 		[Header("Input Actions")]
 
-		[Tooltip("Name of (button) action that enables touching")]
-		public string ModeTouchingActionName;
-		[Tooltip("Negate the touching action button")]
-		public bool negateTouching;
-		InputAction MyModeTouchingAction;
-		[Tooltip("Name of (button) action that activates grab")]
-		public string GrabbingGrabActionName;
-		InputAction MyGrabbingGrabAction;
-		[Tooltip("Name of (button) action that enables teleporting")]
-		public string ModeTeleportingActionName;
-		InputAction MyModeTeleportingAction;
-		[Tooltip("Name of action (button) that activates home teleport")]
-		public string TeleportHomeActionName;
-		InputAction MyTeleportHomeAction;
 
 		[Header("Introspection objects for debugging")]
 		[DisableEditing] public PlayerInput MyPlayerInput;
 		[DisableEditing] public bool inTeleportingMode = false;
 		[DisableEditing] public bool inTouchingMode = false;
 		[DisableEditing] public bool inGrabbingMode = false;
-
-		public void OnControlsChanged(PlayerInput pi)
-		{
-			// Debug.Log($"xxxjack OnControlsChanged {pi}, enabled={pi.enabled}, inputIsActive={pi.inputIsActive}, controlScheme={pi.currentControlScheme}");
-			EnsureDevice();
-		}
 
 
 		public void Awake()
@@ -62,36 +49,32 @@ namespace VRT.Pilots.Common
 
 		void Start()
 		{
-			_Player = GetComponentInParent<PlayerNetworkController>();
+			
 			if (Hand == null) Hand = gameObject;
-			_Controller = Hand.GetComponent<HandController>();
-			if (_Controller == null)
+			if (handController == null) handController = Hand.GetComponent<HandController>();
+			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkController>();
+			if (handController == null)
             {
 				Debug.LogError("HandInteraction: cannot find HandController");
             }
-
+			if (!playerNetworkController.IsLocalPlayer)
+            {
+				Debug.LogError($"HandInteraction: only for local players");
+            }
 			GrabCollider.SetActive(false);
 			TouchCollider.SetActive(false);
-			EnsureDevice();
 		}
 
-		void EnsureDevice()
+	
+		private HandState GetHandState()
         {
-			if (MyPlayerInput == null)
-            {
-				MyPlayerInput = GetComponent<PlayerInput>();
-			}
-			if (MyPlayerInput == null) Debug.LogError("HandInteraction: cannot find PlayerInput");
-
-			MyModeTouchingAction = MyPlayerInput.actions[ModeTouchingActionName];
-			MyGrabbingGrabAction = MyPlayerInput.actions[GrabbingGrabActionName];
-			MyModeTeleportingAction = MyPlayerInput.actions[ModeTeleportingActionName];
-			MyTeleportHomeAction = MyPlayerInput.actions[TeleportHomeActionName];
-		}
+			return HandState.Idle;
+        }
 		
 		void Update()
 		{
-			if (_Player.IsLocalPlayer)
+			if (!playerNetworkController.IsLocalPlayer)
+
 			{
 				
 				//Prevent floor clipping when input tracking provides glitched results
@@ -147,7 +130,7 @@ namespace VRT.Pilots.Common
 			if (inTeleportingMode)
 			{
 				// Teleport mode overrides the other modes, specifically pointing mode.
-				_Controller.SetHandState(HandController.State.Pointing);
+				handController.SetHandState(HandController.HandState.Pointing);
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(true);
@@ -157,7 +140,7 @@ namespace VRT.Pilots.Common
 			}
 			else if(inGrabbingMode)
 			{
-				_Controller.SetHandState(HandController.State.Grabbing);
+				handController.SetHandState(HandController.HandState.Grabbing);
 				GrabCollider.SetActive(true);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(false);
@@ -166,7 +149,7 @@ namespace VRT.Pilots.Common
 			}
 			else if (inTouchingMode)
 			{
-				_Controller.SetHandState(HandController.State.Pointing);
+				handController.SetHandState(HandController.HandState.Pointing);
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(true);
 				teleporter.SetActive(false);
@@ -174,7 +157,7 @@ namespace VRT.Pilots.Common
 			}
 			else 
 			{
-				_Controller.SetHandState(HandController.State.Idle);
+				handController.SetHandState(HandController.HandState.Idle);
 				GrabCollider.SetActive(false);
 				TouchCollider.SetActive(false);
 				teleporter.SetActive(false);

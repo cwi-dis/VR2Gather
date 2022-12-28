@@ -536,7 +536,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2867700563481572480}
   m_Layer: 0
-  m_Name: Direct Interaction
+  m_Name: LH Direct Interaction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -570,7 +570,7 @@ GameObject:
   - component: {fileID: 221261317231345228}
   - component: {fileID: 8181534522428224711}
   m_Layer: 0
-  m_Name: Ray-based Interaction
+  m_Name: LH Ray-based Interaction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
