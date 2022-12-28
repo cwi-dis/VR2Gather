@@ -6,13 +6,13 @@ using UnityEngine.XR.Interaction.Toolkit;
 namespace VRT.Pilots.Common
 {
     /// <summary>
-    /// Ensure all TeleportAreas in the scene have the correct teleport provider and interaction
-    /// manager.
+    /// Ensure all Interactables in the scene have the correct interaction
+    /// manager. Teleportation interactables also get the correct teleport provider.
     /// 
     /// Seems to be needed because we create the whole interaction stuff after the teleport areas
     /// Awake() has been called.
     /// </summary>
-    public class FixTeleportAreas : MonoBehaviour
+    public class FixInteractables : MonoBehaviour
     {
         public XRInteractionManager interactionManager;
         public TeleportationProvider teleportationProvider;
@@ -22,22 +22,24 @@ namespace VRT.Pilots.Common
         {
             if (interactionManager == null) interactionManager = GetComponent<XRInteractionManager>();
             if (teleportationProvider == null) teleportationProvider = GetComponent<TeleportationProvider>();
-            if (interactionManager != null && teleportationProvider != null)
+            if (teleportationProvider != null)
             {
-                Debug.Log($"FixTeleportationAreas: installing teleportation");
-                var allAreas = FindObjectsOfType<BaseTeleportationInteractable>();
-                foreach(var ta in allAreas)
+                Debug.Log($"FixInteractables: installing teleportation");
+                var allTeleportations = FindObjectsOfType<BaseTeleportationInteractable>();
+                foreach (var ta in allTeleportations)
                 {
-                    ta.interactionManager = interactionManager;
                     ta.teleportationProvider = teleportationProvider;
-                    Debug.Log($"FixTeleportationAreas: installed into {ta.name}");
+                    Debug.Log($"FixInteractables: installed teleportationProvider into {ta.name}");
                 }
-                Debug.Log($"FixTeleportationAreas: installing grabbables");
-                var allGrabbables = FindObjectsOfType<XRGrabInteractable>();
-                foreach(var go in allGrabbables)
+            }
+            if (interactionManager != null)
+            {
+                Debug.Log($"FixInteractables: installing interactables");
+                var allInteractables = FindObjectsOfType<XRBaseInteractable>();
+                foreach(var go in allInteractables)
                 {
                     go.interactionManager = interactionManager;
-                    Debug.Log($"FixTeleportationAreas: installed into {go.name}");
+                    Debug.Log($"FixInteractables: installed interactionManager into {go.name}");
                 }
             }
         }
