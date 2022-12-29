@@ -202,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2323218244091371060
 Transform:
   m_ObjectHideFlags: 0
@@ -228,20 +228,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5287329196260260083}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleporter: {fileID: 0}
-  handGO: {fileID: 0}
-  hand: {fileID: 0}
+  handGO: {fileID: 6652609405479520317}
+  hand: {fileID: 7652345816467723323}
   handController: {fileID: 0}
   playerNetworkController: {fileID: 0}
-  GrabCollider: {fileID: 0}
-  TouchCollider: {fileID: 0}
+  GrabCollider: {fileID: 5939396353449226076}
+  TouchCollider: {fileID: 2136182370408221969}
+  TeleporterRay: {fileID: 8032687213609644385}
   m_grabbingAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Grabbing
       m_Type: 0
@@ -251,9 +251,10 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: -1758520528963094988, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   m_pointingAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Pointing
       m_Type: 0
@@ -263,9 +264,10 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: 7904272356298805229, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   m_teleportingAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Teleporting
       m_Type: 0
@@ -275,11 +277,8 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
-  MyPlayerInput: {fileID: 0}
-  inTeleportingMode: 0
-  inTouchingMode: 0
-  inGrabbingMode: 0
+    m_Reference: {fileID: -8061240218431744966, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   currentState: 0
 --- !u!1 &5601917454479471027
 GameObject:
@@ -620,7 +619,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hand: {fileID: 7652345816467723323}
   handState: 0
-  handHandedness: 0
+  handHandedness: 1
   HeldGrabbable: {fileID: 0}
 --- !u!114 &8540287806463370437
 MonoBehaviour:

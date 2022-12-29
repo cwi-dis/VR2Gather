@@ -9,9 +9,6 @@ namespace VRT.Pilots.Common
 	{
 
 		
-		[Tooltip("Teleporter to use")]
-		public VRT.Teleporter.BaseTeleporter teleporter;
-
 		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
 		public GameObject handGO;
 		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
@@ -21,10 +18,12 @@ namespace VRT.Pilots.Common
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
 		[SerializeField] private PlayerNetworkController playerNetworkController;
 		
-		[Tooltip("Collider to use for grabbing")]
+		[Tooltip("GameObject with collider to use for grabbing")]
 		public GameObject GrabCollider;
-		[Tooltip("Collider to use for touching")]
+		[Tooltip("GameObject with collider to use for touching")]
 		public GameObject TouchCollider;
+		[Tooltip("GameObject with teleporter ray")]
+		public GameObject TeleporterRay;
 
 		[Tooltip("The Input System Action that determines whether we are grabbing (if > 0.5)")]
 		[SerializeField] InputActionProperty m_grabbingAction;
@@ -33,15 +32,6 @@ namespace VRT.Pilots.Common
 		[Tooltip("The Input System Action that determines whether we are teleporting (if > 0.5)")]
 		[SerializeField] InputActionProperty m_teleportingAction;
 	
-		[Header("Input Actions")]
-
-
-		[Header("Introspection objects for debugging")]
-		[DisableEditing] public PlayerInput MyPlayerInput;
-		[DisableEditing] public bool inTeleportingMode = false;
-		[DisableEditing] public bool inTouchingMode = false;
-		[DisableEditing] public bool inGrabbingMode = false;
-
 		[Tooltip("Current hand state")]
 		[DisableEditing] [SerializeField] private HandState currentState;
 
@@ -64,8 +54,37 @@ namespace VRT.Pilots.Common
             {
 				Debug.LogError($"HandInteraction: only for local players");
             }
-			GrabCollider.SetActive(false);
-			TouchCollider.SetActive(false);
+			currentState = HandState.Idle;
+			FixObjectStates();
+		}
+
+		void FixObjectStates()
+        {
+			hand.SetGrab(currentState == HandState.Grabbing);
+			hand.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
+			switch (currentState)
+			{
+				case HandState.Idle:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(false);
+					TeleporterRay.SetActive(false);
+					break;
+				case HandState.Pointing:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(true);
+					TeleporterRay.SetActive(false);
+					break;
+				case HandState.Grabbing:
+					GrabCollider.SetActive(true);
+					TouchCollider.SetActive(false);
+					TeleporterRay.SetActive(false);
+					break;
+				case HandState.Teleporting:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(false);
+					TeleporterRay.SetActive(true);
+					break;
+			}
 		}
 
 	
@@ -92,31 +111,7 @@ namespace VRT.Pilots.Common
 			if (newHandState == currentState) return;
 			// xxxjack should we teleport if we've left teleport mode?
 			currentState = newHandState;
-			hand.SetGrab(currentState == HandState.Grabbing);
-			hand.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
-			switch(currentState)
-            {
-				case HandState.Idle:
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(false);
-					teleporter.SetActive(false);
-					break;
-				case HandState.Pointing:
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(true);
-					teleporter.SetActive(false);
-					break;
-				case HandState.Grabbing:
-					GrabCollider.SetActive(true);
-					TouchCollider.SetActive(false);
-					teleporter.SetActive(false);
-					break;
-				case HandState.Teleporting:
-					GrabCollider.SetActive(false);
-					TouchCollider.SetActive(false);
-					teleporter.SetActive(true);
-					break;
-            }
+			FixObjectStates();
 #if xxxjack_old
 			if (!playerNetworkController.IsLocalPlayer)
 
@@ -171,6 +166,7 @@ namespace VRT.Pilots.Common
 #endif
 		}
 
+#if xxxjack_old
 		void UpdateHandState()
         {
 			if (inTeleportingMode)
@@ -209,5 +205,6 @@ namespace VRT.Pilots.Common
 				teleporter.SetActive(false);
 			}
 		}
+#endif
 	}
 }
