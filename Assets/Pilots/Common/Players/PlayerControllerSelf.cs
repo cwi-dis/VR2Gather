@@ -15,6 +15,10 @@ namespace VRT.Pilots.Common
         [Tooltip("Introspection/debug: is direct interaction currently enabled")]
         [DisableEditing] [SerializeField] private bool directInteractionIsEnabled;
 
+        public void Awake()
+        {
+            DisableInteraction();
+        }
         public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             if (!_isLocalPlayer)
@@ -151,6 +155,17 @@ namespace VRT.Pilots.Common
             }
         }
 
+        private void DisableInteraction()
+        {
+            foreach (var go in directInteractionInputObjects)
+            {
+                go.SetActive(false);
+            }
+            foreach (var go in rayBasedInputObjects)
+            {
+                go.SetActive(false);
+            }
+        }
         private void SetDirectInteraction(bool enabled)
         {
             foreach (var go in directInteractionInputObjects)

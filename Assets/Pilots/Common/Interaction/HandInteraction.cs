@@ -60,8 +60,9 @@ namespace VRT.Pilots.Common
 
 		void FixObjectStates()
         {
-			hand.SetGrab(currentState == HandState.Grabbing);
-			hand.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
+			Debug.Log($"HandInteraction: state={currentState}");
+			hand?.SetGrab(currentState == HandState.Grabbing);
+			hand?.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
 			switch (currentState)
 			{
 				case HandState.Idle:
@@ -92,7 +93,7 @@ namespace VRT.Pilots.Common
         {
 			if (m_teleportingAction.action != null)
 			{
-				if (m_teleportingAction.action.ReadValue<float>() > 0.5) return HandState.Teleporting;
+				if (m_teleportingAction.action.IsPressed()) return HandState.Teleporting;
 			}
 			if (m_pointingAction.action != null)
             {

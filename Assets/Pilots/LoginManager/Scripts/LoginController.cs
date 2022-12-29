@@ -12,6 +12,8 @@ namespace VRT.Pilots.LoginManager
 
     public class LoginController : PilotController
     {
+        [Tooltip("The self-player for the login scene")]
+        [SerializeField] public PlayerControllerSelf selfPlayer;
 
         public class MessageType
         {
@@ -23,8 +25,21 @@ namespace VRT.Pilots.LoginManager
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
+        private void Start()
+        {
+            Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
+            {
+                userId = "no-userid",
+                userName = "TestInteractionUser",
+                userData = new Orchestrator.Wrapping.UserData()
+                {
+                    microphoneName = "None",
+                    userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
+                }
+            };
+            selfPlayer.SetUpPlayerController(true, user, null);
+        }
 
-       
         IEnumerator RefreshAndLoad(string scenary)
         {
             yield return null;
