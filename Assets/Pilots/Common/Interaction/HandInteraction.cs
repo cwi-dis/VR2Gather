@@ -13,8 +13,10 @@ namespace VRT.Pilots.Common
 		public VRT.Teleporter.BaseTeleporter teleporter;
 
 		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
-		public GameObject Hand;
-		[Tooltip("Controller for the hand (default: gotten from Hand)")]
+		public GameObject handGO;
+		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
+		public Hand hand;
+		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
 		[SerializeField] private HandController handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
 		[SerializeField] private PlayerNetworkController playerNetworkController;
@@ -28,8 +30,6 @@ namespace VRT.Pilots.Common
 		[SerializeField] InputActionProperty m_grabbingAction;
 		[Tooltip("The Input System Action that determines whether we are pointing (if > 0.5)")]
 		[SerializeField] InputActionProperty m_pointingAction;
-
-
 		[Tooltip("The Input System Action that determines whether we are teleporting (if > 0.5)")]
 		[SerializeField] InputActionProperty m_teleportingAction;
 	
@@ -42,6 +42,8 @@ namespace VRT.Pilots.Common
 		[DisableEditing] public bool inTouchingMode = false;
 		[DisableEditing] public bool inGrabbingMode = false;
 
+		[Tooltip("Current hand state")]
+		[DisableEditing] [SerializeField] private HandState currentState;
 
 		public void Awake()
 		{
@@ -50,8 +52,9 @@ namespace VRT.Pilots.Common
 		void Start()
 		{
 			
-			if (Hand == null) Hand = gameObject;
-			if (handController == null) handController = Hand.GetComponent<HandController>();
+			if (handGO == null) handGO = gameObject;
+			if (hand == null) hand = handGO.GetComponent<Hand>();
+			if (handController == null) handController = handGO.GetComponent<HandController>();
 			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkController>();
 			if (handController == null)
             {
@@ -68,11 +71,53 @@ namespace VRT.Pilots.Common
 	
 		private HandState GetHandState()
         {
+			if (m_teleportingAction.action != null)
+			{
+				if (m_teleportingAction.action.ReadValue<float>() > 0.5) return HandState.Teleporting;
+			}
+			if (m_pointingAction.action != null)
+            {
+				if (m_pointingAction.action.ReadValue<float>() > 0.5) return HandState.Pointing;
+            }
+			if (m_grabbingAction.action != null)
+            {
+				if (m_grabbingAction.action.ReadValue<float>() > 0.5) return HandState.Grabbing;
+            }
 			return HandState.Idle;
         }
 		
 		void Update()
 		{
+			var newHandState = GetHandState();
+			if (newHandState == currentState) return;
+			// xxxjack should we teleport if we've left teleport mode?
+			currentState = newHandState;
+			hand.SetGrab(currentState == HandState.Grabbing);
+			hand.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
+			switch(currentState)
+            {
+				case HandState.Idle:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(false);
+					teleporter.SetActive(false);
+					break;
+				case HandState.Pointing:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(true);
+					teleporter.SetActive(false);
+					break;
+				case HandState.Grabbing:
+					GrabCollider.SetActive(true);
+					TouchCollider.SetActive(false);
+					teleporter.SetActive(false);
+					break;
+				case HandState.Teleporting:
+					GrabCollider.SetActive(false);
+					TouchCollider.SetActive(false);
+					teleporter.SetActive(true);
+					break;
+            }
+#if xxxjack_old
 			if (!playerNetworkController.IsLocalPlayer)
 
 			{
@@ -123,6 +168,7 @@ namespace VRT.Pilots.Common
                 }
 				UpdateHandState();
 			}
+#endif
 		}
 
 		void UpdateHandState()
