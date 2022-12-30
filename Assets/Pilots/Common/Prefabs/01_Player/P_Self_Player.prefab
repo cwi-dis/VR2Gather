@@ -44,13 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleporter: {fileID: 7169158863632739383}
   handGO: {fileID: 0}
   hand: {fileID: 0}
   handController: {fileID: 0}
   playerNetworkController: {fileID: 0}
   GrabCollider: {fileID: 4222971993536608775}
   TouchCollider: {fileID: 8454036779146221642}
+  TeleporterRay: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -87,10 +87,6 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  MyPlayerInput: {fileID: 59450417063062215}
-  inTeleportingMode: 0
-  inTouchingMode: 0
-  inGrabbingMode: 0
   currentState: 0
 --- !u!1 &837632368141674398
 GameObject:
@@ -945,13 +941,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleporter: {fileID: 7169158863632739383}
   handGO: {fileID: 0}
   hand: {fileID: 0}
   handController: {fileID: 0}
   playerNetworkController: {fileID: 0}
   GrabCollider: {fileID: 4222971993536608775}
   TouchCollider: {fileID: 8454036779146221642}
+  TeleporterRay: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -988,10 +984,6 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  MyPlayerInput: {fileID: 59450417063062215}
-  inTeleportingMode: 0
-  inTouchingMode: 0
-  inGrabbingMode: 0
   currentState: 0
 --- !u!1 &4248530420367622023
 GameObject:
@@ -1037,13 +1029,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleporter: {fileID: 7688933061985493981}
   handGO: {fileID: 0}
   hand: {fileID: 0}
   handController: {fileID: 0}
   playerNetworkController: {fileID: 0}
   GrabCollider: {fileID: 4022569732577959940}
   TouchCollider: {fileID: 8671443060062813284}
+  TeleporterRay: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -1080,10 +1072,6 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  MyPlayerInput: {fileID: 59450417063062215}
-  inTeleportingMode: 0
-  inTouchingMode: 0
-  inGrabbingMode: 0
   currentState: 0
 --- !u!1 &4470724064542958035
 GameObject:
@@ -1206,13 +1194,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14ad46424dabc4d2b8e353e26c727bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleporter: {fileID: 7688933061985493981}
   handGO: {fileID: 0}
   hand: {fileID: 0}
   handController: {fileID: 0}
   playerNetworkController: {fileID: 0}
   GrabCollider: {fileID: 4022569732577959940}
   TouchCollider: {fileID: 8671443060062813284}
+  TeleporterRay: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -1249,10 +1237,6 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
-  MyPlayerInput: {fileID: 59450417063062215}
-  inTeleportingMode: 0
-  inTouchingMode: 0
-  inGrabbingMode: 0
   currentState: 0
 --- !u!1 &4987767401138411745
 GameObject:
@@ -2226,18 +2210,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3958494463180791142}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7688933061985493981 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6655183749742542523, guid: 21dad1a70fa0b7842afecfcdd199c370,
-    type: 3}
-  m_PrefabInstance: {fileID: 3958494463180791142}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdb9db596df9a574b90882279a6fb4a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8671443060062813284 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5672356542551957762, guid: 21dad1a70fa0b7842afecfcdd199c370,
