@@ -4,7 +4,7 @@ using VRT.Pilots.Common;
 
 namespace VRT.DevelopmentTests
 {
-    public class TestInteractionController : MonoBehaviour
+    public class TestInteractionController : PilotController
     {
         [Tooltip("Fade in at start of scene")]
         public bool enableFade;
@@ -14,23 +14,11 @@ namespace VRT.DevelopmentTests
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
 
-         public static TestInteractionController Instance { get; private set; }
-
-        public void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            if (enableFade && CameraFader.Instance != null)
-            {
-                CameraFader.Instance.startFadedOut = true;
-            }
-        }
 
         // Start is called before the first frame update
-        public void Start()
+        public override void Start()
         {
+            base.Start();
             Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
             Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
             {
@@ -47,12 +35,8 @@ namespace VRT.DevelopmentTests
             {
                 CameraFader.Instance.startFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());
-            }
-           
-            
+            }      
             playerManager.SetUpPlayerController(true, user, null);
         }
-
-  
     }
 }
