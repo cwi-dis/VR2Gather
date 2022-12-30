@@ -25,26 +25,26 @@ public class TestInteractable : MonoBehaviour
 
     public void OnActivate()
     {
-        Debug.Log($"{Name()}: OnActivate");
+        Debug.Log($"{Name()}: {name}: OnActivate");
     }
     public void OnDeactivate()
     {
-        Debug.Log($"{Name()}: OnDeactivate");
+        Debug.Log($"{Name()}: {name}: OnDeactivate");
     }
     public void OnHoverEnter()
     {
-        Debug.Log($"{Name()}: OnHoverEnter");
+        Debug.Log($"{Name()}: {name}: OnHoverEnter");
     }
     public void OnHoverExit()
     {
-        Debug.Log($"{Name()}: OnHoverExit");
+        Debug.Log($"{Name()}: {name}: OnHoverExit");
     }
     public void OnSelectEnter()
     {
-        Debug.Log($"{Name()}: OnSelectEnter");
+        Debug.Log($"{Name()}: {name}: OnSelectEnter");
     }
     public void OnSelectExit()
     {
-        Debug.Log($"{Name()}: OnSelectExit");
+        Debug.Log($"{Name()}: {name}: OnSelectExit");
     }
 }
