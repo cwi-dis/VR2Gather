@@ -1225,6 +1225,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Secondary Activate",
+                    "type": "Button",
+                    "id": "09df7f2b-0c82-49dc-bd9a-bac278cf9214",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1577,6 +1586,17 @@
                     "processors": "",
                     "groups": "Oculus",
                     "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7a31b9ef-3df6-41c9-a340-d0794019c200",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/primarybutton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Secondary Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -2332,17 +2352,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
-                    "action": "ShowHide",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "26c67b2d-25e3-4033-bba7-e0d9a7c5f09d",
-                    "path": "<XRController>/primaryButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Generic XR Controller",
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false

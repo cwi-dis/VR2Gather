@@ -25,6 +25,8 @@ namespace VRT.Pilots.Common
 		[Tooltip("GameObject with teleporter ray")]
 		public GameObject TeleporterRay;
 
+		[Tooltip("Debugging: set this action to override the other actions: mode switching is done with this action.")]
+		[SerializeField] InputActionProperty m_modeSwitchAction;
 		[Tooltip("The Input System Action that determines whether we are grabbing (if > 0.5)")]
 		[SerializeField] InputActionProperty m_grabbingAction;
 		[Tooltip("The Input System Action that determines whether we are pointing (if > 0.5)")]
@@ -91,6 +93,27 @@ namespace VRT.Pilots.Common
 	
 		private HandState GetHandState()
         {
+			if (m_modeSwitchAction.action != null)
+            {
+				// To debug actions it may be helpful that the normal grab/point
+				// are only used for the interactors. The mode button will switch through
+				// the various modes.
+				if (m_modeSwitchAction.action.WasPerformedThisFrame())
+                {
+					switch(currentState)
+                    {
+						case HandState.Idle:
+							return HandState.Pointing;
+						case HandState.Pointing:
+							return HandState.Grabbing;
+						case HandState.Grabbing:
+							return HandState.Teleporting;
+						case HandState.Teleporting:
+							return HandState.Idle;
+                    }
+                }
+				return currentState;
+            }
 			if (m_teleportingAction.action != null)
 			{
 				if (m_teleportingAction.action.IsPressed()) return HandState.Teleporting;
