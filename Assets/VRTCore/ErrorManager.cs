@@ -19,6 +19,9 @@ namespace VRT.Core
         [Tooltip("Prefab of dialog to use, if no errorManagerSink registered")]
         public GameObject myPrefab;
 
+        [Tooltip("GameObject where dialogs are instantiated (if no errorManagerSink registered), should contain overlay canvas")]
+        public GameObject myCanvas;
+
         ErrorManagerSink mySink = null;
 
         List<string[]> queue = new List<string[]>();
@@ -33,6 +36,10 @@ namespace VRT.Core
             if (instance == null)
             {
                 instance = this;
+            }
+            if (myCanvas == null)
+            {
+                myCanvas = gameObject;
             }
         }
 
@@ -66,7 +73,8 @@ namespace VRT.Core
                             }
                             if (instantiate)
                             {
-                                GameObject popup = Instantiate(myPrefab, gameObject.transform);
+                                myCanvas.SetActive(true);
+                                GameObject popup = Instantiate(myPrefab, myCanvas.transform);
                                 popup.GetComponent<ErrorPopup>().FillError(error[0], error[1]);
                             }
 

@@ -2003,7 +2003,7 @@
                     "id": "0ef08785-0165-4c99-808b-ffaa65a55914",
                     "path": "<ViveController>{LeftHand}/trackpad",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=5,y=5)",
                     "groups": "Vive",
                     "action": "ViewHeight",
                     "isComposite": false,
