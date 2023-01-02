@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 namespace VRT.Pilots.Common
 {
@@ -10,6 +11,10 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class HandVisualController : MonoBehaviour
     {
+        /// <summary>
+        /// Supported controller types. When adding types also add the name substring to
+        /// FindAttachedController().
+        /// </summary>
         public enum ControllerType
         {
             Other,
@@ -36,9 +41,21 @@ namespace VRT.Pilots.Common
   
         void Start()
         {
+            ControllerType curController = FindAttachedController();
+            FixRepresentation(curController, force:true);
+            InputDevices.deviceConnected += OnDeviceChanged;
+            InputDevices.deviceDisconnected += OnDeviceChanged;
+            InputDevices.deviceConfigChanged += OnDeviceChanged;
             directInteractionIsEnabled = PilotController.Instance.directInteractionAllowed;
             FixDirectInteraction();
-            FixRepresentation(ControllerType.Other, force:true);
+         }
+
+        private void OnDestroy()
+        {
+            InputDevices.deviceConnected -= OnDeviceChanged;
+            InputDevices.deviceDisconnected -= OnDeviceChanged;
+            InputDevices.deviceConfigChanged -= OnDeviceChanged;
+
         }
 
         // Update is called once per frame
@@ -70,5 +87,25 @@ namespace VRT.Pilots.Common
             OculusController.SetActive(controllerType == ControllerType.Oculus);
             OtherController.SetActive(controllerType == ControllerType.Other);
         }
+
+        ControllerType FindAttachedController()
+        {
+            List<InputDevice> deviceList = new List<InputDevice>();
+            InputDevices.GetDevices(deviceList);
+            Debug.Log($"xxxjack EnumerateDevices: {deviceList.Count} devices");
+            foreach(var inDev in deviceList)
+            {
+                if (inDev.isValid && inDev.name.Contains("Oculus Touch Controller")) return ControllerType.Oculus;
+            }
+            return ControllerType.Other;
+        }
+
+        void OnDeviceChanged(InputDevice value)
+        {
+            Debug.Log($"xxxjack OnDeviceConnected: device: {value}");
+            ControllerType curController = FindAttachedController();
+            FixRepresentation(curController);
+        }
+   
     }
 }
