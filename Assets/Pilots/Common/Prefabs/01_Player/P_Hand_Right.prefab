@@ -787,6 +787,7 @@ GameObject:
   - component: {fileID: 8329836872111453749}
   - component: {fileID: 1775352735639643329}
   - component: {fileID: 8540287806463370437}
+  - component: {fileID: 6857475060488557817}
   m_Layer: 0
   m_Name: P_Hand_Right
   m_TagString: Untagged
@@ -860,6 +861,24 @@ MonoBehaviour:
   ReferenceTransform: {fileID: 1573086616002105275}
   RendererToDisable: {fileID: 77056827047438991}
   TimeOut: 1
+--- !u!114 &6857475060488557817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6652609405479520317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de72dbb29e1dd1044a9790ce0cc11007, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rayBasedInputObject: {fileID: 6897447720340936516}
+  directInteractionInputObject: {fileID: 5287329196260260083}
+  OculusController: {fileID: 2551335400064308805}
+  OtherController: {fileID: 7903991079643624856}
+  directInteractionIsEnabled: 0
+  controllerType: 0
 --- !u!1 &6656451334728806882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2376,6 +2395,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9773b868cd33c4990b5ba23a0d1c60e1, type: 3}
+--- !u!1 &2551335400064308805 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9773b868cd33c4990b5ba23a0d1c60e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 3434350780398398228}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2892431001353850111 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9773b868cd33c4990b5ba23a0d1c60e1,
@@ -2474,6 +2499,12 @@ PrefabInstance:
 --- !u!4 &7420611320668745506 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0c7fdc988d59b41cc95c61eb3622bd21,
+    type: 3}
+  m_PrefabInstance: {fileID: 7021665781369702601}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7903991079643624856 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 0c7fdc988d59b41cc95c61eb3622bd21,
     type: 3}
   m_PrefabInstance: {fileID: 7021665781369702601}
   m_PrefabAsset: {fileID: 0}

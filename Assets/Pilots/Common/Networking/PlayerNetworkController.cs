@@ -137,15 +137,15 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public HandController GetHandController(HandController.Handedness handedness)
+		public HandNetworkController GetHandController(HandNetworkController.Handedness handedness)
 		{
-			if (handedness == HandController.Handedness.Left)
+			if (handedness == HandNetworkController.Handedness.Left)
 			{
-				return LeftHandTransform.GetComponent<HandController>();
+				return LeftHandTransform.GetComponent<HandNetworkController>();
 			}
 			else
 			{
-				return RightHandTransform.GetComponent<HandController>();
+				return RightHandTransform.GetComponent<HandNetworkController>();
 			}
 		}
 	}
