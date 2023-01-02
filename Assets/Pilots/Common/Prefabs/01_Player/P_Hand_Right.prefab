@@ -270,7 +270,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UpdateTrackingType: 0
   m_EnableInputTracking: 1
-  m_EnableInputActions: 1
+  m_EnableInputActions: 0
   m_ModelPrefab: {fileID: 0}
   m_ModelParent: {fileID: 0}
   m_Model: {fileID: 77056827043969945}
@@ -464,8 +464,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 3866031453113646255, guid: 721820db5472c4cdb9e2c49de50d8533,
-      type: 3}
+    m_Reference: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 1
     m_Action:
