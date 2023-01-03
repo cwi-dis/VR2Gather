@@ -349,6 +349,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Grabbing",
+                    "type": "Button",
+                    "id": "a5ebbdeb-959d-4483-a7a0-e4f72ee6f423",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Select Value",
                     "type": "Value",
                     "id": "e6005f29-e4c1-4f3b-8bf7-3a28bab5ca9c",
@@ -361,6 +370,15 @@
                     "name": "Activate",
                     "type": "Button",
                     "id": "0c0991c5-d329-4afc-8892-1076b440477c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pointing",
+                    "type": "Button",
+                    "id": "9dbfcbef-5f5c-4126-b06a-ccbc37119afb",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -764,6 +782,50 @@
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "3441c045-6c6e-4d9b-b34c-6bdd221e8141",
+                    "path": "<XRController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Grabbing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e7381de1-adb1-4ab0-9071-17a3213c4668",
+                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Grabbing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e092e1be-7f08-4f48-892c-6527b0465351",
+                    "path": "<XRController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Pointing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "42f35a04-19fc-4d0f-a5ab-231765887d5d",
+                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Pointing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -1164,6 +1226,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Grabbing",
+                    "type": "Button",
+                    "id": "53327e0f-4d7a-468c-b5f4-623ad46bff0c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Select Value",
                     "type": "Value",
                     "id": "39bbf1ac-21a3-413d-90f6-6dbf6efeaabe",
@@ -1176,6 +1247,15 @@
                     "name": "Activate",
                     "type": "Button",
                     "id": "41976d89-60de-4deb-bff9-16b4af96b290",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pointing",
+                    "type": "Button",
+                    "id": "217d7354-1075-4b18-b591-2f0a66619739",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -1597,6 +1677,50 @@
                     "processors": "",
                     "groups": "Oculus",
                     "action": "Secondary Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "efacd0a9-e534-4353-87ce-8d20d9a4040e",
+                    "path": "<XRController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Grabbing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1d414e39-fdc6-457d-8a2f-c9a40ddab24f",
+                    "path": "<OculusTouchController>{RightHand}/gripPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Grabbing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1cf66c00-0d9a-48b0-a362-6f09553cd1ee",
+                    "path": "<XRController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller",
+                    "action": "Pointing",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fea84b64-72bc-4d17-8941-59e59106bebf",
+                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Oculus",
+                    "action": "Pointing",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

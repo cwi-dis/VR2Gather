@@ -45,6 +45,7 @@ namespace VRT.Pilots.Common
 		{
 		}
 
+      
 		void Start()
 		{
 			
@@ -102,7 +103,6 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-	
 		private HandState GetHandState()
         {
 			// If we are in Idle state we go to teleporting state when the trigger is pressed in the correct direction

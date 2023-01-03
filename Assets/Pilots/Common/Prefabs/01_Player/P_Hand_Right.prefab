@@ -466,7 +466,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: -1758520528963094988, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_Reference: {fileID: -5375773100271800000, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_pointingAction:
     m_UseReference: 1
@@ -479,7 +479,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 7904272356298805229, guid: 721820db5472c4cdb9e2c49de50d8533,
+    m_Reference: {fileID: -2010257665630619987, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_teleportingAction:
     m_UseReference: 1
