@@ -350,12 +350,12 @@
                 },
                 {
                     "name": "Grabbing",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "a5ebbdeb-959d-4483-a7a0-e4f72ee6f423",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Select Value",
@@ -377,12 +377,12 @@
                 },
                 {
                     "name": "Pointing",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "9dbfcbef-5f5c-4126-b06a-ccbc37119afb",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Activate Value",
@@ -818,10 +818,10 @@
                 },
                 {
                     "name": "",
-                    "id": "42f35a04-19fc-4d0f-a5ab-231765887d5d",
-                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
+                    "id": "2bdc46d9-cadf-48b6-a318-be5de8c57d23",
+                    "path": "<OculusTouchController>{LeftHand}/triggerTouched",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Negate",
                     "groups": "Oculus",
                     "action": "Pointing",
                     "isComposite": false,
@@ -1227,12 +1227,12 @@
                 },
                 {
                     "name": "Grabbing",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "53327e0f-4d7a-468c-b5f4-623ad46bff0c",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Select Value",
@@ -1254,12 +1254,12 @@
                 },
                 {
                     "name": "Pointing",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "217d7354-1075-4b18-b591-2f0a66619739",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Activate Value",
@@ -1716,9 +1716,9 @@
                 {
                     "name": "",
                     "id": "fea84b64-72bc-4d17-8941-59e59106bebf",
-                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
+                    "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/triggertouched",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Negate",
                     "groups": "Oculus",
                     "action": "Pointing",
                     "isComposite": false,
