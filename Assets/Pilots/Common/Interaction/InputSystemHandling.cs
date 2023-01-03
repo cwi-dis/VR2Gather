@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEditor;
 
-#if XXXJACK_DOES_NOT_WORK
 // This InputProcessor should negate values, i.e. a range 0..1 will be mapped to 1..0.
 // This is different from inverting (which maps -1..1 to 1..-1).
 // But it doesn't work...
@@ -34,11 +33,12 @@ public class NegateProcessor : InputProcessor<float>
 
     public override float Process(float value, InputControl control)
     {
-        Debug.Log($"Negate({control.name}): {value}->{1 - value}");
+        string name = "no control";
+        if (control != null) name = control.name;
+        Debug.Log($"Negate({name}): {value}->{1 - value}");
         return 1-value;
     }
 }
-#endif
 
 namespace VRT.Pilots.Common
 {
