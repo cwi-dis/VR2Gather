@@ -2209,7 +2209,7 @@ PrefabInstance:
     - target: {fileID: 3715003807647238045, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3826831324969394881, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -2259,7 +2259,7 @@ PrefabInstance:
     - target: {fileID: 6756273818463653689, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6974583553594520314, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
@@ -2280,12 +2280,12 @@ PrefabInstance:
         type: 3}
       propertyPath: MoveTurn
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7004479241362984629}
     - target: {fileID: 8261883970998026398, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: ViewAdjust
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6792682826266770799}
     - target: {fileID: 8924444475721129896, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_IsActive
@@ -3220,12 +3220,12 @@ PrefabInstance:
         type: 3}
       propertyPath: MoveTurn
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 7004479241362984629}
     - target: {fileID: 8116020605770475481, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: ViewAdjust
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6792682826266770799}
     - target: {fileID: 8540287806463370437, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
       propertyPath: m_Enabled
