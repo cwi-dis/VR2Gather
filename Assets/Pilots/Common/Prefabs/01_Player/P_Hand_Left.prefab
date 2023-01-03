@@ -420,18 +420,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 2319757012462531555}
   TouchCollider: {fileID: 5146605690878989016}
   TeleporterRay: {fileID: 5836945290183854944}
-  m_modeSwitchAction:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Mode Switch
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 9ecc6f7f-3d87-44fb-9aab-13206e20897d
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  MoveTurn: {fileID: 0}
+  ViewAdjust: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 1
     m_Action:
@@ -470,6 +460,19 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 1263111715868034790, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  m_teleportCancelAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Teleport Cancel
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: db16637d-7163-4d1f-b380-23e28b85b0a9
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 737890489006591557, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   currentState: 0
 --- !u!1 &4787018679340500038

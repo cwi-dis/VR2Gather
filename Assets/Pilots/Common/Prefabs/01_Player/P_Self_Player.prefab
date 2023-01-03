@@ -51,18 +51,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 4222971993536608775}
   TouchCollider: {fileID: 8454036779146221642}
   TeleporterRay: {fileID: 0}
-  m_modeSwitchAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  MoveTurn: {fileID: 0}
+  ViewAdjust: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -88,6 +78,18 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_teleportingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: 
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_teleportCancelAction:
     m_UseReference: 0
     m_Action:
       m_Name: 
@@ -873,18 +875,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 4222971993536608775}
   TouchCollider: {fileID: 8454036779146221642}
   TeleporterRay: {fileID: 0}
-  m_modeSwitchAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  MoveTurn: {fileID: 0}
+  ViewAdjust: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -910,6 +902,18 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_teleportingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: 
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_teleportCancelAction:
     m_UseReference: 0
     m_Action:
       m_Name: 
@@ -973,18 +977,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 0}
   TouchCollider: {fileID: 0}
   TeleporterRay: {fileID: 0}
-  m_modeSwitchAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  MoveTurn: {fileID: 0}
+  ViewAdjust: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -1010,6 +1004,18 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_teleportingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: 
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_teleportCancelAction:
     m_UseReference: 0
     m_Action:
       m_Name: 
@@ -1150,18 +1156,8 @@ MonoBehaviour:
   GrabCollider: {fileID: 0}
   TouchCollider: {fileID: 0}
   TeleporterRay: {fileID: 0}
-  m_modeSwitchAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
+  MoveTurn: {fileID: 0}
+  ViewAdjust: {fileID: 0}
   m_grabbingAction:
     m_UseReference: 0
     m_Action:
@@ -1187,6 +1183,18 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_teleportingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: 
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  m_teleportCancelAction:
     m_UseReference: 0
     m_Action:
       m_Name: 
@@ -2268,6 +2276,16 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 8261883970998026398, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: MoveTurn
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8261883970998026398, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: ViewAdjust
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8924444475721129896, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_IsActive
@@ -3197,6 +3215,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: P_Hand_Right
+      objectReference: {fileID: 0}
+    - target: {fileID: 8116020605770475481, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: MoveTurn
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8116020605770475481, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+        type: 3}
+      propertyPath: ViewAdjust
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8540287806463370437, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}

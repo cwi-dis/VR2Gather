@@ -35,7 +35,9 @@ namespace VRT.Pilots.Common
 		[SerializeField] InputActionProperty m_pointingAction;
 		[Tooltip("The Input System Action that determines whether we are teleporting (if > 0.5)")]
 		[SerializeField] InputActionProperty m_teleportingAction;
-	
+		[Tooltip("The Input System Action that determines whether we aborted teleport")]
+		[SerializeField] InputActionProperty m_teleportCancelAction;
+
 		[Tooltip("Current hand state")]
 		[DisableEditing] [SerializeField] private HandState currentState;
 
@@ -103,9 +105,18 @@ namespace VRT.Pilots.Common
 	
 		private HandState GetHandState()
         {
-			
-			if (m_teleportingAction.action != null)
+			// If we are in Idle state we go to teleporting state when the trigger is pressed in the correct direction
+			if (currentState == HandState.Idle)
 			{
+				if (m_teleportingAction.action != null)
+				{
+					if (m_teleportingAction.action.triggered) return HandState.Teleporting;
+				}
+			}
+			// If we are in teleporting we stay there as long the the button keeps being depressed and we're not cancelling
+			if (currentState == HandState.Teleporting)
+			{
+				if (m_teleportCancelAction.action.triggered) return HandState.Idle;
 				if (m_teleportingAction.action.IsPressed()) return HandState.Teleporting;
 			}
 			if (m_pointingAction.action != null)
