@@ -24,6 +24,8 @@ namespace VRT.Pilots.Common
 		public GameObject TouchCollider;
 		[Tooltip("GameObject with teleporter ray")]
 		public GameObject TeleporterRay;
+		[Tooltip("GameObject with move/turn (disabled when teleporter active)")]
+		public GameObject MoveTurn;
 
 		[Tooltip("Debugging: set this action to override the other actions: mode switching is done with this action.")]
 		[SerializeField] InputActionProperty m_modeSwitchAction;
@@ -71,21 +73,25 @@ namespace VRT.Pilots.Common
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
+					MoveTurn.SetActive(true);
 					break;
 				case HandState.Pointing:
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 					TeleporterRay.SetActive(false);
+					MoveTurn.SetActive(true);
 					break;
 				case HandState.Grabbing:
 					GrabCollider.SetActive(true);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
+					MoveTurn.SetActive(true);
 					break;
 				case HandState.Teleporting:
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(true);
+					MoveTurn.SetActive(false);
 					break;
 			}
 		}
