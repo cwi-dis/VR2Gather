@@ -26,6 +26,8 @@ namespace VRT.Pilots.Common
 		public GameObject TeleporterRay;
 		[Tooltip("GameObject with move/turn (disabled when teleporter active)")]
 		public GameObject MoveTurn;
+		[Tooltip("GameObject with view adjust (disabled when teleporter active)")]
+		public GameObject ViewAdjust;
 
 		[Tooltip("The Input System Action that determines whether we are grabbing (if > 0.5)")]
 		[SerializeField] InputActionProperty m_grabbingAction;
@@ -72,24 +74,28 @@ namespace VRT.Pilots.Common
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
 					MoveTurn.SetActive(true);
+					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Pointing:
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 					TeleporterRay.SetActive(false);
 					MoveTurn.SetActive(true);
+					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Grabbing:
 					GrabCollider.SetActive(true);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
 					MoveTurn.SetActive(true);
+					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Teleporting:
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(true);
 					MoveTurn.SetActive(false);
+					ViewAdjust.SetActive(false);
 					break;
 			}
 		}

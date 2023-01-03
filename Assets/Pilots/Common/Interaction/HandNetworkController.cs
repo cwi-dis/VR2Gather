@@ -19,7 +19,8 @@ namespace VRT.Pilots.Common
 			Idle,
 			Pointing,
 			Grabbing,
-			Teleporting
+			Teleporting,
+			ViewAdjusting
 		}
 
 		public enum Handedness
