@@ -105,13 +105,9 @@ namespace VRT.Pilots.Common
 
 		private HandState GetHandState()
         {
-			// If we are in Idle state we go to teleporting state when the trigger is pressed in the correct direction
-			if (currentState == HandState.Idle)
+			if (m_teleportingAction.action != null)
 			{
-				if (m_teleportingAction.action != null)
-				{
-					if (m_teleportingAction.action.triggered) return HandState.Teleporting;
-				}
+				if (m_teleportingAction.action.triggered) return HandState.Teleporting;
 			}
 			// If we are in teleporting we stay there as long the the button keeps being depressed and we're not cancelling
 			if (currentState == HandState.Teleporting)
@@ -119,14 +115,17 @@ namespace VRT.Pilots.Common
 				if (m_teleportCancelAction.action.triggered) return HandState.Idle;
 				if (m_teleportingAction.action.IsPressed()) return HandState.Teleporting;
 			}
+			// Grabbing has priority over pointing (because you can grab without your index
+			// finger on the oculus)
+			if (m_grabbingAction.action != null)
+			{
+				if (m_grabbingAction.action.ReadValue<float>() > 0.5) return HandState.Grabbing;
+			}
 			if (m_pointingAction.action != null)
             {
 				if (m_pointingAction.action.ReadValue<float>() > 0.5) return HandState.Pointing;
             }
-			if (m_grabbingAction.action != null)
-            {
-				if (m_grabbingAction.action.ReadValue<float>() > 0.5) return HandState.Grabbing;
-            }
+			
 			return HandState.Idle;
         }
 		
