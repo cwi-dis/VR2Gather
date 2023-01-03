@@ -2,9 +2,9 @@
 using VRT.Core;
 using VRT.Pilots.Common;
 
-namespace VRT.DevelopmentTests
+namespace VRT.Pilots.SoloPlayground
 {
-    public class TestInteractionController : PilotController
+    public class SoloPlaygroundController : PilotController
     {
         [Tooltip("Fade in at start of scene")]
         public bool enableFade;
