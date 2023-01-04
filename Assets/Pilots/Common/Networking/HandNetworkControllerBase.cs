@@ -49,8 +49,6 @@ namespace VRT.Pilots.Common
 			set => throw new System.NotImplementedException();
 		}
 
-		private bool _CanGrabAgain = true;
-
 		protected PlayerNetworkController _Player;
 
 		public void Awake()
@@ -69,31 +67,6 @@ namespace VRT.Pilots.Common
 		private void OnDestroy()
 		{
 			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
-		}
-
-
-		private void OnTriggerStay(Collider other)
-		{
-			if (handState == HandState.Grabbing && _CanGrabAgain && HeldGrabbable == null)
-			{
-				var grabbable = other.GetComponent<Grabbable>();
-				if (grabbable == null)
-				{
-					return;
-				}
-
-				HandGrabEvent handGrabEvent = new HandGrabEvent()
-				{
-					GrabbableObjectId = grabbable.NetworkId,
-					UserId = _Player.UserId,
-					Handedness = handHandedness,
-					EventType = HandInteractionEventType.Grab,
-				};
-
-				ExecuteHandGrabEvent(handGrabEvent);
-
-				_CanGrabAgain = false;
-			}
 		}
 
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
