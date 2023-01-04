@@ -1268,6 +1268,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3958494463180791142}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &4247113684348723594 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 873595905884011756, guid: 21dad1a70fa0b7842afecfcdd199c370,
+    type: 3}
+  m_PrefabInstance: {fileID: 3958494463180791142}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6768302171833389608
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1457,8 +1463,8 @@ MonoBehaviour:
   BodyTransform: {fileID: 1935332283100515012}
   HeadTransform: {fileID: 0}
   Head2Transform: {fileID: 0}
-  LeftHandTransform: {fileID: 3329774565194536360}
-  RightHandTransform: {fileID: 9017124365061413600}
+  LeftHandTransform: {fileID: 4247113684348723594}
+  RightHandTransform: {fileID: 7630850262051204802}
   SendRate: 10
   _IsLocalPlayer: 1
   camTransform: {fileID: 7845086807825369409}
@@ -1673,6 +1679,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5, type: 3}
+--- !u!4 &7630850262051204802 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 77056827043969945, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
+    type: 3}
+  m_PrefabInstance: {fileID: 7563790233389192539}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9017124365061413600 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1573086616002105275, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
