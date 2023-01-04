@@ -2053,7 +2053,7 @@ MonoBehaviour:
   hand: {fileID: 3264531534731365354}
   handState: 0
   handHandedness: 0
-  HeldGrabbable: {fileID: 0}
+  m_HeldGrabbable: {fileID: 0}
 --- !u!114 &867362575422603076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2339,6 +2339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0400d0e3df5a0384c9403d26ea7ff42a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_state: 0
 --- !u!1001 &1023735546852009113
 PrefabInstance:
   m_ObjectHideFlags: 0

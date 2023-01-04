@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
 {
@@ -228,5 +229,25 @@ namespace VRT.Pilots.Common
 			}
 		}
 #endif
+		public void OnSelectEnter(SelectEnterEventArgs args)
+		{
+			var interactable = args.interactable;
+			GameObject grabbedObject = interactable.gameObject;
+			Grabbable grabbable = grabbedObject.GetComponent<Grabbable>();
+			if (grabbable == null)
+            {
+				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
+            }
+			Debug.Log($"{name}: grabbed {grabbable}");
+			handController.HeldGrabbable = grabbable;
+		}
+		public void OnSelectExit(SelectExitEventArgs args)
+		{
+			// xxxjack we could check that the object released is actually held...
+			// xxxjack may also be needed if we can hold multiple objects....
+			Debug.Log($"{name}: released {handController.HeldGrabbable}");
+			handController.HeldGrabbable = null;
+
+		}
 	}
 }
