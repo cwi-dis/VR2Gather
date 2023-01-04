@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using VRT.Core;
-using VRT.Teleporter;
 
 namespace VRT.Pilots.Common
 {
@@ -18,8 +17,6 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("Maximum distance of touchable objects")]
         public float maxDistance = Mathf.Infinity;
-        [Tooltip("Teleporter to use")]
-        public BaseTeleporter teleporter;
         [Tooltip("Where the hitpoint is in 3D space")]
         public GameObject hotspot;
         [Tooltip("The hand that is used to touch objects")]
@@ -93,7 +90,7 @@ namespace VRT.Pilots.Common
             inTouchingMode = grabbing;
             
             inTeleportingMode = teleporting;
-            teleporter.SetActive(inTeleportingMode);
+            // teleporter.SetActive(inTeleportingMode);
 
         }
 
@@ -115,11 +112,6 @@ namespace VRT.Pilots.Common
             if (inTeleportingMode)
             {
                 Debug.Log("HandInteractionEmulation: Teleport go");
-                if (teleporter.canTeleport())
-                {
-                    teleporter.Teleport();
-                }
-                teleporter.SetActive(false);
                 inTeleportingMode = false;
             }
         }
@@ -129,8 +121,6 @@ namespace VRT.Pilots.Common
             if (inTeleportingMode)
             {
                 Debug.Log("HandInteractionEmulation: Teleport home");
-                teleporter.TeleportHome();
-                teleporter.SetActive(false);
                 inTeleportingMode = false;
             }
         }
@@ -148,15 +138,7 @@ namespace VRT.Pilots.Common
         void Update()
         {
             // First check teleporter, if enabled
-            if (teleporter != null && teleporter.teleporterActive)
-            {
-                Ray teleportRay = Camera.main.ScreenPointToRay(getRayDestination(), Camera.MonoOrStereoscopicEye.Mono);
-                // We have the ray starting at our "hand" going in the direction
-                // of our gaze.
-                Vector3 pos = transform.position;
-                Vector3 dir = teleportRay.direction;
-                teleporter.CustomUpdatePath(pos, dir, 10f);
-            }
+      
             if (inTouchingMode)
             {
                 //
