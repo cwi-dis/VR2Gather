@@ -1,26 +1,18 @@
 ﻿using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
+	using HandState = Hand.HandState;
+
 	public class HandNetworkControllerBase : MonoBehaviour
 	{
-		ActionBasedController controller;
+		[Tooltip("The visual hand this controller is attached to")]
 		public Hand hand;
 		public class HandControllerData : BaseMessage
 		{
 			public Handedness handHandedness;
 			public HandState handState;
-		}
-
-		public enum HandState
-		{
-			Idle,
-			Pointing,
-			Grabbing,
-			Teleporting,
-			ViewAdjusting
 		}
 
 		public enum Handedness
@@ -29,7 +21,9 @@ namespace VRT.Pilots.Common
 			Right
 		}
 
+		[Tooltip("Current state of the hand")]
 		public HandState handState;
+		[Tooltip("Handedness of the hand")]
 		public Handedness handHandedness;
 
 		public enum HandInteractionEventType
@@ -46,13 +40,17 @@ namespace VRT.Pilots.Common
 			public HandInteractionEventType EventType;
 		}
 
-		public Grabbable HeldGrabbable;
+		[Tooltip("The object the hand is currently holding")]
+		[SerializeField] protected Grabbable m_HeldGrabbable;
+		public virtual Grabbable HeldGrabbable
+		{
+			set { m_HeldGrabbable = value; }
+			get => m_HeldGrabbable;
+		}
 
 		private bool _CanGrabAgain = true;
 
-		private Animator _Animator;
-
-		private PlayerNetworkController _Player;
+		protected PlayerNetworkController _Player;
 
 		public void Awake()
 		{
@@ -60,12 +58,8 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
 		}
 
-		void Start()
+		protected virtual void Start()
 		{
-			controller = GetComponent<ActionBasedController>();
-#if xxxjack_old
-			_Animator = GetComponentInChildren<Animator>();
-#endif
 			_Player = GetComponentInParent<PlayerNetworkController>();
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
@@ -101,35 +95,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		private void Update()
-		{
-			float isGrabbing = controller.selectAction.action.ReadValue<float>();
-			float isPointing = controller.activateAction.action.ReadValue<float>();
-//			Debug.Log($"xxxjack hand {HandHandedness} isGrabbing={isGrabbing} isPointing={isPointing}");
-			hand.SetGrab(isGrabbing > 0.5);
-			hand.SetPoint(isPointing > 0.5);
-#if xxxjack_old
-			if (HeldGrabbable != null && HandState != State.Grabbing)
-			{
-				HandGrabEvent handGrabEvent = new HandGrabEvent()
-				{
-					GrabbableObjectId = HeldGrabbable.NetworkId,
-					UserId = _Player.UserId,
-					Handedness = HandHandedness,
-					EventType = HandInteractionEventType.Release
-				};
-
-				ExecuteHandGrabEvent(handGrabEvent);
-			}
-
-			if (!_CanGrabAgain && HandState != State.Grabbing)
-			{
-				_CanGrabAgain = true;
-			}
-#endif
-		}
-
-		private void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
+		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
 		{
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
@@ -158,66 +124,10 @@ namespace VRT.Pilots.Common
 
 				if (data.handHandedness == handHandedness)
 				{
-					SetHandState(data.handState);
+					// This will update the local hand state and run the animation (if needed)
+					hand.state = data.handState;
 				}
 			}
-		}
-
-		public void SetHandState(HandState handState)
-		{
-			if (this.handState != handState)
-			{
-				this.handState = handState;
-                UpdateAnimation();
-				//
-				// If we are a hand of the local player we forward the state change,
-				// so other players can see it too.
-				//
-				if (_Player.IsLocalPlayer)
-				{
-					var data = new HandControllerData
-                    {
-						handHandedness = handHandedness,
-						handState = this.handState
-					};
-
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-                        OrchestratorController.Instance.SendTypeEventToAll(data);
-					}
-					else
-					{
-                        OrchestratorController.Instance.SendTypeEventToMaster(data);
-					}
-				}
-			}
-		}
-
-		private void UpdateAnimation()
-		{
-#if xxxjack_old
-			if (HandState == State.Grabbing)
-			{
-				if (!_Animator.GetBool("IsGrabbing"))
-				{
-					_Animator.SetBool("IsGrabbing", true);
-				}
-				_Animator.SetBool("IsPointing", false);
-			}
-			else if (HandState == State.Pointing)
-			{
-				if (!_Animator.GetBool("IsPointing"))
-				{
-					_Animator.SetBool("IsPointing", true);
-				}
-				_Animator.SetBool("IsGrabbing", false);
-			}
-			else
-			{
-				_Animator.SetBool("IsGrabbing", false);
-				_Animator.SetBool("IsPointing", false);
-			}
-#endif
 		}
 	}
 }

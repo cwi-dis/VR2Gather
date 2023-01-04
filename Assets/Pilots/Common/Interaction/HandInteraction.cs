@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace VRT.Pilots.Common
 {
-	using HandState = HandNetworkControllerBase.HandState;
+	using HandState = Hand.HandState;
 
 	public class HandInteraction : MonoBehaviour
 	{
@@ -68,8 +68,7 @@ namespace VRT.Pilots.Common
 		void FixObjectStates()
         {
 			Debug.Log($"HandInteraction: state={currentState}");
-			hand?.SetGrab(currentState == HandState.Grabbing);
-			hand?.SetPoint(currentState == HandState.Pointing || currentState == HandState.Teleporting);
+			hand.state = currentState;
 			switch (currentState)
 			{
 				case HandState.Idle:
