@@ -1305,6 +1305,11 @@ PrefabInstance:
       propertyPath: RightHandPoseDriver
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 5087159113626831324, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5131421326051842195, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_Name
@@ -1449,7 +1454,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UserId: 
+  BodyTransform: {fileID: 1935332283100515012}
   HeadTransform: {fileID: 0}
+  Head2Transform: {fileID: 0}
   LeftHandTransform: {fileID: 3329774565194536360}
   RightHandTransform: {fileID: 9017124365061413600}
   SendRate: 10
