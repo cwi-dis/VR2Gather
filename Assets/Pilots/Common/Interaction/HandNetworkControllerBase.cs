@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
@@ -44,8 +45,8 @@ namespace VRT.Pilots.Common
 		[SerializeField] protected Grabbable m_HeldGrabbable;
 		public virtual Grabbable HeldGrabbable
 		{
-			set { m_HeldGrabbable = value; }
 			get => m_HeldGrabbable;
+			set => throw new System.NotImplementedException();
 		}
 
 		private bool _CanGrabAgain = true;
@@ -109,6 +110,24 @@ namespace VRT.Pilots.Common
 			{
 				GrabbableObjectManager.Instance.HandleHandGrabEvent(handGrabEvent);
 			}
+		}
+
+		internal void OnNetworkRelease(Grabbable grabbable)
+		{
+			if (m_HeldGrabbable != grabbable)
+            {
+				Debug.LogWarning($"{name}: OnNetworkRelease {grabbable} but  holding {m_HeldGrabbable}");
+			}
+			m_HeldGrabbable = null;
+		}
+
+		internal void OnNetworkGrab(Grabbable grabbable)
+		{
+			if (m_HeldGrabbable != null)
+            {
+				Debug.LogWarning($"{name}: OnNetworkGrab but already holding {m_HeldGrabbable}");
+            }
+			m_HeldGrabbable = grabbable;
 		}
 
 		void OnHandControllerData(HandControllerData data)

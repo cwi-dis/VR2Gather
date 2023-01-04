@@ -77,11 +77,11 @@ namespace VRT.Pilots.Common
 
 			if (handGrabEvent.EventType == HandNetworkControllerBase.HandInteractionEventType.Grab)
 			{
-				// xxxjack grabbable.OnGrab(handController);
+				handController.OnNetworkGrab(grabbable);
 			}
 			else
 			{
-				// xxxjack grabbable.OnRelease(handController);
+				handController.OnNetworkRelease(grabbable);
 			}
 
 			if (OrchestratorController.Instance.UserIsMaster)

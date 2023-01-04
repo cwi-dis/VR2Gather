@@ -15,7 +15,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
 		public Hand hand;
 		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
-		[SerializeField] private HandNetworkControllerBase handController;
+		[SerializeField] private HandNetworkControllerSelf handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
 		[SerializeField] private PlayerNetworkController playerNetworkController;
 		
@@ -52,7 +52,7 @@ namespace VRT.Pilots.Common
 			
 			if (handGO == null) handGO = gameObject;
 			if (hand == null) hand = handGO.GetComponent<Hand>();
-			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerBase>();
+			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerSelf>();
 			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkController>();
 			if (handController == null)
             {
