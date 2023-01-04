@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 		{
 			public Vector3 BodyPosition;
 			public Quaternion BodyOrientation;
-			public Vector3 HeadPosition;
+			// bad idea, leads to detached heads. public Vector3 HeadPosition;
 			public Quaternion HeadOrientation;
 			public Vector3 LeftHandPosition;
 			public Quaternion LeftHandOrientation;
@@ -92,12 +92,12 @@ namespace VRT.Pilots.Common
 					}
 					if (HeadTransform != null)
                     {
-						HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+						//HeadTransform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 						HeadTransform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					}
 					if (Head2Transform != null)
                     {
-						Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
+						//Head2Transform.position = Vector3.Lerp(_PreviousReceivedData.HeadPosition, _LastReceivedData.HeadPosition, t);
 						Head2Transform.rotation = Quaternion.Slerp(_PreviousReceivedData.HeadOrientation, _LastReceivedData.HeadOrientation, t);
 					}
 					if (LeftHandTransform != null)

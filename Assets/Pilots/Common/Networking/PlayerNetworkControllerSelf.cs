@@ -38,7 +38,9 @@ namespace VRT.Pilots.Common
 		{
 			var data = new NetworkPlayerData
 			{
-				HeadPosition = camTransform.position,
+				BodyPosition = BodyTransform.position,
+				BodyOrientation = BodyTransform.rotation,
+				//HeadPosition = camTransform.position,
 				HeadOrientation = camTransform.rotation,
 				LeftHandPosition = LeftHandTransform.position,
 				LeftHandOrientation = LeftHandTransform.rotation,
