@@ -25,7 +25,7 @@ namespace VRT.Pilots.Common
 		}
 
 		[Tooltip("The network controller for this player (used to send/receive messages)")]
-		public PlayerNetworkController Player;
+		public PlayerNetworkControllerBase Player;
 		[Tooltip("Toplevel GameObject for this player (used to get body position/rotation)")]
 		public Transform BodyTransform;
 		[Tooltip("Visible object representing head (used to get head position/rotation)")]

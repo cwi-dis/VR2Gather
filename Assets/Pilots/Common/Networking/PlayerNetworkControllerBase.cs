@@ -4,7 +4,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class PlayerNetworkController : MonoBehaviour
+	public abstract class PlayerNetworkControllerBase : MonoBehaviour
 	{
 		#region NetworkPlayerData
 		/// <summary>
@@ -24,14 +24,17 @@ namespace VRT.Pilots.Common
 		[DisableEditing]
 		public string UserId;
 
+		[Tooltip("The virtual head to rotate")]
 		public Transform HeadTransform;
+		[Tooltip("Left hand for which to synchronise position/orientation")]
 		public Transform LeftHandTransform;
+		[Tooltip("Right hand for which to synchronise position/orientation")]
 		public Transform RightHandTransform;
-
+		[Tooltip("How often position/orientation data is synchronized")]
 		public int SendRate = 10; //Send out 10 "frames" per second
 
 		[Header("Introspection/debugging")]
-		[DisableEditing][SerializeField] private bool _IsLocalPlayer = true;
+		[DisableEditing][SerializeField] protected bool _IsLocalPlayer = true;
 		public bool IsLocalPlayer
 		{
 			get
@@ -39,9 +42,6 @@ namespace VRT.Pilots.Common
 				return _IsLocalPlayer;
 			}
 		}
-
-		private float _SendDelta;
-		private float _LastSendTime;
 
 		private NetworkPlayerData _PreviousReceivedData;
 		private NetworkPlayerData _LastReceivedData;
@@ -52,62 +52,18 @@ namespace VRT.Pilots.Common
 			return $"{GetType().Name}";
 		}
 
-		private void Awake()
+		protected virtual void Awake()
 		{
-			_SendDelta = 1.0f / SendRate;
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkPlayerData, typeof(NetworkPlayerData));
 			OrchestratorController.Instance.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
-		private void OnDestroy()
-		{
-			OrchestratorController.Instance.Unsubscribe<NetworkPlayerData>(OnNetworkPlayerData);
-		}
+		public abstract void SetupPlayerNetworkControllerPlayer(bool local, string _userId);
+	
 
-		void Update()
-		{
-			if (IsLocalPlayer && _LastSendTime + _SendDelta <= Time.realtimeSinceStartup)
-			{
-				SendPlayerData();
-			}
-		}
+	
 
-		public void SetupPlayerNetworkControllerPlayer(bool local, string _userId)
-		{
-			_IsLocalPlayer = local;
-			UserId = _userId;
-		}
-
-		void SendPlayerData()
-		{
-			if (!_IsLocalPlayer)
-            {
-				Debug.LogError($"{Name()}: SendPlayerData called but not IsLocalPlayer");
-            }
-			//Send out 
-			var data = new NetworkPlayerData
-			{
-				HeadPosition = HeadTransform.position,
-				HeadOrientation = HeadTransform.rotation,
-				LeftHandPosition = LeftHandTransform.position,
-				LeftHandOrientation = LeftHandTransform.rotation,
-				RightHandPosition = RightHandTransform.position,
-				RightHandOrientation = RightHandTransform.rotation
-			};
-
-			if (OrchestratorController.Instance.UserIsMaster)
-			{
-				OrchestratorController.Instance.SendTypeEventToAll(data);
-			}
-			else
-			{
-				OrchestratorController.Instance.SendTypeEventToMaster(data);
-			}
-
-			_LastSendTime = Time.realtimeSinceStartup;
-		}
-
-		void OnNetworkPlayerData(NetworkPlayerData data)
+		protected void OnNetworkPlayerData(NetworkPlayerData data)
 		{
 			if (!IsLocalPlayer && UserId == data.SenderId)
 			{

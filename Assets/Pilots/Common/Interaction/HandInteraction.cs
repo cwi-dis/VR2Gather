@@ -17,7 +17,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
 		[SerializeField] private HandNetworkControllerSelf handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
-		[SerializeField] private PlayerNetworkController playerNetworkController;
+		[SerializeField] private PlayerNetworkControllerBase playerNetworkController;
 		
 		[Tooltip("GameObject with collider to use for grabbing")]
 		public GameObject GrabCollider;
@@ -53,7 +53,7 @@ namespace VRT.Pilots.Common
 			if (handGO == null) handGO = gameObject;
 			if (hand == null) hand = handGO.GetComponent<Hand>();
 			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerSelf>();
-			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkController>();
+			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkControllerBase>();
 			if (handController == null)
             {
 				Debug.LogError("HandInteraction: cannot find HandController");

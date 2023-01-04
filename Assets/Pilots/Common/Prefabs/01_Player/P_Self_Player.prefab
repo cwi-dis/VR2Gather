@@ -359,6 +359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionManager: {fileID: 4803339158622329015}
   teleportationProvider: {fileID: 0}
+  debug: 0
 --- !u!1 &2771937326611889967
 GameObject:
   m_ObjectHideFlags: 0
@@ -802,6 +803,7 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 4528479901811161959, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
+  debugLogging: 0
 --- !u!1 &7004479241362984629
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,6 +1392,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7044479312909899358, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
+    - {fileID: -1358535412789719997, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 21abad33e8196954b8f19e6b888a67a4, type: 3}
 --- !u!114 &1730563041212197564 stripped
 MonoBehaviour:
@@ -1432,6 +1435,26 @@ MonoBehaviour:
   isLocalPlayer: 1
   _isVisible: 0
   debugTiling: 0
+  debugTransform: 0
+--- !u!114 &4177976052428464234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935332283100515003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54d3c1410d4ad4748bb28c8bd1a1b110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UserId: 
+  HeadTransform: {fileID: 0}
+  LeftHandTransform: {fileID: 3329774565194536360}
+  RightHandTransform: {fileID: 9017124365061413600}
+  SendRate: 10
+  _IsLocalPlayer: 1
+  camTransform: {fileID: 7845086807825369409}
 --- !u!114 &4736957743163071257
 MonoBehaviour:
   m_ObjectHideFlags: 0

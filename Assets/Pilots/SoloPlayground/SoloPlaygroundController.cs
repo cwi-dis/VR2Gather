@@ -10,7 +10,7 @@ namespace VRT.Pilots.SoloPlayground
         public bool enableFade;
 
         [Tooltip("The user (for enabling isLocal)")]
-        public VRT.Pilots.Common.PlayerNetworkController player;
+        public VRT.Pilots.Common.PlayerNetworkControllerBase player;
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
 

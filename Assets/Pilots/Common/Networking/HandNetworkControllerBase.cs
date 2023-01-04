@@ -49,17 +49,17 @@ namespace VRT.Pilots.Common
 			set => throw new System.NotImplementedException();
 		}
 
-		protected PlayerNetworkController _Player;
+		protected PlayerNetworkControllerBase _Player;
 
 		public void Awake()
 		{
-			_Player = GetComponentInParent<PlayerNetworkController>();
+			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
 		}
 
 		protected virtual void Start()
 		{
-			_Player = GetComponentInParent<PlayerNetworkController>();
+			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
 
 			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
 		}
