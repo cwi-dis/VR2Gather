@@ -3,23 +3,23 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class NetworkTransformSyncBehaviour : NetworkIdBehaviour
+	public class RigidBodyNetworkController : NetworkIdBehaviour
 	{
-		public class NetworkTransformSyncData : BaseMessage
+		public class RigidBodyData : BaseMessage
 		{
 			public string NetworkBehaviourId;
 			public Vector3 Position;
 			public Quaternion Rotation;
 		}
 
-		public enum NetworkTransformSyncMode
+		public enum RigidBodySyncMode
 		{
 			ServerOnly, //Only the server can sync this transform
 			Any //Potentially any user could sync this transform
 		}
 
 		[Tooltip("Sync mode determines if DoSync can only be called by the Master or if any user is allowed to trigger a sync")]
-		public NetworkTransformSyncMode Mode = NetworkTransformSyncMode.ServerOnly;
+		public RigidBodySyncMode Mode = RigidBodySyncMode.ServerOnly;
 		[Tooltip("Automatically sync the transform at the rate indicated by UpdateFrequency")]
 		public bool SyncAutomatically = true;
 		[Tooltip("Number of times to sync per second when SyncAutomatically == true")]
@@ -30,28 +30,28 @@ namespace VRT.Pilots.Common
 		private float _LastUpdateTime; //Last time we sent an update/sync
 		private float _LastReceiveTime; //Last time we received an update/sync
 
-		private NetworkTransformSyncData _PreviousReceivedData = null;
-		private NetworkTransformSyncData _LastReceivedData = null;
+		private RigidBodyData _PreviousReceivedData = null;
+		private RigidBodyData _LastReceivedData = null;
 
 		public void Awake()
 		{
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTransformSyncData, typeof(NetworkTransformSyncData));
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
 		}
 		void Start()
 		{
 			//prime the valus with some logical current data. 
-			_PreviousReceivedData = new NetworkTransformSyncData() { Position = transform.position, Rotation = transform.rotation };
+			_PreviousReceivedData = new RigidBodyData() { Position = transform.position, Rotation = transform.rotation };
 			_LastReceivedData = _PreviousReceivedData;
 		}
 
 		public void OnEnable()
 		{
-			OrchestratorController.Instance.Subscribe<NetworkTransformSyncData>(OnNetworkTransformSyncData);
+			OrchestratorController.Instance.Subscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		public void OnDisable()
 		{
-			OrchestratorController.Instance.Unsubscribe<NetworkTransformSyncData>(OnNetworkTransformSyncData);
+			OrchestratorController.Instance.Unsubscribe<RigidBodyData>(OnRigidBodyData);
 		}
 
 		private void Update()
@@ -75,13 +75,13 @@ namespace VRT.Pilots.Common
 
 		public void DoSync()
 		{
-			if (OrchestratorController.Instance.UserIsMaster && Mode == NetworkTransformSyncMode.ServerOnly)
+			if (OrchestratorController.Instance.UserIsMaster && Mode == RigidBodySyncMode.ServerOnly)
 			{
 				_LastUpdateTime = Time.realtimeSinceStartup;
 
 				OrchestratorController.Instance.SendTypeEventToAll
 					(
-						new NetworkTransformSyncData
+						new RigidBodyData
 						{
 							NetworkBehaviourId = NetworkId,
 							Position = transform.position,
@@ -89,11 +89,11 @@ namespace VRT.Pilots.Common
 						}
 					);
 			}
-			else if (Mode == NetworkTransformSyncMode.Any)
+			else if (Mode == RigidBodySyncMode.Any)
 			{
 				_LastUpdateTime = Time.realtimeSinceStartup;
 
-				var data = new NetworkTransformSyncData
+				var data = new RigidBodyData
 				{
 					NetworkBehaviourId = NetworkId,
 					Position = transform.position,
@@ -115,11 +115,11 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		void OnNetworkTransformSyncData(NetworkTransformSyncData data)
+		void OnRigidBodyData(RigidBodyData data)
 		{
 			if (data.NetworkBehaviourId == NetworkId && data.SenderId != OrchestratorController.Instance.SelfUser.userId)
 			{
-				if (SyncAutomatically && Mode == NetworkTransformSyncMode.Any)
+				if (SyncAutomatically && Mode == RigidBodySyncMode.Any)
 				{
 					Debug.LogWarning($"[NetworkTransformSyncBehaviour] {name} is set to sync automatically, but also receives sync data from another client! This is indicative of a bug!");
 				}
