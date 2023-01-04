@@ -34,6 +34,7 @@ namespace VRT.Pilots.Common
         [Tooltip("The Input System Action that will be used to reset view origin.")]
         [SerializeField] InputActionProperty m_resetOriginAction;
 
+        public bool debugLogging = false;
 
         // Start is called before the first frame update
         void Start()
@@ -67,7 +68,7 @@ namespace VRT.Pilots.Common
         {
             if (BeginLocomotion())
             {
-                Debug.Log($"ViewAdjust: reset origin");
+                if (debugLogging) Debug.Log($"ViewAdjust: reset origin");
                 float rotationY = playerCamera.transform.rotation.eulerAngles.y - player.transform.rotation.eulerAngles.y;
                 cameraOffset.transform.Rotate(0, -rotationY, 0);
                 //Vector3 moveXZ = playerCamera.transform.position - cameraOffset.transform.position;

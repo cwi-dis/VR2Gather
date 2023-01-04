@@ -92,7 +92,6 @@ namespace VRT.Pilots.Common
         {
             List<InputDevice> deviceList = new List<InputDevice>();
             InputDevices.GetDevices(deviceList);
-            Debug.Log($"xxxjack EnumerateDevices: {deviceList.Count} devices");
             foreach(var inDev in deviceList)
             {
                 if (inDev.isValid && inDev.name.Contains("Oculus Touch Controller")) return ControllerType.Oculus;
@@ -102,7 +101,6 @@ namespace VRT.Pilots.Common
 
         void OnDeviceChanged(InputDevice value)
         {
-            Debug.Log($"xxxjack OnDeviceConnected: device: {value}");
             ControllerType curController = FindAttachedController();
             FixRepresentation(curController);
         }

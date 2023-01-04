@@ -33,7 +33,6 @@ public class NegateProcessor : InputProcessor<float>
     {
         string name = "no control";
         if (control != null) name = control.name;
-        Debug.Log($"Negate({name}): {value}->{1 - value}");
         return 1-value;
     }
 }

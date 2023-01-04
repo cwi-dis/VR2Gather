@@ -8,7 +8,8 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerSelf : PlayerControllerBase
     {
-   
+        public bool debugTransform = false;
+
         public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
             if (!_isLocalPlayer)
@@ -29,7 +30,7 @@ namespace VRT.Pilots.Common
             }
             Vector3 pos = new Vector3(PlayerPrefs.GetFloat("cam_pos_x", 0), PlayerPrefs.GetFloat("cam_pos_y", 0), PlayerPrefs.GetFloat("cam_pos_z", 0));
             Vector3 rot = new Vector3(PlayerPrefs.GetFloat("cam_rot_x", 0), PlayerPrefs.GetFloat("cam_rot_y", 0), PlayerPrefs.GetFloat("cam_rot_z", 0));
-            Debug.Log($"{Name()}: loaded self-camera pos={pos}, rot={rot}");
+            if (debugTransform) Debug.Log($"{Name()}: loaded self-camera pos={pos}, rot={rot}");
             cameraOffset.localPosition = pos;
             cameraOffset.localRotation = Quaternion.Euler(rot);
         }
@@ -42,7 +43,7 @@ namespace VRT.Pilots.Common
             }
             Vector3 pos = cameraOffset.localPosition;
             Vector3 rot = cameraOffset.localRotation.eulerAngles;
-            Debug.Log($"{Name()}: Saving self-camera pos={pos}, rot={rot}");
+            if (debugTransform) Debug.Log($"{Name()}: Saving self-camera pos={pos}, rot={rot}");
             PlayerPrefs.SetFloat("cam_pos_x", pos.x);
             PlayerPrefs.SetFloat("cam_pos_y", pos.y);
             PlayerPrefs.SetFloat("cam_pos_z", pos.z);

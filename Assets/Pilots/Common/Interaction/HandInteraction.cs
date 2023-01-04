@@ -67,7 +67,6 @@ namespace VRT.Pilots.Common
 
 		void FixObjectStates()
         {
-			Debug.Log($"HandInteraction: state={currentState}");
 			hand.state = currentState;
 			switch (currentState)
 			{

@@ -51,7 +51,6 @@ namespace VRT.Pilots.Common
             if (m_ShowHideAction.action.WasPressedThisFrame())
             {
                 canvas.SetActive(!canvas.activeSelf);
-                Debug.Log($"xxxjack toggle HUD, now {canvas.activeSelf}");
                 if (canvas.activeSelf)
                 {
                     PilotController.Instance.DisableDirectInteraction();
@@ -83,7 +82,6 @@ namespace VRT.Pilots.Common
 
         public void FillError(string title, string message)
         {
-            Debug.Log($"FillError title={title} message={message}");
             var popupGO = Instantiate(errorPrefab, MessagesGO.transform);
             popupGO.SetActive(true);
             ErrorPopup errorPopup = popupGO.GetComponent<ErrorPopup>();
