@@ -29,14 +29,14 @@ namespace VRT.Pilots.Common
 		public void Awake()
 		{
 			DontDestroyOnLoad(this);
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkController.HandGrabEvent));
-			OrchestratorController.Instance.Subscribe<HandNetworkController.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkControllerBase.HandGrabEvent));
+			OrchestratorController.Instance.Subscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public void OnDisable()
 		{
             if(!this.gameObject.scene.isLoaded) return;
-			OrchestratorController.Instance.Unsubscribe<HandNetworkController.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public static void RegisterGrabbable(Grabbable grabbable)
@@ -64,18 +64,18 @@ namespace VRT.Pilots.Common
 			_GrabbableObjects.Remove(grabbable.NetworkId);
 		}
 
-		private void OnHandGrabEvent(HandNetworkController.HandGrabEvent handGrabEvent)
+		private void OnHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
 		{
 			HandleHandGrabEvent(handGrabEvent);
 		}
 
-		public void HandleHandGrabEvent(HandNetworkController.HandGrabEvent handGrabEvent)
+		public void HandleHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
 		{
 			Grabbable grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
             PlayerNetworkController player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
-			HandNetworkController handController = player.GetHandController(handGrabEvent.Handedness);
+			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
 
-			if (handGrabEvent.EventType == HandNetworkController.HandInteractionEventType.Grab)
+			if (handGrabEvent.EventType == HandNetworkControllerBase.HandInteractionEventType.Grab)
 			{
 				// xxxjack grabbable.OnGrab(handController);
 			}

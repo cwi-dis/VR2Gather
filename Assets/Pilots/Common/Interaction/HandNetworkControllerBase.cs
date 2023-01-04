@@ -4,7 +4,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class HandNetworkController : MonoBehaviour
+	public class HandNetworkControllerBase : MonoBehaviour
 	{
 		ActionBasedController controller;
 		public Hand hand;
@@ -57,7 +57,7 @@ namespace VRT.Pilots.Common
 		public void Awake()
 		{
 			_Player = GetComponentInParent<PlayerNetworkController>();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkController.HandControllerData));
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
 		}
 
 		void Start()

@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 namespace VRT.Pilots.Common
 {
-	using HandState = HandNetworkController.HandState;
+	using HandState = HandNetworkControllerBase.HandState;
 
 	public class HandInteraction : MonoBehaviour
 	{
@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
 		public Hand hand;
 		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
-		[SerializeField] private HandNetworkController handController;
+		[SerializeField] private HandNetworkControllerBase handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
 		[SerializeField] private PlayerNetworkController playerNetworkController;
 		
@@ -51,7 +51,7 @@ namespace VRT.Pilots.Common
 			
 			if (handGO == null) handGO = gameObject;
 			if (hand == null) hand = handGO.GetComponent<Hand>();
-			if (handController == null) handController = handGO.GetComponent<HandNetworkController>();
+			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerBase>();
 			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkController>();
 			if (handController == null)
             {
