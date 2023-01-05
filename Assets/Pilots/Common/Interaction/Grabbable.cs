@@ -81,6 +81,7 @@ namespace VRT.Pilots.Common
 
 		public void OnGrab()
 		{
+			Debug.Log($"Grabbable({name}): grabbed");
 			isGrabbed = true;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
@@ -88,6 +89,7 @@ namespace VRT.Pilots.Common
 
 		public void OnRelease()
 		{
+			Debug.Log($"Grabbable({name}): released");
 			isGrabbed = false;
 			SendSyncMessage();
 			Rigidbody.isKinematic = false;
