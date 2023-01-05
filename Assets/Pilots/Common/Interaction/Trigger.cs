@@ -25,17 +25,27 @@ namespace VRT.Pilots.Common
 			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
 				string layer = LayerMask.LayerToName(other.gameObject.layer);
+				Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer} name {layer}");
+
 				if (layer != "TouchCollider")
 				{
 					return;
 				}
 
-				Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer}");
 
-				networkTrigger.Trigger();
+				OnActivate();
 
 				_ButtonLastTriggered = Time.realtimeSinceStartup;
 			}
+		}
+
+		/// <summary>
+		/// Called from Interactable Activate event.
+		/// </summary>
+        public void OnActivate()
+        {
+			Debug.Log($"Trigger({name}): OnActivate()");
+			networkTrigger.Trigger();
 		}
 	}
 }

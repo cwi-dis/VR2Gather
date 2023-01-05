@@ -202,7 +202,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2236286903219482027}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.02, y: 0.01, z: 0.02}
@@ -256,9 +256,9 @@ MonoBehaviour:
   m_Activated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8220838697276831741}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.NetworkTrigger, Pilots
-        m_MethodName: Trigger
+      - m_Target: {fileID: 5665429939619932236}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.Trigger, Pilots
+        m_MethodName: OnActivate
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
