@@ -118,11 +118,11 @@ namespace VRT.Pilots.Common
 		{
 			if (handedness == HandNetworkControllerBase.Handedness.Left)
 			{
-				return LeftHandTransform.GetComponent<HandNetworkControllerBase>();
+				return LeftHandTransform.GetComponentInParent<HandNetworkControllerBase>();
 			}
 			else
 			{
-				return RightHandTransform.GetComponent<HandNetworkControllerBase>();
+				return RightHandTransform.GetComponentInParent<HandNetworkControllerBase>();
 			}
 		}
 	}

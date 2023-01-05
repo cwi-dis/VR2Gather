@@ -74,7 +74,11 @@ namespace VRT.Pilots.Common
 			Grabbable grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
             PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
 			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
-
+			if (handController == null)
+            {
+				Debug.LogError($"GrabbableObjectManager: {handGrabEvent.Handedness} hand network controller not found");
+				return;
+            }
 			if (handGrabEvent.EventType == HandNetworkControllerBase.HandInteractionEventType.Grab)
 			{
 				handController.OnNetworkGrab(grabbable);
