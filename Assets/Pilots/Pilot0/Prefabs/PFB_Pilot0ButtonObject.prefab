@@ -170,8 +170,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2236286903219482024}
   - component: {fileID: 2236286903219482025}
-  - component: {fileID: 2604186837437614481}
   - component: {fileID: 6659319692764679859}
+  - component: {fileID: 5665429939619932236}
   m_Layer: 28
   m_Name: Button
   m_TagString: Untagged
@@ -207,20 +207,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.02, y: 0.01, z: 0.02}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2604186837437614481
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2236286903219482027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1393eba2e52f03747a4d971214480850, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Pilot0ButtonTrigger: {fileID: 8220838697276831741}
-  TimeOutBetweenTriggers: 1
 --- !u!114 &6659319692764679859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -312,6 +298,20 @@ MonoBehaviour:
   m_OnDeactivate:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5665429939619932236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2236286903219482027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 628c220ef9f89db4198be1b5df1ee33a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  networkTrigger: {fileID: 8220838697276831741}
+  TimeOutBetweenTriggers: 1
 --- !u!1 &2986471831455026930
 GameObject:
   m_ObjectHideFlags: 0

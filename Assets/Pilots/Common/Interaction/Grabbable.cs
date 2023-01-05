@@ -4,7 +4,16 @@ using VRT.Orchestrator.Wrapping;
 namespace VRT.Pilots.Common
 {
 	/// <summary>
-	/// Component to synchronize position/rotation of objects that can move (mainly grabbables).
+	/// Component to implement VR2Gather grabbable object.
+	/// Works with ray interaction and direct interaction.
+	/// The interactors should be set up to call the OnGrab() and OnRelease() methods of this object,
+	/// when the object has entered/exited select mode.
+	/// 
+	/// The object requires a Rigidbody, and that seems to be enough both for direct and ray-based interaction.
+	/// 
+	/// While the object is held it will send out messages to synchronize its position and orientation
+	/// to other instances of the VR2Gather experience.
+	/// While the object is held it will be kinematic, reverting to gravity when released.
 	/// 
 	/// </summary>
 	public class Grabbable : NetworkIdBehaviour
@@ -69,6 +78,7 @@ namespace VRT.Pilots.Common
 						Rotation = Rigidbody.transform.rotation
 					});
 		}
+
 		public void OnGrab()
 		{
 			isGrabbed = true;
