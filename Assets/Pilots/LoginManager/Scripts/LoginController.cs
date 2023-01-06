@@ -25,8 +25,9 @@ namespace VRT.Pilots.LoginManager
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
-        private void Start()
+        public override void Start()
         {
+            // Do not call base.Start(), we don't want to fade in for the login scene.
             Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
             {
                 userId = "no-userid",
