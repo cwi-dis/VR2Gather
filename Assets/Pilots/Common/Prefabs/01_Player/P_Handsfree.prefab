@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4288606396186382934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2635380786451953957}
+  - component: {fileID: 5963833040833714273}
+  m_Layer: 0
+  m_Name: P_Handsfree
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2635380786451953957
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4288606396186382934}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5963833040833714273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4288606396186382934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4b94274e62d743d3909f2a73f8e942b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  castingCursorTexture: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87,
+    type: 3}
+  castingCursorHitTexture: {fileID: 2800000, guid: e476c99fe4722419fa64226e8f4453e4,
+    type: 3}
+  maxDistance: Infinity
+  m_pointingAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Pointing
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 9f05c35f-941a-4d1c-b6e9-4fce5729982b
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4492728866624262683, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  m_activateAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Activate
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 40945e80-94bb-4669-b103-5ac0d213f69f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -665648265273313855, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}

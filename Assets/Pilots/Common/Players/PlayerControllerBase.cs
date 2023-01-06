@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Reflection;
+using TMPro;
 using VRT.Core;
 using System;
 using VRT.UserRepresentation.Voice;
@@ -7,12 +8,14 @@ using VRT.UserRepresentation.Voice;
 namespace VRT.Pilots.Common
 {
 
-    public class PlayerControllerBase : MonoBehaviour
+    abstract public class PlayerControllerBase : MonoBehaviour
     {
         [Tooltip("Main camera, if this is the local player and not using a holodisplay")]
         [SerializeField] protected Camera cam;
         [Tooltip("Main camera if this is the local user and we are using a holo display")]
         [SerializeField] protected GameObject holoCamera;
+        [Tooltip("CameraOffset of camera")]
+        [SerializeField] protected Transform cameraOffset;
         [Tooltip("Avatar representation of this user")]
         [SerializeField] protected GameObject avatar;
         [Tooltip("Video webcam avator representation of this user")]
@@ -21,10 +24,12 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject pointcloud;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
+        [Tooltip("User name is filled into this TMPro field")]
+        [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
-        [SerializeField] protected bool isLocalPlayer;
+        [DisableEditing] [SerializeField] protected bool isLocalPlayer;
         [Tooltip("True if this user has a visual representation")]
-        private bool _isVisible;
+        [DisableEditing] [SerializeField] private bool _isVisible;
         public bool isVisible
         {
             get => _isVisible;
@@ -52,15 +57,17 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        //Looks like this could very well be internal to the PlayerManager? 
-        public void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors);
+        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
         {
-            isLocalPlayer = _isLocalPlayer;
-
+            
             userName = user.userName;
+            if (userNameText != null)
+            {
+                userNameText.text = userName;
+            }
 
-            setupCamera();
-          
+            
             SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
 
 
@@ -118,19 +125,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__PCC_CWI_: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);
-                    Transform cameraTransform = null;
-                    if (isLocalPlayer)
-                    {
-                        cameraTransform = getCameraTransform();
-                    }
-                    if (cameraTransform)
-                    {
-                        Vector3 pos = new Vector3(PlayerPrefs.GetFloat("pcs_pos_x", 0), PlayerPrefs.GetFloat("pcs_pos_y", 0), PlayerPrefs.GetFloat("pcs_pos_z", 0));
-                        Vector3 rot = new Vector3(PlayerPrefs.GetFloat("pcs_rot_x", 0), PlayerPrefs.GetFloat("pcs_rot_y", 0), PlayerPrefs.GetFloat("pcs_rot_z", 0));
-                        Debug.Log($"{Name()}: self-camera pos={pos}, rot={rot}");
-                        cam.gameObject.transform.parent.localPosition = pos;
-                        cam.gameObject.transform.parent.localRotation = Quaternion.Euler(rot);
-                    }
+           
                     userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
@@ -184,132 +179,12 @@ namespace VRT.Pilots.Common
                 voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
             }
         }
-        //
-        // Enable camera (or camera-like object) and input handling.
-        // If not the local player most things will be disabled.
-        // If disableInput is true the input handling will be disabled (probably because we are in the calibration
-        // scene or some other place where input is handled differently than through the PFB_Player).
-        //
-        public void setupCamera(bool disableInput = false)
-        {
-            if (!isLocalPlayer) return;
-            // Unity has two types of null. We need the C# null.
-            if (holoCamera == null) holoCamera = null;
-            // Enable either the normal camera or the holodisplay camera for the local user.
-            bool useLocalHoloDisplay = false;
-            bool useLocalNormalCam = !disableInput;
-            if (useLocalNormalCam)
-            {
-                cam.gameObject.SetActive(true);
-                holoCamera?.SetActive(false);
-            }
-            else if (useLocalHoloDisplay)
-            {
-                cam.gameObject.SetActive(false);
-                holoCamera.SetActive(true);
-            }
-            else
-            {
-                cam?.gameObject.SetActive(false);
-                holoCamera?.SetActive(false);
-            }
-        }
+    
 
-        public Transform getCameraTransform()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetCameraTransform called but isLocalPlayer is false");
-                return null;
-            }
-            if (holoCamera != null && holoCamera.activeSelf)
-            {
-                return holoCamera.transform;
-            }
-            else
-            {
-                return cam.transform;
-            }
-        }
-        /// <summary>
-        /// Get position in world coordinates. Should only be called on receiving pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetPosition()
-        {
-            if (isLocalPlayer)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetPosition called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.position;
-        }
+    
 
-        /// <summary>
-        /// Get rotation in world coordinates. Should only be called on receiving pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public Vector3 GetRotation()
-        {
-            if (isLocalPlayer)
-            {
-                Debug.LogError("Programmer error: BasePipeline: GetRotation called for pipeline that is a source");
-                return new Vector3();
-            }
-            return transform.rotation * Vector3.forward;
-        }
+      
 
-        /// <summary>
-        /// Return position and rotation of this user.  Should only be called on sending pipelines.
-        /// </summary>
-        /// <returns></returns>
-        virtual public ViewerInformation GetViewerInformation()
-        {
-            if (!isLocalPlayer)
-            {
-                Debug.LogError($"Programmer error: {Name()}: GetViewerInformation called for pipeline that is not a source");
-                return new ViewerInformation();
-            }
-            // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
-            Transform cameraTransform = player?.getCameraTransform();
-            if (cameraTransform == null)
-            {
-                Debug.LogError($"Programmer error: {Name()}: no Camera object for self user");
-                return new ViewerInformation();
-            }
-            Vector3 position = cameraTransform.position;
-            Vector3 forward = cameraTransform.rotation * Vector3.forward;
-            return new ViewerInformation()
-            {
-                position = position,
-                gazeForwardDirection = forward
-            };
-        }
-
-        // Update is called once per frame
-        System.DateTime lastUpdateTime;
-        private void Update()
-        {
-            if (debugTiling)
-            {
-                // Debugging: print position/orientation of camera and others every 10 seconds.
-                if (lastUpdateTime == null || System.DateTime.Now > lastUpdateTime + System.TimeSpan.FromSeconds(10))
-                {
-                    lastUpdateTime = System.DateTime.Now;
-                    if (isLocalPlayer)
-                    {
-                        ViewerInformation vi = GetViewerInformation();
-                        Debug.Log($"{Name()}: Tiling: self: pos=({vi.position.x}, {vi.position.y}, {vi.position.z}), lookat=({vi.gazeForwardDirection.x}, {vi.gazeForwardDirection.y}, {vi.gazeForwardDirection.z})");
-                    }
-                    else
-                    {
-                        Vector3 position = GetPosition();
-                        Vector3 rotation = GetRotation();
-                        Debug.Log($"{Name()}: Tiling: other: pos=({position.x}, {position.y}, {position.z}), rotation=({rotation.x}, {rotation.y}, {rotation.z})");
-                    }
-                }
-            }
-        }
+    
     }
 }
