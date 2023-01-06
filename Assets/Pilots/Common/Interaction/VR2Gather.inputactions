@@ -2525,6 +2525,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Emulation",
+            "id": "f0b01c8b-86b2-4bbb-9b78-f8615a0b9241",
+            "actions": [
+                {
+                    "name": "Enable Mouse Ray",
+                    "type": "Button",
+                    "id": "99c2f55c-927b-45a9-bc4f-d4a10e5894a7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Activate Mouse Ray",
+                    "type": "Button",
+                    "id": "01747c65-f929-44f1-ac17-71d0ae74c9f8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e5e01fe6-6c29-4ffe-aeae-5f60fe355bc4",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Enable Mouse Ray",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0d2bbead-99e0-4762-b256-f96ba85d784c",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Activate Mouse Ray",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

@@ -21,18 +21,24 @@ namespace VRT.Pilots.Common
         public Texture2D castingCursorHitTexture;
         [Tooltip("Maximum distance of touchable objects")]
         public float maxDistance = Mathf.Infinity;
-
+        [Tooltip("Camera (default: main camera)")]
+        Camera cam;
         [Tooltip("The Input System Action that determines whether we are pointing (if > 0.5)")]
         [SerializeField] InputActionProperty m_pointingAction;
         [Tooltip("The Input System Action that activates when we are pointing")]
         [SerializeField] InputActionProperty m_activateAction;
 
-        [DisableEditing] bool pointing;
+        [SerializeField][DisableEditing] bool pointing;
+        [SerializeField][DisableEditing] bool hitting;
+
+        private Texture2D curCursor;
+        private Texture2D wantedCursor;
+      
 
         // Start is called before the first frame update
         void Start()
         {
-
+            if (cam == null) cam = Camera.main;
         }
 
         // Update is called once per frame
@@ -43,6 +49,32 @@ namespace VRT.Pilots.Common
             {
                 EnablePointing(pointingNow);
             }
+            if (pointing) CheckRay();
+            FixCursor();
+        }
+
+        private void CheckRay()
+        {
+            Vector2 screenPos = Mouse.current.position.ReadValue();
+            int layerMask = LayerMask.GetMask("TouchableObject");
+            Ray ray = cam.ScreenPointToRay(screenPos);
+            RaycastHit hit = new RaycastHit();
+            hitting = Physics.Raycast(ray, out hit, maxDistance, layerMask);
+            wantedCursor = hitting ? castingCursorHitTexture : castingCursorTexture;
+            if (hitting)
+            {
+                if (m_activateAction.action.IsPressed())
+                {
+                    var hitGO = hit.collider.gameObject;
+                    Debug.Log($"NoHandInteraction: hitting={hitGO}");
+                    var hitTrigger = hitGO.GetComponent<Trigger>();
+                    if (hitTrigger)
+                    {
+                        hitTrigger.OnActivate();
+                    }
+
+                }
+            }
         }
 
         private void EnablePointing(bool pointingNow)
@@ -51,13 +83,21 @@ namespace VRT.Pilots.Common
             Debug.Log($"NoHandInteraction: pointing={pointing}");
             if (pointing)
             {
-                // Enable ray
-                // Fix mouse cursor
+                wantedCursor = castingCursorTexture;
+
             }
             else
             {
-                // Disable ray
-                // Fix mouse cursor
+                wantedCursor = null;
+            }
+        }
+
+        private void FixCursor()
+        {
+            if (curCursor != wantedCursor)
+            {
+                curCursor = wantedCursor;
+                Cursor.SetCursor(curCursor, Vector2.zero, CursorMode.Auto);
             }
         }
     }

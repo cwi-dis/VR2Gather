@@ -44,3 +44,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4b94274e62d743d3909f2a73f8e942b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  castingCursorTexture: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87,
+    type: 3}
+  castingCursorHitTexture: {fileID: 2800000, guid: e476c99fe4722419fa64226e8f4453e4,
+    type: 3}
+  maxDistance: Infinity
+  m_pointingAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Pointing
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 9f05c35f-941a-4d1c-b6e9-4fce5729982b
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4492728866624262683, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  m_activateAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Activate
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 40945e80-94bb-4669-b103-5ac0d213f69f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -665648265273313855, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
