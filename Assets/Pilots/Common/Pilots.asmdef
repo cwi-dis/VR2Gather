@@ -11,7 +11,7 @@
         "Unity.TextMeshPro",
         "Unity.InputSystem",
         "Cwipc",
-        "VRTStatistics"
+        "Unity.XR.Interaction.Toolkit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
