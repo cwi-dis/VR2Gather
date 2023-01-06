@@ -60,7 +60,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             // xxxjack currently returns camera viedw angle (as the name implies)
             // but maybe camera position is better. Or both.
-            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
+            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
                 Debug.LogError($"{Name()}: Camera not found");

@@ -161,6 +161,16 @@ namespace VRT.Orchestrator.Wrapping
         public Action<UserEvent> OnUserEventReceivedEvent;
 
         // Orchestrator Accessors
+        public void LocalUserSessionForDevelopmentTests()
+        {
+            userIsMaster = true;
+            mySession = new Session()
+            {
+                scenarioId = "LocalDevelopmentTest",
+                sessionId = "0000"
+            };
+        }
+
         public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
@@ -452,6 +462,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (status.Error != 0) {
+                Debug.Log($"[OrchestratorController][OnGetSessionInfoResponse] clear session, status={status}");
                 mySession = null;
                 OnErrorEvent?.Invoke(status);
                 return;
@@ -542,7 +553,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully leaved.");
+            Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully left.");
 
             // success
             myScenario = null;
@@ -854,7 +865,7 @@ namespace VRT.Orchestrator.Wrapping
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
 #if VRT_WITH_STATS
-                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
 #endif
                 if (Config.Instance.AutoStart.autoLeaveAfter > 0)
                 {

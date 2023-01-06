@@ -99,7 +99,7 @@ namespace VRT.Transport.SocketIO
                     Array.Copy(pPacket.dataStreamPacket, hdr_timestamp, sizeof(long));
                     Timestamp timestamp = BitConverter.ToInt64(hdr_timestamp, 0);
                     BaseMemoryChunk chunk = new NativeMemoryChunk(pPacket.dataStreamPacket.Length - sizeof(long));
-                    chunk.info.timestamp = timestamp;
+                    chunk.metadata.timestamp = timestamp;
                     System.Runtime.InteropServices.Marshal.Copy(pPacket.dataStreamPacket, sizeof(long), chunk.pointer, chunk.length);
                     bool didDrop = !descriptors[i].outQueue.Enqueue(chunk);
                     if (didDrop)

@@ -54,16 +54,16 @@ namespace VRT.Pilots.Common
 		public bool AutoSpawnOnLocation = false;
 		[Header("Introspection/debugging")]
 		[Tooltip("Debugging: the local player")]
-		public GameObject localPlayer;
+		[DisableEditing] public GameObject localPlayer;
 		[Tooltip("All players")]
-		public List<PlayerNetworkController> AllUsers;
+		[DisableEditing] public List<PlayerNetworkControllerBase> AllUsers;
 
-		public Dictionary<string, PlayerNetworkController> Players;
+		public Dictionary<string, PlayerNetworkControllerBase> Players;
 		private Dictionary<string, PlayerLocation> _PlayerIdToLocation;
 		private Dictionary<PlayerLocation, string> _LocationToPlayerId;
 
-		public Dictionary<string, PlayerNetworkController> Spectators;
-		public Dictionary<string, PlayerNetworkController> Voyeurs;
+		public Dictionary<string, PlayerNetworkControllerBase> Spectators;
+		public Dictionary<string, PlayerNetworkControllerBase> Voyeurs;
 
 		private static SessionPlayersManager _Instance;
 
@@ -84,13 +84,13 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(PlayerLocationChangeRequest));
-			AllUsers = new List<PlayerNetworkController>();
-			Players = new Dictionary<string, PlayerNetworkController>();
+			AllUsers = new List<PlayerNetworkControllerBase>();
+			Players = new Dictionary<string, PlayerNetworkControllerBase>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
-			Spectators = new Dictionary<string, PlayerNetworkController>();
-			Voyeurs = new Dictionary<string, PlayerNetworkController>();
+			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
+			Voyeurs = new Dictionary<string, PlayerNetworkControllerBase>();
 
 			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
 
@@ -144,6 +144,7 @@ namespace VRT.Pilots.Common
                 player.SetActive(true);
 				player.name = $"Player_{user.userId}";
 
+
 #if VRT_WITH_STATS
                 Statistics.Output("SessionPlayerManager", $"self={isLocalPlayer}, userId={user.userId}, userName={user.userName}");
 #endif
@@ -151,7 +152,7 @@ namespace VRT.Pilots.Common
 				PlayerControllerBase playerController = player.GetComponent<PlayerControllerBase>();
                 playerController.SetUpPlayerController(isLocalPlayer, user, configDistributors);
 
-				PlayerNetworkController networkPlayer = player.GetComponent<PlayerNetworkController>();
+				PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
                 networkPlayer.SetupPlayerNetworkControllerPlayer(isLocalPlayer, user.userId);
 
 
@@ -175,7 +176,7 @@ namespace VRT.Pilots.Common
                     if (me.userId == user.userId)
                     {
                         Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
-                        playerController.getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
+                        ((PlayerControllerSelf)playerController).getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
                     }
 #endif
                 }
@@ -198,21 +199,21 @@ namespace VRT.Pilots.Common
 
 		private void OnUserLeft(string userId)
 		{
-			if (Players.TryGetValue(userId, out PlayerNetworkController playerToRemove))
+			if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
 			{
 				RemovePlayer(playerToRemove);
 			}
-			if (Spectators.TryGetValue(userId, out PlayerNetworkController spectatorToRemove))
+			if (Spectators.TryGetValue(userId, out PlayerNetworkControllerBase spectatorToRemove))
 			{
 				RemoveSpectator(spectatorToRemove);
 			}
-			if (Voyeurs.TryGetValue(userId, out PlayerNetworkController voyeurToRemove))
+			if (Voyeurs.TryGetValue(userId, out PlayerNetworkControllerBase voyeurToRemove))
 			{
 				RemoveVoyeur(voyeurToRemove);
 			}
 		}
 
-		private void AddPlayer(PlayerNetworkController player)
+		private void AddPlayer(PlayerNetworkControllerBase player)
 		{
 			Players.Add(player.UserId, player);
 
@@ -237,7 +238,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-        private void AddSpectator(PlayerNetworkController player)
+        private void AddSpectator(PlayerNetworkControllerBase player)
         {
             player.transform.SetParent(NonPlayersLocation);
             player.transform.position = NonPlayersLocation.position;
@@ -248,7 +249,7 @@ namespace VRT.Pilots.Common
 
         }
 
-        private void AddVoyeur(PlayerNetworkController player)
+        private void AddVoyeur(PlayerNetworkControllerBase player)
         {
             player.transform.SetParent(NonPlayersLocation);
             player.transform.position = NonPlayersLocation.position;
@@ -257,7 +258,7 @@ namespace VRT.Pilots.Common
             Voyeurs.Add(player.UserId, player);
         }
 
-        private void RemovePlayer(PlayerNetworkController player)
+        private void RemovePlayer(PlayerNetworkControllerBase player)
 		{
 			Players.Remove(player.UserId);
 
@@ -271,13 +272,13 @@ namespace VRT.Pilots.Common
 			Destroy(player.gameObject);
 		}
 
-		private void RemoveSpectator(PlayerNetworkController player)
+		private void RemoveSpectator(PlayerNetworkControllerBase player)
 		{
 			Spectators.Remove(player.UserId);
 			Destroy(player.gameObject);
 		}
 
-		private void RemoveVoyeur(PlayerNetworkController player)
+		private void RemoveVoyeur(PlayerNetworkControllerBase player)
 		{
 			Voyeurs.Remove(player.UserId);
 			Destroy(player.gameObject);
@@ -321,7 +322,7 @@ namespace VRT.Pilots.Common
 				string playerId = playerLocationData.PlayerIds[i];
 				if (Players.ContainsKey(playerId))
 				{
-                    PlayerNetworkController player = Players[playerId];
+                    PlayerNetworkControllerBase player = Players[playerId];
 					PlayerLocation location = PlayerLocations[playerLocationData.LocationIds[i]];
 
 					SetPlayerToLocation(player, location);
@@ -338,7 +339,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void RequestLocationChangeForPlayer(string locationNetworkId, PlayerNetworkController player)
+		public void RequestLocationChangeForPlayer(string locationNetworkId, PlayerNetworkControllerBase player)
 		{
 			Debug.Log($"[SessionPlayersManager] Requesting location {locationNetworkId} for player {player.UserId}.");
 
@@ -405,7 +406,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		private void SetPlayerToLocation(PlayerNetworkController player, PlayerLocation location)
+		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
 		{
 			Debug.Log($"[SessionPlayersManager] Set player {player.UserId} to location {location.NetworkId}.");
 

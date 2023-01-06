@@ -64,7 +64,7 @@ namespace VRT.UserRepresentation.Voice
             len = decoder.Decode(buffer, 0, mcIn.length, temporalBuffer, 0);
 
             FloatMemoryChunk mcOut = new FloatMemoryChunk(len);
-            mcOut.info.timestamp = mcIn.info.timestamp;
+            mcOut.metadata = mcIn.metadata;
             for (int i = 0; i < len; ++i)
             {
                 mcOut.buffer[i] = temporalBuffer[i];

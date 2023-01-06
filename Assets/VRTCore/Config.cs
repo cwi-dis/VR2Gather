@@ -208,9 +208,6 @@ namespace VRT.Core
                     {
                         Application.targetFrameRate = _Instance.targetFrameRate;
                         Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
-                    } else
-                    {
-                        Debug.Log($"VRTCore.Config: Application.targetFrameRate unchanged, is {Application.targetFrameRate}");
                     }
                     // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
