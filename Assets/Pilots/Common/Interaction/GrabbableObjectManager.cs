@@ -29,14 +29,14 @@ namespace VRT.Pilots.Common
 		public void Awake()
 		{
 			DontDestroyOnLoad(this);
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandController.HandGrabEvent));
-			OrchestratorController.Instance.Subscribe<HandController.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandGrabEvent, typeof(HandNetworkControllerBase.HandGrabEvent));
+			OrchestratorController.Instance.Subscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public void OnDisable()
 		{
             if(!this.gameObject.scene.isLoaded) return;
-			OrchestratorController.Instance.Unsubscribe<HandController.HandGrabEvent>(OnHandGrabEvent);
+			OrchestratorController.Instance.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
 		public static void RegisterGrabbable(Grabbable grabbable)
@@ -52,6 +52,10 @@ namespace VRT.Pilots.Common
 
 		private void RegisterGrabbableInternal(Grabbable grabbable)
 		{
+			if (_GrabbableObjects.ContainsKey(grabbable.NetworkId) && _GrabbableObjects[grabbable.NetworkId] != grabbable)
+            {
+				Debug.LogWarning($"GrabbableObjectManager: RegisterGrabbable: NetworkID={grabbable.NetworkId} registered to Grabbable={grabbable}, overriding old Grabbable={_GrabbableObjects[grabbable.NetworkId]}");
+            }
 			_GrabbableObjects[grabbable.NetworkId] = grabbable;
 		}
 
@@ -60,24 +64,28 @@ namespace VRT.Pilots.Common
 			_GrabbableObjects.Remove(grabbable.NetworkId);
 		}
 
-		private void OnHandGrabEvent(HandController.HandGrabEvent handGrabEvent)
+		private void OnHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
 		{
 			HandleHandGrabEvent(handGrabEvent);
 		}
 
-		public void HandleHandGrabEvent(HandController.HandGrabEvent handGrabEvent)
+		public void HandleHandGrabEvent(HandNetworkControllerBase.HandGrabEvent handGrabEvent)
 		{
 			Grabbable grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
-            PlayerNetworkController player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
-			HandController handController = player.GetHandController(handGrabEvent.Handedness);
-
-			if (handGrabEvent.EventType == HandController.HandInteractionEventType.Grab)
+            PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
+			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
+			if (handController == null)
+            {
+				Debug.LogError($"GrabbableObjectManager: {handGrabEvent.Handedness} hand network controller not found");
+				return;
+            }
+			if (handGrabEvent.EventType == HandNetworkControllerBase.HandInteractionEventType.Grab)
 			{
-				grabbable.OnGrab(handController);
+				handController.OnNetworkGrab(grabbable);
 			}
 			else
 			{
-				grabbable.OnRelease(handController);
+				handController.OnNetworkRelease(grabbable);
 			}
 
 			if (OrchestratorController.Instance.UserIsMaster)

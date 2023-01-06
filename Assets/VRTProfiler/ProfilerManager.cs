@@ -58,7 +58,7 @@ namespace VRT.Profiler
             }
             if (HMDActive == true)
             {
-                var cam = VRConfig.Instance.getMainCameraGameObject();
+                var cam = Camera.main;
                 if (cam != null)
                 {
                     HMD = cam.transform;

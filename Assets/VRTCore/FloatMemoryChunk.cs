@@ -18,6 +18,7 @@ namespace VRT.Core
             _pointer = Marshal.UnsafeAddrOfPinnedArrayElement(buffer, 0);
             elements = _elements;
             length = _elements * 4;
+            metadata = new FrameMetadata();
         }
 
         protected override void onfree()

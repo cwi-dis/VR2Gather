@@ -73,7 +73,7 @@ namespace VRT.Transport.Dash
 
             protected void getDataFromStream(sub.connection subHandle, int stream_index, int bytesNeeded)
             {
-                FrameInfo frameInfo = new FrameInfo();
+                sub.FrameInfo frameInfo = new sub.FrameInfo();
 
                 // Allocate and read.
                 NativeMemoryChunk mc = new NativeMemoryChunk(bytesNeeded);
@@ -104,7 +104,14 @@ namespace VRT.Transport.Dash
                     Debug.Log($"{Name()}: no sync config received yet, returning guessed timestamp");
                 }
                 frameInfo.timestamp = frameInfo.timestamp - parent.clockCorrespondence.streamClockTime + parent.clockCorrespondence.wallClockTime;
-                mc.info = frameInfo;
+                // mc.info = frameInfo;
+                // xxxjack: I don't know if this is correct: copying frameInfo.dsi without reference to dsi_size.
+                mc.metadata = new FrameMetadata()
+                {
+                    timestamp = frameInfo.timestamp,
+                    dsi = frameInfo.dsi,
+                    dsi_size = frameInfo.dsi_size
+                };
                 Timedelta network_latency_ms = now - frameInfo.timestamp;
 
                 bool didDrop = !receiverInfo.outQueue.Enqueue(mc);
@@ -122,7 +129,7 @@ namespace VRT.Transport.Dash
                 bool received_anything = false;
                 foreach (int stream_index in receiverInfo.streamIndexes)
                 {
-                    FrameInfo frameInfo = new FrameInfo();
+                    sub.FrameInfo frameInfo = new sub.FrameInfo();
                     int bytesNeeded = 0;
 
                     // See whether data is available on this stream, and how many bytes we need to allocate
