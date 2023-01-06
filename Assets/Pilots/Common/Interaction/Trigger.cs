@@ -10,17 +10,28 @@ namespace VRT.Pilots.Common
 	/// </summary>
 	public class Trigger : MonoBehaviour
 	{
-		[Tooltip("Component that communicates triggers to other instances of the experience")]
+		[Tooltip("Component that communicates triggers to other instances of the experience (default: on this GameObject)")]
 		public NetworkTrigger networkTrigger;
 
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
 
-		/// <summary>
-		/// Called by Unity on collider activity.
-		/// </summary>
-		/// <param name="other"></param>
-		private void OnTriggerEnter(Collider other)
+        private void Awake()
+        {
+            if (networkTrigger == null)
+			{
+				networkTrigger = GetComponent<NetworkTrigger>();
+				if (networkTrigger == null)
+				{
+					Debug.LogError($"{name}: no NetworkTrigger on GameObject");
+				}
+			}
+        }
+        /// <summary>
+        /// Called by Unity on collider activity.
+        /// </summary>
+        /// <param name="other"></param>
+        private void OnTriggerEnter(Collider other)
 		{
 			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
