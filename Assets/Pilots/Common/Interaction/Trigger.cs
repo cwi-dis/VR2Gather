@@ -29,20 +29,28 @@ namespace VRT.Pilots.Common
         }
         /// <summary>
         /// Called by Unity on collider activity.
+        /// Also called by VRT NoHandInteraction with a null collider on mouse-ray interaction.
         /// </summary>
         /// <param name="other"></param>
-        private void OnTriggerEnter(Collider other)
+        public void OnTriggerEnter(Collider other)
 		{
 			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
-				string layer = LayerMask.LayerToName(other.gameObject.layer);
-				Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer} name {layer}");
-
-				if (layer != "TouchCollider")
-				{
-					return;
+				if (other == null)
+                {
+					Debug.Log($"Trigger({name}): Triggered by mouse-ray");
 				}
+				else
+                {
+					string layer = LayerMask.LayerToName(other.gameObject.layer);
+					Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer} name {layer}");
 
+					if (layer != "TouchCollider")
+					{
+						return;
+					}
+
+				}
 
 				OnActivate();
 
