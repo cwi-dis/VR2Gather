@@ -19,6 +19,8 @@ namespace VRT.Pilots.LoginManager
                     return "TechnicalPlayground";
 				case "Mediascape":
 					return "MediaScape_Museum";
+                case "Development":
+                    return "MediaScape_Stage";
                 default:
                     return null;
             }
