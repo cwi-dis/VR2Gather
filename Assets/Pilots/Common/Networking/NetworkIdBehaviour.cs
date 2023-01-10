@@ -25,7 +25,7 @@ namespace VRT.Pilots.Common
 
 		protected virtual void Awake()
 		{
-			CreateNetworkId();
+			CreateNetworkId(false);
 		}
 
 		public void OnDestroy()
@@ -41,11 +41,11 @@ namespace VRT.Pilots.Common
 
 		// Create a new NetworkId when necessary
 		// xxxjack: some of this code should also be executed for non-auto-created networkIDs.
-		void CreateNetworkId()
+		public void CreateNetworkId(bool forceCreate=true)
 		{
 			if (string.IsNullOrEmpty(NetworkId))
 			{
-				if (noAutoCreateNetworkId)
+				if (noAutoCreateNetworkId && !forceCreate)
 				{
 					Debug.Log($"NetworkIdBehaviour({name}): not creating networkID");
 					return;
@@ -121,7 +121,7 @@ namespace VRT.Pilots.Common
 			else
 #endif
 			{
-				CreateNetworkId();
+				CreateNetworkId(false);
 			}
 		}
 #endif

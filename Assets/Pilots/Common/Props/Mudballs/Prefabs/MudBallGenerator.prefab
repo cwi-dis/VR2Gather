@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25a257cfd86809c4ba11e6e88fd53a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectToInstance: {fileID: 651213463443398195, guid: 8d99d54ef4091474798882170b6a730f,
+  objectToInstance: {fileID: 6568428563970395658, guid: 68716de4fadb78643a120ee5667a3dab,
     type: 3}
   initPoint: {fileID: 1338041618}
   audioAppear: {fileID: 3499467827655184855}
