@@ -20,9 +20,9 @@ namespace VRT.Pilots.Common
         public GameObject[] emulator;
         [Header("Introspection (for debugging)")]
         [Tooltip("Current control scheme")]
-        public string currentControlScheme;
+        [DisableEditing] public string currentControlScheme;
         [Tooltip("PlayerInput to track for controller change (if not one of our ancestors)")]
-        public PlayerInput playerInput;
+        [DisableEditing] public PlayerInput playerInput;
 
         // Start is called before the first frame update
         void Start()

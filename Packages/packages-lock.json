@@ -93,6 +93,30 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.unity.xr.core-utils": {
+      "version": "2.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.xr": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.xr.interaction.toolkit": {
+      "version": "2.0.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.inputsystem": "1.3.0",
+        "com.unity.ugui": "1.0.0",
+        "com.unity.xr.core-utils": "2.0.0",
+        "com.unity.xr.legacyinputhelpers": "2.1.8",
+        "com.unity.modules.audio": "1.0.0",
+        "com.unity.modules.imgui": "1.0.0",
+        "com.unity.modules.physics": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.xr.legacyinputhelpers": {
       "version": "2.1.10",
       "depth": 1,
@@ -141,7 +165,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "c7d60921f826261d1c73cfcf339de977fbb81cd9"
+      "hash": "c8ad26764aa958fee22ee0fe90ac1bcded4d7509"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
