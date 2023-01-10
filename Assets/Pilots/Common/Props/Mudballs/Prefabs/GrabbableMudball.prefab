@@ -40,7 +40,7 @@ PrefabInstance:
     - target: {fileID: 7900339413275237464, guid: 4b09af7aaee46d440bfb545db1621ea9,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.13
       objectReference: {fileID: 0}
     - target: {fileID: 7900339413275237464, guid: 4b09af7aaee46d440bfb545db1621ea9,
         type: 3}
@@ -139,7 +139,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_InteractionLayers:
-    m_Bits: 1
+    m_Bits: 2
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}
   m_FirstHoverEntered:
