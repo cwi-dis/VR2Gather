@@ -77,7 +77,7 @@ Shader "WorldMatFree"
 		ENDCG
 	}
 	Fallback "Diffuse"
-	CustomEditor "ASEMaterialInspector"
+	/* CustomEditor "ASEMaterialInspector" */
 }
 /*ASEBEGIN
 Version=17700
