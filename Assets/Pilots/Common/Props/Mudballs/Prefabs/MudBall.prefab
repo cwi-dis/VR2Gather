@@ -130,8 +130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noAutoCreateNetworkId: 0
   NetworkId: 
-  Mode: 1
-  SyncAutomatically: 1
+  Mode: 0
+  SyncAutomatically: 0
   UpdateFrequency: 10
   InterpolateUpdates: 0
 --- !u!114 &5058766976394723230
@@ -146,3 +146,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02d42fb5864e54c4c92dcf2476aa1a23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  defaultKinematic: 0
+  defaultGravity: 0
