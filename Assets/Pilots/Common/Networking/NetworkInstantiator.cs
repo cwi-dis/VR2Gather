@@ -132,8 +132,8 @@ namespace VRT.Pilots.Common
 				}
 				else
                 {
-					NetworkId = newNetworkId;
-					NetworkIdManager.Add(this);
+					nib.NetworkId = newNetworkId;
+					NetworkIdManager.Add(nib);
                 }
 			}
 			return newNetworkId;
