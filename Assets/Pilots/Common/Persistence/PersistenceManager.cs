@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 namespace VRT.Pilots.Common
 {
     //
-    //Scenes that contain persistable objects should include a single persistence manager to manage the saving and loading of data
+    //Scenes that contain persistable objects should include a single persistence manager to manage the saving and loading of game object data
     //The manager maintains a dictionary of objects identified by their network ID 
     public class PersistenceManager : MonoBehaviour
     {
