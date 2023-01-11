@@ -28,6 +28,8 @@ namespace VRT.Pilots.Common
         [Tooltip("The Input System Action that activates when we are pointing")]
         [SerializeField] InputActionProperty m_activateAction;
 
+        [Tooltip("Verbose messages")]
+        [SerializeField] bool debugLog = false;
         [SerializeField][DisableEditing] bool pointing;
         [SerializeField][DisableEditing] bool hitting;
 
@@ -66,7 +68,7 @@ namespace VRT.Pilots.Common
                 if (m_activateAction.action.IsPressed())
                 {
                     var hitGO = hit.collider.gameObject;
-                    Debug.Log($"NoHandInteraction: hitting={hitGO}");
+                    if (debugLog) Debug.Log($"NoHandInteraction: hitting={hitGO}");
                     var hitTrigger = hitGO.GetComponent<Trigger>();
                     if (hitTrigger == null)
                     {
@@ -84,7 +86,7 @@ namespace VRT.Pilots.Common
         private void EnablePointing(bool pointingNow)
         {
             pointing = pointingNow;
-            Debug.Log($"NoHandInteraction: pointing={pointing}");
+            if (debugLog) Debug.Log($"NoHandInteraction: pointing={pointing}");
             if (pointing)
             {
                 wantedCursor = castingCursorTexture;

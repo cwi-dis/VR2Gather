@@ -21,7 +21,16 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            if (interactionManager == null) interactionManager = GetComponent<XRInteractionManager>();
+            if (interactionManager == null)
+            {
+                interactionManager = FindObjectOfType<XRInteractionManager>();
+                if (interactionManager == null)
+                {
+                    Debug.Log("FixInteractables: Creating interaction manager");
+                    var interactionManagerGO = new GameObject("XR Interaction Manager", typeof(XRInteractionManager));
+                    interactionManager = interactionManagerGO.GetComponent<XRInteractionManager>();
+                }
+            }
             if (teleportationProvider == null) teleportationProvider = GetComponent<TeleportationProvider>();
             if (teleportationProvider != null)
             {
