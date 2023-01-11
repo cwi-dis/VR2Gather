@@ -8,32 +8,42 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Pilots.Common
 {
 	/// <summary>
+    /// Base class for NetworkTrigger and NetworkInstantiator
+    /// </summary>
+	public abstract class NetworkTriggerBase : NetworkIdBehaviour
+    {
+		public abstract void Trigger();
+    }
+
+	/// <summary>
 	/// Component that sends triggers (think: button presses) to other instances of the VR2Gather experience.
 	/// </summary>
-	public class NetworkTrigger : NetworkIdBehaviour
+	public class NetworkTrigger : NetworkTriggerBase
 	{
 		public class NetworkTriggerData : BaseMessage
 		{
 			public string NetworkBehaviourId;
 		}
 
+		[Tooltip("If true only the master participant can make this trigger happen")]
 		public bool MasterOnlyTrigger = false;
 
 		[Tooltip("Event called when either a local or remote trigger happens.")]
 		public UnityEvent OnTrigger;
 
-		public void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
 
 		}
-		public void OnEnable()
+		public virtual void OnEnable()
 		{
 			OrchestratorController.Instance.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 
-		public void OnDisable()
+		public virtual void OnDisable()
 		{
 			OrchestratorController.Instance.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
@@ -42,7 +52,7 @@ namespace VRT.Pilots.Common
 		/// Call this method locally when the user interaction has happened. It will transmit the event to
 		/// other participants, and all participants (including the local one) will call the OnTrigger callback.
 		/// </summary>
-		public virtual void Trigger()
+		public override void Trigger()
 		{
 			if (MasterOnlyTrigger && !OrchestratorController.Instance.UserIsMaster)
 			{

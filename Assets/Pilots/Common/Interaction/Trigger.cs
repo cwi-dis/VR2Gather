@@ -11,7 +11,7 @@ namespace VRT.Pilots.Common
 	public class Trigger : MonoBehaviour
 	{
 		[Tooltip("Component that communicates triggers to other instances of the experience")]
-		public NetworkTrigger networkTrigger;
+		public NetworkTriggerBase networkTrigger;
 
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
