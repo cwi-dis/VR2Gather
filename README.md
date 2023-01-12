@@ -24,3 +24,6 @@ Mainly ffmpeg. Check whether newer versions are available on `nuget.org`. Do the
 - Run `nuget restore`
 - `git rm` and `git add` of the subdirectories in `Assets/packages`.
 
+## Github Actions
+
+- Needs a license. See <https://game.ci/docs/github/activation> for how to get one and install it.
