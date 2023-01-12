@@ -13,21 +13,18 @@ namespace VRT.Pilots.Common
     {
         public static PersistenceManager instance { get; private set; }
         public IDictionary<string, PersistenceData> persistenceDataDictionary;
+        //xxxshishir ToDo: Add config variables to enable and disable this feature
+        private bool loadPersistenceData = true;
+        private bool savePersistenceData = true;
+        //xxxshishir maybe we want to make this user specific and use the current username to name the file
+        private string fileName = "PersistenceData.json";
         // Start is called before the first frame update
         private void Awake()
         {
             if (instance != null)
                 Debug.LogError("Found more than one Persistence Manager in the scene");
             instance = this;
-        }
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
+            PersistenceData pData;
 
         }
     }
