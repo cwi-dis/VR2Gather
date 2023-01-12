@@ -22,8 +22,8 @@ namespace VRT.Pilots.Common
     //xxxshishir Interface for persistence functions - The persistence manager is meant to find this 
     public interface IDataPersistence
     {
-        void loadPersistenceData(PersistenceData pData);
-        void savePersistenceData(PersistenceData pData);
+        PersistenceData loadPersistenceData(string NetworkID);
+        void savePersistenceData(PersistenceData pData, string NetworkID);
         //PersistenceControllerBase objectData
     }
     [System.Serializable]

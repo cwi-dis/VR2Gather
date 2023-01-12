@@ -12,6 +12,7 @@ namespace VRT.Pilots.Common
     public class PersistenceManager : MonoBehaviour
     {
         public static PersistenceManager instance { get; private set; }
+        public IDictionary<string, PersistenceData> persistenceDataDictionary;
         // Start is called before the first frame update
         private void Awake()
         {

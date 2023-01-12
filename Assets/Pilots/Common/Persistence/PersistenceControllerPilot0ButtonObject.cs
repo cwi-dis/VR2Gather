@@ -16,7 +16,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            loadPersistenceData(pData);
+            pData = loadPersistenceData(grabbableSelfRef.NetworkId);
         }
 
         // Update is called once per frame
@@ -34,13 +34,20 @@ namespace VRT.Pilots.Common
         }
         void OnApplicationQuit()
         {
-            savePersistenceData(pData);
+            TransformSelfRef = gameObject.transform;
+            MaterialSelfRef = gameObject.GetComponent<Renderer>().material;
+            pData.NetworkID = grabbableSelfRef.NetworkId;
+            pData.position = TransformSelfRef.position;
+            pData.rotation = TransformSelfRef.rotation;
+            pData.material = MaterialSelfRef;
+            savePersistenceData(pData, pData.NetworkID);
         }
-        public void loadPersistenceData(PersistenceData pData)
+        public PersistenceData loadPersistenceData(string NetworkID)
         {
             Debug.Log("xxxshishir: Load persistence data called");
+            return pData;
         }
-        public void savePersistenceData(PersistenceData pData)
+        public void savePersistenceData(PersistenceData pData, string NetworkID)
         {
             Debug.Log("xxxshishir: Save persistence data called");
         }
