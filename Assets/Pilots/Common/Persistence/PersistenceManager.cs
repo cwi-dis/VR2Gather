@@ -32,6 +32,7 @@ namespace VRT.Pilots.Common
             if (!loadPersistenceData)
                 return;
             persistableSceneObjects = FindAllPersistableObjects();
+            persistenceDataDictionary = new Dictionary<string, PersistenceData>();
             string saveFile = Path.Combine(Application.persistentDataPath, fileName);
             if (!File.Exists(saveFile))
             {
@@ -114,7 +115,7 @@ namespace VRT.Pilots.Common
     //Another option is to use the Newtonsoft Unity package: https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@2.0/manual/index.html
     public class PersistenceDataCollection
     {
-        public ICollection<PersistenceData> pDataCollection;
+        public List<PersistenceData> pDataCollection;
         public IDictionary<string,PersistenceData> toDictionary()
         {
             IDictionary<string, PersistenceData> pDataDictionary = new Dictionary<string,PersistenceData>();
@@ -124,7 +125,7 @@ namespace VRT.Pilots.Common
         }
         public void fromDictionary(IDictionary<string,PersistenceData> pDataDictionary)
         {
-            pDataCollection = pDataDictionary.Values;
+            pDataCollection = pDataDictionary.Values.ToList();
         }
     }
 }
