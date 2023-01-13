@@ -24,7 +24,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         private void Awake()
         {
-            //xxxshishir ToDo: Replace with config.json setting later
+            //xxxshishir ToDo: Replace this with config.json setting later
             loadPersistenceData = true;
             if (instance != null)
                 Debug.LogError("Found more than one Persistence Manager in the scene");
@@ -54,14 +54,41 @@ namespace VRT.Pilots.Common
                 Debug.LogError("Couldn't load persistence data from file :" + saveFile + "\n" + e);
                 return;
             }
+            PersistenceDataCollection pDataCollection = JsonUtility.FromJson<PersistenceDataCollection>(saveFileData);
+            persistenceDataDictionary = pDataCollection.toDictionary();
 
-            PersistenceData pDataArray[] = JsonUtility.FromJson<PersistenceData[]>(saveFileData);
-
+            //xxxshishir Loading persistence data to all persistable objects (with controllers) in the scene
+            foreach (IDataPersistence pObjects in persistableSceneObjects)
+            {
+                string NetworkID = pObjects.getNetworkID();
+                PersistenceData pData = persistenceDataDictionary[NetworkID];
+                pObjects.loadPersistenceData(pData);
+                persistenceDataDictionary.Remove(NetworkID);
+            }
         }
         private List<IDataPersistence> FindAllPersistableObjects()
         {
             IEnumerable<IDataPersistence> persistableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
             return new List<IDataPersistence>(persistableObjects);
+        }
+    }
+    [System.Serializable]
+    //xxxshishir Temporary class to hold the collection of persistence data, by default we can only serialize fields and not types like Dictionaries
+    //https://docs.unity3d.com/2021.2/Documentation/Manual/JSONSerialization.html
+    //Another option is to use the Newtonsoft Unity package: https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@2.0/manual/index.html
+    public class PersistenceDataCollection
+    {
+        public ICollection<PersistenceData> pDataCollection;
+        public IDictionary<string,PersistenceData> toDictionary()
+        {
+            IDictionary<string, PersistenceData> pDataDictionary = new Dictionary<string,PersistenceData>();
+            foreach (PersistenceData pData in pDataCollection)
+                pDataDictionary.Add(pData.NetworkID, pData);
+            return pDataDictionary;
+        }
+        public void fromDictionary(IDictionary<string,PersistenceData> pDataDictionary)
+        {
+            pDataCollection = pDataDictionary.Values;
         }
     }
 }

@@ -11,12 +11,12 @@ namespace VRT.Pilots.Common
         public Grabbable grabbableSelfRef;
         public Transform TransformSelfRef;
         public Material MaterialSelfRef;
-        public PersistenceData pData;
+        //public PersistenceData pData;
 
         // Start is called before the first frame update
         void Start()
         {
-            pData = loadPersistenceData(grabbableSelfRef.NetworkId);
+            //pData = loadPersistenceData(grabbableSelfRef.NetworkId);
         }
 
         // Update is called once per frame
@@ -34,22 +34,28 @@ namespace VRT.Pilots.Common
         }
         void OnApplicationQuit()
         {
-            TransformSelfRef = gameObject.transform;
-            MaterialSelfRef = gameObject.GetComponent<Renderer>().material;
-            pData.NetworkID = grabbableSelfRef.NetworkId;
-            pData.position = TransformSelfRef.position;
-            pData.rotation = TransformSelfRef.rotation;
-            pData.material = MaterialSelfRef;
-            savePersistenceData(pData, pData.NetworkID);
+            //TransformSelfRef = gameObject.transform;
+            //MaterialSelfRef = gameObject.GetComponent<Renderer>().material;
+            //pData.NetworkID = grabbableSelfRef.NetworkId;
+            //pData.position = TransformSelfRef.position;
+            //pData.rotation = TransformSelfRef.rotation;
+            //pData.material = MaterialSelfRef;
+            //savePersistenceData(pData, pData.NetworkID);
         }
-        public PersistenceData loadPersistenceData(string NetworkID)
+        public void loadPersistenceData(PersistenceData pData)
         {
             Debug.Log("xxxshishir: Load persistence data called");
-            return pData;
+            gameObject.transform.position = pData.position;
+            gameObject.transform.rotation = pData.rotation;
+            //xxxshishir ToDo: Add material change tracking later
         }
         public void savePersistenceData(PersistenceData pData, string NetworkID)
         {
             Debug.Log("xxxshishir: Save persistence data called");
+        }
+        public string getNetworkID()
+        {
+            return grabbableSelfRef.NetworkId;
         }
     }
 }
