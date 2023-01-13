@@ -49,9 +49,19 @@ namespace VRT.Pilots.Common
             gameObject.transform.rotation = pData.rotation;
             //xxxshishir ToDo: Add material change tracking later
         }
-        public void savePersistenceData(PersistenceData pData, string NetworkID)
+        public PersistenceData savePersistenceData()
         {
             Debug.Log("xxxshishir: Save persistence data called");
+            PersistenceData pData = new PersistenceData();
+            pData.NetworkID = grabbableSelfRef.NetworkId;
+            pData.position = gameObject.transform.position;
+            pData.rotation = gameObject.transform.rotation;
+            //pData.material = MaterialSelfRef;
+            pData.material = null;
+            pData.MessageData = "";
+            //xxxshishir we assume all pilot0button objects are already in the scene and cannot be dynamically created
+            pData.isStatic = true;
+            return pData;
         }
         public string getNetworkID()
         {

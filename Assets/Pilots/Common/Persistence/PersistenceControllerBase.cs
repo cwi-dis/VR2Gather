@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
     public interface IDataPersistence
     {
         void loadPersistenceData(PersistenceData pData);
-        void savePersistenceData(PersistenceData pData, string NetworkID);
+        PersistenceData savePersistenceData();
         string getNetworkID();
         //PersistenceControllerBase objectData
     }

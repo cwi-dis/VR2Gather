@@ -22,7 +22,7 @@ namespace VRT.Pilots.Common
         //xxxshishir maybe we want to make this user specific and use the current username to name the file
         private string fileName = "PersistenceData.json";
         // Start is called before the first frame update
-        private void Awake()
+        void Awake()
         {
             //xxxshishir ToDo: Replace this with config.json setting later
             loadPersistenceData = true;
@@ -58,12 +58,48 @@ namespace VRT.Pilots.Common
             persistenceDataDictionary = pDataCollection.toDictionary();
 
             //xxxshishir Loading persistence data to all persistable objects (with controllers) in the scene
+            string NetworkID;
+            PersistenceData pData;
             foreach (IDataPersistence pObjects in persistableSceneObjects)
             {
-                string NetworkID = pObjects.getNetworkID();
-                PersistenceData pData = persistenceDataDictionary[NetworkID];
+                NetworkID = pObjects.getNetworkID();
+                pData = persistenceDataDictionary[NetworkID];
                 pObjects.loadPersistenceData(pData);
                 persistenceDataDictionary.Remove(NetworkID);
+            }
+            if (persistenceDataDictionary.Count != 0)
+                Debug.LogWarning("Could not initialize " + persistenceDataDictionary.Count + " persistable objects in the save file");
+        }
+        private void OnApplicationQuit()
+        {
+            // xxxshishir We find persistable objects again on quit to account for dynamically created objects
+            persistableSceneObjects = FindAllPersistableObjects();
+            string NetworkID;
+            PersistenceData pData;
+            foreach (IDataPersistence pObjects in persistableSceneObjects)
+            {
+                pData = pObjects.savePersistenceData();
+                NetworkID = pObjects.getNetworkID();
+                persistenceDataDictionary.Add(NetworkID, pData);
+            }
+            PersistenceDataCollection pDataCollection = new PersistenceDataCollection();
+            pDataCollection.fromDictionary(persistenceDataDictionary);
+            string saveFile = Path.Combine(Application.persistentDataPath, fileName);
+            string saveData = JsonUtility.ToJson(pDataCollection, true);
+            //xxxshishir for now we always overwrite the existing savefile
+            try
+            {
+                using (FileStream stream = new FileStream(saveFile, FileMode.Create))
+                {
+                    using (StreamWriter writer = new StreamWriter(stream))
+                    {
+                        writer.Write(saveData);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Couldn't save persistence data to file :" + saveFile + "\n" + e);
             }
         }
         private List<IDataPersistence> FindAllPersistableObjects()
