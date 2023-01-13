@@ -16,7 +16,7 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "TransmiXR-test",
-  	"sessionScenario" : "Development ",
+  	"sessionScenario" : "Development2",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,

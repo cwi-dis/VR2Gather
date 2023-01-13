@@ -9,6 +9,7 @@ TagManager:
   - Spectator
   - Plants
   - Teleportable
+  - Room
   layers:
   - Default
   - TransparentFX
@@ -34,8 +35,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Dress1
+  - Dress2
   - SelfView
   - PlayerLocation
   - TouchableObject
