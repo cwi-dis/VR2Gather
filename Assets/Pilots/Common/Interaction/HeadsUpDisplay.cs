@@ -152,6 +152,11 @@ namespace VRT.Pilots.Common
             canvas.SetActive(true);
             PilotController.Instance.DisableDirectInteraction();
         }
+
+        public void OnHUDCommand(string command)
+        {
+            Debug.Log($"HeadsUpDisplay: OnHUDCommand({command})");
+        }
     }
 
 }
