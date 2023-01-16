@@ -64,7 +64,10 @@ namespace VRT.Pilots.Common
             }
         }
 
-        void ResetOrigin()
+        /// <summary>
+        /// The user wants the current head position, (X,Z) only, to be the (0, Y, 0), right above the XROrigin.
+        /// </summary>
+        public void ResetOrigin()
         {
             if (BeginLocomotion())
             {

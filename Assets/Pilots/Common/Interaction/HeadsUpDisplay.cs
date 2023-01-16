@@ -38,11 +38,16 @@ namespace VRT.Pilots.Common
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Prefab for error messages")]
         [SerializeField] GameObject errorPrefab;
+
+        [Tooltip("Player controller (found dynamically)")]
+        [DisableEditing] [SerializeField] PlayerControllerSelf playerController;
+
         // Start is called before the first frame update
         void Start()
         {
             Hide();
             if (interceptErrors) ErrorManager.Instance.RegisterSink(this);
+            if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
         }
 
         // Update is called once per frame
@@ -156,6 +161,19 @@ namespace VRT.Pilots.Common
         public void OnHUDCommand(string command)
         {
             Debug.Log($"HeadsUpDisplay: OnHUDCommand({command})");
+            bool ok = false;
+            if (playerController != null)
+            {
+                ok = playerController.OnUserCommand(command);
+            }
+            if (!ok)
+            {
+                ok = PilotController.Instance.OnUserCommand(command);
+            }
+            if (!ok)
+            {
+                Debug.LogError($"HeadsUpDisplay: unknown command \"{command}\"");
+            }
         }
     }
 
