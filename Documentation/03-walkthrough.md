@@ -6,6 +6,8 @@ You will see the term _Pilot_ used a lot in this document and in the project. Fo
 
 The other term you will often see is _Player_. This is one of the participants that is currently immersed in an experience.
 
+The third term is _Session_, which is a group of _Player_ s that are currently experiencing a _Pilot_ together.
+
 ## Runtime structure
 
 Each participant runs a local copy of the application (or, for development, runs the experience from within the Unity Editor). These copies all implement the full "business logic" of the experience. 
@@ -60,7 +62,85 @@ In a roughly bottom-to-top order of dependencies these are:
 - `Transport/SocketIO` and `Transport/TCP` handle streaming of the user representation streams (from the previous set of assemblies) over the net, so that participants can see and hear each other.
 - `Orchestrator` has the communication code and the stubs to allow VR2Gather application instances to communicate via the orchestrator.
 - `DevelopmentTests` has various scenes and sripts that were used during development. Some may still work.
-- `Pilots/Common` has most of the implementation of the VR2Gather framework.
-- The other assemblies under `Pilots` have things that are specific to a certain experience (for an experience that is included in the base repository)
+- `Pilots/Common` has most of the implementation of the VR2Gather framework. The functionality and components here are described in the [Prefabs](04-prefabs.md) section.
+- The other assemblies under `Pilots` have things that are specific to a certain experience (for an experience that is included in the base repository), they are described in the _Scene Overview_ subsection, below.
 - `PilotsExternal` is where the git repository for the experience under development should live.
 
+## Scene Overview
+
+The VR2Gather repository contains 4 main scenes:
+
+- `LoginManager` is the first scene of any VR2Gather experience.
+- `Pilot0` is the "Hello World" of VR2Gather experiences: a near-minimal example.
+- `TechnicalPlayground` is a copy of Pilot0 where you can easily try out new prefabs, interactions and other functionality.
+- `SoloPlayground` is very similar, but it has all orchestrator communication disabled or replaced, so it allows you to do (limited) testing of new functionality on your own, even while offline, without access to the orchestrator.
+
+### Pilot0
+
+Even though LoginManager is the first scene experienced it is better to walk through Pilot0 first, because it the basis of a "normal" VR2Gather scene.
+
+You should open `Assets/Pilots/Pilot0/Scenes/Pilot0` in the hierarchy view while reading this section.
+
+The `Pilot0Controller` object has three components that together manage the session:
+
+- `SessionController` manages comunicating with the orchestrator to allow joining the session and leaving it.
+- `PilotController` (or a subclass of it) manages the local copy of the scene, such as fading it in and out at beginnging and end, and it manages any transition to a follow-on scene.
+- `SessionPlayersManager` manages instantiating the prefabs for the participants: a single `SelfPlayerPrefab` for the local participant and a `PlayerPrefab` for each of the other participants in the session.
+
+ > As a result of this paradigm the scene does not contain the usual Unity objects like the main camera and the controller objects, because these are part of the `SelfPlayerPrefab`. This also means that there are a few scripts to fix things up after self-player creation (like telling interactables where the interaction manager is), and some things may be unexpected (if your script tries to use `Camera.Main` in its `Start()` method it will notice there is no main camera).
+
+  The Pilot0 scene has at most 4 participants (plus unlimited non-playing observers) the `PlayerRoot` object has the locations where these players will be instantiated.
+
+
+The `ErrorManager`, `TilingConfigDistributor` and `SyncConfigDistributor` objects are VR2Gather helper objects. They could be components on the PilotController game object but have their own objects for historic reasons.
+
+The `Floor` and `Tables` objects contain the actual scene. It is worth noticing that the `Floor` has a `TeleportationArea` component allowing the participants to teleport anywhere.
+
+On each table there is an instance of `PFB_Pilot0ButtonObject`, a gadget that can make a "pling" sound when the button is pressed and that can be picked up and dropped elsewhere (or thrown over the side of the world:-). When one participant interacts with the gadget other participants should see and hear that interaction too.
+
+
+Finally, the `EventSystem` is a fairly standard Unity object to handle interaction.
+
+### LoginManager
+
+This is the starting scene of the VR2Gather application. It connects to the orchestrator, allows the user to log in and either join an existing session, or create a new session for a specific pilot.
+
+It allows the participant to interact with the user interface using HMD controller rays, or using keyboard and mouse when not using an HMD. The participant can select their self-representation (avatar) and some other settings, like which microphone or camera to use.
+
+When the participant that created the scene presses the `Start` button a command is sent (via the orchestrator) to make all application instances transition the the scene that belongs to the selected experience.
+
+If you compare this scene to _Pilot0_ you will notice a few differences:
+
+- This scene has a `VRTInitializer` that does global application initialization.
+- The `LoginController` does not have the session components (because there is no session yet), nor the PlayersManager.
+-  It uses a pre-created self-player (for virtual camera, controllers and self-representation), `P_Self_login`.
+
+The scene does have an `OrchestratorLogin` object, which contains the user interface plus the control logic for it.
+
+There is also an `OrchestratorController` object, which has the code that handles session creation and joining, user preferences, etc. This object also contains the general code for communicating through other instances in the experience via the orchestrator, therefore this object is moved to the `DontDestroyOnLoad` objects so that it survives scene transitions.
+
+### TechnicalPlayground
+
+This is basically a copy of `Pilot0`, with some virtual artefacts added. Over time these artefacts come and go: this is the area where developers can try out new functionality.
+
+As of this writing, this scene the following props (aside from the Pilot0 gadgets):
+
+- A mirror where participants can see themselves and each other.
+- A button that also makes pling sounds but cannot be moved.
+- A small mudball that can be grabbed or thrown.
+- A big mudball, it cannot be grabbed but if you push it it should move.
+- A mudball generator: press the button to create a new mudball.
+
+All of these gadgets should be coordinated: if one participant does something with an object all the other participants should see the result.
+
+### SoloPlayground
+
+This is similar to TechnicalPlayground, except it is single-user and does not require the orchestrator. Not all interaction works without the orchestrator but a lot does. And it is much easier to debug (for example) how an object attaches to your hand if you don't have to go through the whole sequence of creating a scene, starting it, etc. every time you have changed some code.
+
+Generally, if you create a new interactable object you do this in a prefab. You then first test interacting with this prefab by putting it in SoloPlayground and interacting with it. Then you put it in TechnicalPlayground and check that its actions are coordinated between application instances. Only then do you put it in your own experience scene.
+
+## Next steps
+
+You should now have a basic understanding of the overall structure of a VR2Gather experience.
+
+The [Prefabs](04-prefabs.md) section is a good continuation point, or go back to the [Developer Overview](01-overview.md)

@@ -34,7 +34,7 @@ You probably need the [CWI Point Cloud](https://github.com/cwi-dis/cwipc) packag
 
 If you don't have an RGBD camera you need not bother with Intel Realsense or Microsoft Kinect support, but you still want `cwipc` to be able to see participants that do have a camera.
 
-After installation (you may have to reboot, on Windows) run `cwipc_view --symthetic` in a Bash window to confirm everything is installed correctly.
+After installation (you may have to reboot, on Windows) run `cwipc_view --synthetic` in a Bash window to confirm everything is installed correctly.
 
 ## Next steps
 
