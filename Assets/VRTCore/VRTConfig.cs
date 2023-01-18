@@ -7,7 +7,7 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Core
 {
     [Serializable]
-    public class VRTConfig
+    public class VRTConfig : MonoBehaviour
     {
         [Flags] public enum ProtocolType
         {
@@ -202,21 +202,38 @@ namespace VRT.Core
             {
                 if (_Instance == null)
                 {
-                    string file = ConfigFilename();
-                    _Instance = JsonUtility.FromJson<VRTConfig>(System.IO.File.ReadAllText(file));
-                    if (_Instance.targetFrameRate != 0)
-                    {
-                        Application.targetFrameRate = _Instance.targetFrameRate;
-                        Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
-                    }
-                    // Initialize some other modules that have their own configuration.
-#if VRT_WITH_STATS
-                    Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
-#endif
-                    Cwipc.CwipcConfig.SetInstance(_Instance.PCs);
+                    Debug.LogError("VRTConfig: Instance accessed before allocation. Must be on a Component that is initialized very early.");
                 }
                 return _Instance;
             }
+            
+        }
+
+        private void Awake()
+        {
+            if (_Instance != null)
+            {
+                Debug.LogError("VRTConfig: Awake() called but there is an Instance already. There must be only a single Component");
+            }
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            string file = ConfigFilename();
+            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            if (targetFrameRate != 0)
+            {
+                Application.targetFrameRate = _Instance.targetFrameRate;
+                Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+            }
+            // Initialize some other modules that have their own configuration.
+#if VRT_WITH_STATS
+            Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
+#endif
+            Cwipc.CwipcConfig.SetInstance(this.PCs);
+            _Instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
 
         public void WriteConfig(object toJson)
