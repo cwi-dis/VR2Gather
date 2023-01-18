@@ -27,7 +27,7 @@ namespace VRT.Profiler
         private void Awake()
         {
             Instance = this;
-            HMDActive = Config.Instance.pilot3NavigationLogs;
+            HMDActive = VRTConfig.Instance.pilot3NavigationLogs;
             csvOutputPathname = string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName);
         }
 

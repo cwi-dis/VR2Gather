@@ -19,7 +19,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.Config._User;
+    using static VRT.Core.VRTConfig._User;
 
     public class PointCloudPipelineSelf : PointCloudPipelineBase
     {
@@ -43,7 +43,7 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
         {
             if (!isLocalPlayer)
             {
@@ -85,7 +85,7 @@ namespace VRT.UserRepresentation.PointCloud
             return this;
         }
 
-        protected void _InitForSelfUser(Config._User._PCSelfConfig PCSelfConfig, bool preview)
+        protected void _InitForSelfUser(VRTConfig._User._PCSelfConfig PCSelfConfig, bool preview)
         {
             isSource = true;
             if (synchronizer != null)
@@ -164,7 +164,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // Which encoder do we want?
                 string pointcloudCodec = CwipcConfig.Instance.Codec;
                 // For TCP we want short queues and we want them leaky (so we don't hang)
-                bool leakyQueues = Config.Instance.protocolType == Config.ProtocolType.TCP;
+                bool leakyQueues = VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP;
                 //
                 // Determine tiles to transmit
                 //
@@ -219,20 +219,20 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create correct writer for PC transmission
                 //
-                switch (Config.Instance.protocolType)
+                switch (VRTConfig.Instance.protocolType)
                 {
-                    case Config.ProtocolType.Dash:
+                    case VRTConfig.ProtocolType.Dash:
                         writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
                         break;
-                    case Config.ProtocolType.TCP:
+                    case VRTConfig.ProtocolType.TCP:
                         writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
                         break;
-                    case Config.ProtocolType.None:
-                    case Config.ProtocolType.SocketIO:
+                    case VRTConfig.ProtocolType.None:
+                    case VRTConfig.ProtocolType.SocketIO:
                         writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
-                        throw new System.Exception($"{Name()}: Unknown protocolType {Config.Instance.protocolType}");
+                        throw new System.Exception($"{Name()}: Unknown protocolType {VRTConfig.Instance.protocolType}");
                 }
 
 #if VRT_WITH_STATS
@@ -241,7 +241,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
         }
 
-        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, Config._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
+        private void _CreateDescriptionsForOutgoing(Cwipc.PointCloudTileDescription[] tilesToTransmit, VRTConfig._User._PCSelfConfig._Encoder[] Encoders, bool leakyQueues)
         {
             int[] octreeBitsArray = new int[Encoders.Length];
             for (int i = 0; i < Encoders.Length; i++)

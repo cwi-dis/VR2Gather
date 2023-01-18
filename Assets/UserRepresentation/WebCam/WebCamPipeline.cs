@@ -44,9 +44,9 @@ namespace VRT.UserRepresentation.WebCam
 
         public static void Register()
         {
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             RegisterPipelineClass(true, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
             RegisterPipelineClass(false, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
@@ -61,7 +61,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)
@@ -71,13 +71,13 @@ namespace VRT.UserRepresentation.WebCam
             }
             //bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             FFmpeg.AutoGen.AVCodecID codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
-            if (Config.Instance.Video.Codec == "h264")
+            if (VRTConfig.Instance.Video.Codec == "h264")
             {
                 codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
             }
             else
             {
-                Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.Video.Codec}");
+                Debug.LogError($"WebCamPipeline: unknown codec: {VRTConfig.Instance.Video.Codec}");
             }
             isSource = (cfg.sourceType == "self");
             if (user.userData.webcamName == "None") return this;
@@ -123,12 +123,12 @@ namespace VRT.UserRepresentation.WebCam
                                 inQueue = writerQueue
                                 }
                             };
-                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                            if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.Dash)
                             {
                                 writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                             }
                             else
-                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                             if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP)
                             {
                                 writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
                             }
@@ -161,11 +161,11 @@ namespace VRT.UserRepresentation.WebCam
                 case "remote": // Remoto
                     if (isLocalPlayer) Debug.LogError($"{Name()}: sourceType!=self but isLocalPlayer is true");
 
-                    if (Config.Instance.protocolType == Config.ProtocolType.Dash)
+                    if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.Dash)
                     {
                         reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                     }
-                    else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                    else if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP)
                     {
                         reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
                     }

@@ -132,7 +132,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
-            Config._User realUser = Config.Instance.LocalUser;
+            VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 #if WITH_QUALITY_ASSESSMENT
             currentStimuli = StimuliController.getCurrentStimulus();
             bitRatebudget = StimuliController.getBitrateBudget();

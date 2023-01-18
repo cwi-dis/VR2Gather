@@ -90,7 +90,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, Config._User userCfg, BaseConfigDistributor[] configDistributors=null)
+        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, VRTConfig._User userCfg, BaseConfigDistributor[] configDistributors=null)
         {
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
@@ -109,7 +109,7 @@ namespace VRT.Pilots.Common
                     webcam.SetActive(true);
                     if (userCfg == null)
                     {
-                        userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                        userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : VRTConfig.Instance.RemoteUser;
                     }
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg);
@@ -126,7 +126,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
+                    userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : VRTConfig.Instance.RemoteUser;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
                     if (configDistributors != null)
@@ -158,12 +158,12 @@ namespace VRT.Pilots.Common
             }
             if (isLocalPlayer)
             { // Sender
-                var AudioBin2Dash = Config.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
+                var AudioBin2Dash = VRTConfig.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
                 if (AudioBin2Dash == null)
                     throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                 try
                 {
-                    voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType); //Audio Pipeline
+                    voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, VRTConfig.Instance.protocolType); //Audio Pipeline
                 }
                 catch (EntryPointNotFoundException e)
                 {
@@ -173,10 +173,10 @@ namespace VRT.Pilots.Common
             }
             else
             { // Receiver
-                var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
+                var AudioSUBConfig = VRTConfig.Instance.RemoteUser.AudioSUBConfig;
                 if (AudioSUBConfig == null)
                     throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-                voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
+                voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, VRTConfig.Instance.protocolType); //Audio Pipeline
             }
         }
     

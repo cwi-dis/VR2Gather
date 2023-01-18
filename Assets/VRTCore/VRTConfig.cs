@@ -7,7 +7,7 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Core
 {
     [Serializable]
-    public class Config
+    public class VRTConfig
     {
         [Flags] public enum ProtocolType
         {
@@ -195,15 +195,15 @@ namespace VRT.Core
         public _User LocalUser;
         public _User RemoteUser;
 
-        static Config _Instance;
-        public static Config Instance
+        static VRTConfig _Instance;
+        public static VRTConfig Instance
         {
             get
             {
                 if (_Instance == null)
                 {
                     string file = ConfigFilename();
-                    _Instance = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(file));
+                    _Instance = JsonUtility.FromJson<VRTConfig>(System.IO.File.ReadAllText(file));
                     if (_Instance.targetFrameRate != 0)
                     {
                         Application.targetFrameRate = _Instance.targetFrameRate;
