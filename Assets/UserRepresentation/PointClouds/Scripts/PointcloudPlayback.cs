@@ -34,10 +34,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
             }
-            if (cfg.sourceType != "prerecorded")
-            {
-                Debug.LogError("{Name()}: Init() called with cfg.sourceType != prerecorded");
-            }
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
             // tile (because it would mean that the other tiles with the same timestamp become useless)
@@ -136,7 +132,6 @@ namespace VRT.UserRepresentation.PointCloud
             VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 
             cfg = new VRTConfig._User();
-            cfg.sourceType = "prerecorded";
             cfg.PCSelfConfig = new VRTConfig._User._PCSelfConfig();
             cfg.PCSelfConfig.PrerecordedReaderConfig = new VRTConfig._User._PCSelfConfig._PrerecordedReaderConfig();
             if (folder == null || folder == "")

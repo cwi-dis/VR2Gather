@@ -40,7 +40,7 @@ namespace VRT.UserRepresentation.PointCloud
 
 
         /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
-        /// <param name="cfg"> Config file json </param>
+        /// <param name="cfg"> Config file json (xxxjack unused should be removed)</param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
@@ -49,10 +49,6 @@ namespace VRT.UserRepresentation.PointCloud
             if (isLocalPlayer)
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
-            }
-            if (cfg.sourceType != "remote")
-            {
-                Debug.LogError("{Name()}: Init() called with cfg.sourceType != remote");
             }
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one

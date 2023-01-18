@@ -109,7 +109,7 @@ namespace VRT.Pilots.Common
                     webcam.SetActive(true);
                     if (userCfg == null)
                     {
-                        userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : VRTConfig.Instance.RemoteUser;
+                        userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
                     }
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg);
@@ -126,7 +126,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : VRTConfig.Instance.RemoteUser;
+                    userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
                     if (configDistributors != null)
@@ -173,10 +173,8 @@ namespace VRT.Pilots.Common
             }
             else
             { // Receiver
-                var AudioSUBConfig = VRTConfig.Instance.RemoteUser.AudioSUBConfig;
-                if (AudioSUBConfig == null)
-                    throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-                voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, VRTConfig.Instance.protocolType); //Audio Pipeline
+                const int audioStreamNumber = 0;
+                voice.AddComponent<VoiceReceiver>().Init(user, "audio", audioStreamNumber, VRTConfig.Instance.protocolType); //Audio Pipeline
             }
         }
     

@@ -49,10 +49,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==false");
             }
-            if (cfg.sourceType != "self")
-            {
-                Debug.LogError("{Name()}: Init() called with cfg.sourceType != self");
-            }
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
             // tile (because it would mean that the other tiles with the same timestamp become useless)
