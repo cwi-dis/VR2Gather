@@ -9,6 +9,7 @@ namespace VRT.Core
     [Serializable]
     public class VRTConfig : MonoBehaviour
     {
+        
         [Flags] public enum ProtocolType
         {
             None = 0,
@@ -190,7 +191,10 @@ namespace VRT.Core
         };
         [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
         public _User LocalUser;
-   
+
+        [Tooltip("Introspection: Config override JSON file used")]
+        public string configOverrideFilename;
+
         static VRTConfig _Instance;
         public static VRTConfig Instance
         {
@@ -217,7 +221,16 @@ namespace VRT.Core
         private void Initialize()
         {
             string file = ConfigFilename();
-            JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            configOverrideFilename = file;
+            if (System.IO.File.Exists(file))
+            {
+                Debug.Log($"VRTConfig: override settings from {file}");
+                JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            }
+            else
+            {
+                Debug.LogWarning($"VRTConfig: override file not found: {file}");
+            }
             if (targetFrameRate != 0)
             {
                 Application.targetFrameRate = _Instance.targetFrameRate;

@@ -44,16 +44,16 @@ namespace VRT.UserRepresentation.WebCam
 
         public static void Register()
         {
-            if (VRTConfig.Instance.ffmpegDLLDir != "")
-            {
-                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
-            }
             RegisterPipelineClass(true, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
             RegisterPipelineClass(false, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
         }
 
         public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)
         {
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
+            }
             return dst.AddComponent<WebCamPipeline>();
         }
 
