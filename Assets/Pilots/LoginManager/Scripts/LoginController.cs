@@ -15,13 +15,7 @@ namespace VRT.Pilots.LoginManager
         [Tooltip("The self-player for the login scene")]
         [SerializeField] public PlayerControllerSelf selfPlayer;
 
-        public class MessageType
-        {
-            // Bad magic. These are prefixes generated (I think) by the orchestrator)
-            public const string START = "START";
-            public const string READY = "READY";
-        }
-      
+       
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
@@ -52,6 +46,15 @@ namespace VRT.Pilots.LoginManager
         public override void OnUserMessageReceived(string message)
         {
             Debug.Log($"{Name()}: OnUserMessageReceived: {message}");
+            if (!message.StartsWith("START_")) {
+                Debug.LogError("LoginController: only expecting START_ messages");
+                return;
+            }
+            message = message.Substring(6);
+            SessionConfig.FromJson(message);
+#if xxxjack_old
+            SessionConfig.Instance = JsonUtility.FromJson<SessionConfig>(message);
+           
             string[] msg = message.Split(new char[] { '_' });
             if (msg[0] == MessageType.START)
             {
@@ -98,6 +101,7 @@ namespace VRT.Pilots.LoginManager
             {
                 // Do something to check if all the users are ready (future implementation)
             }
+#endif
         }
     }
 

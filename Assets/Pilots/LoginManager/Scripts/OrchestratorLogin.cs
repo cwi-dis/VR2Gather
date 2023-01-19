@@ -36,7 +36,6 @@ namespace VRT.Pilots.LoginManager
         #region GUI Components
 
         public bool developerOptions = true;
-        private int kindAudio = 0; // Set SocketIO as default
         const int kindPresenter = 0;
 
         [HideInInspector] public bool isMaster = false;
@@ -1174,7 +1173,13 @@ namespace VRT.Pilots.LoginManager
 
         public void ReadyButton()
         {
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + VRTConfig.Instance.PCs.Codec + "_" + VRTConfig.Instance.Voice.Codec);
+            SessionConfig cfg = SessionConfig.Instance;
+            cfg.scenarioName = OrchestratorController.Instance.MyScenario.scenarioName;
+            cfg.scenarioVariant = null;
+            // protocolType already set
+            // pointCloudCodec, voiceCodec and videoCodec already set
+            string message = JsonUtility.ToJson(cfg);
+            SendMessageToAll("START_" + message);
         }
 
      
@@ -1194,19 +1199,19 @@ namespace VRT.Pilots.LoginManager
         {
             if (uncompressedPointcloudsToggle.isOn)
             {
-                VRTConfig.Instance.PCs.Codec = "cwi0";
+                SessionConfig.Instance.pointCloudCodec = "cwi0";
             }
             else
             {
-                VRTConfig.Instance.PCs.Codec = "cwi1";
+                SessionConfig.Instance.pointCloudCodec = "cwi1";
             }
             if (uncompressedAudioToggle.isOn)
             {
-                VRTConfig.Instance.Voice.Codec = "VR2a";
+                SessionConfig.Instance.voiceCodec = "VR2a";
             }
             else
             {
-                VRTConfig.Instance.Voice.Codec = "VR2A";
+                SessionConfig.Instance.voiceCodec = "VR2A";
             }
         }
 
@@ -1218,7 +1223,7 @@ namespace VRT.Pilots.LoginManager
                     if (socketProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
+                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
                         // Set Toggles
                         dashProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1228,7 +1233,7 @@ namespace VRT.Pilots.LoginManager
                     if (dashProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
+                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1238,7 +1243,7 @@ namespace VRT.Pilots.LoginManager
                     if (tcpProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
+                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         dashProtocolToggle.isOn = false;
@@ -1247,7 +1252,6 @@ namespace VRT.Pilots.LoginManager
                 default:
                     break;
             }
-            kindAudio = (int)VRTConfig.Instance.protocolType;
         }
 
 
