@@ -111,7 +111,11 @@ When the participant that created the scene presses the `Start` button a command
 
 If you compare this scene to _Pilot0_ you will notice a few differences:
 
-- This scene has a `VRTInitializer` that does global application initialization.
+- This scene has a `VRTInitializer` that does global application initialization. This GameObject also has the `VRTConfig` component that has all the global configuration information (such as the URL at which to contact the orchestrator), and it has a `PilotRegistry` object that maps Pilot names (as known by the orchestrator) to scene names (as known by this Unity application.
+
+  The configuration settings can be overriden at runtime by placing a `config.json` file in the same directory as where the executable lives, or (for Unity Editor) next to the Assets folder.
+  
+  The VRTInitializer GameObject is placed in DontDestroyOnLoad, so subsequent scenes also have access to the global configuration.
 - The `LoginController` does not have the session components (because there is no session yet), nor the PlayersManager.
 -  It uses a pre-created self-player (for virtual camera, controllers and self-representation), `P_Self_login`.
 
