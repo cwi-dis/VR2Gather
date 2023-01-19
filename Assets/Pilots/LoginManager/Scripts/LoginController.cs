@@ -85,11 +85,13 @@ namespace VRT.Pilots.LoginManager
                 {
                     VRTConfig.Instance.Voice.Codec = msg[5];
                 }
-                string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+                string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(pilotName, pilotVariant);
                 if (sceneName == null)
                 {
-                    throw new System.Exception($"{Name()}: Selected scenario \"{sceneName}\" not implemented in this player");
+                    Debug.LogError($"{Name()}: Selected scenario \"{pilotName}\" not implemented in this player (unknown scene)");
+                    return;
                 }
+                
                 if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
             }
             else if (msg[0] == MessageType.READY)
