@@ -20,7 +20,7 @@ namespace VRT.Core
 
         [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
-        [Tooltip("If greater than 0 limit application target framerate (for non-HMD use)")]
+        [Tooltip("If nonzero: target frame rate. -1 is system default. (ignored when using HMD)")]
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
@@ -233,7 +233,7 @@ namespace VRT.Core
             }
             if (targetFrameRate != 0)
             {
-                Application.targetFrameRate = _Instance.targetFrameRate;
+                Application.targetFrameRate = this.targetFrameRate;
                 Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
             }
             // Initialize some other modules that have their own configuration.
