@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.Video;
 using VRT.Core;
+using System;
 
 namespace VRT.Pilots.Common
 {
@@ -117,6 +118,33 @@ namespace VRT.Pilots.Common
         public virtual void OnUserMessageReceived(string message)
         {
             Debug.LogWarning($"{Name()}: OnUserMessageReceived: unexpected message: {message}");
+        }
+
+        /// <summary>
+        /// Called by HUD and other UI methods to implement per-pilot commands.
+        /// If overridden by subclasses they must call this base method too
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>True if the command is implemented.</returns>
+        public virtual bool OnUserCommand(string command)
+        {
+            if (command == "leave")
+            {
+                LoadNewScene("LoginManager");
+                return true;
+            }
+            if (command == "exit")
+            {
+#if UNITY_EDITOR
+                // Application.Quit() does not work in the editor so
+                // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+                return true;
+            }
+            return false;
         }
     }
 }

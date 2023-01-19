@@ -47,8 +47,9 @@ namespace VRT.Pilots.Common
 			{
 				if (Application.isPlaying)
 				{
-					Debug.LogError("[NetworkIdManager] Colliding network Ids! Couldn't add NetworkIdBehaviour.", behaviour);
+					Debug.LogError($"NetworkIdManager: Colliding network Id {behaviour.NetworkId} Couldn't add NetworkIdBehaviour {behaviour}");
 				}
+				Debug.Log($"NetworkIdManager: id {behaviour.NetworkId} registered to {behaviour}");
 				return false;
 			}
 

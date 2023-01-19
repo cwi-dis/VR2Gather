@@ -318,15 +318,15 @@ namespace VRT.Core
         // Start is called before the first frame update
         void Start()
         {
-            _debugSynchronizer = Config.Instance.Synchronizer.debugSynchronizer;
-            debugJitterBuffer = Config.Instance.Synchronizer.debugJitterBuffer;
-            minLatency = Config.Instance.Synchronizer.minLatency;
+            _debugSynchronizer = VRTConfig.Instance.Synchronizer.debugSynchronizer;
+            debugJitterBuffer = VRTConfig.Instance.Synchronizer.debugJitterBuffer;
+            minLatency = VRTConfig.Instance.Synchronizer.minLatency;
             currentMinLatency = minLatency;
             currentLatency = minLatency;
-            maxLatency = Config.Instance.Synchronizer.maxLatency;
-            latencyMaxDecrease = Config.Instance.Synchronizer.latencyMaxDecrease;
-            latencyMaxIncrease = Config.Instance.Synchronizer.latencyMaxIncrease;
-            acceptDesyncOnDataUnavailable = Config.Instance.Synchronizer.acceptDesyncOnDataUnavailable;
+            maxLatency = VRTConfig.Instance.Synchronizer.maxLatency;
+            latencyMaxDecrease = VRTConfig.Instance.Synchronizer.latencyMaxDecrease;
+            latencyMaxIncrease = VRTConfig.Instance.Synchronizer.latencyMaxIncrease;
+            acceptDesyncOnDataUnavailable = VRTConfig.Instance.Synchronizer.acceptDesyncOnDataUnavailable;
 
             if (debugSynchronizer) Debug.Log($"{Name()}: Synchronizer started");
 #if VRT_WITH_STATS

@@ -24,8 +24,8 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            takeScreenshot = Config.Instance.ScreenshotTool.takeScreenshot;
-            screenshotTargetDirectory = Config.Instance.ScreenshotTool.screenshotTargetDirectory;
+            takeScreenshot = VRTConfig.Instance.ScreenshotTool.takeScreenshot;
+            screenshotTargetDirectory = VRTConfig.Instance.ScreenshotTool.screenshotTargetDirectory;
             gameObject.SetActive(takeScreenshot);
             if (!takeScreenshot)
             {

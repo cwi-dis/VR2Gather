@@ -11,7 +11,7 @@ public class CopyConfigOnBuild : IPostprocessBuildWithReport
     public int callbackOrder {  get { return 0; } }
     public void OnPostprocessBuild(BuildReport report)
     {
-        string srcDir = VRT.Core.Config.ConfigFilename("") + "/";
+        string srcDir = VRT.Core.VRTConfig.ConfigFilename("") + "/";
         string dstDir;
         
         if (report.summary.platform == BuildTarget.Android)

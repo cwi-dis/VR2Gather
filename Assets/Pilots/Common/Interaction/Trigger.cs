@@ -10,8 +10,8 @@ namespace VRT.Pilots.Common
 	/// </summary>
 	public class Trigger : MonoBehaviour
 	{
-		[Tooltip("Component that communicates triggers to other instances of the experience (default: on this GameObject)")]
-		public NetworkTrigger networkTrigger;
+		[Tooltip("Component that communicates triggers to other instances of the experience")]
+		public NetworkTriggerBase networkTrigger;
 
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
@@ -27,6 +27,7 @@ namespace VRT.Pilots.Common
 				}
 			}
         }
+
         /// <summary>
         /// Called by Unity on collider activity.
         /// Also called by VRT NoHandInteraction with a null collider on mouse-ray interaction.

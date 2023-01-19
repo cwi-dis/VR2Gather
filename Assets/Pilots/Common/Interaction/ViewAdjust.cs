@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,21 +35,31 @@ namespace VRT.Pilots.Common
         [Tooltip("The Input System Action that will be used to reset view origin.")]
         [SerializeField] InputActionProperty m_resetOriginAction;
 
+        [Tooltip("Position indicator, visible while adjusting position")]
+        [SerializeField] GameObject positionIndicator;
+
+        [Tooltip("How many seconds is the position indicator visible?")]
+        [SerializeField] float positionIndicatorDuration = 5f;
+
+        float positionIndicatorInvisibleAfter = 0;
+
         public bool debugLogging = false;
 
         // Start is called before the first frame update
         void Start()
         {
-
+            if (positionIndicator != null && positionIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) positionIndicator.SetActive(false);
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (positionIndicator != null && positionIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) positionIndicator.SetActive(false);
             Vector2 heightInput = m_ViewHeightAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
             float deltaHeight = heightInput.y * heightFactor;
             if (deltaHeight != 0 && BeginLocomotion())
             {
+                ShowPositionIndicator();
                 cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
                 // Note: we don't save height changes. But if you reset view position
                 // afterwards we do also save height changes.
@@ -64,8 +75,21 @@ namespace VRT.Pilots.Common
             }
         }
 
-        void ResetOrigin()
+        private void ShowPositionIndicator()
         {
+            if (positionIndicator != null)
+            {
+                positionIndicator.SetActive(true);
+                positionIndicatorInvisibleAfter = Time.time + positionIndicatorDuration;
+            }
+        }
+
+        /// <summary>
+        /// The user wants the current head position, (X,Z) only, to be the (0, Y, 0), right above the XROrigin.
+        /// </summary>
+        public void ResetOrigin()
+        {
+            ShowPositionIndicator();
             if (BeginLocomotion())
             {
                 if (debugLogging) Debug.Log($"ViewAdjust: reset origin");
