@@ -614,8 +614,8 @@ namespace VRT.Pilots.LoginManager
             socketProtocolToggle.isOn = true;
             dashProtocolToggle.isOn = false;
             tcpProtocolToggle.isOn = false;
-            uncompressedPointcloudsToggle.isOn = VRTConfig.Instance.PCs.Codec == "cwi0";
-            uncompressedAudioToggle.isOn = VRTConfig.Instance.Voice.Codec == "VR2a";
+            uncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
+            uncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
 
             if (OrchestratorController.Instance.UserIsLogged)
             { // Comes from another scene
@@ -1223,7 +1223,7 @@ namespace VRT.Pilots.LoginManager
                     if (socketProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
+                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.SocketIO;
                         // Set Toggles
                         dashProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1233,7 +1233,7 @@ namespace VRT.Pilots.LoginManager
                     if (dashProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
+                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.Dash;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1243,7 +1243,7 @@ namespace VRT.Pilots.LoginManager
                     if (tcpProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        SessionConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
+                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.TCP;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         dashProtocolToggle.isOn = false;

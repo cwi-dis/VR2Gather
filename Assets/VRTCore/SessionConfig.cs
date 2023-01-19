@@ -2,15 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using VRT.Core;
 
-namespace VRT.Pilots.Common
+namespace VRT.Core
 {
     /// <summary>
 	/// Per-session parameters that should be the same for all participants in the experience.
 	/// </summary>
     public class SessionConfig
     {
+        public enum ProtocolType
+        {
+            None = 0,
+            SocketIO = 1,
+            Dash = 2,
+            TCP = 3,
+        };
+
         /// <summary>
 		/// The experience name (so _not_ the session name or the scene name)
 		/// </summary>
@@ -22,7 +29,7 @@ namespace VRT.Pilots.Common
         /// <summary>
 		/// The transport protocol to use (socketio, tcp, dash)
 		/// </summary>
-        public VRTConfig.ProtocolType protocolType = VRTConfig.ProtocolType.SocketIO;
+        public ProtocolType protocolType = ProtocolType.SocketIO;
         /// <summary>
 		/// The codec to use for webcam video (4CC)
 		/// </summary>

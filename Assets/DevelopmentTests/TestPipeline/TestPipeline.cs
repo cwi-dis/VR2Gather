@@ -98,8 +98,9 @@ public class TestPipeline : MonoBehaviour
                 Debug.Log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> OnConnectReady");
                 string uuid = System.Guid.NewGuid().ToString();
                 User user = OrchestratorController.Instance.SelfUser;
-                gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000, VRTConfig.ProtocolType.SocketIO); //Audio Pipeline
-                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0, VRTConfig.ProtocolType.SocketIO); //Audio Pipeline
+                SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.SocketIO;
+                gameObject.AddComponent<VoiceSender>().Init(user, "audio", 2000, 10000); //Audio Pipeline
+                gameObject.AddComponent<VoiceReceiver>().Init(user, "audio", 0); //Audio Pipeline
                 pointcloudsReader = new AsyncSocketIOReader(user, remoteStream, "cwi1", tiles);
                 pointcloudsWriter = new AsyncSocketIOWriter(user, remoteStream, "cwi1", streams);
 
@@ -173,17 +174,17 @@ public class TestPipeline : MonoBehaviour
 
         // using Audio over dash
         if (useDashVoice && !useSocketIO) {
+            SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.Dash;
             string uuid = System.Guid.NewGuid().ToString();
-            gameObject.AddComponent<VoiceSender>().Init(new User() { 
-                sfuData = new SfuData() { 
-                    url_audio = $"{remoteURL}/{uuid}/audio/" 
-                } 
-            }, "audio", 2000, 10000, VRTConfig.ProtocolType.Dash); //Audio Pipeline
-            gameObject.AddComponent<VoiceReceiver>().Init(new User() { 
-                sfuData = new SfuData() { 
-                    url_audio = $"{remoteURL}/{uuid}/audio/" 
-                } 
-            }, "audio", 0, VRTConfig.ProtocolType.Dash); //Audio Pipeline
+            var tmpUser = new User()
+            {
+                sfuData = new SfuData()
+                {
+                    url_audio = $"{remoteURL}/{uuid}/audio/"
+                }
+            };
+            gameObject.AddComponent<VoiceSender>().Init(tmpUser, "audio", 2000, 10000); //Audio Pipeline
+            gameObject.AddComponent<VoiceReceiver>().Init(tmpUser, "audio", 0); //Audio Pipeline
         }
 
     }

@@ -25,8 +25,8 @@ public class TestAudio : MonoBehaviour
             Debug.Log($"Supported audio input device name: {d}");
         }
         // Copy parameters
-        if (audioCodec != "") VRTConfig.Instance.Voice.Codec = audioCodec;
-        audioCodec = VRTConfig.Instance.Voice.Codec;
+        if (audioCodec != "") SessionConfig.Instance.voiceCodec = audioCodec;
+        audioCodec = SessionConfig.Instance.voiceCodec;
         if (audioFps != 0) VRTConfig.Instance.Voice.audioFps = audioFps;
         audioFps = VRTConfig.Instance.Voice.audioFps;
         
@@ -40,8 +40,9 @@ public class TestAudio : MonoBehaviour
         QueueThreadSafe queue = new QueueThreadSafe("NullVoiceNetworkQueue", 4, true);
         if (useTCP)
         {
-            sender.Init(user, "testAudio", 1000, 10000, VRT.Core.VRTConfig.ProtocolType.TCP);
-            receiver.Init(user, "testAudio", 0, VRT.Core.VRTConfig.ProtocolType.TCP);
+            SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.TCP;
+            sender.Init(user, "testAudio", 1000, 10000);
+            receiver.Init(user, "testAudio", 0);
         } else
         {
             sender.Init(user, queue);
