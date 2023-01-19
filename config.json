@@ -1,99 +1,17 @@
 {
-	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
-
-  "targetFrameRate": 0,
-  "ntpSyncThreshold": 0.100,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
-  "statsOutputFileAppend": false,
-  "ffmpegDLLDir" : "../ffmpeg/x64",
- 
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "",
-  	"sessionScenario" : "",
-  	"sessionTransportProtocol" : "",
+  	"sessionName" : "CWI 50th Anniversary Party",
+  	"sessionScenario" : "Development",
+  	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "",
+  	"autoCreateForUser" : "flauwte",
   	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 3,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
-  },
-  "ScreenshotTool" : {
-  	"takeScreenshot" : false,
-  	"screenshotTargetDirectory" : "../session_screenshots"
-  },
-  "VR" : {
-	"_loader" : ""
-  },
-  "Macintosh": {
-    "SIGNALS_SMD_PATH": "/Users/jack/lib"
-  },
-  "PCs": {
-    "Codec": "cwi1",
-    "defaultCellSize": 0.0024,
-    "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 5,
-    "encoderParallelism" : 0,
-    "decoderParallelism" : 0
-  },
-  "Voice": {
-  	"Codec": "VR2A",
-  	"maxPlayoutLatency" : 0.5,
-	"maxPlayoutAhead": 0.400,
-	"ignoreSynchronizer" : false
-  },
-  "Video": {
-  	"Codec" : "h264"
-  },
-  "Synchronizer" : {
-  	"debugSynchronizer" : false,
-  	"debugJitterBuffer" : false,
-  	"minLatency" : 100,
-  	"maxLatency" : 5000,
-  	"latencyMaxDecrease" : 1,
-  	"latencyMaxIncrease" : 33,
-  	"acceptDesyncOnDataUnavailable" : false
-  },
-
-  "LocalUser": {
-    
-    "PCSelfConfig": {
-      "RS2ReaderConfig": {
-        "configFilename": "./cameraconfig.xml"
-      },
-      "SynthReaderConfig": {
-        "nPoints": 16000
-      },
-      "ProxyReaderConfig": {
-        "localIP": "",
-        "port": 9335
-      },
-	  "PrerecordedReaderConfig" : {
-		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
-	  },
-      "voxelSize": 0,
-      "frameRate": 15,
-      "tiled": false,
-      "Encoders": [
-		
-		{
-          "octreeBits": 9
-        }
-
-      ],
-      "Bin2Dash": {
-        "segmentSize": 1000,
-        "segmentLife": 16000
-      },
-      "AudioBin2Dash": {
-        "segmentSize": 1000,
-        "segmentLife": 16000
-      }
-    }
   }
 }
