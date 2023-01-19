@@ -312,8 +312,8 @@ namespace VRT.Pilots.LoginManager
                 }
                 sessionNumUsersText.text = OrchestratorController.Instance.ConnectedUsers.Length.ToString() /*+ "/" + "4"*/;
                 // We may be able to continue auto-starting
-                if (Config.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStart != null)
+                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
             else
             {
@@ -362,7 +362,7 @@ namespace VRT.Pilots.LoginManager
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
+                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);
@@ -373,7 +373,7 @@ namespace VRT.Pilots.LoginManager
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
+                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);
@@ -560,12 +560,12 @@ namespace VRT.Pilots.LoginManager
                 instance = this;
             }
 
-            AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+            AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
 
             system = EventSystem.current;
 
             // Update Application version
-            orchURLText.text = Config.Instance.orchestratorURL;
+            orchURLText.text = VRTConfig.Instance.orchestratorURL;
             nativeVerText.text = VersionLog.Instance.NativeClient;
             playerVerText.text = "v" + Application.version;
             orchVerText.text = "";
@@ -615,8 +615,8 @@ namespace VRT.Pilots.LoginManager
             socketProtocolToggle.isOn = true;
             dashProtocolToggle.isOn = false;
             tcpProtocolToggle.isOn = false;
-            uncompressedPointcloudsToggle.isOn = Config.Instance.PCs.Codec == "cwi0";
-            uncompressedAudioToggle.isOn = Config.Instance.Voice.Codec == "VR2a";
+            uncompressedPointcloudsToggle.isOn = VRTConfig.Instance.PCs.Codec == "cwi0";
+            uncompressedAudioToggle.isOn = VRTConfig.Instance.Voice.Codec == "VR2a";
 
             if (OrchestratorController.Instance.UserIsLogged)
             { // Comes from another scene
@@ -667,7 +667,7 @@ namespace VRT.Pilots.LoginManager
 
         void AutoStateUpdate()
         {
-            Config._AutoStart config = Config.Instance.AutoStart;
+            VRTConfig._AutoStart config = VRTConfig.Instance.AutoStart;
             if (config == null) return;
             if (
                     Keyboard.current.shiftKey.isPressed
@@ -1174,7 +1174,7 @@ namespace VRT.Pilots.LoginManager
 
         public void ReadyButton()
         {
-            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + Config.Instance.PCs.Codec + "_" + Config.Instance.Voice.Codec);
+            SendMessageToAll("START_" + OrchestratorController.Instance.MyScenario.scenarioName + "_" + kindAudio + "_" + kindPresenter + "_" + VRTConfig.Instance.PCs.Codec + "_" + VRTConfig.Instance.Voice.Codec);
         }
 
      
@@ -1194,19 +1194,19 @@ namespace VRT.Pilots.LoginManager
         {
             if (uncompressedPointcloudsToggle.isOn)
             {
-                Config.Instance.PCs.Codec = "cwi0";
+                VRTConfig.Instance.PCs.Codec = "cwi0";
             }
             else
             {
-                Config.Instance.PCs.Codec = "cwi1";
+                VRTConfig.Instance.PCs.Codec = "cwi1";
             }
             if (uncompressedAudioToggle.isOn)
             {
-                Config.Instance.Voice.Codec = "VR2a";
+                VRTConfig.Instance.Voice.Codec = "VR2a";
             }
             else
             {
-                Config.Instance.Voice.Codec = "VR2A";
+                VRTConfig.Instance.Voice.Codec = "VR2A";
             }
         }
 
@@ -1218,7 +1218,7 @@ namespace VRT.Pilots.LoginManager
                     if (socketProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        Config.Instance.protocolType = Config.ProtocolType.SocketIO;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
                         // Set Toggles
                         dashProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1228,7 +1228,7 @@ namespace VRT.Pilots.LoginManager
                     if (dashProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        Config.Instance.protocolType = Config.ProtocolType.Dash;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
@@ -1238,7 +1238,7 @@ namespace VRT.Pilots.LoginManager
                     if (tcpProtocolToggle.isOn)
                     {
                         // Set AudioType
-                        Config.Instance.protocolType = Config.ProtocolType.TCP;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         dashProtocolToggle.isOn = false;
@@ -1247,7 +1247,7 @@ namespace VRT.Pilots.LoginManager
                 default:
                     break;
             }
-            kindAudio = (int)Config.Instance.protocolType;
+            kindAudio = (int)VRTConfig.Instance.protocolType;
         }
 
 
@@ -1339,7 +1339,7 @@ namespace VRT.Pilots.LoginManager
             switch (OrchestratorController.Instance.ConnectionStatus)
             {
                 case OrchestratorController.orchestratorConnectionStatus.__DISCONNECTED__:
-                    OrchestratorController.Instance.SocketConnect(Config.Instance.orchestratorURL);
+                    OrchestratorController.Instance.SocketConnect(VRTConfig.Instance.orchestratorURL);
                     break;
                 case OrchestratorController.orchestratorConnectionStatus.__CONNECTING__:
                     OrchestratorController.Instance.Abort();
@@ -1356,7 +1356,7 @@ namespace VRT.Pilots.LoginManager
                 state = State.Online;
             }
             PanelChanger();
-            if (pConnected && autoState == AutoState.DidNone && Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoLogin)
+            if (pConnected && autoState == AutoState.DidNone && VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoLogin)
             {
                 if (
                     Keyboard.current.shiftKey.isPressed
@@ -1449,12 +1449,12 @@ namespace VRT.Pilots.LoginManager
                 PlayerPrefs.DeleteKey("userPasswordLoginIF");
             }
             // If we want to autoCreate or autoStart depending on username set the right config flags.
-            if (Config.Instance.AutoStart != null && Config.Instance.AutoStart.autoCreateForUser != "")
+            if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
-                bool isThisUser = Config.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
-                Debug.Log($"[OrchestratorLogin][AutoStart] user={userNameLoginIF.text} autoCreateForUser={Config.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
-                Config.Instance.AutoStart.autoCreate = isThisUser;
-                Config.Instance.AutoStart.autoJoin = !isThisUser;
+                bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
+                Debug.Log($"[OrchestratorLogin][AutoStart] user={userNameLoginIF.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
+                VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
+                VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
         }
@@ -1499,18 +1499,18 @@ namespace VRT.Pilots.LoginManager
             PanelChanger();
             if (userLoggedSucessfully
                 && autoState == AutoState.DidLogIn
-                && Config.Instance.AutoStart != null
-                && (Config.Instance.AutoStart.autoCreate || Config.Instance.AutoStart.autoJoin)
+                && VRTConfig.Instance.AutoStart != null
+                && (VRTConfig.Instance.AutoStart.autoCreate || VRTConfig.Instance.AutoStart.autoJoin)
                 )
             {
                 if (
                     Keyboard.current.shiftKey.isPressed
 
                     ) return;
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {Config.Instance.AutoStart.autoCreate} autoJoin {Config.Instance.AutoStart.autoJoin}");
+                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
                 autoState = AutoState.DidPlay;
                 StateButton(State.Play);
-                Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+                Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1543,9 +1543,9 @@ namespace VRT.Pilots.LoginManager
         private void OnGetNTPTimeResponse(NtpClock ntpTime)
         {
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
-            if (Math.Abs(difference) >= Config.Instance.ntpSyncThreshold)
+            if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
-                ntpText.text = $"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {Config.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.";
+                ntpText.text = $"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.";
                 ntpPanel.SetActive(true);
                 loginPanel.SetActive(false);
             }
@@ -1568,8 +1568,8 @@ namespace VRT.Pilots.LoginManager
                 // update the list of available sessions
                 UpdateSessions(orchestratorSessions, sessionIdDrop);
                 // We may be able to advance auto-connection
-                if (Config.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStart != null)
+                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 
@@ -1600,8 +1600,8 @@ namespace VRT.Pilots.LoginManager
                 state = State.Lobby;
                 PanelChanger();
                 // We may be able to advance auto-connection
-                if (Config.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStart != null)
+                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
             else
             {
@@ -1749,8 +1749,8 @@ namespace VRT.Pilots.LoginManager
                 //update the data in the dropdown
                 UpdateScenarios(scenarioIdDrop);
                 // We may be able to advance auto-connection
-                if (Config.Instance.AutoStart != null)
-                    Invoke("AutoStateUpdate", Config.Instance.AutoStart.autoDelay);
+                if (VRTConfig.Instance.AutoStart != null)
+                    Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
             }
         }
 

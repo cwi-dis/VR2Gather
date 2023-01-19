@@ -19,7 +19,6 @@ public class VRTInitializer : MonoBehaviour
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
-        _ = Config.Instance;
     }
 
     private void OnApplicationQuit()

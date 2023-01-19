@@ -54,9 +54,9 @@ namespace VRT.Video
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
             outAudioQueue = _outAudioQueue;
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             videoPacket = ffmpeg.av_packet_alloc();
             audioPacket = ffmpeg.av_packet_alloc();
@@ -261,7 +261,7 @@ namespace VRT.Video
             {
                 swrCtx = ffmpeg.swr_alloc();
                 int src_nb_samples = 1024;
-                int dst_rate = Config.Instance.audioSampleRate;
+                int dst_rate = VRTConfig.Instance.audioSampleRate;
 
                 ffmpeg.av_opt_set_int(swrCtx, "in_channel_layout", (long)audioFrame->channel_layout, 0);          // Source layout
                 ffmpeg.av_opt_set_int(swrCtx, "in_sample_rate", audioFrame->sample_rate, 0);                // Source sample rate.

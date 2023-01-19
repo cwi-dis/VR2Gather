@@ -7,8 +7,9 @@ using Statistics = Cwipc.Statistics;
 namespace VRT.Core
 {
     [Serializable]
-    public class Config
+    public class VRTConfig : MonoBehaviour
     {
+        
         [Flags] public enum ProtocolType
         {
             None = 0,
@@ -17,32 +18,24 @@ namespace VRT.Core
             TCP = 3,
         };
 
-        public enum UserRepresentation
-        {
-            PC
-        };
-
+        [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
-        public string orchestratorLogURL = "";
-        public bool openLogOnExit = true;
+        [Tooltip("If nonzero: target frame rate. -1 is system default. (ignored when using HMD)")]
         public int targetFrameRate = -1; // system default framerate
+        [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
+        [Tooltip("Protocol for streaming user representations (audio, video, pointclouds)")]
         public ProtocolType protocolType = ProtocolType.SocketIO;
+        [Tooltip("Audio sample rate. NOTE: must match between all instances")]
         public readonly int audioSampleRate = 48000;
-        public UserRepresentation userRepresentation = UserRepresentation.PC;
-        public bool pilot3NavigationLogs = true;
+        [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
         public double statsInterval = 10.0;
+        [Tooltip("Path name of stats: output file. Empty: to console log")]
         public string statsOutputFile = "";
-        public bool allowControllerMovement = true;
+        [Tooltip("Append to stats: file in stead of overwriting")]
         public bool statsOutputFileAppend = true;
+        [Tooltip("If not empty: directory path where ffmpeg native DLLs are stored")]
         public string ffmpegDLLDir = "";
-
-        [Serializable]
-        public class _VR
-        {
-            public string loader = null;
-        }
-        public _VR VR;
 
         [Serializable]
         public class _ScreenshotTool
@@ -60,20 +53,34 @@ namespace VRT.Core
             // - automatically create a session with a given name and parameters
             // - automatically join a session of a given name
             // - automatically start a session when enough people have joined
+            [Tooltip("Automatically login with predefined credentials")]
             public bool autoLogin = false;
-            public string sessionName = "";
-            public string sessionScenario = "";
-            public string sessionTransportProtocol = "";
-            public bool sessionUncompressed = false;
-            public bool sessionUncompressedAudio = false;
+            [Tooltip("Automatically create a session")]
             public bool autoCreate = false;
+            [Tooltip("Automatically join a session")]
             public bool autoJoin = true;
+            [Tooltip("If not empty: autoCreate for this user, autoJoin for all others")]
             public string autoCreateForUser = "";
+            [Tooltip("AutoCreate and AutoJoin:Session name")]
+            public string sessionName = "";
+            [Tooltip("AutoCreate: Scenario name")]
+            public string sessionScenario = "";
+            [Tooltip("AutoCreate: Transport protocol")]
+            public string sessionTransportProtocol = "";
+            [Tooltip("AutoCreate: Uncompressed pointclouds")]
+            public bool sessionUncompressed = false;
+            [Tooltip("AutoCreate: Uncompressed audio")]
+            public bool sessionUncompressedAudio = false;
+            [Tooltip("AutoCreate: Start session when this many users have joined")]
             public int autoStartWith = -1;
-            public float autoDelay = 0.2f;
+            [Tooltip("Automatically leave session after this many seconds (if > 0)")]
             public float autoLeaveAfter = 0f;
+            [Tooltip("Automatically quit application after leaving")]
             public bool autoStopAfterLeave = false;
+            [Tooltip("Delay in seconds between automatic login/create/join step")]
+            public float autoDelay = 0.2f;
         };
+        [Tooltip("Automation of LoginManager dialogs")]
         public _AutoStart AutoStart;
 
         [Serializable]
@@ -94,6 +101,7 @@ namespace VRT.Core
             public float maxPlayoutAhead = 0.066f;
             public bool ignoreSynchronizer = false;
         }
+        [Tooltip("Conversational audio settings")]
         public _Voice Voice;
 
         [Serializable]
@@ -101,6 +109,7 @@ namespace VRT.Core
         {
             public string Codec = "h264";
         }
+        [Tooltip("Webcam video avatar settings")]
         public _Video Video;
 
         [Serializable]
@@ -124,24 +133,12 @@ namespace VRT.Core
             [Tooltip("If not all streams have data available play out unsynced (false: delay until data is available)")]
             public bool acceptDesyncOnDataUnavailable = false;
         }
+        [Tooltip("Avatar media stream synchronizer parameters")]
         public _Synchronizer Synchronizer;
 
         [Serializable]
         public class _User
         {
-            public string sourceType;
-            [Serializable]
-            public class _PCSUBConfig
-            {
-            }
-            public _PCSUBConfig PCSUBConfig;
-            [Serializable]
-            public class _AudioSUBConfig
-            {
-                public int streamNumber;
-            }
-            public _AudioSUBConfig AudioSUBConfig;
-
             [Serializable]
             public class _PCSelfConfig
             {
@@ -188,35 +185,64 @@ namespace VRT.Core
                 }
                 public _Bin2Dash Bin2Dash;
                 public _Bin2Dash AudioBin2Dash;
-             }
+            }
             public _PCSelfConfig PCSelfConfig;
 
         };
+        [Tooltip("Point cloud avatar capturer, encoder and transmission parameters")]
         public _User LocalUser;
-        public _User RemoteUser;
 
-        static Config _Instance;
-        public static Config Instance
+        [Tooltip("Introspection: Config override JSON file used")]
+        public string configOverrideFilename;
+
+        static VRTConfig _Instance;
+        public static VRTConfig Instance
         {
             get
             {
                 if (_Instance == null)
                 {
-                    string file = ConfigFilename();
-                    _Instance = JsonUtility.FromJson<Config>(System.IO.File.ReadAllText(file));
-                    if (_Instance.targetFrameRate != 0)
-                    {
-                        Application.targetFrameRate = _Instance.targetFrameRate;
-                        Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
-                    }
-                    // Initialize some other modules that have their own configuration.
-#if VRT_WITH_STATS
-                    Statistics.Initialize(_Instance.statsInterval, _Instance.statsOutputFile, _Instance.statsOutputFileAppend);
-#endif
-                    Cwipc.CwipcConfig.SetInstance(_Instance.PCs);
+                    Debug.LogError("VRTConfig: Instance accessed before allocation. Must be on a Component that is initialized very early.");
                 }
                 return _Instance;
             }
+            
+        }
+
+        private void Awake()
+        {
+            if (_Instance != null)
+            {
+                Debug.LogError("VRTConfig: Awake() called but there is an Instance already. There must be only a single Component");
+            }
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            string file = ConfigFilename();
+            configOverrideFilename = file;
+            if (System.IO.File.Exists(file))
+            {
+                Debug.Log($"VRTConfig: override settings from {file}");
+                JsonUtility.FromJsonOverwrite(System.IO.File.ReadAllText(file), this);
+            }
+            else
+            {
+                Debug.LogWarning($"VRTConfig: override file not found: {file}");
+            }
+            if (targetFrameRate != 0)
+            {
+                Application.targetFrameRate = this.targetFrameRate;
+                Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+            }
+            // Initialize some other modules that have their own configuration.
+#if VRT_WITH_STATS
+            Statistics.Initialize(this.statsInterval, this.statsOutputFile, this.statsOutputFileAppend);
+#endif
+            Cwipc.CwipcConfig.SetInstance(this.PCs);
+            _Instance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
 
         public void WriteConfig(object toJson)

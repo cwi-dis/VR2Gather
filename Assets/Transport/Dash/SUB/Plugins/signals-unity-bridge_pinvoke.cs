@@ -260,7 +260,7 @@ namespace VRT.Transport.Dash
                 string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
                 if (path == "" || path == null)
                 {
-                    path = Config.Instance.Macintosh.SIGNALS_SMD_PATH;
+                    path = VRTConfig.Instance.Macintosh.SIGNALS_SMD_PATH;
                 }
                 if (path == "" || path == null)
                 {
