@@ -734,7 +734,7 @@ namespace VRT.Pilots.LoginManager
                     int idx = 0;
                     foreach (var entry in scenarioIdDrop.options)
                     {
-                        if (entry.text.Contains(config.sessionScenario))
+                        if (entry.text.Contains(config.sessionScenario + " "))
                         {
                             if (found)
                             {
