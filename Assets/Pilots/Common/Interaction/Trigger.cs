@@ -11,27 +11,47 @@ namespace VRT.Pilots.Common
 	public class Trigger : MonoBehaviour
 	{
 		[Tooltip("Component that communicates triggers to other instances of the experience")]
-		public NetworkTrigger networkTrigger;
+		public NetworkTriggerBase networkTrigger;
 
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
 
-		/// <summary>
-		/// Called by Unity on collider activity.
-		/// </summary>
-		/// <param name="other"></param>
-		private void OnTriggerEnter(Collider other)
+        private void Awake()
+        {
+            if (networkTrigger == null)
+			{
+				networkTrigger = GetComponent<NetworkTrigger>();
+				if (networkTrigger == null)
+				{
+					Debug.LogError($"{name}: no NetworkTrigger on GameObject");
+				}
+			}
+        }
+        
+        /// <summary>
+        /// Called by Unity on collider activity.
+        /// Also called by VRT NoHandInteraction with a null collider on mouse-ray interaction.
+        /// </summary>
+        /// <param name="other"></param>
+        public void OnTriggerEnter(Collider other)
 		{
 			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
-				string layer = LayerMask.LayerToName(other.gameObject.layer);
-				Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer} name {layer}");
-
-				if (layer != "TouchCollider")
-				{
-					return;
+				if (other == null)
+                {
+					Debug.Log($"Trigger({name}): Triggered by mouse-ray");
 				}
+				else
+                {
+					string layer = LayerMask.LayerToName(other.gameObject.layer);
+					Debug.Log($"Trigger({name}): Triggered by collider {other.name} on layer {other.gameObject.layer} name {layer}");
 
+					if (layer != "TouchCollider")
+					{
+						return;
+					}
+
+				}
 
 				OnActivate();
 

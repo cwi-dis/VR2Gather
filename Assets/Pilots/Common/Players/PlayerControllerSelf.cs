@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -141,5 +142,27 @@ namespace VRT.Pilots.Common
             }
         }
 
+        /// <summary>
+        /// This method is called by the HUD (or other means) if the user has issued a command.
+        /// If the player controller doesn't implement this command the PilotController is tried.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>True if command implemented</returns>
+        public bool OnUserCommand(string command)
+        {
+            if (command == "resetview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.ResetOrigin();
+                return true;
+            }
+            if (command == "resetposition")
+            {
+                transform.localPosition = Vector3.zero;
+                transform.localEulerAngles = Vector3.zero;
+                return true;
+            }
+            return false;
+        }
     }
 }

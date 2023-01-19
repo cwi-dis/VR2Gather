@@ -91,6 +91,7 @@ namespace VRT.Orchestrator.Wrapping
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
 
+        private bool autoStopOnLeave = false;
         #endregion
 
         #region public
@@ -197,8 +198,14 @@ namespace VRT.Orchestrator.Wrapping
             if (instance == null) {
                 instance = this;
             } else {
+                Debug.LogError("OrchestratorController: attempt to create second instance");
                 Destroy(gameObject);
             }
+        }
+
+        void Start()
+        {
+            autoStopOnLeave = VRTConfig.Instance.AutoStart.autoStopAfterLeave;
         }
 
         private void OnDestroy() {
@@ -580,7 +587,7 @@ namespace VRT.Orchestrator.Wrapping
         void _OptionalStopOnLeave()
         {
             // If wanted: stop playing (in editor), or quit application
-            if (Config.Instance.AutoStart.autoStopAfterLeave)
+            if (autoStopOnLeave)
             {
                 Application.Quit();
 #if UNITY_EDITOR
@@ -867,12 +874,12 @@ namespace VRT.Orchestrator.Wrapping
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
 #endif
-                if (Config.Instance.AutoStart.autoLeaveAfter > 0)
+                if (VRTConfig.Instance.AutoStart.autoLeaveAfter > 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStart.autoLeaveAfter}");
 #endif
-                    Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
+                    Invoke("LeaveSession", VRTConfig.Instance.AutoStart.autoLeaveAfter);
                 }
             }
             OnUserMessageReceivedEvent?.Invoke(userMessage);

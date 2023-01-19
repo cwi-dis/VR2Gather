@@ -23,9 +23,9 @@ namespace VRT.Pilots.Common
 		[NetworkId]
 		public string NetworkId;
 
-		void Awake()
+		protected virtual void Awake()
 		{
-			CreateNetworkId();
+			CreateNetworkId(false);
 		}
 
 		public void OnDestroy()
@@ -40,11 +40,16 @@ namespace VRT.Pilots.Common
 
 
 		// Create a new NetworkId when necessary
-		void CreateNetworkId()
+		// xxxjack: some of this code should also be executed for non-auto-created networkIDs.
+		public void CreateNetworkId(bool forceCreate=true)
 		{
 			if (string.IsNullOrEmpty(NetworkId))
 			{
-				if (noAutoCreateNetworkId) return;
+				if (noAutoCreateNetworkId && !forceCreate)
+				{
+					Debug.Log($"NetworkIdBehaviour({name}): not creating networkID");
+					return;
+				}
 #if UNITY_EDITOR
 				// if in editor, make sure we aren't a prefab of some kind
 				if (IsAssetOnDisk())
@@ -54,7 +59,7 @@ namespace VRT.Pilots.Common
 				Undo.RecordObject(this, "Added GUID");
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
-				Debug.Log($"xxxjack NetworkIdBehaviour: invented {NetworkId} for {name}");
+				Debug.Log($"NetworkIdBehaviour({name}: invented {NetworkId}");
 
 #if UNITY_EDITOR
 				if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))
@@ -116,7 +121,7 @@ namespace VRT.Pilots.Common
 			else
 #endif
 			{
-				CreateNetworkId();
+				CreateNetworkId(false);
 			}
 		}
 #endif

@@ -1,13 +1,8 @@
 {
-	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
 	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
-	"orchestratorLogURL" : "http://192.16.197.145:8081/",
-	"openLogOnExit" : false,
 
   "targetFrameRate": 0,
   "ntpSyncThreshold": 0.100,
-  "nonHMDHeight": 1.5,
-  "pilot3NavigationLogs": false,
   "statsInterval": 10,
   "statsOutputFile":  "",
   "statsOutputFileAppend": false,
@@ -66,7 +61,6 @@
   },
 
   "LocalUser": {
-    "sourceType": "self",
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
@@ -100,12 +94,6 @@
         "segmentSize": 1000,
         "segmentLife": 16000
       }
-    }
-  },
-  "RemoteUser": {
-    "sourceType": "remote",
-    "AudioSUBConfig": {
-      "streamNumber": 0
     }
   }
 }
