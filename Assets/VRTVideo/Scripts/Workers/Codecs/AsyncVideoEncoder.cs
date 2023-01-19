@@ -51,9 +51,9 @@ namespace VRT.Video
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
             outAudioQueue = _outAudioQueue;
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             Start();
         }
