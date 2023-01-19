@@ -52,8 +52,15 @@ namespace VRT.Pilots.LoginManager
             }
             message = message.Substring(6);
             SessionConfig.FromJson(message);
+            string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(SessionConfig.Instance.scenarioName, SessionConfig.Instance.scenarioVariant); ;
+            if (sceneName == null)
+            {
+                Debug.LogError($"{Name()}: Selected scenario \"{SessionConfig.Instance.scenarioName}\" not implemented in this player (unknown scene)");
+                return;
+            }
+
+            if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
 #if xxxjack_old
-            SessionConfig.Instance = JsonUtility.FromJson<SessionConfig>(message);
            
             string[] msg = message.Split(new char[] { '_' });
             if (msg[0] == MessageType.START)
