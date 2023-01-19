@@ -35,6 +35,8 @@ namespace VRT.Orchestrator.Wrapping
 {
     public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
+        [Tooltip("Enable trace logging output")]
+        [SerializeField] private bool enableLogging = true;
         #region enum
 
         public enum orchestratorConnectionStatus {
@@ -307,7 +309,7 @@ namespace VRT.Orchestrator.Wrapping
             if (!userIsLogged) {
                 //user was not logged before request
                 if (userLoggedSucessfully) {
-                    Debug.Log("[OrchestratorController][OnLoginResponse] User logged.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnLoginResponse: User logged in.");
 
                     userIsLogged = true;
 
@@ -353,7 +355,7 @@ namespace VRT.Orchestrator.Wrapping
             } else {
                 //user was logged before request
                 if (userLoggedOutSucessfully) {
-                    Debug.Log("[OrchestratorController][OnLogoutResponse] User logout.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnLogoutResponse: User logout.");
 
                     //normal
                     me = null;
@@ -378,8 +380,8 @@ namespace VRT.Orchestrator.Wrapping
         long timeOfGetNTPTimeRequest = 0;
 
         public void GetNTPTime() {
-            Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
-            Debug.Log("[OrchestratorController][GetNTPTime]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: GetNTPTime: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             timeOfGetNTPTimeRequest = (long)sinceEpoch.TotalMilliseconds;
             orchestratorWrapper.GetNTPTime();
@@ -391,9 +393,9 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::NtpTime::" + ntpTime.Timestamp);
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeUTC::" + Helper.GetClockTimestamp(DateTime.UtcNow));
-            Debug.Log("[OrchestratorController][OnGetNTPTimeResponse]::DateTimeNow::" + Helper.GetClockTimestamp(DateTime.Now));
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: NtpTime: " + ntpTime.Timestamp);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetNTPTimeResponse: DateTimeUTC: " + Helper.GetClockTimestamp(DateTime.UtcNow));
+            if (enableLogging) Debug.Log("[OrchestratorController: OnGetNTPTimeResponse: DateTimeNow: " + Helper.GetClockTimestamp(DateTime.Now));
             System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
             long localTimeMs = (long)sinceEpoch.TotalMilliseconds;
             long uncertainty = localTimeMs - timeOfGetNTPTimeRequest;
@@ -418,7 +420,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetSessionsResponse] Number of available sessions:" + sessions.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionsResponse: Number of available sessions:" + sessions.Count);
 
             // update the list of available sessions
             availableSessions = sessions;
@@ -442,7 +444,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnAddSessionResponse] Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
+            if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
 #endif
@@ -464,18 +466,18 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnGetSessionInfoResponse(ResponseStatus status, Session session) {
             if (mySession == null || string.IsNullOrEmpty(session.sessionId)) {
-                Debug.Log("[OrchestratorController][OnGetSessionInfoResponse] Aborted, current session is null.");
+                if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Aborted, current session is null.");
                 return;
             }
 
             if (status.Error != 0) {
-                Debug.Log($"[OrchestratorController][OnGetSessionInfoResponse] clear session, status={status}");
+                if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: clear session, status={status}");
                 mySession = null;
                 OnErrorEvent?.Invoke(status);
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetSessionInfoResponse] Get session info of " + session.sessionName + ".");
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Get session info of " + session.sessionName + ".");
 
             // success
             mySession = session;
@@ -491,7 +493,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetScenarioInstanceInfoResponse] Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetScenarioInstanceInfoResponse: Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
 
             // now retrieve the url of the Live presenter stream
             orchestratorWrapper.GetLivePresenterData();
@@ -509,7 +511,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnDeleteSessionResponse] Session succesfully deleted.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnDeleteSessionResponse: Session succesfully deleted.");
 
             OnDeleteSessionEvent?.Invoke();
             mySession = null;
@@ -529,7 +531,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnJoinSessionResponse] Session " + session.sessionName + " succesfully joined.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnJoinSessionResponse: Session " + session.sessionName + " succesfully joined.");
 
             // success
             mySession = session;
@@ -560,7 +562,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully left.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: Session " + mySession.sessionName + " succesfully left.");
 
             // success
             myScenario = null;
@@ -573,7 +575,7 @@ namespace VRT.Orchestrator.Wrapping
 
                 // As the session creator, the session should be deleted when leaving.
                 if (mySession.sessionAdministrator == me.userId) {
-                    Debug.Log("[OrchestratorController][OnLeaveSessionResponse] As session creator, delete the current session when its empty.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: As session creator, delete the current session when its empty.");
                     StartCoroutine(WaitForEmptySessionToDelete());
                     return;
                 }
@@ -599,7 +601,7 @@ namespace VRT.Orchestrator.Wrapping
         public void OnUserJoinedSession(string userID) {
             // Someone as joined the session
             if (!string.IsNullOrEmpty(userID)) {
-                Debug.Log("[OrchestratorController][OnUserJoinedSession] User " + GetUser(userID).userName + " joined the session.");
+                if (enableLogging) Debug.Log("OrchestratorController: OnUserJoinedSession: User " + GetUser(userID).userName + " joined the session.");
                 orchestratorWrapper.GetSessionInfo();
                 OnUserJoinSessionEvent?.Invoke(userID);
             }
@@ -609,12 +611,12 @@ namespace VRT.Orchestrator.Wrapping
             if (!string.IsNullOrEmpty(userID)) {
                 // If the session creator left, I need to leave also.
                 if (mySession.sessionAdministrator == userID) {
-                    Debug.Log("[OrchestratorController][OnUserLeftSession] Session creator " + GetUser(userID).userName + " leaved the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " leaved the session.");
                     LeaveSession();
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    Debug.Log("[OrchestratorController][OnUserLeftSession] User " + GetUser(userID).userName + " leaved the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " leaved the session.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);
@@ -636,7 +638,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetScenariosResponse] Number of available scenarios:" + scenarios.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetScenariosResponse: Number of available scenarios:" + scenarios.Count);
 
             // update the list of available scenarios
             availableScenarios = scenarios;
@@ -679,7 +681,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorControler][OnGetUsersResponse] Users count:" + users.Count);
+            if (enableLogging) Debug.Log("OrchestratorControler: OnGetUsersResponse: Users count:" + users.Count);
 
             availableUserAccounts = users;
             OnGetUsersEvent?.Invoke(users.ToArray());
@@ -701,12 +703,12 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (userIsLogged) {
-                Debug.Log("[OrchestratorController][OnAddUserResponse] User successfully added.");
+                if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully added.");
                 OnAddUserEvent?.Invoke(user);
                 // update the lists of user, anyway the result
                 orchestratorWrapper.GetUsers();
             } else {
-                Debug.Log("[OrchestratorController][OnAddUserResponse] User successfully registered.");
+                if (enableLogging) Debug.Log("OrchestratorController: OnAddUserResponse: User successfully registered.");
                 OnSignInEvent.Invoke();
             }
         }
@@ -721,7 +723,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorControler][OnUpdateUserDataResponse] User data key updated.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnUpdateUserDataResponse: User data key updated.");
             orchestratorWrapper.GetUserInfo();
         }
 
@@ -735,7 +737,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorControler][OnUpdateUserDataJsonResponse] User data fully updated.");
+            if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
             orchestratorWrapper.GetUserInfo();
         }
 
@@ -749,7 +751,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorControler][OnClearUserDataResponse] User data successfully cleaned-up.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnClearUserDataResponse: User data successfully cleaned-up.");
             orchestratorWrapper.GetUserInfo();
         }
 
@@ -763,7 +765,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetUserInfoResponse] Get info of user ID: " + user.userId);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetUserInfoResponse: Get info of user ID: " + user.userId);
 
             OnGetUserInfoEvent?.Invoke(user);
 
@@ -783,7 +785,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnDeleteUserResponse]");
+            if (enableLogging) Debug.Log("OrchestratorController: OnDeleteUserResponse");
 
             // update the lists of user, anyway the result
             orchestratorWrapper.GetUsers();
@@ -803,7 +805,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnGetRoomsResponse] Rooms count:" + rooms.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetRoomsResponse: Rooms count:" + rooms.Count);
 
             // update the list of available rooms
             availableRoomInstances = rooms;
@@ -819,7 +821,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
             }
 
-            Debug.Log("[OrchestratorController][OnJoinRoomResponse] Room joined.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnJoinRoomResponse: Room joined.");
 
             OnJoinRoomEvent?.Invoke(status.Error == 0);
         }
@@ -834,7 +836,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnLeaveRoomResponse] Room leaved.");
+            if (enableLogging) Debug.Log("OrchestratorController: OnLeaveRoomResponse: Room leaved.");
 
             OnLeaveRoomEvent?.Invoke();
         }
@@ -915,14 +917,14 @@ namespace VRT.Orchestrator.Wrapping
 
         public void OnMasterEventReceived(UserEvent pMasterEventData) {
             if (pMasterEventData.fromId != me.userId) {
-                //Debug.Log("[OrchestratorController][OnMasterEventReceived] Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
+                //if (enableLogging) Debug.Log("OrchestratorController: OnMasterEventReceived: Master user: " + pMasterEventData.fromId + " sent: " + pMasterEventData.message);
                 OnMasterEventReceivedEvent?.Invoke(pMasterEventData);
             }
         }
 
         public void OnUserEventReceived(UserEvent pUserEventData) {
             if (pUserEventData.fromId != me.userId) {
-                //Debug.Log("[OrchestratorController][OnUserEventReceived] User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
+                //if (enableLogging) Debug.Log("OrchestratorController: OnUserEventReceived: User: " + pUserEventData.fromId + " sent: " + pUserEventData.message);
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
@@ -940,7 +942,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
-            Debug.Log("[OrchestratorController][OnGetAvailableDataStreams] Available DataStream list count: " + dataStreams.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetAvailableDataStreams: Available DataStream list count: " + dataStreams.Count);
         }
 
         public void GetRegisteredDataStreams() {
@@ -952,7 +954,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnErrorEvent?.Invoke(status);
                 return;
             }
-            Debug.Log("[OrchestratorController][OnGetRegisteredDataStreams] Registered DataStream list count: " + dataStreams.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetRegisteredDataStreams: Registered DataStream list count: " + dataStreams.Count);
         }
 
 #endregion
@@ -1010,11 +1012,11 @@ namespace VRT.Orchestrator.Wrapping
             var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
             foreach (var ip in host.AddressList) {
                 if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
-                    Debug.Log("[OrchestratorController][GetIPAdress] IPv4 adress: " + ip.ToString());
+                    if (enableLogging) Debug.Log("OrchestratorController: GetIPAdress: IPv4 adress: " + ip.ToString());
                     return ip.ToString();
                 }
             }
-            Debug.Log("[OrchestratorController][GetIPAdress] Cannot retrieve IPv4 adress of the network adapater.");
+            Debug.LogError("OrchestratorController: GetIPAdress: Cannot retrieve IPv4 adress of the network adapater.");
             return "";
         }
 
@@ -1034,7 +1036,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             string requestURL = orchestratorLogsDNS + "?id=" + pSessionID + "&kind=sfu&download=1";
-            Debug.Log("[OrchestratorController][Collect_SFU_Logs] SFU session terminated, retrieving logs from: " + requestURL);
+            if (enableLogging) Debug.Log("OrchestratorController: Collect_SFU_Logs: SFU session terminated, retrieving logs from: " + requestURL);
             Application.OpenURL(requestURL);
         }
 
@@ -1043,7 +1045,7 @@ namespace VRT.Orchestrator.Wrapping
 #region Errors
 
         public void OnError(ResponseStatus status) {
-            Debug.Log("[OrchestratorController][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+            if (enableLogging) Debug.Log("OrchestratorController: OnError: Error code: " + status.Error + "::Error message: " + status.Message);
 
             OnErrorEvent?.Invoke(status);
         }

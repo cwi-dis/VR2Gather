@@ -28,6 +28,8 @@ namespace VRT.Pilots.LoginManager
 
     public class OrchestratorLogin : MonoBehaviour
     {
+        [Tooltip("Enable trace logging output")]
+        [SerializeField] private bool enableLogging = true;
 
         private static OrchestratorLogin instance;
 
@@ -316,7 +318,7 @@ namespace VRT.Pilots.LoginManager
             }
             else
             {
-                Debug.Log("[OrchestratorLogin][UpdateUsersSession] ConnectedUsers was null");
+                if (enableLogging) Debug.Log("OrchestratorLogin: UpdateUsersSession: ConnectedUsers was null");
             }
         }
 
@@ -625,7 +627,7 @@ namespace VRT.Pilots.LoginManager
                 FillSelfUserData();
                 UpdateSessions(orchestratorSessions, sessionIdDrop);
                 UpdateScenarios(scenarioIdDrop);
-                Debug.Log("Come from another Scene");
+                Debug.Log("OrchestratorLogin: Coming from another Scene");
 
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
             }
@@ -676,27 +678,27 @@ namespace VRT.Pilots.LoginManager
             {
                 if (config.autoCreate)
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting");
                     autoState = AutoState.DidCreate;
                     StateButton(State.Create);
 
                 }
                 if (config.autoJoin)
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoJoin: starting");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoJoin: starting");
                     autoState = AutoState.DidJoin;
                     StateButton(State.Join);
                 }
             }
             if (state == State.Create && autoState == AutoState.DidCreate)
             {
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionName={config.sessionName}");
+                if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionName={config.sessionName}");
                 sessionNameIF.text = config.sessionName;
                 uncompressedPointcloudsToggle.isOn = config.sessionUncompressed;
                 uncompressedAudioToggle.isOn = config.sessionUncompressedAudio;
                 if (config.sessionTransportProtocol != null && config.sessionTransportProtocol != "")
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                     // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                     // on and then simulating a button callback works.
                     switch (config.sessionTransportProtocol)
@@ -711,7 +713,7 @@ namespace VRT.Pilots.LoginManager
                             tcpProtocolToggle.isOn = true;
                             break;
                         default:
-                            Debug.LogError($"Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
+                            Debug.LogError($"OrchestratorLogin: AutoStart: Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
                             break;
                     }
                     SetProtocol(config.sessionTransportProtocol);
@@ -728,7 +730,7 @@ namespace VRT.Pilots.LoginManager
             {
                 if (config.sessionScenario != null && config.sessionScenario != "")
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: sessionScenario={config.sessionScenario}");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionScenario={config.sessionScenario}");
                     bool found = false;
                     int idx = 0;
                     foreach (var entry in scenarioIdDrop.options)
@@ -737,7 +739,7 @@ namespace VRT.Pilots.LoginManager
                         {
                             if (found)
                             {
-                                Debug.LogError($"Multiple scenarios match {config.sessionScenario}");
+                                Debug.LogError($"OrchestratorLogin: AutoStart: Multiple scenarios match {config.sessionScenario}");
                             }
                             found = true;
                             scenarioIdDrop.value = idx;
@@ -746,13 +748,13 @@ namespace VRT.Pilots.LoginManager
                     }
                     if (!found)
                     {
-                        Debug.LogError($"No scenarios match {config.sessionScenario}");
+                        Debug.LogError($"OrchestratorLogin: AutoStart: No scenarios match {config.sessionScenario}");
 
                     }
                 }
                 if (config.autoCreate)
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: creating");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: creating");
                     Invoke("AddSession", config.autoDelay);
                 }
                 autoState = AutoState.DidCompleteCreation;
@@ -762,7 +764,7 @@ namespace VRT.Pilots.LoginManager
             {
                 if (sessionNumUsersText.text == config.autoStartWith.ToString())
                 {
-                    Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate: starting with {config.autoStartWith} users");
+                    if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: starting with {config.autoStartWith} users");
                     Invoke("ReadyButton", config.autoDelay);
                     autoState = AutoState.Done;
                 }
@@ -770,12 +772,12 @@ namespace VRT.Pilots.LoginManager
             if (state == State.Join && autoState == AutoState.DidJoin)
             {
                 var options = sessionIdDrop.options;
-                Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: look for {config.sessionName}");
+                if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: look for {config.sessionName}");
                 for (int i = 0; i < options.Count; i++)
                 {
                     if (options[i].text.StartsWith(config.sessionName + " "))
                     {
-                        Debug.Log($"[OrchestratorLogin][AutoStart] autojoin: entry {i} is {config.sessionName}, joining");
+                        if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autojoin: entry {i} is {config.sessionName}, joining");
                         sessionIdDrop.value = i;
                         autoState = AutoState.Done;
                         Invoke("JoinSession", config.autoDelay);
@@ -1366,7 +1368,7 @@ namespace VRT.Pilots.LoginManager
                     Keyboard.current.shiftKey.isPressed
 
                     ) return;
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoLogin");
+                if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoLogin");
                 autoState = AutoState.DidLogIn;
                 Login();
             }
@@ -1426,13 +1428,13 @@ namespace VRT.Pilots.LoginManager
 
         private void SignIn()
         {
-            Debug.Log("[OrchestratorLogin][SignIn] Send SignIn registration for user " + userNameRegisterIF.text);
+            if (enableLogging) Debug.Log("OrchestratorLogin: SignIn: Send SignIn registration for user " + userNameRegisterIF.text);
             OrchestratorController.Instance.SignIn(userNameRegisterIF.text, userPasswordRegisterIF.text);
         }
 
         private void OnSignIn()
         {
-            Debug.Log("[OrchestratorLogin][OnSignIn] User " + userNameLoginIF.text + " successfully registered.");
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnSignIn: User " + userNameLoginIF.text + " successfully registered.");
             userNameLoginIF.text = userNameRegisterIF.text;
             userPasswordLoginIF.text = userPasswordRegisterIF.text;
             loginPanel.SetActive(true);
@@ -1456,7 +1458,7 @@ namespace VRT.Pilots.LoginManager
             if (VRTConfig.Instance.AutoStart != null && VRTConfig.Instance.AutoStart.autoCreateForUser != "")
             {
                 bool isThisUser = VRTConfig.Instance.AutoStart.autoCreateForUser == userNameLoginIF.text;
-                Debug.Log($"[OrchestratorLogin][AutoStart] user={userNameLoginIF.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
+                if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: user={userNameLoginIF.text} autoCreateForUser={VRTConfig.Instance.AutoStart.autoCreateForUser} isThisUser={isThisUser}");
                 VRTConfig.Instance.AutoStart.autoCreate = isThisUser;
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
@@ -1511,7 +1513,7 @@ namespace VRT.Pilots.LoginManager
                     Keyboard.current.shiftKey.isPressed
 
                     ) return;
-                Debug.Log($"[OrchestratorLogin][AutoStart] autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
+                if (enableLogging) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate {VRTConfig.Instance.AutoStart.autoCreate} autoJoin {VRTConfig.Instance.AutoStart.autoJoin}");
                 autoState = AutoState.DidPlay;
                 StateButton(State.Play);
                 Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
@@ -1553,7 +1555,7 @@ namespace VRT.Pilots.LoginManager
                 ntpPanel.SetActive(true);
                 loginPanel.SetActive(false);
             }
-            Debug.Log("[OrchestratorLogin][OnGetNTPTimeResponse] Difference: " + difference);
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
         }
 
         #endregion
@@ -1661,13 +1663,13 @@ namespace VRT.Pilots.LoginManager
 
         private void OnDeleteSessionHandler()
         {
-            Debug.Log("[OrchestratorLogin][OnDeleteSessionHandler] Not implemented");
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
         }
 
         private void JoinSession()
         {
             if (sessionIdDrop.options.Count <= 0)
-                Debug.LogError($"[JoinSession] There are no sessions to join.");
+                Debug.LogError($"JoinSession: There are no sessions to join.");
             else
             {
                 string sessionIdToJoin = OrchestratorController.Instance.AvailableSessions[sessionIdDrop.value].sessionId;
@@ -1778,7 +1780,7 @@ namespace VRT.Pilots.LoginManager
 
         private void OnGetUsersHandler(User[] users)
         {
-            Debug.Log("[OrchestratorLogin][OnGetUsersHandler] Users Updated");
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnGetUsersHandler: Users Updated");
 
             // Update the sfuData if is in session.
             if (OrchestratorController.Instance.ConnectedUsers != null)
@@ -1801,13 +1803,13 @@ namespace VRT.Pilots.LoginManager
 
         private void AddUser()
         {
-            Debug.Log("[OrchestratorLogin][AddUser] Send AddUser registration for user " + userNameRegisterIF.text);
+            if (enableLogging) Debug.Log("OrchestratorLogin: AddUser: Send AddUser registration for user " + userNameRegisterIF.text);
             OrchestratorController.Instance.AddUser(userNameRegisterIF.text, userPasswordRegisterIF.text);
         }
 
         private void OnAddUserHandler(User user)
         {
-            Debug.Log("[OrchestratorLogin][OnAddUserHandler] User " + user.userName + " registered with exit.");
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnAddUserHandler: User " + user.userName + " registered with exit.");
             loginPanel.SetActive(true);
             signinPanel.SetActive(false);
             userNameLoginIF.text = userNameRegisterIF.text;
@@ -1880,7 +1882,7 @@ namespace VRT.Pilots.LoginManager
 
         private void DeleteUser()
         {
-            Debug.Log("[OrchestratorLogin][DeleteUser] Not implemented");
+            Debug.LogError("OrchestratorLogin: DeleteUser: Not implemented");
         }
 
         #endregion
@@ -1894,19 +1896,19 @@ namespace VRT.Pilots.LoginManager
 
         private void OnGetRoomsHandler(RoomInstance[] rooms)
         {
-            Debug.Log("[OrchestratorLogin][OnGetRoomsHandler] Send GetUsers command");
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnGetRoomsHandler: Send GetUsers command");
 
             OrchestratorController.Instance.GetUsers();
         }
 
         private void JoinRoom()
         {
-            Debug.Log("[OrchestratorLogin][JoinRoom] Not implemented");
+            Debug.LogError("OrchestratorLogin: JoinRoom: Not implemented");
         }
 
         private void OnJoinRoomHandler(bool hasJoined)
         {
-            Debug.Log("[OrchestratorLogin][OnJoinRoomHandler] Not implemented");
+            Debug.LogError("OrchestratorLogin: OnJoinRoomHandler: Not implemented");
         }
 
         private void LeaveRoom()
@@ -1916,7 +1918,7 @@ namespace VRT.Pilots.LoginManager
 
         private void OnLeaveRoomHandler()
         {
-            Debug.Log("[OrchestratorLogin][OnLeaveRoomHandler] Not implemented");
+            Debug.LogError("OrchestratorLogin: OnLeaveRoomHandler: Not implemented");
         }
 
         #endregion
@@ -1925,7 +1927,7 @@ namespace VRT.Pilots.LoginManager
 
         private void SendMessage()
         {
-            Debug.Log("[OrchestratorLogin][SendMessage] Not implemented");
+            Debug.LogError("OrchestratorLogin: SendMessage: Not implemented");
         }
 
         private void SendMessageToAll(string message)
@@ -1947,27 +1949,27 @@ namespace VRT.Pilots.LoginManager
 
         private void SendEventToMaster()
         {
-            Debug.Log("[OrchestratorLogin][SendEventToMaster] Not implemented");
+            Debug.LogError("OrchestratorLogin: SendEventToMaster: Not implemented");
         }
 
         private void SendEventToUser()
         {
-            Debug.Log("[OrchestratorLogin][SendEventToUser] Not implemented");
+            Debug.LogError("OrchestratorLogin: SendEventToUser: Not implemented");
         }
 
         private void SendEventToAll()
         {
-            Debug.Log("[OrchestratorLogin][SendEventToAll] Not implemented");
+            Debug.LogError("OrchestratorLogin: SendEventToAll: Not implemented");
         }
 
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
-            Debug.Log("[OrchestratorLogin][OnMasterEventReceivedHandler] MASTER EVENT RECEIVED: [" + pMasterEventData.fromId + "]: " + pMasterEventData.message);
+            Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.fromId + ": " + pMasterEventData.message);
         }
 
         private void OnUserEventReceivedHandler(UserEvent pUserEventData)
         {
-            Debug.Log("[OrchestratorLogin][OnUserEventReceivedHandler] USER EVENT RECEIVED: [" + pUserEventData.fromId + "]: " + pUserEventData.message);
+            Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
         }
 
         #endregion
@@ -1990,7 +1992,7 @@ namespace VRT.Pilots.LoginManager
 
         private void OnErrorHandler(ResponseStatus status)
         {
-            Debug.Log("[OrchestratorLogin][OnError]::Error code: " + status.Error + "::Error message: " + status.Message);
+            Debug.Log("OrchestratorLogin: OnError: Error code: " + status.Error + ", Error message: " + status.Message);
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
 
@@ -1998,15 +2000,6 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
-#if NO_LONGER_USED_UNITY_STANDALONE_WIN
-    void OnGUI() {
-        if (GUI.Button(new Rect(Screen.width / 2, 5, 70, 20), "Open Log")) {
-            var log_path = System.IO.Path.Combine(System.IO.Directory.GetParent(Environment.GetEnvironmentVariable("AppData")).ToString(), "LocalLow", Application.companyName, Application.productName, "Player.log");
-            Debug.Log(log_path);
-            Application.OpenURL(log_path);
-        }
-    }
-#endif
     }
 
 }
