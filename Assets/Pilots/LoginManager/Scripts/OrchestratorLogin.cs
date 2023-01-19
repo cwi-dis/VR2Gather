@@ -37,11 +37,9 @@ namespace VRT.Pilots.LoginManager
 
         #region GUI Components
 
-        public bool developerOptions = true;
-        const int kindPresenter = 0;
-
-        [HideInInspector] public bool isMaster = false;
-        [HideInInspector] public string userID = "";
+        [Tooltip("This user is the master of the session")]
+        [DisableEditing] public bool isMaster = false;
+        [DisableEditing] public string userID = "";
 
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
@@ -69,7 +67,6 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Button okButton = null;
 
         [Header("Login")]
-        [SerializeField] private GameObject usersButtonsPanel = null;
         [SerializeField] private GameObject loginPanel = null;
         [SerializeField] private InputField userNameLoginIF = null;
         [SerializeField] private InputField userPasswordLoginIF = null;
@@ -149,11 +146,6 @@ namespace VRT.Pilots.LoginManager
         [Header("Content")]
         [SerializeField] private RectTransform orchestratorSessions = null;
         [SerializeField] private RectTransform usersSession = null;
-
-        [Header("Logs container")]
-        [SerializeField] private GameObject logsPanel = null;
-        [SerializeField] private RectTransform logsContainer = null;
-        [SerializeField] private ScrollRect logsScrollRect = null;
 
         #endregion
 
@@ -455,13 +447,6 @@ namespace VRT.Pilots.LoginManager
             foreach (string device in devices)
                 microphones.Add(device);
             dd.AddOptions(microphones);
-        }
-
-
-        private IEnumerator ScrollLogsToBottom()
-        {
-            yield return new WaitForSeconds(0.2f);
-            logsScrollRect.verticalScrollbar.value = 0;
         }
 
         private void SetUserRepresentationGUI(UserRepresentationType _representationType)
@@ -829,17 +814,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -854,17 +828,6 @@ namespace VRT.Pilots.LoginManager
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(true);
                     CheckRememberMe();
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(true);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -878,17 +841,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(true);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -902,17 +854,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(true);
                     playPanel.SetActive(false);
@@ -928,17 +869,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(true);
@@ -952,17 +882,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -976,17 +895,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -1002,17 +910,6 @@ namespace VRT.Pilots.LoginManager
                     // Panels
                     ntpPanel.SetActive(false);
                     loginPanel.SetActive(false);
-                    if (developerOptions)
-                    {
-                        infoPanel.SetActive(true);
-                        usersButtonsPanel.SetActive(false);
-                        logsPanel.SetActive(true);
-                    }
-                    else
-                    {
-                        infoPanel.SetActive(false);
-                        logsPanel.SetActive(false);
-                    }
                     vrtPanel.SetActive(false);
                     configPanel.SetActive(false);
                     playPanel.SetActive(false);
@@ -1268,8 +1165,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent += OnConnect;
             OrchestratorController.Instance.OnConnectingEvent += OnConnecting;
             OrchestratorController.Instance.OnConnectionEvent += OnDisconnect;
-            OrchestratorController.Instance.OnOrchestratorRequestEvent += OnOrchestratorRequest;
-            OrchestratorController.Instance.OnOrchestratorResponseEvent += OnOrchestratorResponse;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent += OnGetOrchestratorVersionHandler;
             OrchestratorController.Instance.OnLoginEvent += OnLogin;
             OrchestratorController.Instance.OnLogoutEvent += OnLogout;
@@ -1304,8 +1199,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnConnectionEvent -= OnConnect;
             OrchestratorController.Instance.OnConnectingEvent -= OnConnecting;
             OrchestratorController.Instance.OnConnectionEvent -= OnDisconnect;
-            OrchestratorController.Instance.OnOrchestratorRequestEvent -= OnOrchestratorRequest;
-            OrchestratorController.Instance.OnOrchestratorResponseEvent -= OnOrchestratorResponse;
             OrchestratorController.Instance.OnGetOrchestratorVersionEvent -= OnGetOrchestratorVersionHandler;
             OrchestratorController.Instance.OnLoginEvent -= OnLogin;
             OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
@@ -1406,24 +1299,7 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
-        #region Orchestrator Logs
-
-        // Display the sent message in the logs
-        public void OnOrchestratorRequest(string pRequest)
-        {
-            AddTextComponentOnContent(logsContainer.transform, ">>> " + pRequest);
-        }
-
-        // Display the received message in the logs
-        public void OnOrchestratorResponse(string pResponse)
-        {
-            string lResponse = pResponse.Length <= 8192 ? pResponse : pResponse.Substring(0, 8192) + "...";
-            AddTextComponentOnContent(logsContainer.transform, "<<< " + lResponse);
-            StartCoroutine(ScrollLogsToBottom());
-        }
-
-        #endregion
-
+      
         #region Login/Logout
 
         private void SignIn()
@@ -1937,9 +1813,6 @@ namespace VRT.Pilots.LoginManager
 
         private void OnUserMessageReceivedHandler(UserMessage userMessage)
         {
-            AddTextComponentOnContent(logsContainer.transform, "<<< USER MESSAGE RECEIVED: " + userMessage.fromName + "[" + userMessage.fromId + "]: " + userMessage.message);
-            StartCoroutine(ScrollLogsToBottom());
-
             LoginController.Instance.OnUserMessageReceived(userMessage.message);
         }
 
