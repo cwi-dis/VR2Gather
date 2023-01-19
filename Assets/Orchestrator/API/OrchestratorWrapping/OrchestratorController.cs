@@ -127,8 +127,8 @@ namespace VRT.Orchestrator.Wrapping
         public Action<NtpClock> OnGetNTPTimeEvent;
 
         // Orchestrator Sessions Events
-        public Action<Session[]> OnGetSessionsEvent;
-        public Action<Session> OnGetSessionInfoEvent;
+        public Action<Session[]> OnSessionsEvent;
+        public Action<Session> OnSessionInfoEvent;
         public Action<Session> OnAddSessionEvent;
         public Action<Session> OnJoinSessionEvent;
         public Action OnSessionJoinedEvent;
@@ -423,7 +423,7 @@ namespace VRT.Orchestrator.Wrapping
             // update the list of available sessions
             availableSessions = sessions;
 
-            OnGetSessionsEvent?.Invoke(sessions.ToArray());
+            OnSessionsEvent?.Invoke(sessions.ToArray());
 
             if (isAutoRetrievingData) {
                 // auto retriving phase: this was the last call
@@ -482,7 +482,7 @@ namespace VRT.Orchestrator.Wrapping
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
 
-            OnGetSessionInfoEvent?.Invoke(session);
+            OnSessionInfoEvent?.Invoke(session);
         }
 
         public void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario) {

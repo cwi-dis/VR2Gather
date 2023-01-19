@@ -1273,9 +1273,9 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnLogoutEvent += OnLogout;
             OrchestratorController.Instance.OnSignInEvent += OnSignIn;
             OrchestratorController.Instance.OnGetNTPTimeEvent += OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
+            OrchestratorController.Instance.OnSessionsEvent += OnSessionsHandler;
             OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
-            OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
+            OrchestratorController.Instance.OnSessionInfoEvent += OnSessionInfoHandler;
             OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
             OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
             OrchestratorController.Instance.OnDeleteSessionEvent += OnDeleteSessionHandler;
@@ -1309,9 +1309,9 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnLogoutEvent -= OnLogout;
             OrchestratorController.Instance.OnSignInEvent -= OnSignIn;
             OrchestratorController.Instance.OnGetNTPTimeEvent -= OnGetNTPTimeResponse;
-            OrchestratorController.Instance.OnGetSessionsEvent -= OnGetSessionsHandler;
+            OrchestratorController.Instance.OnSessionsEvent -= OnSessionsHandler;
             OrchestratorController.Instance.OnAddSessionEvent -= OnAddSessionHandler;
-            OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
+            OrchestratorController.Instance.OnSessionInfoEvent -= OnSessionInfoHandler;
             OrchestratorController.Instance.OnJoinSessionEvent -= OnJoinSessionHandler;
             OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
             OrchestratorController.Instance.OnDeleteSessionEvent -= OnDeleteSessionHandler;
@@ -1565,7 +1565,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.GetSessions();
         }
 
-        private void OnGetSessionsHandler(Session[] sessions)
+        private void OnSessionsHandler(Session[] sessions)
         {
             if (sessions != null)
             {
@@ -1619,7 +1619,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void OnGetSessionInfoHandler(Session session)
+        private void OnSessionInfoHandler(Session session)
         {
             if (session != null)
             {

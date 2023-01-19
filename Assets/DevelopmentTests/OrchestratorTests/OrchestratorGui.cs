@@ -418,8 +418,8 @@ namespace VRT.Orchestrator
             OrchestratorController.Instance.OnSignInEvent += OnSignIn;
             OrchestratorController.Instance.OnLoginEvent += OnLogin;
             OrchestratorController.Instance.OnLogoutEvent += OnLogout;
-            OrchestratorController.Instance.OnGetSessionsEvent += OnGetSessionsHandler;
-            OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
+            OrchestratorController.Instance.OnSessionsEvent += OnSessionsHandler;
+            OrchestratorController.Instance.OnSessionInfoEvent += OnSessionInfoHandler;
             OrchestratorController.Instance.OnAddSessionEvent += OnAddSessionHandler;
             OrchestratorController.Instance.OnJoinSessionEvent += OnJoinSessionHandler;
             OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
@@ -568,7 +568,7 @@ namespace VRT.Orchestrator
             OrchestratorController.Instance.GetSessions();
         }
 
-        private void OnGetSessionsHandler(Session[] sessions) {
+        private void OnSessionsHandler(Session[] sessions) {
             // clean current session items
             RemoveComponentsFromList(orchestratorSessions.transform);
             Dropdown dd = sessionIdPanel.GetComponentInChildren<Dropdown>();
@@ -593,7 +593,7 @@ namespace VRT.Orchestrator
             OrchestratorController.Instance.GetSessionInfo();
         }
 
-        private void OnGetSessionInfoHandler(Session session) {
+        private void OnSessionInfoHandler(Session session) {
             if (session != null) {
                 userMaster.text = OrchestratorController.Instance.UserIsMaster.ToString();
                 userSession.text = session.GetGuiRepresentation();

@@ -12,7 +12,11 @@ namespace VRT.Pilots.Common
     {
         public static SessionController Instance { get; private set; }
 
-       
+        public string Name()
+        {
+            return $"{GetType().Name}";
+        }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -32,7 +36,6 @@ namespace VRT.Pilots.Common
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
         {
-            OrchestratorController.Instance.OnGetSessionInfoEvent += OnGetSessionInfoHandler;
             OrchestratorController.Instance.OnLeaveSessionEvent += OnLeaveSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
@@ -44,24 +47,12 @@ namespace VRT.Pilots.Common
         // Un-Subscribe to Orchestrator Wrapper Events
         private void TerminateControllerEvents()
         {
-            OrchestratorController.Instance.OnGetSessionInfoEvent -= OnGetSessionInfoHandler;
             OrchestratorController.Instance.OnLeaveSessionEvent -= OnLeaveSessionHandler;
             OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
 
             OrchestratorController.Instance.UnregisterMessageForwarder();
-        }
-
-   
-        private void OnGetSessionInfoHandler(Session session)
-        {
-            if (session != null)
-            {
-            }
-            else
-            {
-            }
         }
 
         private void LeaveSession()
@@ -71,7 +62,7 @@ namespace VRT.Pilots.Common
 
         private void OnLeaveSessionHandler()
         {
-            Debug.Log("OrchestratorPilot0: left session, loading LoginManager scene");
+            Debug.Log($"{Name()}: left session, loading LoginManager scene");
             PilotController.LoadScene("LoginManager");
         }
 
@@ -79,7 +70,7 @@ namespace VRT.Pilots.Common
         {
             if (!string.IsNullOrEmpty(userID))
             {
-                Debug.Log($"OrchestratorPilot0: user joined session: {userID}");
+                Debug.Log($"{Name()}: user joined session: {userID}");
             }
         }
 
@@ -87,14 +78,14 @@ namespace VRT.Pilots.Common
         {
             if (!string.IsNullOrEmpty(userID))
             {
-                Debug.Log($"OrchestratorPilot0: user left session: {userID}");
+                Debug.Log($"{Name()}: user left session: {userID}");
             }
         }
 
   
         private void OnErrorHandler(ResponseStatus status)
         {
-            Debug.Log($"OrchestratorPilot0: OnErrorHandler: {status.Error}, Error message: {status.Message}");
+            Debug.Log($"{Name()}: OnErrorHandler: {status.Error}, Error message: {status.Message}");
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
     }
