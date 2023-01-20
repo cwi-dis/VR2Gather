@@ -1659,10 +1659,8 @@ namespace VRT.Pilots.LoginManager
                     SetUserRepresentationGUI(user.userData.userRepresentationType);
                     // Session name
 
-#if UNITY_STANDALONE_WIN
-                string time = DateTime.Now.ToString("hhmmss");
-                sessionNameIF.text = $"{user.userName}_{time}";
-#endif
+                    string time = DateTime.Now.ToString("hhmmss");
+                    sessionNameIF.text = $"{user.userName}_{time}";
 
                 }
 
