@@ -28,9 +28,9 @@ namespace VRT.Pilots.Common
         public virtual void RegisterPipeline(string userId, BasePipeline pipeline)
         {
 
-            if (pipelines.ContainsKey(userId))
+            if (pipelines.ContainsKey(userId) && pipelines[userId] != pipeline)
             {
-                Debug.LogError($"Programmer error: {Name()}: registering duplicate userId {userId}");
+                Debug.Log($"{Name()}: replacing pipeline for userId {userId}");
             }
             pipelines[userId] = pipeline;
         }
