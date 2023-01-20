@@ -19,7 +19,7 @@ namespace VRT.Pilots.LoginManager
         public float MicrophoneLevel { get; private set; }
 
         [Tooltip("Player used for this preview (capture and display only)")]
-        public PlayerControllerBase player;
+        public PlayerControllerSelf player;
         bool playerHasBeenInitialized = false;
         string currentMicrophoneName = "None";
         AudioClip recorder;
@@ -30,10 +30,24 @@ namespace VRT.Pilots.LoginManager
         // Start is called before the first frame update
         void Start()
         {
-        }
+         }
 
         void Update()
         {
+            // See if we can already initialize player self representation
+            if (!playerHasBeenInitialized)
+            {
+                User user = OrchestratorController.Instance.SelfUser;
+                if (user != null)
+                {
+                    UserData userData = user.userData;
+                    if (userData != null)
+                    {
+                        ChangeRepresentation(userData.userRepresentationType, userData.webcamName);
+                    }
+                }
+            }
+            // See if we need to listen to audio for VU-meter.
             if (currentMicrophoneName != "None")
             {
                 int writePosition = Microphone.GetPosition(currentMicrophoneName);
@@ -61,7 +75,7 @@ namespace VRT.Pilots.LoginManager
             currentMicrophoneName = microphoneName;
             if (currentMicrophoneName != "None")
             {
-                AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+                AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
                 recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
                 readPosition = 0;
             }
@@ -79,6 +93,7 @@ namespace VRT.Pilots.LoginManager
 
         public void ChangeRepresentation(UserRepresentationType representation, string webcamName)
         {
+            Debug.Log($"SelfRepresentationPreview: representation={representation}, webCamName={webcamName}");
             if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
             User tmpSelfUser = new User()
             {
@@ -96,44 +111,7 @@ namespace VRT.Pilots.LoginManager
                 //player.setupInputOutput(true); // xxxjack needed for preview?
                 playerHasBeenInitialized = true;
             }
-            
-
-            player.SetRepresentation(representation, tmpSelfUser, Config.Instance.LocalUser);
-#if xxxjack
-            switch (representation)
-            {
-                case UserRepresentationType.__NONE__:
-                    player.gameObject.SetActive(false);
-                    break;
-                case UserRepresentationType.__2D__:
-                    player.webcam.SetActive(true);
-                    if (webcamName != "None")
-                    {
-                        BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(player.webcam, representation, true);
-                        wcPipeline.Init(true, new User() { userData = new UserData() { webcamName = webcamName, microphoneName = "None" } }, Config.Instance.LocalUser, true);
-                    }
-
-                    break;
-                case UserRepresentationType.__AVATAR__:
-                    player.avatar.SetActive(true);
-                    break;
-                case UserRepresentationType.__PCC_CWI_:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
-                case UserRepresentationType.__PCC_SYNTH__:
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                    player.pc.SetActive(true);
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(player.pc, representation, true);
-                    pcPipeline.Init(true, new User() { userData = new UserData() { userRepresentationType = representation } }, Config.Instance.LocalUser, true);
-                    break;
-                case UserRepresentationType.__SPECTATOR__:
-                case UserRepresentationType.__CAMERAMAN__:
-                    player.gameObject.SetActive(false);
-                    break;
-                default:
-                    break;
-            }
-#endif
+            player.SetRepresentation(representation, tmpSelfUser, VRTConfig.Instance.LocalUser);
         }
     }
 }

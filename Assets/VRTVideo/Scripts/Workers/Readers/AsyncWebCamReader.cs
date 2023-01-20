@@ -35,9 +35,9 @@ namespace VRT.Video
         public AsyncWebCamReader(string deviceName, int width, int height, int fps, MonoBehaviour monoBehaviour, QueueThreadSafe _outQueue) : base()
         {
 
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             if (string.IsNullOrEmpty(deviceName) || deviceName == "None") return;
 
@@ -93,9 +93,12 @@ namespace VRT.Video
                 NativeMemoryChunk chunk = RGBA2RGBFilter.Process(handle.AddrOfPinnedObject());
                 System.TimeSpan sinceEpoch = System.DateTime.UtcNow - new System.DateTime(1970, 1, 1);
                 Timestamp now = (Timestamp)sinceEpoch.TotalMilliseconds;
-                chunk.info.timestamp = now;
-                chunk.info.dsi = infoData;
-                chunk.info.dsi_size = 12;
+                chunk.metadata = new FrameMetadata()
+                {
+                    timestamp = now,
+                    dsi = infoData,
+                    dsi_size = 12
+                };
                 outQueue.Enqueue(chunk);
                 isFrameReady = false;
             }

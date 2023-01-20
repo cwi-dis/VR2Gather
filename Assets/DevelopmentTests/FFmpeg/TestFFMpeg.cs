@@ -109,7 +109,8 @@ public unsafe class TestFFMpeg : MonoBehaviour {
             Debug.Log($"Cannot find a video stream in the input file");
             return;
         }
-        video_dec_ctx = fmt_ctx->streams[video_stream_index]->codec;
+        video_dec_ctx = ffmpeg.avcodec_alloc_context3(video_dec);
+        ffmpeg.avcodec_parameters_to_context(video_dec_ctx, fmt_ctx->streams[video_stream_index]->codecpar);
         if ((ret = ffmpeg.avcodec_open2(video_dec_ctx, video_dec, null)) < 0) {
             Debug.Log("Cannot open video decoder");
             return;
@@ -130,7 +131,6 @@ public unsafe class TestFFMpeg : MonoBehaviour {
 
         AVFrame* frame = ffmpeg.av_frame_alloc();
         AVPacket* packet = ffmpeg.av_packet_alloc();
-        ffmpeg.av_init_packet(packet);
         packet->data = null;
         packet->size = 0;
         

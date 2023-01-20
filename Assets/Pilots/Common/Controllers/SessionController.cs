@@ -72,7 +72,7 @@ namespace VRT.Pilots.Common
         private void OnLeaveSessionHandler()
         {
             Debug.Log("OrchestratorPilot0: left session, loading LoginManager scene");
-            SceneManager.LoadScene("LoginManager");
+            PilotController.LoadScene("LoginManager");
         }
 
         private void OnUserJoinedSessionHandler(string userID)

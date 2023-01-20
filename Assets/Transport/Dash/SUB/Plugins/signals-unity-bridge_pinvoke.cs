@@ -8,6 +8,7 @@ using Cwipc;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
     using IncomingStreamDescription = Cwipc.StreamSupport.IncomingStreamDescription;
 
     public class sub
@@ -26,7 +27,24 @@ namespace VRT.Transport.Dash
             public uint totalHeight;
         }
 
-      
+        public struct FrameInfo
+        {
+            /// <summary>
+            /// Presentation timestamp (milliseconds).
+            /// </summary>
+            public Timestamp timestamp;
+            /// <summary>
+            /// Per-frame metadata carried by Dash packets.
+            /// </summary>
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+            public byte[] dsi;
+            /// <summary>
+            /// Length of dsi.
+            /// </summary>
+            public int dsi_size;
+        }
+
+
         protected class _API
         {
 
@@ -242,7 +260,7 @@ namespace VRT.Transport.Dash
                 string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
                 if (path == "" || path == null)
                 {
-                    path = Config.Instance.Macintosh.SIGNALS_SMD_PATH;
+                    path = VRTConfig.Instance.Macintosh.SIGNALS_SMD_PATH;
                 }
                 if (path == "" || path == null)
                 {

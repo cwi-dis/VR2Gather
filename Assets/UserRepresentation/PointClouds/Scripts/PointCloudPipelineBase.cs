@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.Config._User;
+    using static VRT.Core.VRTConfig._User;
 
     public abstract class PointCloudPipelineBase : BasePipeline
     {
@@ -31,7 +31,12 @@ namespace VRT.UserRepresentation.PointCloud
         public BaseTileSelector tileSelector = null;
         [Tooltip("Object responsible for synchronizing playout")]
         public ISynchronizer synchronizer = null;
-        protected AsyncReader reader;
+        private AsyncReader _reader;
+        public AsyncReader reader
+        {
+            get { return _reader; }
+            protected set { _reader = value; }
+        }
         protected AbstractPointCloudEncoder encoder;
         protected List<AbstractPointCloudDecoder> decoders = new List<AbstractPointCloudDecoder>();
         protected AsyncWriter writer;

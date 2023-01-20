@@ -3,12 +3,11 @@ name: Build and Test
 on:
   push:
     branches:
-      - issue2-cicd
-      - master
       - 'deployment/**'
+    tags:
+      - 'build*'
   pull_request:
     branches:
-      - master
       - 'deployment/**'
       
 

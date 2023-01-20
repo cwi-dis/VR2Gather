@@ -51,9 +51,9 @@ namespace VRT.Video
             inAudioQueue = _inAudioQueue;
             outVideoQueue = _outVideoQueue;
             outAudioQueue = _outAudioQueue;
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             Start();
         }
@@ -77,7 +77,7 @@ namespace VRT.Video
 #if ENCODER_MONOTONIC_TIMESTAMPS
                 videoFrame->pts = frame++;
 #else
-                long tsInFps = (mc.info.timestamp * setup.fps) / 1000;
+                long tsInFps = (mc.metadata.timestamp * setup.fps) / 1000;
                 videoFrame->pts = tsInFps;
 #endif
                 int ret = ffmpeg.avcodec_send_frame(codecVideo_ctx, videoFrame);
@@ -97,7 +97,7 @@ namespace VRT.Video
                             Buffer.MemoryCopy(videoPacket->data, (void*)videoData.pointer, videoPacket->size, videoPacket->size);
 #if !ENCODER_MONOTONIC_TIMESTAMPS
                             long tsInMs = (videoPacket->pts * 1000) / setup.fps;
-                            videoData.info.timestamp = tsInMs;
+                            videoData.metadata.timestamp = tsInMs;
 #endif
                             outVideoQueue.Enqueue(videoData);
                         }
@@ -115,11 +115,11 @@ namespace VRT.Video
         void CreateVideoCodec(NativeMemoryChunk mc, int width, int height, int fps, int bitRate)
         {
             videoPacket = ffmpeg.av_packet_alloc();
-            if (mc.info.dsi_size == 12)
+            if (mc.metadata.dsi_size == 12)
             {
-                width = BitConverter.ToInt32(mc.info.dsi, 0);
-                height = BitConverter.ToInt32(mc.info.dsi, 4);
-                fps = BitConverter.ToInt32(mc.info.dsi, 8);
+                width = BitConverter.ToInt32(mc.metadata.dsi, 0);
+                height = BitConverter.ToInt32(mc.metadata.dsi, 4);
+                fps = BitConverter.ToInt32(mc.metadata.dsi, 8);
             }
 
             RGB2YUV420PFilter = new VideoFilter(width, height, AVPixelFormat.AV_PIX_FMT_RGB24, AVPixelFormat.AV_PIX_FMT_YUV420P);

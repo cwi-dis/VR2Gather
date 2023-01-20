@@ -69,7 +69,7 @@ namespace VRT.Pilots.Common
         /// <param name="cfg">The configration data for this pipeline</param>
         /// <param name="preview">Set to true if the pipeline should not transmit, only render locally.</param>
         /// <returns></returns>
-        abstract public BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false);
+        abstract public BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false);
 
         virtual public string Name()
         {
@@ -119,7 +119,7 @@ namespace VRT.Pilots.Common
                 return new ViewerInformation();
             }
             // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerControllerBase player = gameObject.GetComponentInParent<PlayerControllerBase>();
+            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {

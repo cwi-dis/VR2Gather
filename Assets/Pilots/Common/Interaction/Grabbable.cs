@@ -3,154 +3,109 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
+	/// <summary>
+	/// Component to implement VR2Gather grabbable object.
+	/// Works with ray interaction and direct interaction.
+	/// The interactors should be set up to call the OnGrab() and OnRelease() methods of this object,
+	/// when the object has entered/exited select mode.
+	/// 
+	/// The object requires a Rigidbody, and that seems to be enough both for direct and ray-based interaction.
+	/// 
+	/// While the object is held it will send out messages to synchronize its position and orientation
+	/// to other instances of the VR2Gather experience.
+	/// While the object is held it will be kinematic, reverting to gravity when released.
+	/// 
+	/// </summary>
 	public class Grabbable : NetworkIdBehaviour
 	{
 		public class RigidbodySyncMessage : BaseMessage
 		{
 			public string NetworkId;
+			public bool isGrabbed;
 			public Vector3 Position;
 			public Quaternion Rotation;
 		}
 
-
-		public bool UseOffsets;
-
-		public Vector3 GrabPositionOffsetLeft;
-		public Vector3 GrabRotationOffsetLeft;
-
-		public Vector3 GrabPositionOffsetRight;
-		public Vector3 GrabRotationOffsetRight;
-
+		[Tooltip("The grabbable object itself")]
 		public Rigidbody Rigidbody;
-		public bool ForceSleepSync;
-		private bool _isKinematic = false;
-		private bool _useGravity = true;
-		private bool _IsSimulating = false;
+		[Tooltip("Number of times to sync per second")]
+		public float UpdateFrequency = 10;
+		float _lastUpdateTime;
 
-		private HandController _CurrentGrabber;
+		[Tooltip("Introspection/debug: is the object grabbed and transmitting its position?")]
+		[DisableEditing] [SerializeField] private bool isGrabbed;
 
-		public void Awake()
+		// xxxjack private HandController _CurrentGrabber;
+
+		protected override void Awake()
 		{
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
+
 		}
 		public void OnEnable()
-		{	
-			// Any grabbable object needs a unique networkID, otherwise it will cause problems. If this are generated on the fly, we need a counter so we will use the number of grabbable objects +1
-			if (NetworkId == null || NetworkId == "")
-			{
-				Grabbable[] g_list = FindObjectsOfType<Grabbable>();
-				NetworkId = "nid_0000_" + (g_list.Length +1);
-			}
-
-			// we now register the object to the grabbableObjectManager
+		{
 			GrabbableObjectManager.RegisterGrabbable(this);
+
 			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
 
 		public void OnDisable()
 		{
-			if (_CurrentGrabber != null)
-			{
-				OnRelease(_CurrentGrabber);
-			}
+			
 			GrabbableObjectManager.UnregisterGrabbable(this);
 
 			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
 
-        public void Start()
+		public void Update()
+		{
+			if (!isGrabbed) return;
+			// xxxjack bail out if sending too many updates
+			if (Time.realtimeSinceStartup < _lastUpdateTime + (1 / UpdateFrequency)) return;
+			_lastUpdateTime = Time.realtimeSinceStartup;
+			SendSyncMessage();
+		}
+
+		private void SendSyncMessage()
         {
-			//on start we save the selected properties
-			_isKinematic = Rigidbody.isKinematic;
-			_useGravity = Rigidbody.useGravity;
-        }
-
-        public void Update()
-		{
-			if (OrchestratorController.Instance.UserIsMaster && ForceSleepSync && _IsSimulating)
-			{
-				if (Rigidbody != null && Rigidbody.IsSleeping())
-				{
-					OrchestratorController.Instance.SendTypeEventToAll(
-						new RigidbodySyncMessage
-						{
-							NetworkId = NetworkId,
-							Position = transform.position,
-							Rotation = transform.rotation
-						});
-
-					_IsSimulating = false;
-				}
-			}
-		}
-
-		public void OnGrab(HandController handController)
-		{
-			if (_CurrentGrabber != handController)
-			{
-				if (_CurrentGrabber != null)
-				{
-					_CurrentGrabber.HeldGrabbable = null;
-				}
-
-				if (Rigidbody != null)
-				{
-					Rigidbody.isKinematic = true;
-					Rigidbody.useGravity = false;
-				}
-
-				transform.parent = handController.transform;
-
-				if (UseOffsets)
-				{
-					if (handController.HandHandedness == HandController.Handedness.Left)
+			OrchestratorController.Instance.SendTypeEventToAll(
+					new RigidbodySyncMessage
 					{
-						ParentToHand(handController.transform, GrabPositionOffsetLeft, GrabRotationOffsetLeft);
-					}
-					else
-					{
-						ParentToHand(handController.transform, GrabPositionOffsetRight, GrabRotationOffsetRight);
-					}
-				}
-
-				_CurrentGrabber = handController;
-				handController.HeldGrabbable = this;
-				_IsSimulating = false;
-			}
+						NetworkId = NetworkId,
+						isGrabbed = isGrabbed,
+						Position = Rigidbody.transform.position,
+						Rotation = Rigidbody.transform.rotation
+					});
 		}
 
-		public void OnRelease(HandController handController)
+		public void OnGrab()
 		{
-			if (_CurrentGrabber == handController)
-			{
-				transform.parent = null;
-				_CurrentGrabber.HeldGrabbable = null;
-				_CurrentGrabber = null;
-
-				if (Rigidbody != null)
-				{
-					//we return the original state
-					Rigidbody.isKinematic = _isKinematic;
-					Rigidbody.useGravity = _useGravity;
-					_IsSimulating = true;
-				}
-			}
+			Debug.Log($"Grabbable({name}): grabbed");
+			isGrabbed = true;
+			Rigidbody.isKinematic = true;
+			Rigidbody.useGravity = false;
 		}
 
-		private void ParentToHand(Transform newParent, Vector3 localPosition, Vector3 localRotation)
+		public void OnRelease()
 		{
-			transform.parent = newParent;
-			transform.localPosition = localPosition;
-			transform.localRotation = Quaternion.Euler(localRotation);
+			Debug.Log($"Grabbable({name}): released");
+			isGrabbed = false;
+			SendSyncMessage();
+			Rigidbody.isKinematic = false;
+			Rigidbody.useGravity = true;
 		}
+
 
 		private void OnRigidbodySync(RigidbodySyncMessage rigidBodySyncMessage)
 		{
-			if (rigidBodySyncMessage.NetworkId == NetworkId && !OrchestratorController.Instance.UserIsMaster)
+			if (rigidBodySyncMessage.NetworkId == NetworkId && !isGrabbed)
 			{
 				Rigidbody.Sleep();
-				transform.position = rigidBodySyncMessage.Position;
-				transform.rotation = rigidBodySyncMessage.Rotation;
+				Rigidbody.transform.position = rigidBodySyncMessage.Position;
+				Rigidbody.transform.rotation = rigidBodySyncMessage.Rotation;
+				Rigidbody.isKinematic = rigidBodySyncMessage.isGrabbed;
+				Rigidbody.useGravity = !rigidBodySyncMessage.isGrabbed;
 			}
 		}
 	}

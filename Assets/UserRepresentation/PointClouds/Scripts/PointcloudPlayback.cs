@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
         [Tooltip("Prefer best quality in stead of worst quality")]
         public bool preferBest;
         User dummyUser;
-        Config._User cfg;
+        VRTConfig._User cfg;
 
 
         /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
@@ -28,15 +28,11 @@ namespace VRT.UserRepresentation.PointCloud
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
         {
             if (isLocalPlayer)
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
-            }
-            if (cfg.sourceType != "prerecorded")
-            {
-                Debug.LogError("{Name()}: Init() called with cfg.sourceType != prerecorded");
             }
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
@@ -66,7 +62,7 @@ namespace VRT.UserRepresentation.PointCloud
             return this;
         }
 
-        protected void _InitForPrerecordedPlayer(Config._User._PCSelfConfig PCSelfConfig)
+        protected void _InitForPrerecordedPlayer(VRTConfig._User._PCSelfConfig PCSelfConfig)
         {
             var PrerecordedReaderConfig = PCSelfConfig.PrerecordedReaderConfig;
             if (PrerecordedReaderConfig == null || PrerecordedReaderConfig.folder == null)
@@ -133,12 +129,11 @@ namespace VRT.UserRepresentation.PointCloud
             dummyUser.userData = new UserData();
             dummyUser.userData.userRepresentationType = UserRepresentationType.__PCC_PRERECORDED__;
 
-            Config._User realUser = Config.Instance.LocalUser;
+            VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 
-            cfg = new Config._User();
-            cfg.sourceType = "prerecorded";
-            cfg.PCSelfConfig = new Config._User._PCSelfConfig();
-            cfg.PCSelfConfig.PrerecordedReaderConfig = new Config._User._PCSelfConfig._PrerecordedReaderConfig();
+            cfg = new VRTConfig._User();
+            cfg.PCSelfConfig = new VRTConfig._User._PCSelfConfig();
+            cfg.PCSelfConfig.PrerecordedReaderConfig = new VRTConfig._User._PCSelfConfig._PrerecordedReaderConfig();
             if (folder == null || folder == "")
             {
                 folder = realUser.PCSelfConfig.PrerecordedReaderConfig.folder;

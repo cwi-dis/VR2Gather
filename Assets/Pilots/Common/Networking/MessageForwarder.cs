@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 		TID_PlayerLocationDataRequest = 104,
 		TID_PlayerLocationChangeRequest = 105,
 		TID_HandGrabEvent = 106,
-		TID_NetworkTransformSyncData = 107,
+		TID_RigidBodyData = 107,
 		TID_RigidbodySyncMessage = 108,
 		TID_TextChatDataMessage = 109,
 		TID_TilingConfigMessage = 110,
@@ -23,6 +23,7 @@ namespace VRT.Pilots.Common
 		TID_PlayerTransformSyncData = 113,
 		TID_AddPlayerToSequenceData = 114,
 		TID_SyncConfigMessage = 115,
+		TID_NetworkInstantiatorData = 116,
 	};
 
 	/// <summary>

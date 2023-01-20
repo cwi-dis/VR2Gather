@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace VRT.Core
 {
@@ -7,8 +8,8 @@ namespace VRT.Core
     {
 
         [Header("ErrorHandling")]
-        [SerializeField] private Text errorTitle = null;
-        [SerializeField] private Text errorMessage = null;
+        [SerializeField] private TextMeshProUGUI errorTitle = null;
+        [SerializeField] private TextMeshProUGUI errorMessage = null;
         [SerializeField] private Button errorButton = null;
 
         public string ErrorMessage { get { return errorMessage.text; } }

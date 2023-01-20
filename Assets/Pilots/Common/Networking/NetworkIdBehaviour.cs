@@ -9,15 +9,23 @@ using UnityEditor.SceneManagement;
 
 namespace VRT.Pilots.Common
 {
-
+	/// <summary>
+	/// Base class for components that exist in multiple players (instances of a VR2Gather experience).
+	/// It basically caters for NetworkId's being the same across multiple instances, but different for
+	/// each different GameObject. This is done with nifty code that fills the NetworkId field whenever 
+	/// a NetworkIdBehaviour is instantiated, *except when this is in a prefab or something* (in which
+	/// case it will be instantianted when 
+	/// </summary>
 	public class NetworkIdBehaviour : MonoBehaviour
 	{
+		[Tooltip("Don't auto-create a network ID")]
+		[SerializeField] private bool noAutoCreateNetworkId;
 		[NetworkId]
 		public string NetworkId;
 
-		void Awake()
+		protected virtual void Awake()
 		{
-			CreateNetworkId();
+			CreateNetworkId(false);
 		}
 
 		public void OnDestroy()
@@ -32,10 +40,16 @@ namespace VRT.Pilots.Common
 
 
 		// Create a new NetworkId when necessary
-		void CreateNetworkId()
+		// xxxjack: some of this code should also be executed for non-auto-created networkIDs.
+		public void CreateNetworkId(bool forceCreate=true)
 		{
 			if (string.IsNullOrEmpty(NetworkId))
 			{
+				if (noAutoCreateNetworkId && !forceCreate)
+				{
+					Debug.Log($"NetworkIdBehaviour({name}): not creating networkID");
+					return;
+				}
 #if UNITY_EDITOR
 				// if in editor, make sure we aren't a prefab of some kind
 				if (IsAssetOnDisk())
@@ -45,6 +59,7 @@ namespace VRT.Pilots.Common
 				Undo.RecordObject(this, "Added GUID");
 #endif
 				NetworkId = System.Guid.NewGuid().ToString();
+				Debug.Log($"NetworkIdBehaviour({name}: invented {NetworkId}");
 
 #if UNITY_EDITOR
 				if (PrefabUtility.IsPartOfNonAssetPrefabInstance(this))
@@ -106,7 +121,7 @@ namespace VRT.Pilots.Common
 			else
 #endif
 			{
-				CreateNetworkId();
+				CreateNetworkId(false);
 			}
 		}
 #endif

@@ -91,6 +91,7 @@ namespace VRT.Orchestrator.Wrapping
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
 
+        private bool autoStopOnLeave = false;
         #endregion
 
         #region public
@@ -161,6 +162,16 @@ namespace VRT.Orchestrator.Wrapping
         public Action<UserEvent> OnUserEventReceivedEvent;
 
         // Orchestrator Accessors
+        public void LocalUserSessionForDevelopmentTests()
+        {
+            userIsMaster = true;
+            mySession = new Session()
+            {
+                scenarioId = "LocalDevelopmentTest",
+                sessionId = "0000"
+            };
+        }
+
         public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
@@ -187,8 +198,14 @@ namespace VRT.Orchestrator.Wrapping
             if (instance == null) {
                 instance = this;
             } else {
+                Debug.LogError("OrchestratorController: attempt to create second instance");
                 Destroy(gameObject);
             }
+        }
+
+        void Start()
+        {
+            autoStopOnLeave = VRTConfig.Instance.AutoStart.autoStopAfterLeave;
         }
 
         private void OnDestroy() {
@@ -452,6 +469,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (status.Error != 0) {
+                Debug.Log($"[OrchestratorController][OnGetSessionInfoResponse] clear session, status={status}");
                 mySession = null;
                 OnErrorEvent?.Invoke(status);
                 return;
@@ -542,7 +560,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully leaved.");
+            Debug.Log("[OrchestratorController][OnLeaveSessionResponse] Session " + mySession.sessionName + " succesfully left.");
 
             // success
             myScenario = null;
@@ -569,7 +587,7 @@ namespace VRT.Orchestrator.Wrapping
         void _OptionalStopOnLeave()
         {
             // If wanted: stop playing (in editor), or quit application
-            if (Config.Instance.AutoStart.autoStopAfterLeave)
+            if (autoStopOnLeave)
             {
                 Application.Quit();
 #if UNITY_EDITOR
@@ -854,14 +872,14 @@ namespace VRT.Orchestrator.Wrapping
                 // xxxjack this is gross. We have to print the stats line for "session started" , because
                 // in LoginController we don't know the session ID.
 #if VRT_WITH_STATS
-                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession.sessionId}, sessionName={mySession.sessionName}");
+                Statistics.Output("OrchestratorController", $"starting=1, sessionId={mySession?.sessionId}, sessionName={mySession?.sessionName}");
 #endif
-                if (Config.Instance.AutoStart.autoLeaveAfter > 0)
+                if (VRTConfig.Instance.AutoStart.autoLeaveAfter > 0)
                 {
 #if VRT_WITH_STATS
-                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={Config.Instance.AutoStart.autoLeaveAfter}");
+                    Statistics.Output("OrchestratorController", $"autoLeaveAfter={VRTConfig.Instance.AutoStart.autoLeaveAfter}");
 #endif
-                    Invoke("LeaveSession", Config.Instance.AutoStart.autoLeaveAfter);
+                    Invoke("LeaveSession", VRTConfig.Instance.AutoStart.autoLeaveAfter);
                 }
             }
             OnUserMessageReceivedEvent?.Invoke(userMessage);

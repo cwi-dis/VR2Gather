@@ -12,6 +12,8 @@ namespace VRT.Pilots.LoginManager
 
     public class LoginController : PilotController
     {
+        [Tooltip("The self-player for the login scene")]
+        [SerializeField] public PlayerControllerSelf selfPlayer;
 
         public class MessageType
         {
@@ -19,21 +21,24 @@ namespace VRT.Pilots.LoginManager
             public const string START = "START";
             public const string READY = "READY";
         }
-        private static LoginController instance;
-
-        public static LoginController Instance { get { return instance; } }
-
+      
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
-
         public override void Start()
         {
-            base.Start();
-            if (instance == null)
+            // Do not call base.Start(), we don't want to fade in for the login scene.
+            Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
             {
-                instance = this;
-            }
+                userId = "no-userid",
+                userName = "TestInteractionUser",
+                userData = new Orchestrator.Wrapping.UserData()
+                {
+                    microphoneName = "None",
+                    userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
+                }
+            };
+            selfPlayer.SetUpPlayerController(true, user, null);
         }
 
         IEnumerator RefreshAndLoad(string scenary)
@@ -41,12 +46,12 @@ namespace VRT.Pilots.LoginManager
             yield return null;
             OrchestratorController.Instance.GetUsers();
             yield return new WaitForSeconds(0.5f);
-            SceneManager.LoadScene(scenary);
+            LoadNewScene(scenary);
         }
 
-        public override void MessageActivation(string message)
+        public override void OnUserMessageReceived(string message)
         {
-            Debug.Log($"[FPA] MessageActivation {message}");
+            Debug.Log($"{Name()}: OnUserMessageReceived: {message}");
             string[] msg = message.Split(new char[] { '_' });
             if (msg[0] == MessageType.START)
             {
@@ -54,19 +59,19 @@ namespace VRT.Pilots.LoginManager
                 switch (msg[2])
                 {
                     case "0": // No Audio
-                        Config.Instance.protocolType = Config.ProtocolType.None;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.None;
                         break;
                     case "1": // Socket Audio
-                        Config.Instance.protocolType = Config.ProtocolType.SocketIO;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
                         break;
                     case "2": // Dash Audio
-                        Config.Instance.protocolType = Config.ProtocolType.Dash;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
                         break;
                     case "3": // Raw TCP
-                        Config.Instance.protocolType = Config.ProtocolType.TCP;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
                         break;
                     default:
-                        Debug.LogError($"LoginController: received unknown START audio type {msg[2]}");
+                        Debug.LogError($"{Name()}: received unknown START audio type {msg[2]}");
                         break;
                 }
                 string pilotName = msg[1];
@@ -74,17 +79,19 @@ namespace VRT.Pilots.LoginManager
                 if (msg.Length > 3 && msg[3] != "") pilotVariant = msg[3];
                 if (msg.Length > 4 && msg[4] != "")
                 {
-                    Config.Instance.PCs.Codec = msg[4];
+                    VRTConfig.Instance.PCs.Codec = msg[4];
                 }
                 if (msg.Length > 5 && msg[5] != "")
                 {
-                    Config.Instance.Voice.Codec = msg[5];
+                    VRTConfig.Instance.Voice.Codec = msg[5];
                 }
-                string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+                string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(pilotName, pilotVariant);
                 if (sceneName == null)
                 {
-                    throw new System.Exception($"Selected scenario \"{sceneName}\" not implemented in this player");
+                    Debug.LogError($"{Name()}: Selected scenario \"{pilotName}\" not implemented in this player (unknown scene)");
+                    return;
                 }
+                
                 if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
             }
             else if (msg[0] == MessageType.READY)

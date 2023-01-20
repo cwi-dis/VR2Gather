@@ -1,22 +1,16 @@
 {
-	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
 	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
-	"orchestratorLogURL" : "http://192.16.197.145:8081/",
-	"openLogOnExit" : false,
 
   "targetFrameRate": 0,
   "ntpSyncThreshold": 0.100,
-  "nonHMDHeight": 1.5,
-  "pilot3NavigationLogs": true,
-  "statsInterval": 0.033,
-  "statsOutputFile":  "stats-{host}-{ts}.txt",
+  "statsInterval": 10,
+  "statsOutputFile":  "",
   "statsOutputFileAppend": false,
   "ffmpegDLLDir" : "../ffmpeg/x64",
  
   "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "traction",
-  	"sessionName" : "",
+  	"sessionName" : "Traction",
   	"sessionScenario" : "Development2",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
@@ -24,7 +18,7 @@
   	"autoCreateForUser" : "",
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
@@ -67,7 +61,6 @@
   },
 
   "LocalUser": {
-    "sourceType": "self",
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
@@ -101,12 +94,6 @@
         "segmentSize": 1000,
         "segmentLife": 16000
       }
-    }
-  },
-  "RemoteUser": {
-    "sourceType": "remote",
-    "AudioSUBConfig": {
-      "streamNumber": 0
     }
   }
 }
