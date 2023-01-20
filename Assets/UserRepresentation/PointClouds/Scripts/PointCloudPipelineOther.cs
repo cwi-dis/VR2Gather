@@ -50,7 +50,6 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
             }
-            SetupConfigDistributors();
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
             // tile (because it would mean that the other tiles with the same timestamp become useless)
@@ -62,6 +61,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
+            SetupConfigDistributors();
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
