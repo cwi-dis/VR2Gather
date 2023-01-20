@@ -30,7 +30,6 @@ namespace VRT.Pilots.SoloPlayground
                     userRepresentationType = UserRepresentationType.__AVATAR__
                 }
             };
-            player.SetupPlayerNetworkControllerPlayer(true, user.userId);
             if (enableFade)
             {
                 CameraFader.Instance.startFadedOut = true;

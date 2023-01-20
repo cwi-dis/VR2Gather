@@ -145,11 +145,9 @@ namespace VRT.Pilots.Common
 #endif
 
 				PlayerControllerBase playerController = player.GetComponent<PlayerControllerBase>();
-                playerController.SetUpPlayerController(isLocalPlayer, user);
+                PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
 
-				PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
-                networkPlayer.SetupPlayerNetworkControllerPlayer(isLocalPlayer, user.userId);
-
+				playerController.SetUpPlayerController(isLocalPlayer, user);
 
                 AllUsers.Add(networkPlayer);
 

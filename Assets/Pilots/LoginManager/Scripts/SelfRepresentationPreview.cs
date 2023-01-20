@@ -111,7 +111,7 @@ namespace VRT.Pilots.LoginManager
                 //player.setupInputOutput(true); // xxxjack needed for preview?
                 playerHasBeenInitialized = true;
             }
-            player.SetRepresentation(representation, tmpSelfUser, VRTConfig.Instance.LocalUser);
+            player.SetRepresentation(representation);
         }
     }
 }

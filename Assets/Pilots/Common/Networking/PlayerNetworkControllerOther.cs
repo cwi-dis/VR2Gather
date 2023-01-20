@@ -8,7 +8,7 @@ namespace VRT.Pilots.Common
     public class PlayerNetworkControllerOther : PlayerNetworkControllerBase
     {
 
-		public override void SetupPlayerNetworkControllerPlayer(bool local, string _userId)
+		public override void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId)
 		{
 			if (local)
 			{
@@ -16,6 +16,7 @@ namespace VRT.Pilots.Common
 			}
 			_IsLocalPlayer = false;
 			UserId = _userId;
+			playerController = _playerController;
 		}
 
 		private void OnDestroy()

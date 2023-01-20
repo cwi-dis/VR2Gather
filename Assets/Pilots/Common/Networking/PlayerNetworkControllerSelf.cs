@@ -17,7 +17,7 @@ namespace VRT.Pilots.Common
 			base.Awake();
 			_SendDelta = 1.0f / SendRate;
 		}
-		public override void SetupPlayerNetworkControllerPlayer(bool local, string _userId)
+		public override void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId)
 		{
 			if (!local)
             {
@@ -25,6 +25,7 @@ namespace VRT.Pilots.Common
             }
 			_IsLocalPlayer = true;
 			UserId = _userId;
+			playerController = _playerController;
 		}
 
 		void Update()
@@ -45,7 +46,8 @@ namespace VRT.Pilots.Common
 				LeftHandPosition = LeftHandTransform.position,
 				LeftHandOrientation = LeftHandTransform.rotation,
 				RightHandPosition = RightHandTransform.position,
-				RightHandOrientation = RightHandTransform.rotation
+				RightHandOrientation = RightHandTransform.rotation,
+				representation = playerController.userRepresentation
 			};
 
 			if (OrchestratorController.Instance.UserIsMaster)
