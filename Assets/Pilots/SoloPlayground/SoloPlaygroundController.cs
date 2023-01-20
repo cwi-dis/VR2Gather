@@ -36,7 +36,7 @@ namespace VRT.Pilots.SoloPlayground
                 CameraFader.Instance.startFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());
             }      
-            playerManager.SetUpPlayerController(true, user, null);
+            playerManager.SetUpPlayerController(true, user);
         }
     }
 }

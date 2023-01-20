@@ -104,20 +104,24 @@ namespace VRT.Pilots.Common
 			InstantiatePlayers();
 		}
 
+		public void SetupConfigDistributors()
+		{
+            var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            if (configDistributors == null || configDistributors.Length == 0)
+            {
+                Debug.LogWarning("No BaseConfigDistributor found");
+            }
+            foreach (var cd in configDistributors)
+            {
+                cd?.SetSelfUserId(OrchestratorController.Instance.SelfUser.userId);
+            }
+        }
+
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
 
-			// First tell the tilingConfigDistributor what our user ID is.
-			var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
-			if (configDistributors == null || configDistributors.Length == 0)
-			{
-				Debug.LogWarning("No BaseConfigDistributor found");
-			}
-			foreach(var cd in configDistributors) {
-				cd?.Init(OrchestratorController.Instance.SelfUser.userId);
-			}
-			
+			SetupConfigDistributors();	
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -141,7 +145,7 @@ namespace VRT.Pilots.Common
 #endif
 
 				PlayerControllerBase playerController = player.GetComponent<PlayerControllerBase>();
-                playerController.SetUpPlayerController(isLocalPlayer, user, configDistributors);
+                playerController.SetUpPlayerController(isLocalPlayer, user);
 
 				PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
                 networkPlayer.SetupPlayerNetworkControllerPlayer(isLocalPlayer, user.userId);

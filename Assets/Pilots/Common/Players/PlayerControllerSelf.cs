@@ -11,14 +11,14 @@ namespace VRT.Pilots.Common
     {
         public bool debugTransform = false;
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
             if (!_isLocalPlayer)
             {
                 Debug.LogError($"{Name()}: isLocalPlayer==false");
             }
             isLocalPlayer = true;
-            _SetupCommon(user, configDistributors);
+            _SetupCommon(user);
             setupCamera();
             LoadCameraTransform();
         }

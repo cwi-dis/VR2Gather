@@ -32,7 +32,7 @@ namespace VRT.Pilots.LoginManager
                     userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
                 }
             };
-            selfPlayer.SetUpPlayerController(true, user, null);
+            selfPlayer.SetUpPlayerController(true, user);
         }
 
         IEnumerator RefreshAndLoad(string scenary)

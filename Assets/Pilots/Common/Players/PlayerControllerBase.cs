@@ -57,8 +57,8 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors);
-        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
+        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User user)
         {
             
             userName = user.userName;
@@ -68,7 +68,7 @@ namespace VRT.Pilots.Common
             }
 
             
-            SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
+            SetRepresentation(user.userData.userRepresentationType, user, null);
 
 
             if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
@@ -90,7 +90,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, VRTConfig._User userCfg, BaseConfigDistributor[] configDistributors=null)
+        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, VRTConfig._User userCfg)
         {
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
@@ -129,19 +129,6 @@ namespace VRT.Pilots.Common
                     userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
-                    if (configDistributors != null)
-                    {
-                        if (configDistributors.Length == 0)
-                        {
-                            Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
-                        }
-                        // Register for distribution of tiling and sync configurations
-                        foreach (var cd in configDistributors)
-                        {
-                            cd?.RegisterPipeline(user.userId, pcPipeline);
-                        }
-                    }
-
                     break;
                 default:
                     isVisible = false;
