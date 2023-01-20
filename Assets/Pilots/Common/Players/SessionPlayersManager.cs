@@ -307,34 +307,6 @@ namespace VRT.Pilots.Common
 				SendPlayerLocationData(request.SenderId);
 			}
 		}
-
-		public void RequestLocationChangeForPlayer(string locationNetworkId, PlayerNetworkControllerBase player)
-		{
-			Debug.Log($"[SessionPlayersManager] Requesting location {locationNetworkId} for player {player.UserId}.");
-
-			if (!OrchestratorController.Instance.UserIsMaster)
-			{
-				Debug.LogError("Programmer error: [SessionsPlayersManager] Requesting location change for a specific player while not master.");
-				return;
-			}
-
-			if (TryGetPlayerLocationFromNetworkId(locationNetworkId, out PlayerLocation location))
-			{
-				if (location.IsEmpty && location.isActiveAndEnabled)
-				{
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-						SetPlayerToLocation(Players[player.UserId], location);
-						SendPlayerLocationData();
-					}
-				}
-				else
-				{
-					Debug.LogWarning("[SessionsPlayersManager] Location was already occupied or not active.");
-				}
-			}
-		}
-
 		
 		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
 		{
@@ -358,21 +330,6 @@ namespace VRT.Pilots.Common
 			location.SetPlayer(player);
 			_PlayerIdToLocation[playerId] = location;
 			_LocationToPlayerId[location] = playerId;
-		}
-
-		private bool TryGetPlayerLocationFromNetworkId(string networkId, out PlayerLocation playerLocation)
-		{
-			foreach (var location in PlayerLocations)
-			{
-				if (location.NetworkId == networkId && location.IsEmpty)
-				{
-					playerLocation = location;
-					return true;
-				}
-			}
-
-			playerLocation = null;
-			return false;
 		}
 #endregion
 	}
