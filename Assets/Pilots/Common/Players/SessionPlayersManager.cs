@@ -37,11 +37,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public class PlayerLocationChangeRequest : BaseMessage
-		{
-			public string LocationNetworkId;
-		}
-        [Tooltip("Prefab used to create players")]
+		[Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
         public GameObject SelfPlayerPrefab;
@@ -82,7 +78,6 @@ namespace VRT.Pilots.Common
 		{
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(PlayerLocationChangeRequest));
 			AllUsers = new List<PlayerNetworkControllerBase>();
 			Players = new Dictionary<string, PlayerNetworkControllerBase>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();
@@ -94,7 +89,6 @@ namespace VRT.Pilots.Common
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
-			OrchestratorController.Instance.Subscribe<PlayerLocationChangeRequest>(OnPlayerLocationChangeRequest);
 		}
 
 		public void OnDestroy()
@@ -103,7 +97,6 @@ namespace VRT.Pilots.Common
 
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
-			OrchestratorController.Instance.Unsubscribe<PlayerLocationChangeRequest>(OnPlayerLocationChangeRequest);
 		}
 
 		public void Start()
@@ -342,46 +335,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void RequestLocationChange(string locationNetworkId)
-		{
-			if (TryGetPlayerLocationFromNetworkId(locationNetworkId, out PlayerLocation location))
-			{
-				if (location.IsEmpty)
-				{
-					var me = OrchestratorController.Instance.SelfUser;
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-						SetPlayerToLocation(Players[me.userId], location);
-					}
-					else
-					{
-						OrchestratorController.Instance.SendTypeEventToMaster
-							(
-							new PlayerLocationChangeRequest { LocationNetworkId = locationNetworkId }
-							);
-					}
-				} else
-				{
-					Debug.Log($"[SessionsPlayersManager] RequestLocationChange destination {locationNetworkId} is occupied");
-				}
-			} else
-			{
-				Debug.Log($"[SessionPlayersManager] could not TryGetPlayerLocationFromNetworkId for {locationNetworkId}");
-			}
-		}
-
-		private void OnPlayerLocationChangeRequest(PlayerLocationChangeRequest locationChangeRequest)
-		{
-			if (OrchestratorController.Instance.UserIsMaster)
-			{
-				if (TryGetPlayerLocationFromNetworkId(locationChangeRequest.LocationNetworkId, out PlayerLocation location))
-				{
-					SetPlayerToLocation(Players[locationChangeRequest.SenderId], location);
-					SendPlayerLocationData();
-				}
-			}
-		}
-
+		
 		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
 		{
 			Debug.Log($"[SessionPlayersManager] Set player {player.UserId} to location {location.NetworkId}.");
