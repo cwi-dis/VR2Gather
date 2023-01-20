@@ -148,7 +148,7 @@ namespace VRT.Pilots.Common
         /// </summary>
         /// <param name="command"></param>
         /// <returns>True if command implemented</returns>
-        public bool OnUserCommand(string command)
+        public virtual bool OnUserCommand(string command)
         {
             if (command == "resetview")
             {

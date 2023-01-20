@@ -105,7 +105,7 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void SetRepresentation(UserRepresentationType type)
+        public virtual void SetRepresentation(UserRepresentationType type)
         {
             userRepresentation = type;
             // Delete old pipelines, if any   
