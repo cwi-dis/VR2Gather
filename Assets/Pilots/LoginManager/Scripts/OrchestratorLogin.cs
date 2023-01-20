@@ -62,10 +62,8 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text ntpText = null;
 
         [Header("Connect")]
-        [SerializeField] private GameObject ntpPanel = null;
-        [SerializeField] private Button connectButton = null;
-        [SerializeField] private Button okButton = null;
-
+        [SerializeField] private GameObject connectPanel = null;
+      
         [Header("Login")]
         [SerializeField] private GameObject loginPanel = null;
         [SerializeField] private InputField userNameLoginIF = null;
@@ -565,8 +563,6 @@ namespace VRT.Pilots.LoginManager
             Updatemicrophones(microphoneDropdown);
 
             // Buttons listeners
-            connectButton.onClick.AddListener(delegate { SocketConnect(); });
-            okButton.onClick.AddListener(delegate { OKButton(); });
             loginButton.onClick.AddListener(delegate { Login(); });
             signinButton.onClick.AddListener(delegate { SigninButton(); });
             registerButton.onClick.AddListener(delegate { RegisterButton(true); });
@@ -808,120 +804,42 @@ namespace VRT.Pilots.LoginManager
 
         public void PanelChanger()
         {
+            connectPanel.gameObject.SetActive(state == State.Offline);
+            loginPanel.SetActive(state == State.Online);
+            vrtPanel.SetActive(state == State.Logged);
+            configPanel.SetActive(state == State.Config);
+            playPanel.SetActive(state == State.Play);
+            createPanel.SetActive(state == State.Create);
+            joinPanel.SetActive(state == State.Join);
+            lobbyPanel.SetActive(state == State.Lobby);
+            // Buttons
             switch (state)
             {
                 case State.Offline:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(true);
                     break;
                 case State.Online:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(true);
                     CheckRememberMe();
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
                     break;
                 case State.Logged:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(true);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
+                   
                     break;
                 case State.Config:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(true);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
+                   
                     // Behaviour
                     SelfRepresentationChanger();
                     break;
                 case State.Play:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(true);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
+                    
                     break;
                 case State.Create:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(true);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
+                   
                     break;
                 case State.Join:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(true);
-                    lobbyPanel.SetActive(false);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
                     // Behaviour
                     GetSessions();
                     break;
                 case State.Lobby:
-                    // Panels
-                    ntpPanel.SetActive(false);
-                    loginPanel.SetActive(false);
-                    vrtPanel.SetActive(false);
-                    configPanel.SetActive(false);
-                    playPanel.SetActive(false);
-                    createPanel.SetActive(false);
-                    joinPanel.SetActive(false);
-                    lobbyPanel.SetActive(true);
-                    // Buttons
-                    connectButton.gameObject.SetActive(false);
-                    if (OrchestratorController.Instance.UserIsMaster)
-                        readyButton.gameObject.SetActive(true);
-                    else
-                        readyButton.gameObject.SetActive(false);
+                    readyButton.gameObject.SetActive(OrchestratorController.Instance.UserIsMaster);
                     break;
                 case State.InGame:
                     break;
@@ -1037,11 +955,6 @@ namespace VRT.Pilots.LoginManager
                 signinPanel.SetActive(false);
                 confirmPasswordRegisterIF.textComponent.color = Color.white;
             }
-        }
-
-        public void OKButton()
-        {
-            PanelChanger();
         }
 
         public void SaveConfigButton()
@@ -1425,13 +1338,11 @@ namespace VRT.Pilots.LoginManager
         private void OnGetNTPTimeResponse(NtpClock ntpTime)
         {
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
+            if (enableLogging) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
             if (Math.Abs(difference) >= VRTConfig.Instance.ntpSyncThreshold)
             {
-                ntpText.text = $"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.";
-                ntpPanel.SetActive(true);
-                loginPanel.SetActive(false);
+                Debug.LogError($"This machine has a desynchronization of {difference:F3} sec with the Orchestrator.\nThis is greater than {VRTConfig.Instance.ntpSyncThreshold:F3}.\nYou may suffer some problems as a result.");
             }
-            if (enableLogging) Debug.Log("OrchestratorLogin: OnGetNTPTimeResponse: Difference: " + difference);
         }
 
         #endregion
