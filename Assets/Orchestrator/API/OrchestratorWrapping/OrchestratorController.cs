@@ -174,7 +174,14 @@ namespace VRT.Orchestrator.Wrapping
             };
         }
 
-        public bool IsAutoRetrievingData { set { isAutoRetrievingData = connectedToOrchestrator; } }
+        public void StartRetrievingData() {
+            if (!connectedToOrchestrator)
+            {
+                Debug.LogError("OrchestratorController: cannot retrieve data if not connected");
+            }
+            isAutoRetrievingData = true;
+        }
+
         public bool ConnectedToOrchestrator { get { return connectedToOrchestrator; } }
         public orchestratorConnectionStatus ConnectionStatus { get { return connectionStatus; } }
         public bool UserIsLogged { get { return userIsLogged; } }
