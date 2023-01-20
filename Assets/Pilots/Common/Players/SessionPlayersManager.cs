@@ -63,8 +63,7 @@ namespace VRT.Pilots.Common
 		private Dictionary<PlayerLocation, string> _LocationToPlayerId;
 
 		public Dictionary<string, PlayerNetworkControllerBase> Spectators;
-		public Dictionary<string, PlayerNetworkControllerBase> Voyeurs;
-
+		
 		private static SessionPlayersManager _Instance;
 
 		public static SessionPlayersManager Instance
@@ -90,8 +89,7 @@ namespace VRT.Pilots.Common
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
 			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
-			Voyeurs = new Dictionary<string, PlayerNetworkControllerBase>();
-
+			
 			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
@@ -159,31 +157,25 @@ namespace VRT.Pilots.Common
                 AllUsers.Add(networkPlayer);
 
 				var representationType = user.userData.userRepresentationType;
-				if (representationType == UserRepresentationType.__SPECTATOR__)
+				switch(representationType)
 				{
-					AddSpectator(networkPlayer);
-				}
-				else
-				if (representationType == UserRepresentationType.__NONE__)
-				{
-					AddVoyeur(networkPlayer);
-				}
-				else
-				if (representationType == UserRepresentationType.__CAMERAMAN__)
-				{
-					AddVoyeur(networkPlayer);
+					case UserRepresentationType.__NONE__:
+					case UserRepresentationType.__SPECTATOR__:
+                        AddSpectator(networkPlayer);
+                        break;
+                    case UserRepresentationType.__CAMERAMAN__:
+						AddSpectator(networkPlayer);
 #if UNITY_EDITOR
-                    if (me.userId == user.userId)
-                    {
-                        Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
-                        ((PlayerControllerSelf)playerController).getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
-                    }
+                        if (isLocalPlayer)
+                        {
+                            Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
+                            ((PlayerControllerSelf)playerController).getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
+                        }
 #endif
-                }
-                else
-				if (representationType != UserRepresentationType.__CAMERAMAN__)
-				{
-					AddPlayer(networkPlayer);
+						break;
+                    default:
+						AddPlayer(networkPlayer);
+						break;
 				}
 			}
 
@@ -202,14 +194,13 @@ namespace VRT.Pilots.Common
 			if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
 			{
 				RemovePlayer(playerToRemove);
-			}
+			} else
 			if (Spectators.TryGetValue(userId, out PlayerNetworkControllerBase spectatorToRemove))
 			{
 				RemoveSpectator(spectatorToRemove);
-			}
-			if (Voyeurs.TryGetValue(userId, out PlayerNetworkControllerBase voyeurToRemove))
+			} else
 			{
-				RemoveVoyeur(voyeurToRemove);
+				Debug.LogWarning($"SessionPlayersManager: Unknown player left: {userId}");
 			}
 		}
 
@@ -249,15 +240,6 @@ namespace VRT.Pilots.Common
 
         }
 
-        private void AddVoyeur(PlayerNetworkControllerBase player)
-        {
-            player.transform.SetParent(NonPlayersLocation);
-            player.transform.position = NonPlayersLocation.position;
-            player.transform.rotation = NonPlayersLocation.rotation;
-
-            Voyeurs.Add(player.UserId, player);
-        }
-
         private void RemovePlayer(PlayerNetworkControllerBase player)
 		{
 			Players.Remove(player.UserId);
@@ -275,12 +257,6 @@ namespace VRT.Pilots.Common
 		private void RemoveSpectator(PlayerNetworkControllerBase player)
 		{
 			Spectators.Remove(player.UserId);
-			Destroy(player.gameObject);
-		}
-
-		private void RemoveVoyeur(PlayerNetworkControllerBase player)
-		{
-			Voyeurs.Remove(player.UserId);
 			Destroy(player.gameObject);
 		}
 
