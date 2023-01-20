@@ -60,6 +60,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Text playerVerText = null;
         [SerializeField] private Text orchVerText = null;
         [SerializeField] private Text ntpText = null;
+        [SerializeField] private Button developerSessionButton = null;
 
         [Header("Connect")]
         [SerializeField] private GameObject connectPanel = null;
@@ -549,6 +550,7 @@ namespace VRT.Pilots.LoginManager
             system = EventSystem.current;
             // Developer mode settings
             developerMode = PlayerPrefs.GetInt("developerMode", 0) != 0;
+            developerModeButton.isOn = developerMode;
             // Update Application version
             orchURLText.text = VRTConfig.Instance.orchestratorURL;
             nativeVerText.text = VersionLog.Instance.NativeClient;
@@ -565,6 +567,7 @@ namespace VRT.Pilots.LoginManager
 
             // Buttons listeners
             developerModeButton.onValueChanged.AddListener(delegate { DeveloperModeButtonClicked(); });
+            developerSessionButton.onClick.AddListener(delegate { StartDeveloperSession(); });
             loginButton.onClick.AddListener(delegate { Login(); });
             signinButton.onClick.AddListener(delegate { SigninButton(); });
             registerButton.onClick.AddListener(delegate { RegisterButton(true); });
@@ -937,6 +940,11 @@ namespace VRT.Pilots.LoginManager
             developerMode = developerModeButton.isOn;
             PlayerPrefs.SetInt("developerMode", developerMode?1:0);
             PanelChanger();
+        }
+
+        private void StartDeveloperSession()
+        {
+            PilotController.LoadScene("SoloPlayground");
         }
 
         private void SigninButton()
