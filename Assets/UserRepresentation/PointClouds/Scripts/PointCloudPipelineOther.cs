@@ -61,6 +61,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
+            SetupConfigDistributors();
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -131,20 +132,20 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
             };
 
-            switch (VRTConfig.Instance.protocolType)
+            switch (SessionConfig.Instance.protocolType)
             {
-                case VRTConfig.ProtocolType.None:
-                case VRTConfig.ProtocolType.SocketIO:
+                case SessionConfig.ProtocolType.None:
+                case SessionConfig.ProtocolType.SocketIO:
                     reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
-                case VRTConfig.ProtocolType.Dash:
+                case SessionConfig.ProtocolType.Dash:
                     reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
-                case VRTConfig.ProtocolType.TCP:
+                case SessionConfig.ProtocolType.TCP:
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
                 default:
-                    throw new System.Exception($"{Name()}: unknown protocolType {VRTConfig.Instance.protocolType}");
+                    throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
             }
 
             string synchronizerName = "none";

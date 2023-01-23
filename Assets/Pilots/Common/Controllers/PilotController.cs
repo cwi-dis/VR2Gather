@@ -26,6 +26,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Allow direct interaction in this scene (default: ray-based and keyboard/mouse")]
         [SerializeField] protected bool allowDirectInteractionInScene;
 
+        [Tooltip("Set for scenes that are not networked")]
+        public bool sceneIsSingleUser = false;
+
         [Tooltip("Direct interaction disabled now because of UI visible (introspection/debug)")]
         [DisableEditing] [SerializeField] protected bool m_directInteractionDisabled;
         /// <summary>
@@ -130,7 +133,15 @@ namespace VRT.Pilots.Common
         {
             if (command == "leave")
             {
-                LoadNewScene("LoginManager");
+                SessionController ctrl = GetComponent<SessionController>();
+                if (ctrl != null)
+                {
+                    ctrl.LeaveSession();
+                }
+                else
+                {
+                    LoadNewScene("LoginManager");
+                }
                 return true;
             }
             if (command == "exit")

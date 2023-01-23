@@ -58,6 +58,24 @@ namespace VRT.UserRepresentation.PointCloud
             return $"{GetType().Name}#{instanceNumber}";
         }
 
+        protected void SetupConfigDistributors()
+        {
+            if (PilotController.Instance.sceneIsSingleUser) return;
+            BaseConfigDistributor[] configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            if (configDistributors != null)
+            {
+                if (configDistributors.Length == 0)
+                {
+                    Debug.LogError("Programmer Error: No ConfigDistributor, you may not be able to see other participants");
+                }
+                // Register for distribution of tiling and sync configurations
+                foreach (var cd in configDistributors)
+                {
+                    cd?.RegisterPipeline(user.userId, this);
+                }
+            }
+        }
+
         protected QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)
         {
             CwipcConfig PCs = CwipcConfig.Instance;

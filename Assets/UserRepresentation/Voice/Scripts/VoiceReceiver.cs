@@ -48,7 +48,7 @@ namespace VRT.UserRepresentation.Voice
         }
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _streamNumber, VRTConfig.ProtocolType proto)
+        public void Init(User user, string _streamName, int _streamNumber)
         {
 #if VRT_AUDIO_DEBUG
             if (debugAddTone || debugReplaceByTone)
@@ -72,8 +72,9 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            string audioCodec = VRTConfig.Instance.Voice.Codec;
+            string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
+            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
 
             preparerQueue = new QueueThreadSafe("VoiceReceiverPreparer", 200, false);
             QueueThreadSafe _readerOutputQueue = preparerQueue;
@@ -84,12 +85,12 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = decoderQueue;
             }
 
-            if (proto == VRTConfig.ProtocolType.Dash)
+            if (proto == SessionConfig.ProtocolType.Dash)
             {
                 reader = new AsyncSubReader(user.sfuData.url_audio, _streamName, _streamNumber, audioCodec, _readerOutputQueue);
             }
             else
-            if (proto == VRTConfig.ProtocolType.TCP)
+            if (proto == SessionConfig.ProtocolType.TCP)
             {
                 reader = new AsyncTCPReader(user.userData.userAudioUrl, audioCodec, _readerOutputQueue);
             }
@@ -143,7 +144,7 @@ namespace VRT.UserRepresentation.Voice
             audioSource.loop = true;
             audioSource.Play();
 
-            string audioCodec = VRTConfig.Instance.Voice.Codec;
+            string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             preparerQueue = null;
