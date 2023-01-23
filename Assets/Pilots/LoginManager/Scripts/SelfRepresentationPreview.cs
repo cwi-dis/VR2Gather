@@ -107,11 +107,11 @@ namespace VRT.Pilots.LoginManager
             if (!playerHasBeenInitialized)
             {
                 tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
-                player.SetUpPlayerController(true, tmpSelfUser, null);
+                player.SetUpPlayerController(true, tmpSelfUser);
                 //player.setupInputOutput(true); // xxxjack needed for preview?
                 playerHasBeenInitialized = true;
             }
-            player.SetRepresentation(representation, tmpSelfUser, VRTConfig.Instance.LocalUser);
+            player.SetRepresentation(representation);
         }
     }
 }
