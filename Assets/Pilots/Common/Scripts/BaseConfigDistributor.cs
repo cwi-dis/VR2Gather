@@ -13,9 +13,27 @@ namespace VRT.Pilots.Common
 
         }
         protected string selfUserId;
+        protected Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
 
-        abstract public BaseConfigDistributor Init(string _selfUserId);
+        public virtual string Name()
+        {
+            return $"{GetType().Name}";
+        }
 
-        abstract public void RegisterPipeline(string userId, BasePipeline pipeline);
+        public virtual void SetSelfUserId(string _selfUserId)
+        {
+            selfUserId = _selfUserId;
+        }
+
+        public virtual void RegisterPipeline(string userId, BasePipeline pipeline)
+        {
+
+            if (pipelines.ContainsKey(userId) && pipelines[userId] != pipeline)
+            {
+                Debug.Log($"{Name()}: replacing pipeline for userId {userId}");
+            }
+            pipelines[userId] = pipeline;
+        }
+
     }
 }

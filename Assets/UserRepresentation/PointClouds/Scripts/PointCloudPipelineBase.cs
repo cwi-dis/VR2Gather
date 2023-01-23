@@ -20,7 +20,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.Config._User;
+    using static VRT.Core.VRTConfig._User;
 
     public abstract class PointCloudPipelineBase : BasePipeline
     {
@@ -56,6 +56,24 @@ namespace VRT.UserRepresentation.PointCloud
         public override string Name()
         {
             return $"{GetType().Name}#{instanceNumber}";
+        }
+
+        protected void SetupConfigDistributors()
+        {
+            if (PilotController.Instance.sceneIsSingleUser) return;
+            BaseConfigDistributor[] configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            if (configDistributors != null)
+            {
+                if (configDistributors.Length == 0)
+                {
+                    Debug.LogError("Programmer Error: No ConfigDistributor, you may not be able to see other participants");
+                }
+                // Register for distribution of tiling and sync configurations
+                foreach (var cd in configDistributors)
+                {
+                    cd?.RegisterPipeline(user.userId, this);
+                }
+            }
         }
 
         protected QueueThreadSafe _CreateRendererAndPreparer(int curTile = -1)

@@ -4,13 +4,21 @@ using VRT.Core;
 
 namespace VRT.Pilots.LoginManager
 {
-    public class PilotRegistry
+    public class PilotRegistry : MonoBehaviour
     {
+        public static PilotRegistry Instance;
 
-        public static string GetSceneNameForPilotName(string pilotName, string pilotVariant)
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        public string GetSceneNameForPilotName(string pilotName, string pilotVariant)
         {
             // Note: Pilot scenes need to be registered here, but also added to the "scenes in build"
             // through Unity Editor File->Build Settings dialog.
+            //
+            // And new pilot names must be added to the scenarios.json of the orchestrator.
             switch (pilotName)
             {
                 case "Pilot 0":
@@ -21,6 +29,12 @@ namespace VRT.Pilots.LoginManager
                     return "TransmiXR";
                 case "Development2":
                     return "TransmiXR-Museum";
+                case "Development3":
+                    return null;
+                case "Mediascape":
+                    return null;
+                case "MedicalExamination":
+                    return null;
                 default:
                     return null;
             }

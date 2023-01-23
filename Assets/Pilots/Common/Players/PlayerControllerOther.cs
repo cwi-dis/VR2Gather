@@ -8,14 +8,14 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerOther : PlayerControllerBase
     {
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
             if (_isLocalPlayer)
             {
                 Debug.LogError($"{Name()}: isLocalPlayer==true");
             }
             isLocalPlayer = false;
-            _SetupCommon(user, configDistributors);
+            _SetupCommon(user);
         }
 
         /// <summary>

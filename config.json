@@ -1,19 +1,6 @@
 {
-	"_orchestratorURL": "http://192.168.1.10:8080/socket.io/",
-	"orchestratorURL": "http://192.16.197.145:8080/socket.io/",
-	"orchestratorLogURL" : "http://192.16.197.145:8081/",
-	"openLogOnExit" : false,
 
-  "targetFrameRate": 0,
-  "ntpSyncThreshold": 0.100,
-  "nonHMDHeight": 1.5,
-  "pilot3NavigationLogs": false,
-  "statsInterval": 10,
-  "statsOutputFile":  "",
-  "statsOutputFileAppend": false,
-  "ffmpegDLLDir" : "../ffmpeg/x64",
- 
-  "AutoStart" : {
+  "_unused_AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "TransmiXR-test",
   	"sessionScenario" : "Development2",
@@ -28,45 +15,7 @@
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
   },
-  "ScreenshotTool" : {
-  	"takeScreenshot" : false,
-  	"screenshotTargetDirectory" : "../session_screenshots"
-  },
-  "VR" : {
-	"_loader" : ""
-  },
-  "Macintosh": {
-    "SIGNALS_SMD_PATH": "/Users/jack/lib"
-  },
-  "PCs": {
-    "Codec": "cwi1",
-    "defaultCellSize": 0.0024,
-    "cellSizeFactor": 1,
-    "timeoutBeforeGhosting" : 5,
-    "encoderParallelism" : 0,
-    "decoderParallelism" : 0
-  },
-  "Voice": {
-  	"Codec": "VR2A",
-  	"maxPlayoutLatency" : 0.5,
-	"maxPlayoutAhead": 0.400,
-	"ignoreSynchronizer" : false
-  },
-  "Video": {
-  	"Codec" : "h264"
-  },
-  "Synchronizer" : {
-  	"debugSynchronizer" : false,
-  	"debugJitterBuffer" : false,
-  	"minLatency" : 100,
-  	"maxLatency" : 5000,
-  	"latencyMaxDecrease" : 1,
-  	"latencyMaxIncrease" : 33,
-  	"acceptDesyncOnDataUnavailable" : false
-  },
-
-  "LocalUser": {
-    "sourceType": "self",
+  "_unused_LocalUser": {
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
@@ -100,12 +49,6 @@
         "segmentSize": 1000,
         "segmentLife": 16000
       }
-    }
-  },
-  "RemoteUser": {
-    "sourceType": "remote",
-    "AudioSUBConfig": {
-      "streamNumber": 0
     }
   }
 }
