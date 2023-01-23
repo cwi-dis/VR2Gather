@@ -1,16 +1,16 @@
 {
 
-  "_unused_AutoStart" : {
+  "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "TransmiXR-test",
-  	"sessionScenario" : "Development2",
+  	"sessionScenario" : "Development",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
   	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
