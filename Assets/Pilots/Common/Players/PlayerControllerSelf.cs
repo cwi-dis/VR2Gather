@@ -11,14 +11,14 @@ namespace VRT.Pilots.Common
     {
         public bool debugTransform = false;
 
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
             if (!_isLocalPlayer)
             {
                 Debug.LogError($"{Name()}: isLocalPlayer==false");
             }
             isLocalPlayer = true;
-            _SetupCommon(user, configDistributors);
+            _SetupCommon(user);
             setupCamera();
             LoadCameraTransform();
         }
@@ -148,7 +148,7 @@ namespace VRT.Pilots.Common
         /// </summary>
         /// <param name="command"></param>
         /// <returns>True if command implemented</returns>
-        public bool OnUserCommand(string command)
+        public virtual bool OnUserCommand(string command)
         {
             if (command == "resetview")
             {
@@ -164,5 +164,20 @@ namespace VRT.Pilots.Common
             }
             return false;
         }
+
+#if UNITY_EDITOR
+        [ContextMenu("Toggle Invisibility (Editor-only hack)")]
+        private void ForceTrigger()
+        {
+            if (userRepresentation == user.userData.userRepresentationType)
+            {
+                SetRepresentation(UserRepresentationType.__NONE__);
+            }
+            else
+            {
+                SetRepresentation(user.userData.userRepresentationType);
+            }
+        }
+#endif
     }
 }

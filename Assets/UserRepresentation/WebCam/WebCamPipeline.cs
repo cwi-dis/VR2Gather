@@ -71,13 +71,13 @@ namespace VRT.UserRepresentation.WebCam
             }
             //bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             FFmpeg.AutoGen.AVCodecID codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
-            if (VRTConfig.Instance.Video.Codec == "h264")
+            if (SessionConfig.Instance.videoCodec == "h264")
             {
                 codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
             }
             else
             {
-                Debug.LogError($"WebCamPipeline: unknown codec: {VRTConfig.Instance.Video.Codec}");
+                Debug.LogError($"WebCamPipeline: unknown codec: {SessionConfig.Instance.videoCodec}");
             }
             isSource = isLocalPlayer;
             if (user.userData.webcamName == "None") return this;
@@ -121,18 +121,23 @@ namespace VRT.UserRepresentation.WebCam
                                 inQueue = writerQueue
                                 }
                             };
-                        if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.Dash)
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
                             writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         }
                         else
-                         if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP)
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                         {
                             writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
                         }
                         else
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                         {
                             writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
+                        }
+                        else
+                        {
+                            Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                         }
 
                     }
@@ -159,17 +164,23 @@ namespace VRT.UserRepresentation.WebCam
             else
             {
        
-                if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.Dash)
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                 {
                     reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                 }
-                else if (VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP)
+                else
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                 {
                     reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
                 }
                 else
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
                 {
                     reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                }
+                else
+                {
+                    Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                 }
 
                 //
