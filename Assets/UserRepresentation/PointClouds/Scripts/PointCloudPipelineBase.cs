@@ -60,6 +60,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         protected void SetupConfigDistributors()
         {
+            if (PilotController.Instance.sceneIsSingleUser) return;
             BaseConfigDistributor[] configDistributors = FindObjectsOfType<BaseConfigDistributor>();
             if (configDistributors != null)
             {
