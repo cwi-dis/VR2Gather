@@ -55,13 +55,21 @@ namespace VRT.Pilots.Common
             OrchestratorController.Instance.UnregisterMessageForwarder();
         }
 
-        private void LeaveSession()
+        public void LeaveSession()
         {
             OrchestratorController.Instance.LeaveSession();
         }
 
         private void OnLeaveSessionHandler()
         {
+#if xxxjack_not
+            // Code disabled: the session controller should handle deleting the session for the master user.
+            if (OrchestratorController.Instance.UserIsMaster)
+            {
+                Debug.Log($"{Name()}: left session as master, deleting.");
+                OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.MySession.sessionId);
+            }
+#endif
             Debug.Log($"{Name()}: left session, loading LoginManager scene");
             PilotController.LoadScene("LoginManager");
         }

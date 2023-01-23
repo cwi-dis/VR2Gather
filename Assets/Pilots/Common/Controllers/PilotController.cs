@@ -133,7 +133,15 @@ namespace VRT.Pilots.Common
         {
             if (command == "leave")
             {
-                LoadNewScene("LoginManager");
+                SessionController ctrl = GetComponent<SessionController>();
+                if (ctrl != null)
+                {
+                    ctrl.LeaveSession();
+                }
+                else
+                {
+                    LoadNewScene("LoginManager");
+                }
                 return true;
             }
             if (command == "exit")
