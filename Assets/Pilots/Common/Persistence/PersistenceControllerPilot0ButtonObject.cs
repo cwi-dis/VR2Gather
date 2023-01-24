@@ -22,31 +22,18 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         void Update()
         {
-            if (testInfoPrinted == false)
-            {
-                string NID = "0000";
-                NID = grabbableSelfRef.NetworkId;
-                Debug.Log("xxxshishir: Printing test message from persistable game object with ID: " + NID);
-                testInfoPrinted = true;
-            }
-
 
         }
         void OnApplicationQuit()
         {
-            //TransformSelfRef = gameObject.transform;
-            //MaterialSelfRef = gameObject.GetComponent<Renderer>().material;
-            //pData.NetworkID = grabbableSelfRef.NetworkId;
-            //pData.position = TransformSelfRef.position;
-            //pData.rotation = TransformSelfRef.rotation;
-            //pData.material = MaterialSelfRef;
-            //savePersistenceData(pData, pData.NetworkID);
+
         }
         public void loadPersistenceData(PersistenceData pData)
         {
             Debug.Log("xxxshishir: Load persistence data called");
             gameObject.transform.position = pData.position;
             gameObject.transform.rotation = pData.rotation;
+            grabbableSelfRef.SendSyncMessage();
             //xxxshishir ToDo: Add material change tracking later
         }
         public PersistenceData savePersistenceData()

@@ -29,6 +29,8 @@ namespace VRT.Pilots.Common
             if (instance != null)
                 Debug.LogError("Found more than one Persistence Manager in the scene");
             instance = this;
+            //xxxshishir disable persistence for all users that are not the session host
+
             if (!loadPersistenceData)
                 return;
             persistableSceneObjects = FindAllPersistableObjects();

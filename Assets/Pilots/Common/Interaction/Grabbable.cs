@@ -67,7 +67,7 @@ namespace VRT.Pilots.Common
 			SendSyncMessage();
 		}
 
-		private void SendSyncMessage()
+		public void SendSyncMessage()
         {
 			OrchestratorController.Instance.SendTypeEventToAll(
 					new RigidbodySyncMessage
