@@ -15,13 +15,7 @@ namespace VRT.Pilots.LoginManager
         [Tooltip("The self-player for the login scene")]
         [SerializeField] public PlayerControllerSelf selfPlayer;
 
-        public class MessageType
-        {
-            // Bad magic. These are prefixes generated (I think) by the orchestrator)
-            public const string START = "START";
-            public const string READY = "READY";
-        }
-      
+       
         //AsyncOperation async;
         Coroutine loadCoroutine = null;
 
@@ -38,7 +32,7 @@ namespace VRT.Pilots.LoginManager
                     userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
                 }
             };
-            selfPlayer.SetUpPlayerController(true, user, null);
+            selfPlayer.SetUpPlayerController(true, user);
         }
 
         IEnumerator RefreshAndLoad(string scenary)
@@ -52,6 +46,22 @@ namespace VRT.Pilots.LoginManager
         public override void OnUserMessageReceived(string message)
         {
             Debug.Log($"{Name()}: OnUserMessageReceived: {message}");
+            if (!message.StartsWith("START_")) {
+                Debug.LogError("LoginController: only expecting START_ messages");
+                return;
+            }
+            message = message.Substring(6);
+            SessionConfig.FromJson(message);
+            string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(SessionConfig.Instance.scenarioName, SessionConfig.Instance.scenarioVariant); ;
+            if (sceneName == null)
+            {
+                Debug.LogError($"{Name()}: Selected scenario \"{SessionConfig.Instance.scenarioName}\" not implemented in this player (unknown scene)");
+                return;
+            }
+
+            if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
+#if xxxjack_old
+           
             string[] msg = message.Split(new char[] { '_' });
             if (msg[0] == MessageType.START)
             {
@@ -59,16 +69,16 @@ namespace VRT.Pilots.LoginManager
                 switch (msg[2])
                 {
                     case "0": // No Audio
-                        Config.Instance.protocolType = Config.ProtocolType.None;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.None;
                         break;
                     case "1": // Socket Audio
-                        Config.Instance.protocolType = Config.ProtocolType.SocketIO;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
                         break;
                     case "2": // Dash Audio
-                        Config.Instance.protocolType = Config.ProtocolType.Dash;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
                         break;
                     case "3": // Raw TCP
-                        Config.Instance.protocolType = Config.ProtocolType.TCP;
+                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
                         break;
                     default:
                         Debug.LogError($"{Name()}: received unknown START audio type {msg[2]}");
@@ -79,23 +89,26 @@ namespace VRT.Pilots.LoginManager
                 if (msg.Length > 3 && msg[3] != "") pilotVariant = msg[3];
                 if (msg.Length > 4 && msg[4] != "")
                 {
-                    Config.Instance.PCs.Codec = msg[4];
+                    VRTConfig.Instance.PCs.Codec = msg[4];
                 }
                 if (msg.Length > 5 && msg[5] != "")
                 {
-                    Config.Instance.Voice.Codec = msg[5];
+                    VRTConfig.Instance.Voice.Codec = msg[5];
                 }
-                string sceneName = PilotRegistry.GetSceneNameForPilotName(pilotName, pilotVariant);
+                string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(pilotName, pilotVariant);
                 if (sceneName == null)
                 {
-                    throw new System.Exception($"{Name()}: Selected scenario \"{sceneName}\" not implemented in this player");
+                    Debug.LogError($"{Name()}: Selected scenario \"{pilotName}\" not implemented in this player (unknown scene)");
+                    return;
                 }
+                
                 if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
             }
             else if (msg[0] == MessageType.READY)
             {
                 // Do something to check if all the users are ready (future implementation)
             }
+#endif
         }
     }
 

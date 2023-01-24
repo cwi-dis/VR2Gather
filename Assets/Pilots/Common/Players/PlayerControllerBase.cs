@@ -10,18 +10,26 @@ namespace VRT.Pilots.Common
 
     abstract public class PlayerControllerBase : MonoBehaviour
     {
+        [Tooltip("Network controller for this player (default: on same GameObject)")]
+        PlayerNetworkControllerBase playerNetworkController = null;
         [Tooltip("Main camera, if this is the local player and not using a holodisplay")]
         [SerializeField] protected Camera cam;
         [Tooltip("Main camera if this is the local user and we are using a holo display")]
         [SerializeField] protected GameObject holoCamera;
         [Tooltip("CameraOffset of camera")]
         [SerializeField] protected Transform cameraOffset;
+        [Tooltip("Current visual representation of this user")]
+        [DisableEditing] public UserRepresentationType userRepresentation;
         [Tooltip("Avatar representation of this user")]
         [SerializeField] protected GameObject avatar;
-        [Tooltip("Video webcam avator representation of this user")]
+        [Tooltip("Video webcam avatar representation of this user")]
         [SerializeField] protected GameObject webcam;
         [Tooltip("Point cloud representation of this user")]
         [SerializeField] protected GameObject pointcloud;
+        [Tooltip("Experience-defined representation of this user")]
+        [SerializeField] protected GameObject altRepOne;
+        [Tooltip("Experience-defined representation of this user")]
+        [SerializeField] protected GameObject altRepTwo;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
         [Tooltip("User name is filled into this TMPro field")]
@@ -30,6 +38,9 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] protected bool isLocalPlayer;
         [Tooltip("True if this user has a visual representation")]
         [DisableEditing] [SerializeField] private bool _isVisible;
+        [Tooltip("Orchestrator User structure for this player")]
+        [DisableEditing][SerializeField] protected VRT.Orchestrator.Wrapping.User user;
+       
         public bool isVisible
         {
             get => _isVisible;
@@ -57,18 +68,22 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors);
-        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
+        protected void _SetupCommon(VRT.Orchestrator.Wrapping.User _user)
         {
-            
+            if (playerNetworkController == null)
+            {
+                playerNetworkController = GetComponent<PlayerNetworkControllerBase>();
+            }
+            user = _user;
             userName = user.userName;
             if (userNameText != null)
             {
                 userNameText.text = userName;
             }
-
+            playerNetworkController.SetupPlayerNetworkController(this, isLocalPlayer, user.userId);
             
-            SetRepresentation(user.userData.userRepresentationType, user, null, configDistributors);
+            SetRepresentation(user.userData.userRepresentationType);
 
 
             if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
@@ -90,8 +105,9 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public void SetRepresentation(UserRepresentationType type, Orchestrator.Wrapping.User user, Config._User userCfg, BaseConfigDistributor[] configDistributors=null)
+        public virtual void SetRepresentation(UserRepresentationType type)
         {
+            userRepresentation = type;
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -101,16 +117,15 @@ namespace VRT.Pilots.Common
             webcam.SetActive(false);
             this.pointcloud.SetActive(false);
             avatar.SetActive(false);
+            if (altRepOne != null) altRepOne.SetActive(false);
+            if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
-            switch (user.userData.userRepresentationType)
+            VRTConfig._User userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
+            switch (userRepresentation)
             {
                 case UserRepresentationType.__2D__:
                     isVisible = true;
                     webcam.SetActive(true);
-                    if (userCfg == null)
-                    {
-                        userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
-                    }
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg);
                     break;
@@ -126,22 +141,16 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    userCfg = isLocalPlayer ? Config.Instance.LocalUser : Config.Instance.RemoteUser;
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     pcPipeline?.Init(isLocalPlayer, user, userCfg);
-                    if (configDistributors != null)
-                    {
-                        if (configDistributors.Length == 0)
-                        {
-                            Debug.LogError("Programmer Error: No tilingConfigDistributor, you may not be able to see other participants");
-                        }
-                        // Register for distribution of tiling and sync configurations
-                        foreach (var cd in configDistributors)
-                        {
-                            cd?.RegisterPipeline(user.userId, pcPipeline);
-                        }
-                    }
-
+                    break;
+                case UserRepresentationType.__ALT1__:
+                    altRepOne.SetActive(true);
+                    isVisible = true;
+                    break;
+                case UserRepresentationType.__ALT2__:
+                    altRepTwo.SetActive(true);
+                    isVisible = true;
                     break;
                 default:
                     isVisible = false;
@@ -158,12 +167,12 @@ namespace VRT.Pilots.Common
             }
             if (isLocalPlayer)
             { // Sender
-                var AudioBin2Dash = Config.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
+                var AudioBin2Dash = VRTConfig.Instance.LocalUser.PCSelfConfig.AudioBin2Dash;
                 if (AudioBin2Dash == null)
                     throw new Exception("PointCloudPipeline: missing self-user PCSelfConfig.AudioBin2Dash config");
                 try
                 {
-                    voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife, Config.Instance.protocolType); //Audio Pipeline
+                    voice.AddComponent<VoiceSender>().Init(user, "audio", AudioBin2Dash.segmentSize, AudioBin2Dash.segmentLife); //Audio Pipeline
                 }
                 catch (EntryPointNotFoundException e)
                 {
@@ -173,10 +182,8 @@ namespace VRT.Pilots.Common
             }
             else
             { // Receiver
-                var AudioSUBConfig = Config.Instance.RemoteUser.AudioSUBConfig;
-                if (AudioSUBConfig == null)
-                    throw new Exception("PointCloudPipeline: missing other-user AudioSUBConfig config");
-                voice.AddComponent<VoiceReceiver>().Init(user, "audio", AudioSUBConfig.streamNumber, Config.Instance.protocolType); //Audio Pipeline
+                const int audioStreamNumber = 0;
+                voice.AddComponent<VoiceReceiver>().Init(user, "audio", audioStreamNumber); //Audio Pipeline
             }
         }
     

@@ -18,7 +18,7 @@ namespace VRT.UserRepresentation.PointCloud
     using IncomingTileDescription = Cwipc.StreamSupport.IncomingTileDescription;
     using EncoderStreamDescription = Cwipc.StreamSupport.EncoderStreamDescription;
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
-    using static VRT.Core.Config._User;
+    using static VRT.Core.VRTConfig._User;
 
 
     public class PointCloudPipelineOther : PointCloudPipelineBase
@@ -40,19 +40,15 @@ namespace VRT.UserRepresentation.PointCloud
 
 
         /// <summary> Orchestrator based Init. Start is called before the first frame update </summary> 
-        /// <param name="cfg"> Config file json </param>
+        /// <param name="cfg"> Config file json (xxxjack unused should be removed)</param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
         /// <param name="calibrationMode"> Bool to enter in calib mode and don't encode and send your own PC </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
         {
             if (isLocalPlayer)
             {
                 Debug.LogError("${Name()}: Init() called with isLocalPlayer==true");
-            }
-            if (cfg.sourceType != "remote")
-            {
-                Debug.LogError("{Name()}: Init() called with cfg.sourceType != remote");
             }
             //
             // Decoder queue size needs to be large for tiled receivers, so we never drop a packet for one
@@ -65,6 +61,7 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
+            SetupConfigDistributors();
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -135,20 +132,20 @@ namespace VRT.UserRepresentation.PointCloud
 #endif
             };
 
-            switch (Config.Instance.protocolType)
+            switch (SessionConfig.Instance.protocolType)
             {
-                case Config.ProtocolType.None:
-                case Config.ProtocolType.SocketIO:
+                case SessionConfig.ProtocolType.None:
+                case SessionConfig.ProtocolType.SocketIO:
                     reader = new AsyncSocketIOReader(user, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
-                case Config.ProtocolType.Dash:
+                case SessionConfig.ProtocolType.Dash:
                     reader = new AsyncSubPCReader(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, tilesToReceive);
                     break;
-                case Config.ProtocolType.TCP:
+                case SessionConfig.ProtocolType.TCP:
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
                 default:
-                    throw new System.Exception($"{Name()}: unknown protocolType {Config.Instance.protocolType}");
+                    throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
             }
 
             string synchronizerName = "none";

@@ -75,7 +75,7 @@ namespace VRT.Pilots.LoginManager
             currentMicrophoneName = microphoneName;
             if (currentMicrophoneName != "None")
             {
-                AsyncVoiceReader.PrepareDSP(Config.Instance.audioSampleRate, 0);
+                AsyncVoiceReader.PrepareDSP(VRTConfig.Instance.audioSampleRate, 0);
                 recorder = Microphone.Start(currentMicrophoneName, true, 1, samples);
                 readPosition = 0;
             }
@@ -107,11 +107,11 @@ namespace VRT.Pilots.LoginManager
             if (!playerHasBeenInitialized)
             {
                 tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
-                player.SetUpPlayerController(true, tmpSelfUser, null);
+                player.SetUpPlayerController(true, tmpSelfUser);
                 //player.setupInputOutput(true); // xxxjack needed for preview?
                 playerHasBeenInitialized = true;
             }
-            player.SetRepresentation(representation, tmpSelfUser, Config.Instance.LocalUser);
+            player.SetRepresentation(representation);
         }
     }
 }

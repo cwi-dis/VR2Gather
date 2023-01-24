@@ -44,16 +44,16 @@ namespace VRT.UserRepresentation.WebCam
 
         public static void Register()
         {
-            if (Config.Instance.ffmpegDLLDir != "")
-            {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
-            }
             RegisterPipelineClass(true, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
             RegisterPipelineClass(false, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
         }
 
         public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)
         {
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
+            {
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
+            }
             return dst.AddComponent<WebCamPipeline>();
         }
 
@@ -61,7 +61,7 @@ namespace VRT.UserRepresentation.WebCam
         /// <param name="cfg"> Config file json </param>
         /// <param name="url_pcc"> The url for pointclouds from sfuData of the Orchestrator </param> 
         /// <param name="url_audio"> The url for audio from sfuData of the Orchestrator </param>
-        public override BasePipeline Init(bool isLocalPlayer, object _user, Config._User cfg, bool preview = false)
+        public override BasePipeline Init(bool isLocalPlayer, object _user, VRTConfig._User cfg, bool preview = false)
         {
             User user = (User)_user;
             if (user == null || user.userData == null)
@@ -71,121 +71,129 @@ namespace VRT.UserRepresentation.WebCam
             }
             //bool useDash = Config.Instance.protocolType == Config.ProtocolType.Dash;
             FFmpeg.AutoGen.AVCodecID codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
-            if (Config.Instance.Video.Codec == "h264")
+            if (SessionConfig.Instance.videoCodec == "h264")
             {
                 codec = FFmpeg.AutoGen.AVCodecID.AV_CODEC_ID_H264;
             }
             else
             {
-                Debug.LogError($"WebCamPipeline: unknown codec: {Config.Instance.Video.Codec}");
+                Debug.LogError($"WebCamPipeline: unknown codec: {SessionConfig.Instance.videoCodec}");
             }
-            isSource = (cfg.sourceType == "self");
+            isSource = isLocalPlayer;
             if (user.userData.webcamName == "None") return this;
-            switch (cfg.sourceType)
+            if (isLocalPlayer)
             {
-                case "self": // Local
-                    if (!isLocalPlayer) Debug.LogError($"{Name()}: sourceType==self but not isLocalPlayer");
+                //
+                // Allocate queues we need for this sourceType
+                //
+                encoderQueue = new QueueThreadSafe("WebCamPipelineEncoder", 2, true);
+                //
+                // Create reader
+                //
+                webReader = new AsyncWebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
+                webCamTexture = webReader.webcamTexture;
+                if (!preview)
+                {
                     //
-                    // Allocate queues we need for this sourceType
+                    // Create encoders for transmission
                     //
-                    encoderQueue = new QueueThreadSafe("WebCamPipelineEncoder", 2, true);
-                    //
-                    // Create reader
-                    //
-                    webReader = new AsyncWebCamReader(user.userData.webcamName, width, height, fps, this, encoderQueue);
-                    webCamTexture = webReader.webcamTexture;
-                    if (!preview)
+                    try
                     {
-                        //
-                        // Create encoders for transmission
-                        //
-                        try
-                        {
-                            encoder = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
-                        }
-                        catch (System.EntryPointNotFoundException e)
-                        {
-                            Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
-                            throw new System.Exception("WebCamPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
-                        }
-                        //
-                        // Create bin2dash writer for PC transmission
-                        //
-                        var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
-                        if (Bin2Dash == null)
-                            throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
-                        try
-                        {
-                            OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {
+                        encoder = new AsyncVideoEncoder(new AsyncVideoEncoder.Setup() { codec = codec, width = width, height = height, fps = fps, bitrate = bitrate }, encoderQueue, null, writerQueue, null);
+                    }
+                    catch (System.EntryPointNotFoundException e)
+                    {
+                        Debug.Log($"WebCamPipeline: VideoEncoder: EntryPointNotFoundException: {e}");
+                        throw new System.Exception("WebCamPipeline: PCEncoder() raised EntryPointNotFound exception, skipping PC encoding");
+                    }
+                    //
+                    // Create bin2dash writer for PC transmission
+                    //
+                    var Bin2Dash = cfg.PCSelfConfig.Bin2Dash;
+                    if (Bin2Dash == null)
+                        throw new System.Exception("WebCamPipeline: missing self-user PCSelfConfig.Bin2Dash config");
+                    try
+                    {
+                        OutgoingStreamDescription[] dashStreamDescriptions = new OutgoingStreamDescription[1] {
                                 new OutgoingStreamDescription() {
                                 tileNumber = 0,
                                 qualityIndex = 0,
                                 inQueue = writerQueue
                                 }
                             };
-                            if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-                            {
-                                writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
-                            }
-                            else
-                             if (Config.Instance.protocolType == Config.ProtocolType.TCP)
-                            {
-                                writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
-                            }
-                            else
-                            {
-                                writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
-                            }
-
-                        }
-                        catch (System.EntryPointNotFoundException e)
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
                         {
-                            Debug.Log($"WebCamPipeline: SocketIOWriter(): EntryPointNotFound({e.Message})");
-                            throw new System.Exception($"WebCamPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
+                            writer = new AsyncB2DWriter(user.sfuData.url_pcc, "webcam", "wcwc", Bin2Dash.segmentSize, Bin2Dash.segmentLife, dashStreamDescriptions);
                         }
-                        
-                    }
-                    else
-                    {
-                        Transform screen = transform.Find("PlayerHeadScreen");
-                        var renderer = screen.GetComponent<Renderer>();
-                        if (renderer != null)
+                        else
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
                         {
-                            renderer.material.mainTexture = webCamTexture;
-                            renderer.material.SetFloat("_convertGamma", preview ? 0 : 1);
-
-                            renderer.transform.localScale = new Vector3(0.5f, webCamTexture.height / (float)webCamTexture.width * 0.5f, 1);
+                            writer = new AsyncTCPWriter(user.userData.userPCurl, "wcwc", dashStreamDescriptions);
                         }
-                    }
-                    break;
-                case "remote": // Remoto
-                    if (isLocalPlayer) Debug.LogError($"{Name()}: sourceType!=self but isLocalPlayer is true");
+                        else
+                        if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
+                        {
+                            writer = new AsyncSocketIOWriter(user, "webcam", "wcwc", dashStreamDescriptions);
+                        }
+                        else
+                        {
+                            Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
+                        }
 
-                    if (Config.Instance.protocolType == Config.ProtocolType.Dash)
-                    {
-                        reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
                     }
-                    else if (Config.Instance.protocolType == Config.ProtocolType.TCP)
+                    catch (System.EntryPointNotFoundException e)
                     {
-                        reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
-                    }
-                    else
-                    {
-                        reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                        Debug.Log($"WebCamPipeline: SocketIOWriter(): EntryPointNotFound({e.Message})");
+                        throw new System.Exception($"WebCamPipeline: B2DWriter() raised EntryPointNotFound({e.Message}) exception, skipping PC writing");
                     }
 
-                    //
-                    // Create video decoder.
-                    //
-                    decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
-                    //
-                    // Create video preparer.
-                    //
-                    preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
-                    // xxxjack should set Synchronizer here
-                   
-                    ready = true;
-                    break;
+                }
+                else
+                {
+                    Transform screen = transform.Find("PlayerHeadScreen");
+                    var renderer = screen.GetComponent<Renderer>();
+                    if (renderer != null)
+                    {
+                        renderer.material.mainTexture = webCamTexture;
+                        renderer.material.SetFloat("_convertGamma", preview ? 0 : 1);
+
+                        renderer.transform.localScale = new Vector3(0.5f, webCamTexture.height / (float)webCamTexture.width * 0.5f, 1);
+                    }
+                }
+            }
+            else
+            {
+       
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.Dash)
+                {
+                    reader = new AsyncSubReader(user.sfuData.url_pcc, "webcam", 0, "wcwc", videoCodecQueue);
+                }
+                else
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP)
+                {
+                    reader = new AsyncTCPReader(user.userData.userPCurl, "wcwc", videoCodecQueue);
+                }
+                else
+                if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.SocketIO)
+                {
+                    reader = new AsyncSocketIOReader(user, "webcam", "wcwc", videoCodecQueue);
+                }
+                else
+                {
+                    Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
+                }
+
+                //
+                // Create video decoder.
+                //
+                decoder = new AsyncVideoDecoder(codec, videoCodecQueue, null, videoPreparerQueue, null);
+                //
+                // Create video preparer.
+                //
+                preparer = new AsyncVideoPreparer(videoPreparerQueue, null);
+                // xxxjack should set Synchronizer here
+
+                ready = true;
             }
             return this;
         }

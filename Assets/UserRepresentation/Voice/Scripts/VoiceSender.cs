@@ -28,7 +28,7 @@ namespace VRT.UserRepresentation.Voice
         QueueThreadSafe senderQueue = null;
 
         // Start is called before the first frame update
-        public void Init(User user, string _streamName, int _segmentSize, int _segmentLife, Config.ProtocolType proto)
+        public void Init(User user, string _streamName, int _segmentSize, int _segmentLife)
         {
             string micro = null;
             if (user != null && user.userData != null)
@@ -40,8 +40,9 @@ namespace VRT.UserRepresentation.Voice
                 return;
             }
 
-            string audioCodec = Config.Instance.Voice.Codec;
+            string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
+            SessionConfig.ProtocolType proto = SessionConfig.Instance.protocolType;
 
             QueueThreadSafe _readerOutputQueue = null;
             if (audioIsEncoded)
@@ -60,7 +61,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {
@@ -70,11 +71,11 @@ namespace VRT.UserRepresentation.Voice
             OutgoingStreamDescription[] b2dStreams = new OutgoingStreamDescription[1];
             b2dStreams[0].inQueue = senderQueue;
 
-            if (proto == Config.ProtocolType.Dash)
+            if (proto == SessionConfig.ProtocolType.Dash)
             {
                 writer = new AsyncB2DWriter(user.sfuData.url_audio, _streamName, audioCodec, _segmentSize, _segmentLife, b2dStreams);
             } 
-            else if (proto == Config.ProtocolType.TCP)
+            else if (proto == SessionConfig.ProtocolType.TCP)
             {
                 writer = new AsyncTCPWriter(user.userData.userAudioUrl, audioCodec, b2dStreams);
             }
@@ -104,7 +105,7 @@ namespace VRT.UserRepresentation.Voice
                 return;
             }
 
-            string audioCodec = Config.Instance.Voice.Codec;
+            string audioCodec = SessionConfig.Instance.voiceCodec;
             bool audioIsEncoded = audioCodec == "VR2A";
 
             QueueThreadSafe _readerOutputQueue = null;
@@ -124,7 +125,7 @@ namespace VRT.UserRepresentation.Voice
                 _readerOutputQueue = senderQueue;
             }
 
-            reader = new AsyncVoiceReader(micro, Config.Instance.audioSampleRate, Config.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
+            reader = new AsyncVoiceReader(micro, VRTConfig.Instance.audioSampleRate, VRTConfig.Instance.Voice.audioFps, minBufferSize, this, _readerOutputQueue);
             int audioSamplesPerPacket = reader.getBufferSize();
             if (codec != null && audioSamplesPerPacket % codec.minSamplesPerFrame != 0)
             {

@@ -37,9 +37,9 @@ namespace VRT.Pilots.Common
 
 		// xxxjack private HandController _CurrentGrabber;
 
-		public void Awake()
+		protected override void Awake()
 		{
-
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
 
 		}
