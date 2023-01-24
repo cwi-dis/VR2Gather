@@ -30,6 +30,8 @@ namespace VRT.Pilots.Common
                 Debug.LogError("Found more than one Persistence Manager in the scene");
             instance = this;
             //xxxshishir disable persistence for all users that are not the session host
+            if (!Orchestrator.Wrapping.OrchestratorController.Instance.UserIsMaster)
+                loadPersistenceData = false;
 
             if (!loadPersistenceData)
                 return;
@@ -75,6 +77,16 @@ namespace VRT.Pilots.Common
         }
         private void OnApplicationQuit()
         {
+            if(Orchestrator.Wrapping.OrchestratorController.Instance.UserIsMaster)
+                saveAllPersistenceData();
+        }
+        private List<IDataPersistence> FindAllPersistableObjects()
+        {
+            IEnumerable<IDataPersistence> persistableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
+            return new List<IDataPersistence>(persistableObjects);
+        }
+        private void saveAllPersistenceData()
+        {
             // xxxshishir We find persistable objects again on quit to account for dynamically created objects
             persistableSceneObjects = FindAllPersistableObjects();
             string NetworkID;
@@ -104,11 +116,6 @@ namespace VRT.Pilots.Common
             {
                 Debug.LogError("Couldn't save persistence data to file :" + saveFile + "\n" + e);
             }
-        }
-        private List<IDataPersistence> FindAllPersistableObjects()
-        {
-            IEnumerable<IDataPersistence> persistableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
-            return new List<IDataPersistence>(persistableObjects);
         }
     }
     [System.Serializable]
