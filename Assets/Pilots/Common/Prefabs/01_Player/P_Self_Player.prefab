@@ -1672,9 +1672,12 @@ MonoBehaviour:
   cam: {fileID: 1790764940407382550}
   holoCamera: {fileID: 0}
   cameraOffset: {fileID: 4754063988648330083}
+  userRepresentation: 0
   avatar: {fileID: 7342134860299516999}
   webcam: {fileID: 7171150154254213433}
   pointcloud: {fileID: 6341382799821854084}
+  altRepOne: {fileID: 0}
+  altRepTwo: {fileID: 0}
   voice: {fileID: 7656253769967137944}
   userNameText: {fileID: 1730563041212197564}
   isLocalPlayer: 1
@@ -1701,6 +1704,7 @@ MonoBehaviour:
   RightHandTransform: {fileID: 7630850262051204802}
   SendRate: 10
   _IsLocalPlayer: 1
+  playerController: {fileID: 0}
   camTransform: {fileID: 7845086807825369409}
 --- !u!114 &4736957743163071257
 MonoBehaviour:
