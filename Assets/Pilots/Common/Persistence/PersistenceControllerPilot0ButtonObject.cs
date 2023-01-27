@@ -28,18 +28,23 @@ namespace VRT.Pilots.Common
         {
 
         }
-        public void loadPersistenceData(PersistenceData pData)
+        public void loadPersistentData(PersistentData pData)
         {
-            Debug.Log("xxxshishir: Load persistence data called");
+            Debug.Log($"{name}: Load persistence data called");
+            if (pData.NetworkID != grabbableSelfRef.NetworkId)
+            {
+                Debug.LogWarning($"{name}: loading data for {pData.NetworkID} but grabbableSelf is {grabbableSelfRef.NetworkId}");
+            }
             gameObject.transform.position = pData.position;
             gameObject.transform.rotation = pData.rotation;
             grabbableSelfRef.SendSyncMessage();
             //xxxshishir ToDo: Add material change tracking later
         }
-        public PersistenceData savePersistenceData()
+
+        public PersistentData getPersistentDataForSaving()
         {
             Debug.Log("xxxshishir: Save persistence data called");
-            PersistenceData pData = new PersistenceData();
+            PersistentData pData = new PersistentData();
             pData.NetworkID = grabbableSelfRef.NetworkId;
             pData.position = gameObject.transform.position;
             pData.rotation = gameObject.transform.rotation;
@@ -50,6 +55,7 @@ namespace VRT.Pilots.Common
             pData.isStatic = true;
             return pData;
         }
+
         public string getNetworkID()
         {
             return grabbableSelfRef.NetworkId;
