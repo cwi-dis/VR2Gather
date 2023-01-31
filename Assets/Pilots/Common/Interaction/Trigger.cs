@@ -24,9 +24,9 @@ namespace VRT.Pilots.Common
             if (networkTrigger == null)
 			{
 				networkTrigger = GetComponent<NetworkTrigger>();
-				if (networkTrigger == null)
+				if (networkTrigger == null && localTrigger.GetPersistentEventCount() == 0)
 				{
-					Debug.LogError($"{name}: no NetworkTrigger on GameObject");
+					Debug.LogError($"{name}: no NetworkTrigger and no local triggers on GameObject");
 				}
 			}
         }
