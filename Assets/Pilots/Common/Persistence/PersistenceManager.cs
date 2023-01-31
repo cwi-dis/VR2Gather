@@ -11,8 +11,14 @@ namespace VRT.Pilots.Common
     /// <summary>
     /// Load and save state of all persistable objects.
     /// </summary>
-    public class PersistenceManager : MonoBehaviour
+    public class PersistenceManager : NetworkIdBehaviour
     {
+        public class PersistenceManagerData : BaseMessage
+        {
+            public bool doLoad;
+            public bool doSave;
+        }
+       
         public static PersistenceManager Instance { get; private set; }
         //xxxshishir ToDo: Add config variables to enable and disable this feature
         [Tooltip("Automatically load of previously saved persistence data on start")]
@@ -24,6 +30,22 @@ namespace VRT.Pilots.Common
         //xxxshishir maybe we want to make this user specific and use the current username to name the file
         [Tooltip("Filename where persistent data is saved and loaded from")]
         [SerializeField] private string fileName = "PersistenceData.json";
+
+        protected override void Awake()
+        {
+            base.Awake();
+            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PersistenceManagerData, typeof(PersistenceManagerData));
+        }
+
+        public virtual void OnEnable()
+        {
+            OrchestratorController.Instance.Subscribe<PersistenceManagerData>(OnPersistenceCall);
+        }
+
+        public virtual void OnDisable()
+        {
+            OrchestratorController.Instance.Unsubscribe<PersistenceManagerData>(OnPersistenceCall);
+        }
         
         // Start is called before the first frame update
         void Start()
@@ -40,6 +62,65 @@ namespace VRT.Pilots.Common
         private void OnApplicationQuit()
         {
             if(savePersistentDataOnQuit)
+            {
+                saveAllPersistentData();
+            }
+        }
+
+        /// <summary>
+        /// Call this method to load persistent data (or forward the request to do so to the master)
+        /// </summary>
+        public void OnLoad()
+        {
+            PersistenceManagerData data = new PersistenceManagerData()
+            {
+                doLoad = true
+            };
+            if (OrchestratorController.Instance.UserIsMaster)
+            {
+                Debug.Log("PersistenceManager: OnLoad: master, therefore loading data");
+                OnPersistenceCall(data);
+            }
+            else
+            {
+                Debug.Log("PersistenceManager: OnLoad: forwarding to master");
+                OrchestratorController.Instance.SendTypeEventToMaster(data);
+            }
+        }
+
+        /// <summary>
+        /// Call this method to save persistent data (or forward the request to do so to the master)
+        /// </summary>
+        public void OnSave()
+        {
+            PersistenceManagerData data = new PersistenceManagerData()
+            {
+                doSave = true
+            };
+            if (OrchestratorController.Instance.UserIsMaster)
+            {
+                Debug.Log("PersistenceManager: OnSave: master, therefore loading data");
+                OnPersistenceCall(data);
+            }
+            else
+            {
+                Debug.Log("PersistenceManager: OnSave: forwarding to master");
+                OrchestratorController.Instance.SendTypeEventToMaster(data);
+            }
+        }
+
+        public void OnPersistenceCall(PersistenceManagerData data)
+        {
+            if (!OrchestratorController.Instance.UserIsMaster)
+            {
+                Debug.LogError($"PersistenceManager: OnPersistenceCall but not master");
+                return;
+            }
+            if (data.doLoad)
+            {
+                loadAllPersistentData();
+            }
+            if (data.doSave)
             {
                 saveAllPersistentData();
             }
