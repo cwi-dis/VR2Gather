@@ -227,6 +227,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_InteractionLayers:
     m_Bits: 4
+  m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}
   m_FirstHoverEntered:
@@ -271,6 +272,8 @@ MonoBehaviour:
   m_Deactivated:
     m_PersistentCalls:
       m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
   m_OnFirstHoverEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -327,7 +330,7 @@ GameObject:
   - component: {fileID: 6858270817136547864}
   - component: {fileID: 2162240661057732598}
   - component: {fileID: 5074880227610526853}
-  - component: {fileID: 7275107282369312698}
+  - component: {fileID: 1674616156035744027}
   m_Layer: 29
   m_Name: PFB_Pilot0ButtonObject
   m_TagString: Untagged
@@ -438,6 +441,7 @@ MonoBehaviour:
     m_Bits: 4294967295
   m_InteractionLayers:
     m_Bits: 2
+  m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}
   m_FirstHoverEntered:
@@ -494,6 +498,8 @@ MonoBehaviour:
   m_Deactivated:
     m_PersistentCalls:
       m_Calls: []
+  m_StartingHoverFilters: []
+  m_StartingSelectFilters: []
   m_OnFirstHoverEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -522,6 +528,10 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_AttachTransform: {fileID: 0}
+  m_UseDynamicAttach: 0
+  m_MatchAttachPosition: 1
+  m_MatchAttachRotation: 1
+  m_SnapToColliderVolume: 1
   m_AttachEaseInTime: 0.15
   m_MovementType: 2
   m_VelocityDamping: 1
@@ -558,6 +568,9 @@ MonoBehaviour:
   m_ForceGravityOnDetach: 0
   m_RetainTransformParent: 1
   m_AttachPointCompatibilityMode: 0
+  m_StartingSingleGrabTransformers: []
+  m_StartingMultipleGrabTransformers: []
+  m_AddDefaultGrabTransformers: 1
 --- !u!114 &2162240661057732598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,7 +601,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.035, y: 0.007, z: 0.05}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7275107282369312698
+--- !u!114 &1674616156035744027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -597,7 +610,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 2986471831455026930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243cefbd033cd1c43a7a5993bab80e45, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d01f80fadf83064b9769a7dac7f596f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabbableSelfRef: {fileID: 2162240661057732598}
+  grabbableRef: {fileID: 0}
+  transformRef: {fileID: 0}
