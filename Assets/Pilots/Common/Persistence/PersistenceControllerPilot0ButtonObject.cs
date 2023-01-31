@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace VRT.Pilots.Common
 {
-    public class PersistenceControllerPilot0ButtonObject : PersistenceControllerBase, IDataPersistence
+    public class PersistenceControllerPilot0ButtonObject : PersistenceController, IDataPersistence
     {
         private bool testInfoPrinted = false;
         public Grabbable grabbableSelfRef;

@@ -8,28 +8,28 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-    //
-    //Scenes that contain persistable objects should include a single persistence manager to manage the saving and loading of game object data
-    //The manager maintains a dictionary of objects identified by their network ID 
+    /// <summary>
+    /// Load and save state of all persistable objects.
+    /// </summary>
     public class PersistenceManager : MonoBehaviour
     {
         public static PersistenceManager Instance { get; private set; }
-       private List<IDataPersistence> persistableSceneObjects;
         //xxxshishir ToDo: Add config variables to enable and disable this feature
-        [Tooltip("Enable loading of previously saved persistence data ")]
+        [Tooltip("Automatically load of previously saved persistence data on start")]
         [SerializeField] private bool loadPersistentDataOnStart = true;
-        [Tooltip("Enable saving of persistence data in this session")]
+        [Tooltip("Automatically save persistence data on session end")]
         [SerializeField] private bool savePersistentDataOnQuit = true;
-        [Tooltip("When set will load/save only in master, otherwise in all instances")]
+        [Tooltip("Automatic load/save in master only, otherwise in all instances")]
         [SerializeField] private bool masterOnly = true;
         //xxxshishir maybe we want to make this user specific and use the current username to name the file
         [Tooltip("Filename where persistent data is saved and loaded from")]
         [SerializeField] private string fileName = "PersistenceData.json";
+        
         // Start is called before the first frame update
         void Start()
         {
             if (Instance != null)
-                Debug.LogError("Found more than one Persistence Manager in the scene");
+                Debug.LogError("PersistenceManager: multiple instances in scene");
             Instance = this;
             if (loadPersistentDataOnStart)
             {
@@ -44,21 +44,23 @@ namespace VRT.Pilots.Common
                 saveAllPersistentData();
             }
         }
+
         private List<IDataPersistence> FindAllPersistableObjects()
         {
             IEnumerable<IDataPersistence> persistableObjects = FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
             return new List<IDataPersistence>(persistableObjects);
         }
-        public void saveAllPersistentData()
+
+        private void saveAllPersistentData()
         {
             if (masterOnly && !OrchestratorController.Instance.UserIsMaster)
             {
-                Debug.Log($"{name}: saveAllPersistentData: not saving, not master");
+                Debug.Log($"PersistenceManager: saveAllPersistentData: not saving, not master");
                 return;
             }
             // xxxshishir We find persistable objects again on quit to account for dynamically created objects
-            Debug.Log($"{name}: saveAllPersistenceData called");
-            persistableSceneObjects = FindAllPersistableObjects();
+            Debug.Log($"PersistenceManager: saveAllPersistenceData called");
+            List<IDataPersistence> persistableSceneObjects = FindAllPersistableObjects();
             string NetworkID;
             PersistentData pData;
             var persistenceDataDictionary = new Dictionary<string, PersistentData>();
@@ -66,7 +68,7 @@ namespace VRT.Pilots.Common
             {
                 pData = pObjects.getPersistentDataForSaving();
                 NetworkID = pObjects.getNetworkID();
-                Debug.Log($"{name}: save data for {NetworkID}");
+                Debug.Log($"PersistenceManager: save data for {NetworkID}");
                 persistenceDataDictionary.Add(NetworkID, pData);
             }
             PersistentDataCollection pDataCollection = new PersistentDataCollection();
@@ -86,21 +88,22 @@ namespace VRT.Pilots.Common
             }
             catch (Exception e)
             {
-                Debug.LogError("Couldn't save persistence data to file :" + saveFile + "\n" + e);
+                Debug.LogError($"PersistenceManager: {saveFile}: Error {e}");
             }
         }
-        public void loadAllPersistentData()
+
+        private void loadAllPersistentData()
         {
             if (masterOnly && !OrchestratorController.Instance.UserIsMaster)
             {
-                Debug.Log($"{name}: loadAllPersistentData: not loading, not master");
+                Debug.Log($"PersistenceManager: loadAllPersistentData: not loading, not master");
                 return;
             }
-            persistableSceneObjects = FindAllPersistableObjects();
+            List<IDataPersistence> persistableSceneObjects = FindAllPersistableObjects();
             string saveFile = Path.Combine(Application.persistentDataPath, fileName);
             if (!File.Exists(saveFile))
             {
-                Debug.LogError("No save data found!");
+                Debug.LogError($"PersistenceManager: File not found: {saveFile}");
                 return;
             }
             string saveFileData = "";
@@ -116,7 +119,7 @@ namespace VRT.Pilots.Common
             }
             catch (Exception e)
             {
-                Debug.LogError("Couldn't load persistence data from file :" + saveFile + "\n" + e);
+                Debug.LogError($"PersistenceManager: Error reading from {saveFile}: {e}");
                 return;
             }
             PersistentDataCollection pDataCollection = JsonUtility.FromJson<PersistentDataCollection>(saveFileData);
@@ -133,9 +136,10 @@ namespace VRT.Pilots.Common
                 persistenceDataDictionary.Remove(NetworkID);
             }
             if (persistenceDataDictionary.Count != 0)
-                Debug.LogWarning($"{name}: Could not initialize {persistenceDataDictionary.Count} persistable objects in the save file");
+                Debug.LogWarning($"PersistenceManager: Could not initialize {persistenceDataDictionary.Count} persistable objects present in the save file");
         }
     }
+
     [System.Serializable]
     //xxxshishir Temporary class to hold the collection of persistence data, by default we can only serialize fields and not types like Dictionaries
     //https://docs.unity3d.com/2021.2/Documentation/Manual/JSONSerialization.html
@@ -143,6 +147,7 @@ namespace VRT.Pilots.Common
     public class PersistentDataCollection
     {
         public List<PersistentData> pDataCollection;
+
         public IDictionary<string,PersistentData> toDictionary()
         {
             IDictionary<string, PersistentData> pDataDictionary = new Dictionary<string,PersistentData>();
@@ -150,6 +155,7 @@ namespace VRT.Pilots.Common
                 pDataDictionary.Add(pData.NetworkID, pData);
             return pDataDictionary;
         }
+
         public void fromDictionary(IDictionary<string,PersistentData> pDataDictionary)
         {
             pDataCollection = pDataDictionary.Values.ToList();

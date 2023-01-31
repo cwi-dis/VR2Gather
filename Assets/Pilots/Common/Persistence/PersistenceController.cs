@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace VRT.Pilots.Common
 {
-    public abstract class PersistenceControllerBase : MonoBehaviour
+    public abstract class PersistenceController : MonoBehaviour
     {
         // Start is called before the first frame update
         void Start()
