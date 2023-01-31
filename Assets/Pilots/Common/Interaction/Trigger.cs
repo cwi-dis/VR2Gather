@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 namespace VRT.Pilots.Common
@@ -12,6 +13,8 @@ namespace VRT.Pilots.Common
 	{
 		[Tooltip("Component that communicates triggers to other instances of the experience")]
 		public NetworkTriggerBase networkTrigger;
+		[Tooltip("Local callbacks to do when triggered.")]
+		public UnityEvent localTrigger;
 
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
@@ -21,9 +24,9 @@ namespace VRT.Pilots.Common
             if (networkTrigger == null)
 			{
 				networkTrigger = GetComponent<NetworkTrigger>();
-				if (networkTrigger == null)
+				if (networkTrigger == null && localTrigger.GetPersistentEventCount() == 0)
 				{
-					Debug.LogError($"{name}: no NetworkTrigger on GameObject");
+					Debug.LogError($"{name}: no NetworkTrigger and no local triggers on GameObject");
 				}
 			}
         }
@@ -65,7 +68,11 @@ namespace VRT.Pilots.Common
         public void OnActivate()
         {
 			Debug.Log($"Trigger({name}): OnActivate()");
-			networkTrigger.Trigger();
+			if (networkTrigger != null)
+			{
+				networkTrigger.Trigger();
+			}
+			localTrigger.Invoke();
 		}
 	}
 }
