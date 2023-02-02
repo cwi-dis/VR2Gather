@@ -13,6 +13,8 @@ namespace VRT.Pilots.SoloPlayground
         public VRT.Pilots.Common.PlayerNetworkControllerBase player;
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
+        [Tooltip("User representation")]
+        public UserRepresentationType userRepresentation = UserRepresentationType.__AVATAR__;
 
 
         // Start is called before the first frame update
@@ -27,7 +29,7 @@ namespace VRT.Pilots.SoloPlayground
                 userData = new Orchestrator.Wrapping.UserData()
                 {
                     microphoneName = "None",
-                    userRepresentationType = UserRepresentationType.__AVATAR__
+                    userRepresentationType = userRepresentation
                 }
             };
             if (enableFade)

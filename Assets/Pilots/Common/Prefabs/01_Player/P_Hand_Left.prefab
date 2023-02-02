@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &335145054921605873
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 472548960646974677}
+  m_Layer: 0
+  m_Name: RiggingAttachPointLeftHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &472548960646974677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335145054921605873}
+  m_LocalRotation: {x: 0.55377144, y: 0.4397013, z: 0.55377144, w: 0.4397013}
+  m_LocalPosition: {x: -0.01, y: -0.01, z: -0.19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3440647670940916381}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 103.1}
 --- !u!1 &2319757012462531555
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,6 +455,7 @@ Transform:
   - {fileID: 5279577406935798576}
   - {fileID: 3884054822418467607}
   - {fileID: 2137744821078276756}
+  - {fileID: 472548960646974677}
   m_Father: {fileID: 1790983422348413134}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
