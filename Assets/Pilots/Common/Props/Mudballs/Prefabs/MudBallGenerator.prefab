@@ -257,7 +257,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 7938924960164905144}
+      objectReference: {fileID: 0}
     - target: {fileID: 106792676388117314, guid: c1c01814571870a4bb1902884eb8f170,
         type: 3}
       propertyPath: m_Deactivated.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -403,6 +403,21 @@ PrefabInstance:
       propertyPath: networkTrigger
       value: 
       objectReference: {fileID: 2494339738444114026}
+    - target: {fileID: 8222446400066679699, guid: c1c01814571870a4bb1902884eb8f170,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8222446400066679699, guid: c1c01814571870a4bb1902884eb8f170,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8222446400066679699, guid: c1c01814571870a4bb1902884eb8f170,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8571077852622750969, guid: c1c01814571870a4bb1902884eb8f170, type: 3}
     - {fileID: 646709419, guid: c1c01814571870a4bb1902884eb8f170, type: 3}
@@ -414,15 +429,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4025659694062833403}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7938924960164905144 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6481451831915810371, guid: c1c01814571870a4bb1902884eb8f170,
-    type: 3}
-  m_PrefabInstance: {fileID: 4025659694062833403}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 628c220ef9f89db4198be1b5df1ee33a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
