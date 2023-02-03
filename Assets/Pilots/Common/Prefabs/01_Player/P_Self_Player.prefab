@@ -345,6 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_System: {fileID: 6401796635452955404}
+  m_DelayTime: 0
 --- !u!114 &1325930266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -911,6 +912,7 @@ MonoBehaviour:
   m_DebounceTime: 0.5
   m_EnableTurnLeftRight: 1
   m_EnableTurnAround: 0
+  m_DelayTime: 0
   m_LeftHandSnapTurnAction:
     m_UseReference: 1
     m_Action:
@@ -952,6 +954,7 @@ MonoBehaviour:
   m_System: {fileID: 6401796635452955404}
   m_MoveSpeed: 1
   m_EnableStrafe: 1
+  m_EnableFly: 0
   m_UseGravity: 1
   m_GravityApplicationMode: 0
   m_ForwardSource: {fileID: 7845086807825369409}
@@ -1399,21 +1402,6 @@ PrefabInstance:
       propertyPath: pointingModeAxisInvert
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2560253360125558930, guid: 21dad1a70fa0b7842afecfcdd199c370,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3440647670940916381, guid: 21dad1a70fa0b7842afecfcdd199c370,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3715003807647238045, guid: 21dad1a70fa0b7842afecfcdd199c370,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3826831324969394881, guid: 21dad1a70fa0b7842afecfcdd199c370,
         type: 3}
       propertyPath: m_Enabled
@@ -1672,9 +1660,12 @@ MonoBehaviour:
   cam: {fileID: 1790764940407382550}
   holoCamera: {fileID: 0}
   cameraOffset: {fileID: 4754063988648330083}
+  userRepresentation: 0
   avatar: {fileID: 7342134860299516999}
   webcam: {fileID: 7171150154254213433}
   pointcloud: {fileID: 6341382799821854084}
+  altRepOne: {fileID: 0}
+  altRepTwo: {fileID: 0}
   voice: {fileID: 7656253769967137944}
   userNameText: {fileID: 1730563041212197564}
   isLocalPlayer: 1
@@ -1701,6 +1692,7 @@ MonoBehaviour:
   RightHandTransform: {fileID: 7630850262051204802}
   SendRate: 10
   _IsLocalPlayer: 1
+  playerController: {fileID: 0}
   camTransform: {fileID: 7845086807825369409}
 --- !u!114 &4736957743163071257
 MonoBehaviour:
@@ -1880,11 +1872,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5655057707699943033, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
-        type: 3}
-      propertyPath: m_InteractionManager
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6652609405479520317, guid: ff0aeac6f1cd4e747a73e883ac2d7fa5,
         type: 3}
