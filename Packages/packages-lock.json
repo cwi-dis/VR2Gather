@@ -70,7 +70,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "12.1.8",
+      "version": "12.1.10",
       "depth": 1,
       "source": "builtin",
       "dependencies": {
@@ -87,11 +87,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "12.1.8",
+      "version": "12.1.10",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
-        "com.unity.render-pipelines.core": "12.1.8",
+        "com.unity.render-pipelines.core": "12.1.10",
         "com.unity.searcher": "4.9.1"
       }
     },
@@ -146,7 +146,7 @@
       }
     },
     "com.unity.xr.core-utils": {
-      "version": "2.0.0",
+      "version": "2.0.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
