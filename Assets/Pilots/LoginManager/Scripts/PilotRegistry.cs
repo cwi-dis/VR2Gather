@@ -26,11 +26,11 @@ namespace VRT.Pilots.LoginManager
                 case "Technical Playground":
                     return "TechnicalPlayground";
                 case "Development":
-                    return "TransmiXR";
+                    return "Pilot Zero Shared";
                 case "Development2":
-                    return "TransmiXR-Museum";
+                    return "TransmiXR";
                 case "Development3":
-                    return null;
+                    return "TransmiXR-Museum";
                 case "Mediascape":
                     return null;
                 case "MedicalExamination":
