@@ -8,9 +8,9 @@
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "",
-  	"autoCreate" : true,
+  	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoStartWith" : 0,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
