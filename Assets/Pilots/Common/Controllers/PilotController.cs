@@ -88,7 +88,7 @@ namespace VRT.Pilots.Common
         {
             if(CameraFader.Instance != null)
             {
-                StartCoroutine(CameraFader.Instance.FadeIn());
+                CameraFader.Instance.StartFadeIn();
             }
         }
 

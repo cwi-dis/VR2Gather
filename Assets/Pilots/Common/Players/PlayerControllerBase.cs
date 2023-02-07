@@ -19,7 +19,7 @@ namespace VRT.Pilots.Common
         [Tooltip("CameraOffset of camera")]
         [SerializeField] protected Transform cameraOffset;
         [Tooltip("Current visual representation of this user")]
-        [DisableEditing] public UserRepresentationType userRepresentation;
+        public UserRepresentationType userRepresentation;
         [Tooltip("Avatar representation of this user")]
         [SerializeField] protected GameObject avatar;
         [Tooltip("Video webcam avatar representation of this user")]
