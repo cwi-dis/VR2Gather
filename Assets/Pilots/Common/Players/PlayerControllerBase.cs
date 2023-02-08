@@ -142,7 +142,19 @@ namespace VRT.Pilots.Common
                     this.pointcloud.SetActive(true);
            
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
-                    pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    try
+                    {
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
+                        userRepresentation = UserRepresentationType.__AVATAR__;
+                        avatar.SetActive(true);
+                        this.pointcloud.SetActive(false);
+                        Destroy(pcPipeline);
+                        throw;
+                    }
                     break;
                 case UserRepresentationType.__ALT1__:
                     altRepOne.SetActive(true);
