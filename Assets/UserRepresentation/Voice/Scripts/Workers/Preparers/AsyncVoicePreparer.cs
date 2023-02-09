@@ -336,7 +336,12 @@ namespace VRT.UserRepresentation.Voice
 
                 if (ShouldOutput())
                 {
-                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={(int)(statsTotalSamples / (statsTotalUpdates-statsNoData))}");
+                    int samplesPerFrame = 0;
+                    if(statsTotalUpdates > statsNoData)
+                    {
+                        samplesPerFrame = (int)(statsTotalSamples / (statsTotalUpdates - statsNoData));
+                    }
+                    Output($"fps={statsTotalUpdates / Interval():F2}, fps_dropped={statsDrops / Interval():F2}, fps_nodata={statsNoData / Interval():F2}, samples_per_frame={samplesPerFrame}");
                     Clear();
                     statsTotalUpdates = 0;
                     statsTotalSamples = 0;
