@@ -58,7 +58,7 @@ namespace VRT.UserRepresentation.Voice
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
-            Debug.Log("VoicePreparer: Started.");
+            Debug.Log($"{Name()}: Started.");
             Start();
         }
 
@@ -77,7 +77,7 @@ namespace VRT.UserRepresentation.Voice
         public override void AsyncOnStop()
         {
             base.AsyncOnStop();
-            Debug.Log("VoicePreparer: Stopped");
+            Debug.Log($"{Name()}: Stopped");
         }
 
         protected override void AsyncUpdate()
@@ -190,6 +190,7 @@ namespace VRT.UserRepresentation.Voice
                         {
                             // There is another frame in the queue that is also earlier than minTimestamp.
                             // Drop this one.
+                            if (debugBuffering) Debug.Log($"{Name()}: drop frame ts={currentTimestamp} because next ts={queueHeadTimestamp} is better");
                             dropCount++;
                             currentAudioFrame.free();
                             currentAudioFrame = null;
