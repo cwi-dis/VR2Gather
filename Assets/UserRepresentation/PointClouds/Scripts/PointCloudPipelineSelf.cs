@@ -110,7 +110,14 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Allocate queues we need for this sourceType
             //
-            encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            if (preview)
+            {
+                encoderQueue = null;
+            }
+            else
+            {
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            }
             //
             // Ensure we can determine from the log file who this is.
             //

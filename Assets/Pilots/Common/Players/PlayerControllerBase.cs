@@ -40,7 +40,11 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] private bool _isVisible;
         [Tooltip("Orchestrator User structure for this player")]
         [DisableEditing][SerializeField] protected VRT.Orchestrator.Wrapping.User user;
-       
+
+        // May be set by subclasses to indicate this player should not transmit
+        // any data streams.
+        protected bool isPreviewPlayer = false;
+
         public bool isVisible
         {
             get => _isVisible;
@@ -107,6 +111,7 @@ namespace VRT.Pilots.Common
 
         public virtual void SetRepresentation(UserRepresentationType type)
         {
+            if (type == userRepresentation) return;
             userRepresentation = type;
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
@@ -127,7 +132,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     webcam.SetActive(true);
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
-                    wcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
                 case UserRepresentationType.__AVATAR__:
                     isVisible = true;
@@ -144,7 +149,7 @@ namespace VRT.Pilots.Common
                     BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
                     try
                     {
-                        pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     }
                     catch (Exception e)
                     {
@@ -172,6 +177,7 @@ namespace VRT.Pilots.Common
 
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
+            if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
             {
                 Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");

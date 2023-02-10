@@ -9,7 +9,15 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerSelf : PlayerControllerBase
     {
+        [Tooltip("Disable transmitters for this self-player")]
+        [SerializeField] private bool previewPlayer = false;
+
         public bool debugTransform = false;
+
+        private void Awake()
+        {
+            isPreviewPlayer = previewPlayer;
+        }
 
         public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
