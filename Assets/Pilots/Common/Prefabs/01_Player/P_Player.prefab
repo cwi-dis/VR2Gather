@@ -826,6 +826,7 @@ MonoBehaviour:
   altRepOne: {fileID: 8520122571391461576}
   altRepTwo: {fileID: 0}
   voice: {fileID: 4012052827202430640}
+  charControl: {fileID: 3076079762117982612}
   userNameText: {fileID: 5037811773562763412}
   isLocalPlayer: 0
   _isVisible: 0

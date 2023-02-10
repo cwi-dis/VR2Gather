@@ -75,6 +75,10 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
+        protected virtual void Update()
+        {
+        }
+
         public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
         protected void _SetupCommon(VRT.Orchestrator.Wrapping.User _user)
         {
@@ -140,7 +144,10 @@ namespace VRT.Pilots.Common
             {
                 case UserRepresentationType.__NONE__:
                     // disable character controller.
-                    if (charControl != null) charControl.enabled = false;
+                    if (charControl != null)
+                    {
+                        charControl.enabled = false;
+                    }
                     break;
                 case UserRepresentationType.__2D__:
                     isVisible = true;
