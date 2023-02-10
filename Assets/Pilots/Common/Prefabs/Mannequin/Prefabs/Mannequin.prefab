@@ -428,9 +428,8 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   headConstraint: {fileID: 1387395448}
   headBodyOffset: {x: 0, y: 0, z: 0}
-  headRotationY: 0
-  followPosition: 0
-  followRotation: 0
+  turnSmoothness: 5
+  mannequinTransform: {fileID: 9216795048553883566}
 --- !u!1 &2771220398156754783
 GameObject:
   m_ObjectHideFlags: 0
