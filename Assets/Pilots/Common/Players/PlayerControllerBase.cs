@@ -40,7 +40,11 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] private bool _isVisible;
         [Tooltip("Orchestrator User structure for this player")]
         [DisableEditing][SerializeField] protected VRT.Orchestrator.Wrapping.User user;
-       
+
+        // May be set by subclasses to indicate this player should not transmit
+        // any data streams.
+        protected bool isPreviewPlayer = false;
+
         public bool isVisible
         {
             get => _isVisible;
@@ -105,9 +109,15 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public virtual void SetRepresentation(UserRepresentationType type)
+        public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
+            if (type == userRepresentation) return;
+            if (onlyIfVisible && !isVisible) return;
             userRepresentation = type;
+            if (permanent)
+            {
+                user.userData.userRepresentationType = type;
+            }
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -126,8 +136,8 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__2D__:
                     isVisible = true;
                     webcam.SetActive(true);
-                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
-                    wcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
+                    wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
                 case UserRepresentationType.__AVATAR__:
                     isVisible = true;
@@ -141,10 +151,10 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, userRepresentation, isLocalPlayer);
                     try
                     {
-                        pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     }
                     catch (Exception e)
                     {
@@ -172,6 +182,7 @@ namespace VRT.Pilots.Common
 
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
+            if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
             {
                 Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");

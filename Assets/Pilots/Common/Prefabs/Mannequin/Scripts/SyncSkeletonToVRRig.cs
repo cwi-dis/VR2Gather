@@ -30,40 +30,26 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     public Transform headConstraint;
     [Tooltip("Computed offset between skeleton head and main object")]
     public Vector3 headBodyOffset;
-    [Tooltip("Computed rotation angle difference")]
-    public float headRotationY;
-    [Tooltip("If set: body follows head position")]
-    public bool followPosition;
-    [Tooltip("If set: body follows head rotation")]
-    public bool followRotation;
+    //xxxshishir added transform variable to track the mannequin directly rather than the player
+    [Tooltip("Mannequin body turn speed")]
+    public float turnSmoothness = 5;
+    [Tooltip("Mannequin transform")]
+    public Transform mannequinTransform;
+
     // Start is called before the first frame update
     void Start()
     {
         headBodyOffset = playerTransform.position - headConstraint.position;
-        headRotationY = headConstraint.eulerAngles.y;
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-        // xxxjack this is wrong. What we think we should do:
-        // - Map camera rotation to skeleton head
-        // - compute skeleton head position - player position
-        // - update player position so skeleton head position matches camera position.
-        // and think about other users.
+        //xxxshishir trying out the new method from: https://blog.immersive-insiders.com/animate-avatar-for-vr-in-unity/, seems to work well
+        mannequinTransform.position = headConstraint.position + headBodyOffset;
+        mannequinTransform.forward = Vector3.Lerp(mannequinTransform.forward, Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
         head.Map();
         leftHand.Map();
         rightHand.Map();
-        if (followPosition)
-        {
-            playerTransform.position = headConstraint.position + headBodyOffset;
-            headBodyOffset = playerTransform.position - headConstraint.position;
-        }
-        if (followRotation)
-        {
-            //transform.forward = Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized;
-            playerTransform.Rotate(0, -headRotationY, 0);
-            headRotationY = headConstraint.eulerAngles.y;
-        }
     }
 }
