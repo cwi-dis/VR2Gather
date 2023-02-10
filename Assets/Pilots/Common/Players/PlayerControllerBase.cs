@@ -40,6 +40,7 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] private bool _isVisible;
         [Tooltip("Orchestrator User structure for this player")]
         [DisableEditing][SerializeField] protected VRT.Orchestrator.Wrapping.User user;
+        protected bool isInitialized = false;
 
         // May be set by subclasses to indicate this player should not transmit
         // any data streams.
@@ -72,6 +73,7 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
+        
         public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
         protected void _SetupCommon(VRT.Orchestrator.Wrapping.User _user)
         {
@@ -111,8 +113,9 @@ namespace VRT.Pilots.Common
 
         public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
-            if (type == userRepresentation) return;
-            if (onlyIfVisible && !isVisible) return;
+            if (isInitialized && type == userRepresentation) return;
+            if (isInitialized && onlyIfVisible && !isVisible) return;
+            isInitialized = true;
             userRepresentation = type;
             if (permanent)
             {
@@ -133,6 +136,9 @@ namespace VRT.Pilots.Common
             VRTConfig._User userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
             switch (userRepresentation)
             {
+                case UserRepresentationType.__NONE__:
+                    // disable character controller.
+                    break;
                 case UserRepresentationType.__2D__:
                     isVisible = true;
                     webcam.SetActive(true);
