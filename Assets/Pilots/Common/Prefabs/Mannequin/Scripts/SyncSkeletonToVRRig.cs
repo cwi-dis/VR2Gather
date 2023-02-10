@@ -61,6 +61,11 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     //xxxshishir addition debug variable to track camera movement
     [Tooltip("Camera transform")]
     public Transform cameraTransform;
+    [Tooltip("Mannequin body turn speed")]
+    public float turnSmoothness = 0.1f;
+    [Tooltip("Mannequin transform")]
+    public Transform mannequinTransform;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -95,22 +100,33 @@ public class SyncSkeletonToVRRig : MonoBehaviour
         //}
 
         //xxxshishir trying out new approach based on jack's previous comment - this still doesn't work properly - movement is at the right speed but inverted
-        head.ManualMapRotation(cameraTransform.rotation);
+        //head.ManualMapRotation(cameraTransform.rotation);
 
-        headBodyOffset = playerTransform.position - headConstraint.position;
-        var newPlayerPosition = headConstraint.position - cameraTransform.position;
-        if(followPosition)
-        {
-            playerTransform.position = playerTransform.position + newPlayerPosition;
-        }
-        head.MapPositionOnly();
-        if(followRotation)
-        {
-            playerTransform.rotation = cameraTransform.rotation;
-        }
+        //headBodyOffset = playerTransform.position - headConstraint.position;
+        //var newPlayerPosition = headConstraint.position - cameraTransform.position;
+        //if(followPosition)
+        //{
+        //    playerTransform.position = playerTransform.position + newPlayerPosition;
+        //}
         //head.MapPositionOnly();
+        //if(followRotation)
+        //{
+        //    playerTransform.rotation = cameraTransform.rotation;
+        //}
+        ////head.MapPositionOnly();
+        //leftHand.Map();
+        //rightHand.Map();
+
+        //xxxshishir trying out the new method from: https://blog.immersive-insiders.com/animate-avatar-for-vr-in-unity/
+        //playerTransform.position = cameraTransform.position + headBodyOffset;
+        //playerTransform.forward = Vector3.Lerp(playerTransform.forward, Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
+        //playerTransform.position = headConstraint.position + headBodyOffset;
+        //playerTransform.forward = Vector3.Lerp(playerTransform.forward, Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
+        mannequinTransform.position = headConstraint.position + headBodyOffset;
+        mannequinTransform.forward = Vector3.Lerp(mannequinTransform.forward, Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
+        head.Map();
         leftHand.Map();
         rightHand.Map();
-
+        //headBodyOffset = playerTransform.position - headConstraint.position;
     }
 }
