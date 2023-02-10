@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 
         public bool debugTransform = false;
 
-        private void Awake()
+        void Awake()
         {
             isPreviewPlayer = previewPlayer;
         }
