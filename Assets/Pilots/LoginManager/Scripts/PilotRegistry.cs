@@ -26,7 +26,7 @@ namespace VRT.Pilots.LoginManager
                 case "Technical Playground":
                     return "TechnicalPlayground";
                 case "Development":
-                    return "Pilot Zero Shared";
+                    return "_Pilot Zero Jack";
                 case "Development2":
                     return "PilotZeroAuthoring";
                 case "Development3":
