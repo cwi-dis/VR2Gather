@@ -109,10 +109,15 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public virtual void SetRepresentation(UserRepresentationType type)
+        public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
             if (type == userRepresentation) return;
+            if (onlyIfVisible && !isVisible) return;
             userRepresentation = type;
+            if (permanent)
+            {
+                user.userData.userRepresentationType = type;
+            }
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -131,7 +136,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.__2D__:
                     isVisible = true;
                     webcam.SetActive(true);
-                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
                 case UserRepresentationType.__AVATAR__:
@@ -146,7 +151,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, userRepresentation, isLocalPlayer);
                     try
                     {
                         pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
