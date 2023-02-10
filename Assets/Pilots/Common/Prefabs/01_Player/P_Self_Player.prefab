@@ -1606,6 +1606,11 @@ PrefabInstance:
       propertyPath: rightHand.vrTarget
       value: 
       objectReference: {fileID: 6895736282343858898}
+    - target: {fileID: 3076079762117982612, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5087159113626831324, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_Enabled
@@ -1740,6 +1745,7 @@ MonoBehaviour:
   altRepOne: {fileID: 3157120788678654688}
   altRepTwo: {fileID: 0}
   voice: {fileID: 7656253769967137944}
+  charControl: {fileID: 8601234040758807484}
   userNameText: {fileID: 1730563041212197564}
   isLocalPlayer: 1
   _isVisible: 0
@@ -1818,6 +1824,12 @@ GameObject:
 --- !u!1 &7656253769967137944 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4012052827202430640, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6768302171833389608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!143 &8601234040758807484 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 3076079762117982612, guid: 21abad33e8196954b8f19e6b888a67a4,
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}

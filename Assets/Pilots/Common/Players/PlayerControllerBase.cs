@@ -32,6 +32,8 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject altRepTwo;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
+        [Tooltip("Charachter controller, will be disabled for no-representation users")]
+        [SerializeField] protected CharacterController charControl;
         [Tooltip("User name is filled into this TMPro field")]
         [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
@@ -73,7 +75,6 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        
         public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
         protected void _SetupCommon(VRT.Orchestrator.Wrapping.User _user)
         {
@@ -134,10 +135,12 @@ namespace VRT.Pilots.Common
             if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
             VRTConfig._User userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
+            if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
                 case UserRepresentationType.__NONE__:
                     // disable character controller.
+                    if (charControl != null) charControl.enabled = false;
                     break;
                 case UserRepresentationType.__2D__:
                     isVisible = true;
