@@ -1671,6 +1671,7 @@ MonoBehaviour:
   isLocalPlayer: 1
   _isVisible: 0
   debugTiling: 0
+  previewPlayer: 0
   debugTransform: 0
 --- !u!114 &4177976052428464234
 MonoBehaviour:
