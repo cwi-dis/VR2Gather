@@ -1,0 +1,54 @@
+{
+  "orchestratorURL" : "http://beignet.local:8080/socket.io/",
+  "AutoStart" : {
+  	"autoLogin" : true,
+  	"sessionName" : "lissabon-authoring",
+  	"sessionScenario" : "Development",
+  	"sessionTransportProtocol" : "",
+  	"sessionUncompressed" : false,
+  	"sessionUncompressedAudio" : false,
+  	"autoCreateForUser" : "",
+  	"autoCreate" : true,
+  	"autoJoin" : false,
+  	"autoStartWith" : 3,
+  	"autoDelay" : 1.5,
+  	"autoLeaveAfter" : 0,
+  	"autoStopAfterLeave" : false
+  },
+  "_unused_LocalUser": {
+    
+    "PCSelfConfig": {
+      "RS2ReaderConfig": {
+        "configFilename": "./cameraconfig.xml"
+      },
+      "SynthReaderConfig": {
+        "nPoints": 16000
+      },
+      "ProxyReaderConfig": {
+        "localIP": "",
+        "port": 9335
+      },
+	  "PrerecordedReaderConfig" : {
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
+	  },
+      "voxelSize": 0,
+      "frameRate": 15,
+      "tiled": false,
+      "Encoders": [
+		
+		{
+          "octreeBits": 9
+        }
+
+      ],
+      "Bin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      },
+      "AudioBin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      }
+    }
+  }
+}
