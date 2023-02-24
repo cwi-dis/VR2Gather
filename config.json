@@ -1,5 +1,5 @@
 {
-  "orchestratorURL" : "http://beignet.local:8080/socket.io/",
+  "_orchestratorURL" : "http://beignet.local:8080/socket.io/",
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "TransmiXR-test",
