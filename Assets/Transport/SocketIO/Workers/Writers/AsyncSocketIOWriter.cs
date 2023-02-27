@@ -82,7 +82,7 @@ namespace VRT.Transport.SocketIO
                 for (int i = 0; i < streams.Length; ++i)
                 {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
-                    if (chk == null) return; // xxxjack shouldn't this be continue?????
+                    if (chk == null) continue; // xxxjack was return???
                     var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
                     var buf = new byte[chk.length+sizeof(long)];
                     Array.Copy(hdr_timestamp, buf, sizeof(long));

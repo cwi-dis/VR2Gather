@@ -35,6 +35,7 @@ namespace VRT.Pilots.Common
 
 		public void Awake()
 		{
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
 		}
 		void Start()

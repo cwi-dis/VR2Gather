@@ -24,6 +24,7 @@ namespace VRT.Pilots.Common
 		TID_AddPlayerToSequenceData = 114,
 		TID_SyncConfigMessage = 115,
 		TID_NetworkInstantiatorData = 116,
+		TID_PersistenceManagerData = 117,
 	};
 
 	/// <summary>

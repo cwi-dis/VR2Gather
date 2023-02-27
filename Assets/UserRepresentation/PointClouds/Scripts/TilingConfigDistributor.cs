@@ -19,29 +19,13 @@ namespace VRT.UserRepresentation.PointCloud
         }
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
-        private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
         const bool debug = true;
 
         public void Awake()
         {
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
         }
-        public override BaseConfigDistributor Init(string _selfUserId)
-        {
-            selfUserId = _selfUserId;
-            return this;
-        }
-
-        public override void RegisterPipeline(string userId, BasePipeline pipeline)
-        {
-
-            if (pipelines.ContainsKey(userId))
-            {
-                Debug.LogError($"Programmer error: TilingConfigDistributor: registering duplicate userId {userId}");
-            }
-            pipelines[userId] = pipeline;
-        }
-
+       
         void Start()
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Started");
@@ -74,6 +58,11 @@ namespace VRT.UserRepresentation.PointCloud
                 return;
             }
             PointCloudNetworkTileDescription tilingConfig = pipeline.GetTilingConfig();
+            if (tilingConfig.tiles == null)
+            {
+                Debug.LogWarning($"TilingConfigDistributor: no tiling information yet for user {selfUserId}");
+                return;
+            }
             if (debug) Debug.Log($"TilingConfigDistributor: sending tiling information for user {selfUserId} with {tilingConfig.tiles.Length} tiles to receivers");
             var data = new TilingConfigMessage { data = tilingConfig };
 

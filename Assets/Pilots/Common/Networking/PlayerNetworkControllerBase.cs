@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SpatialTracking;
 using VRT.Orchestrator.Wrapping;
+using VRT.Core;
 
 namespace VRT.Pilots.Common
 {
@@ -8,7 +9,8 @@ namespace VRT.Pilots.Common
 	{
 		#region NetworkPlayerData
 		/// <summary>
-		/// Message class to store and transmit hand and head positions and orientations
+		/// Message class to store and transmit hand and head positions and orientations and
+		/// current representation.
 		/// </summary>
 		public class NetworkPlayerData : BaseMessage
 		{
@@ -20,6 +22,7 @@ namespace VRT.Pilots.Common
 			public Quaternion LeftHandOrientation;
 			public Vector3 RightHandPosition;
 			public Quaternion RightHandOrientation;
+			public UserRepresentationType representation;
 		}
 		#endregion
 
@@ -41,7 +44,8 @@ namespace VRT.Pilots.Common
 
 		[Header("Introspection/debugging")]
 		[DisableEditing][SerializeField] protected bool _IsLocalPlayer = true;
-		public bool IsLocalPlayer
+		[DisableEditing][SerializeField] protected PlayerControllerBase playerController;
+        public bool IsLocalPlayer
 		{
 			get
 			{
@@ -64,7 +68,7 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.Subscribe<NetworkPlayerData>(OnNetworkPlayerData);
 		}
 
-		public abstract void SetupPlayerNetworkControllerPlayer(bool local, string _userId);
+		public abstract void SetupPlayerNetworkController(PlayerControllerBase _playerController, bool local, string _userId);
 	
 		protected void OnNetworkPlayerData(NetworkPlayerData data)
 		{
@@ -75,7 +79,12 @@ namespace VRT.Pilots.Common
 					//We're the master, so inform the others
 					OrchestratorController.Instance.SendTypeEventToAll(data, true);
 				}
-
+				if (data.representation != playerController.userRepresentation)
+				{
+					// User representation has changed.
+					Debug.Log($"{Name()}: Representation changed to {data.representation}");
+					playerController.SetRepresentation(data.representation);
+				}
 				_PreviousReceivedData = _LastReceivedData;
 				_LastReceivedData = data;
 				_LastReceiveTime = Time.realtimeSinceStartup;

@@ -1,11 +1,10 @@
 {
- 
-  "AutoStart" : {
+   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "mediascape",
   	"sessionScenario" : "Mediascape",
-  	"sessionTransportProtocol" : "socketio",
-  	"autoCreateForUser" : "flauwte",
+  	"sessionTransportProtocol" : "tcp",
+  	"autoCreateForUser" : "topinambur",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
