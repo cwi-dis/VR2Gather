@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 1408698125888528250}
   - component: {fileID: 4958479032458268928}
   m_Layer: 0
-  m_Name: PFB_Mirror
+  m_Name: OBJ_Mirror
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

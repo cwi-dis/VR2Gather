@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 1898908462522342445}
   - component: {fileID: 115074441152337022}
   m_Layer: 0
-  m_Name: PFB_TeleportTargetReticle
+  m_Name: OBJ_TeleportTargetReticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

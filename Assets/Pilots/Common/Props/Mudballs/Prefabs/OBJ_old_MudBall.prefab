@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2034950275801934758}
   - component: {fileID: 5058766976394723230}
   m_Layer: 29
-  m_Name: old_MudBall
+  m_Name: OBJ_old_MudBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

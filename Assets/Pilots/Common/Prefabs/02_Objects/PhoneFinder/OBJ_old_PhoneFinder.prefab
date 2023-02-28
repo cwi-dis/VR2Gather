@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 612850310}
   - component: {fileID: 612850311}
   m_Layer: 29
-  m_Name: PFB_old_PhoneFinder
+  m_Name: OBJ_old_PhoneFinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

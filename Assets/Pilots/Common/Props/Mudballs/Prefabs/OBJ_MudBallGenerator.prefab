@@ -90,7 +90,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4025659694550140004}
   m_Layer: 0
-  m_Name: MudBallGenerator
+  m_Name: OBJ_MudBallGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
