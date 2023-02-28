@@ -264,7 +264,7 @@ namespace VRT.Pilots.Common
 		{
 			var interactable = args.interactable;
 			GameObject grabbedObject = interactable.gameObject;
-			Grabbable grabbable = grabbedObject.GetComponent<Grabbable>();
+			VRTGrabbableController grabbable = grabbedObject.GetComponent<VRTGrabbableController>();
 			if (grabbable == null)
             {
 				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");

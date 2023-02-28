@@ -57,7 +57,7 @@ namespace VRT.Pilots.Common
     public class PersistenceController : MonoBehaviour, IDataPersistence
     {
         [Tooltip("Grabbable to persist. Default: on this GameObject.")]
-        public Grabbable grabbableRef;
+        public VRTGrabbableController grabbableRef;
         [Tooltip("Transform to persist. Default: on this GameObject.")]
         public Transform transformRef;
         
@@ -65,7 +65,7 @@ namespace VRT.Pilots.Common
         {
             if (grabbableRef == null)
             {
-                grabbableRef = GetComponent<Grabbable>();
+                grabbableRef = GetComponent<VRTGrabbableController>();
             }
             if (transformRef == null)
             {

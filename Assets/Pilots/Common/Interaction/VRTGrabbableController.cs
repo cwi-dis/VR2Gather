@@ -16,7 +16,7 @@ namespace VRT.Pilots.Common
 	/// While the object is held it will be kinematic, reverting to gravity when released.
 	/// 
 	/// </summary>
-	public class Grabbable : NetworkIdBehaviour
+	public class VRTGrabbableController : NetworkIdBehaviour
 	{
 		public class RigidbodySyncMessage : BaseMessage
 		{
@@ -45,7 +45,7 @@ namespace VRT.Pilots.Common
 		}
 		public void OnEnable()
 		{
-			GrabbableObjectManager.RegisterGrabbable(this);
+			VRTGrabbableManager.RegisterGrabbable(this);
 
 			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}
@@ -53,7 +53,7 @@ namespace VRT.Pilots.Common
 		public void OnDisable()
 		{
 			
-			GrabbableObjectManager.UnregisterGrabbable(this);
+			VRTGrabbableManager.UnregisterGrabbable(this);
 
 			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnRigidbodySync);
 		}

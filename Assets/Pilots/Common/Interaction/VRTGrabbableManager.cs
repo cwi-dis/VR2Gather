@@ -4,22 +4,22 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-	public class GrabbableObjectManager : MonoBehaviour
+	public class VRTGrabbableManager : MonoBehaviour
 	{
-		private Dictionary<string, Grabbable> _GrabbableObjects = new Dictionary<string, Grabbable>();
+		private Dictionary<string, VRTGrabbableController> _GrabbableObjects = new Dictionary<string, VRTGrabbableController>();
 
-		private static GrabbableObjectManager _Instance;
+		private static VRTGrabbableManager _Instance;
 
-		public static GrabbableObjectManager Instance
+		public static VRTGrabbableManager Instance
 		{
 			get
 			{
 				if (_Instance is null)
 				{
-					_Instance = FindObjectOfType<GrabbableObjectManager>();
+					_Instance = FindObjectOfType<VRTGrabbableManager>();
 					if (_Instance == null)
 					{
-						_Instance = new GameObject("GrabbableObjectManager").AddComponent<GrabbableObjectManager>();
+						_Instance = new GameObject("GrabbableObjectManager").AddComponent<VRTGrabbableManager>();
 					}
 				}
 				return _Instance;
@@ -39,18 +39,18 @@ namespace VRT.Pilots.Common
 			OrchestratorController.Instance.Unsubscribe<HandNetworkControllerBase.HandGrabEvent>(OnHandGrabEvent);
 		}
 
-		public static void RegisterGrabbable(Grabbable grabbable)
+		public static void RegisterGrabbable(VRTGrabbableController grabbable)
 		{
 			Instance.RegisterGrabbableInternal(grabbable);
 		}
 
-		public static void UnregisterGrabbable(Grabbable grabbable)
+		public static void UnregisterGrabbable(VRTGrabbableController grabbable)
 		{
 			if (_Instance == null) return;
 			Instance.UnregisterGrabbableInternal(grabbable);
 		}
 
-		private void RegisterGrabbableInternal(Grabbable grabbable)
+		private void RegisterGrabbableInternal(VRTGrabbableController grabbable)
 		{
 			if (_GrabbableObjects.ContainsKey(grabbable.NetworkId) && _GrabbableObjects[grabbable.NetworkId] != grabbable)
             {
@@ -59,7 +59,7 @@ namespace VRT.Pilots.Common
 			_GrabbableObjects[grabbable.NetworkId] = grabbable;
 		}
 
-		private void UnregisterGrabbableInternal(Grabbable grabbable)
+		private void UnregisterGrabbableInternal(VRTGrabbableController grabbable)
 		{
 			_GrabbableObjects.Remove(grabbable.NetworkId);
 		}
@@ -76,7 +76,7 @@ namespace VRT.Pilots.Common
 				Debug.LogError($"GrabbableObjectManager: Grabbing object with unknown ObjectID {handGrabEvent.GrabbableObjectId}");
 				return;
             }
-			Grabbable grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
+			VRTGrabbableController grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
             PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
 			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
 			if (handController == null)

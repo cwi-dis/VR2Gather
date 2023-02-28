@@ -10,7 +10,7 @@ namespace VRT.Pilots.Common
 	/// </summary>
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(RigidBodyNetworkController))]
-	public class RigidBodyController : MonoBehaviour
+	public class VRTRigidBodyController : MonoBehaviour
 	{
 		private Rigidbody _Rigidbody;
 		private RigidBodyNetworkController _TransformSync;

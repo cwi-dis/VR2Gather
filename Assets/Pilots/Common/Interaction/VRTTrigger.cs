@@ -9,7 +9,7 @@ namespace VRT.Pilots.Common
 	/// <summary>
 	/// Behaviour of an object that the user can touch (either through direct interaction or ray-based interaction).
 	/// </summary>
-	public class Trigger : MonoBehaviour
+	public class VRTTrigger : MonoBehaviour
 	{
 		[Tooltip("Component that communicates triggers to other instances of the experience")]
 		public NetworkTriggerBase networkTrigger;

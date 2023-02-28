@@ -69,7 +69,7 @@ namespace VRT.Pilots.Common
                 {
                     var hitGO = hit.collider.gameObject;
                     if (debugLog) Debug.Log($"NoHandInteraction: hitting={hitGO}");
-                    var hitTrigger = hitGO.GetComponent<Trigger>();
+                    var hitTrigger = hitGO.GetComponent<VRTTrigger>();
                     if (hitTrigger == null)
                     {
                         Debug.LogError($"NoHandInteraction: GameObject {hitGO} has collider but no Trigger component");
