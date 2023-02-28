@@ -265,7 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2244984119856902220}
   m_Layer: 0
-  m_Name: PFB_LocalButton
+  m_Name: PFB_old_LocalButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
