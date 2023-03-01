@@ -77,7 +77,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noAutoCreateNetworkId: 0
   NetworkId: 
-  templateObject: {fileID: 6568428563970395658, guid: 68716de4fadb78643a120ee5667a3dab,
+  templateObject: {fileID: 2125739197500702208, guid: eab08261bfa807e4cb8a71883e97d728,
     type: 3}
   location: {fileID: 1338041619}
 --- !u!1 &4025659694550140007
