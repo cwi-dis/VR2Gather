@@ -1549,6 +1549,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9047915349826287895, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Id
+      value: 10c03d6c-5bfa-40e3-882f-6b23896014ae
+      objectReference: {fileID: 0}
+    - target: {fileID: 9047915349826287895, guid: 21dad1a70fa0b7842afecfcdd199c370,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Name
+      value: Directional Anchor Rotation
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21dad1a70fa0b7842afecfcdd199c370, type: 3}
 --- !u!4 &3329774565194536360 stripped

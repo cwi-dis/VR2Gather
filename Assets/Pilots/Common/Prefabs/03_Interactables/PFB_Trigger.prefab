@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 5570042935228312283}
   - component: {fileID: 5570042935228312282}
   - component: {fileID: 1021895334704761280}
-  - component: {fileID: 2079397617491308351}
   - component: {fileID: 1906011789919997361}
   m_Layer: 28
   m_Name: PFB_Trigger
@@ -43,7 +42,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5570042935228312280}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -98,9 +97,9 @@ MonoBehaviour:
   m_Activated:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2079397617491308351}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.Trigger, Pilots
-        m_MethodName: OnActivate
+      - m_Target: {fileID: 1906011789919997361}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.NetworkTrigger, Pilots
+        m_MethodName: Trigger
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -142,23 +141,6 @@ MonoBehaviour:
   m_OnDeactivate:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2079397617491308351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5570042935228312280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50d1e8b7157a6384390ad4db8b48a3ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  networkTrigger: {fileID: 1906011789919997361}
-  localTrigger:
-    m_PersistentCalls:
-      m_Calls: []
-  TimeOutBetweenTriggers: 1
 --- !u!114 &1906011789919997361
 MonoBehaviour:
   m_ObjectHideFlags: 0

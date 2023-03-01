@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9215170192509955344}
-  - component: {fileID: 8220838698186333637}
   - component: {fileID: 3103009493993856836}
   m_Layer: 0
   m_Name: XyloponeSound
@@ -25,45 +24,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 63207433408586836}
-  m_LocalRotation: {x: -0, y: 0.70710576, z: -0, w: 0.70710784}
-  m_LocalPosition: {x: -0.10473007, y: 0.3738322, z: 0.003441525}
-  m_LocalScale: {x: 0.49169043, y: 0.49169043, z: 0.49169043}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2245411196160612057}
-  m_RootOrder: 1
+  m_Father: {fileID: 2342228425559306382}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8220838698186333637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 63207433408586836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a95615ea91f4334e865a3c5ff2b3a0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  noAutoCreateNetworkId: 0
-  NetworkId: 
-  MasterOnlyTrigger: 0
-  OnTrigger:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3103009493993856836}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: PlayOneShot
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 8300000, guid: 8b52af5b2c3c3a149b0445b99891f0e9,
-            type: 3}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!82 &3103009493993856836
 AudioSource:
   m_ObjectHideFlags: 0
@@ -191,7 +159,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2342228425559306382}
-  - {fileID: 9215170192509955344}
   m_Father: {fileID: 3169652536637878010}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -252,11 +219,51 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2245411196160612057}
     m_Modifications:
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 3103009493993856836}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: PlayOneShot
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.AudioSource, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 8300000, guid: 8b52af5b2c3c3a149b0445b99891f0e9, type: 3}
+    - target: {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.AudioClip, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 2079397617491308351, guid: 67aa8329b004e04449ade356f6e93292,
         type: 3}
       propertyPath: networkTrigger
       value: 
-      objectReference: {fileID: 8220838698186333637}
+      objectReference: {fileID: 0}
     - target: {fileID: 5570042935228312280, guid: 67aa8329b004e04449ade356f6e93292,
         type: 3}
       propertyPath: m_Name
@@ -337,8 +344,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1906011789919997361, guid: 67aa8329b004e04449ade356f6e93292, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67aa8329b004e04449ade356f6e93292, type: 3}
 --- !u!4 &2342228425559306382 stripped
 Transform:
@@ -356,7 +362,7 @@ PrefabInstance:
     - target: {fileID: 6886076587129330562, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}
       propertyPath: m_Name
-      value: OBJ_Pilot0ButtonObject
+      value: OBJ_Clicker_Green_A
       objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}

@@ -87,5 +87,10 @@ PrefabInstance:
       propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 8300000, guid: 515cf2e5532f32a438ced1984f67175e, type: 3}
+    - target: {fileID: 8628337517996709860, guid: 7f5e1b7b6639c4870ac5384c0de66e19,
+        type: 3}
+      propertyPath: OnTrigger.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 8300000, guid: 515cf2e5532f32a438ced1984f67175e, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7f5e1b7b6639c4870ac5384c0de66e19, type: 3}
