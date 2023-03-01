@@ -74,7 +74,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 8b52af5b2c3c3a149b0445b99891f0e9, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -356,7 +356,7 @@ PrefabInstance:
     - target: {fileID: 6886076587129330562, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}
       propertyPath: m_Name
-      value: PFB_Grabbable
+      value: OBJ_Pilot0ButtonObject
       objectReference: {fileID: 0}
     - target: {fileID: 6886076587129330563, guid: bbd7e943559eb764387ecb95b1d1f1f1,
         type: 3}
