@@ -283,14 +283,40 @@ namespace VRT.Pilots.Common
 
 		}
 
+		/// <summary>
+		/// For VR2Gather direct interaction we want touching (with finger extended) to be activating.
+		/// This callback should be added to XRDirectInteractor for touch as Hover Entered callback and it will
+		/// call OnActivated() on the object that is touched.
+		/// </summary>
+		/// <param name="args"></param>
 		public void OnDirectHoverEnter(HoverEnterEventArgs args)
 		{
-			Debug.Log("Direct Hover Enter");
+			var source = (IXRActivateInteractor)args.interactorObject;
+			var target = (IXRActivateInteractable)args.interactableObject;
+            Debug.Log($"Direct Hover Enter from {source}, calling {target}.OnActivated() ");
+            ActivateEventArgs activateArgs = new ActivateEventArgs
+            {
+                interactorObject = source,
+                interactableObject = target
+            };
+            target.OnActivated(activateArgs);
 		}
 
+		/// <summary>
+		/// See OnDirectHoverEnter for an explanation.
+		/// </summary>
+		/// <param name="args"></param>
 		public void OnDirectHoverExit(HoverExitEventArgs args)
 		{
-			Debug.Log("Direct Hover Exit");
-		}
-	}
+            var source = (IXRActivateInteractor)args.interactorObject;
+            var target = (IXRActivateInteractable)args.interactableObject;
+            Debug.Log($"Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");
+            DeactivateEventArgs activateArgs = new DeactivateEventArgs
+            {
+                interactorObject = source,
+                interactableObject = target
+            };
+            target.OnDeactivated(activateArgs);
+        }
+    }
 }
