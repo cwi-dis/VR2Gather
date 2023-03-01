@@ -260,6 +260,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 #endif
+
 		public void OnSelectEnter(SelectEnterEventArgs args)
 		{
 			var interactable = args.interactable;
@@ -272,6 +273,7 @@ namespace VRT.Pilots.Common
 			Debug.Log($"{name}: grabbed {grabbable}");
 			handController.HeldGrabbable = grabbable;
 		}
+
 		public void OnSelectExit(SelectExitEventArgs args)
 		{
 			// xxxjack we could check that the object released is actually held...
@@ -279,6 +281,16 @@ namespace VRT.Pilots.Common
 			Debug.Log($"{name}: released {handController.HeldGrabbable}");
 			handController.HeldGrabbable = null;
 
+		}
+
+		public void OnDirectHoverEnter(HoverEnterEventArgs args)
+		{
+			Debug.Log("Direct Hover Enter");
+		}
+
+		public void OnDirectHoverExit(HoverExitEventArgs args)
+		{
+			Debug.Log("Direct Hover Exit");
 		}
 	}
 }
