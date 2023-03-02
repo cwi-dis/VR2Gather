@@ -1,17 +1,20 @@
 {
-   "AutoStart" : {
-  	"autoLogin" : true,
-  	"sessionName" : "mediascape",
-  	"sessionScenario" : "Mediascape",
-  	"sessionTransportProtocol" : "tcp",
-  	"autoCreateForUser" : "topinambur",
-  	"autoCreate" : false,
-  	"autoJoin" : false,
-  	"autoStartWith" : 2,
-  	"autoDelay" : 1.5,
-  	"sessionUncompressed" : true,
-  	"sessionUncompressedAudio" : true,
-  	"autoLeaveAfter" : 0,
-  	"autoStopAfterLeave" : false
+  "AutoStart": {
+    "autoLogin": true,
+    "sessionName": "mediascape",
+    "sessionScenario": "TechnicalPlayground",
+    "sessionTransportProtocol": "tcp",
+    "autoCreateForUser": "topinambur",
+    "autoCreate": false,
+    "autoJoin": false,
+    "autoStartWith": 2,
+    "autoDelay": 1.5,
+    "sessionUncompressed": true,
+    "sessionUncompressedAudio": true,
+    "autoLeaveAfter": 0,
+    "autoStopAfterLeave": false
+  },
+  "Voice": {
+    "ignoreSynchronizer" :  true
   }
 }
