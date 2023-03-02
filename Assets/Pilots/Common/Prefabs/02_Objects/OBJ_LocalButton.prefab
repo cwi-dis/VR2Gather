@@ -295,6 +295,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2244984119856902220}
     m_Modifications:
+    - target: {fileID: 1021895334704761280, guid: 67aa8329b004e04449ade356f6e93292,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2079397617491308351, guid: 67aa8329b004e04449ade356f6e93292,
         type: 3}
       propertyPath: networkTrigger

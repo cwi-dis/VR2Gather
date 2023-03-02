@@ -278,6 +278,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 2494339738444114026}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Trigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: VRT.Pilots.Common.NetworkInstantiator, Pilots
+      objectReference: {fileID: 0}
+    - target: {fileID: 5225637104089961763, guid: df7e71082a6fe476b877542a2ac16e26,
+        type: 3}
+      propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6516761691932996572, guid: df7e71082a6fe476b877542a2ac16e26,
         type: 3}
       propertyPath: localTrigger.m_PersistentCalls.m_Calls.Array.size
