@@ -2,7 +2,7 @@
   "AutoStart": {
     "autoLogin": true,
     "sessionName": "mediascape",
-    "sessionScenario": "TechnicalPlayground",
+    "sessionScenario": "Mediascape",
     "sessionTransportProtocol": "tcp",
     "autoCreateForUser": "topinambur",
     "autoCreate": false,
