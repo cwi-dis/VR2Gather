@@ -9,8 +9,8 @@
   	"autoJoin" : false,
   	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
-  	"sessionUncompressed" : false,
-  	"sessionUncompressedAudio" : false,
+  	"sessionUncompressed" : true,
+  	"sessionUncompressedAudio" : true,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
   }
