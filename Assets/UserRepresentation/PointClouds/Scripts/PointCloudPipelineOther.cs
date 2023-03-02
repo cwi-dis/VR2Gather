@@ -107,7 +107,7 @@ namespace VRT.UserRepresentation.PointCloud
             IncomingTileDescription[] tilesToReceive = StreamSupport.CreateIncomingTileDescription(networkTileDescription);
             int nTileToReceive = tilesToReceive.Length;
 
-            string pointcloudCodec = CwipcConfig.Instance.Codec;
+            string pointcloudCodec = SessionConfig.Instance.pointCloudCodec;
             for (int tileIndex = 0; tileIndex < nTileToReceive; tileIndex++)
             {
                 //

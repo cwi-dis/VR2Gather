@@ -169,8 +169,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (!preview)
             {
                 // Which encoder do we want?
-                string pointcloudCodec = CwipcConfig.Instance.Codec;
-                // For TCP we want short queues and we want them leaky (so we don't hang)
+                string pointcloudCodec = SessionConfig.Instance.pointCloudCodec;
+               // For TCP we want short queues and we want them leaky (so we don't hang)
                 bool leakyQueues = SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP;
                 //
                 // Determine tiles to transmit
