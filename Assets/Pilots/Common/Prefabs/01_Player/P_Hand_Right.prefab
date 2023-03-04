@@ -135,10 +135,34 @@ MonoBehaviour:
   m_StartingTargetFilter: {fileID: 0}
   m_HoverEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8116020605770475481}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+        m_MethodName: OnDirectHoverEnter
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_HoverExited:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8116020605770475481}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+        m_MethodName: OnDirectHoverExit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -592,6 +616,7 @@ GameObject:
   - component: {fileID: 7098924809847901187}
   - component: {fileID: 6642238605415844186}
   - component: {fileID: 8237340509810971193}
+  - component: {fileID: 3368201714448005018}
   m_Layer: 31
   m_Name: RH Direct Grab
   m_TagString: Untagged
@@ -927,6 +952,18 @@ MonoBehaviour:
     m_Reference: {fileID: 875253871413052681, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
   m_ButtonPressPoint: 0.5
+--- !u!114 &3368201714448005018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5939396353449226076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab5b0dedd721de4da94627735649e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6652609405479520317
 GameObject:
   m_ObjectHideFlags: 0

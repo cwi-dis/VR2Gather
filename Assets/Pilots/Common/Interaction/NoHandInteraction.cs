@@ -65,20 +65,27 @@ namespace VRT.Pilots.Common
             wantedCursor = hitting ? castingCursorHitTexture : castingCursorTexture;
             if (hitting)
             {
-                if (m_activateAction.action.IsPressed())
+                if (m_activateAction.action.WasPressedThisFrame())
                 {
                     var hitGO = hit.collider.gameObject;
                     if (debugLog) Debug.Log($"NoHandInteraction: hitting={hitGO}");
-                    var hitTrigger = hitGO.GetComponent<Trigger>();
+                    var hitTrigger = hitGO.GetComponent<XRSimpleInteractable>();
                     if (hitTrigger == null)
                     {
-                        Debug.LogError($"NoHandInteraction: GameObject {hitGO} has collider but no Trigger component");
+                        Debug.LogError($"NoHandInteraction: GameObject {hitGO} has collider but no XRSimpleInteractable component");
                     }
                     else
                     {
-                        hitTrigger.OnTriggerEnter(null);
+                        var source = (IXRActivateInteractor)null;
+                        var target = (IXRActivateInteractable)hitTrigger;
+                        Debug.Log($"NoHandInteraction: calling {target}.OnActivated() ");
+                        ActivateEventArgs activateArgs = new ActivateEventArgs
+                        {
+                            interactorObject = source,
+                            interactableObject = target
+                        };
+                        target.OnActivated(activateArgs);
                     }
-
                 }
             }
         }

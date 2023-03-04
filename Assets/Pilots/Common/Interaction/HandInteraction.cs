@@ -100,9 +100,11 @@ namespace VRT.Pilots.Common
 		void FixObjectStates()
         {
 			hand.state = currentState;
+			FixGrab fixGrab = GrabCollider.GetComponent<FixGrab>();
 			switch (currentState)
 			{
 				case HandState.Idle:
+					fixGrab?.AboutToDisable();
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
@@ -110,7 +112,8 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Pointing:
-					GrabCollider.SetActive(false);
+                    fixGrab?.AboutToDisable();
+                    GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 					TeleporterRay.SetActive(false);
 					MoveTurn.SetActive(true);
@@ -124,7 +127,8 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Teleporting:
-					GrabCollider.SetActive(false);
+                    fixGrab?.AboutToDisable();
+                    GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(true);
 					MoveTurn.SetActive(false);
@@ -260,11 +264,12 @@ namespace VRT.Pilots.Common
 			}
 		}
 #endif
+
 		public void OnSelectEnter(SelectEnterEventArgs args)
 		{
 			var interactable = args.interactable;
 			GameObject grabbedObject = interactable.gameObject;
-			Grabbable grabbable = grabbedObject.GetComponent<Grabbable>();
+			VRTGrabbableController grabbable = grabbedObject.GetComponent<VRTGrabbableController>();
 			if (grabbable == null)
             {
 				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
@@ -272,6 +277,7 @@ namespace VRT.Pilots.Common
 			Debug.Log($"{name}: grabbed {grabbable}");
 			handController.HeldGrabbable = grabbable;
 		}
+
 		public void OnSelectExit(SelectExitEventArgs args)
 		{
 			// xxxjack we could check that the object released is actually held...
@@ -280,5 +286,41 @@ namespace VRT.Pilots.Common
 			handController.HeldGrabbable = null;
 
 		}
-	}
+
+		/// <summary>
+		/// For VR2Gather direct interaction we want touching (with finger extended) to be activating.
+		/// This callback should be added to XRDirectInteractor for touch as Hover Entered callback and it will
+		/// call OnActivated() on the object that is touched.
+		/// </summary>
+		/// <param name="args"></param>
+		public void OnDirectHoverEnter(HoverEnterEventArgs args)
+		{
+			var source = (IXRActivateInteractor)args.interactorObject;
+			var target = (IXRActivateInteractable)args.interactableObject;
+            Debug.Log($"Direct Hover Enter from {source}, calling {target}.OnActivated() ");
+            ActivateEventArgs activateArgs = new ActivateEventArgs
+            {
+                interactorObject = source,
+                interactableObject = target
+            };
+            target.OnActivated(activateArgs);
+		}
+
+		/// <summary>
+		/// See OnDirectHoverEnter for an explanation.
+		/// </summary>
+		/// <param name="args"></param>
+		public void OnDirectHoverExit(HoverExitEventArgs args)
+		{
+            var source = (IXRActivateInteractor)args.interactorObject;
+            var target = (IXRActivateInteractable)args.interactableObject;
+            Debug.Log($"Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");
+            DeactivateEventArgs activateArgs = new DeactivateEventArgs
+            {
+                interactorObject = source,
+                interactableObject = target
+            };
+            target.OnDeactivated(activateArgs);
+        }
+    }
 }

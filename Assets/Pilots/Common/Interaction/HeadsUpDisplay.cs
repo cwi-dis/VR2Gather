@@ -34,6 +34,10 @@ namespace VRT.Pilots.Common
         public float height = 0;
         [Tooltip("How fast should it move when the user changes position/orientation?")]
         public float velocity = 0.01f;
+        [Tooltip("How far away from its preferred position can it be before we start moving it?")]
+        public float maxOffset = 1;
+        [Tooltip("How far away from its preferred orientation can it be before we start moving it?")]
+        public float maxAngle = 1;
         [Tooltip("Should this HUD intercept and display error messages?")]
         [SerializeField] bool interceptErrors = true;
         [Tooltip("Prefab for error messages")]
@@ -41,6 +45,8 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Player controller (found dynamically)")]
         [DisableEditing] [SerializeField] PlayerControllerSelf playerController;
+        [Tooltip("Dialog needs to move")]
+        [DisableEditing][SerializeField] bool shouldChange;
 
         // Start is called before the first frame update
         void Start()
@@ -80,9 +86,23 @@ namespace VRT.Pilots.Common
 
             Vector3 position = Camera.main.transform.position + forward * distance;
             Quaternion rotation = Quaternion.LookRotation(forward);
-            transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
-            transform.position = Vector3.Lerp(transform.position, position, velocity);
-            //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
+            if (Vector3.Distance(transform.position, position) > maxOffset ||
+                Quaternion.Angle(transform.rotation, rotation) > maxAngle)
+            {
+                shouldChange = true;
+            }
+            if (shouldChange)
+            {
+                transform.rotation = Quaternion.Lerp(transform.rotation, rotation, velocity);
+                transform.position = Vector3.Lerp(transform.position, position, velocity);
+                //transform.localScale = Vector3.Lerp(transform.localScale, scale, scaleVel);
+                if (Vector3.Distance(transform.position, position) < maxOffset / 10 &&
+                   Quaternion.Angle(transform.rotation, rotation) < maxAngle / 10)
+                {
+                    shouldChange = false;
+                }
+             }
+
         }
 
         public void FillError(string title, string message)

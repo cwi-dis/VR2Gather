@@ -42,8 +42,8 @@ namespace VRT.Pilots.Common
 		}
 
 		[Tooltip("The object the hand is currently holding")]
-		[SerializeField] protected Grabbable m_HeldGrabbable;
-		public virtual Grabbable HeldGrabbable
+		[SerializeField] protected VRTGrabbableController m_HeldGrabbable;
+		public virtual VRTGrabbableController HeldGrabbable
 		{
 			get => m_HeldGrabbable;
 			set => throw new System.NotImplementedException();
@@ -81,11 +81,11 @@ namespace VRT.Pilots.Common
 			}
 			else
 			{
-				GrabbableObjectManager.Instance.HandleHandGrabEvent(handGrabEvent);
+				VRTGrabbableManager.Instance.HandleHandGrabEvent(handGrabEvent);
 			}
 		}
 
-		internal void OnNetworkRelease(Grabbable grabbable)
+		internal void OnNetworkRelease(VRTGrabbableController grabbable)
 		{
 			if (m_HeldGrabbable != grabbable)
             {
@@ -94,7 +94,7 @@ namespace VRT.Pilots.Common
 			m_HeldGrabbable = null;
 		}
 
-		internal void OnNetworkGrab(Grabbable grabbable)
+		internal void OnNetworkGrab(VRTGrabbableController grabbable)
 		{
 			if (m_HeldGrabbable != null)
             {

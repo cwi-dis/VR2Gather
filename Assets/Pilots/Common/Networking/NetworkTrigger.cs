@@ -58,7 +58,11 @@ namespace VRT.Pilots.Common
 			{
 				return;
 			}
-
+			if (NetworkId == null || NetworkId == "")
+			{
+				Debug.LogError($"{name}: Trigger with empty NetworkId");
+				return;
+			}
 			Debug.Log($"NetworkTrigger({name}): Trigger id = {NetworkId}");
 			var triggerData = new NetworkTriggerData()
 			{

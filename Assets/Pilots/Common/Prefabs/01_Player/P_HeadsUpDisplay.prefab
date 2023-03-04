@@ -2558,10 +2558,13 @@ MonoBehaviour:
   HelpToggle: {fileID: 4040406380293345297}
   distance: 1
   height: -0.2
-  velocity: 0.01
+  velocity: 0.03
+  maxOffset: 1
+  maxAngle: 30
   interceptErrors: 1
   errorPrefab: {fileID: 7952195003180476581}
   playerController: {fileID: 0}
+  shouldChange: 0
 --- !u!114 &4040406381615210406
 MonoBehaviour:
   m_ObjectHideFlags: 0
