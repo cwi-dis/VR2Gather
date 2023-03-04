@@ -20,18 +20,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PilotsExternal/TransmiXR/CWI/Scenes/PilotZeroAuthoring.unity
     guid: 507cffdde0bc6ac4db4c493c31e7f23f
-  - enabled: 0
-    path: 
-    guid: d8ff6f61ef1c456488323f14c4c63ae4
   - enabled: 1
     path: Assets/PilotsExternal/TransmiXR/TUS/Scenes/Pilot Zero Shared.unity
     guid: c836a08403a4588429569b520aa6f535
   - enabled: 1
     path: Assets/PilotsExternal/TransmiXR/TUS/Scenes/Pilot Zero.unity
     guid: 6683696f48d08f54d8ea29bc6bbd3cf1
-  - enabled: 1
-    path: Assets/PilotsExternal/TransmiXR/MergeByJack/Scenes/_Pilot Zero Jack.unity
-    guid: 501c9bf08b0b5d249ba6dfdee4b7bc24
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}
