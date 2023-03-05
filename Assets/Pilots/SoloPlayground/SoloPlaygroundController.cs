@@ -36,7 +36,12 @@ namespace VRT.Pilots.SoloPlayground
             {
                 CameraFader.Instance.startFadedOut = true;
                 StartCoroutine(CameraFader.Instance.FadeIn());
-            }      
+            }
+            if (playerManager == null)
+            {
+                Debug.LogError($"{Name()}: playerManager field not set");
+                return;
+            }
             playerManager.SetUpPlayerController(true, user);
         }
     }
