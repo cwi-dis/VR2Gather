@@ -77,7 +77,12 @@ namespace VRT.Pilots.Common
 				return;
             }
 			VRTGrabbableController grabbable = _GrabbableObjects[handGrabEvent.GrabbableObjectId];
-            PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players[handGrabEvent.UserId];
+            PlayerNetworkControllerBase player = SessionPlayersManager.Instance.Players.GetValueOrDefault(handGrabEvent.UserId, null);
+			if (player == null)
+			{
+				Debug.LogError($"GrabbableObjectManager: PlayerID {handGrabEvent.UserId} does not exist");
+				return;
+			}
 			HandNetworkControllerBase handController = player.GetHandController(handGrabEvent.Handedness);
 			if (handController == null)
             {
