@@ -39,7 +39,7 @@ namespace VRT.Pilots.Common
 		{
 			if (playerController == null)
 			{
-				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called."));
+				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called.");
 				return;
 			}
 			var data = new NetworkPlayerData
