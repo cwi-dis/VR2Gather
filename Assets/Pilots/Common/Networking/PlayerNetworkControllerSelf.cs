@@ -37,6 +37,11 @@ namespace VRT.Pilots.Common
 		}
 		void SendPlayerData()
 		{
+			if (playerController == null)
+			{
+				Debug.LogError($"{Name()}: SendPlayerData with no playerController. Probably SetupPlayerNetworkController was not called."));
+				return;
+			}
 			var data = new NetworkPlayerData
 			{
 				BodyPosition = BodyTransform.position,
