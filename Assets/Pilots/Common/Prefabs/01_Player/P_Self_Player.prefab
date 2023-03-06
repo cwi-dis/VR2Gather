@@ -337,7 +337,7 @@ Transform:
   m_Children:
   - {fileID: 1829631288928453384}
   m_Father: {fileID: 1935332283100515012}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6401796635452955404
 MonoBehaviour:
@@ -411,7 +411,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1935332283100515012}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2925055322648869731
 GameObject:
@@ -1099,7 +1099,7 @@ Transform:
   m_Children:
   - {fileID: 4754063988648330083}
   m_Father: {fileID: 1935332283100515012}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &460217820224002531
 PrefabInstance:
@@ -1609,8 +1609,23 @@ PrefabInstance:
     - target: {fileID: 2107846204465463838, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: head.vrTarget
+      value: 
+      objectReference: {fileID: 8124781905032620269}
+    - target: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: leftHand.vrTarget
+      value: 
+      objectReference: {fileID: 3486262730169127347}
+    - target: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: rightHand.vrTarget
+      value: 
+      objectReference: {fileID: 6895736282343858898}
     - target: {fileID: 2593157252197247934, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: head.vrTarget
@@ -1630,6 +1645,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4326305017399503632, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 5087159113626831324, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
