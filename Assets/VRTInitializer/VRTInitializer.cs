@@ -19,6 +19,8 @@ public class VRTInitializer : MonoBehaviour
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
+        Debug.Log("Initializer: Initialize NegateProcessor");
+        var tmp = new NegateProcessor();
     }
 
     private void OnApplicationQuit()

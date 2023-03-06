@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4679806703645119030}
   - component: {fileID: 673681542959852457}
+  - component: {fileID: 1047392494586452987}
   m_Layer: 0
   m_Name: Input Action Manager
   m_TagString: Untagged
@@ -46,6 +47,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ActionAssets:
   - {fileID: -944628639613478452, guid: 721820db5472c4cdb9e2c49de50d8533, type: 3}
+--- !u!114 &1047392494586452987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 837632368141674398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d55a23bd834e0494ea4358d4d70349bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventSystem: {fileID: 0}
+  inputActionManager: {fileID: 0}
+  actionMapNames:
+  - RH Locomotion
+  - ViewPosition
+  - Emulation
+  eventSystemHasSelection: 0
 --- !u!1 &1526195919971273045
 GameObject:
   m_ObjectHideFlags: 0
