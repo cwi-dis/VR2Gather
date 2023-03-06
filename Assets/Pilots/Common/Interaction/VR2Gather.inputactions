@@ -108,7 +108,7 @@
                     "path": "<XRController>{LeftHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -119,7 +119,7 @@
                     "path": "<XRController>{LeftHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -130,7 +130,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -152,7 +152,7 @@
                     "path": "<XRController>{LeftHand}/pointerPosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -163,7 +163,7 @@
                     "path": "<XRController>{LeftHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -174,7 +174,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -185,7 +185,7 @@
                     "path": "<XRController>{LeftHand}/*",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Haptic Device",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -196,118 +196,8 @@
                     "path": "<XRController>{LeftHand}/trackingState",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Tracking State",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "Vector 3 Fallback",
-                    "id": "194ba201-f94f-498d-bc0b-6ce381a3cfe2",
-                    "path": "Vector3Fallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "a3618ab2-927f-4b03-a7ce-b664665b9acd",
-                    "path": "<OculusTouchController>{LeftHand}/pointerPosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "15d2734d-abba-463a-9a24-f48ed7d622dd",
-                    "path": "<OculusTouchController>{LeftHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "c7980cbe-5313-4a5d-b3fb-4d398b1d4d61",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Quaternion Fallback",
-                    "id": "862ae356-5726-40dd-aefe-9ca2b2d7a743",
-                    "path": "QuaternionFallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "cece0e77-9a98-496d-80bc-892c7d8f9700",
-                    "path": "<OculusTouchController>{LeftHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "5b1e227c-63b2-4b24-9cc5-15f1d2abbaac",
-                    "path": "<OculusTouchController>{LeftHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "3a4f66d7-ba3b-486e-9652-51d789d55f98",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "f90dfc90-f04e-4cae-91f6-4098fd2d3f14",
-                    "path": "<OculusTouchController>{LeftHand}/trackingState",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Tracking State",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e4a50e20-06f6-49f0-8751-175bc13f9dd8",
-                    "path": "<OculusTouchController>{LeftHand}/*",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Haptic Device",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -864,7 +754,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Noncontinuous Move",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -875,7 +765,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.72)",
                     "processors": "",
-                    "groups": "Noncontinuous Move",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -886,7 +776,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -897,7 +787,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Noncontinuous Move",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -908,19 +798,8 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "",
                     "processors": "StickDeadzone",
-                    "groups": "Continuous Move",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "46fe951f-05d6-43a3-9f57-6bb54e74dbab",
-                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -985,7 +864,7 @@
                     "path": "<XRController>{RightHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -996,7 +875,7 @@
                     "path": "<XRController>{RightHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1007,7 +886,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1029,7 +908,7 @@
                     "path": "<XRController>{RightHand}/pointerPosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1040,7 +919,7 @@
                     "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1051,7 +930,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1062,7 +941,7 @@
                     "path": "<XRController>{RightHand}/*",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Haptic Device",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1073,120 +952,10 @@
                     "path": "<XRController>{RightHand}/trackingState",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Tracking State",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cbac4d0a-9ffd-4aa2-a070-3d5e3067f767",
-                    "path": "<OculusTouchController>{RightHand}/*",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Haptic Device",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "d1e9aefa-d584-4875-aa3b-df9c235f87af",
-                    "path": "<OculusTouchController>{RightHand}/trackingState",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Tracking State",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "Quaternion Fallback",
-                    "id": "1b9799e1-4054-459d-8d81-498f9be96059",
-                    "path": "QuaternionFallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "fdab60eb-23de-4b19-93e0-022407d546c7",
-                    "path": "<OculusTouchController>{RightHand}/pointerRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "8a9d98ce-65bb-43b7-8897-9f3a77aca5af",
-                    "path": "<OculusTouchController>{RightHand}/deviceRotation",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "30db8fd2-3668-427f-ba47-d6023fa9cd41",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotation",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "Vector 3 Fallback",
-                    "id": "19152f00-71e3-49ba-bdf6-a8af7e15c433",
-                    "path": "Vector3Fallback",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "first",
-                    "id": "73c62f80-2b66-4a01-8dfb-ed1795901f56",
-                    "path": "<OculusTouchController>{RightHand}/pointerPosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "second",
-                    "id": "26a1bfa5-650f-480f-9755-fec40a66f6ef",
-                    "path": "<OculusTouchController>{RightHand}/devicePosition",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "third",
-                    "id": "7ba7f834-7c5b-46d1-93fb-c0ac8088971c",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Position",
-                    "isComposite": false,
-                    "isPartOfComposite": true
                 }
             ]
         },
@@ -1761,7 +1530,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1772,7 +1541,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.76)",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1783,7 +1552,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1794,7 +1563,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1888,17 +1657,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "cb9963e1-22d8-4aec-821e-c2b7f179f93b",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis",
-                    "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Turn",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "65b083be-dab3-4ead-b767-3fecf0b25bfa",
                     "path": "2DVector",
@@ -1985,39 +1743,6 @@
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "fc3ac527-2a4b-4b5f-be67-6779b90ddbc1",
-                    "path": "<OculusTouchController>{RightHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Teleport Mode Cancel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b42e7667-1a4c-44c7-b2e4-542fe8210dd7",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis",
-                    "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.74)",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Teleport Mode Activate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8727b490-6093-453c-a043-4c0f4d26ccb9",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis",
-                    "interactions": "Sector(directions=-1,sweepBehavior=3)",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Teleport Select",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
