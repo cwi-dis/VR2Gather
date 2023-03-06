@@ -107,6 +107,27 @@ namespace VRT.Pilots.Common
             }
         }
 
+        public void HigherView(float deltaHeight=0.02f)
+        {
+            ShowPositionIndicator();
+            if (deltaHeight != 0 && BeginLocomotion())
+            {
+                ShowPositionIndicator();
+                cameraOffset.transform.position += new Vector3(0, deltaHeight, 0);
+                if (debugLogging) Debug.Log($"ViewAdjust: new height={cameraOffset.transform.position.y}");
+                if (playerController != null)
+                {
+                    playerController.SaveCameraTransform();
+                }
+                EndLocomotion();
+            }
+        }
+
+        public void LowerView()
+        {
+            HigherView(-0.02f);
+        }
+
         protected void OnEnable()
         {
             m_ViewHeightAction.EnableDirectAction();

@@ -165,6 +165,18 @@ namespace VRT.Pilots.Common
                 if (va != null) va.ResetOrigin();
                 return true;
             }
+            if (command == "lowerview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.LowerView();
+                return true;
+            }
+            if (command == "higherview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.HigherView();
+                return true;
+            }
             if (command == "resetposition")
             {
                 transform.localPosition = Vector3.zero;
