@@ -784,10 +784,10 @@
                 {
                     "name": "",
                     "id": "99cb7ad1-51ec-4611-af68-92a85f2c17d6",
-                    "path": "<XRController>{LeftHand}/Primary2DAxis",
+                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus",
+                    "groups": "Oculus",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1593,10 +1593,10 @@
                 {
                     "name": "",
                     "id": "d6c08c3d-3d41-4695-994d-1ac9016a5a9e",
-                    "path": "<XRController>{RightHand}/Primary2DAxis",
+                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Oculus;Generic XR Controller;Vive",
+                    "groups": "Oculus",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1686,6 +1686,39 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "d6e9be0b-3c0b-4e33-9129-7a383aa6d86b",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Turn",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "af0f5c11-22c8-4d26-9336-132ac95b711e",
+                    "path": "<ViveController>{RightHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "55bd3cb2-91d3-4ffa-ad9e-f1fe4073d527",
+                    "path": "<ViveController>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
