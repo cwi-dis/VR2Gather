@@ -7,6 +7,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3688664645527212641}
     m_Modifications:
+    - target: {fileID: 142158876932745796, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
     - target: {fileID: 340185576990802736, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: m_RootOrder
@@ -62,6 +67,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 820468325798237171, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
+    - target: {fileID: 1849690324003306691, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
+    - target: {fileID: 2164728550884041307, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
+    - target: {fileID: 2357462565325909325, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
     - target: {fileID: 2655146729378806096, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: leftHand
@@ -107,6 +132,11 @@ PrefabInstance:
       propertyPath: rightHand.vrTarget
       value: 
       objectReference: {fileID: 4615436885030762087}
+    - target: {fileID: 4598402269897438588, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
     - target: {fileID: 5421204654899639151, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: m_IsActive
@@ -122,6 +152,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9103677903036206774, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: pcPipelineParent
+      value: 
+      objectReference: {fileID: 8208501400391060769}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8daed3a0f2fa41a2955b61b87840f3b, type: 3}
 --- !u!1001 &3020625101201365157
