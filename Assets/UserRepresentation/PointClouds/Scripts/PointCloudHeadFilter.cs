@@ -2,28 +2,36 @@
 
 namespace VRT.UserRepresentation.PointCloud
 {
-     public class PointCloudHeadFilter : MonoBehaviour
+    /// <summary>
+    /// Component that crops point clouds captured, to enable sending head-only point clouds.
+    /// Probably together with some other (partial body) representation.
+    /// </summary>
+    public class PointCloudHeadFilter : MonoBehaviour
     {
+        [Tooltip("If true head-only point cloud capture is enabled (otherwise full point clouds)")]
         public bool headOnly;
+        [Tooltip("The GameObject with the point cloud pipeline")]
         public GameObject pc;
+        [Tooltip("The GameObject with the bounding box (to determine point cloud cropping)")]
         public HeadPosition head;
+        [Tooltip("True if point clouds have left-hand coordinates and X should be inverted")]
         public bool invertX = true;
+        [Tooltip("True if point clouds have left-hand coordinates and Z should be inverted")]
         public bool invertZ = false;
-        public bool drawCenterSphere = false;
-        Vector3 _debugCenter;
-       
+         
         // Start is called before the first frame update
         void Start()
         {
 
         }
 
-        void OnDrawGizmos()
+
+        private void OnDisable()
         {
-            if (headOnly && drawCenterSphere)
+            PointCloudPipelineSelf pipeline = pc?.GetComponent<PointCloudPipelineSelf>();
+            if (pipeline != null )
             {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawSphere(_debugCenter, 0.1f);
+                pipeline.SetCrop(null);
             }
         }
 
@@ -59,11 +67,7 @@ namespace VRT.UserRepresentation.PointCloud
                     bbox[4] = minZ;
                     bbox[5] = maxZ;
                 }
-                if (drawCenterSphere)
-                {
-                    Vector3 pcCenter = new Vector3((bbox[0] + bbox[1]) / 2f, (bbox[2] + bbox[3]) / 2f, (bbox[4] + bbox[5]) / 2f);
-                    _debugCenter = pc.transform.TransformPoint(pcCenter);
-                }
+               
                 pipeline.SetCrop(bbox);
             } else
             {

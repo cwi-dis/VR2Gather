@@ -60,7 +60,10 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
-            SetupConfigDistributors();
+            if (!preview)
+            {
+                SetupConfigDistributors();
+            }
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)

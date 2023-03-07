@@ -4,13 +4,16 @@ using UnityEngine;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    /// <summary>
+    /// Script to supply head bounding boxes to PointCloudHeadFilter.
+    /// </summary>
     public class HeadPosition : MonoBehaviour
     {
         static public HeadPosition Instance;
-        public Vector3 offset;
-        public Vector3 size;
-        public bool drawGizmoBbox;
+        [Tooltip("In the editor scene view draw the box around the head (in head orientation)")]
         public bool drawGizmoHeadcube;
+        [Tooltip("In the editor scene view, draw the resulting bounding box (in world orientation)")]
+        public bool drawGizmoBbox;
 
         private void Awake()
         {
