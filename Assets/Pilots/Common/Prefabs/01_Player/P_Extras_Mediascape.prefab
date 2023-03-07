@@ -1253,6 +1253,16 @@ MonoBehaviour:
     rigTarget: {fileID: 1852888725250241380}
     trackingPositionOffset: {x: 0, y: 0, z: 0}
     trackingRotationOffset: {x: 0, y: 0, z: 0}
+  leftKnee:
+    vrTarget: {fileID: 0}
+    rigTarget: {fileID: 0}
+    trackingPositionOffset: {x: 0, y: 0, z: 0}
+    trackingRotationOffset: {x: 0, y: 0, z: 0}
+  rightKnee:
+    vrTarget: {fileID: 0}
+    rigTarget: {fileID: 0}
+    trackingPositionOffset: {x: 0, y: 0, z: 0}
+    trackingRotationOffset: {x: 0, y: 0, z: 0}
   leftFoot:
     vrTarget: {fileID: 573777077040510668}
     rigTarget: {fileID: 3412226186632119139}
@@ -1871,6 +1881,16 @@ MonoBehaviour:
     rigTarget: {fileID: 1852888725250241380}
     trackingPositionOffset: {x: 0, y: -0.02, z: -0.1}
     trackingRotationOffset: {x: -90, y: 180, z: 0}
+  leftKnee:
+    vrTarget: {fileID: 0}
+    rigTarget: {fileID: 0}
+    trackingPositionOffset: {x: 0, y: 0, z: 0}
+    trackingRotationOffset: {x: 0, y: 0, z: 0}
+  rightKnee:
+    vrTarget: {fileID: 0}
+    rigTarget: {fileID: 0}
+    trackingPositionOffset: {x: 0, y: 0, z: 0}
+    trackingRotationOffset: {x: 0, y: 0, z: 0}
   leftFoot:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 0}
@@ -2706,6 +2726,54 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1 &5421204654899639151
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 422285596080580377}
+  - component: {fileID: 2845361881820347177}
+  m_Layer: 0
+  m_Name: MarieAntoinette
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &422285596080580377
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5421204654899639151}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8037319, z: 0.005699992}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 340185576990802736}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2845361881820347177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5421204654899639151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a08cb2a99100cbd47bfdcbb23a7fc5d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pc: {fileID: 0}
+  other: {fileID: 3858540474394555660}
+  headFilter: {fileID: 0}
+  autoEnable: 1
 --- !u!1 &5579289739381584117
 GameObject:
   m_ObjectHideFlags: 0
@@ -2924,6 +2992,7 @@ Transform:
   - {fileID: 4523754442921701302}
   - {fileID: 9207943687891030355}
   - {fileID: 2798302281092876617}
+  - {fileID: 422285596080580377}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2941,6 +3010,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MediaScape_extras: {fileID: 6021922257278985562}
   PointcloudGO: {fileID: 0}
+  MarieAntoinette: {fileID: 5421204654899639151}
   avatarHeadLondon: {fileID: 7622442047289975821}
   avatarHeadParis: {fileID: 3663531970068563266}
   leftHand: {fileID: 0}
@@ -3942,7 +4012,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &6864063822032089304
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -3959,7 +4029,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!114 &8767020063493155193
 MonoBehaviour:
   m_ObjectHideFlags: 0
