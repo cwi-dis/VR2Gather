@@ -10,7 +10,7 @@ namespace VRT.Pilots.Common
     public class PlayerControllerSelf : PlayerControllerBase
     {
         [Tooltip("Disable transmitters for this self-player")]
-        [SerializeField] private bool previewPlayer = false;
+        public bool previewPlayer = false;
 
         public bool debugTransform = false;
 
@@ -163,6 +163,18 @@ namespace VRT.Pilots.Common
             {
                 ViewAdjust va = GetComponentInChildren<ViewAdjust>();
                 if (va != null) va.ResetOrigin();
+                return true;
+            }
+            if (command == "lowerview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.LowerView();
+                return true;
+            }
+            if (command == "higherview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.HigherView();
                 return true;
             }
             if (command == "resetposition")

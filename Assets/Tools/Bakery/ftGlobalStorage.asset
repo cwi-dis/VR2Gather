@@ -506,7 +506,7 @@ MonoBehaviour:
   - Assets/Pilots/Common/Prefabs/04_Props/PhoneFinder/Models/Phone Finder.fbx
   - Assets/Pilots/Common/Prefabs/02_Objects/Models/sphere.fbx
   - Assets/Pilots/Common/Props/UserBasePosition.fbx
-  - Assets/Pilots/Common/Prefabs/02_Objects/PhoneFinder/Models/Phone Finder.fbx
+  - Assets/Pilots/Common/Prefabs/Mannequin/Model/Ch36_decapitated.fbx
   uvOverlapAssetList: 00000000ffffffff000000000101000000000000010100000000000001010000010100000101000000000000010100000000000001010000010100000101000000000000010100000101000000000000010100000101000000000000010100000000000000000000010100000101000000000000000000000000000001010000000000000000000001010000000000000000000000000000010100000101000000000000
   xatlasWarningShown: 0
   checkerPreviewOn: 0
