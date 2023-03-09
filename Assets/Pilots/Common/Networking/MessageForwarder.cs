@@ -128,9 +128,14 @@ namespace VRT.Pilots.Common
 				var forwarder = MessageForwarders[messageType];
 				if (forwarder != null)
 				{
+					if (messageType.Name != "NetworkPlayerData") Debug.Log($"MessageForwarder: xxxjack forward messageType {messageType.Name}");
 					forwarder.Forward(message.Data);
 				}
 			}
+			else
+            {
+				Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
+            }
 		}
 	}
 
