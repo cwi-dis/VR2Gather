@@ -69,6 +69,7 @@ namespace VRT.Pilots.Common
 
 		public void SendSyncMessage()
         {
+			Debug.Log($"Grabbable: xxxjack SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
 			OrchestratorController.Instance.SendTypeEventToAll(
 					new RigidbodySyncMessage
 					{
