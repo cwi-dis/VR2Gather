@@ -91,19 +91,21 @@ namespace VRT.Pilots.Common
 
 		internal void OnNetworkRelease(Grabbable grabbable)
 		{
-			if (m_HeldGrabbable != grabbable)
+			if (m_HeldGrabbable != grabbable && m_HeldGrabbable != null)
             {
 				Debug.LogWarning($"{name}: OnNetworkRelease {grabbable} but  holding {m_HeldGrabbable}");
 			}
-			m_HeldGrabbable = null;
+            Debug.Log($"{name}: OnNetworkRelease({grabbable})");
+            m_HeldGrabbable = null;
 		}
 
 		internal void OnNetworkGrab(Grabbable grabbable)
 		{
 			if (m_HeldGrabbable != null)
             {
-				Debug.LogWarning($"{name}: OnNetworkGrab but already holding {m_HeldGrabbable}");
+				Debug.LogWarning($"{name}: OnNetworkGrab {grabbable} but already holding {m_HeldGrabbable}");
             }
+			Debug.Log($"{name}: OnNetworkGrab({grabbable})");
 			m_HeldGrabbable = grabbable;
 		}
 
