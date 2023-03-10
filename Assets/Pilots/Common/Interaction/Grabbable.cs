@@ -60,6 +60,7 @@ namespace VRT.Pilots.Common
 
 		public void Update()
 		{
+			// If the local user is not grabbing this grabble we have nothing to do.
 			if (!isGrabbed) return;
 			// xxxjack bail out if sending too many updates
 			if (Time.realtimeSinceStartup < _lastUpdateTime + (1 / UpdateFrequency)) return;
@@ -101,14 +102,22 @@ namespace VRT.Pilots.Common
 
 		private void OnRigidbodySync(RigidbodySyncMessage rigidBodySyncMessage)
 		{
-			if (rigidBodySyncMessage.NetworkId == NetworkId && !isGrabbed)
+			if (rigidBodySyncMessage.NetworkId != NetworkId)
 			{
-				Rigidbody.Sleep();
-				Rigidbody.transform.position = rigidBodySyncMessage.Position;
-				Rigidbody.transform.rotation = rigidBodySyncMessage.Rotation;
-				Rigidbody.isKinematic = rigidBodySyncMessage.isGrabbed;
-				Rigidbody.useGravity = !rigidBodySyncMessage.isGrabbed;
+				Debug.Log("Grabbable: ignore OnRigidBodySync for different object");
+				return;
 			}
+			if (isGrabbed)
+			{
+				Debug.Log("Grabbable: ignore OnRigidBodySync for locally grabbed object");
+				return;
+			}
+			
+			Rigidbody.Sleep();
+			Rigidbody.transform.position = rigidBodySyncMessage.Position;
+			Rigidbody.transform.rotation = rigidBodySyncMessage.Rotation;
+			Rigidbody.isKinematic = rigidBodySyncMessage.isGrabbed;
+			Rigidbody.useGravity = !rigidBodySyncMessage.isGrabbed;
 		}
 	}
 }
