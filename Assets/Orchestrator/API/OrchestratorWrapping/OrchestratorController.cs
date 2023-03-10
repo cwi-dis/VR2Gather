@@ -925,6 +925,10 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void SendEventToAll(string pEventData) {
+            if (!userIsMaster)
+            {
+                Debug.LogError("OrchestratorController: SendEventToAll() called, but not master user");
+            }
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
 
             if (lData != null) {
