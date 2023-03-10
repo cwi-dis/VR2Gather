@@ -72,7 +72,11 @@ namespace VRT.Pilots.Common
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
 		{
 			// We are not enabled if we are running without the orchestrator
-			if (!enabled) return;
+			if (!enabled)
+			{
+				Debug.Log($"{name}: not forwarding HandGrabEvent");
+				return;
+			}
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
 			if (!OrchestratorController.Instance.UserIsMaster)
@@ -87,19 +91,21 @@ namespace VRT.Pilots.Common
 
 		internal void OnNetworkRelease(Grabbable grabbable)
 		{
-			if (m_HeldGrabbable != grabbable)
+			if (m_HeldGrabbable != grabbable && m_HeldGrabbable != null)
             {
 				Debug.LogWarning($"{name}: OnNetworkRelease {grabbable} but  holding {m_HeldGrabbable}");
 			}
-			m_HeldGrabbable = null;
+            Debug.Log($"{name}: OnNetworkRelease({grabbable})");
+            m_HeldGrabbable = null;
 		}
 
 		internal void OnNetworkGrab(Grabbable grabbable)
 		{
 			if (m_HeldGrabbable != null)
             {
-				Debug.LogWarning($"{name}: OnNetworkGrab but already holding {m_HeldGrabbable}");
+				Debug.LogWarning($"{name}: OnNetworkGrab {grabbable} but already holding {m_HeldGrabbable}");
             }
+			Debug.Log($"{name}: OnNetworkGrab({grabbable})");
 			m_HeldGrabbable = grabbable;
 		}
 
