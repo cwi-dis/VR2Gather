@@ -72,7 +72,11 @@ namespace VRT.Pilots.Common
 		protected void ExecuteHandGrabEvent(HandGrabEvent handGrabEvent)
 		{
 			// We are not enabled if we are running without the orchestrator
-			if (!enabled) return;
+			if (!enabled)
+			{
+				Debug.Log($"{name}: not forwarding HandGrabEvent");
+				return;
+			}
 			//If we're not master, inform the master
 			//And then execute the event locally already instead of waiting for it to return
 			if (!OrchestratorController.Instance.UserIsMaster)
