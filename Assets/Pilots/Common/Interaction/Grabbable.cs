@@ -112,7 +112,6 @@ namespace VRT.Pilots.Common
 		{
 			if (rigidBodySyncMessage.NetworkId != NetworkId)
 			{
-				Debug.Log("Grabbable: ignore OnRigidBodySync for different object");
 				return;
 			}
 			if (isGrabbed)

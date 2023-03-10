@@ -119,7 +119,6 @@ namespace VRT.Pilots.Common
 			TypedMessage message = JsonUtility.FromJson<TypedMessage>(jsonMessage);
 			if (!TypeFromId.TryGetValue(message.TypeId, out Type messageType))
 			{
-				Debug.LogError($"Programmer error: [MessageForwarder] No type known with TypeId = {message.TypeId}! Has the type mapping been added to MessageForwarder.cs?");
 				return;
 			}
 
@@ -128,7 +127,6 @@ namespace VRT.Pilots.Common
 				var forwarder = MessageForwarders[messageType];
 				if (forwarder != null)
 				{
-					if (messageType.Name != "NetworkPlayerData") Debug.Log($"MessageForwarder: xxxjack forward messageType {messageType.Name}");
 					forwarder.Forward(message.Data);
 				}
 			}
