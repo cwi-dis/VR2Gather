@@ -10,7 +10,7 @@ VR2Gather is copyright Centrum Wiskunde & Informatica, and distributed under the
 
 ## Warning
 
-As of this writing (March 2022) it is not yet possible to use VR2Gather as distributed here on github without some modifications, for two main reasons.
+As of this writing (March 2023) it is not yet possible to use VR2Gather as distributed here on github without some modifications, for two main reasons.
 
 The main problem is that the central _Orchestrator_ cannot be made available as open source.
 
