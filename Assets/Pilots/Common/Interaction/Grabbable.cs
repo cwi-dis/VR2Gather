@@ -47,7 +47,7 @@ namespace VRT.Pilots.Common
 		{
 			GrabbableObjectManager.RegisterGrabbable(this);
 
-			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnRigidbodySync);
+			OrchestratorController.Instance.Subscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void OnDisable()
@@ -55,7 +55,7 @@ namespace VRT.Pilots.Common
 			
 			GrabbableObjectManager.UnregisterGrabbable(this);
 
-			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnRigidbodySync);
+			OrchestratorController.Instance.Unsubscribe<RigidbodySyncMessage>(OnNetworkRigidbodySync);
 		}
 
 		public void Update()
@@ -65,20 +65,28 @@ namespace VRT.Pilots.Common
 			// xxxjack bail out if sending too many updates
 			if (Time.realtimeSinceStartup < _lastUpdateTime + (1 / UpdateFrequency)) return;
 			_lastUpdateTime = Time.realtimeSinceStartup;
-			SendSyncMessage();
+			SendRigidbodySyncMessage();
 		}
 
-		public void SendSyncMessage()
-        {
+		public void SendRigidbodySyncMessage()
+		{
 			Debug.Log($"Grabbable: xxxjack SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
-			OrchestratorController.Instance.SendTypeEventToAll(
-					new RigidbodySyncMessage
-					{
-						NetworkId = NetworkId,
-						isGrabbed = isGrabbed,
-						Position = Rigidbody.transform.position,
-						Rotation = Rigidbody.transform.rotation
-					});
+
+			RigidbodySyncMessage message = new RigidbodySyncMessage
+			{
+				NetworkId = NetworkId,
+				isGrabbed = isGrabbed,
+				Position = Rigidbody.transform.position,
+				Rotation = Rigidbody.transform.rotation
+			};
+			if (!OrchestratorController.Instance.UserIsMaster)
+			{
+				OrchestratorController.Instance.SendTypeEventToMaster(message);
+			}
+			else
+			{
+				OrchestratorController.Instance.SendTypeEventToAll(message);
+			}
 		}
 
 		public void OnGrab()
@@ -87,7 +95,7 @@ namespace VRT.Pilots.Common
 			isGrabbed = true;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
-			SendSyncMessage();
+			SendRigidbodySyncMessage();
 		}
 
 		public void OnRelease()
@@ -96,11 +104,11 @@ namespace VRT.Pilots.Common
 			isGrabbed = false;
 			Rigidbody.isKinematic = false;
 			Rigidbody.useGravity = true;
-			SendSyncMessage();
+			SendRigidbodySyncMessage();
 		}
 
 
-		private void OnRigidbodySync(RigidbodySyncMessage rigidBodySyncMessage)
+		private void OnNetworkRigidbodySync(RigidbodySyncMessage rigidBodySyncMessage)
 		{
 			if (rigidBodySyncMessage.NetworkId != NetworkId)
 			{
@@ -112,7 +120,11 @@ namespace VRT.Pilots.Common
 				Debug.Log("Grabbable: ignore OnRigidBodySync for locally grabbed object");
 				return;
 			}
-			
+			// If we are master we also forward the message
+			if (OrchestratorController.Instance.UserIsMaster)
+			{
+				OrchestratorController.Instance.SendTypeEventToAll(rigidBodySyncMessage, true);
+			}
 			Rigidbody.Sleep();
 			Rigidbody.transform.position = rigidBodySyncMessage.Position;
 			Rigidbody.transform.rotation = rigidBodySyncMessage.Rotation;
