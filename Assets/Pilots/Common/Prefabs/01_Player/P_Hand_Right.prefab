@@ -660,8 +660,8 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8116020605770475481}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+      - m_Target: {fileID: 6617721036135197020}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, Pilots
         m_MethodName: OnSelectEnter
         m_Mode: 0
         m_Arguments:
@@ -675,8 +675,8 @@ MonoBehaviour:
   m_SelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8116020605770475481}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+      - m_Target: {fileID: 6617721036135197020}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, Pilots
         m_MethodName: OnSelectExit
         m_Mode: 0
         m_Arguments:
@@ -904,10 +904,10 @@ MonoBehaviour:
   m_DirectionalAnchorRotationAction:
     m_UseReference: 0
     m_Action:
-      m_Name: 
+      m_Name: Directional Anchor Rotation
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 
+      m_Id: c2b5d27f-8831-461d-9641-ee920c83619a
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -939,6 +939,7 @@ GameObject:
   - component: {fileID: 8329836872111453749}
   - component: {fileID: 7986563547363483015}
   - component: {fileID: 6857475060488557817}
+  - component: {fileID: 6617721036135197020}
   m_Layer: 0
   m_Name: P_Hand_Right
   m_TagString: Untagged
@@ -991,7 +992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ead30106d63304520add422292707140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: {fileID: 7652345816467723323}
+  handAppearance: {fileID: 7652345816467723323}
   handState: 0
   handHandedness: 1
   m_HeldGrabbable: {fileID: 0}
@@ -1013,6 +1014,19 @@ MonoBehaviour:
   OtherController: {fileID: 7903991079643624856}
   directInteractionIsEnabled: 0
   controllerType: 0
+--- !u!114 &6617721036135197020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6652609405479520317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 310f5999d713f23469639a93e9324f40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handNetworkController: {fileID: 0}
 --- !u!1 &6656451334728806882
 GameObject:
   m_ObjectHideFlags: 0
