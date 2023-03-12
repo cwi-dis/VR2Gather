@@ -6,7 +6,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-    using HandState = Hand.HandState;
+    using HandState = HandDirectAppearance.HandState;
 
     public class HandNetworkControllerSelf : HandNetworkControllerBase
     {

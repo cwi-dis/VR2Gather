@@ -35,7 +35,7 @@ public class NegateProcessor : InputProcessor<float>
 
 namespace VRT.Pilots.Common
 {
-	using HandState = Hand.HandState;
+	using HandState = HandDirectAppearance.HandState;
 
 	public class HandDirectInteraction : MonoBehaviour
 	{
@@ -44,7 +44,7 @@ namespace VRT.Pilots.Common
 		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
 		public GameObject handGO;
 		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
-		public Hand hand;
+		public HandDirectAppearance hand;
 		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
 		[SerializeField] private HandNetworkControllerSelf handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
@@ -82,7 +82,7 @@ namespace VRT.Pilots.Common
 		{
 			
 			if (handGO == null) handGO = gameObject;
-			if (hand == null) hand = handGO.GetComponent<Hand>();
+			if (hand == null) hand = handGO.GetComponent<HandDirectAppearance>();
 			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerSelf>();
 			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkControllerBase>();
 			if (handController == null)

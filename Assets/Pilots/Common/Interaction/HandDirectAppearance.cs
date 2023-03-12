@@ -10,7 +10,7 @@ namespace VRT.Pilots.Common
     /// Animations between states are automatically executed.
     /// </summary>
     [RequireComponent(typeof(Animator))]
-    public class Hand : MonoBehaviour
+    public class HandDirectAppearance : MonoBehaviour
     {
         /// <summary>
         /// Various states the hand can be in.
