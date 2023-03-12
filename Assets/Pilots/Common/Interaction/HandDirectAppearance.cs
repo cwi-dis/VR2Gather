@@ -20,8 +20,7 @@ namespace VRT.Pilots.Common
             Idle,
             Pointing,
             Grabbing,
-            Teleporting,
-            ViewAdjusting
+            Teleporting
         }
 
         [Tooltip("Current state")]
