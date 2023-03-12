@@ -37,7 +37,7 @@ namespace VRT.Pilots.Common
 {
 	using HandState = Hand.HandState;
 
-	public class HandInteraction : MonoBehaviour
+	public class HandDirectInteraction : MonoBehaviour
 	{
 
 		
