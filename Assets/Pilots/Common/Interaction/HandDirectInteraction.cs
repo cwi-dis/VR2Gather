@@ -125,7 +125,6 @@ namespace VRT.Pilots.Common
             {
 				if (m_pointingAction.action.ReadValue<float>() > 0.5) return HandState.Pointing;
             }
-			
 			return HandState.Idle;
         }
 		
@@ -136,105 +135,12 @@ namespace VRT.Pilots.Common
 			// xxxjack should we teleport if we've left teleport mode?
 			currentState = newHandState;
 			FixObjectStates();
-#if xxxjack_old
-			if (!playerNetworkController.IsLocalPlayer)
-
-			{
-				
-				//Prevent floor clipping when input tracking provides glitched results
-				//This could on occasion cause released grabbables to go throught he floor
-				if (transform.position.y <= 0.05f)
-				{
-					transform.position = new Vector3(transform.position.x, 0.05f, transform.position.z);
-				}
-
-				//
-				// See whether we are pointing, grabbing, teleporting or idle
-				//
-				inTeleportingMode = MyModeTeleportingAction.IsPressed();
-				inTouchingMode = MyModeTouchingAction.IsPressed();
-				if (negateTouching) inTouchingMode = !inTouchingMode;
-				inGrabbingMode = MyGrabbingGrabAction.IsPressed();
-				if (inTeleportingMode || inGrabbingMode)
-                {
-					inTouchingMode = false;
-                }
-				if (inTeleportingMode)
-                {
-					inGrabbingMode = false;
-                }
-				if (inTeleportingMode)
-                {
-					teleporter.UpdatePath();
-					if (MyTeleportHomeAction.IsPressed())
-                    {
-						// Debug.Log("xxxjack teleport home");
-						teleporter.TeleportHome();
-                    }
-				}
-				else
-                {
-					// If we are _not_ in teleporting mode, but the teleporter
-					// is active that means we have just gone out of teleporting mode.
-					// We teleport (if possible).
-					if (teleporter.teleporterActive)
-                    {
-						if (teleporter.canTeleport())
-                        {
-							teleporter.Teleport();
-                        }
-                    }
-                }
-				UpdateHandState();
-			}
-#endif
 		}
 
-#if xxxjack_old
-		void UpdateHandState()
-        {
-			if (inTeleportingMode)
-			{
-				// Teleport mode overrides the other modes, specifically pointing mode.
-				handController.SetHandState(HandController.HandState.Pointing);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(true);
-				teleporter.UpdatePath();
-				inGrabbingMode = false;
-				inTouchingMode = false;
-			}
-			else if(inGrabbingMode)
-			{
-				handController.SetHandState(HandController.HandState.Grabbing);
-				GrabCollider.SetActive(true);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(false);
-				inTouchingMode = false;
-				inTeleportingMode = false;
-			}
-			else if (inTouchingMode)
-			{
-				handController.SetHandState(HandController.HandState.Pointing);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(true);
-				teleporter.SetActive(false);
-				inTeleportingMode = false;
-			}
-			else 
-			{
-				handController.SetHandState(HandController.HandState.Idle);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(false);
-			}
-		}
-#endif
 		public void OnSelectEnter(SelectEnterEventArgs args)
 		{
-			var interactable = args.interactable;
-			GameObject grabbedObject = interactable.gameObject;
-			Grabbable grabbable = grabbedObject.GetComponent<Grabbable>();
+			GameObject grabbedObject = args.interactableObject.transform.gameObject;
+			Grabbable grabbable = grabbedObject?.GetComponent<Grabbable>();
 			if (grabbable == null)
             {
 				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
@@ -242,13 +148,13 @@ namespace VRT.Pilots.Common
 			Debug.Log($"{name}: grabbed {grabbable}");
 			handController.HeldGrabbable = grabbable;
 		}
+
 		public void OnSelectExit(SelectExitEventArgs args)
 		{
 			// xxxjack we could check that the object released is actually held...
 			// xxxjack may also be needed if we can hold multiple objects....
 			Debug.Log($"{name}: released {handController.HeldGrabbable}");
 			handController.HeldGrabbable = null;
-
 		}
 	}
 }
