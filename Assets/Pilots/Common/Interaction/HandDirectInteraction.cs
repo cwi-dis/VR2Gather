@@ -137,24 +137,5 @@ namespace VRT.Pilots.Common
 			FixObjectStates();
 		}
 
-		public void OnSelectEnter(SelectEnterEventArgs args)
-		{
-			GameObject grabbedObject = args.interactableObject.transform.gameObject;
-			Grabbable grabbable = grabbedObject?.GetComponent<Grabbable>();
-			if (grabbable == null)
-            {
-				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
-            }
-			Debug.Log($"{name}: grabbed {grabbable}");
-			handController.HeldGrabbable = grabbable;
-		}
-
-		public void OnSelectExit(SelectExitEventArgs args)
-		{
-			// xxxjack we could check that the object released is actually held...
-			// xxxjack may also be needed if we can hold multiple objects....
-			Debug.Log($"{name}: released {handController.HeldGrabbable}");
-			handController.HeldGrabbable = null;
-		}
 	}
 }

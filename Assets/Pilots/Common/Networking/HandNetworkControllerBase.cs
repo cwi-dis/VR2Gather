@@ -9,7 +9,7 @@ namespace VRT.Pilots.Common
 	public class HandNetworkControllerBase : MonoBehaviour
 	{
 		[Tooltip("The visual hand this controller is attached to")]
-		public HandDirectAppearance hand;
+		public HandDirectAppearance handAppearance;
 		public class HandControllerData : BaseMessage
 		{
 			public Handedness handHandedness;
@@ -125,7 +125,7 @@ namespace VRT.Pilots.Common
 				if (data.handHandedness == handHandedness)
 				{
 					// This will update the local hand state and run the animation (if needed)
-					hand.state = data.handState;
+					handAppearance.state = data.handState;
 				}
 			}
 		}
