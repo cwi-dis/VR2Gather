@@ -70,9 +70,11 @@ namespace VRT.Pilots.Common
 		void FixObjectStates()
         {
 			hand.state = currentState;
+			FixGrab fixGrab = GrabCollider.GetComponent<FixGrab>();
 			switch (currentState)
 			{
 				case HandState.Idle:
+					fixGrab?.AboutToDisable();
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(false);
@@ -80,6 +82,7 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Pointing:
+					fixGrab?.AboutToDisable();
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 					TeleporterRay.SetActive(false);
@@ -94,6 +97,7 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Teleporting:
+					fixGrab?.AboutToDisable();
 					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(true);
