@@ -28,7 +28,7 @@ namespace VRT.Pilots.Common
         public void OnSelectEnter(SelectEnterEventArgs args)
         {
             GameObject grabbedObject = args.interactableObject.transform.gameObject;
-            Grabbable grabbable = grabbedObject?.GetComponent<Grabbable>();
+            VRTGrabbableController grabbable = grabbedObject?.GetComponent<VRTGrabbableController>();
             if (grabbable == null)
             {
                 Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
