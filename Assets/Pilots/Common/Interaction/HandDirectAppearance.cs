@@ -10,7 +10,7 @@ namespace VRT.Pilots.Common
     /// Animations between states are automatically executed.
     /// </summary>
     [RequireComponent(typeof(Animator))]
-    public class Hand : MonoBehaviour
+    public class HandDirectAppearance : MonoBehaviour
     {
         /// <summary>
         /// Various states the hand can be in.
@@ -20,8 +20,7 @@ namespace VRT.Pilots.Common
             Idle,
             Pointing,
             Grabbing,
-            Teleporting,
-            ViewAdjusting
+            Teleporting
         }
 
         [Tooltip("Current state")]

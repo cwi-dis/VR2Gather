@@ -112,8 +112,8 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8261883970998026398}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+      - m_Target: {fileID: 5931296429021814033}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, Pilots
         m_MethodName: OnSelectEnter
         m_Mode: 0
         m_Arguments:
@@ -127,8 +127,8 @@ MonoBehaviour:
   m_SelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8261883970998026398}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.HandInteraction, Pilots
+      - m_Target: {fileID: 5931296429021814033}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.VRTHandController, Pilots
         m_MethodName: OnSelectExit
         m_Mode: 0
         m_Arguments:
@@ -2107,6 +2107,7 @@ GameObject:
   - component: {fileID: 7603936952119059507}
   - component: {fileID: 4531651057176545457}
   - component: {fileID: 867362575422603076}
+  - component: {fileID: 5931296429021814033}
   m_Layer: 0
   m_Name: P_Hand_Left
   m_TagString: Untagged
@@ -2154,12 +2155,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5862755559334039368}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ead30106d63304520add422292707140, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: {fileID: 3264531534731365354}
+  handAppearance: {fileID: 3264531534731365354}
   handState: 0
   handHandedness: 0
   m_HeldGrabbable: {fileID: 0}
@@ -2181,6 +2182,19 @@ MonoBehaviour:
   OtherController: {fileID: 1282686269084641543}
   directInteractionIsEnabled: 0
   controllerType: 0
+--- !u!114 &5931296429021814033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5862755559334039368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 310f5999d713f23469639a93e9324f40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handNetworkController: {fileID: 0}
 --- !u!1 &6544830567396037082
 GameObject:
   m_ObjectHideFlags: 0
