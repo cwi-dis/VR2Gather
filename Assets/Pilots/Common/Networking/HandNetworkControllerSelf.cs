@@ -6,7 +6,7 @@ using VRT.Orchestrator.Wrapping;
 
 namespace VRT.Pilots.Common
 {
-    using HandState = Hand.HandState;
+    using HandState = HandDirectAppearance.HandState;
 
     public class HandNetworkControllerSelf : HandNetworkControllerBase
     {
@@ -55,14 +55,14 @@ namespace VRT.Pilots.Common
 
         private void Update()
         {
-            if (oldState != hand.state)
+            if (oldState != handAppearance.state)
             {
-                oldState = hand.state;
+                oldState = handAppearance.state;
                 // Inform other participants of the change in our hand state
                 var data = new HandControllerData
                 {
                     handHandedness = handHandedness,
-                    handState = hand.state
+                    handState = handAppearance.state
                 };
 
                 if (OrchestratorController.Instance.UserIsMaster)

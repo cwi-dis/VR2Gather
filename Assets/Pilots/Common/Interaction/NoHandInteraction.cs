@@ -8,7 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
 {
-    using HandState = Hand.HandState;
+    using HandState = HandDirectAppearance.HandState;
 
     /// <summary>
     /// Behaviour that allows using the mouse to activate things.

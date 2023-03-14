@@ -3,48 +3,18 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEditor;
 
-// This InputProcessor should negate values, i.e. a range 0..1 will be mapped to 1..0.
-// This is different from inverting (which maps -1..1 to 1..-1).
-// But it doesn't work...
-#if UNITY_EDITOR
-[InitializeOnLoad]
-#endif
-public class NegateProcessor : InputProcessor<float>
-{
-
-#if UNITY_EDITOR
-	static NegateProcessor()
-	{
-		Initialize();
-	}
-#endif
-
-	[RuntimeInitializeOnLoadMethod]
-	static void Initialize()
-	{
-		InputSystem.RegisterProcessor<NegateProcessor>();
-	}
-
-	public override float Process(float value, InputControl control)
-	{
-		string name = "no control";
-		if (control != null) name = control.name;
-		return 1 - value;
-	}
-}
-
 namespace VRT.Pilots.Common
 {
-	using HandState = Hand.HandState;
+	using HandState = HandDirectAppearance.HandState;
 
-	public class HandInteraction : MonoBehaviour
+	public class HandDirectInteraction : MonoBehaviour
 	{
 
 		
 		[Tooltip("If non-null, use this gameobject as hand (otherwise use self)")]
 		public GameObject handGO;
 		[Tooltip("If non-null use this hand visualizer (otherwise het from HandGO)")]
-		public Hand hand;
+		public HandDirectAppearance hand;
 		[Tooltip("Controller for the hand (default: gotten from HandGO)")]
 		[SerializeField] private HandNetworkControllerSelf handController;
 		[Tooltip("Player network controller used to communicate changes to other players (default: get from parent)")]
@@ -82,7 +52,7 @@ namespace VRT.Pilots.Common
 		{
 			
 			if (handGO == null) handGO = gameObject;
-			if (hand == null) hand = handGO.GetComponent<Hand>();
+			if (hand == null) hand = handGO.GetComponent<HandDirectAppearance>();
 			if (handController == null) handController = handGO.GetComponent<HandNetworkControllerSelf>();
 			if (playerNetworkController == null) playerNetworkController = GetComponentInParent<PlayerNetworkControllerBase>();
 			if (handController == null)
@@ -112,8 +82,8 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Pointing:
-                    fixGrab?.AboutToDisable();
-                    GrabCollider.SetActive(false);
+					fixGrab?.AboutToDisable();
+					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(true);
 					TeleporterRay.SetActive(false);
 					MoveTurn.SetActive(true);
@@ -127,8 +97,8 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(true);
 					break;
 				case HandState.Teleporting:
-                    fixGrab?.AboutToDisable();
-                    GrabCollider.SetActive(false);
+					fixGrab?.AboutToDisable();
+					GrabCollider.SetActive(false);
 					TouchCollider.SetActive(false);
 					TeleporterRay.SetActive(true);
 					MoveTurn.SetActive(false);
@@ -159,7 +129,6 @@ namespace VRT.Pilots.Common
             {
 				if (m_pointingAction.action.ReadValue<float>() > 0.5) return HandState.Pointing;
             }
-			
 			return HandState.Idle;
         }
 		
@@ -170,133 +139,18 @@ namespace VRT.Pilots.Common
 			// xxxjack should we teleport if we've left teleport mode?
 			currentState = newHandState;
 			FixObjectStates();
-#if xxxjack_old
-			if (!playerNetworkController.IsLocalPlayer)
-
-			{
-				
-				//Prevent floor clipping when input tracking provides glitched results
-				//This could on occasion cause released grabbables to go throught he floor
-				if (transform.position.y <= 0.05f)
-				{
-					transform.position = new Vector3(transform.position.x, 0.05f, transform.position.z);
-				}
-
-				//
-				// See whether we are pointing, grabbing, teleporting or idle
-				//
-				inTeleportingMode = MyModeTeleportingAction.IsPressed();
-				inTouchingMode = MyModeTouchingAction.IsPressed();
-				if (negateTouching) inTouchingMode = !inTouchingMode;
-				inGrabbingMode = MyGrabbingGrabAction.IsPressed();
-				if (inTeleportingMode || inGrabbingMode)
-                {
-					inTouchingMode = false;
-                }
-				if (inTeleportingMode)
-                {
-					inGrabbingMode = false;
-                }
-				if (inTeleportingMode)
-                {
-					teleporter.UpdatePath();
-					if (MyTeleportHomeAction.IsPressed())
-                    {
-						// Debug.Log("xxxjack teleport home");
-						teleporter.TeleportHome();
-                    }
-				}
-				else
-                {
-					// If we are _not_ in teleporting mode, but the teleporter
-					// is active that means we have just gone out of teleporting mode.
-					// We teleport (if possible).
-					if (teleporter.teleporterActive)
-                    {
-						if (teleporter.canTeleport())
-                        {
-							teleporter.Teleport();
-                        }
-                    }
-                }
-				UpdateHandState();
-			}
-#endif
 		}
 
-#if xxxjack_old
-		void UpdateHandState()
+        /// <summary>
+        /// For VR2Gather direct interaction we want touching (with finger extended) to be activating.
+        /// This callback should be added to XRDirectInteractor for touch as Hover Entered callback and it will
+        /// call OnActivated() on the object that is touched.
+        /// </summary>
+        /// <param name="args"></param>
+        public void OnDirectHoverEnter(HoverEnterEventArgs args)
         {
-			if (inTeleportingMode)
-			{
-				// Teleport mode overrides the other modes, specifically pointing mode.
-				handController.SetHandState(HandController.HandState.Pointing);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(true);
-				teleporter.UpdatePath();
-				inGrabbingMode = false;
-				inTouchingMode = false;
-			}
-			else if(inGrabbingMode)
-			{
-				handController.SetHandState(HandController.HandState.Grabbing);
-				GrabCollider.SetActive(true);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(false);
-				inTouchingMode = false;
-				inTeleportingMode = false;
-			}
-			else if (inTouchingMode)
-			{
-				handController.SetHandState(HandController.HandState.Pointing);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(true);
-				teleporter.SetActive(false);
-				inTeleportingMode = false;
-			}
-			else 
-			{
-				handController.SetHandState(HandController.HandState.Idle);
-				GrabCollider.SetActive(false);
-				TouchCollider.SetActive(false);
-				teleporter.SetActive(false);
-			}
-		}
-#endif
-
-		public void OnSelectEnter(SelectEnterEventArgs args)
-		{
-			var interactable = args.interactable;
-			GameObject grabbedObject = interactable.gameObject;
-			VRTGrabbableController grabbable = grabbedObject.GetComponent<VRTGrabbableController>();
-			if (grabbable == null)
-            {
-				Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
-            }
-			Debug.Log($"{name}: grabbed {grabbable}");
-			handController.HeldGrabbable = grabbable;
-		}
-
-		public void OnSelectExit(SelectExitEventArgs args)
-		{
-			// xxxjack we could check that the object released is actually held...
-			// xxxjack may also be needed if we can hold multiple objects....
-			Debug.Log($"{name}: released {handController.HeldGrabbable}");
-			handController.HeldGrabbable = null;
-
-		}
-
-		/// <summary>
-		/// For VR2Gather direct interaction we want touching (with finger extended) to be activating.
-		/// This callback should be added to XRDirectInteractor for touch as Hover Entered callback and it will
-		/// call OnActivated() on the object that is touched.
-		/// </summary>
-		/// <param name="args"></param>
-		public void OnDirectHoverEnter(HoverEnterEventArgs args)
-		{
-			var source = (IXRActivateInteractor)args.interactorObject;
-			var target = (IXRActivateInteractable)args.interactableObject;
+            var source = (IXRActivateInteractor)args.interactorObject;
+            var target = (IXRActivateInteractable)args.interactableObject;
             Debug.Log($"Direct Hover Enter from {source}, calling {target}.OnActivated() ");
             ActivateEventArgs activateArgs = new ActivateEventArgs
             {
@@ -304,14 +158,14 @@ namespace VRT.Pilots.Common
                 interactableObject = target
             };
             target.OnActivated(activateArgs);
-		}
+        }
 
-		/// <summary>
-		/// See OnDirectHoverEnter for an explanation.
-		/// </summary>
-		/// <param name="args"></param>
-		public void OnDirectHoverExit(HoverExitEventArgs args)
-		{
+        /// <summary>
+        /// See OnDirectHoverEnter for an explanation.
+        /// </summary>
+        /// <param name="args"></param>
+        public void OnDirectHoverExit(HoverExitEventArgs args)
+        {
             var source = (IXRActivateInteractor)args.interactorObject;
             var target = (IXRActivateInteractable)args.interactableObject;
             Debug.Log($"Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");

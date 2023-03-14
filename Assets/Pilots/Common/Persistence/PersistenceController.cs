@@ -88,7 +88,7 @@ namespace VRT.Pilots.Common
             }
             transformRef.position = pData.position;
             transformRef.rotation = pData.rotation;
-            grabbableRef.SendSyncMessage();
+            grabbableRef.SendRigidbodySyncMessage();
          }
 
         /// <summary>

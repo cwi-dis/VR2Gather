@@ -38,6 +38,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Position indicator, visible while adjusting position")]
         [SerializeField] GameObject positionIndicator;
 
+        [Tooltip("Best forward direction indicator, visible while adjusting position")]
+        [SerializeField] GameObject forwardIndicator;
+
         [Tooltip("How many seconds is the position indicator visible?")]
         [SerializeField] float positionIndicatorDuration = 5f;
 
@@ -48,13 +51,19 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
+            optionalHideIndicators();
+        }
+
+        private void optionalHideIndicators()
+        {
             if (positionIndicator != null && positionIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) positionIndicator.SetActive(false);
+            if (forwardIndicator != null && forwardIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) forwardIndicator.SetActive(false);
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (positionIndicator != null && positionIndicator.activeSelf && Time.time > positionIndicatorInvisibleAfter) positionIndicator.SetActive(false);
+            optionalHideIndicators();
             Vector2 heightInput = m_ViewHeightAction.action?.ReadValue<Vector2>() ?? Vector2.zero;
             float deltaHeight = heightInput.y * heightFactor;
             if (deltaHeight != 0 && BeginLocomotion())
@@ -80,8 +89,12 @@ namespace VRT.Pilots.Common
             if (positionIndicator != null)
             {
                 positionIndicator.SetActive(true);
-                positionIndicatorInvisibleAfter = Time.time + positionIndicatorDuration;
             }
+            if (forwardIndicator != null)
+            {
+                forwardIndicator.SetActive(true);
+            }
+            positionIndicatorInvisibleAfter = Time.time + positionIndicatorDuration;
         }
 
         /// <summary>
