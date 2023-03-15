@@ -2,18 +2,19 @@
   "AutoStart": {
     "autoLogin": true,
     "sessionName": "mediascape",
-    "sessionScenario": "Mediascape",
-    "sessionTransportProtocol": "tcp",
-    "autoCreateForUser": "topinambur",
-    "autoCreate": false,
+    "sessionScenario": "Development",
+    "sessionTransportProtocol": "socketio",
+    "autoCreateForUser": "",
+    "autoCreate": true,
     "autoJoin": false,
-    "autoStartWith": 2,
+    "autoStartWith": 1,
     "autoDelay": 1.5,
-    "sessionUncompressed": true,
-    "sessionUncompressedAudio": true,
+    "sessionUncompressed": false,
+    "sessionUncompressedAudio": false,
     "autoLeaveAfter": 0,
     "autoStopAfterLeave": false
   },
+  "statsOutputFile" : "-",
   "Voice": {
     "ignoreSynchronizer" :  true
   }
