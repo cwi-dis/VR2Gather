@@ -1,7 +1,7 @@
 {
   "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
   "statsOutputFile" : "-",
-  "AutoStart" : {
+  "_unused_AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
   	"sessionScenario" : "Technical Playground",
