@@ -13,7 +13,7 @@ namespace VRT.Pilots.Common
         protected ActionBasedController controller;
         HandState oldState = HandState.Idle;
 
-        public override Grabbable HeldGrabbable
+        public override VRTGrabbableController HeldGrabbable
         {
             set {
                 if (value == m_HeldGrabbable) return;

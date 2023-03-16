@@ -52,8 +52,16 @@ namespace VRT.Pilots.Common
         void Start()
         {
             Hide();
-            if (interceptErrors) ErrorManager.Instance.RegisterSink(this);
-            if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
+             if (playerController == null) playerController = GetComponentInParent<PlayerControllerSelf>();
+            if (interceptErrors)
+            {
+                if (ErrorManager.Instance == null)
+                {
+                    Debug.LogError("HeadsUpDisplay: interceptErrors is true, but there is no ErrorManager");
+                    return;
+                }
+                ErrorManager.Instance.RegisterSink(this);
+            }
         }
 
         // Update is called once per frame

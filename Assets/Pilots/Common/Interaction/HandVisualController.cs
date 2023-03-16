@@ -101,6 +101,7 @@ namespace VRT.Pilots.Common
 
         void OnDeviceChanged(InputDevice value)
         {
+            Debug.Log($"OnDeviceChanged: {value.name}, manufacturer={value.manufacturer}, characteristics={value.characteristics}, valid={value.isValid}");
             ControllerType curController = FindAttachedController();
             FixRepresentation(curController);
         }
