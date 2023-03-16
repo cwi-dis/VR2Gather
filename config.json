@@ -1,20 +1,55 @@
 {
-  "AutoStart": {
-    "autoLogin": true,
-    "sessionName": "mediascape",
-    "sessionScenario": "Mediascape",
-    "sessionTransportProtocol": "tcp",
-    "autoCreateForUser": "topinambur",
-    "autoCreate": false,
-    "autoJoin": false,
-    "autoStartWith": 2,
-    "autoDelay": 1.5,
-    "sessionUncompressed": true,
-    "sessionUncompressedAudio": true,
-    "autoLeaveAfter": 0,
-    "autoStopAfterLeave": false
+  "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
+  "statsOutputFile" : "-",
+  "_unused_AutoStart" : {
+  	"autoLogin" : true,
+  	"sessionName" : "jack-grab",
+  	"sessionScenario" : "Technical Playground",
+  	"sessionTransportProtocol" : "",
+  	"sessionUncompressed" : false,
+  	"sessionUncompressedAudio" : false,
+  	"autoCreateForUser" : "sap",
+  	"autoCreate" : false,
+  	"autoJoin" : false,
+  	"autoStartWith" : 2,
+  	"autoDelay" : 1.5,
+  	"autoLeaveAfter" : 0,
+  	"autoStopAfterLeave" : false
   },
-  "Voice": {
-    "ignoreSynchronizer" :  true
+  "_unused_LocalUser": {
+    
+    "PCSelfConfig": {
+      "RS2ReaderConfig": {
+        "configFilename": "./cameraconfig.xml"
+      },
+      "SynthReaderConfig": {
+        "nPoints": 16000
+      },
+      "ProxyReaderConfig": {
+        "localIP": "",
+        "port": 9335
+      },
+	  "PrerecordedReaderConfig" : {
+		"folder" : "../cwipc_test/Samples/loot-150K-4tiles"
+	  },
+      "voxelSize": 0,
+      "frameRate": 15,
+      "tiled": false,
+      "Encoders": [
+		
+		{
+          "octreeBits": 9
+        }
+
+      ],
+      "Bin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      },
+      "AudioBin2Dash": {
+        "segmentSize": 1000,
+        "segmentLife": 16000
+      }
+    }
   }
 }
