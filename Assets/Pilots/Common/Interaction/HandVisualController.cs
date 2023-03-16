@@ -92,11 +92,21 @@ namespace VRT.Pilots.Common
         {
             List<InputDevice> deviceList = new List<InputDevice>();
             InputDevices.GetDevices(deviceList);
+            bool foundOculusController = false;
+            bool foundViveController = false;
+            bool foundController = false;
             foreach(var inDev in deviceList)
             {
-                if (inDev.isValid && inDev.name.Contains("Oculus Touch Controller")) return ControllerType.Oculus;
+                if (!inDev.isValid) continue;
+                if ((inDev.characteristics & InputDeviceCharacteristics.Controller) == 0) continue;
+                foundController = true;
+                if (inDev.name.Contains("Oculus Touch Controller")) foundOculusController = true;
+                if (inDev.name.Contains("HTC Vive Controller")) foundViveController = true;
             }
-            return ControllerType.Other;
+            if (foundOculusController) return ControllerType.Oculus;
+            if (foundViveController) return ControllerType.Other; // xxxjack should be Vive
+            if (foundController) return ControllerType.Other;
+            return ControllerType.Other; // xxxjack should be None
         }
 
         void OnDeviceChanged(InputDevice value)
