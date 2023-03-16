@@ -2888,38 +2888,6 @@
             ]
         },
         {
-            "name": "Continuous Move",
-            "bindingGroup": "Continuous Move",
-            "devices": [
-                {
-                    "devicePath": "<XRController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<XRController>{RightHand}",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "Noncontinuous Move",
-            "bindingGroup": "Noncontinuous Move",
-            "devices": [
-                {
-                    "devicePath": "<XRController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<XRController>{RightHand}",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
             "name": "Oculus",
             "bindingGroup": "Oculus",
             "devices": [
