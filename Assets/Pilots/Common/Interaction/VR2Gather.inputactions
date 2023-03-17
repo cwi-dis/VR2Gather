@@ -305,7 +305,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -316,7 +316,7 @@
                     "path": "<XRController>{LeftHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -327,7 +327,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -338,7 +338,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -349,7 +349,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -360,7 +360,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -382,7 +382,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -393,7 +393,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -404,7 +404,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -415,7 +415,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -437,7 +437,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -448,7 +448,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -459,7 +459,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -470,7 +470,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -657,7 +657,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -679,7 +679,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Pointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -703,9 +703,9 @@
             "actions": [
                 {
                     "name": "Teleport Select",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "cbeaf823-3b69-4004-8ec8-13ea2ca3fc31",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -754,7 +754,18 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus;Vive",
+                    "groups": "Generic XR Controller;Oculus",
+                    "action": "Teleport Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d0bb8817-016c-452d-a6ac-02e6dbe3d2d9",
+                    "path": "<ViveController>{LeftHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -765,7 +776,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.72)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus;Vive",
+                    "groups": "Generic XR Controller;Oculus",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -835,6 +846,39 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "cb5c28c8-2d50-4186-84fd-5e9b22f04d23",
+                    "path": "OneModifier",
+                    "interactions": "Sector(directions=1,sweepBehavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "83d53960-bc22-4343-b40e-94b8e83fee29",
+                    "path": "<ViveController>{LeftHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "14f81ba7-e0cf-4e74-911a-0b1fbfeb9fff",
+                    "path": "<ViveController>{LeftHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
@@ -1103,7 +1147,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1114,7 +1158,7 @@
                     "path": "<XRController>{RightHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1125,7 +1169,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1136,7 +1180,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1147,7 +1191,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1158,7 +1202,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1180,7 +1224,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1191,7 +1235,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1202,7 +1246,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1213,7 +1257,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1235,7 +1279,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1246,7 +1290,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1257,7 +1301,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1268,7 +1312,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1466,7 +1510,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1488,7 +1532,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller",
+                    "groups": "Generic XR Controller;Vive",
                     "action": "Pointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1512,9 +1556,9 @@
             "actions": [
                 {
                     "name": "Teleport Select",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "02e43582-8973-4940-af06-dff6158e3df2",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -1563,7 +1607,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus;Vive",
+                    "groups": "Generic XR Controller;Oculus",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1574,7 +1618,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.76)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus;Vive",
+                    "groups": "Generic XR Controller;Oculus",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1807,6 +1851,50 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Turn",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "cb94704b-7aa0-46fd-97b9-7a7116b2cf66",
+                    "path": "<ViveController>{RightHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Teleport Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "One Modifier",
+                    "id": "e37edd10-48a3-4ad8-b0a1-205bb1ba5dee",
+                    "path": "OneModifier",
+                    "interactions": "Sector(directions=1,sweepBehavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "c01c3579-d055-41c4-a7ed-fc2d9260fcf4",
+                    "path": "<ViveController>{RightHand}/trackpadClicked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Teleport Mode Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "b90b7c71-c0d4-4d1f-8126-57610fb012d0",
+                    "path": "<ViveController>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Vive",
+                    "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
@@ -2883,38 +2971,6 @@
                 {
                     "devicePath": "<WMRHMD>",
                     "isOptional": true,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "Continuous Move",
-            "bindingGroup": "Continuous Move",
-            "devices": [
-                {
-                    "devicePath": "<XRController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<XRController>{RightHand}",
-                    "isOptional": false,
-                    "isOR": false
-                }
-            ]
-        },
-        {
-            "name": "Noncontinuous Move",
-            "bindingGroup": "Noncontinuous Move",
-            "devices": [
-                {
-                    "devicePath": "<XRController>{LeftHand}",
-                    "isOptional": false,
-                    "isOR": false
-                },
-                {
-                    "devicePath": "<XRController>{RightHand}",
-                    "isOptional": false,
                     "isOR": false
                 }
             ]
