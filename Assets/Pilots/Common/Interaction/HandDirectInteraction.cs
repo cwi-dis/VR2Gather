@@ -2,6 +2,7 @@
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEditor;
+using System.Collections;
 
 namespace VRT.Pilots.Common
 {
@@ -68,8 +69,29 @@ namespace VRT.Pilots.Common
 		}
 
 		void FixObjectStates()
-        {
-			hand.state = currentState;
+		{
+			_FixObjectStates();// StartCoroutine(FixObjectStatesCoro());
+		}
+
+		IEnumerator FixObjectStatesCoro()
+		{
+			yield return null;
+			//yield return null;
+			//yield return null;
+			//yield return null;
+			//yield return null;
+
+			//yield return null;
+			//yield return null;
+			//yield return null;
+			//yield return null;
+			//yield return null;
+			_FixObjectStates();
+		}
+
+		void _FixObjectStates() {
+            Debug.Log($"xxxjack {Time.frameCount} HandState is now {currentState}");
+            hand.state = currentState;
 			FixGrab fixGrab = GrabCollider.GetComponent<FixGrab>();
 			switch (currentState)
 			{
@@ -105,7 +127,7 @@ namespace VRT.Pilots.Common
 					ViewAdjust.SetActive(false);
 					break;
 			}
-		}
+        }
 
 		private HandState GetHandState()
         {
@@ -137,6 +159,7 @@ namespace VRT.Pilots.Common
 			var newHandState = GetHandState();
 			if (newHandState == currentState) return;
 			// xxxjack should we teleport if we've left teleport mode?
+			Debug.Log($"xxxjack {Time.frameCount} HandState will be {newHandState}");
 			currentState = newHandState;
 			FixObjectStates();
 		}
