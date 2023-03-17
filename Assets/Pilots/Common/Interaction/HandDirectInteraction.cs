@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEditor;
 using System.Collections;
+using System;
 
 namespace VRT.Pilots.Common
 {
@@ -70,22 +71,15 @@ namespace VRT.Pilots.Common
 
 		void FixObjectStates()
 		{
-			_FixObjectStates();// StartCoroutine(FixObjectStatesCoro());
+			StartCoroutine(FixObjectStatesCoro());
 		}
 
 		IEnumerator FixObjectStatesCoro()
 		{
-			yield return null;
-			//yield return null;
-			//yield return null;
-			//yield return null;
-			//yield return null;
-
-			//yield return null;
-			//yield return null;
-			//yield return null;
-			//yield return null;
-			//yield return null;
+			for(int i=0; i<5; i++)
+			{
+				yield return null;
+			}
 			_FixObjectStates();
 		}
 
