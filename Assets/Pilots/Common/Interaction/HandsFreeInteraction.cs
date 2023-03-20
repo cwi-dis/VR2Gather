@@ -53,21 +53,25 @@ namespace VRT.Pilots.Common
             {
                 EnablePointing(pointingNow);
             }
-            // if (pointing) CheckRay();
+            if (pointing) CheckMouseRay();
             FixCursor();
         }
 
-        private void CheckRay()
+        private void CheckMouseRay()
         {
-#if xxxjack_nolonger
             Vector2 screenPos = Mouse.current.position.ReadValue();
-            int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = cam.ScreenPointToRay(screenPos);
             RaycastHit hit = new RaycastHit();
-            hitting = Physics.Raycast(ray, out hit, maxDistance, layerMask);
-            wantedCursor = hitting ? castingCursorHitTexture : castingCursorTexture;
+            hitting = Physics.Raycast(ray, out hit);
             if (hitting)
             {
+                Vector3 destinationPoint = hit.point;
+                Vector3 sourcePoint = handsFreeInteractor.transform.position;
+                Vector3 direction = Vector3.Normalize(destinationPoint - sourcePoint);
+                handsFreeInteractor.transform.rotation = Quaternion.LookRotation(direction);
+
+
+#if xxxjack_nolonger
                 if (m_activateAction.action.WasPressedThisFrame())
                 {
                     var hitGO = hit.collider.gameObject;
@@ -90,8 +94,8 @@ namespace VRT.Pilots.Common
                         target.OnActivated(activateArgs);
                     }
                 }
-            }
 #endif
+            }
         }
 
         private void EnablePointing(bool pointingNow)
