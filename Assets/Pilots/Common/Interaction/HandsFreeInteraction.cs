@@ -98,7 +98,7 @@ namespace VRT.Pilots.Common
         {
             pointing = pointingNow;
             if (debugLog) Debug.Log($"NoHandInteraction: pointing={pointing}");
-            handsFreeInteractor.SetActive(true);
+            handsFreeInteractor.SetActive(pointing);
         }
 
         private void FixCursor()
