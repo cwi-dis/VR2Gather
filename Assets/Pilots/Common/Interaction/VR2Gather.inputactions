@@ -1725,6 +1725,133 @@
             ]
         },
         {
+            "name": "Handsfree Interact",
+            "id": "9d959550-489c-4d93-bcc7-6d7ba961a892",
+            "actions": [
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "1128c1c0-8dc0-49e7-981d-fc64df0f6999",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Grabbing",
+                    "type": "Value",
+                    "id": "bae1feec-af68-4c0f-8fc7-55c1d3385d55",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Select Value",
+                    "type": "Value",
+                    "id": "37fcf9aa-8e6b-41ed-999d-ec4e67c3831d",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Activate",
+                    "type": "Button",
+                    "id": "7f694269-b7f0-4a7f-8e56-abee77a4c75c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pointing",
+                    "type": "Value",
+                    "id": "7df7b503-0861-4430-8916-92e119606803",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Activate Value",
+                    "type": "Value",
+                    "id": "846122a0-5d98-4036-b489-2f1273a6757f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "UI Press",
+                    "type": "Button",
+                    "id": "705ad4ce-c305-4aaf-82d4-685427199c74",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UI Press Value",
+                    "type": "Value",
+                    "id": "f73a4161-ed9e-46a7-9873-ddf80919513f",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Rotate Anchor",
+                    "type": "Value",
+                    "id": "1df0db2b-324b-4f41-87ba-644380e54e25",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Translate Anchor",
+                    "type": "Value",
+                    "id": "de5fd82e-4a16-4ba2-91be-b4cb136274da",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Secondary Activate",
+                    "type": "Button",
+                    "id": "300f1dc6-7358-4e8a-844d-b9935e1be64d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Enable Handsfree Ray",
+                    "type": "Button",
+                    "id": "cee6d43b-66a8-4d6e-b6fd-481984e1242d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "43c00cd8-f698-41b9-a34e-cfa10228dfd2",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Enable Handsfree Ray",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "Handsfree Locomotion",
             "id": "b933aa80-7f38-472e-8e5e-66bba9745cfa",
             "actions": [
@@ -2441,15 +2568,6 @@
             "id": "f0b01c8b-86b2-4bbb-9b78-f8615a0b9241",
             "actions": [
                 {
-                    "name": "Enable Mouse Ray",
-                    "type": "Button",
-                    "id": "99c2f55c-927b-45a9-bc4f-d4a10e5894a7",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Activate Mouse Ray",
                     "type": "Button",
                     "id": "01747c65-f929-44f1-ac17-71d0ae74c9f8",
@@ -2460,17 +2578,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "e5e01fe6-6c29-4ffe-aeae-5f60fe355bc4",
-                    "path": "<Keyboard>/alt",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Enable Mouse Ray",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "",
                     "id": "0d2bbead-99e0-4762-b256-f96ba85d784c",

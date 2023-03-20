@@ -11,9 +11,9 @@ namespace VRT.Pilots.Common
     using HandState = HandDirectAppearance.HandState;
 
     /// <summary>
-    /// Behaviour that allows using the mouse to activate things.
+    /// Behaviour that allows enabling/disabling a ray-based interactor with keyboard/mouse or gamepad.
     /// </summary>
-    public class NoHandInteraction : MonoBehaviour
+    public class HandsFreeInteraction : MonoBehaviour
     {
         [Tooltip("Mouse cursor to use while looking for touchable items")]
         public Texture2D castingCursorTexture;
@@ -27,6 +27,8 @@ namespace VRT.Pilots.Common
         [SerializeField] InputActionProperty m_pointingAction;
         [Tooltip("The Input System Action that activates when we are pointing")]
         [SerializeField] InputActionProperty m_activateAction;
+        [Tooltip("GameObject with the handsfree ray-based interactor")]
+        public GameObject handsFreeInteractor;
 
         [Tooltip("Verbose messages")]
         [SerializeField] bool debugLog = false;
@@ -51,12 +53,13 @@ namespace VRT.Pilots.Common
             {
                 EnablePointing(pointingNow);
             }
-            if (pointing) CheckRay();
+            // if (pointing) CheckRay();
             FixCursor();
         }
 
         private void CheckRay()
         {
+#if xxxjack_nolonger
             Vector2 screenPos = Mouse.current.position.ReadValue();
             int layerMask = LayerMask.GetMask("TouchableObject");
             Ray ray = cam.ScreenPointToRay(screenPos);
@@ -88,30 +91,18 @@ namespace VRT.Pilots.Common
                     }
                 }
             }
+#endif
         }
 
         private void EnablePointing(bool pointingNow)
         {
             pointing = pointingNow;
             if (debugLog) Debug.Log($"NoHandInteraction: pointing={pointing}");
-            if (pointing)
-            {
-                wantedCursor = castingCursorTexture;
-
-            }
-            else
-            {
-                wantedCursor = null;
-            }
+            handsFreeInteractor.SetActive(true);
         }
 
         private void FixCursor()
         {
-            if (curCursor != wantedCursor)
-            {
-                curCursor = wantedCursor;
-                Cursor.SetCursor(curCursor, Vector2.zero, CursorMode.Auto);
-            }
         }
     }
 
