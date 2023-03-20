@@ -874,7 +874,7 @@ Transform:
   m_GameObject: {fileID: 3055079212644292880}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.1, z: 0.05}
+  m_LocalScale: {x: 0.05, y: 1, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4366855936940917118}
@@ -1592,7 +1592,7 @@ MonoBehaviour:
       type: 3}
   positionIndicator: {fileID: 8331748099356273066}
   forwardIndicator: {fileID: 2752953324859522846}
-  positionIndicatorDuration: 3
+  positionIndicatorDuration: 5
   debugLogging: 0
 --- !u!1 &7004479241362984629
 GameObject:
@@ -1972,7 +1972,7 @@ PrefabInstance:
     - target: {fileID: 1866790007818221088, guid: 6c527cd471a46b547b52b8f80eeca60d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1866790007818221088, guid: 6c527cd471a46b547b52b8f80eeca60d,
         type: 3}
