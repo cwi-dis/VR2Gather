@@ -35,7 +35,7 @@ namespace VRT.Pilots.Common
             if (teleportationProvider != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing teleportation");
-                var allTeleportations = FindObjectsOfType<BaseTeleportationInteractable>();
+                var allTeleportations = FindObjectsOfType<BaseTeleportationInteractable>(true);
                 foreach (var ta in allTeleportations)
                 {
                     ta.teleportationProvider = teleportationProvider;
@@ -45,7 +45,7 @@ namespace VRT.Pilots.Common
             if (interactionManager != null)
             {
                 if (debug) Debug.Log($"FixInteractables: installing interactables");
-                var allInteractables = FindObjectsOfType<XRBaseInteractable>();
+                var allInteractables = FindObjectsOfType<XRBaseInteractable>(true);
                 foreach(var go in allInteractables)
                 {
                     go.interactionManager = interactionManager;
