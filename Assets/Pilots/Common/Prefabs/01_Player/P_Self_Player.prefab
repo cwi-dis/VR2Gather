@@ -2164,6 +2164,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PositionIndicator
       objectReference: {fileID: 0}
+    - target: {fileID: 6256145334947356404, guid: 6c527cd471a46b547b52b8f80eeca60d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6436316909497532596, guid: 6c527cd471a46b547b52b8f80eeca60d,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
