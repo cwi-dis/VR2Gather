@@ -452,6 +452,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7957250788412427323}
     m_Modifications:
+    - target: {fileID: 679528490855445099, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Id
+      value: 026b4a02-53ff-4598-881c-bddc83b43335
+      objectReference: {fileID: 0}
+    - target: {fileID: 679528490855445099, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Name
+      value: Directional Anchor Rotation
+      objectReference: {fileID: 0}
     - target: {fileID: 1352402328379271859, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_IsActive
@@ -516,6 +526,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Id
+      value: 795bbef4-4b2b-429e-a0a7-cd1029969e05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3037014250523190874, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_DirectionalAnchorRotationAction.m_Action.m_Name
+      value: Directional Anchor Rotation
       objectReference: {fileID: 0}
     - target: {fileID: 5589928396278177872, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
