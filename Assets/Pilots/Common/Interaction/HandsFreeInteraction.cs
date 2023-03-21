@@ -15,28 +15,24 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class HandsFreeInteraction : MonoBehaviour
     {
-        [Tooltip("Mouse cursor to use while looking for touchable items")]
-        public Texture2D castingCursorTexture;
-        [Tooltip("Mouse cursor to use when over a touchable item")]
-        public Texture2D castingCursorHitTexture;
-        [Tooltip("Maximum distance of touchable objects")]
-        public float maxDistance = Mathf.Infinity;
-        [Tooltip("Camera (default: main camera)")]
+        [Tooltip("Camera for mouse pointing (default: main camera)")]
         Camera cam;
-        [Tooltip("The Input System Action that determines whether we are pointing (if > 0.5)")]
+        [Tooltip("The Input System Action that determines whether we are pointing with the mouse")]
         [SerializeField] InputActionProperty m_pointingAction;
-        [Tooltip("The Input System Action that activates when we are pointing")]
-        [SerializeField] InputActionProperty m_activateAction;
+        [Tooltip("The Input System Action that determines whether we are sweeping with a gamepad")]
+        [SerializeField] InputActionProperty m_sweepingAction;
+        [Tooltip("The Input System Action that determines sweep delta")]
+        [SerializeField] InputActionProperty m_sweepingDelta;
+        [Tooltip("The speed of sweeping")]
+        [SerializeField] float sweepSpeed = 1;
         [Tooltip("GameObject with the handsfree ray-based interactor")]
         public GameObject handsFreeInteractor;
 
         [Tooltip("Verbose messages")]
         [SerializeField] bool debugLog = false;
         [SerializeField][DisableEditing] bool pointing;
-        [SerializeField][DisableEditing] bool hitting;
+        [SerializeField][DisableEditing] bool sweeping;
 
-        private Texture2D curCursor;
-        private Texture2D wantedCursor;
       
 
         // Start is called before the first frame update
@@ -51,10 +47,18 @@ namespace VRT.Pilots.Common
             bool pointingNow = m_pointingAction.action.IsPressed();
             if (pointingNow != pointing)
             {
-                EnablePointing(pointingNow);
+                pointing = pointingNow;
+                EnableRay();
+            }
+            bool sweepingNow = m_sweepingAction.action.IsPressed();
+            if (sweeping != sweepingNow)
+            {
+                sweeping = sweepingNow;
+                handsFreeInteractor.transform.rotation = Quaternion.identity;
+                EnableRay();
             }
             if (pointing) CheckMouseRay();
-            FixCursor();
+            if (sweeping) CheckSweep();
         }
 
         private void CheckMouseRay()
@@ -62,52 +66,31 @@ namespace VRT.Pilots.Common
             Vector2 screenPos = Mouse.current.position.ReadValue();
             Ray ray = cam.ScreenPointToRay(screenPos);
             RaycastHit hit = new RaycastHit();
-            hitting = Physics.Raycast(ray, out hit);
+            bool hitting = Physics.Raycast(ray, out hit);
             if (hitting)
             {
                 Vector3 destinationPoint = hit.point;
+                if (debugLog) Debug.Log($"NoHandInteraction: ray destination={destinationPoint}");
                 Vector3 sourcePoint = handsFreeInteractor.transform.position;
                 Vector3 direction = Vector3.Normalize(destinationPoint - sourcePoint);
                 handsFreeInteractor.transform.rotation = Quaternion.LookRotation(direction);
-
-
-#if xxxjack_nolonger
-                if (m_activateAction.action.WasPressedThisFrame())
-                {
-                    var hitGO = hit.collider.gameObject;
-                    if (debugLog) Debug.Log($"NoHandInteraction: hitting={hitGO}");
-                    var hitTrigger = hitGO.GetComponent<XRSimpleInteractable>();
-                    if (hitTrigger == null)
-                    {
-                        Debug.LogError($"NoHandInteraction: GameObject {hitGO} has collider but no XRSimpleInteractable component");
-                    }
-                    else
-                    {
-                        var source = (IXRActivateInteractor)null;
-                        var target = (IXRActivateInteractable)hitTrigger;
-                        Debug.Log($"NoHandInteraction: calling {target}.OnActivated() ");
-                        ActivateEventArgs activateArgs = new ActivateEventArgs
-                        {
-                            interactorObject = source,
-                            interactableObject = target
-                        };
-                        target.OnActivated(activateArgs);
-                    }
-                }
-#endif
             }
         }
 
-        private void EnablePointing(bool pointingNow)
+        private void CheckSweep()
         {
-            pointing = pointingNow;
-            if (debugLog) Debug.Log($"NoHandInteraction: pointing={pointing}");
-            handsFreeInteractor.SetActive(pointing);
+            Vector2 delta = m_sweepingDelta.action.ReadValue<Vector2>();
+            if (delta == Vector2.zero) return;
+            if (debugLog) Debug.Log($"NoHandInteraction: sweepingDelta={delta}");
+            handsFreeInteractor.transform.Rotate(-delta.y * Time.deltaTime * sweepSpeed, delta.x*Time.deltaTime*sweepSpeed, 0);
         }
 
-        private void FixCursor()
+        private void EnableRay()
         {
+            if (debugLog) Debug.Log($"NoHandInteraction: pointing={pointing}, sweeping={sweeping}");
+            handsFreeInteractor.SetActive(pointing||sweeping);
         }
+
     }
 
 }

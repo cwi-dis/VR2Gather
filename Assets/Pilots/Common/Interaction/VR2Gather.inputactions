@@ -1828,13 +1828,31 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Enable Handsfree Ray",
+                    "name": "Enable Mouse Ray",
                     "type": "Button",
                     "id": "cee6d43b-66a8-4d6e-b6fd-481984e1242d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Enable Sweep Ray",
+                    "type": "Button",
+                    "id": "f5ae2d1e-6081-4659-8e00-43fa13bf0574",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sweep Delta",
+                    "type": "Value",
+                    "id": "87dabb73-ee0f-4400-a374-ab6fde05cd6f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -1845,7 +1863,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
-                    "action": "Enable Handsfree Ray",
+                    "action": "Enable Mouse Ray",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1862,12 +1880,122 @@
                 },
                 {
                     "name": "",
+                    "id": "d1671804-4d09-4309-8763-6b60c4f064c1",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d3548573-b966-4b24-a174-6ff32c8db7dd",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "219ad538-a30d-4295-b78d-4886eaf10ea0",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button8",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "17fbb0d3-db80-422e-9cb3-68e855aab95e",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7118a677-231d-4303-a080-cc46d353dbb1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "43d80bc6-9bdb-412b-921d-4e5274602c5a",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "355fd306-c743-430a-909f-44178551b1fb",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Activate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "214f84af-4382-47c6-9e2e-e59ef627d2f9",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Enable Sweep Ray",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "06124228-39ff-42cb-87f0-f522ebf03e01",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Enable Sweep Ray",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ff89c278-82ad-469e-bbfd-cf6df809d963",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Sweep Delta",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a29af285-0d85-4de0-8b48-e1f157c323af",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Sweep Delta",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

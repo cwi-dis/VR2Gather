@@ -108,11 +108,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4b94274e62d743d3909f2a73f8e942b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  castingCursorTexture: {fileID: 2800000, guid: c4cf7d1a91d8245928e32b951eaccb87,
-    type: 3}
-  castingCursorHitTexture: {fileID: 2800000, guid: e476c99fe4722419fa64226e8f4453e4,
-    type: 3}
-  maxDistance: Infinity
   m_pointingAction:
     m_UseReference: 1
     m_Action:
@@ -126,22 +121,37 @@ MonoBehaviour:
       m_Flags: 0
     m_Reference: {fileID: 2530068346517018695, guid: 721820db5472c4cdb9e2c49de50d8533,
       type: 3}
-  m_activateAction:
-    m_UseReference: 0
+  m_sweepingAction:
+    m_UseReference: 1
     m_Action:
-      m_Name: Activate
+      m_Name: Sweeping
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 40945e80-94bb-4669-b103-5ac0d213f69f
+      m_Id: eb0e8156-066d-4e64-9f9b-0b677a7ba3aa
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: -214568773454135320, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  m_sweepingDelta:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Sweeping Delta
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 89f6c450-e097-4a4f-a7be-e72309243877
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 6657517189106191310, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  sweepSpeed: 25
   handsFreeInteractor: {fileID: 7351180254485775096}
   debugLog: 0
   pointing: 0
-  hitting: 0
+  sweeping: 0
 --- !u!1 &7351180254485775096
 GameObject:
   m_ObjectHideFlags: 0
