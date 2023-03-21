@@ -2820,6 +2820,28 @@
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79a12ef0-d345-43ae-9d38-25beea9b3465",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ShowHide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "373eaa12-1fdc-47ee-9d8e-5e4a57ef1659",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ShowHide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
