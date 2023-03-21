@@ -1507,6 +1507,7 @@ MonoBehaviour:
   player: {fileID: 1935332283100515003}
   playerCamera: {fileID: 1790764940407382550}
   heightFactor: 0.001
+  resetHeightWithPosition: 1
   viewAdjusted:
     m_PersistentCalls:
       m_Calls:
@@ -2910,9 +2911,10 @@ MonoBehaviour:
   HeightSource: {fileID: 0}
   FloorSource: {fileID: 0}
   Destination: {fileID: 0}
-  heightFactor: 1
+  heightFactor: 0.555
   widthFactor: 0
-  setHeightOnStart: 0
+  setHeightOnStart: 1
+  delayFrameCount: 25
   currentSize: {x: 0, y: 0, z: 0}
 --- !u!1 &6341382799821854084 stripped
 GameObject:
