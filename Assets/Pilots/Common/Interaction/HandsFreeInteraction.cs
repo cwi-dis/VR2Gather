@@ -54,7 +54,7 @@ namespace VRT.Pilots.Common
             if (sweeping != sweepingNow)
             {
                 sweeping = sweepingNow;
-                handsFreeInteractor.transform.rotation = Quaternion.identity;
+                handsFreeInteractor.transform.localRotation = Quaternion.identity;
                 EnableRay();
             }
             if (pointing) CheckMouseRay();
