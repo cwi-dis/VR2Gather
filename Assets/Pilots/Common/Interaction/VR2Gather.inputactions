@@ -2541,6 +2541,28 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "",
+                    "id": "7e7bb70a-aee0-4e02-951b-0b2f2a695be7",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68532be1-66ee-4337-ab87-755179399094",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/hat",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "ViewHeight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Two Modifiers",
                     "id": "63da09c5-9231-4d83-ad91-cdd4a92f8801",
                     "path": "TwoModifiers",
