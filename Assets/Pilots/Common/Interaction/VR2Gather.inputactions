@@ -3290,6 +3290,28 @@
                 },
                 {
                     "name": "",
+                    "id": "ee29fced-72c8-42e1-a1fd-ce3ee190b7f9",
+                    "path": "<HID::Logitech Logitech RumblePad 2 USB>/button7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97ca31e3-1845-44a5-aae3-60ef38b6c9da",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "2be603b5-86aa-4e98-b351-44223aeb2281",
                     "path": "<Mouse>/scroll",
                     "interactions": "",
