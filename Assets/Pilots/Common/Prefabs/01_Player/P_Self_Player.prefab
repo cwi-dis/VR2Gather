@@ -1507,6 +1507,22 @@ MonoBehaviour:
   player: {fileID: 1935332283100515003}
   playerCamera: {fileID: 1790764940407382550}
   heightFactor: 0.001
+  resetHeightWithPosition: 1
+  viewAdjusted:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 563067656724376193}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.SizeAdjust, Pilots
+        m_MethodName: AdjustHeight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_ViewHeightAction:
     m_UseReference: 1
     m_Action:
@@ -2880,6 +2896,26 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &563067656724376193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3157120788678654688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HeightSource: {fileID: 0}
+  FloorSource: {fileID: 0}
+  Destination: {fileID: 0}
+  heightFactor: 0.555
+  widthFactor: 0
+  setHeightOnStart: 1
+  delayFrameCount: 25
+  currentSize: {x: 0, y: 0, z: 0}
 --- !u!1 &6341382799821854084 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 426937040433907628, guid: 21abad33e8196954b8f19e6b888a67a4,

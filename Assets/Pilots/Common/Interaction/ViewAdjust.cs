@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.XR.Interaction.Toolkit;
@@ -25,6 +26,11 @@ namespace VRT.Pilots.Common
 
         [Tooltip("Multiplication factor for height adjustment")]
         [SerializeField] float heightFactor = 1;
+
+        [Tooltip("Reset viewpoint height when resetting position (otherwise height is untouched)")]
+        [SerializeField] bool resetHeightWithPosition = false;
+        [Tooltip("Callback done after view has been adjusted")]
+        public UnityEvent viewAdjusted;
 
         [Tooltip("The Input System Action that will be used to change view height. Must be a Value Vector2 Control of which y is used.")]
         [SerializeField] InputActionProperty m_ViewHeightAction;
@@ -110,12 +116,21 @@ namespace VRT.Pilots.Common
                 cameraOffset.transform.Rotate(0, -rotationY, 0);
                 //Vector3 moveXZ = playerCamera.transform.position - cameraOffset.transform.position;
                 Vector3 moveXZ = playerCamera.transform.position - player.transform.position;
-                moveXZ.y = 0;
+                if (resetHeightWithPosition)
+                {
+                    moveXZ.y = cameraOffset.transform.position.y;
+                }
+                else
+                {
+                    moveXZ.y = 0;
+                }
                 cameraOffset.transform.position -= moveXZ;
                 if (playerController != null)
                 {
                     playerController.SaveCameraTransform();
+
                 }
+                viewAdjusted.Invoke();
                 EndLocomotion();
             }
         }
@@ -132,6 +147,7 @@ namespace VRT.Pilots.Common
                 {
                     playerController.SaveCameraTransform();
                 }
+                viewAdjusted.Invoke();
                 EndLocomotion();
             }
         }
