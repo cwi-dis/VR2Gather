@@ -21,6 +21,8 @@ namespace VRT.Pilots.Common
         public float widthFactor = 0;
         [Tooltip("If true set height at Start(). Otherwise only on AdjustHeight() callback")]
         public bool setHeightOnStart = true;
+        [Tooltip("Number of frame to delay setting height on start")]
+        [SerializeField] private int delayFrameCount = 5;
         [Tooltip("Current size (introspection)")]
         [DisableEditing][SerializeField] Vector3 currentSize;
 
@@ -35,11 +37,24 @@ namespace VRT.Pilots.Common
 
         private void Start()
         {
-            if (setHeightOnStart) AdjustHeight();
+            if (setHeightOnStart)
+            {
+
+            }
         }
 
+        IEnumerator adjustAfterDelay()
+        {
+            while (delayFrameCount > 0)
+            {
+                yield return null;
+                delayFrameCount--;
+            }
+            AdjustHeight();
+        }
         public void AdjustHeight()
         {
+            if (!gameObject.activeInHierarchy || !enabled) return;
             float topY = HeightSource.transform.position.y;
             float botY = 0;
             if (FloorSource != null) botY = FloorSource.transform.position.y;
