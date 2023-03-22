@@ -39,7 +39,7 @@ namespace VRT.Pilots.Common
         {
             if (setHeightOnStart)
             {
-
+                adjustAfterDelay();
             }
         }
 

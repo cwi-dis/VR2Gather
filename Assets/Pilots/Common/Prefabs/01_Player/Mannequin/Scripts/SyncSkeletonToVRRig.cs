@@ -11,7 +11,7 @@ public class SyncSkeletonToVRRig : MonoBehaviour
         public Transform vrTarget;
         [Tooltip("The skeleton constraint target that is updated")]
         public Transform rigTarget;
-      
+
         public void Map()
         {
             rigTarget.position = vrTarget.position;
@@ -39,7 +39,7 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        headBodyOffset = playerTransform.position - headConstraint.position;
+        AdjustHeight();
     }
 
     // Update is called once per frame
@@ -51,5 +51,17 @@ public class SyncSkeletonToVRRig : MonoBehaviour
         head.Map();
         leftHand.Map();
         rightHand.Map();
+    }
+
+    public void AdjustHeight()
+    {
+        const bool heightOnly = true;
+        headBodyOffset = playerTransform.position - headConstraint.position;
+        if (heightOnly )
+        {
+            headBodyOffset.x = 0;
+            headBodyOffset.z = 0;
+        }
+        Debug.Log($"SyncSkeletonToVRRig: {Time.frameCount}: headBodyOffset is now {headBodyOffset.y}");
     }
 }
