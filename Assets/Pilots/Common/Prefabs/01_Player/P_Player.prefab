@@ -949,7 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 471a24327d5a647208b9847f71d3de97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: {fileID: 3524832135667406572}
+  handAppearance: {fileID: 0}
   handState: 0
   handHandedness: 0
   m_HeldGrabbable: {fileID: 0}
@@ -1031,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 471a24327d5a647208b9847f71d3de97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hand: {fileID: 8890403257435995659}
+  handAppearance: {fileID: 0}
   handState: 0
   handHandedness: 0
   m_HeldGrabbable: {fileID: 0}
@@ -1608,11 +1608,6 @@ PrefabInstance:
       propertyPath: head.vrTarget
       value: 
       objectReference: {fileID: 4311645287905124984}
-    - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
-        type: 3}
-      propertyPath: playerTransform
-      value: 
-      objectReference: {fileID: 5131421326051842284}
     - target: {fileID: 8337406300393679913, guid: 66f26d0ca28284407ac0857d0fc08dcb,
         type: 3}
       propertyPath: leftHand.vrTarget

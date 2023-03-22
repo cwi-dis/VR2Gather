@@ -1523,6 +1523,42 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 7186155764716260540}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.SizeAdjust, Pilots
+        m_MethodName: AdjustHeight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 9084156543231048086}
+        m_TargetAssemblyTypeName: SyncSkeletonToVRRig, Pilots
+        m_MethodName: AdjustHeight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 4889465034314653177}
+        m_TargetAssemblyTypeName: SyncSkeletonToVRRig, Pilots
+        m_MethodName: AdjustHeight
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_ViewHeightAction:
     m_UseReference: 1
     m_Action:
@@ -2909,13 +2945,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HeightSource: {fileID: 0}
-  FloorSource: {fileID: 0}
+  FloorSource: {fileID: 1935332283100515003}
   Destination: {fileID: 0}
-  heightFactor: 0.555
-  widthFactor: 0
+  heightFactor: 0.8
+  widthFactor: 0.8
   setHeightOnStart: 1
   delayFrameCount: 25
   currentSize: {x: 0, y: 0, z: 0}
+--- !u!114 &4889465034314653177 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6768302171833389608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a582194c44ffa164ebf10df6c8c3985c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6341382799821854084 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 426937040433907628, guid: 21abad33e8196954b8f19e6b888a67a4,
@@ -2928,6 +2976,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7186155764716260540 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4492213561764585108, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6768302171833389608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7342134860299516999 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4037853332143369839, guid: 21abad33e8196954b8f19e6b888a67a4,
@@ -2952,6 +3012,18 @@ CharacterController:
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9084156543231048086 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2593157252197247934, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6768302171833389608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a582194c44ffa164ebf10df6c8c3985c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7563790233389192539
 PrefabInstance:
   m_ObjectHideFlags: 0

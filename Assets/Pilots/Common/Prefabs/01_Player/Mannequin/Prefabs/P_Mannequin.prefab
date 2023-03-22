@@ -425,7 +425,7 @@ MonoBehaviour:
   rightHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 141090808}
-  playerTransform: {fileID: 0}
+  playerTransform: {fileID: 1026377582264090575}
   headConstraint: {fileID: 1387395448}
   headBodyOffset: {x: 0, y: 0, z: 0}
   turnSmoothness: 5
