@@ -47,6 +47,9 @@ MonoBehaviour:
   head:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 5152070896775454124}
+  neck:
+    vrTarget: {fileID: 0}
+    rigTarget: {fileID: 0}
   leftHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 6712339557575232786}
@@ -237,18 +240,20 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2771220398156754783}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HeightSource: {fileID: 0}
-  FloorSource: {fileID: 0}
+  SourceTop: {fileID: 0}
+  SourceBottom: {fileID: 0}
   Destination: {fileID: 0}
-  heightFactor: 0.555
-  widthFactor: 0
+  DestinationTop: {fileID: 0}
+  DestinationBottom: {fileID: 0}
   setHeightOnStart: 1
-  delayFrameCount: 25
+  nativeHeight: 1
+  actualHeight: 0
+  nativeSize: {x: 0, y: 0, z: 0}
   currentSize: {x: 0, y: 0, z: 0}
 --- !u!1 &7126427462198000594
 GameObject:
