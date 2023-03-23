@@ -91,7 +91,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 646612256834869448}
   m_LocalRotation: {x: -0.0023452765, y: -0.019527659, z: 0.99980456, w: 0.0020136687}
-  m_LocalPosition: {x: 0.082446404, y: 0.5201766, z: 0.121}
+  m_LocalPosition: {x: 0.084, y: 1.088, z: 0.305}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8935e03361a14ec4b8edc872f76bc822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_ConstrainedObject: {fileID: 5492294063804161292}
     m_SourceObjects:
@@ -484,13 +484,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Weight: 1
   m_Data:
-    m_ConstrainedObject: {fileID: 8632123344774810139}
+    m_ConstrainedObject: {fileID: 8563769113475459968}
     m_OverrideSource: {fileID: 6016065227439753776}
     m_OverridePosition: {x: 0, y: 0, z: 0}
     m_OverrideRotation: {x: 0, y: 0, z: 0}
     m_PositionWeight: 1
     m_RotationWeight: 1
-    m_Space: 2
+    m_Space: 0
 --- !u!1 &4957394532893611526
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,13 +626,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Weight: 1
   m_Data:
-    m_ConstrainedObject: {fileID: 7654402702487186184}
+    m_ConstrainedObject: {fileID: 5632015502014692532}
     m_OverrideSource: {fileID: 4119847482977365825}
     m_OverridePosition: {x: 0, y: 0, z: 0}
     m_OverrideRotation: {x: 0, y: 0, z: 0}
     m_PositionWeight: 1
     m_RotationWeight: 1
-    m_Space: 2
+    m_Space: 0
 --- !u!1 &7126427462198000594
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,7 +677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8935e03361a14ec4b8edc872f76bc822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Weight: 1
+  m_Weight: 0
   m_Data:
     m_ConstrainedObject: {fileID: 24365501510664827}
     m_SourceObjects:
@@ -829,7 +829,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7954362611414847242}
   m_LocalRotation: {x: 0.002566422, y: -0.02130854, z: 0.9997676, w: -0.0020229367}
-  m_LocalPosition: {x: -0.08244722, y: 0.5200544, z: 0.241}
+  m_LocalPosition: {x: -0.117, y: 1.035, z: 0.356}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
