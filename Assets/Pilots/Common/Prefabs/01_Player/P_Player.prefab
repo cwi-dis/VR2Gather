@@ -1704,6 +1704,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6040715544508562796, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
+        type: 3}
+      propertyPath: SourceTop
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6040715544508562796, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
+        type: 3}
+      propertyPath: SourceBottom
+      value: 
+      objectReference: {fileID: 5131421326051842195}
     - target: {fileID: 8337406300393679913, guid: 641a517337c3b4b3b8e9e4a50d4501a6,
         type: 3}
       propertyPath: head.vrTarget

@@ -225,6 +225,7 @@ Transform:
   - {fileID: 8124781905032620269}
   - {fileID: 5085212277543437832}
   - {fileID: 8736906729654321031}
+  - {fileID: 330052784955061087}
   m_Father: {fileID: 4754063988648330083}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -426,6 +427,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interval: 0
+--- !u!1 &2088947311060252771
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 330052784955061087}
+  m_Layer: 0
+  m_Name: RiggingAttachPointHead
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &330052784955061087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088947311060252771}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.12, z: -0.07}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7845086807825369409}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2689821907506672988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,7 +1482,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6571030630402920821}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.07, z: -0.07}
+  m_LocalPosition: {x: 0, y: 0.12, z: -0.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2736,7 +2768,12 @@ PrefabInstance:
         type: 3}
       propertyPath: head.vrTarget
       value: 
-      objectReference: {fileID: 8124781905032620269}
+      objectReference: {fileID: 330052784955061087}
+    - target: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: neck.vrTarget
+      value: 
+      objectReference: {fileID: 8736906729654321031}
     - target: {fileID: 2177218273738149841, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: leftHand.vrTarget
@@ -2752,6 +2789,11 @@ PrefabInstance:
       propertyPath: head.vrTarget
       value: 
       objectReference: {fileID: 8124781905032620269}
+    - target: {fileID: 2593157252197247934, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: neck.vrTarget
+      value: 
+      objectReference: {fileID: 8736906729654321031}
     - target: {fileID: 2593157252197247934, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: leftHand.vrTarget
@@ -2772,6 +2814,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 4492213561764585108, guid: 21abad33e8196954b8f19e6b888a67a4,
+        type: 3}
+      propertyPath: SourceTop
+      value: 
+      objectReference: {fileID: 6571030630402920821}
     - target: {fileID: 5087159113626831324, guid: 21abad33e8196954b8f19e6b888a67a4,
         type: 3}
       propertyPath: m_Enabled
@@ -2971,7 +3018,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3157120788678654688}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
   m_Name: 
@@ -2981,7 +3028,7 @@ MonoBehaviour:
   Destination: {fileID: 3157120788678654688}
   DestinationTop: {fileID: 6726712104318176041}
   DestinationBottom: {fileID: 8720780922578823339}
-  setHeightOnStart: 1
+  setHeightOnStart: 0
   nativeHeight: 1
   actualHeight: 0
   nativeSize: {x: 0, y: 0, z: 0}
@@ -3023,7 +3070,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
   m_Name: 

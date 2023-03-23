@@ -11,11 +11,20 @@ public class SyncSkeletonToVRRig : MonoBehaviour
         public Transform vrTarget;
         [Tooltip("The skeleton constraint target that is updated")]
         public Transform rigTarget;
+        [Tooltip("The skeleton constraint that corresponds to the vrTarget (default: rigTarget)")]
+        public Transform rigSource;
+        [Tooltip("Only map position, not rotation")]
+        public bool positionOnly = false;
 
         public void Map()
         {
-            rigTarget.position = vrTarget.position;
-            rigTarget.rotation = vrTarget.rotation;
+            if (rigSource == null) rigSource = rigTarget;
+            Vector3 delta = vrTarget.position - rigSource.position;
+            rigTarget.position += delta;
+            if (!positionOnly)
+            {
+                rigTarget.rotation = vrTarget.rotation;
+            }
         }
     }
     [Tooltip("VRRig to Skeleton mapping for player head")]
@@ -28,10 +37,6 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     public VRMap rightHand;
     [Tooltip("Player main object (tracks skeleton neck position in XZ but not Y")]
     public Transform playerTransform;
-    [Tooltip("Skeleton head")]
-    public Transform headConstraint;
-    [Tooltip("Computed offset between skeleton head and main object")]
-    public Vector3 headBodyOffset;
     //xxxshishir added transform variable to track the mannequin directly rather than the player
     [Tooltip("Mannequin body turn speed")]
     public float turnSmoothness = 5;
@@ -47,16 +52,20 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+#if xxxjack_not
         //xxxshishir trying out the new method from: https://blog.immersive-insiders.com/animate-avatar-for-vr-in-unity/, seems to work well
         mannequinTransform.position = headConstraint.position + headBodyOffset;
         mannequinTransform.forward = Vector3.Lerp(mannequinTransform.forward, Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
+#endif
         head.Map();
+        neck.Map();
         leftHand.Map();
         rightHand.Map();
     }
 
     public void AdjustHeight()
     {
+#if xxxjack_not
         const bool heightOnly = true;
         headBodyOffset = playerTransform.position - headConstraint.position;
         if (heightOnly )
@@ -65,5 +74,6 @@ public class SyncSkeletonToVRRig : MonoBehaviour
             headBodyOffset.z = 0;
         }
         Debug.Log($"SyncSkeletonToVRRig: {Time.frameCount}: headBodyOffset is now {headBodyOffset.y}");
+#endif
     }
 }

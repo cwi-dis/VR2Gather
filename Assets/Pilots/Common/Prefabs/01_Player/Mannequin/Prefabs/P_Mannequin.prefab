@@ -422,7 +422,7 @@ MonoBehaviour:
     rigTarget: {fileID: 1387395448}
   neck:
     vrTarget: {fileID: 0}
-    rigTarget: {fileID: 0}
+    rigTarget: {fileID: 5922344921038603923}
   leftHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 307532591}
@@ -430,8 +430,6 @@ MonoBehaviour:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 141090808}
   playerTransform: {fileID: 1026377582264090575}
-  headConstraint: {fileID: 1387395448}
-  headBodyOffset: {x: 0, y: 0, z: 0}
   turnSmoothness: 5
   mannequinTransform: {fileID: 9216795048553883566}
 --- !u!1 &2678744696633900038
