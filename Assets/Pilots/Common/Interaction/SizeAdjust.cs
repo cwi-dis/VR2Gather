@@ -21,8 +21,6 @@ namespace VRT.Pilots.Common
         public GameObject DestinationBottom;
         [Tooltip("If true set height at Start(). Otherwise only on AdjustHeight() callback")]
         public bool setHeightOnStart = true;
-        [Tooltip("Number of frame to delay setting height on start")]
-        [SerializeField] private int delayFrameCount = 5;
         [Tooltip("Native total height of destination (introspection)")]
         [DisableEditing] [SerializeField] float nativeHeight = 1;
         [Tooltip("Current real player height (introspection)")]
@@ -47,19 +45,15 @@ namespace VRT.Pilots.Common
         {
             if (setHeightOnStart)
             {
-                StartCoroutine(adjustAfterDelay());
+                AdjustHeight();
             }
         }
 
-        IEnumerator adjustAfterDelay()
+        private void Update()
         {
-            while (delayFrameCount > 0)
-            {
-                yield return null;
-                delayFrameCount--;
-            }
-            AdjustHeight();
+            
         }
+
         public void AdjustHeight()
         {
             if (!gameObject.activeInHierarchy || !enabled) return;
