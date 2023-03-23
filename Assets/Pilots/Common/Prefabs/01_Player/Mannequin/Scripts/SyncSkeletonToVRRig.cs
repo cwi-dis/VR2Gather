@@ -20,11 +20,13 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     }
     [Tooltip("VRRig to Skeleton mapping for player head")]
     public VRMap head;
+    [Tooltip("VRRig to Skeleton mapping for player neck")]
+    public VRMap neck;
     [Tooltip("VRRig to Skeleton mapping for player left hand")]
     public VRMap leftHand;
     [Tooltip("VRRig to Skeleton mapping for player right hand")]
     public VRMap rightHand;
-    [Tooltip("Player main object (tracks skeleton head position in XZ but not Y")]
+    [Tooltip("Player main object (tracks skeleton neck position in XZ but not Y")]
     public Transform playerTransform;
     [Tooltip("Skeleton head")]
     public Transform headConstraint;
