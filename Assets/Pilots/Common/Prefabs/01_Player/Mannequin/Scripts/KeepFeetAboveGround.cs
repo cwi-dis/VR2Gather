@@ -19,7 +19,7 @@ public class KeepFeetAboveGround : MonoBehaviour
         if (height < 0)
         {
             Debug.Log($"KeepFeetAboveGround: {Time.frameCount}: height={height}, fixing.");
-            transform.Translate(0, height, 0);
+            transform.Translate(0, -height, 0, Space.World);
         } else
         {
             //transform.Translate(0, 0, 0);
