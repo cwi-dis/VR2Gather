@@ -15,6 +15,8 @@ public class SyncSkeletonToVRRig : MonoBehaviour
         public Transform rigSource;
         [Tooltip("Only map position, not rotation")]
         public bool positionOnly = false;
+        [Tooltip("But do map Y rotation")]
+        public bool includeYRotation = false;
 
         public void Map()
         {
@@ -24,6 +26,11 @@ public class SyncSkeletonToVRRig : MonoBehaviour
             if (!positionOnly)
             {
                 rigTarget.rotation = vrTarget.rotation;
+            } else if (includeYRotation)
+            {
+                Vector3 rot = rigTarget.rotation.eulerAngles;
+                rot.y = vrTarget.rotation.eulerAngles.y;
+                rigTarget.rotation = Quaternion.Euler(rot);
             }
         }
     }

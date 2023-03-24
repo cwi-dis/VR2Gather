@@ -424,22 +424,26 @@ MonoBehaviour:
     rigTarget: {fileID: 1387395448}
     rigSource: {fileID: 0}
     positionOnly: 0
+    includeYRotation: 0
   neck:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 9216795048553883566}
     rigSource: {fileID: 8043673863871292635}
     positionOnly: 1
+    includeYRotation: 1
   leftHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 307532591}
     rigSource: {fileID: 0}
     positionOnly: 0
+    includeYRotation: 0
   rightHand:
     vrTarget: {fileID: 0}
     rigTarget: {fileID: 141090808}
     rigSource: {fileID: 0}
     positionOnly: 0
-  turnSmoothness: 5
+    includeYRotation: 0
+  turnSmoothness: 3
   mannequinTransform: {fileID: 9216795048553883566}
 --- !u!1 &2289970173331173827
 GameObject:
