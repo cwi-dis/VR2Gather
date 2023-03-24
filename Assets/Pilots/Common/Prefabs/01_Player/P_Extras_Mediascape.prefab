@@ -1877,6 +1877,7 @@ GameObject:
   m_Component:
   - component: {fileID: 340185576990802736}
   - component: {fileID: 2655146729378806096}
+  - component: {fileID: 917951756811975538}
   m_Layer: 0
   m_Name: P_Extras_Mediascape
   m_TagString: Untagged
@@ -1924,6 +1925,28 @@ MonoBehaviour:
   RightHand: {fileID: 0}
   VRRigSkeleton: {fileID: 2643913130187556494}
   VRRigControllers: {fileID: 3491280144031394514}
+--- !u!114 &917951756811975538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6021922257278985562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SourceTop: {fileID: 0}
+  SourceBottom: {fileID: 0}
+  Destination: {fileID: 6021922257278985562}
+  DestinationTop: {fileID: 159488938778816899}
+  DestinationBottom: {fileID: 6021922257278985562}
+  setHeightOnStart: 0
+  nativeHeight: 1
+  actualHeight: 0
+  nativeSize: {x: 0, y: 0, z: 0}
+  currentSize: {x: 0, y: 0, z: 0}
 --- !u!1 &8071086912542919360
 GameObject:
   m_ObjectHideFlags: 0
@@ -2254,6 +2277,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7fea04ad1f256594993b92ed55b912e6, type: 3}
+--- !u!1 &159488938778816899 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5738084239287222366, guid: 7fea04ad1f256594993b92ed55b912e6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5591037992563667421}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &273146858974210793 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5646725516260252468, guid: 7fea04ad1f256594993b92ed55b912e6,

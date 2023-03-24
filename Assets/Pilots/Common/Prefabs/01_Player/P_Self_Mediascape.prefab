@@ -72,6 +72,16 @@ PrefabInstance:
       propertyPath: pcPipelineParent
       value: 
       objectReference: {fileID: 8208501400391060769}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: SourceTop
+      value: 
+      objectReference: {fileID: 6768289265333810752}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: SourceBottom
+      value: 
+      objectReference: {fileID: 3688664645527212574}
     - target: {fileID: 1849690324003306691, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: pcPipelineParent
@@ -159,32 +169,6 @@ PrefabInstance:
       objectReference: {fileID: 8208501400391060769}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d8daed3a0f2fa41a2955b61b87840f3b, type: 3}
---- !u!1 &1442901268420481461 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3858540474394555660, guid: d8daed3a0f2fa41a2955b61b87840f3b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2416881662977172665}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &4081410734091337273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1442901268420481461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HeightSource: {fileID: 0}
-  FloorSource: {fileID: 3688664645527212574}
-  Destination: {fileID: 0}
-  heightFactor: 0.6
-  widthFactor: 0
-  setHeightOnStart: 0
-  delayFrameCount: 5
-  currentSize: {x: 0, y: 0, z: 0}
 --- !u!1001 &3020625101201365157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -286,7 +270,7 @@ PrefabInstance:
         type: 3}
       propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 4081410734091337273}
+      objectReference: {fileID: 0}
     - target: {fileID: 7982515813306233572, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: viewAdjusted.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
@@ -354,6 +338,12 @@ Transform:
 --- !u!1 &5743539894262065215 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7376418575889346714, guid: fceec8934b5ae4fdaa36454e0b30346f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3020625101201365157}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6768289265333810752 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8360547589668728549, guid: fceec8934b5ae4fdaa36454e0b30346f,
     type: 3}
   m_PrefabInstance: {fileID: 3020625101201365157}
   m_PrefabAsset: {fileID: 0}
