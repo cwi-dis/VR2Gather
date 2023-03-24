@@ -18,7 +18,7 @@ public class KeepFeetAboveGround : MonoBehaviour
         float height = transform.position.y - RootObject.transform.position.y;
         if (height < 0)
         {
-            Debug.Log($"KeepFeetAboveGround: {Time.frameCount}: height={height}, fixing.");
+            Debug.Log($"KeepFeetAboveGround {name}: {Time.frameCount}: height={height}, fixing.");
             transform.Translate(0, -height, 0, Space.World);
         } else
         {
