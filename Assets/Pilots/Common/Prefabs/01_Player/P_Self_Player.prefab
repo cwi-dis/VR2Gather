@@ -1544,7 +1544,7 @@ MonoBehaviour:
   viewAdjusted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 6258038496853616784}
         m_TargetAssemblyTypeName: VRT.Pilots.Common.SizeAdjust, Pilots
         m_MethodName: AdjustHeight
         m_Mode: 1
@@ -3012,6 +3012,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6768302171833389608}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6258038496853616784 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 807501320281897656, guid: 21abad33e8196954b8f19e6b888a67a4,
+    type: 3}
+  m_PrefabInstance: {fileID: 6768302171833389608}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8437315033426740478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6341382799821854084 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 426937040433907628, guid: 21abad33e8196954b8f19e6b888a67a4,
