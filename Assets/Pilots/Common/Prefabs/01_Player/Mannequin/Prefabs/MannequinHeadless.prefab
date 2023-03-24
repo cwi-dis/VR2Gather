@@ -64,8 +64,7 @@ MonoBehaviour:
     rigTarget: {fileID: 5224393445221029532}
     rigSource: {fileID: 0}
     positionOnly: 0
-  playerTransform: {fileID: 0}
-  turnSmoothness: 5
+  turnSmoothness: 3
   mannequinTransform: {fileID: 425248171957617992}
 --- !u!1 &646612256834869448
 GameObject:

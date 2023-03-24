@@ -35,9 +35,6 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     public VRMap leftHand;
     [Tooltip("VRRig to Skeleton mapping for player right hand")]
     public VRMap rightHand;
-    [Tooltip("Player main object (tracks skeleton neck position in XZ but not Y")]
-    public Transform playerTransform;
-    //xxxshishir added transform variable to track the mannequin directly rather than the player
     [Tooltip("Mannequin body turn speed")]
     public float turnSmoothness = 5;
     [Tooltip("Mannequin transform")]
@@ -46,34 +43,17 @@ public class SyncSkeletonToVRRig : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        AdjustHeight();
     }
 
     // Update is called once per frame
     void LateUpdate()
     {
-#if xxxjack_not
-        //xxxshishir trying out the new method from: https://blog.immersive-insiders.com/animate-avatar-for-vr-in-unity/, seems to work well
-        mannequinTransform.position = headConstraint.position + headBodyOffset;
-        mannequinTransform.forward = Vector3.Lerp(mannequinTransform.forward, Vector3.ProjectOnPlane(headConstraint.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
-#endif
-        head.Map();
+       head.Map();
         neck.Map();
         leftHand.Map();
         rightHand.Map();
-    }
+         //xxxshishir trying out the new method from: https://blog.immersive-insiders.com/animate-avatar-for-vr-in-unity/, seems to work well
+        mannequinTransform.forward = Vector3.Lerp(mannequinTransform.forward, Vector3.ProjectOnPlane(head.rigTarget.forward, Vector3.up).normalized, Time.deltaTime * turnSmoothness);
+  }
 
-    public void AdjustHeight()
-    {
-#if xxxjack_not
-        const bool heightOnly = true;
-        headBodyOffset = playerTransform.position - headConstraint.position;
-        if (heightOnly )
-        {
-            headBodyOffset.x = 0;
-            headBodyOffset.z = 0;
-        }
-        Debug.Log($"SyncSkeletonToVRRig: {Time.frameCount}: headBodyOffset is now {headBodyOffset.y}");
-#endif
-    }
 }
