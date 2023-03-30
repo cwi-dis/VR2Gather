@@ -1535,18 +1535,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_System: {fileID: 6401796635452955404}
-  playerController: {fileID: 1246181775895122469}
   cameraOffset: {fileID: 4470724064542958035}
   player: {fileID: 1935332283100515003}
+  pointCloudPipeline: {fileID: 0}
   playerCamera: {fileID: 1790764940407382550}
   heightFactor: 0.001
   resetHeightWithPosition: 0
   viewAdjusted:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VRT.Pilots.Common.SizeAdjust, Pilots
-        m_MethodName: AdjustHeight
+      - m_Target: {fileID: 1246181775895122469}
+        m_TargetAssemblyTypeName: VRT.Pilots.Common.PlayerControllerSelf, Pilots
+        m_MethodName: SaveCameraTransform
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1598,7 +1598,7 @@ MonoBehaviour:
   positionIndicator: {fileID: 8331748099356273066}
   forwardIndicator: {fileID: 2752953324859522846}
   positionIndicatorDuration: 5
-  debugLogging: 0
+  debug: 0
 --- !u!1 &7004479241362984629
 GameObject:
   m_ObjectHideFlags: 0

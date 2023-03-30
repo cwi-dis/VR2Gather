@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
     using static VRT.Core.VRTConfig._User;
 
-    public class PointCloudPipelineSelf : PointCloudPipelineBase
+    public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
         public static void Register()
         {
@@ -346,6 +346,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
+        }
+
+        public Vector3 GetPosition()
+        {
+            AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
+            if (pcReader == null)
+            {
+                return Vector3.zero;
+            }
+            return pcReader.GetPosition();
         }
     }
 }
