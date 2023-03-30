@@ -21,6 +21,7 @@ namespace VRT.Pilots.Common
 
         private void Awake()
         {
+			Debug.LogError("VRTTrigger is obsolete. See issue #43.")
             if (networkTrigger == null)
 			{
 				networkTrigger = GetComponent<NetworkTrigger>();
