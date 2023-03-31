@@ -187,10 +187,11 @@
       "url": "https://packages.unity.com"
     },
     "nl.cwi.dis.cwipc": {
-      "version": "file:/Users/dis/VRTogether/cwipc/cwipc_unity/nl.cwi.dis.cwipc",
+      "version": "git+https://github.com/cwi-dis/cwipc_unity?path=/nl.cwi.dis.cwipc",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "46d51d3962c46fedb97df48dbb0b4558cd55a794"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
