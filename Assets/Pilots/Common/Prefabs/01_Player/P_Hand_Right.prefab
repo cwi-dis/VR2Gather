@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 176528342844994254}
   - component: {fileID: 321280728609223748}
   - component: {fileID: 4869608374092560068}
-  m_Layer: 30
+  m_Layer: 0
   m_Name: RH Direct Touch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -702,7 +702,7 @@ GameObject:
   - component: {fileID: 6642238605415844186}
   - component: {fileID: 8237340509810971193}
   - component: {fileID: 3368201714448005018}
-  m_Layer: 31
+  m_Layer: 2
   m_Name: RH Direct Grab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
