@@ -19,14 +19,12 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - Light dynamic
-  - Spectator
-  - Enviroment
   - 
-  - Fader
   - 
-  - Dynamic Objects
-  - Header
+  - 
+  - 
+  - 
+  - VRT-TeleportableArea
   - 
   - 
   - 
@@ -36,12 +34,14 @@ TagManager:
   - 
   - 
   - 
-  - SelfView
-  - PlayerLocation
-  - TouchableObject
-  - GrabbableObject
-  - TouchCollider
-  - GrabCollider
+  - 
+  - 
+  - 
+  - 
+  - VRT-TouchableObject
+  - VRT-GrabbableObject
+  - 
+  - Teleport
   m_SortingLayers:
   - name: Default
     uniqueID: 0
