@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4379629751308654054}
   - component: {fileID: 83880693156904884}
   - component: {fileID: 5149526046071268490}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: PFB_LocationForPlayer
   m_TagString: PlayerLocation
   m_Icon: {fileID: 0}
