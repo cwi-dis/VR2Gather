@@ -4,10 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Battery
-  - PlayerLocation
-  - Spectator
-  - Plants
   - Teleportable
   layers:
   - Default
