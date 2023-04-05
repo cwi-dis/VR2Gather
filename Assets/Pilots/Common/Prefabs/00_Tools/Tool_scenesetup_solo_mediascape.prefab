@@ -47,6 +47,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7957250787554126034, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_Name
+      value: MediascapeSoloPlaygroundController
+      objectReference: {fileID: 0}
     - target: {fileID: 7957250787554126039, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: player
@@ -122,6 +127,11 @@ PrefabInstance:
       propertyPath: NetworkId
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7957250788819180476, guid: e4a2ad980cb30454eab747ddbac46ff6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7957250788819180479, guid: e4a2ad980cb30454eab747ddbac46ff6,
         type: 3}
       propertyPath: m_IsActive
@@ -137,7 +147,8 @@ PrefabInstance:
       propertyPath: m_Data.m_Root
       value: 
       objectReference: {fileID: 4281869100548988546}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2454423965594524020, guid: e4a2ad980cb30454eab747ddbac46ff6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e4a2ad980cb30454eab747ddbac46ff6, type: 3}
 --- !u!4 &4281869100548988546 stripped
 Transform:
@@ -207,6 +218,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8238465485384513781}
     m_Modifications:
+    - target: {fileID: 383515087941475817, guid: 1360ad471029e4ec096d8565f788ff7f,
+        type: 3}
+      propertyPath: butOnlyWhenVisible
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1157510402178431183, guid: 1360ad471029e4ec096d8565f788ff7f,
         type: 3}
       propertyPath: m_Enabled
