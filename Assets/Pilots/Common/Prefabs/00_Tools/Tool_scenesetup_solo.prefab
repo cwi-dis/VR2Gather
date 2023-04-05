@@ -187,7 +187,8 @@ GameObject:
   - component: {fileID: 7957250787554126032}
   - component: {fileID: 7957250787554126038}
   - component: {fileID: 7957250787554126035}
-  - component: {fileID: 7957250787554126039}
+  - component: {fileID: 1222537213239129258}
+  - component: {fileID: 2454423965594524020}
   m_Layer: 0
   m_Name: SoloPlaygroundController
   m_TagString: Untagged
@@ -245,7 +246,7 @@ MonoBehaviour:
   AutoSpawnOnLocation: 1
   localPlayer: {fileID: 0}
   AllUsers: []
---- !u!114 &7957250787554126039
+--- !u!114 &1222537213239129258
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -254,18 +255,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 7957250787554126034}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63c0cf25bd15a5147b5159cdf504580d, type: 3}
+  m_Script: {fileID: 11500000, guid: b345692cec56f8a4ca6d71758912a011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 6311498540185021984}
+  playerManager: {fileID: 9162158745625746543}
+  userRepresentation: 2
+--- !u!114 &2454423965594524020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7957250787554126034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a18fb8b87fbabd4e92f7c78ac723017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   startFadedOut: 0
   fadeOutText: 
   allowDirectInteractionInScene: 1
-  sceneIsSingleUser: 0
+  sceneIsSingleUser: 1
   m_directInteractionDisabled: 0
-  enableFade: 0
-  player: {fileID: 6311498540185021984}
-  playerManager: {fileID: 9162158745625746543}
-  userRepresentation: 2
 --- !u!1 &7957250788412427322
 GameObject:
   m_ObjectHideFlags: 0
