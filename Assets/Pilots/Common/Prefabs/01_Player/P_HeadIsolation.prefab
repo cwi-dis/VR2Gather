@@ -44,10 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5108a77c6f65c423ba69bbab1571e465, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 0, z: 0}
-  size: {x: 1, y: 1, z: 1}
-  drawGizmoBbox: 0
   drawGizmoHeadcube: 0
+  drawGizmoBbox: 0
 --- !u!1 &6916535084958141328
 GameObject:
   m_ObjectHideFlags: 0
@@ -98,4 +96,3 @@ MonoBehaviour:
   head: {fileID: 2134568275601948114}
   invertX: 1
   invertZ: 0
-  drawCenterSphere: 0
