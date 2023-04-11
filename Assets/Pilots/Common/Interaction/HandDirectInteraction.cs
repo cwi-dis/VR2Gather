@@ -41,8 +41,10 @@ namespace VRT.Pilots.Common
 		[SerializeField] InputActionProperty m_teleportingAction;
 		[Tooltip("The Input System Action that determines whether we aborted teleport")]
 		[SerializeField] InputActionProperty m_teleportCancelAction;
+        [Tooltip("Print logging messages on important changes")]
+        [SerializeField] bool debug = false;
 
-		[Tooltip("Current hand state")]
+        [Tooltip("Current hand state")]
 		[DisableEditing] [SerializeField] private HandState currentState;
 
 		public void Awake()
@@ -84,7 +86,7 @@ namespace VRT.Pilots.Common
 		}
 
 		void _FixObjectStates() {
-            Debug.Log($"xxxjack {Time.frameCount} HandState is now {currentState}");
+            if (debug) Debug.Log($"{name}: {Time.frameCount} HandState is now {currentState}");
             hand.state = currentState;
 			FixGrab fixGrab = GrabCollider.GetComponent<FixGrab>();
 			switch (currentState)
@@ -153,7 +155,7 @@ namespace VRT.Pilots.Common
 			var newHandState = GetHandState();
 			if (newHandState == currentState) return;
 			// xxxjack should we teleport if we've left teleport mode?
-			Debug.Log($"xxxjack {Time.frameCount} HandState will be {newHandState}");
+			if (debug) Debug.Log($"{name}: {Time.frameCount} HandState will be {newHandState}");
 			currentState = newHandState;
 			FixObjectStates();
 		}
@@ -168,7 +170,7 @@ namespace VRT.Pilots.Common
         {
             var source = (IXRActivateInteractor)args.interactorObject;
             var target = (IXRActivateInteractable)args.interactableObject;
-            Debug.Log($"Direct Hover Enter from {source}, calling {target}.OnActivated() ");
+            if (debug) Debug.Log($"{name}: Direct Hover Enter from {source}, calling {target}.OnActivated() ");
             ActivateEventArgs activateArgs = new ActivateEventArgs
             {
                 interactorObject = source,
@@ -185,7 +187,7 @@ namespace VRT.Pilots.Common
         {
             var source = (IXRActivateInteractor)args.interactorObject;
             var target = (IXRActivateInteractable)args.interactableObject;
-            Debug.Log($"Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");
+            if (debug) Debug.Log($"{name}: Direct Hover Exit from {source}, calling {target}.OnDeactivated() ");
             DeactivateEventArgs activateArgs = new DeactivateEventArgs
             {
                 interactorObject = source,
