@@ -12,6 +12,8 @@ namespace VRT.Pilots.Common
     {
         [Tooltip("Network controller (default: get from this GameObject)")]
         public HandNetworkControllerSelf handNetworkController;
+        [Tooltip("Print logging messages on important changes")]
+        [SerializeField] bool debug = false;
 
         private void Awake()
         {
@@ -33,7 +35,7 @@ namespace VRT.Pilots.Common
             {
                 Debug.LogError($"{name}: grabbed {grabbedObject} which has no Grabbable");
             }
-            Debug.Log($"{name}: grabbed {grabbable}");
+            if (debug) Debug.Log($"{name}: grabbed {grabbable}");
             handNetworkController.HeldGrabbable = grabbable;
         }
 
@@ -41,7 +43,7 @@ namespace VRT.Pilots.Common
         {
             // xxxjack we could check that the object released is actually held...
             // xxxjack may also be needed if we can hold multiple objects....
-            Debug.Log($"{name}: released {handNetworkController.HeldGrabbable}");
+            if (debug) Debug.Log($"{name}: released {handNetworkController.HeldGrabbable}");
             handNetworkController.HeldGrabbable = null;
         }  // Start is called before the first frame update
        
