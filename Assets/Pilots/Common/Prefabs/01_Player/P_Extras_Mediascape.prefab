@@ -287,6 +287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 6021922257278985562}
+  debug: 0
 --- !u!1 &2135816275955331348
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,6 +935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootObject: {fileID: 6021922257278985562}
+  debug: 0
 --- !u!1 &3433919784616605139
 GameObject:
   m_ObjectHideFlags: 0
@@ -2015,6 +2017,7 @@ MonoBehaviour:
   RightHand: {fileID: 0}
   VRRigSkeleton: {fileID: 2643913130187556494}
   VRRigControllers: {fileID: 3491280144031394514}
+  butOnlyWhenVisible: 1
 --- !u!114 &917951756811975538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2022,7 +2025,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6021922257278985562}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: befb0b6b9bfc3bc4c97f3beef8d12f5f, type: 3}
   m_Name: 
@@ -2033,6 +2036,19 @@ MonoBehaviour:
   DestinationTop: {fileID: 159488938778816899}
   DestinationBottom: {fileID: 6021922257278985562}
   setHeightOnStart: 0
+  setHeightOnHMDTracking: 1
+  m_trackingAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Tracking
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: a60ccc43-ec09-4e47-8233-ed624da09f24
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 0}
   nativeHeight: 1
   actualHeight: 0
   nativeSize: {x: 0, y: 0, z: 0}
