@@ -252,7 +252,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.15
+  near clip plane: 0.2
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -1574,6 +1574,7 @@ MonoBehaviour:
   player: {fileID: 1935332283100515003}
   pointCloudGO: {fileID: 6341382799821854084}
   playerCamera: {fileID: 1790764940407382550}
+  cameraZFudgeFactor: -0.1
   heightFactor: 0.001
   resetHeightWithPosition: 0
   viewAdjusted:
@@ -2678,12 +2679,12 @@ PrefabInstance:
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.125
+      value: -0.16
       objectReference: {fileID: 0}
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.16
       objectReference: {fileID: 0}
     - target: {fileID: 9164957187378806018, guid: a604d45e2d52f42c8b5100b0e76586cf,
         type: 3}

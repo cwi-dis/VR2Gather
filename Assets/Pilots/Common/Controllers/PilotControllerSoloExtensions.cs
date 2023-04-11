@@ -1,14 +1,16 @@
-﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using VRT.Core;
 using VRT.Pilots.Common;
 
-namespace VRT.Pilots.SoloPlayground
+namespace VRT.Pilots.Common
 {
-    public class SoloPlaygroundController : PilotController
+    /// <summary>
+    /// Extensions to PilotController for solo experiences.
+    /// </summary>
+    public class PilotControllerSoloExtensions : MonoBehaviour
     {
-        [Tooltip("Fade in at start of scene")]
-        public bool enableFade;
-
         [Tooltip("The user (for enabling isLocal)")]
         public VRT.Pilots.Common.PlayerNetworkControllerBase player;
         [Tooltip("The user (for setup camera position and input/output)")]
@@ -16,12 +18,9 @@ namespace VRT.Pilots.SoloPlayground
         [Tooltip("User representation")]
         public UserRepresentationType userRepresentation = UserRepresentationType.__AVATAR__;
 
-
-        // Start is called before the first frame update
-        public override void Start()
+        public void Start()
         {
-            base.Start();
-            Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
+           Orchestrator.Wrapping.OrchestratorController.Instance.LocalUserSessionForDevelopmentTests();
             Orchestrator.Wrapping.User user = new Orchestrator.Wrapping.User()
             {
                 userId = "no-userid",
@@ -32,17 +31,15 @@ namespace VRT.Pilots.SoloPlayground
                     userRepresentationType = userRepresentation
                 }
             };
-            if (enableFade)
-            {
-                CameraFader.Instance.startFadedOut = true;
-                StartCoroutine(CameraFader.Instance.FadeIn());
-            }
+           
             if (playerManager == null)
             {
-                Debug.LogError($"{Name()}: playerManager field not set");
+                Debug.LogError($"{name}: playerManager field not set");
                 return;
             }
             playerManager.SetUpPlayerController(true, user);
         }
+
     }
 }
+
