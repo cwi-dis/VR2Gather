@@ -87,6 +87,27 @@ PrefabInstance:
       propertyPath: DestinationTop
       value: 
       objectReference: {fileID: 643349446343778356}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_Reference
+      value: 
+      objectReference: {fileID: 6076662051529947318, guid: 721820db5472c4cdb9e2c49de50d8533,
+        type: 3}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_Action.m_Id
+      value: 1076cb01-9d53-4bdb-9e9c-9789111fc4d9
+      objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_Action.m_Name
+      value: Tracking
+      objectReference: {fileID: 0}
     - target: {fileID: 1849690324003306691, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: pcPipelineParent
@@ -292,7 +313,7 @@ PrefabInstance:
     - target: {fileID: 3673924254292886361, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 17
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 4185150392795127551, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
@@ -312,7 +333,7 @@ PrefabInstance:
     - target: {fileID: 6094539924294276110, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_RootOrder
-      value: 16
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 6111656368764997799, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
