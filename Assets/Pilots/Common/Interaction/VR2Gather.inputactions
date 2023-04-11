@@ -15,6 +15,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "Tracking State",
+                    "type": "Button",
+                    "id": "8ebda005-eac0-4718-9037-563a89b41381",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Rotation",
                     "type": "Value",
                     "id": "aed87fe6-2b01-4dd2-a8fa-195578fd8158",
@@ -44,6 +53,17 @@
                     "processors": "",
                     "groups": "Generic XR Controller;Oculus;Vive",
                     "action": "Rotation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5f18e477-b996-4cad-a188-064e11c4eaa4",
+                    "path": "<XRHMD>/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Generic XR Controller;Oculus;Vive",
+                    "action": "Tracking State",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
