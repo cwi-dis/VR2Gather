@@ -34,10 +34,12 @@ namespace VRT.Pilots.Common
 
 		[Tooltip("Introspection/debug: is the object grabbed and transmitting its position?")]
 		[DisableEditing] [SerializeField] private bool isGrabbed;
+        [Tooltip("Print logging messages on important changes")]
+        [SerializeField] bool debug = false;
 
-		// xxxjack private HandController _CurrentGrabber;
+        // xxxjack private HandController _CurrentGrabber;
 
-		protected override void Awake()
+        protected override void Awake()
 		{
 			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidbodySyncMessage, typeof(RigidbodySyncMessage));
@@ -70,7 +72,7 @@ namespace VRT.Pilots.Common
 
 		public void SendRigidbodySyncMessage()
 		{
-			Debug.Log($"Grabbable: xxxjack SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
+			if (debug) Debug.Log($"Grabbable: SendSyncMessage id={NetworkId} isGrabbed={isGrabbed}");
 
 			RigidbodySyncMessage message = new RigidbodySyncMessage
 			{
@@ -91,7 +93,7 @@ namespace VRT.Pilots.Common
 
 		public void OnGrab()
 		{
-			Debug.Log($"Grabbable({name}): grabbed");
+			if (debug) Debug.Log($"Grabbable({name}): grabbed");
 			isGrabbed = true;
 			Rigidbody.isKinematic = true;
 			Rigidbody.useGravity = false;
@@ -100,7 +102,7 @@ namespace VRT.Pilots.Common
 
 		public void OnRelease()
 		{
-			Debug.Log($"Grabbable({name}): released");
+			if (debug) Debug.Log($"Grabbable({name}): released");
 			isGrabbed = false;
 			Rigidbody.isKinematic = false;
 			Rigidbody.useGravity = true;
