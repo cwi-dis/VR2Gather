@@ -24,6 +24,7 @@ namespace VRT.Pilots.Common
 		TID_AddPlayerToSequenceData = 114,
 		TID_SyncConfigMessage = 115,
 		TID_NetworkInstantiatorData = 116,
+		TID_PersistenceManagerData = 117,
 	};
 
 	/// <summary>
@@ -118,7 +119,6 @@ namespace VRT.Pilots.Common
 			TypedMessage message = JsonUtility.FromJson<TypedMessage>(jsonMessage);
 			if (!TypeFromId.TryGetValue(message.TypeId, out Type messageType))
 			{
-				Debug.LogError($"Programmer error: [MessageForwarder] No type known with TypeId = {message.TypeId}! Has the type mapping been added to MessageForwarder.cs?");
 				return;
 			}
 
@@ -130,6 +130,10 @@ namespace VRT.Pilots.Common
 					forwarder.Forward(message.Data);
 				}
 			}
+			else
+            {
+				Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
+            }
 		}
 	}
 

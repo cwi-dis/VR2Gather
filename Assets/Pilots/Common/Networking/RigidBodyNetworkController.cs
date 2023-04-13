@@ -33,10 +33,12 @@ namespace VRT.Pilots.Common
 		private RigidBodyData _PreviousReceivedData = null;
 		private RigidBodyData _LastReceivedData = null;
 
-		public void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_RigidBodyData, typeof(RigidBodyData));
 		}
+
 		void Start()
 		{
 			//prime the valus with some logical current data. 

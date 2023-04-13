@@ -10,13 +10,7 @@ namespace VRT.Core
     public class VRTConfig : MonoBehaviour
     {
         
-        [Flags] public enum ProtocolType
-        {
-            None = 0,
-            SocketIO = 1,
-            Dash = 2,
-            TCP = 3,
-        };
+      
 
         [Tooltip("Orchestrator SocketIO endpoint URL")]
         public string orchestratorURL = "";
@@ -24,8 +18,6 @@ namespace VRT.Core
         public int targetFrameRate = -1; // system default framerate
         [Tooltip("Maximum NTP desync allowed before a warning is shown")]
         public float ntpSyncThreshold = 1.0f;
-        [Tooltip("Protocol for streaming user representations (audio, video, pointclouds)")]
-        public ProtocolType protocolType = ProtocolType.SocketIO;
         [Tooltip("Audio sample rate. NOTE: must match between all instances")]
         public readonly int audioSampleRate = 48000;
         [Tooltip("If nonzero: number of seconds between stats: lines. If zero: every event")]
@@ -95,7 +87,6 @@ namespace VRT.Core
         [Serializable]
         public class _Voice
         {
-            public string Codec = "VR2A";
             public int audioFps = 50;
             public float maxPlayoutLatency = 0.3f;
             public float maxPlayoutAhead = 0.066f;
@@ -103,14 +94,6 @@ namespace VRT.Core
         }
         [Tooltip("Conversational audio settings")]
         public _Voice Voice;
-
-        [Serializable]
-        public class _Video
-        {
-            public string Codec = "h264";
-        }
-        [Tooltip("Webcam video avatar settings")]
-        public _Video Video;
 
         [Serializable]
         public class _Synchronizer

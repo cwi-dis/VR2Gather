@@ -106,12 +106,15 @@ namespace VRT.Pilots.LoginManager
             };
             if (!playerHasBeenInitialized)
             {
-                tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
-                player.SetUpPlayerController(true, tmpSelfUser, null);
-                //player.setupInputOutput(true); // xxxjack needed for preview?
+                // We set HasBeenInitialized early, because SetupPlayerController may raise an exception
+                // and revert the representation to avatar if there are problems with the chosen representation
+                // (for example no cameras found).
+                // This way we don't get into an error message loop.
                 playerHasBeenInitialized = true;
+                tmpSelfUser.userName = OrchestratorController.Instance.SelfUser.userName;
+                player.SetUpPlayerController(true, tmpSelfUser);
             }
-            player.SetRepresentation(representation, tmpSelfUser, VRTConfig.Instance.LocalUser);
+            player.SetRepresentation(representation, permanent: true);
         }
     }
 }

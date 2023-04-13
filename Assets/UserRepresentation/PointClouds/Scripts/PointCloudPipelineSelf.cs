@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
     using static VRT.Core.VRTConfig._User;
 
-    public class PointCloudPipelineSelf : PointCloudPipelineBase
+    public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
         public static void Register()
         {
@@ -60,6 +60,10 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
+            if (!preview)
+            {
+                SetupConfigDistributors();
+            }
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -109,7 +113,14 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Allocate queues we need for this sourceType
             //
-            encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            if (preview)
+            {
+                encoderQueue = null;
+            }
+            else
+            {
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            }
             //
             // Ensure we can determine from the log file who this is.
             //
@@ -160,7 +171,7 @@ namespace VRT.UserRepresentation.PointCloud
                 // Which encoder do we want?
                 string pointcloudCodec = CwipcConfig.Instance.Codec;
                 // For TCP we want short queues and we want them leaky (so we don't hang)
-                bool leakyQueues = VRTConfig.Instance.protocolType == VRTConfig.ProtocolType.TCP;
+                bool leakyQueues = SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP;
                 //
                 // Determine tiles to transmit
                 //
@@ -215,20 +226,20 @@ namespace VRT.UserRepresentation.PointCloud
                 //
                 // Create correct writer for PC transmission
                 //
-                switch (VRTConfig.Instance.protocolType)
+                switch (SessionConfig.Instance.protocolType)
                 {
-                    case VRTConfig.ProtocolType.Dash:
+                    case SessionConfig.ProtocolType.Dash:
                         writer = new AsyncB2DWriter(user.sfuData.url_pcc, "pointcloud", pointcloudCodec, PCSelfConfig.Bin2Dash.segmentSize, PCSelfConfig.Bin2Dash.segmentLife, outgoingStreamDescriptions);
                         break;
-                    case VRTConfig.ProtocolType.TCP:
+                    case SessionConfig.ProtocolType.TCP:
                         writer = new AsyncTCPWriter(user.userData.userPCurl, pointcloudCodec, outgoingStreamDescriptions);
                         break;
-                    case VRTConfig.ProtocolType.None:
-                    case VRTConfig.ProtocolType.SocketIO:
+                    case SessionConfig.ProtocolType.None:
+                    case SessionConfig.ProtocolType.SocketIO:
                         writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
-                        throw new System.Exception($"{Name()}: Unknown protocolType {VRTConfig.Instance.protocolType}");
+                        throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                 }
 
 #if VRT_WITH_STATS
@@ -335,6 +346,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
+        }
+
+        public Vector3 GetPosition()
+        {
+            AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
+            if (pcReader == null)
+            {
+                return Vector3.zero;
+            }
+            return pcReader.GetPosition();
         }
     }
 }

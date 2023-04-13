@@ -37,11 +37,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public class PlayerLocationChangeRequest : BaseMessage
-		{
-			public string LocationNetworkId;
-		}
-        [Tooltip("Prefab used to create players")]
+		[Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
         public GameObject SelfPlayerPrefab;
@@ -63,8 +59,7 @@ namespace VRT.Pilots.Common
 		private Dictionary<PlayerLocation, string> _LocationToPlayerId;
 
 		public Dictionary<string, PlayerNetworkControllerBase> Spectators;
-		public Dictionary<string, PlayerNetworkControllerBase> Voyeurs;
-
+		
 		private static SessionPlayersManager _Instance;
 
 		public static SessionPlayersManager Instance
@@ -83,20 +78,17 @@ namespace VRT.Pilots.Common
 		{
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationData, typeof(PlayerLocationData));
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationDataRequest, typeof(PlayerLocationDataRequest));
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_PlayerLocationChangeRequest, typeof(PlayerLocationChangeRequest));
 			AllUsers = new List<PlayerNetworkControllerBase>();
 			Players = new Dictionary<string, PlayerNetworkControllerBase>();
 			_PlayerIdToLocation = new Dictionary<string, PlayerLocation>();
 			_LocationToPlayerId = new Dictionary<PlayerLocation, string>();
 
 			Spectators = new Dictionary<string, PlayerNetworkControllerBase>();
-			Voyeurs = new Dictionary<string, PlayerNetworkControllerBase>();
-
+			
 			OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeft;
 
 			OrchestratorController.Instance.Subscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Subscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
-			OrchestratorController.Instance.Subscribe<PlayerLocationChangeRequest>(OnPlayerLocationChangeRequest);
 		}
 
 		public void OnDestroy()
@@ -105,7 +97,6 @@ namespace VRT.Pilots.Common
 
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationData>(OnPlayerLocationData);
 			OrchestratorController.Instance.Unsubscribe<PlayerLocationDataRequest>(OnPlayerLocationDataRequest);
-			OrchestratorController.Instance.Unsubscribe<PlayerLocationChangeRequest>(OnPlayerLocationChangeRequest);
 		}
 
 		public void Start()
@@ -113,20 +104,24 @@ namespace VRT.Pilots.Common
 			InstantiatePlayers();
 		}
 
+		public void SetupConfigDistributors()
+		{
+            var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
+            if (configDistributors == null || configDistributors.Length == 0)
+            {
+                Debug.LogWarning("No BaseConfigDistributor found");
+            }
+            foreach (var cd in configDistributors)
+            {
+                cd?.SetSelfUserId(OrchestratorController.Instance.SelfUser.userId);
+            }
+        }
+
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
 
-			// First tell the tilingConfigDistributor what our user ID is.
-			var configDistributors = FindObjectsOfType<BaseConfigDistributor>();
-			if (configDistributors == null || configDistributors.Length == 0)
-			{
-				Debug.LogWarning("No BaseConfigDistributor found");
-			}
-			foreach(var cd in configDistributors) {
-				cd?.Init(OrchestratorController.Instance.SelfUser.userId);
-			}
-			
+			SetupConfigDistributors();	
 
 			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
@@ -151,40 +146,32 @@ namespace VRT.Pilots.Common
 #endif
 
 				PlayerControllerBase playerController = player.GetComponent<PlayerControllerBase>();
-                playerController.SetUpPlayerController(isLocalPlayer, user, configDistributors);
+                PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
 
-				PlayerNetworkControllerBase networkPlayer = player.GetComponent<PlayerNetworkControllerBase>();
-                networkPlayer.SetupPlayerNetworkControllerPlayer(isLocalPlayer, user.userId);
-
+				playerController.SetUpPlayerController(isLocalPlayer, user);
 
                 AllUsers.Add(networkPlayer);
 
 				var representationType = user.userData.userRepresentationType;
-				if (representationType == UserRepresentationType.__SPECTATOR__)
+				switch(representationType)
 				{
-					AddSpectator(networkPlayer);
-				}
-				else
-				if (representationType == UserRepresentationType.__NONE__)
-				{
-					AddVoyeur(networkPlayer);
-				}
-				else
-				if (representationType == UserRepresentationType.__CAMERAMAN__)
-				{
-					AddVoyeur(networkPlayer);
+					case UserRepresentationType.__NONE__:
+					case UserRepresentationType.__SPECTATOR__:
+                        AddSpectator(networkPlayer);
+                        break;
+                    case UserRepresentationType.__CAMERAMAN__:
+						AddSpectator(networkPlayer);
 #if UNITY_EDITOR
-                    if (me.userId == user.userId)
-                    {
-                        Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
-                        ((PlayerControllerSelf)playerController).getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
-                    }
+                        if (isLocalPlayer)
+                        {
+                            Debug.Log($"SessionPlayerManager: Cameraman: {player.name} representationType {representationType}");
+                            ((PlayerControllerSelf)playerController).getCameraTransform().GetComponent<VRT.Core.UnityRecorderController>().enabled = true;
+                        }
 #endif
-                }
-                else
-				if (representationType != UserRepresentationType.__CAMERAMAN__)
-				{
-					AddPlayer(networkPlayer);
+						break;
+                    default:
+						AddPlayer(networkPlayer);
+						break;
 				}
 			}
 
@@ -203,14 +190,13 @@ namespace VRT.Pilots.Common
 			if (Players.TryGetValue(userId, out PlayerNetworkControllerBase playerToRemove))
 			{
 				RemovePlayer(playerToRemove);
-			}
+			} else
 			if (Spectators.TryGetValue(userId, out PlayerNetworkControllerBase spectatorToRemove))
 			{
 				RemoveSpectator(spectatorToRemove);
-			}
-			if (Voyeurs.TryGetValue(userId, out PlayerNetworkControllerBase voyeurToRemove))
+			} else
 			{
-				RemoveVoyeur(voyeurToRemove);
+				Debug.LogWarning($"SessionPlayersManager: Unknown player left: {userId}");
 			}
 		}
 
@@ -250,15 +236,6 @@ namespace VRT.Pilots.Common
 
         }
 
-        private void AddVoyeur(PlayerNetworkControllerBase player)
-        {
-            player.transform.SetParent(NonPlayersLocation);
-            player.transform.position = NonPlayersLocation.position;
-            player.transform.rotation = NonPlayersLocation.rotation;
-
-            Voyeurs.Add(player.UserId, player);
-        }
-
         private void RemovePlayer(PlayerNetworkControllerBase player)
 		{
 			Players.Remove(player.UserId);
@@ -276,12 +253,6 @@ namespace VRT.Pilots.Common
 		private void RemoveSpectator(PlayerNetworkControllerBase player)
 		{
 			Spectators.Remove(player.UserId);
-			Destroy(player.gameObject);
-		}
-
-		private void RemoveVoyeur(PlayerNetworkControllerBase player)
-		{
-			Voyeurs.Remove(player.UserId);
 			Destroy(player.gameObject);
 		}
 
@@ -339,74 +310,7 @@ namespace VRT.Pilots.Common
 				SendPlayerLocationData(request.SenderId);
 			}
 		}
-
-		public void RequestLocationChangeForPlayer(string locationNetworkId, PlayerNetworkControllerBase player)
-		{
-			Debug.Log($"[SessionPlayersManager] Requesting location {locationNetworkId} for player {player.UserId}.");
-
-			if (!OrchestratorController.Instance.UserIsMaster)
-			{
-				Debug.LogError("Programmer error: [SessionsPlayersManager] Requesting location change for a specific player while not master.");
-				return;
-			}
-
-			if (TryGetPlayerLocationFromNetworkId(locationNetworkId, out PlayerLocation location))
-			{
-				if (location.IsEmpty && location.isActiveAndEnabled)
-				{
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-						SetPlayerToLocation(Players[player.UserId], location);
-						SendPlayerLocationData();
-					}
-				}
-				else
-				{
-					Debug.LogWarning("[SessionsPlayersManager] Location was already occupied or not active.");
-				}
-			}
-		}
-
-		public void RequestLocationChange(string locationNetworkId)
-		{
-			if (TryGetPlayerLocationFromNetworkId(locationNetworkId, out PlayerLocation location))
-			{
-				if (location.IsEmpty)
-				{
-					var me = OrchestratorController.Instance.SelfUser;
-					if (OrchestratorController.Instance.UserIsMaster)
-					{
-						SetPlayerToLocation(Players[me.userId], location);
-					}
-					else
-					{
-						OrchestratorController.Instance.SendTypeEventToMaster
-							(
-							new PlayerLocationChangeRequest { LocationNetworkId = locationNetworkId }
-							);
-					}
-				} else
-				{
-					Debug.Log($"[SessionsPlayersManager] RequestLocationChange destination {locationNetworkId} is occupied");
-				}
-			} else
-			{
-				Debug.Log($"[SessionPlayersManager] could not TryGetPlayerLocationFromNetworkId for {locationNetworkId}");
-			}
-		}
-
-		private void OnPlayerLocationChangeRequest(PlayerLocationChangeRequest locationChangeRequest)
-		{
-			if (OrchestratorController.Instance.UserIsMaster)
-			{
-				if (TryGetPlayerLocationFromNetworkId(locationChangeRequest.LocationNetworkId, out PlayerLocation location))
-				{
-					SetPlayerToLocation(Players[locationChangeRequest.SenderId], location);
-					SendPlayerLocationData();
-				}
-			}
-		}
-
+		
 		private void SetPlayerToLocation(PlayerNetworkControllerBase player, PlayerLocation location)
 		{
 			Debug.Log($"[SessionPlayersManager] Set player {player.UserId} to location {location.NetworkId}.");
@@ -429,21 +333,6 @@ namespace VRT.Pilots.Common
 			location.SetPlayer(player);
 			_PlayerIdToLocation[playerId] = location;
 			_LocationToPlayerId[location] = playerId;
-		}
-
-		private bool TryGetPlayerLocationFromNetworkId(string networkId, out PlayerLocation playerLocation)
-		{
-			foreach (var location in PlayerLocations)
-			{
-				if (location.NetworkId == networkId && location.IsEmpty)
-				{
-					playerLocation = location;
-					return true;
-				}
-			}
-
-			playerLocation = null;
-			return false;
 		}
 #endregion
 	}

@@ -8,14 +8,14 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerOther : PlayerControllerBase
     {
-        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user, BaseConfigDistributor[] configDistributors)
+        public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
             if (_isLocalPlayer)
             {
                 Debug.LogError($"{Name()}: isLocalPlayer==true");
             }
             isLocalPlayer = false;
-            _SetupCommon(user, configDistributors);
+            _SetupCommon(user);
         }
 
         /// <summary>
@@ -40,8 +40,9 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         System.DateTime lastUpdateTime;
         
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
             if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
