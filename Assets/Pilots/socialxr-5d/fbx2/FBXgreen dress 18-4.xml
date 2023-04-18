@@ -1,0 +1,627 @@
+<?xml version="1.0"?>
+<Autodesk_Cache_File>
+  <cacheType Type="OneFile" Format="mcx"/>
+  <time Range="18000-181800"/>
+  <cacheTimePerFrame TimePerFrame="200"/>
+  <cacheVersion Version="2.0"/>
+  <extra>CLO - Virtual Fashion Inc.</extra>
+  <extra>Marvelous</extra>
+  <Channels>
+    <channel0 ChannelName="Pattern2D679565Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel1 ChannelName="Pattern2D679566Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel2 ChannelName="Pattern2D679568Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel3 ChannelName="Pattern2D679569Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel4 ChannelName="Pattern2D679570Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel5 ChannelName="Pattern2D679571Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel6 ChannelName="Pattern2D679572Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel7 ChannelName="Pattern2D679573Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel8 ChannelName="Pattern2D679582Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel9 ChannelName="Pattern2D679583Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel10 ChannelName="Pattern2D679584Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel11 ChannelName="Pattern2D679585Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel12 ChannelName="Pattern2D679586Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel13 ChannelName="Pattern2D679587Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel14 ChannelName="Pattern2D679588Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel15 ChannelName="Pattern2D679589Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel16 ChannelName="Pattern2D679581Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel17 ChannelName="Pattern2D679581Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel18 ChannelName="Pattern2D679579Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel19 ChannelName="Pattern2D679579Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel20 ChannelName="Pattern2D679580Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel21 ChannelName="Pattern2D679580Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel22 ChannelName="Pattern2D679592Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel23 ChannelName="Pattern2D679593Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel24 ChannelName="Pattern2D679594Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel25 ChannelName="Pattern2D679595Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel26 ChannelName="Pattern2D679598Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel27 ChannelName="Pattern2D679599Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel28 ChannelName="Pattern2D679581Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel29 ChannelName="Pattern2D679581Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel30 ChannelName="Pattern2D679575Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel31 ChannelName="Pattern2D679575Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel32 ChannelName="Pattern2D679580Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel33 ChannelName="Pattern2D679580Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel34 ChannelName="Pattern2D1410079Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel35 ChannelName="Pattern2D1410080Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel36 ChannelName="Pattern2D1410084Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel37 ChannelName="Pattern2D1751668Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel38 ChannelName="MatShape374900Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel39 ChannelName="Pattern2D891040Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel40 ChannelName="Pattern2D891041Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel41 ChannelName="Pattern2D891042Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel42 ChannelName="Pattern2D891043Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel43 ChannelName="Pattern2D891044Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel44 ChannelName="Pattern2D891038Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel45 ChannelName="Pattern2D891039Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel46 ChannelName="Pattern2D891045Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel47 ChannelName="Pattern2D891046Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel48 ChannelName="Pattern2D891047Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel49 ChannelName="BodyFront12Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel50 ChannelName="BodyBackYoke7Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel51 ChannelName="BodyBackYoke8Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel52 ChannelName="BodyBackYoke14Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel53 ChannelName="BodyFrontShape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel54 ChannelName="BodyFront13Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel55 ChannelName="BodyFront1Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel56 ChannelName="BodyBackYoke11Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel57 ChannelName="MatShape432695Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel58 ChannelName="MatShape432703Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel59 ChannelName="MatShape432711Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel60 ChannelName="MatShape432719Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel61 ChannelName="BodyBackYokeShape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel62 ChannelName="Cuffs1Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel63 ChannelName="Cuffs2Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel64 ChannelName="Cuffs3Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel65 ChannelName="Cuffs4Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel66 ChannelName="BodyFront14Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel67 ChannelName="BodyBackYoke9Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel68 ChannelName="BodyBackYoke10Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel69 ChannelName="BodyBackYoke15Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel70 ChannelName="BodyFront3Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel71 ChannelName="BodyFront15Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel72 ChannelName="BodyFront4Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel73 ChannelName="BodyBackYoke12Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel74 ChannelName="Cuffs13Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel75 ChannelName="BodyFront5Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel76 ChannelName="BodyFrontShape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel77 ChannelName="BodyBack2Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel78 ChannelName="BodyFrontPlacket2Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel79 ChannelName="BodyFrontPlacketShape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel80 ChannelName="Pattern2D232673Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel81 ChannelName="Pattern2D232674Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel82 ChannelName="Pattern2D232676Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel83 ChannelName="Pattern2D232677Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel84 ChannelName="Pattern2D232678Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel85 ChannelName="Pattern2D232679Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel86 ChannelName="Pattern2D232680Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel87 ChannelName="Pattern2D232681Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel88 ChannelName="Pattern2D232682Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel89 ChannelName="Pattern2D232683Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel90 ChannelName="Pattern2D733226Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel91 ChannelName="CollarStand8Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel92 ChannelName="Cuffs10Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel93 ChannelName="Cuffs11Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel94 ChannelName="Cuffs15Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel95 ChannelName="Cuffs12Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel96 ChannelName="Pattern2D8185528Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel97 ChannelName="BodyFront9Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel98 ChannelName="BodyFront11Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel99 ChannelName="BodyFront16Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel100 ChannelName="BodyFront18Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel101 ChannelName="BodyFront22Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel102 ChannelName="BodyFront20Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel103 ChannelName="Pattern2D4326680Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel104 ChannelName="Pattern2D4326681Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel105 ChannelName="Cuffs5Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel106 ChannelName="Cuffs6Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel107 ChannelName="Cuffs7Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel108 ChannelName="Cuffs8Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel109 ChannelName="Cuffs14Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel110 ChannelName="Pattern2D733228Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel111 ChannelName="Pattern2D733229Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel112 ChannelName="MatShape516807Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel113 ChannelName="MatShape517216Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel114 ChannelName="MatShape517242Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel115 ChannelName="MatShape517272Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel116 ChannelName="MatShape517720Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel117 ChannelName="MatShape520577Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel118 ChannelName="MatShape520973Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel119 ChannelName="MatShape521558Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel120 ChannelName="MatShape521569Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel121 ChannelName="MatShape521740Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel122 ChannelName="MatShape521854Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel123 ChannelName="MatShape524777Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel124 ChannelName="MatShape525295Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel125 ChannelName="StitchMatShape516165Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel126 ChannelName="StitchMatShape516384Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel127 ChannelName="StitchMatShape516608Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel128 ChannelName="StitchMatShape517188Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel129 ChannelName="StitchMatShape517700Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel130 ChannelName="StitchMatShape517902Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel131 ChannelName="StitchMatShape519159Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel132 ChannelName="StitchMatShape520560Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel133 ChannelName="StitchMatShape520840Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel134 ChannelName="StitchMatShape520877Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel135 ChannelName="StitchMatShape521472Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel136 ChannelName="StitchMatShape521540Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel137 ChannelName="StitchMatShape521672Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel138 ChannelName="StitchMatShape521732Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel139 ChannelName="StitchMatShape521843Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel140 ChannelName="StitchMatShape522069Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel141 ChannelName="StitchMatShape522248Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel142 ChannelName="StitchMatShape522379Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel143 ChannelName="StitchMatShape522513Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel144 ChannelName="StitchMatShape522644Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel145 ChannelName="StitchMatShape522780Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel146 ChannelName="StitchMatShape522953Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel147 ChannelName="StitchMatShape523084Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel148 ChannelName="StitchMatShape523218Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel149 ChannelName="StitchMatShape523349Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel150 ChannelName="StitchMatShape523485Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel151 ChannelName="StitchMatShape523668Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel152 ChannelName="StitchMatShape523839Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel153 ChannelName="StitchMatShape524017Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel154 ChannelName="StitchMatShape524188Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel155 ChannelName="StitchMatShape524474Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel156 ChannelName="StitchMatShape524694Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel157 ChannelName="StitchMatShape525284Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel158 ChannelName="StitchMatShape525507Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel159 ChannelName="MatShape516611Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel160 ChannelName="MatShape516614Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel161 ChannelName="MatShape517191Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel162 ChannelName="MatShape517194Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel163 ChannelName="MatShape517197Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel164 ChannelName="MatShape517200Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel165 ChannelName="MatShape517208Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel166 ChannelName="MatShape517219Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel167 ChannelName="MatShape517222Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel168 ChannelName="MatShape517225Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel169 ChannelName="MatShape517228Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel170 ChannelName="MatShape517231Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel171 ChannelName="MatShape517234Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel172 ChannelName="MatShape517245Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel173 ChannelName="MatShape517248Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel174 ChannelName="MatShape517251Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel175 ChannelName="MatShape517264Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel176 ChannelName="MatShape517703Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel177 ChannelName="MatShape517706Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel178 ChannelName="MatShape517709Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel179 ChannelName="MatShape517712Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel180 ChannelName="MatShape520563Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel181 ChannelName="MatShape520566Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel182 ChannelName="MatShape520569Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel183 ChannelName="MatShape520880Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel184 ChannelName="MatShape520883Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel185 ChannelName="MatShape520886Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel186 ChannelName="MatShape520889Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel187 ChannelName="MatShape520892Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel188 ChannelName="MatShape520895Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel189 ChannelName="MatShape520898Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel190 ChannelName="MatShape520901Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel191 ChannelName="MatShape520904Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel192 ChannelName="MatShape520932Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel193 ChannelName="MatShape520945Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel194 ChannelName="MatShape521475Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel195 ChannelName="MatShape521483Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel196 ChannelName="MatShape521561Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel197 ChannelName="MatShape521675Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel198 ChannelName="MatShape521846Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel199 ChannelName="MatShape521857Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel200 ChannelName="MatShape522072Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel201 ChannelName="MatShape522075Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel202 ChannelName="MatShape525287Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel203 ChannelName="MatShape525298Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel204 ChannelName="MatShape525510Shape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+  <Channels>
+    <channel205 ChannelName="AVATARVROUWShape" ChannelType="FloatVectorArray" ChannelInterpretation="positions" SamplingType="Regular" SamplingRate="200" StartTime="18000" EndTime="181800"/>
+  </Channels>
+</Autodesk_Cache_File>
