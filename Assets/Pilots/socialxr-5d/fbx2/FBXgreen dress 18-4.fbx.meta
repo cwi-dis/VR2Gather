@@ -3,7 +3,102 @@ guid: 68cbdd5f7a5314047a82eacefdf8aea5
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Back_Capsleeves_FRONT_373006
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Bodice_Left_FRONT_373026
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Bodice_Right_FRONT_373045
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Collar Right_FRONT_373036
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Collar_Left_FRONT_373015
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Jacket_Embroidery_Sleeve_Left_FRONT_372997
+    second: {fileID: 2100000, guid: 043b7159b974e9c4f946a34295ecc669, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515268
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515286
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515304
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515322
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515340
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515358
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515376
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515394
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515412
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515430
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515448
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515466
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PT_FABRIC_FRONT_515484
+    second: {fileID: 2100000, guid: 5f409b1033ff3ea41af7602f6f4abae6, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
