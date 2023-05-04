@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace VRT.Pilots.Common
 {
@@ -21,6 +24,10 @@ namespace VRT.Pilots.Common
         public GameObject DestinationBottom;
         [Tooltip("If true set height at Start(). Otherwise only on AdjustHeight() callback")]
         public bool setHeightOnStart = true;
+        [Tooltip("If true set height whenever HMD starts tracking. Otherwise only on AdjustHeight() callback")]
+        public bool setHeightOnHMDTracking = true;
+        [Tooltip("The Input System Action that determines whether we are tracking")]
+        [SerializeField] InputActionProperty m_trackingAction;
         [Tooltip("Native total height of destination (introspection)")]
         [DisableEditing] [SerializeField] float nativeHeight = 1;
         [Tooltip("Current real player height (introspection)")]
@@ -51,7 +58,13 @@ namespace VRT.Pilots.Common
 
         private void Update()
         {
-            
+            if (setHeightOnHMDTracking)
+            {
+                if (m_trackingAction.action.WasPerformedThisFrame())
+                {
+                    AdjustHeight();
+                }
+            }
         }
 
         public void AdjustHeight()

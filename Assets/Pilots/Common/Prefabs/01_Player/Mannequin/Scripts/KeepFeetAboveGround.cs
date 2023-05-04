@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class KeepFeetAboveGround : MonoBehaviour
 {
+    [Tooltip("Foot may not go below the origin of this object")]
     public GameObject RootObject;
+    [Tooltip("Print logging message if position adjusted")]
+    [SerializeField] bool debug = false;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +21,7 @@ public class KeepFeetAboveGround : MonoBehaviour
         float height = transform.position.y - RootObject.transform.position.y;
         if (height < 0)
         {
-            Debug.Log($"KeepFeetAboveGround {name}: {Time.frameCount}: height={height}, fixing.");
+            if (debug) Debug.Log($"KeepFeetAboveGround {name}: {Time.frameCount}: height={height}, fixing.");
             transform.Translate(0, -height, 0, Space.World);
         } else
         {

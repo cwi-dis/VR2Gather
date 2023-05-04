@@ -11,6 +11,9 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class FixGrab : MonoBehaviour
     {
+        [Tooltip("Print logging messages")]
+        [SerializeField] bool debug = false;
+
         HashSet<Collider> currentlyEntered = new HashSet<Collider>();
         // Start is called before the first frame update
         void Start()
@@ -20,26 +23,26 @@ namespace VRT.Pilots.Common
 
         private void OnTriggerEnter(Collider other)
         {
-            Debug.Log($"FixGrab: OnTriggerEnter({other})");
+            if (debug) Debug.Log($"FixGrab: OnTriggerEnter({other})");
             currentlyEntered.Add(other);
         }
 
         private void OnTriggerExit(Collider other)
         {
-            Debug.Log($"FixGrab: OnTriggerExit({other})");
+            if (debug) Debug.Log($"FixGrab: OnTriggerExit({other})");
             currentlyEntered.Remove(other);
         }
 
         public void AboutToDisable()
         {
             if (currentlyEntered.Count == 0) return;
-            Debug.Log($"FixGrab: Disabled, {currentlyEntered.Count} colliders not exited");
+            if (debug) Debug.Log($"FixGrab: Disabled, {currentlyEntered.Count} colliders not exited");
             HashSet<Collider> tmp = new HashSet<Collider>(currentlyEntered);
             foreach(var c in tmp)
             {
                 SendMessage("OnTriggerExit", c, SendMessageOptions.DontRequireReceiver);
             }
-            Debug.Log($"FixGrab: Disabled, now {currentlyEntered.Count} colliders not exited");
+            if (debug) Debug.Log($"FixGrab: Disabled, now {currentlyEntered.Count} colliders not exited");
        }
         // Update is called once per frame
         void Update()

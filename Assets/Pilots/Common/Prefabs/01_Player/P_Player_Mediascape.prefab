@@ -72,6 +72,16 @@ PrefabInstance:
       propertyPath: m_Positions.Array.data[0].x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_Action.m_Id
+      value: f5386f6c-a53d-4a30-b37a-c897b1096384
+      objectReference: {fileID: 0}
+    - target: {fileID: 917951756811975538, guid: d8daed3a0f2fa41a2955b61b87840f3b,
+        type: 3}
+      propertyPath: m_trackingAction.m_Action.m_Name
+      value: Tracking
+      objectReference: {fileID: 0}
     - target: {fileID: 1888448337928862630, guid: d8daed3a0f2fa41a2955b61b87840f3b,
         type: 3}
       propertyPath: m_IsActive
