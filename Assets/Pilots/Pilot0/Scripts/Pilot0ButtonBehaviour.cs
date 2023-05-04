@@ -10,7 +10,11 @@ namespace VRT.Pilots.Pilot0
 		public float TimeOutBetweenTriggers = 1f;
 		private float _ButtonLastTriggered;
 
-		private void OnTriggerEnter(Collider other)
+        private void Awake()
+        {
+            Debug.LogError($"Pilot0ButtonBehaviour is obsolete on {name}. See issue #43.");
+        }
+        private void OnTriggerEnter(Collider other)
 		{
 			if (Time.realtimeSinceStartup - _ButtonLastTriggered > TimeOutBetweenTriggers)
 			{
