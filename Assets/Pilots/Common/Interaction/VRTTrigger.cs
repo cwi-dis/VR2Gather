@@ -21,6 +21,7 @@ namespace VRT.Pilots.Common
 
         private void Awake()
         {
+			Debug.LogError("VRTTrigger is obsolete. See issue #43.");
             if (networkTrigger == null)
 			{
 				networkTrigger = GetComponent<NetworkTrigger>();
@@ -30,7 +31,7 @@ namespace VRT.Pilots.Common
 				}
 			}
         }
-        
+
         /// <summary>
         /// Called by Unity on collider activity.
         /// Also called by VRT NoHandInteraction with a null collider on mouse-ray interaction.

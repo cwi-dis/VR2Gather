@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 		{
 			get
 			{
-				if (_Instance is null)
+				if (_Instance == null)
 				{
 					_Instance = FindObjectOfType<VRTGrabbableManager>();
 					if (_Instance == null)
