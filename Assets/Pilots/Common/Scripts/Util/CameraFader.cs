@@ -1,114 +1,148 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CameraFader : MonoBehaviour
+namespace VRT.Pilots.Common
 {
-	public float FadeDuration = 1.0f;
-	public Image FadeImage;
-	public Text FadeText;
-
-	public bool StartFadedOut = false;
-
-	private Material _FadeMaterial;
-	private bool _Fading = false;
-	private float _Target;
-	private float _Value;
-	private float _Step;
-
-	private static CameraFader _Instance;
-	public static CameraFader Instance
-	{
-		get
-		{
-			if(_Instance == null)
-			{
-				_Instance = FindObjectOfType<CameraFader>();
-			}
-
-			return _Instance;
-		}
-	}
-
-	public void Awake()
-	{
-		_FadeMaterial = Instantiate(FadeImage.material);
-		FadeImage.material = _FadeMaterial;
-		_InitFade();
-
-	}
-
-	void _InitFade()
+    /// <summary>
+    /// Use this component in a scene to fade-in and fade-out the scene.
+    /// </summary>
+    public class CameraFader : MonoBehaviour
     {
-		if (StartFadedOut)
-		{
-			_FadeMaterial.color = Color.black;
-			_Value = 1f;
-		}
-		else
-		{
-			_FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
-			_Value = 0f;
-		}
-	}
+        [Tooltip("How many seconds the fadein/fadeout takes")]
+        public float FadeDuration = 1.0f;
+        [Tooltip("Fade GameObject (disabled when not fading in/out)")]
+        public GameObject FadeGO;
+        [Tooltip("Image in FadeGO, its material will be cloned and animated for fading")]
+        public Image FadeImage;
+        private Text FadeText;
 
-	public void SetText(string text)
-	{
-		FadeText.text = text;
-	}
+        [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
+        public bool startFadedOut = false;
+        private bool fadeInStarted = false;
+        private Material _FadeMaterial;
+        private bool _Fading = false;
+        private float _Target;
+        private float _Value;
+        private float _Step;
 
-	public void ClearText()
-	{
-		FadeText.text = "";
-	}
+        private static CameraFader _Instance;
+        public static CameraFader Instance
+        {
+            get
+            {
+                if (_Instance == null)
+                {
+                    _Instance = FindObjectOfType<CameraFader>();
+                }
 
-	public IEnumerator FadeIn()
-	{
-		_InitFade();
-		yield return null;
+                return _Instance;
+            }
+        }
 
-		ClearText();
-		_Fading = true;
-		_Target = 0.0f;
-		_Step = -1.0f / FadeDuration;
+        public void Awake()
+        {
+            PilotController ctrl = FindObjectOfType<PilotController>();
+            if (ctrl != null)
+            {
+                startFadedOut = ctrl.startFadedOut;
+            }
+            _FadeMaterial = Instantiate(FadeImage.material);
+            FadeImage.material = _FadeMaterial;
+            _InitFade();
 
-		_Value = _FadeMaterial.color.a;
+        }
 
-		while (_Fading)
-		{
-			_Value += Time.deltaTime * _Step;
-			_Value = Mathf.Clamp01(_Value);
+        private void Start()
+        {
+            StartFadeIn();
+        }
 
-			if (_Value == _Target)
-			{
-				_Fading = false;
-			}
+        void _InitFade()
+        {
+            if (startFadedOut)
+            {
+                _FadeMaterial.color = Color.black;
+                _Value = 1f;
+                if (FadeGO != null) FadeGO.SetActive(true);
+            }
+            else
+            {
+                _FadeMaterial.color = new Color(0f, 0f, 0f, 0f);
+                _Value = 0f;
+                if (FadeGO != null) FadeGO.SetActive(false);
+            }
+        }
 
-			_FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
-			yield return null;
-		}
-	}
+        public void SetText(string text)
+        {
+            if (FadeText != null) FadeText.text = text;
+        }
 
-	public IEnumerator FadeOut()
-	{
-		_Fading = true;
-		_Target = 1.0f;
-		_Step = 1.0f / FadeDuration;
+        public void ClearText()
+        {
+            if (FadeText != null) FadeText.text = "";
+        }
 
-		_Value = _FadeMaterial.color.a;
+        public IEnumerator FadeIn()
+        {
+            _InitFade();
+            yield return null;
 
-		while (_Fading)
-		{
-			_Value += Time.deltaTime * _Step;
-			_Value = Mathf.Clamp01(_Value);
+            ClearText();
+            _Fading = true;
+            _Target = 0.0f;
+            _Step = -1.0f / FadeDuration;
 
-			if (_Value == _Target)
-			{
-				_Fading = false;
-			}
+            _Value = _FadeMaterial.color.a;
 
-			_FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
-			yield return null;
-		}
-	}
+            while (_Fading)
+            {
+                _Value += Time.deltaTime * _Step;
+                _Value = Mathf.Clamp01(_Value);
+
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
+                if (_Value == _Target)
+                {
+                    _Fading = false;
+                    if (FadeGO != null) FadeGO.SetActive(false);
+                }
+
+                yield return null;
+            }
+        }
+
+        public IEnumerator FadeOut()
+        {
+            _Fading = true;
+            FadeGO?.SetActive(true);
+            _Target = 1.0f;
+            _Step = 1.0f / FadeDuration;
+
+            _Value = _FadeMaterial.color.a;
+
+            while (_Fading)
+            {
+                _Value += Time.deltaTime * _Step;
+                _Value = Mathf.Clamp01(_Value);
+                _FadeMaterial.color = new Color(0f, 0f, 0f, _Value);
+
+                if (_Value == _Target)
+                {
+                    _Fading = false;
+                    // if (FadeGO != null) FadeGO.SetActive(false);
+                }
+
+                yield return null;
+            }
+        }
+
+        public void StartFadeIn()
+        {
+            if (!startFadedOut || fadeInStarted) return;
+            fadeInStarted = true;
+            StartCoroutine(FadeIn());
+        }
+    }
 }

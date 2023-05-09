@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using VRT.Core;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 using System.IO;
 
 namespace VRT.Pilots.Common
@@ -21,15 +24,17 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            takeScreenshot = Config.Instance.ScreenshotTool.takeScreenshot;
-            screenshotTargetDirectory = Config.Instance.ScreenshotTool.screenshotTargetDirectory;
+            takeScreenshot = VRTConfig.Instance.ScreenshotTool.takeScreenshot;
+            screenshotTargetDirectory = VRTConfig.Instance.ScreenshotTool.screenshotTargetDirectory;
             gameObject.SetActive(takeScreenshot);
             if (!takeScreenshot)
             {
                 Debug.Log($"{Name()}: disabling, config.ScreenshotTool.takeScreenshot = false");
                 return;
             }
-            BaseStats.Output(Name(), $"output_dir={screenshotTargetDirectory}");
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), $"output_dir={screenshotTargetDirectory}");
+#endif
             width = Screen.width;
             height = Screen.height;
             if (!Directory.Exists(screenshotTargetDirectory))

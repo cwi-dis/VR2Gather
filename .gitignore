@@ -1,4 +1,6 @@
 Library/
+Logs/
+UserSettings/
 Temp/
 obj/
 dlls/
@@ -8,6 +10,7 @@ Assembly-CSharp.csproj
 cameraconfig.xml
 .collabignore
 *.csproj
+*.sln
 Exe/
 Build/
 Builds/

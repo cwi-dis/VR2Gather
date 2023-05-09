@@ -4,10 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Battery
-  - PlayerLocation
-  - Spectator
-  - Plants
   - Teleportable
   layers:
   - Default
@@ -19,15 +15,12 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - Light dynamic
-  - Spectator
-  - Enviroment
   - 
-  - Fader
-  - TeleportableArea
-  - Dynamic Objects
-  - Header
-  - UI2
+  - 
+  - 
+  - 
+  - 
+  - VRT-TeleportableArea
   - 
   - 
   - 
@@ -36,12 +29,15 @@ TagManager:
   - 
   - 
   - 
-  - SelfView
-  - PlayerLocation
-  - TouchableObject
-  - GrabbableObject
-  - TouchCollider
-  - GrabCollider
+  - 
+  - 
+  - 
+  - 
+  - 
+  - VRT-TouchableObject
+  - VRT-GrabbableObject
+  - 
+  - Teleport
   m_SortingLayers:
   - name: Default
     uniqueID: 0

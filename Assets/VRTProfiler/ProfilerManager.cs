@@ -27,7 +27,7 @@ namespace VRT.Profiler
         private void Awake()
         {
             Instance = this;
-            HMDActive = Config.Instance.pilot3NavigationLogs;
+            HMDActive = false; // xxxjack: this needs to be fixed (it depended on pilot3logs which was also silly)
             csvOutputPathname = string.Format("{0}/../{1}.csv", Application.persistentDataPath, fileName);
         }
 
@@ -58,7 +58,7 @@ namespace VRT.Profiler
             }
             if (HMDActive == true)
             {
-                var cam = VRConfig.Instance.getMainCameraGameObject();
+                var cam = Camera.main;
                 if (cam != null)
                 {
                     HMD = cam.transform;

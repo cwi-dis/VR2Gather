@@ -1,44 +1,69 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 using VRT.Orchestrator.Wrapping;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 
 namespace VRT.Pilots.Common
 {
-	public class NetworkTrigger : NetworkIdBehaviour
+	/// <summary>
+    /// Base class for NetworkTrigger and NetworkInstantiator
+    /// </summary>
+	public abstract class NetworkTriggerBase : NetworkIdBehaviour
+    {
+		public abstract void Trigger();
+    }
+
+	/// <summary>
+	/// Component that sends triggers (think: button presses) to other instances of the VR2Gather experience.
+	/// </summary>
+	public class NetworkTrigger : NetworkTriggerBase
 	{
 		public class NetworkTriggerData : BaseMessage
 		{
 			public string NetworkBehaviourId;
 		}
 
+		[Tooltip("If true only the master participant can make this trigger happen")]
 		public bool MasterOnlyTrigger = false;
 
+		[Tooltip("Event called when either a local or remote trigger happens.")]
 		public UnityEvent OnTrigger;
 
-		public void Awake()
+		protected override void Awake()
 		{
+			base.Awake();
 			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_NetworkTriggerData, typeof(NetworkTriggerData));
 
 		}
-		public void OnEnable()
+		public virtual void OnEnable()
 		{
 			OrchestratorController.Instance.Subscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
 
-		public void OnDisable()
+		public virtual void OnDisable()
 		{
 			OrchestratorController.Instance.Unsubscribe<NetworkTriggerData>(OnNetworkTrigger);
 		}
 
-		public virtual void Trigger()
+		/// <summary>
+		/// Call this method locally when the user interaction has happened. It will transmit the event to
+		/// other participants, and all participants (including the local one) will call the OnTrigger callback.
+		/// </summary>
+		public override void Trigger()
 		{
 			if (MasterOnlyTrigger && !OrchestratorController.Instance.UserIsMaster)
 			{
 				return;
 			}
-
-			Debug.Log($"[NetworkTrigger] Trigger called on NetworkTrigger with id = {NetworkId} and name = {gameObject.name}.");
+			if (NetworkId == null || NetworkId == "")
+			{
+				Debug.LogError($"{name}: Trigger with empty NetworkId");
+				return;
+			}
+			Debug.Log($"NetworkTrigger({name}): Trigger id = {NetworkId}");
 			var triggerData = new NetworkTriggerData()
 			{
 				NetworkBehaviourId = NetworkId,
@@ -51,7 +76,9 @@ namespace VRT.Pilots.Common
 			else
 			{
 				OnTrigger.Invoke();
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#if VRT_WITH_STATS
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#endif
 				OrchestratorController.Instance.SendTypeEventToAll(triggerData);
 			}
 		}
@@ -60,7 +87,9 @@ namespace VRT.Pilots.Common
 		{
 			if (NeedsAction(data.NetworkBehaviourId))
 			{
-				VRT.Core.BaseStats.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#if VRT_WITH_STATS
+                Statistics.Output("NetworkTrigger", $"name={name}, sessionId={OrchestratorController.Instance.MySession.sessionId}");
+#endif
 
 				OnTrigger.Invoke();
 

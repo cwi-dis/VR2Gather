@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 		TID_PlayerLocationDataRequest = 104,
 		TID_PlayerLocationChangeRequest = 105,
 		TID_HandGrabEvent = 106,
-		TID_NetworkTransformSyncData = 107,
+		TID_RigidBodyData = 107,
 		TID_RigidbodySyncMessage = 108,
 		TID_TextChatDataMessage = 109,
 		TID_TilingConfigMessage = 110,
@@ -23,6 +23,8 @@ namespace VRT.Pilots.Common
 		TID_PlayerTransformSyncData = 113,
 		TID_AddPlayerToSequenceData = 114,
 		TID_SyncConfigMessage = 115,
+		TID_NetworkInstantiatorData = 116,
+		TID_PersistenceManagerData = 117,
 	};
 
 	/// <summary>
@@ -117,7 +119,6 @@ namespace VRT.Pilots.Common
 			TypedMessage message = JsonUtility.FromJson<TypedMessage>(jsonMessage);
 			if (!TypeFromId.TryGetValue(message.TypeId, out Type messageType))
 			{
-				Debug.LogError($"Programmer error: [MessageForwarder] No type known with TypeId = {message.TypeId}! Has the type mapping been added to MessageForwarder.cs?");
 				return;
 			}
 
@@ -129,6 +130,10 @@ namespace VRT.Pilots.Common
 					forwarder.Forward(message.Data);
 				}
 			}
+			else
+            {
+				Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
+            }
 		}
 	}
 

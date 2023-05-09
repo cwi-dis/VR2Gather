@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using FFmpeg.AutoGen;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Video
 {
@@ -18,9 +19,9 @@ namespace VRT.Video
 
         public VideoFilter(int width, int height, AVPixelFormat source, AVPixelFormat target)
         {
-            if (Config.Instance.ffmpegDLLDir != "")
+            if (VRTConfig.Instance.ffmpegDLLDir != "")
             {
-                FFmpeg.AutoGen.ffmpeg.RootPath = Config.Instance.ffmpegDLLDir;
+                FFmpeg.AutoGen.ffmpeg.RootPath = VRTConfig.Instance.ffmpegDLLDir;
             }
             srcStride = new int[] { ffmpeg.av_image_get_buffer_size(source, width, 1, 1) };
             int num_bytes = ffmpeg.av_image_get_buffer_size(target, width, height, 1);

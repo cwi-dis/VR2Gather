@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using VRT.Core;
+using Cwipc;
 using VRT.Orchestrator.Wrapping;
 using VRT.Pilots.Common;
 
@@ -16,30 +17,14 @@ namespace VRT.UserRepresentation.PointCloud
         }
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
-        private Dictionary<string, BasePipeline> pipelines = new Dictionary<string, BasePipeline>();
         const bool debug = true;
 
         public void Awake()
         {
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_SyncConfigMessage, typeof(SyncConfigMessage));
         }
-        public override BaseConfigDistributor Init(string _selfUserId)
-        {
-            selfUserId = _selfUserId;
-            return this;
-        }
 
-        public override void RegisterPipeline(string userId, BasePipeline pipeline)
-        {
-
-            if (pipelines.ContainsKey(userId))
-            {
-                Debug.LogError($"Programmer error: SyncConfigDistributor: registering duplicate userId {userId}");
-            }
-            pipelines[userId] = pipeline;
-        }
-
-        void Start()
+         void Start()
         {
             if (debug) Debug.Log($"SyncConfigDistributor: Started");
             //Subscribe to incoming data of the type we're interested in. 
@@ -64,7 +49,7 @@ namespace VRT.UserRepresentation.PointCloud
             earliestNextTransmission = System.DateTime.Now + System.TimeSpan.FromSeconds(interval);
             if (interval < 10) interval = interval * 2;
             // Find PointCloudPipeline belonging to self user.
-            PointCloudPipeline pipeline = (PointCloudPipeline)pipelines[selfUserId];
+            PointCloudPipelineSelf pipeline = (PointCloudPipelineSelf)pipelines[selfUserId];
             // Get data from self PointCloudPipeline.
             if (pipeline == null)
             {
@@ -106,7 +91,7 @@ namespace VRT.UserRepresentation.PointCloud
                 Debug.LogWarning($"SyncConfigDistributor: received data for unknown userId {receivedData.SenderId}");
                 return;
             }
-            PointCloudPipeline pipeline = (PointCloudPipeline)pipelines[receivedData.SenderId];
+            PointCloudPipelineOther pipeline = (PointCloudPipelineOther)pipelines[receivedData.SenderId];
             if (pipeline == null)
             {
                 return;

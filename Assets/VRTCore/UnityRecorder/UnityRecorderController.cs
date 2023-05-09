@@ -9,7 +9,7 @@ using UnityEditor.Recorder.Input;
 #endif
 using UnityEngine;
 
-namespace VRTCore
+namespace VRT.Core
 {
     public class UnityRecorderController : MonoBehaviour
     {

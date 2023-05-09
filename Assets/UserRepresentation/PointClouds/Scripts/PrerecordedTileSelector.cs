@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
 using VRT.Transport.SocketIO;
 using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
@@ -17,6 +20,7 @@ using QualityAssesment;
 
 namespace VRT.UserRepresentation.PointCloud
 {
+    using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
 
     public class PrerecordedTileSelector : BaseTileSelector
     {
@@ -84,7 +88,7 @@ namespace VRT.UserRepresentation.PointCloud
             public float PCBBZCentroid;
         }
 
-        public void Init(PointCloudPipeline _prerecordedPointcloud, int _nQualities, int _nTiles, TilingConfig? tilingConfig)
+        public void Init(PointCloudPipelineOther _prerecordedPointcloud, int _nQualities, int _nTiles, PointCloudNetworkTileDescription? tilingConfig)
         {
             if (tilingConfig != null)
             {
@@ -128,7 +132,7 @@ namespace VRT.UserRepresentation.PointCloud
         {
             prerecordedTileAdaptationSets = new List<AdaptationSet>[nTiles];
             prerecordedTileGeometrySets = new List<TileGeometry>[nTiles];
-            Config._User realUser = Config.Instance.LocalUser;
+            VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 #if WITH_QUALITY_ASSESSMENT
             currentStimuli = StimuliController.getCurrentStimulus();
             bitRatebudget = StimuliController.getBitrateBudget();
@@ -257,7 +261,7 @@ namespace VRT.UserRepresentation.PointCloud
         }
         protected override Vector3 getCameraForward()
         {
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {
@@ -270,7 +274,7 @@ namespace VRT.UserRepresentation.PointCloud
         public Vector3 getCameraPosition()
         {
             // The camera object is nested in another object on our parent object, so getting at it is difficult:
-            PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+            PlayerControllerSelf player = gameObject.GetComponentInParent<PlayerControllerSelf>();
             Transform cameraTransform = player?.getCameraTransform();
             if (cameraTransform == null)
             {
@@ -280,7 +284,7 @@ namespace VRT.UserRepresentation.PointCloud
             return cameraTransform.position;
         }
 
-        protected override Vector3 getPointcloudPosition(long currentFrameNumber)
+        protected override Vector3 getPointCloudPosition(long currentFrameNumber)
         {
             return new Vector3(0, 0, 0);
         }
@@ -339,7 +343,9 @@ namespace VRT.UserRepresentation.PointCloud
             {
                 statMsg += $", Tile{i}Orientationx={TileOrientation[i].x}, Tile{i}Orientationy={TileOrientation[i].y}, Tile{i}Orientationz={TileOrientation[i].z}, Tile{i}BBCentroidLocationx={tileLocations[i].x}, Tile{i}BBCentroidLocationy={tileLocations[i].y}, Tile{i}BBCentroidLocationz={tileLocations[i].z}, Distancetile{i}={tileDistances[i]}, Utilitytile{i}={hybridTileUtilities[i]}, LegacyUtilitytile{i}={tileUtilities[i]}";
             }
-            BaseStats.Output(Name(), statMsg);
+#if VRT_WITH_STATS
+            Statistics.Output(Name(), statMsg);
+#endif
             //xxxshishir modified here for weighted hybrid tile selction
             hybridTileWeights = new float[nTiles];
             Array.Copy(hybridTileUtilities, hybridTileWeights, nTiles);

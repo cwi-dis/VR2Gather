@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
+using VRT.Core;
+using VRT.Pilots.Common;
+#if VRT_WITH_STATS
+using Statistics = Cwipc.Statistics;
+#endif
+using Cwipc;
 
 public class VRTInitializer : MonoBehaviour
 {
@@ -10,8 +16,20 @@ public class VRTInitializer : MonoBehaviour
     void Awake()
     {
         Debug.Log("Initializer: Registering pipelines");
-        PointCloudPipeline.Register();
+        PointCloudPipelineSelf.Register();
+        PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
+        Debug.Log("Initializer: Initialize NegateProcessor");
+        var tmp = new NegateProcessor();
+    }
+
+    private void OnApplicationQuit()
+    {
+#if VRT_WITH_STATS
+        Statistics.Output("PilotController", $"quitting=1");
+#endif
+        // xxxjack the ShowTotalRefCount call may come too early, because the VoiceDashSender and VoiceDashReceiver seem to work asynchronously...
+        BaseMemoryChunkReferences.ShowTotalRefCount();
     }
 
     private void Start()

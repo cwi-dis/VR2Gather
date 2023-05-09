@@ -4,7 +4,7 @@ namespace VRT.Pilots.Common
 {
 	public class PlayerLocation : NetworkIdBehaviour
 	{
-		public NetworkPlayer CurrentPlayer;
+		public PlayerNetworkControllerBase CurrentPlayer;
 
 		public bool IsEmpty
 		{
@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
 			}
 		}
 
-		public void SetPlayer(NetworkPlayer player)
+		public void SetPlayer(PlayerNetworkControllerBase player)
 		{
 			CurrentPlayer = player;
 			player.transform.parent = transform;

@@ -1,0 +1,222 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - 'deployment/**'
+    tags:
+      - 'build*'
+  pull_request:
+    branches:
+      - 'deployment/**'
+      
+
+jobs:
+  buildForWindows:
+    name: Build for Windows
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2021.3.24f1
+        targetPlatform:
+          - StandaloneWindows64
+    steps:
+      # Checkout (without LFS)
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      # Git LFS
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        uses: actions/cache@v3
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+
+      # Cache
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+#      # Test
+#      - name: Run tests
+#        uses: game-ci/unity-test-runner@v2
+#        env:
+#          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+#        with:
+#          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build
+      - name: Build project
+        uses: game-ci/unity-builder@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+          buildName: VR2Gather
+
+      # Output
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Build-${{ matrix.targetPlatform }}
+          path: build
+          retention-days: 4
+
+#   buildForLinux:
+#     name: Build for Linux
+#     runs-on: ubuntu-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         unityVersion:
+#           - 2021.3.11f1
+#         targetPlatform:
+#           - StandaloneLinux64
+# #          - Android
+#     steps:
+#       # Checkout (without LFS)
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+#         with:
+#           submodules: true
+#           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+# 
+#       # Git LFS
+#       - name: Create LFS file list
+#         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+# 
+#       - name: Restore LFS cache
+#         uses: actions/cache@v3
+#         id: lfs-cache
+#         with:
+#           path: .git/lfs
+#           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+# 
+#       - name: Git LFS Pull
+#         run: |
+#           git lfs pull
+#           git add .
+#           git reset --hard
+# 
+#       # Cache
+#       - uses: actions/cache@v3
+#         with:
+#           path: Library
+#           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+#           restore-keys: |
+#             Library-
+# 
+# #      # Test
+# #      - name: Run tests
+# #        uses: game-ci/unity-test-runner@v2
+# #        env:
+# #          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+# #        with:
+# #          githubToken: ${{ secrets.GITHUB_TOKEN }}
+# 
+#       # Build
+#       - name: Build project
+#         uses: game-ci/unity-builder@v2
+#         env:
+#           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#         with:
+#           unityVersion: ${{ matrix.unityVersion }}
+#           targetPlatform: ${{ matrix.targetPlatform }}
+# 
+#       # Output
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: Build-${{ matrix.targetPlatform }}
+#           path: build
+#           retention-days: 4
+# 
+#   buildForMacos:
+#     name: Build for MacOS
+#     runs-on: macos-latest
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         unityVersion:
+#           - 2021.3.11f1
+#         targetPlatform:
+#           - StandaloneOSX
+#     steps:
+#       # Checkout (without LFS)
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#         with:
+#           submodules: true
+#           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+# 
+#       # Git LFS
+#       - name: Create LFS file list
+#         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+# 
+#       - name: Restore LFS cache
+#         uses: actions/cache@v3
+#         id: lfs-cache
+#         with:
+#           path: .git/lfs
+#           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+# 
+#       - name: Git LFS Pull
+#         run: |
+#           git lfs pull
+#           git add .
+#           git reset --hard
+# 
+#       # Cache
+#       - uses: actions/cache@v3
+#         with:
+#           path: Library
+#           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+#           restore-keys: |
+#             Library-
+# 
+# #      # Test
+# #      - name: Run tests
+# #        uses: game-ci/unity-test-runner@v2
+# #        env:
+# #          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+# #        with:
+# #          githubToken: ${{ secrets.GITHUB_TOKEN }}
+# 
+#       # Build
+#       - name: Build project
+#         uses: game-ci/unity-builder@v2
+#         env:
+#           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#         with:
+#           unityVersion: ${{ matrix.unityVersion }}
+#           targetPlatform: ${{ matrix.targetPlatform }}
+# 
+#       # Output
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: Build-${{ matrix.targetPlatform }}
+#           path: build
+#           retention-days: 4

@@ -2,24 +2,42 @@ using VRT.Orchestrator.Wrapping;
 using UnityEngine;
 using VRT.Core;
 
-public class PilotRegistry
+namespace VRT.Pilots.LoginManager
 {
-
-    public static string GetSceneNameForPilotName(string pilotName, string pilotVariant)
+    public class PilotRegistry : MonoBehaviour
     {
-        // Note: Pilot scenes need to be registered here, but also added to the "scenes in build"
-        // through Unity Editor File->Build Settings dialog.
-        switch (pilotName)
+        public static PilotRegistry Instance;
+
+        private void Awake()
         {
-            case "Pilot 0":
-                return "Pilot0";
-            case "Mediascape":
-                return "MediaScape_Museum";
-            case "Technical Playground":
-                return "TechnicalPlayground";
-            default:
-                throw new  System.Exception($"Selected scenario \"{pilotName}\" not implemented in this player");
+            Instance = this;
+        }
+
+        public string GetSceneNameForPilotName(string pilotName, string pilotVariant)
+        {
+            // Note: Pilot scenes need to be registered here, but also added to the "scenes in build"
+            // through Unity Editor File->Build Settings dialog.
+            //
+            // And new pilot names must be added to the scenarios.json of the orchestrator.
+            switch (pilotName)
+            {
+                case "Pilot 0":
+                    return "Pilot0";
+                case "Technical Playground":
+                    return "TechnicalPlayground";
+                case "Development":
+                    return "MediaScape_Stage";
+                case "Development2":
+                    return null;
+                case "Development3":
+                    return null;
+                case "Mediascape":
+					return "MediaScape_Museum";
+                case "MedicalExamination":
+                    return null;
+                default:
+                    return null;
+            }
         }
     }
-
 }

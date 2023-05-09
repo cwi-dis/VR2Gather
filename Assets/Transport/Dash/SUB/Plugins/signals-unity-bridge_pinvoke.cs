@@ -4,9 +4,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using VRT.Core;
+using Cwipc;
 
 namespace VRT.Transport.Dash
 {
+    using Timestamp = System.Int64;
+    using IncomingStreamDescription = Cwipc.StreamSupport.IncomingStreamDescription;
+
     public class sub
     {
         const int MAX_SUB_MESSAGE_LEVEL = 0; // 0-Error, 1-Warn, 2-Info, 3-Debug
@@ -23,12 +27,23 @@ namespace VRT.Transport.Dash
             public uint totalHeight;
         }
 
-        public struct StreamDescriptor
+        public struct FrameInfo
         {
-            public int streamIndex;
-            public int tileNumber;
-            public Vector3 orientation;
+            /// <summary>
+            /// Presentation timestamp (milliseconds).
+            /// </summary>
+            public Timestamp timestamp;
+            /// <summary>
+            /// Per-frame metadata carried by Dash packets.
+            /// </summary>
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
+            public byte[] dsi;
+            /// <summary>
+            /// Length of dsi.
+            /// </summary>
+            public int dsi_size;
         }
+
 
         protected class _API
         {
@@ -143,14 +158,14 @@ namespace VRT.Transport.Dash
                 return streamDesc.MP4_4CC;
             }
 
-            public StreamDescriptor[] get_streams()
+            public IncomingStreamDescription[] get_streams()
             {
                 if (pointer == IntPtr.Zero)
                 {
                     UnityEngine.Debug.LogAssertion("sub.get_streams: called with pointer==null");
                 }
                 int nStreams = _API.sub_get_stream_count(pointer);
-                StreamDescriptor[] rv = new StreamDescriptor[nStreams];
+                IncomingStreamDescription[] rv = new IncomingStreamDescription[nStreams];
                 for (int streamIndex = 0; streamIndex < nStreams; streamIndex++)
                 {
                     DashStreamDescriptor streamDesc = new DashStreamDescriptor();
@@ -245,7 +260,7 @@ namespace VRT.Transport.Dash
                 string path = Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH");
                 if (path == "" || path == null)
                 {
-                    path = Config.Instance.Macintosh.SIGNALS_SMD_PATH;
+                    path = VRTConfig.Instance.Macintosh.SIGNALS_SMD_PATH;
                 }
                 if (path == "" || path == null)
                 {

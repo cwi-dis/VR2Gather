@@ -1,5 +1,6 @@
 {
     "name": "Pilots",
+    "rootNamespace": "",
     "references": [
         "VRTCore",
         "VRTeleporter",
@@ -7,7 +8,10 @@
         "Orchestrator",
         "Voice",
         "UnityEngine.SpatialTracking",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.InputSystem",
+        "Cwipc",
+        "Unity.XR.Interaction.Toolkit"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

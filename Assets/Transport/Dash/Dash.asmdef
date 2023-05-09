@@ -1,7 +1,9 @@
 {
     "name": "Dash",
+    "rootNamespace": "",
     "references": [
-        "VRTCore"
+        "VRTCore",
+        "Cwipc"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
