@@ -24,6 +24,7 @@ public class NegateProcessor : InputProcessor<float>
     [RuntimeInitializeOnLoadMethod]
     static void Initialize()
     {
+        Debug.Log("NegateProcessor: registering with Input System");
         InputSystem.RegisterProcessor<NegateProcessor>();
     }
 

@@ -42,7 +42,7 @@ namespace VRT.Pilots.Common
             return $"{GetType().Name}";
         }
 
-        public void Awake()
+        public virtual void Awake()
         {
             if (Instance != null)
             {
