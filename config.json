@@ -1,5 +1,4 @@
-{
- 
+{ 
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "Medical Examination",
@@ -7,7 +6,8 @@
   	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "flauwte",
+  	"autoCreateForUser" : "topinambur",
+
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,

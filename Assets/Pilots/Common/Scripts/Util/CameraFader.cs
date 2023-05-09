@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +20,7 @@ namespace VRT.Pilots.Common
 
         [Tooltip("If true this scene fades in from black (otherwise it only fades out to black)")]
         public bool startFadedOut = false;
-
+        private bool fadeInStarted = false;
         private Material _FadeMaterial;
         private bool _Fading = false;
         private float _Target;
@@ -51,6 +52,11 @@ namespace VRT.Pilots.Common
             FadeImage.material = _FadeMaterial;
             _InitFade();
 
+        }
+
+        private void Start()
+        {
+            StartFadeIn();
         }
 
         void _InitFade()
@@ -130,6 +136,13 @@ namespace VRT.Pilots.Common
 
                 yield return null;
             }
+        }
+
+        public void StartFadeIn()
+        {
+            if (!startFadedOut || fadeInStarted) return;
+            fadeInStarted = true;
+            StartCoroutine(FadeIn());
         }
     }
 }

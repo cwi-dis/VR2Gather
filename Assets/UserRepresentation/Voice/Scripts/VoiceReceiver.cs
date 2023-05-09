@@ -20,15 +20,6 @@ namespace VRT.UserRepresentation.Voice
 
     public class VoiceReceiver : MonoBehaviour
     {
-#if VRT_AUDIO_DEBUG
-        //
-        // Debug code to test what is going wrong with audio.
-        // Setting debugReplaceByTone will replace all incoming audio data with a 440Hz tone
-        // Setting debugAddTone will add the tone.
-        const bool debugReplaceByTone = false;
-        const bool debugAddTone = false;
-        ToneGenerator debugToneGenerator = null;
-#endif
         AsyncReader reader;
         AsyncWorker codec;
         AsyncVoicePreparer preparer;
@@ -50,12 +41,6 @@ namespace VRT.UserRepresentation.Voice
         // Start is called before the first frame update
         public void Init(User user, string _streamName, int _streamNumber)
         {
-#if VRT_AUDIO_DEBUG
-            if (debugAddTone || debugReplaceByTone)
-            {
-                debugToneGenerator = new ToneGenerator();
-            }
-#endif
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
@@ -122,12 +107,6 @@ namespace VRT.UserRepresentation.Voice
 
         public void Init(User user, QueueThreadSafe queue)
         {
-#if VRT_AUDIO_DEBUG
-            if (debugAddTone || debugReplaceByTone)
-            {
-                debugToneGenerator = new ToneGenerator();
-            }
-#endif
 #if VRT_WITH_STATS
             stats = new Stats(Name());
 #endif
@@ -205,17 +184,6 @@ namespace VRT.UserRepresentation.Voice
                     tmpBuffer[i] = 0;
                 }
             }
-#if VRT_AUDIO_DEBUG
-            if (debugReplaceByTone)
-            {
-                for (int i = 0; i < tmpBuffer.Length; i++) tmpBuffer[i] = 0;
-                for (int i = 0; i < data.Length; i++) data[i] = 0;
-            }
-            if (debugAddTone || debugReplaceByTone)
-            {
-                debugToneGenerator.addTone(tmpBuffer);
-            }
-#endif
             for (int i=0; i<data.Length; i++)
             {
                 data[i] += tmpBuffer[i / channels];

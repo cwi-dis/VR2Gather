@@ -21,7 +21,7 @@ namespace VRT.UserRepresentation.PointCloud
     using PointCloudNetworkTileDescription = Cwipc.StreamSupport.PointCloudNetworkTileDescription;
     using static VRT.Core.VRTConfig._User;
 
-    public class PointCloudPipelineSelf : PointCloudPipelineBase
+    public class PointCloudPipelineSelf : PointCloudPipelineBase, IPointCloudPositionProvider
     {
         public static void Register()
         {
@@ -60,7 +60,10 @@ namespace VRT.UserRepresentation.PointCloud
             //
             if (CwipcConfig.Instance.preparerQueueSizeOverride > 0) pcPreparerQueueSize = CwipcConfig.Instance.preparerQueueSizeOverride;
             user = (User)_user;
-            SetupConfigDistributors();
+            if (!preview)
+            {
+                SetupConfigDistributors();
+            }
 
             // xxxjack this links synchronizer for all instances, including self. Is that correct?
             if (synchronizer == null)
@@ -110,7 +113,14 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Allocate queues we need for this sourceType
             //
-            encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            if (preview)
+            {
+                encoderQueue = null;
+            }
+            else
+            {
+                encoderQueue = new QueueThreadSafe("PCEncoder", 2, true);
+            }
             //
             // Ensure we can determine from the log file who this is.
             //
@@ -159,8 +169,8 @@ namespace VRT.UserRepresentation.PointCloud
             if (!preview)
             {
                 // Which encoder do we want?
-                string pointcloudCodec = CwipcConfig.Instance.Codec;
-                // For TCP we want short queues and we want them leaky (so we don't hang)
+                string pointcloudCodec = SessionConfig.Instance.pointCloudCodec;
+               // For TCP we want short queues and we want them leaky (so we don't hang)
                 bool leakyQueues = SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.TCP;
                 //
                 // Determine tiles to transmit
@@ -336,6 +346,16 @@ namespace VRT.UserRepresentation.PointCloud
             }
             Debug.Log($"{Name()}: GetSyncConfig: visual {rv.visuals.wallClockTime}={rv.visuals.streamClockTime}, audio {rv.audio.wallClockTime}={rv.audio.streamClockTime}");
             return rv;
+        }
+
+        public Vector3 GetPosition()
+        {
+            AsyncPointCloudReader pcReader = reader as AsyncPointCloudReader;
+            if (pcReader == null)
+            {
+                return Vector3.zero;
+            }
+            return pcReader.GetPosition();
         }
     }
 }
