@@ -9,7 +9,15 @@ namespace VRT.Pilots.Common
 
     public class PlayerControllerSelf : PlayerControllerBase
     {
+        [Tooltip("Disable transmitters for this self-player")]
+        public bool previewPlayer = false;
+
         public bool debugTransform = false;
+
+        void Awake()
+        {
+            isPreviewPlayer = previewPlayer;
+        }
 
         public override void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user)
         {
@@ -127,8 +135,9 @@ namespace VRT.Pilots.Common
         // Update is called once per frame
         System.DateTime lastUpdateTime;
         
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
              if (debugTiling)
             {
                 // Debugging: print position/orientation of camera and others every 10 seconds.
@@ -154,6 +163,18 @@ namespace VRT.Pilots.Common
             {
                 ViewAdjust va = GetComponentInChildren<ViewAdjust>();
                 if (va != null) va.ResetOrigin();
+                return true;
+            }
+            if (command == "lowerview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.LowerView();
+                return true;
+            }
+            if (command == "higherview")
+            {
+                ViewAdjust va = GetComponentInChildren<ViewAdjust>();
+                if (va != null) va.HigherView();
                 return true;
             }
             if (command == "resetposition")

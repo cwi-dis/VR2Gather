@@ -19,7 +19,7 @@ namespace VRT.Pilots.Common
         [Tooltip("CameraOffset of camera")]
         [SerializeField] protected Transform cameraOffset;
         [Tooltip("Current visual representation of this user")]
-        [DisableEditing] public UserRepresentationType userRepresentation;
+        public UserRepresentationType userRepresentation;
         [Tooltip("Avatar representation of this user")]
         [SerializeField] protected GameObject avatar;
         [Tooltip("Video webcam avatar representation of this user")]
@@ -32,6 +32,8 @@ namespace VRT.Pilots.Common
         [SerializeField] protected GameObject altRepTwo;
         [Tooltip("Audio representation of this user")]
         [SerializeField] protected GameObject voice;
+        [Tooltip("Charachter controller, will be disabled for no-representation users")]
+        [SerializeField] protected CharacterController charControl;
         [Tooltip("User name is filled into this TMPro field")]
         [SerializeField] protected TextMeshProUGUI userNameText; 
         [Tooltip("True if this is the local player (debug/introspection only)")]
@@ -40,7 +42,12 @@ namespace VRT.Pilots.Common
         [DisableEditing] [SerializeField] private bool _isVisible;
         [Tooltip("Orchestrator User structure for this player")]
         [DisableEditing][SerializeField] protected VRT.Orchestrator.Wrapping.User user;
-       
+        protected bool isInitialized = false;
+
+        // May be set by subclasses to indicate this player should not transmit
+        // any data streams.
+        protected bool isPreviewPlayer = false;
+
         public bool isVisible
         {
             get => _isVisible;
@@ -66,6 +73,10 @@ namespace VRT.Pilots.Common
         virtual public string Name()
         {
             return $"{GetType().Name}";
+        }
+
+        protected virtual void Update()
+        {
         }
 
         public abstract void SetUpPlayerController(bool _isLocalPlayer, VRT.Orchestrator.Wrapping.User user);
@@ -105,9 +116,16 @@ namespace VRT.Pilots.Common
             }
         }
 
-        public virtual void SetRepresentation(UserRepresentationType type)
+        public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
+            if (isInitialized && type == userRepresentation) return;
+            if (isInitialized && onlyIfVisible && !isVisible) return;
+            isInitialized = true;
             userRepresentation = type;
+            if (permanent)
+            {
+                user.userData.userRepresentationType = type;
+            }
             // Delete old pipelines, if any   
             if (webcam.TryGetComponent(out BasePipeline webpipeline))
                 Destroy(webpipeline);
@@ -121,13 +139,21 @@ namespace VRT.Pilots.Common
             if (altRepTwo != null) altRepTwo.SetActive(false);
             // Enable and initialize the correct representation
             VRTConfig._User userCfg = isLocalPlayer ? VRTConfig.Instance.LocalUser : null;
+            if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
+                case UserRepresentationType.__NONE__:
+                    // disable character controller.
+                    if (charControl != null)
+                    {
+                        charControl.enabled = false;
+                    }
+                    break;
                 case UserRepresentationType.__2D__:
                     isVisible = true;
                     webcam.SetActive(true);
-                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, user.userData.userRepresentationType, isLocalPlayer);
-                    wcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
+                    wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
                 case UserRepresentationType.__AVATAR__:
                     isVisible = true;
@@ -141,8 +167,20 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
-                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, user.userData.userRepresentationType, isLocalPlayer);
-                    pcPipeline?.Init(isLocalPlayer, user, userCfg);
+                    BasePipeline pcPipeline = BasePipeline.AddPipelineComponent(this.pointcloud, userRepresentation, isLocalPlayer);
+                    try
+                    {
+                        pcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
+                        userRepresentation = UserRepresentationType.__AVATAR__;
+                        avatar.SetActive(true);
+                        this.pointcloud.SetActive(false);
+                        Destroy(pcPipeline);
+                        throw;
+                    }
                     break;
                 case UserRepresentationType.__ALT1__:
                     altRepOne.SetActive(true);
@@ -160,6 +198,7 @@ namespace VRT.Pilots.Common
 
         public void LoadAudio(VRT.Orchestrator.Wrapping.User user)
         {
+            if (isPreviewPlayer) return;
             if (user.userData.microphoneName == "None")
             {
                 Debug.LogWarning($"SessionPlayersManager: user {user.userId} has no microphone, skipping audio.");

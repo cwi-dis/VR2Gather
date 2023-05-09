@@ -10,7 +10,8 @@
         "Pilots",
         "TCP",
         "Cwipc",
-        "VRTStatistics"
+        "Unity.XR.Interaction.Toolkit",
+        "UnityEngine.SpatialTracking"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

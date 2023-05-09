@@ -25,8 +25,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5323423855503634329}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.125, y: 0, z: -0.125}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalPosition: {x: -0.175, y: -0.05, z: -0.175}
+  m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9164957187378806018}
   m_RootOrder: 0
@@ -43,10 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5108a77c6f65c423ba69bbab1571e465, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 0, z: 0}
-  size: {x: 1, y: 1, z: 1}
-  drawGizmoBbox: 0
   drawGizmoHeadcube: 0
+  drawGizmoBbox: 0
 --- !u!1 &6916535084958141328
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,6 +73,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.125, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6561372155910251654}
   m_Father: {fileID: 0}
@@ -96,4 +96,3 @@ MonoBehaviour:
   head: {fileID: 2134568275601948114}
   invertX: 1
   invertZ: 0
-  drawCenterSphere: 0

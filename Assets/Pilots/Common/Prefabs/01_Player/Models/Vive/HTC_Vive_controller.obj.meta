@@ -3,7 +3,12 @@ guid: 0c7fdc988d59b41cc95c61eb3622bd21
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: HTC_Vive_controllerMat
+    second: {fileID: 2100000, guid: 2558cc708fd5c434a9f95189c5d49e8b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

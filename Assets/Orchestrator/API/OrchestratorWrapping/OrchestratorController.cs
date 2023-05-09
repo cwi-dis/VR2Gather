@@ -83,6 +83,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // orchestrator connection state
         private bool connectedToOrchestrator = false;
+        private bool hasBeenConnectedToOrchestrator = false;
 
         // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
         private bool isAutoRetrievingData = false;
@@ -235,13 +236,16 @@ namespace VRT.Orchestrator.Wrapping
 
         // Connect to the orchestrator
         public void SocketConnect(string pUrl) {
+            if (enableLogging) Debug.Log($"OrchestratorController: connect to {pUrl}");
             orchestratorWrapper = new OrchestratorWrapper(pUrl, this, this, this, this);
             orchestratorWrapper.Connect();
         }
 
         // SockerConnect response callback
         public void OnConnect() {
+            if (enableLogging) Debug.Log($"OrchestratorController: connected to orchestrator");
             connectedToOrchestrator = true;
+            hasBeenConnectedToOrchestrator = true;
             connectionStatus = orchestratorConnectionStatus.__CONNECTED__;
             OnConnectionEvent?.Invoke(true);
 
@@ -250,6 +254,11 @@ namespace VRT.Orchestrator.Wrapping
 
         // SockerConnecting response callback
         public void OnConnecting() {
+            if (enableLogging) Debug.Log($"OrchestratorController: connecting to orchestrator");
+            if (hasBeenConnectedToOrchestrator)
+            {
+                Debug.LogWarning("OrchestratorController: attempting to reconnect to orchestrator");
+            }
             connectionStatus = orchestratorConnectionStatus.__CONNECTING__;
             OnConnectingEvent?.Invoke();
         }
@@ -276,6 +285,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // SockerDisconnect response callback
         public void OnDisconnect() {
+            if (enableLogging) Debug.Log($"OrchestratorController: disconnected from orchestrator");
             me = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
@@ -688,7 +698,7 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorControler: OnGetUsersResponse: Users count:" + users.Count);
+            if (enableLogging) Debug.Log("OrchestratorController: OnGetUsersResponse: Users count:" + users.Count);
 
             availableUserAccounts = users;
             OnGetUsersEvent?.Invoke(users.ToArray());
@@ -915,6 +925,10 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public void SendEventToAll(string pEventData) {
+            if (!userIsMaster)
+            {
+                Debug.LogError("OrchestratorController: SendEventToAll() called, but not master user");
+            }
             byte[] lData = Encoding.ASCII.GetBytes(pEventData);
 
             if (lData != null) {

@@ -66,7 +66,7 @@ namespace VRT.Pilots.Common
 				OrchestratorController.Instance.SendTypeEventToMaster(instantiatorRequest);
 				return;
 			}
-			var newId = InstantiateObject(null);
+			var newId = InstantiateNetworkObject(null);
 			instantiatorRequest.InstantiatedObjectId = newId;
 			OrchestratorController.Instance.SendTypeEventToAll(instantiatorRequest);
 
@@ -85,7 +85,7 @@ namespace VRT.Pilots.Common
                 {
 					Debug.LogError($"NetworkInstantiator({name}): master received request with newId={data.InstantiatedObjectId}");
                 }
-				var newId = InstantiateObject(null);
+				var newId = InstantiateNetworkObject(null);
 				var instantiatorRequest = new NetworkInstantiatorData()
 				{
 					NetworkBehaviourId = NetworkId,
@@ -104,7 +104,7 @@ namespace VRT.Pilots.Common
 					Debug.LogError($"NetworkInstantiator({name}): non-master received request with empty newId");
 				}
 				var newId = data.InstantiatedObjectId;
-				InstantiateObject(newId);
+				InstantiateNetworkObject(newId);
 #if VRT_WITH_STATS
 				Statistics.Output("NetworkInstantiator", $"name={name}, local=0, master=1, instantiatorId={NetworkId}, newId={newId}");
 #endif
@@ -115,9 +115,27 @@ namespace VRT.Pilots.Common
 #endif
 		}
 
-		public virtual string InstantiateObject(string newNetworkId)
+		/// <summary>
+		/// Create a local copy of the new object and return it. May be overridden by subclasses,
+		/// for example to initialize the new object correctly.
+		/// Note that if the content of the object is dynamic (for example a photograph) then there
+		/// is no guaraantee that all copies are completely identical (because each photo will be taken using
+		/// the camera in that instance of VR2Gather)
+		/// </summary>
+		/// <returns></returns>
+		protected virtual GameObject InstantiateTemplateObject()
 		{
-			GameObject newObject = Instantiate(templateObject, location.transform.position, location.transform.rotation);
+			return Instantiate(templateObject, location.transform.position, location.transform.rotation);
+        }
+
+		/// <summary>
+		/// Instantiate the object and assign its network IDs.
+		/// </summary>
+		/// <param name="newNetworkId"></param>
+		/// <returns></returns>
+        protected string InstantiateNetworkObject(string newNetworkId)
+		{
+			GameObject newObject = InstantiateTemplateObject();
 			NetworkIdBehaviour[] netIdBehaviours = newObject.GetComponentsInChildren<NetworkIdBehaviour>(true);
 			if (netIdBehaviours.Length > 1 && !string.IsNullOrEmpty(newNetworkId))
             {

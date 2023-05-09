@@ -45,8 +45,13 @@ namespace VRT.Pilots.Common
 		/// <param name="forward">Whether or not we forward this message. Defaults to false. Should be set to true if it's a message received by the Master, to be forwarded to all users</param>
 		public static void SendTypeEventToAll<T>(this OrchestratorController controller, T data, bool forward = false) where T : BaseMessage
 		{
-			if (controller == null || controller.SelfUser == null)
+			if (controller == null)
 			{
+				return;
+			}
+			if (controller.SelfUser == null)
+			{
+				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
 				return;
 			}
 
@@ -82,8 +87,13 @@ namespace VRT.Pilots.Common
 		/// <param name="data">The data of type T to send</param>
 		public static void SendTypeEventToMaster<T>(this OrchestratorController controller, T data) where T : BaseMessage
 		{
-			if (controller == null || controller.SelfUser == null)
+			if (controller == null)
 			{
+				return;
+			}
+			if (controller.SelfUser == null)
+			{
+				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
 				return;
 			}
 
@@ -117,8 +127,13 @@ namespace VRT.Pilots.Common
 		/// <param name="data">The data of type T to send</param>
 		public static void SendTypeEventToUser<T>(this OrchestratorController controller, string userId, T data) where T : BaseMessage
 		{
-			if (controller == null || controller.SelfUser == null)
+			if (controller == null)
 			{
+				return;
+			}
+			if (controller.SelfUser == null)
+			{
+				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
 				return;
 			}
 
