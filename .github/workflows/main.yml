@@ -23,12 +23,20 @@ jobs:
         targetPlatform:
           - StandaloneWindows64
     steps:
+      - name: Check disk size
+        run: |
+          df -k
+
       # Checkout (without LFS)
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: true
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Check disk size
+        run: |
+          df -k
 
       # Git LFS
       - name: Create LFS file list
@@ -38,12 +46,20 @@ jobs:
           cat .lfs-assets-id-unsorted | cut -d' ' -f1 | sort > .lfs-assets-id
           cat .lfs-assets-id-unsorted
 
+      - name: Check disk size
+        run: |
+          df -k
+
       - name: Restore LFS cache
         uses: actions/cache@v3
         id: lfs-cache
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Check disk size
+        run: |
+          df -k
 
       - name: Git LFS Pull
         run: |
@@ -59,7 +75,11 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-
+      - name: Check disk size
+        run: |
+          df -k
+          echo Large packages:
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
 #      # Test
 #      - name: Run tests
 #        uses: game-ci/unity-test-runner@v2
