@@ -72,18 +72,14 @@ jobs:
         run: |
           df -k
 
-      # Cache
-      - name: Restore Library cache
-        uses: actions/cache@v3
-        with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-      - name: Check disk size
-        run: |
-          df -k
-
+#      # Cache
+#      - name: Restore Library cache
+#        uses: actions/cache@v3
+#        with:
+#          path: Library
+#          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+#          restore-keys: |
+#            Library-
 #      # Test
 #      - name: Run tests
 #        uses: game-ci/unity-test-runner@v2
@@ -103,6 +99,10 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: VR2Gather
+
+      - name: Check disk size
+        run: |
+          df -k
 
       # Output
       - uses: actions/upload-artifact@v3
