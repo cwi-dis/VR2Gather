@@ -34,7 +34,7 @@ jobs:
       - name: Create LFS file list
         run: |
           git lfs ls-files -l > .lfs-assets-id-unsorted
-          git submodules foreach git lfs ls-files -l >> .lfs-assets-id-unsorted
+          git submodule foreach git lfs ls-files -l >> .lfs-assets-id-unsorted
           cat .lfs-assets-id-unsorted | cut -d' ' -f1 | sort > .lfs-assets-id
           cat .lfs-assets-id-unsorted
 
