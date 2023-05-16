@@ -32,7 +32,7 @@ jobs:
 
       # Git LFS
       - name: Create LFS file list
-        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+        run: (git lfs ls-files -l ; git submodules foreach git lfs ls-files -l) | cut -d' ' -f1 | sort > .lfs-assets-id
 
       - name: Restore LFS cache
         uses: actions/cache@v3
@@ -44,6 +44,7 @@ jobs:
       - name: Git LFS Pull
         run: |
           git lfs pull
+          git submodule foreach git lfs pull
           git add .
           git reset --hard
 
