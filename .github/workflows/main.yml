@@ -72,6 +72,15 @@ jobs:
         run: |
           df -k
 
+      - name: Git LFS Prune
+        run: |
+          git lfs prune -f
+          git submodule foreach git lfs prune -f
+
+      - name: Check disk size
+        run: |
+          df -k
+
 #      # Cache
 #      - name: Restore Library cache
 #        uses: actions/cache@v3
