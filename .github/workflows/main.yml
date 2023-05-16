@@ -38,29 +38,29 @@ jobs:
         run: |
           df -k
 
-      # Git LFS
-      - name: Create LFS file list
-        run: |
-          git lfs ls-files -l > .lfs-assets-id-unsorted
-          git submodule foreach git lfs ls-files -l >> .lfs-assets-id-unsorted
-          cat .lfs-assets-id-unsorted | cut -d' ' -f1 | sort > .lfs-assets-id
-          cat .lfs-assets-id-unsorted
-
-      - name: Check disk size
-        run: |
-          df -k
-
-      - name: Restore LFS cache
-        uses: actions/cache@v3
-        id: lfs-cache
-        with:
-          path: .git/lfs
-          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
-
-      - name: Check disk size
-        run: |
-          df -k
-
+#      # Git LFS
+#      - name: Create LFS file list
+#        run: |
+#          git lfs ls-files -l > .lfs-assets-id-unsorted
+#          git submodule foreach git lfs ls-files -l >> .lfs-assets-id-unsorted
+#          cat .lfs-assets-id-unsorted | cut -d' ' -f1 | sort > .lfs-assets-id
+#          cat .lfs-assets-id-unsorted
+#
+#      - name: Check disk size
+#        run: |
+#          df -k
+#
+#      - name: Restore LFS cache
+#        uses: actions/cache@v3
+#        id: lfs-cache
+#        with:
+#          path: .git/lfs
+#          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+#
+#      - name: Check disk size
+#        run: |
+#          df -k
+#
       - name: Git LFS Pull
         run: |
           git lfs pull
@@ -68,7 +68,12 @@ jobs:
           git add .
           git reset --hard
 
+      - name: Check disk size
+        run: |
+          df -k
+
       # Cache
+      - name: Restore Library cache
       - uses: actions/cache@v3
         with:
           path: Library
@@ -78,8 +83,7 @@ jobs:
       - name: Check disk size
         run: |
           df -k
-          echo Large packages:
-          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
+
 #      # Test
 #      - name: Run tests
 #        uses: game-ci/unity-test-runner@v2
