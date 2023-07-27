@@ -20,7 +20,7 @@
     
     "PCSelfConfig": {
       "RS2ReaderConfig": {
-        "configFilename": "./cameraconfig.xml"
+        "configFilename": "./cameraconfig.json"
       },
       "SynthReaderConfig": {
         "nPoints": 16000
