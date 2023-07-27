@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Pilots/LoginManager/Scenes/LoginManager.unity
     guid: 29732a909b44f204db3708ba9a91c2fc
-  - enabled: 1
+  - enabled: 0
     path: Assets/Pilots/Pilot0/Scenes/Pilot0.unity
     guid: 01e8d4050e184da48aba95c97a697601
-  - enabled: 1
+  - enabled: 0
     path: Assets/Pilots/TechnicalPlayground/Scenes/TechnicalPlayground.unity
     guid: 8d7c2248902f944f78d3799d2a8f1dba
   - enabled: 1
