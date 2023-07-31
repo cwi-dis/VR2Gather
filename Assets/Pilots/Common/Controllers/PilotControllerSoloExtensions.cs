@@ -11,8 +11,6 @@ namespace VRT.Pilots.Common
     /// </summary>
     public class PilotControllerSoloExtensions : MonoBehaviour
     {
-        [Tooltip("The user (for enabling isLocal)")]
-        public VRT.Pilots.Common.PlayerNetworkControllerBase player;
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
         [Tooltip("User representation")]
@@ -37,6 +35,7 @@ namespace VRT.Pilots.Common
                 Debug.LogError($"{name}: playerManager field not set");
                 return;
             }
+            playerManager.gameObject.SetActive(true);
             playerManager.SetUpPlayerController(true, user);
         }
 
