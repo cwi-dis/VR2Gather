@@ -20,7 +20,7 @@ MonoBehaviour:
   LowOverheadMode: 0
   OptimizeBufferDiscards: 1
   PhaseSync: 0
-  SymmetricProjection: 1
+  SymmetricProjection: 0
   SubsampledLayout: 0
   FoveatedRenderingMethod: 0
   LateLatching: 0
