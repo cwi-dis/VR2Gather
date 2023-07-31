@@ -14,14 +14,12 @@ using UnityEngine.InputSystem;
 public class NegateProcessor : InputProcessor<float>
 {
 
-#if UNITY_EDITOR
     static NegateProcessor()
     {
         Initialize();
     }
-#endif
 
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()
     {
         Debug.Log("NegateProcessor: registering with Input System");
