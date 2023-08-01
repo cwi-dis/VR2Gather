@@ -39,6 +39,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Callbacks called when the controller changes")]
         public System.Action controllerChanged;
 
+        [Tooltip("Introspection/Debug: print log messages")]
+        [SerializeField] bool debug = false;
+
         [Tooltip("Introspection/debug: is direct interaction currently enabled")]
         [DisableEditing][SerializeField] private bool directInteractionIsEnabled;
 
@@ -85,10 +88,33 @@ namespace VRT.Pilots.Common
             foreach (var inDev in deviceList)
             {
                 if (!inDev.isValid) continue;
+                if (debug)
+                {
+                    Debug.Log($"VRTInputController: examine device \"{inDev.name}\"");
+                }
                 if ((inDev.characteristics & InputDeviceCharacteristics.Controller) == 0) continue;
+
                 foundController = true;
-                if (inDev.name.Contains("Oculus Touch Controller")) foundOculusController = true;
-                if (inDev.name.Contains("HTC Vive Controller")) foundViveController = true;
+                if (debug)
+                {
+                    Debug.Log($"VRTInputController: is a controller");
+                }
+                if (inDev.name.Contains("Oculus Touch Controller"))
+                {
+                    foundOculusController = true;
+                    if (debug)
+                    {
+                        Debug.Log($"VRTInputController: is Oculus Controller");
+                    }
+                }
+                if (inDev.name.Contains("HTC Vive Controller"))
+                {
+                    foundViveController = true;
+                    if (debug)
+                    {
+                        Debug.Log($"VRTInputController: is Vive controller");
+                    }
+                }
             }
             if (foundOculusController) return ControllerType.Oculus;
             if (foundViveController) return ControllerType.Vive;
@@ -108,6 +134,10 @@ namespace VRT.Pilots.Common
 
         void OnRealControllerChanged(ControllerType newController)
         {
+            if (debug)
+            {
+                Debug.Log($"VRTInputController: controllerType={newController}, directInteraction={directInteractionIsEnabled}");
+            }
             m_currentRealController = newController;
             m_currentVisibleController = m_currentRealController;
             if (directInteractionIsEnabled)
