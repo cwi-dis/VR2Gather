@@ -85,13 +85,18 @@ namespace VRT.Pilots.Common
             bool foundOculusController = false;
             bool foundViveController = false;
             bool foundController = false;
+            if (debug)
+            {
+                Debug.Log($"VRTInputController: examine {deviceList.Count} devices");
+            }
             foreach (var inDev in deviceList)
             {
-                if (!inDev.isValid) continue;
                 if (debug)
                 {
-                    Debug.Log($"VRTInputController: examine device \"{inDev.name}\"");
+                    Debug.Log($"VRTInputController: examine device \"{inDev.name}\", valid={inDev.isValid}");
                 }
+                if (!inDev.isValid) continue;
+                
                 if ((inDev.characteristics & InputDeviceCharacteristics.Controller) == 0) continue;
 
                 foundController = true;
