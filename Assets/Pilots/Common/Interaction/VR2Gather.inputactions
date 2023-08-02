@@ -1186,7 +1186,7 @@
                 {
                     "name": "",
                     "id": "fea84b64-72bc-4d17-8941-59e59106bebf",
-                    "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/triggertouched",
+                    "path": "<OculusTouchController>{RightHand}/triggerTouched",
                     "interactions": "",
                     "processors": "Negate",
                     "groups": "Oculus-OpenXR;Oculus-Native",
