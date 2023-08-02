@@ -325,7 +325,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -336,7 +336,7 @@
                     "path": "<XRController>{LeftHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -347,7 +347,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -358,7 +358,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -369,7 +369,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -380,7 +380,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -424,7 +424,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -435,7 +435,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -457,7 +457,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -468,7 +468,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -497,198 +497,11 @@
                 },
                 {
                     "name": "",
-                    "id": "642a0165-a77b-4312-bc78-094628529c91",
-                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Select",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8d46a020-c419-4a16-ac74-71152588e6e8",
-                    "path": "<OculusTouchController>{LeftHand}/grip",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Select Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "57e5d4d2-0b8b-4e18-9eaf-05e8e6d10fc7",
-                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Activate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a956c9aa-638e-44da-8d0c-13c0f7908ac8",
-                    "path": "<OculusTouchController>{LeftHand}/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Activate Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "97b8d82a-a074-44dc-9f09-54c295d456c6",
-                    "path": "<OculusTouchController>{LeftHand}/triggerPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "UI Press",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8d385188-d5ce-4d6b-806d-94352d453f7d",
-                    "path": "<OculusTouchController>{LeftHand}/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "UI Press Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "2D Vector",
-                    "id": "15a3fd40-639d-413c-81bf-9927fd0b7f77",
-                    "path": "2DVector(mode=2)",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "ce11dfb6-f46b-4f02-82c5-8ec39c405733",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "dbbe3586-c7cf-4228-8400-daaf5c66b8fb",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "804e26bf-8032-447c-8885-c8ffbc09af13",
-                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis/x",
-                    "interactions": "",
-                    "processors": "Clamp(min=-1),Invert",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "b2aacbc4-1544-45e9-b334-78d52062a59a",
-                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis/x",
-                    "interactions": "",
-                    "processors": "Clamp(max=1)",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "2D Vector",
-                    "id": "91e5f81f-1b07-493b-bd99-aec4cf481652",
-                    "path": "2DVector(mode=2)",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "92c8f42a-f44a-43aa-8b3f-d5ae241c62c7",
-                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis/y",
-                    "interactions": "",
-                    "processors": "Clamp(max=1)",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "54a6b8d3-b502-47ba-ace2-62539f1be082",
-                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis/y",
-                    "interactions": "",
-                    "processors": "Clamp(min=-1),Invert",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "f4d109ac-6cc6-473f-86f0-d4fae6527dc4",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "75c78e86-6df8-4ab3-add9-634bc2e8361e",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
                     "id": "3441c045-6c6e-4d9b-b34c-6bdd221e8141",
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
-                    "action": "Grabbing",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "e7381de1-adb1-4ab0-9071-17a3213c4668",
-                    "path": "<OculusTouchController>{LeftHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1167,7 +980,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1178,7 +991,7 @@
                     "path": "<XRController>{RightHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1189,7 +1002,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1200,7 +1013,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1211,7 +1024,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1222,7 +1035,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1266,7 +1079,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1277,7 +1090,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1299,7 +1112,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1310,7 +1123,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1338,182 +1151,6 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "2D Vector",
-                    "id": "55fb77c4-b850-417c-9a01-c1ec1dff05fb",
-                    "path": "2DVector(mode=2)",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "b020759e-5268-4bdd-8764-91da1e93fb6f",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis/y",
-                    "interactions": "",
-                    "processors": "Clamp(max=1)",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "9a2b0768-3a0a-4634-8f42-2d353b6db705",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis/y",
-                    "interactions": "",
-                    "processors": "Clamp(min=-1),Invert",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "ee22cf8a-620c-4b16-84cb-193ae9328a58",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "77a07047-8c70-4413-b0b2-8e39ffc54bd1",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Translate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "2D Vector",
-                    "id": "9f8620f6-e9be-4c0c-a7ff-61c515c122a3",
-                    "path": "2DVector(mode=2)",
-                    "interactions": "",
-                    "processors": "StickDeadzone",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "f80faa08-3e57-4b52-ba8a-7058d8854302",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "6186010c-a402-4b71-9658-5ed11993bd07",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "07ae66e2-99e9-40d6-8349-e98efaf77b50",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis/x",
-                    "interactions": "",
-                    "processors": "Clamp(min=-1),Invert",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "1e1a36b9-0165-46f1-b3fc-580cafc6e279",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis/x",
-                    "interactions": "",
-                    "processors": "Clamp(max=1)",
-                    "groups": "Oculus",
-                    "action": "Rotate Anchor",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "19e24ed3-c74b-453c-94be-176bd846aa3a",
-                    "path": "<OculusTouchController>{RightHand}/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "UI Press Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2efc5d7b-d734-48c0-a793-ffd4a3614d6e",
-                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "UI Press",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a435042a-5b2f-4245-b346-38acdabbdd70",
-                    "path": "<OculusTouchController>{RightHand}/trigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Activate Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "3066f0c4-53f0-49da-8141-52c1587b7acc",
-                    "path": "<OculusTouchController>{RightHand}/triggerPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Activate",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "4e727535-b27d-4550-a6fe-de3c52911893",
-                    "path": "<OculusTouchController>{RightHand}/grip",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Select Value",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "b30e56c7-8cd3-4462-a1f7-c689e1f62106",
-                    "path": "<OculusTouchController>{RightHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
-                    "action": "Select",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "",
                     "id": "7a31b9ef-3df6-41c9-a340-d0794019c200",
                     "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/primarybutton",
@@ -1530,18 +1167,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive",
-                    "action": "Grabbing",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1d414e39-fdc6-457d-8a2f-c9a40ddab24f",
-                    "path": "<OculusTouchController>{RightHand}/gripPressed",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Oculus",
+                    "groups": "Generic XR Controller;Vive;Oculus",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
