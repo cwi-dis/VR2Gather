@@ -111,7 +111,7 @@ namespace VRT.Pilots.Common
                     {
                         Debug.Log($"VRTInputController: is Oculus Controller");
                     }
-                }
+                } else
                 if (inDev.name.Contains("HTC Vive Controller"))
                 {
                     foundViveController = true;
@@ -119,6 +119,9 @@ namespace VRT.Pilots.Common
                     {
                         Debug.Log($"VRTInputController: is Vive controller");
                     }
+                } else
+                {
+                    Debug.LogWarning($"VRTInputController: treat \"{inDev.name}\" as generic controller");
                 }
             }
             if (foundOculusController) return ControllerType.Oculus;
