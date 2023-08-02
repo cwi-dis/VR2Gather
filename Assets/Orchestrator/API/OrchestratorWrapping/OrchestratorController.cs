@@ -210,7 +210,7 @@ namespace VRT.Orchestrator.Wrapping
             if (instance == null) {
                 instance = this;
             } else {
-                Debug.LogError($"OrchestratorController: attempt to create second instance from GameObject {gameObject.name}. First from {instance.gameObject.name}.");
+                Debug.LogWarning($"OrchestratorController: attempt to create second instance from GameObject {gameObject.name}. Keep first one, from {instance.gameObject.name}.");
                 Destroy(gameObject);
             }
         }

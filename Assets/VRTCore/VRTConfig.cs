@@ -196,7 +196,9 @@ namespace VRT.Core
         {
             if (_Instance != null)
             {
-                Debug.LogError("VRTConfig: Awake() called but there is an Instance already. There must be only a single Component");
+                Debug.LogWarning($"VRTConfig: Awake() called but there is an Instance already from {_Instance.gameObject}. Keeping the old one.");
+                Destroy(gameObject);
+                return;
             }
             Initialize();
         }
