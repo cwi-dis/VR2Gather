@@ -815,10 +815,10 @@
                 {
                     "name": "",
                     "id": "99cb7ad1-51ec-4611-af68-92a85f2c17d6",
-                    "path": "<OculusTouchController>{LeftHand}/Primary2DAxis",
+                    "path": "<XRController>{LeftHand}/primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Oculus",
+                    "groups": "Oculus;Generic XR Controller",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1657,10 +1657,10 @@
                 {
                     "name": "",
                     "id": "d6c08c3d-3d41-4695-994d-1ac9016a5a9e",
-                    "path": "<OculusTouchController>{RightHand}/Primary2DAxis",
+                    "path": "<XRController>{RightHand}/primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Oculus",
+                    "groups": "Oculus;Generic XR Controller",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
