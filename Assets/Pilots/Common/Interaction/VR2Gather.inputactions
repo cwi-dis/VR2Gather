@@ -40,7 +40,7 @@
                     "path": "<XRHMD>/centerEyePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -51,7 +51,7 @@
                     "path": "<XRHMD>/centerEyeRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -62,7 +62,7 @@
                     "path": "<XRHMD>/isTracked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Tracking State",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -128,7 +128,7 @@
                     "path": "<XRController>{LeftHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -139,7 +139,7 @@
                     "path": "<XRController>{LeftHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -150,7 +150,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -172,7 +172,7 @@
                     "path": "<XRController>{LeftHand}/pointerPosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -183,7 +183,7 @@
                     "path": "<XRController>{LeftHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -194,7 +194,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -205,7 +205,7 @@
                     "path": "<XRController>{LeftHand}/*",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Haptic Device",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -216,7 +216,7 @@
                     "path": "<XRController>{LeftHand}/trackingState",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Tracking State",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -325,7 +325,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -336,7 +336,7 @@
                     "path": "<XRController>{LeftHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -347,7 +347,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -358,7 +358,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -369,7 +369,7 @@
                     "path": "<XRController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -380,7 +380,7 @@
                     "path": "<XRController>{LeftHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -402,7 +402,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -413,7 +413,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -424,7 +424,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -435,7 +435,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -457,7 +457,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -468,7 +468,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -479,7 +479,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -490,7 +490,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -501,7 +501,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -523,7 +523,7 @@
                     "path": "<OculusTouchController>{LeftHand}/triggerTouched",
                     "interactions": "",
                     "processors": "Negate",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "Pointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -587,7 +587,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Oculus-Native",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -609,7 +609,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.72)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Oculus-Native",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -620,7 +620,7 @@
                     "path": "<XRController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -631,7 +631,7 @@
                     "path": "<XRController>{LeftHand}/primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Oculus-OpenXR;Generic XR Controller",
+                    "groups": "Oculus-OpenXR;Generic XR Controller;Oculus-Native",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -675,7 +675,7 @@
                     "path": "<XRController>{LeftHand}/Primary2DAxis",
                     "interactions": "",
                     "processors": "StickDeadzone",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -774,7 +774,7 @@
                     "path": "<XRController>{RightHand}/pointerRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -785,7 +785,7 @@
                     "path": "<XRController>{RightHand}/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -796,7 +796,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Rotation",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -818,7 +818,7 @@
                     "path": "<XRController>{RightHand}/pointerPosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -829,7 +829,7 @@
                     "path": "<XRController>{RightHand}/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -840,7 +840,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Position",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -851,7 +851,7 @@
                     "path": "<XRController>{RightHand}/*",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Haptic Device",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -862,7 +862,7 @@
                     "path": "<XRController>{RightHand}/trackingState",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Tracking State",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -980,7 +980,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -991,7 +991,7 @@
                     "path": "<XRController>{RightHand}/grip",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Select Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1002,7 +1002,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1013,7 +1013,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Activate Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1024,7 +1024,7 @@
                     "path": "<XRController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "UI Press",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1035,7 +1035,7 @@
                     "path": "<XRController>{RightHand}/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "UI Press Value",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1057,7 +1057,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1068,7 +1068,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1079,7 +1079,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1090,7 +1090,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/x",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Rotate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1112,7 +1112,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(max=1)",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1123,7 +1123,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis/y",
                     "interactions": "",
                     "processors": "Clamp(min=-1),Invert",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1134,7 +1134,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1145,7 +1145,7 @@
                     "path": "",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Translate Anchor",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -1156,7 +1156,7 @@
                     "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/primarybutton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "Secondary Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1167,7 +1167,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Vive-OpenXR;Oculus-OpenXR;Oculus-Native",
                     "action": "Grabbing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1189,7 +1189,7 @@
                     "path": "<XRInputV1::Oculus::OculusTouchControllerOpenXR>{RightHand}/triggertouched",
                     "interactions": "",
                     "processors": "Negate",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "Pointing",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1253,7 +1253,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=-1,sweepBehavior=3)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Oculus-Native",
                     "action": "Teleport Select",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1264,7 +1264,7 @@
                     "path": "<XRController>{RightHand}/Primary2DAxis",
                     "interactions": "Sector(directions=1,sweepBehavior=2,pressPoint=0.76)",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Oculus-Native",
                     "action": "Teleport Mode Activate",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1275,7 +1275,7 @@
                     "path": "<XRController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Teleport Mode Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1286,7 +1286,7 @@
                     "path": "<XRController>{RightHand}/primary2DAxis",
                     "interactions": "Sector(directions=12,sweepBehavior=1),Sector(directions=2,sweepBehavior=2)",
                     "processors": "",
-                    "groups": "Oculus-OpenXR;Generic XR Controller",
+                    "groups": "Oculus-OpenXR;Generic XR Controller;Oculus-Native",
                     "action": "Turn",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2005,7 +2005,7 @@
                     "path": "<OculusTouchController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2016,7 +2016,7 @@
                     "path": "<OculusTouchController>{LeftHand}/thumbstick",
                     "interactions": "",
                     "processors": "ScaleVector2(x=5,y=5)",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2071,7 +2071,7 @@
                     "path": "<OculusTouchController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2082,7 +2082,7 @@
                     "path": "<OculusTouchController>{RightHand}/thumbstick",
                     "interactions": "",
                     "processors": "ScaleVector2(x=5,y=5)",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewHeight",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2225,7 +2225,7 @@
                     "path": "<OculusTouchController>{LeftHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2236,7 +2236,7 @@
                     "path": "<OculusTouchController>{LeftHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2247,7 +2247,7 @@
                     "path": "<OculusTouchController>{LeftHand}/thumbstickClicked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2313,7 +2313,7 @@
                     "path": "<OculusTouchController>{RightHand}/gripPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2324,7 +2324,7 @@
                     "path": "<OculusTouchController>{RightHand}/triggerPressed",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2335,7 +2335,7 @@
                     "path": "<OculusTouchController>{RightHand}/thumbstickClicked",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR",
+                    "groups": "Oculus-OpenXR;Oculus-Native",
                     "action": "ViewReset",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -2429,7 +2429,7 @@
                     "path": "<XRController>{LeftHand}/secondaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR;Generic XR Controller",
+                    "groups": "Oculus-OpenXR;Generic XR Controller;Oculus-Native",
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2440,7 +2440,7 @@
                     "path": "<XRController>{RightHand}/secondaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Oculus-OpenXR;Generic XR Controller",
+                    "groups": "Oculus-OpenXR;Generic XR Controller;Oculus-Native",
                     "action": "ShowHide",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2885,7 +2885,7 @@
                     "path": "*/{Submit}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Submit",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2896,7 +2896,7 @@
                     "path": "*/{Cancel}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "Keyboard&Mouse;Gamepad;Touch;Joystick;XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -2973,7 +2973,7 @@
                     "path": "<XRController>/trigger",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "Click",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -3039,7 +3039,7 @@
                     "path": "<XRController>/devicePosition",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "TrackedDevicePosition",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -3050,7 +3050,7 @@
                     "path": "<XRController>/deviceRotation",
                     "interactions": "",
                     "processors": "",
-                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR",
+                    "groups": "XR;Generic XR Controller;Oculus-OpenXR;Vive-OpenXR;Oculus-Native",
                     "action": "TrackedDeviceOrientation",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -3171,6 +3171,27 @@
             "devices": [
                 {
                     "devicePath": "<Touchscreen>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Oculus-Native",
+            "bindingGroup": "Oculus-Native",
+            "devices": [
+                {
+                    "devicePath": "<OculusHMD>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<OculusTouchController>{LeftHand}",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<OculusTouchController>{RightHand}",
                     "isOptional": false,
                     "isOR": false
                 }
