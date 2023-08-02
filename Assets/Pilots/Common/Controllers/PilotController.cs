@@ -49,8 +49,7 @@ namespace VRT.Pilots.Common
                 Debug.LogError("PilotController: multiple PilotController (subclass) instances in scene");
             }
             Instance = this;
-            var tmp = new NegateProcessor();
-        }
+       }
 
         /// <summary>
         /// Call this method to load a new scene (optionally after fading out the current scene).
