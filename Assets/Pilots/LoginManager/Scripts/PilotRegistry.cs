@@ -26,7 +26,7 @@ namespace VRT.Pilots.LoginManager
                 case "Technical Playground":
                     return "TechnicalPlayground";
                 case "Development":
-                    return null;
+                    return "Vqeg";
                 case "Development2":
                     return null;
                 case "Development3":
