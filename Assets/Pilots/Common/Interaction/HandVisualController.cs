@@ -28,6 +28,9 @@ namespace VRT.Pilots.Common
         [Tooltip("Current controller type")]
         [DisableEditing] [SerializeField] ControllerType controllerType = ControllerType.None;
 
+        [Tooltip("Enable debug logging")]
+        [SerializeField] bool debug = false;
+
         public void Awake()
         {
             if (inputController == null)
@@ -48,6 +51,10 @@ namespace VRT.Pilots.Common
 
         private void DisableInteraction()
         {
+            if (debug)
+            {
+                Debug.Log($"HandVisualController: disable interaction");
+            }
             directInteractionInputObject.SetActive(false);
             rayBasedInputObject.SetActive(false);
         }
@@ -55,6 +62,10 @@ namespace VRT.Pilots.Common
         void FixRepresentation(ControllerType _controllerType)
         {
             controllerType = _controllerType;
+            if (debug)
+            {
+                Debug.Log($"HandVisualController: FixRepresentation type={controllerType}");
+            }
             directInteractionInputObject.SetActive(controllerType == ControllerType.VirtualHand);
             rayBasedInputObject.SetActive(controllerType != ControllerType.VirtualHand); // xxxjack how about None?
             OculusController.SetActive(controllerType == ControllerType.Oculus);
@@ -66,7 +77,5 @@ namespace VRT.Pilots.Common
         {
             FixRepresentation(inputController.currentVisibleController);
         }
-
-   
     }
 }

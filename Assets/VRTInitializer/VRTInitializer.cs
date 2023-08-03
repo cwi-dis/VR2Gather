@@ -12,15 +12,14 @@ using Cwipc;
 
 public class VRTInitializer : MonoBehaviour
 {
+    
     // Start is called before the first frame update
     void Awake()
     {
-        Debug.Log("Initializer: Registering pipelines");
+         Debug.Log("Initializer: Registering pipelines");
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
-        Debug.Log("Initializer: Initialize NegateProcessor");
-        var tmp = new NegateProcessor();
     }
 
     private void OnApplicationQuit()

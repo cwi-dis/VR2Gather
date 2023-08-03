@@ -553,7 +553,7 @@ namespace VRT.Pilots.LoginManager
             developerModeButton.isOn = developerMode;
             // Update Application version
             orchURLText.text = VRTConfig.Instance.orchestratorURL;
-            nativeVerText.text = VersionLog.Instance.NativeClient;
+            if (VersionLog.Instance != null) nativeVerText.text = VersionLog.Instance.NativeClient;
             playerVerText.text = "v" + Application.version;
             orchVerText.text = "";
 

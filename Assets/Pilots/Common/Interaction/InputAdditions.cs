@@ -13,7 +13,6 @@ using UnityEngine.InputSystem;
 #endif
 public class NegateProcessor : InputProcessor<float>
 {
-
 #if UNITY_EDITOR
     static NegateProcessor()
     {
@@ -21,7 +20,7 @@ public class NegateProcessor : InputProcessor<float>
     }
 #endif
 
-    [RuntimeInitializeOnLoadMethod]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Initialize()
     {
         Debug.Log("NegateProcessor: registering with Input System");

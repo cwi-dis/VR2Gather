@@ -105,7 +105,10 @@ namespace VRT.Core
             else if (type == LogType.Error)
             {
                 error[0] = "Error";
+                // Don't show a popup for BestHTTP error messages
                 if (stackTrace.Contains("BestHTTP")) return;
+                // Don't show a popup for Quest virtual keyboard not enabled.
+                if (condition.Contains("overlay keyboard is disabled")) return;
                 lock (thisLock)
                 {
                     queue.Add(error);
