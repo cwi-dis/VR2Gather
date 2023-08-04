@@ -103,12 +103,13 @@ namespace VRT.Orchestrator.Wrapping
         public static OrchestratorController Instance {
             get {
                 if (instance is null) {
-                    Debug.LogError("OrchestratorController.Instance called before Awake");
-                    //instance = new GameObject("OrchestratorController").AddComponent<OrchestratorController>();
+                    Debug.Log("OrchestratorController.Instance: Creating GameObject");
+                    instance = new GameObject("OrchestratorController").AddComponent<OrchestratorController>();
                 }
                 return instance;
             }
         }
+
 
         // Orchestrator Error Response Events
         public Action<ResponseStatus> OnErrorEvent;
@@ -204,12 +205,12 @@ namespace VRT.Orchestrator.Wrapping
         #region Unity
 
         private void Awake() {
-            Debug.Log($"xxxjack OrchestratorController.Awake from {gameObject.name}");
-            DontDestroyOnLoad(this);
-
+            
             if (instance == null) {
+                Debug.Log($"xxxjack OrchestratorController.Awake from {gameObject.name}");
+                DontDestroyOnLoad(this);
                 instance = this;
-            } else {
+            } else if (instance != this) {
                 Debug.LogWarning($"OrchestratorController: attempt to create second instance from GameObject {gameObject.name}. Keep first one, from {instance.gameObject.name}.");
                 Destroy(gameObject);
             }
