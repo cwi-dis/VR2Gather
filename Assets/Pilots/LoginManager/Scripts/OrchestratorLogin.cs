@@ -278,6 +278,7 @@ namespace VRT.Pilots.LoginManager
                     textItem.text += " - (Cameraman)";
                     break;
                 default:
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {user.userData.userRepresentationType}");
                     break;
             }
         }
@@ -416,41 +417,26 @@ namespace VRT.Pilots.LoginManager
             switch (_representationType)
             {
                 case UserRepresentationType.NoRepresentation:
+                case UserRepresentationType.AudioOnly:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                    userRepresentationLobbyText.text = "NO REPRESENTATION";
                     break;
                 case UserRepresentationType.VideoAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
-                    userRepresentationLobbyText.text = "VIDEO";
                     break;
                 case UserRepresentationType.SimpleAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                    userRepresentationLobbyText.text = "AVATAR";
                     break;
                 case UserRepresentationType.Old__PCC_CWI_:
                 case UserRepresentationType.Old__PCC_CWIK4A_:
                 case UserRepresentationType.Old__PCC_PROXY__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    userRepresentationLobbyText.text = "POINTCLOUD";
-                    break;
                 case UserRepresentationType.Old__PCC_SYNTH__:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
-                    userRepresentationLobbyText.text = "SYNTHETIC PC";
-                    break;
                 case UserRepresentationType.Old__PCC_PRERECORDED__:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
-                    userRepresentationLobbyText.text = "PRERECORDED PC";
                     break;
-                case UserRepresentationType.AudioOnly:
-                    userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
-                    userRepresentationLobbyText.text = "SPECTATOR";
-                    break;
-                case UserRepresentationType.NoRepresentationCamera:
+                 case UserRepresentationType.NoRepresentationCamera:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
-                    userRepresentationLobbyText.text = "CAMERAMAN";
                     break;
-                default:
-                    break;
+              
             }
         }
 
@@ -490,6 +476,7 @@ namespace VRT.Pilots.LoginManager
                     selfRepresentationDescription.text = "Local video recorder.";
                     break;
                 default:
+                    Debug.LogError($"OrchestratorLogin: Unknown UserRepresentationType {_representationType}");
                     break;
             }
         }

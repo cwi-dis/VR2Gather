@@ -96,7 +96,8 @@ namespace VRT.Pilots.Common
             
             SetRepresentation(user.userData.userRepresentationType);
 
-
+            // xxxjack Don't like this special case here: it means that everyone except 
+            // NoRepresentation has audio (including the caermaman)
             if (user.userData.userRepresentationType != UserRepresentationType.NoRepresentation)
             {
                 isAudible = true;
@@ -191,6 +192,7 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     break;
                 default:
+                    Debug.LogError($"{Name()}: Unknown UserRepresentationType {userRepresentation}");
                     isVisible = false;
                     break;
             }
