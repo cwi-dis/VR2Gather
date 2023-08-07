@@ -97,7 +97,7 @@ namespace VRT.Pilots.Common
             SetRepresentation(user.userData.userRepresentationType);
 
 
-            if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
+            if (user.userData.userRepresentationType != UserRepresentationType.NoRepresentation)
             {
                 isAudible = true;
 
@@ -142,28 +142,28 @@ namespace VRT.Pilots.Common
             if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     // disable character controller.
                     if (charControl != null)
                     {
                         charControl.enabled = false;
                     }
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     isVisible = true;
                     webcam.SetActive(true);
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     isVisible = true;
                     avatar.SetActive(true);
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
-                case UserRepresentationType.__PCC_CWI_: // PC
+                case UserRepresentationType.Old__PCC_SYNTH__:
+                case UserRepresentationType.Old__PCC_PRERECORDED__:
+                case UserRepresentationType.Old__PCC_CWIK4A_:
+                case UserRepresentationType.Old__PCC_PROXY__:
+                case UserRepresentationType.Old__PCC_CWI_: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
@@ -175,18 +175,18 @@ namespace VRT.Pilots.Common
                     catch (Exception e)
                     {
                         Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
-                        userRepresentation = UserRepresentationType.__AVATAR__;
+                        userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
                         this.pointcloud.SetActive(false);
                         Destroy(pcPipeline);
                         throw;
                     }
                     break;
-                case UserRepresentationType.__ALT1__:
+                case UserRepresentationType.AppDefinedRepresentationOne:
                     altRepOne.SetActive(true);
                     isVisible = true;
                     break;
-                case UserRepresentationType.__ALT2__:
+                case UserRepresentationType.AppDefinedRepresentationTwo:
                     altRepTwo.SetActive(true);
                     isVisible = true;
                     break;

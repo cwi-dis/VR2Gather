@@ -154,11 +154,11 @@ namespace VRT.Pilots.Common
 				var representationType = user.userData.userRepresentationType;
 				switch(representationType)
 				{
-					case UserRepresentationType.__NONE__:
-					case UserRepresentationType.__SPECTATOR__:
+					case UserRepresentationType.NoRepresentation:
+					case UserRepresentationType.AudioOnly:
                         AddSpectator(networkPlayer);
                         break;
-                    case UserRepresentationType.__CAMERAMAN__:
+                    case UserRepresentationType.NoRepresentationCamera:
 						AddSpectator(networkPlayer);
 #if UNITY_EDITOR
                         if (isLocalPlayer)

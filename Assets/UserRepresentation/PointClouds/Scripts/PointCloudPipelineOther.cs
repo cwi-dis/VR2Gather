@@ -26,11 +26,11 @@ namespace VRT.UserRepresentation.PointCloud
 
         public static void Register()
         {
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWIK4A_, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWI_, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PROXY__, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PRERECORDED__, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_SYNTH__, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.Old__PCC_CWIK4A_, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.Old__PCC_CWI_, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.Old__PCC_PROXY__, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.Old__PCC_PRERECORDED__, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.Old__PCC_SYNTH__, AddPipelineComponent);
         }
 
         private static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)

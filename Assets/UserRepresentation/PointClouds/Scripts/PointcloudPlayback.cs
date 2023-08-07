@@ -127,7 +127,7 @@ namespace VRT.UserRepresentation.PointCloud
 
             dummyUser = new User();
             dummyUser.userData = new UserData();
-            dummyUser.userData.userRepresentationType = UserRepresentationType.__PCC_PRERECORDED__;
+            dummyUser.userData.userRepresentationType = UserRepresentationType.Old__PCC_PRERECORDED__;
 
             VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 

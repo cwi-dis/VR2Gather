@@ -14,7 +14,7 @@ namespace VRT.Pilots.Common
         [Tooltip("The user (for setup camera position and input/output)")]
         public PlayerControllerSelf playerManager;
         [Tooltip("User representation")]
-        public UserRepresentationType userRepresentation = UserRepresentationType.__AVATAR__;
+        public UserRepresentationType userRepresentation = UserRepresentationType.SimpleAvatar;
 
         public void Start()
         {

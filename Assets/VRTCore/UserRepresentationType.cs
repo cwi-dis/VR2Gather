@@ -8,50 +8,50 @@ namespace VRT.Core
         /// <summary>
         /// No representation, spectator/listener only.
         /// </summary>
-        __NONE__,
+        NoRepresentation,
         /// <summary>
         /// 2D video (WebCam) stream, usually shown as an avatar with a screen.
         /// </summary>
-        __2D__,
+        VideoAvatar,
         /// <summary>
         /// Default avatar.
         /// </summary>
-        __AVATAR__,
+        SimpleAvatar,
         /// <summary>
         /// Point cloud (from Realsense camera)
         /// </summary>
-        __PCC_CWI_,
+        Old__PCC_CWI_,
         /// <summary>
         /// Point cloud (from Kinect camera)
         /// </summary>
-        __PCC_CWIK4A_,
+        Old__PCC_CWIK4A_,
         /// <summary>
         /// Point cloud (from remote RGBD camera via proxy)
         /// </summary>
-        __PCC_PROXY__,
+        Old__PCC_PROXY__,
         /// <summary>
         /// Synthetic point cloud
         /// </summary>
-        __PCC_SYNTH__,
+        Old__PCC_SYNTH__,
         /// <summary>
         /// Prerecorded point cloud
         /// </summary>
-        __PCC_PRERECORDED__,
+        Old__PCC_PRERECORDED__,
         /// <summary>
         /// User without visual representation but with audio feed
         /// </summary>
-        __SPECTATOR__,
+        AudioOnly,
         /// <summary>
         /// Special spectator that records view (possibly retransmitting as a web video feed)
         /// </summary>
-        __CAMERAMAN__,
+        NoRepresentationCamera,
         /// <summary>
         /// Application-defined alternative representation
         /// </summary>
-        __ALT1__,
+        AppDefinedRepresentationOne,
         /// <summary>
         /// Application-defined alternative representation
         /// </summary>
-        __ALT2__
+        AppDefinedRepresentationTwo
     }
 }

@@ -243,37 +243,37 @@ namespace VRT.Pilots.LoginManager
             // IMAGE
             switch (user.userData.userRepresentationType)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     textItem.text += " - (No Rep)";
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                     textItem.text += " - (2D Video)";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     textItem.text += " - (3D Avatar)";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.Old__PCC_CWI_:
+                case UserRepresentationType.Old__PCC_CWIK4A_:
+                case UserRepresentationType.Old__PCC_PROXY__:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     textItem.text += " - (Simple PC)";
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
+                case UserRepresentationType.Old__PCC_SYNTH__:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     textItem.text += " - (Synthetic PC)";
                     break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
+                case UserRepresentationType.Old__PCC_PRERECORDED__:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     textItem.text += " - (Prerecorded PC)";
                     break;
-                case UserRepresentationType.__SPECTATOR__:
+                case UserRepresentationType.AudioOnly:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     textItem.text += " - (Spectator)";
                     break;
-                case UserRepresentationType.__CAMERAMAN__:
+                case UserRepresentationType.NoRepresentationCamera:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     textItem.text += " - (Cameraman)";
                     break;
@@ -377,51 +377,12 @@ namespace VRT.Pilots.LoginManager
         private void UpdateRepresentations(Dropdown dd)
         {
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
+            // xxxjack this has the huge disadvantage that they are numerically sorted.
+            // xxxjack and the order is difficult to change currently, because the values
+            // xxxjack are stored by the orchestrator in the user record, in numerical form...
             dd.ClearOptions();
-            //dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
-            List<string> finalNames = new List<string>();
-            foreach (string type in Enum.GetNames(typeof(UserRepresentationType)))
-            {
-                string enumName;
-                switch (type)
-                {
-                    case "__NONE__":
-                        enumName = "No Representation";
-                        break;
-                    case "__2D__":
-                        enumName = "Video Avatar";
-                        break;
-                    case "__AVATAR__":
-                        enumName = "Avatar";
-                        break;
-                    case "__PCC_CWI_":
-                        enumName = "PointCloud (RealSense)";
-                        break;
-                    case "__PCC_CWIK4A_":
-                        enumName = "PointCloud (Kinect)";
-                        break;
-                    case "__PCC_PROXY__":
-                        enumName = "PointCloud (5G phone)";
-                        break;
-                    case "__PCC_SYNTH__":
-                        enumName = "Synthetic PointCloud";
-                        break;
-                    case "__PCC_PRERECORDED__":
-                        enumName = "Prerecorded PointCloud";
-                        break;
-                    case "__SPECTATOR__":
-                        enumName = "Voice-only Spectator";
-                        break;
-                    case "__CAMERAMAN__":
-                        enumName = "Cameraman";
-                        break;
-                    default:
-                        enumName = type + " Not Defined";
-                        break;
-                }
-                finalNames.Add(enumName);
-            }
-            dd.AddOptions(finalNames);
+            dd.AddOptions(new List<string>(Enum.GetNames(typeof(UserRepresentationType))));
+            
         }
 
         private void UpdateWebcams(Dropdown dd)
@@ -454,37 +415,37 @@ namespace VRT.Pilots.LoginManager
             // left change the icon 'userRepresentationLobbyImage'
             switch (_representationType)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     userRepresentationLobbyText.text = "NO REPRESENTATION";
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCamIcon");
                     userRepresentationLobbyText.text = "VIDEO";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     userRepresentationLobbyText.text = "AVATAR";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.Old__PCC_CWI_:
+                case UserRepresentationType.Old__PCC_CWIK4A_:
+                case UserRepresentationType.Old__PCC_PROXY__:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     userRepresentationLobbyText.text = "POINTCLOUD";
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
+                case UserRepresentationType.Old__PCC_SYNTH__:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     userRepresentationLobbyText.text = "SYNTHETIC PC";
                     break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
+                case UserRepresentationType.Old__PCC_PRERECORDED__:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
                     userRepresentationLobbyText.text = "PRERECORDED PC";
                     break;
-                case UserRepresentationType.__SPECTATOR__:
+                case UserRepresentationType.AudioOnly:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URNoneIcon");
                     userRepresentationLobbyText.text = "SPECTATOR";
                     break;
-                case UserRepresentationType.__CAMERAMAN__:
+                case UserRepresentationType.NoRepresentationCamera:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URCameramanIcon");
                     userRepresentationLobbyText.text = "CAMERAMAN";
                     break;
@@ -498,34 +459,34 @@ namespace VRT.Pilots.LoginManager
             // left change the icon 'userRepresentationLobbyImage'
             switch (_representationType)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     selfRepresentationDescription.text = "No representation, no audio. The user can only watch.";
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     selfRepresentationDescription.text = "Avatar with video window from your camera.";
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     selfRepresentationDescription.text = "3D Synthetic Avatar.";
                     break;
-                case UserRepresentationType.__PCC_CWI_:
+                case UserRepresentationType.Old__PCC_CWI_:
                     selfRepresentationDescription.text = "Realistic point cloud user representation, captured with RealSense cameras.";
                     break;
-                case UserRepresentationType.__PCC_CWIK4A_:
+                case UserRepresentationType.Old__PCC_CWIK4A_:
                     selfRepresentationDescription.text = "Realistic point cloud user representation, captured with Azure Kinect cameras.";
                     break;
-                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.Old__PCC_PROXY__:
                     selfRepresentationDescription.text = "Realistic point cloud user representation, captured with 5G phone camera.";
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
+                case UserRepresentationType.Old__PCC_SYNTH__:
                     selfRepresentationDescription.text = "3D Synthetic point cloud avatar.";
                     break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
+                case UserRepresentationType.Old__PCC_PRERECORDED__:
                     selfRepresentationDescription.text = "3D Pre-recorded point cloud.";
                     break;
-                case UserRepresentationType.__SPECTATOR__:
+                case UserRepresentationType.AudioOnly:
                     selfRepresentationDescription.text = "No visual representation, only audio communication.";
                     break;
-                case UserRepresentationType.__CAMERAMAN__:
+                case UserRepresentationType.NoRepresentationCamera:
                     selfRepresentationDescription.text = "Local video recorder.";
                     break;
                 default:
@@ -861,7 +822,7 @@ namespace VRT.Pilots.LoginManager
             webcamInfoGO.SetActive(false);
           
          
-            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.__2D__)
+            if ((UserRepresentationType)representationTypeConfigDropdown.value == UserRepresentationType.VideoAvatar)
             {
                 webcamInfoGO.SetActive(true);
             }

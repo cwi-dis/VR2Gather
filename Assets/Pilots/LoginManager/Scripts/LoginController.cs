@@ -29,7 +29,7 @@ namespace VRT.Pilots.LoginManager
                 userData = new Orchestrator.Wrapping.UserData()
                 {
                     microphoneName = "None",
-                    userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
+                    userRepresentationType = UserRepresentationType.SimpleAvatar // xxxjack need correct one.
                 }
             };
             selfPlayer.SetUpPlayerController(true, user);
