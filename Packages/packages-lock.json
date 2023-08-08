@@ -183,7 +183,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "bfc08ef5f55398fe61724b2873f264415a57360b"
+      "hash": "693b3baf13f488e6bedbe8e123f7aecac61b4ae4"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
