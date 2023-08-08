@@ -18,9 +18,9 @@ namespace VRT.Core
         /// </summary>
         SimpleAvatar,
         /// <summary>
-        /// Point cloud (from Realsense camera)
+        /// Point cloud.
         /// </summary>
-        Old__PCC_CWI_,
+        PointCloud,
         /// <summary>
         /// Point cloud (from Kinect camera)
         /// </summary>

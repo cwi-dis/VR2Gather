@@ -164,7 +164,7 @@ namespace VRT.Pilots.Common
                 case UserRepresentationType.Old__PCC_PRERECORDED__:
                 case UserRepresentationType.Old__PCC_CWIK4A_:
                 case UserRepresentationType.Old__PCC_PROXY__:
-                case UserRepresentationType.Old__PCC_CWI_: // PC
+                case UserRepresentationType.PointCloud: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            

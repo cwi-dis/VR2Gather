@@ -255,7 +255,7 @@ namespace VRT.Pilots.LoginManager
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     textItem.text += " - (3D Avatar)";
                     break;
-                case UserRepresentationType.Old__PCC_CWI_:
+                case UserRepresentationType.PointCloud:
                 case UserRepresentationType.Old__PCC_CWIK4A_:
                 case UserRepresentationType.Old__PCC_PROXY__:
                     imageItem.sprite = Resources.Load<Sprite>("Icons/URSingleIcon");
@@ -426,7 +426,7 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.SimpleAvatar:
                     userRepresentationLobbyImage.sprite = Resources.Load<Sprite>("Icons/URAvatarIcon");
                     break;
-                case UserRepresentationType.Old__PCC_CWI_:
+                case UserRepresentationType.PointCloud:
                 case UserRepresentationType.Old__PCC_CWIK4A_:
                 case UserRepresentationType.Old__PCC_PROXY__:
                 case UserRepresentationType.Old__PCC_SYNTH__:
@@ -454,7 +454,7 @@ namespace VRT.Pilots.LoginManager
                 case UserRepresentationType.SimpleAvatar:
                     selfRepresentationDescription.text = "3D Synthetic Avatar.";
                     break;
-                case UserRepresentationType.Old__PCC_CWI_:
+                case UserRepresentationType.PointCloud:
                     selfRepresentationDescription.text = "Realistic point cloud user representation, captured with RealSense cameras.";
                     break;
                 case UserRepresentationType.Old__PCC_CWIK4A_:

@@ -23,7 +23,7 @@ namespace VRT.UserRepresentation.PointCloud
         public static void Register()
         {
             RegisterPipelineClass(true, UserRepresentationType.Old__PCC_CWIK4A_, AddPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.Old__PCC_CWI_, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.PointCloud, AddPipelineComponent);
             RegisterPipelineClass(true, UserRepresentationType.Old__PCC_PROXY__, AddPipelineComponent);
             RegisterPipelineClass(true, UserRepresentationType.Old__PCC_PRERECORDED__, AddPipelineComponent);
             RegisterPipelineClass(true, UserRepresentationType.Old__PCC_SYNTH__, AddPipelineComponent);
@@ -125,13 +125,13 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Create reader
             //
+            pcReader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
+#if xxxjack_old
             switch (user.userData.userRepresentationType)
             {
                 case UserRepresentationType.Old__PCC_CWI_:
-                    var RS2ReaderConfig = PCSelfConfig.CameraReaderConfig;
-                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
-                    pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     break;
+             
                 case UserRepresentationType.Old__PCC_CWIK4A_:
                     var KinectReaderConfig = PCSelfConfig.CameraReaderConfig; // Note: config shared with rs2
                     if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
@@ -160,6 +160,7 @@ namespace VRT.UserRepresentation.PointCloud
                     throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
 
             }
+#endif
 
             reader = pcReader;
 
