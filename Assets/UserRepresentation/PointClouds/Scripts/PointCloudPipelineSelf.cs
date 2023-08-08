@@ -128,13 +128,13 @@ namespace VRT.UserRepresentation.PointCloud
             switch (user.userData.userRepresentationType)
             {
                 case UserRepresentationType.Old__PCC_CWI_:
-                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
-                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    var RS2ReaderConfig = PCSelfConfig.CameraReaderConfig;
+                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
                     pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     break;
                 case UserRepresentationType.Old__PCC_CWIK4A_:
-                    var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
-                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+                    var KinectReaderConfig = PCSelfConfig.CameraReaderConfig; // Note: config shared with rs2
+                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
                     pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     break;
                 case UserRepresentationType.Old__PCC_PROXY__:
