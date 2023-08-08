@@ -150,6 +150,7 @@ namespace VRT.Core
                 public class _RemoteCameraReaderConfig
                 {
                     public string url;
+                    public bool isCompressed;
                 }
                 public _RemoteCameraReaderConfig RemoteCameraReaderConfig;
                 [Serializable]

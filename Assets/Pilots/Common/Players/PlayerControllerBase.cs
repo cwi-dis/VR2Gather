@@ -119,6 +119,17 @@ namespace VRT.Pilots.Common
 
         public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
+            switch(type)
+            {
+                case UserRepresentationType.Deprecated__PCC_SYNTH__:
+                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
+                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
+                case UserRepresentationType.Deprecated__PCC_PROXY__:
+                    Debug.LogWarning($"{Name()}: Deprecated type {type} changed to PointCloud");
+                    type = UserRepresentationType.PointCloud;
+                    break;
+
+            }
             if (isInitialized && type == userRepresentation) return;
             if (isInitialized && onlyIfVisible && !isVisible) return;
             isInitialized = true;
@@ -160,10 +171,6 @@ namespace VRT.Pilots.Common
                     isVisible = true;
                     avatar.SetActive(true);
                     break;
-                case UserRepresentationType.Old__PCC_SYNTH__:
-                case UserRepresentationType.Old__PCC_PRERECORDED__:
-                case UserRepresentationType.Old__PCC_CWIK4A_:
-                case UserRepresentationType.Old__PCC_PROXY__:
                 case UserRepresentationType.PointCloud: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);

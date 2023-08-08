@@ -24,19 +24,19 @@ namespace VRT.Core
         /// <summary>
         /// Point cloud (from Kinect camera)
         /// </summary>
-        Old__PCC_CWIK4A_,
+        Deprecated__PCC_CWIK4A_,
         /// <summary>
         /// Point cloud (from remote RGBD camera via proxy)
         /// </summary>
-        Old__PCC_PROXY__,
+        Deprecated__PCC_PROXY__,
         /// <summary>
         /// Synthetic point cloud
         /// </summary>
-        Old__PCC_SYNTH__,
+        Deprecated__PCC_SYNTH__,
         /// <summary>
         /// Prerecorded point cloud
         /// </summary>
-        Old__PCC_PRERECORDED__,
+        Deprecated__PCC_PRERECORDED__,
         /// <summary>
         /// User without visual representation but with audio feed
         /// </summary>
