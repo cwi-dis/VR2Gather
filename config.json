@@ -1,5 +1,5 @@
 {
-  "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
+  "orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "-",
   "_unused_AutoStart" : {
   	"autoLogin" : true,
