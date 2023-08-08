@@ -14,10 +14,8 @@ namespace VRT.UserRepresentation.PointCloud
         public static AsyncPointCloudReader Create(VRTConfig._User._PCSelfConfig config, QueueThreadSafe selfPreparerQueue, QueueThreadSafe encoderQueue) { 
             switch(config.capturerType)
             {
-#if xxxjack_notyet
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.auto:
-                    return null;
-#endif
+                    return new AsyncAutoReader(config.CameraReaderConfig.configFilename, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.synthetic:
                    return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.kinect:
@@ -34,11 +32,10 @@ namespace VRT.UserRepresentation.PointCloud
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.proxy:
                     var ProxyReaderConfig = config.ProxyReaderConfig;
                     return new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, config.voxelSize, config.frameRate, selfPreparerQueue, encoderQueue);
-#if xxxjack_notyet
                 case VRTConfig._User._PCSelfConfig.PCCapturerType.remote:
-                    return null;
-#endif
-                default:
+                    var rcConfig = config.RemoteCameraReaderConfig;
+                    return new AsyncNetworkCaptureReader(rcConfig.url, rcConfig.isCompressed, selfPreparerQueue, encoderQueue);
+               default:
                     throw new System.Exception($"PointCloudCapturerFactory: bad capturerType {config.capturerType}");
              }
         }
