@@ -16,6 +16,7 @@ namespace VRT.Core
             SocketIO = 1,
             Dash = 2,
             TCP = 3,
+            WEBRTC = 4,
         };
 
         /// <summary>

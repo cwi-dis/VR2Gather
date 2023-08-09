@@ -144,6 +144,9 @@ namespace VRT.UserRepresentation.PointCloud
                 case SessionConfig.ProtocolType.TCP:
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
+                case SessionConfig.ProtocolType.WEBRTC:
+                    reader = new AsyncWebRTCPCReader("incorrect-webrtc-url", pointcloudCodec, tilesToReceive);
+                    break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
             }

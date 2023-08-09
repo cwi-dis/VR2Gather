@@ -81,6 +81,7 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
+                // xxxjack WebRTC audio still to be done.
                 reader = new AsyncSocketIOReader(user, _streamName, audioCodec, _readerOutputQueue);
             }
 

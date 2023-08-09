@@ -116,6 +116,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private Toggle socketProtocolToggle = null;
         [SerializeField] private Toggle dashProtocolToggle = null;
         [SerializeField] private Toggle tcpProtocolToggle = null;
+        [SerializeField] private Toggle webrtcProtocolToggle = null;
         [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
         [SerializeField] private Toggle uncompressedAudioToggle = null;
 
@@ -602,6 +603,7 @@ namespace VRT.Pilots.LoginManager
             socketProtocolToggle.isOn = true;
             dashProtocolToggle.isOn = false;
             tcpProtocolToggle.isOn = false;
+            webrtcProtocolToggle.isOn = false;
             uncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
             uncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
 
@@ -697,6 +699,9 @@ namespace VRT.Pilots.LoginManager
                             break;
                         case "tcp":
                             tcpProtocolToggle.isOn = true;
+                            break;
+                        case "webrtc":
+                            webrtcProtocolToggle.isOn = true;
                             break;
                         default:
                             Debug.LogError($"OrchestratorLogin: AutoStart: Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
@@ -1023,6 +1028,7 @@ namespace VRT.Pilots.LoginManager
             socketProtocolToggle.interactable = !socketProtocolToggle.isOn;
             dashProtocolToggle.interactable = !dashProtocolToggle.isOn;
             tcpProtocolToggle.interactable = !tcpProtocolToggle.isOn;
+            webrtcProtocolToggle.interactable = !webrtcProtocolToggle.isOn;
         }
 
         public void SetCompression()
@@ -1049,7 +1055,7 @@ namespace VRT.Pilots.LoginManager
         {
             switch (proto)
             {
-                case "socketio": // Socket
+                case "socketio":
                     if (socketProtocolToggle.isOn)
                     {
                         // Set AudioType
@@ -1057,9 +1063,10 @@ namespace VRT.Pilots.LoginManager
                         // Set Toggles
                         dashProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
+                        webrtcProtocolToggle.isOn = false;
                     }
                     break;
-                case "dash": // Dash
+                case "dash":
                     if (dashProtocolToggle.isOn)
                     {
                         // Set AudioType
@@ -1067,9 +1074,10 @@ namespace VRT.Pilots.LoginManager
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         tcpProtocolToggle.isOn = false;
+                        webrtcProtocolToggle.isOn = false;
                     }
                     break;
-                case "tcp": // Dash
+                case "tcp":
                     if (tcpProtocolToggle.isOn)
                     {
                         // Set AudioType
@@ -1077,6 +1085,18 @@ namespace VRT.Pilots.LoginManager
                         // Set Toggles
                         socketProtocolToggle.isOn = false;
                         dashProtocolToggle.isOn = false;
+                        webrtcProtocolToggle.isOn = false;
+                    }
+                    break;
+                case "webrtc":
+                    if (webrtcProtocolToggle.isOn)
+                    {
+                        // Set AudioType
+                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.WEBRTC;
+                        // Set Toggles
+                        socketProtocolToggle.isOn = false;
+                        dashProtocolToggle.isOn = false;
+                        tcpProtocolToggle.isOn = false;
                     }
                     break;
                 default:

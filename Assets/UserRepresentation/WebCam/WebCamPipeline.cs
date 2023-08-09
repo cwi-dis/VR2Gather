@@ -137,6 +137,7 @@ namespace VRT.UserRepresentation.WebCam
                         }
                         else
                         {
+                            // xxxjack webrtc video still to be done
                             Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                         }
 
@@ -180,6 +181,7 @@ namespace VRT.UserRepresentation.WebCam
                 }
                 else
                 {
+                    // xxxjack webrtc video still to be done
                     Debug.LogError($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
                 }
 

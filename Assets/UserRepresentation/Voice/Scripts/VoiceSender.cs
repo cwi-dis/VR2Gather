@@ -81,6 +81,7 @@ namespace VRT.UserRepresentation.Voice
             }
             else
             {
+                // xxxjack webrtc audio still to be done
                 writer = new AsyncSocketIOWriter(user, _streamName, audioCodec, b2dStreams);
             }
             string encoderName = "none";
