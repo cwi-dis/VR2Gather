@@ -1,17 +1,17 @@
 {
   "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
   "statsOutputFile" : "-",
-  "_unused_AutoStart" : {
+  "AutoStart" : {
   	"autoLogin" : true,
-  	"sessionName" : "jack-grab",
-  	"sessionScenario" : "Technical Playground",
+  	"sessionName" : "ashu-test",
+  	"sessionScenario" : "Development",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "sap",
-  	"autoCreate" : false,
+  	"autoCreateForUser" : "",
+  	"autoCreate" : true,
   	"autoJoin" : false,
-  	"autoStartWith" : 2,
+  	"autoStartWith" : 1,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false

@@ -38,8 +38,9 @@ public class VideoQualityRating : MonoBehaviour
             Debug.LogWarning("No rating selected.");
             return;
         }
-
-        string ratingText = ratingButtons[selectedRating - 1].GetComponentInChildren<Text>().text;
+        var button = ratingButtons[selectedRating - 1];
+        var comp = button.GetComponentInChildren<TextMeshProUGUI>();
+        string ratingText = comp.text;
         string response = $"Video Quality Rating: {ratingText}";
 
         // Append the response to the file
