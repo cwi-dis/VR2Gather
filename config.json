@@ -1,10 +1,10 @@
 {
   "orchestratorURL" : "http://flauwte.local:8080/socket.io/",
   "_statsOutputFile" : "-",
-  "_unused_AutoStart" : {
+  "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "webrtctest",
-  	"sessionScenario" : "Technical Playground",
+  	"sessionScenario" : "Pilot 0",
   	"sessionTransportProtocol" : "webrtc",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
