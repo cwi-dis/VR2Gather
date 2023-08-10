@@ -6,7 +6,7 @@
   	"sessionName" : "webrtctest",
   	"sessionScenario" : "Pilot 0",
   	"sessionTransportProtocol" : "webrtc",
-  	"sessionUncompressed" : false,
+  	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : false,
   	"autoCreateForUser" : "vrtiny",
   	"autoCreate" : false,
@@ -23,7 +23,7 @@
         "configFilename": "./cameraconfig.json"
       },
       "SynthReaderConfig": {
-        "nPoints": 16000
+        "nPoints": 20
       },
       "ProxyReaderConfig": {
         "localIP": "",
