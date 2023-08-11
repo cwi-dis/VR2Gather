@@ -16,9 +16,10 @@
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
   },
-  "_unused_LocalUser": {
+  "LocalUser": {
     
     "PCSelfConfig": {
+	  "capturerTypeName" : "auto",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
