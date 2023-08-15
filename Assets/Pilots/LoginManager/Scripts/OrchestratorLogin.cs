@@ -1066,7 +1066,9 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
+#if outdated_orchestrator
             OrchestratorController.Instance.OnGetLiveDataEvent += OnGetLivePresenterDataHandler;
+#endif
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
@@ -1100,7 +1102,9 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
+#if outdated_orchestrator
             OrchestratorController.Instance.OnGetLiveDataEvent -= OnGetLivePresenterDataHandler;
+#endif
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
@@ -1113,7 +1117,7 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
         }
 
-        #endregion
+#endregion
 
         #region Commands
 
@@ -1522,6 +1526,8 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
+#if outdated_orchestrator
+
         #region Live
 
         private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
@@ -1530,7 +1536,7 @@ namespace VRT.Pilots.LoginManager
         }
 
         #endregion
-
+#endif
         #region Users
 
         private void GetUsers()
@@ -1753,7 +1759,7 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
-        #endregion
+#endregion
 
     }
 

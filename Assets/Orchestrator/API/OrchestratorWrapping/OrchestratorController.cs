@@ -72,8 +72,11 @@ namespace VRT.Orchestrator.Wrapping
         //Rooms
         private List<RoomInstance> availableRoomInstances;
 
+#if outdated_orchestrator
+
         //LivePresenter
         private LivePresenterData livePresenterData;
+#endif
 
         // user Login state
         private bool userIsLogged = false;
@@ -95,7 +98,7 @@ namespace VRT.Orchestrator.Wrapping
         private bool collectSFULogs = false;
 
         private bool autoStopOnLeave = false;
-        #endregion
+#endregion
 
         #region public
 
@@ -146,8 +149,10 @@ namespace VRT.Orchestrator.Wrapping
         public Action<ScenarioInstance> OnGetScenarioEvent;
         public Action<Scenario[]> OnGetScenariosEvent;
 
+#if outdated_orchestrator
         // Orchestrator Live Events
         public Action<LivePresenterData> OnGetLiveDataEvent;
+#endif
 
         // Orchestrator User Events
         public Action<User[]> OnGetUsersEvent;
@@ -197,10 +202,12 @@ namespace VRT.Orchestrator.Wrapping
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session MySession { get { return mySession; } }
         public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+#if outdated_orchestrator
         public LivePresenterData LivePresenterData { get { return livePresenterData; } }
+#endif
         public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
 
-        #endregion
+#endregion
 
         #region Unity
 
@@ -516,9 +523,11 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnGetScenarioInstanceInfoResponse: Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
+#if outdated_orchestrator
 
             // now retrieve the url of the Live presenter stream
             orchestratorWrapper.GetLivePresenterData();
+#endif
             myScenario = scenario;
             OnGetScenarioEvent?.Invoke(myScenario);
         }
@@ -673,6 +682,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
+#if outdated_orchestrator
 
 #region Live
 
@@ -690,7 +700,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
-
+#endif
 #region Users
 
         public void GetUsers() {

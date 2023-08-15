@@ -375,6 +375,8 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
+#if outdated_orchestrator
+
         public void GetLivePresenterData()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetLivePresenterData");
@@ -388,7 +390,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: GetLivePresenterDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
-
+#endif
         public void GetScenarios()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetScenarios");
@@ -620,7 +622,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
         }
 
-        #endregion
+#endregion
 
         #region commands - no Acks
 
@@ -854,9 +856,11 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinSessionResponse),
                 new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
+#if outdated_orchestrator
 
                 //live stream
                 new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
+#endif
 
                 //scenarios
                 new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
@@ -1005,6 +1009,6 @@ namespace VRT.Orchestrator.Wrapping
             }
             return null;
         }
-        #endregion
+#endregion
     }
 }

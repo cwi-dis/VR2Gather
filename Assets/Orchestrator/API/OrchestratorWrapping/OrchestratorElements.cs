@@ -108,6 +108,8 @@ namespace VRT.Orchestrator.Wrapping
         public SfuData() { }
     }
 
+#if outdated_orchestrator
+
     public class LivePresenterData : OrchestratorElement
     {
         public string liveAddress = "";
@@ -116,7 +118,7 @@ namespace VRT.Orchestrator.Wrapping
         // empty constructor callled by the JsonData parser
         public LivePresenterData() { }
     }
-
+#endif
     public class DataStream : OrchestratorElement
     {
         public string dataStreamUserId = "";

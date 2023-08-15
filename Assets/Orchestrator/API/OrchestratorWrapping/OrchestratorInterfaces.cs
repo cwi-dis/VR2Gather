@@ -66,8 +66,9 @@ namespace VRT.Orchestrator.Wrapping
         void OnJoinSessionResponse(ResponseStatus status, Session session);
         void OnLeaveSessionResponse(ResponseStatus status);
 
+#if outdated_orchestrator
         void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData);
-
+#endif
         void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios);
         void OnGetScenarioInstanceInfoResponse(ResponseStatus status, ScenarioInstance scenario);
 
