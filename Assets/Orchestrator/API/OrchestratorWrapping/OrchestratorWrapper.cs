@@ -22,14 +22,11 @@
 //  other intellectual property.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using LitJson;
-using BestHTTP;
 using BestHTTP.SocketIO;
-using BestHTTP.SocketIO.Events;
 using System.Text;
 using VRT.Orchestrator.WSManagement;
 
@@ -114,10 +111,6 @@ namespace VRT.Orchestrator.Wrapping
         }
     }
 
-    //class that overrides generic UnityEvent wwith string argument
-    public class UnityStringEvent : UnityEvent<string>
-    {
-    }
 
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
@@ -164,6 +157,7 @@ namespace VRT.Orchestrator.Wrapping
 
             InitGrammar();
         }
+#if outdated_orchestrator
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
 
@@ -173,6 +167,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public Action<UserAudioPacket> OnAudioSent;
+#endif
         public Action<UserDataStreamPacket> OnDataStreamReceived;
 
         private string myUserID = "";
@@ -725,6 +720,7 @@ namespace VRT.Orchestrator.Wrapping
 
             if (UserMessagesListener != null) UserMessagesListener.OnUserMessageReceived(messageReceived);
         }
+#if outdated_orchestrator
 
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
@@ -738,6 +734,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnAudioSent?.Invoke(packetReceived);
             }
         }
+#endif
 
         // bit-stream packets from the orchestrator
         private void OnUserDataReceived(Socket socket, Packet packet, params object[] args)
@@ -789,6 +786,7 @@ namespace VRT.Orchestrator.Wrapping
                     break;
             }
         }
+#if outdated_orchestrator
 
         // events packets from master user through the orchestrator
         private void OnMasterEventReceived(Socket socket, Packet packet, params object[] args)
@@ -817,8 +815,8 @@ namespace VRT.Orchestrator.Wrapping
                 UserMessagesListener.OnUserEventReceived(lUserEvent);
             }
         }
-
-        #endregion
+#endif
+#endregion
 
         #region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
@@ -1001,12 +999,16 @@ namespace VRT.Orchestrator.Wrapping
                 //messages
                 new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
                 //audio packets
+#if outdated_orchestrator
                 new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
+#endif
                 //session update events
                 new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 //user events
+#if outdated_orchestrator
                 new OrchestratorMessageReceiver("SceneEventToMaster", OnMasterEventReceived),
                 new OrchestratorMessageReceiver("SceneEventToUser", OnUserEventReceived),
+#endif
                 //user bit-stream
                 new OrchestratorMessageReceiver("DataReceived", OnUserDataReceived)
             };

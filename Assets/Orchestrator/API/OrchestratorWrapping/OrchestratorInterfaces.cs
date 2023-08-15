@@ -31,8 +31,10 @@ namespace VRT.Orchestrator.Wrapping
     public interface IUserMessagesListener
     {
         void OnUserMessageReceived(UserMessage userMessage);
+#if outdated_orchestrator
         void OnMasterEventReceived(UserEvent pSceneEventData);
         void OnUserEventReceived(UserEvent pSceneEventData);
+#endif
     }
 
     // Interface to implement to listen the user events emitted spontaneously

@@ -188,8 +188,9 @@ namespace VRT.Orchestrator.Wrapping
         public string scenarioId;
         public string scenarioName;
         public string scenarioDescription;
+#if outdated_orchestrator
         public List<OrchestratorElement> scenarioRooms = new List<OrchestratorElement>();
-
+#endif
         public override string GetId()
         {
             return scenarioId;

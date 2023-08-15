@@ -170,7 +170,6 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator User Messages Events
         public Action<UserEvent> OnMasterEventReceivedEvent;
         public Action<UserEvent> OnUserEventReceivedEvent;
-
         // Orchestrator Accessors
         public void LocalUserSessionForDevelopmentTests()
         {
@@ -287,11 +286,6 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
             OnGetOrchestratorVersionEvent?.Invoke(version);
-        }
-
-        // Disconnect from the orchestrator
-        public void socketDisconnect() {
-            orchestratorWrapper.Disconnect();
         }
 
         // SockerDisconnect response callback
@@ -657,9 +651,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #region Scenarios
 
-        public void GetScenarios() {
-            orchestratorWrapper.GetScenarios();
-        }
 
         public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
             if (status.Error != 0) {
@@ -722,9 +713,6 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void AddUser(string pUserName, string pUserPassword, bool pAdmin = false) {
-            orchestratorWrapper.AddUser(pUserName, pUserPassword, pAdmin);
-        }
 
         public void OnAddUserResponse(ResponseStatus status, User user) {
             if (status.Error != 0) {
@@ -966,8 +954,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
-
-        #endregion
+#endregion
 
 #region Data bit-stream
 #if outdated_orchestrator

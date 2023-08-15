@@ -1,16 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
-using UnityEditor;
 using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
-using Cwipc;
 using VRT.Pilots.Common;
 
 namespace VRT.Pilots.LoginManager
@@ -32,8 +28,6 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private bool developerMode = true;
 
         private static OrchestratorLogin instance;
-
-        public static OrchestratorLogin Instance { get { return instance; } }
 
         #region GUI Components
 
@@ -1073,7 +1067,6 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
 #if outdated_orchestrator
-
             OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
             OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
             OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
@@ -1167,11 +1160,6 @@ namespace VRT.Pilots.LoginManager
         {
             statusText.text = OrchestratorController.orchestratorConnectionStatus.__CONNECTING__.ToString();
             statusText.color = connectingCol;
-        }
-
-        private void socketDisconnect()
-        {
-            OrchestratorController.Instance.socketDisconnect();
         }
 
         private void OnDisconnect(bool pConnected)
@@ -1313,11 +1301,6 @@ namespace VRT.Pilots.LoginManager
 
         #region NTP clock
 
-        private void GetNTPTime()
-        {
-            OrchestratorController.Instance.GetNTPTime();
-        }
-
         private void OnGetNTPTimeResponse(NtpClock ntpTime)
         {
             double difference = Helper.GetClockTimestamp(DateTime.UtcNow) - ntpTime.Timestamp;
@@ -1426,11 +1409,6 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void DeleteSession()
-        {
-            OrchestratorController.Instance.DeleteSession(OrchestratorController.Instance.MySession.sessionId);
-        }
-
         private void OnDeleteSessionHandler()
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
@@ -1513,11 +1491,6 @@ namespace VRT.Pilots.LoginManager
 
         #region Scenarios
 
-        private void GetScenarios()
-        {
-            OrchestratorController.Instance.GetScenarios();
-        }
-
         private void OnGetScenariosHandler(Scenario[] scenarios)
         {
             if (scenarios != null && scenarios.Length > 0)
@@ -1571,12 +1544,6 @@ namespace VRT.Pilots.LoginManager
             }
 
             UpdateUsersSession(usersSession);
-        }
-
-        private void AddUser()
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: AddUser: Send AddUser registration for user " + userNameRegisterIF.text);
-            OrchestratorController.Instance.AddUser(userNameRegisterIF.text, userPasswordRegisterIF.text);
         }
 
         private void OnAddUserHandler(User user)
@@ -1649,13 +1616,14 @@ namespace VRT.Pilots.LoginManager
                 }
             }
         }
+#if outdated_orchestrator
 
         private void DeleteUser()
         {
             Debug.LogError("OrchestratorLogin: DeleteUser: Not implemented");
         }
-
-        #endregion
+#endif
+#endregion
 #if outdated_orchestrator
 
         #region Rooms
@@ -1696,10 +1664,6 @@ namespace VRT.Pilots.LoginManager
 #endif
 #region Messages
 
-        private void SendMessage()
-        {
-            Debug.LogError("OrchestratorLogin: SendMessage: Not implemented");
-        }
 
         private void SendMessageToAll(string message)
         {
@@ -1713,23 +1677,6 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
-        #region Events
-
-        private void SendEventToMaster()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToMaster: Not implemented");
-        }
-
-        private void SendEventToUser()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToUser: Not implemented");
-        }
-
-        private void SendEventToAll()
-        {
-            Debug.LogError("OrchestratorLogin: SendEventToAll: Not implemented");
-        }
-
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
             Debug.LogError("OrchestratorLogin: OnMasterEventReceivedHandler: Unexpected message from " + pMasterEventData.fromId + ": " + pMasterEventData.message);
@@ -1739,8 +1686,7 @@ namespace VRT.Pilots.LoginManager
         {
             Debug.LogError("OrchestratorLogin: OnUserEventReceivedHandler: Unexpected message from " + pUserEventData.fromId + ": " + pUserEventData.message);
         }
-
-        #endregion
+#endregion
 
 #region Data Stream
 #if outdated_orchestrator
@@ -1757,15 +1703,13 @@ namespace VRT.Pilots.LoginManager
 #endif
 #endregion
 
-        #region Errors
+#region Errors
 
         private void OnErrorHandler(ResponseStatus status)
         {
             Debug.Log("OrchestratorLogin: OnError: Error code: " + status.Error + ", Error message: " + status.Message);
             ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
-
-        #endregion
 
 #endregion
 
