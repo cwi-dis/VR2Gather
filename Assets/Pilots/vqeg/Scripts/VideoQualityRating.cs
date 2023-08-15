@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using TMPro;
+using System;
 
 public class VideoQualityRating : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class VideoQualityRating : MonoBehaviour
     {
         selectedRating = rating;
         SaveUserResponseToFile();
+        UpdateButtonHighlighting(rating);
     }
 
     private void SaveUserResponseToFile()
@@ -43,12 +45,28 @@ public class VideoQualityRating : MonoBehaviour
         string ratingText = comp.text;
         string response = $"Video Quality Rating: {ratingText}";
 
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        string response1 = $"{timestamp} - Video Quality Rating: {ratingText}";
+
+
         // Append the response to the file
         using (StreamWriter writer = new StreamWriter(filePath, true))
         {
-            writer.WriteLine(response);
+            writer.WriteLine(response1);
         }
 
-        Debug.Log("User response saved: " + response);
+        Debug.Log("User response saved: " + response1);
     }
+
+    private void UpdateButtonHighlighting(int selectedRating)
+    {
+        for (int i = 0; i < ratingButtons.Length; i++)
+        {
+            bool isSelected = (i + 1) == selectedRating;
+            ColorBlock colors = ratingButtons[i].colors;
+            colors.normalColor = isSelected ? Color.yellow : Color.white;
+            ratingButtons[i].colors = colors;
+        }
+    }
+
 }

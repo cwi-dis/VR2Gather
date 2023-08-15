@@ -1,2 +1,12 @@
-Video Quality Rating: Good
-Video Quality Rating: Good
+2023-08-15 16:05:00 - Video Quality Rating: Excellent
+2023-08-15 16:05:00 - Video Quality Rating: Excellent
+2023-08-15 16:05:00 - Video Quality Rating: Excellent
+2023-08-15 16:05:00 - Video Quality Rating: Excellent
+2023-08-15 16:05:01 - Video Quality Rating: Excellent
+2023-08-15 16:10:00 - Video Quality Rating: Excellent
+2023-08-15 16:10:01 - Video Quality Rating: Good
+2023-08-15 16:10:03 - Video Quality Rating: Fair
+2023-08-15 16:10:04 - Video Quality Rating: Poor
+2023-08-15 16:10:05 - Video Quality Rating: Good
+2023-08-15 16:10:06 - Video Quality Rating: Excellent
+2023-08-15 16:10:07 - Video Quality Rating: Poor
