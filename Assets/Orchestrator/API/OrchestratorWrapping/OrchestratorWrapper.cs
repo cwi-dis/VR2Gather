@@ -523,6 +523,8 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
         }
 
+#if outdated_orchestrator
+
         public void GetRooms()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetRooms");
@@ -563,7 +565,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveRoomResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveRoomResponse(status);
         }
-
+#endif
         public void SendMessage(string message, string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendMessage");
@@ -903,6 +905,8 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnDeleteUserResponse),
 
+#if outdated_orchestrator
+
                 //rooms
                 new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
                 new OrchestratorCommand("JoinRoom", new List<Parameter>
@@ -911,7 +915,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinRoomResponse),
                 new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
-
+#endif
                 //messages
                 new OrchestratorCommand("SendMessage", new List<Parameter>
                 {

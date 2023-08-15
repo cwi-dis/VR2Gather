@@ -1072,9 +1072,12 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
+#if outdated_orchestrator
+
             OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
             OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
             OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
+#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
@@ -1108,9 +1111,12 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
+#if outdated_orchestrator
+
             OrchestratorController.Instance.OnGetRoomsEvent -= OnGetRoomsHandler;
             OrchestratorController.Instance.OnJoinRoomEvent -= OnJoinRoomHandler;
             OrchestratorController.Instance.OnLeaveRoomEvent -= OnLeaveRoomHandler;
+#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
@@ -1537,7 +1543,7 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 #endif
-        #region Users
+#region Users
 
         private void GetUsers()
         {
@@ -1650,6 +1656,7 @@ namespace VRT.Pilots.LoginManager
         }
 
         #endregion
+#if outdated_orchestrator
 
         #region Rooms
 
@@ -1686,8 +1693,8 @@ namespace VRT.Pilots.LoginManager
         }
 
         #endregion
-
-        #region Messages
+#endif
+#region Messages
 
         private void SendMessage()
         {

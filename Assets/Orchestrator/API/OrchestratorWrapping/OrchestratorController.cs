@@ -69,10 +69,9 @@ namespace VRT.Orchestrator.Wrapping
         private ScenarioInstance myScenario;
         private List<Scenario> availableScenarios;
 
+#if outdated_orchestrator
         //Rooms
         private List<RoomInstance> availableRoomInstances;
-
-#if outdated_orchestrator
 
         //LivePresenter
         private LivePresenterData livePresenterData;
@@ -201,8 +200,8 @@ namespace VRT.Orchestrator.Wrapping
         public ScenarioInstance MyScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session MySession { get { return mySession; } }
-        public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
 #if outdated_orchestrator
+       public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
         public LivePresenterData LivePresenterData { get { return livePresenterData; } }
 #endif
         public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
@@ -825,6 +824,8 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
+#if outdated_orchestrator
+
 #region Rooms
 
         public void GetRooms() {
@@ -874,7 +875,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
-
+#endif
 #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {

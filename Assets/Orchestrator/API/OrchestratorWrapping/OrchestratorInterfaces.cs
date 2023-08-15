@@ -79,10 +79,12 @@ namespace VRT.Orchestrator.Wrapping
         void OnUpdateUserDataJsonResponse(ResponseStatus status);
         void OnClearUserDataResponse(ResponseStatus status);
         void OnDeleteUserResponse(ResponseStatus status);
+#if outdated_orchestrator
 
         void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms);
         void OnJoinRoomResponse(ResponseStatus status);
         void OnLeaveRoomResponse(ResponseStatus status);
+#endif
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);
