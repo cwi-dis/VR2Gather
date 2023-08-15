@@ -623,17 +623,18 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
         }
 
-#endregion
+        #endregion
 
-        #region commands - no Acks
+#region commands - no Acks
 
+#if outdated_orchestrator
         public void PushAudioPacket(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
             command.GetParameter("audiodata").ParamValue = pByteArray;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void SendSceneEventPacketToMaster(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToMaster");
@@ -707,7 +708,7 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitPacket(command);
         }
 
-        #endregion
+#endregion
 
         #region remote response
 
@@ -928,12 +929,14 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("message", typeof(string))
                 },
                 OnSendMessageToAllResponse),
+#if outdated_orchestrator
 
                 //audio packets
                 new OrchestratorCommand("PushAudio", new List<Parameter>
                 {
                     new Parameter("audiodata", typeof(byte[]))
                 }),
+#endif
 
                 //user events
                 new OrchestratorCommand("SendSceneEventToMaster", new List<Parameter>
