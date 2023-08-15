@@ -90,9 +90,7 @@ namespace VRT.Orchestrator.Wrapping
         // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
         private bool isAutoRetrievingData = false;
 
-        // Orchestrator Logs entry point where to find SFU logs of a running session.
-        private string orchestratorLogsDNS = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
-
+       
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
 
@@ -234,7 +232,6 @@ namespace VRT.Orchestrator.Wrapping
             Debug.Log($"xxxjack OrchestratorController.OnDestroy from {gameObject.name}");
 
             if (mySession != null) {
-                Collect_SFU_Logs(mySession.sessionId);
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
 #endif
@@ -346,7 +343,7 @@ namespace VRT.Orchestrator.Wrapping
 
                     // Replaced by UpdateUserDataKey to update the IP adress field of the user on the Login.
                     //orchestratorWrapper.GetUserInfo();
-
+                    // xxxjack note: this has the side-effect that we get a callback with all the settings.
                     UpdateUserDataKey("userIP", GetIPAddress());
                 } else {
                     userIsLogged = false;
@@ -604,8 +601,7 @@ namespace VRT.Orchestrator.Wrapping
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && me != null) {
-                Collect_SFU_Logs(mySession.sessionId);
-
+ 
                 // As the session creator, the session should be deleted when leaving.
                 if (mySession.sessionAdministrator == me.userId) {
                     if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: As session creator, delete the current session when its empty.");
@@ -1064,25 +1060,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-#region Logs
-
-        public void UpdateOrchestratorLogsDNS(string pDNS) {
-            if (!string.IsNullOrEmpty(pDNS)) {
-                orchestratorLogsDNS = pDNS;
-            }
-        }
-
-        private void Collect_SFU_Logs(string pSessionID) {
-            if (!collectSFULogs) {
-                return;
-            }
-
-            string requestURL = orchestratorLogsDNS + "?id=" + pSessionID + "&kind=sfu&download=1";
-            if (enableLogging) Debug.Log("OrchestratorController: Collect_SFU_Logs: SFU session terminated, retrieving logs from: " + requestURL);
-            Application.OpenURL(requestURL);
-        }
-
-#endregion
 
 #region Errors
 

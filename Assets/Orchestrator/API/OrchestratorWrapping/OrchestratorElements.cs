@@ -82,10 +82,12 @@ namespace VRT.Orchestrator.Wrapping
 
     public class UserData: OrchestratorElement
     {
+#if outdated_orchestrator
+
         public string userIP = "";
         public string userMQexchangeName = "";
         public string userMQurl = "";
-
+#endif
         public string userPCurl = "";
         public string userAudioUrl = "";
 

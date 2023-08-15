@@ -465,7 +465,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetUserInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
-
         public void UpdateUserData(string userDataKey, string userDataValue)
         {
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
@@ -480,7 +479,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
-
         public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
@@ -888,6 +886,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+
                 new OrchestratorCommand("UpdateUserData", new List<Parameter>
                 {
                     new Parameter("userDataKey", typeof(string)),
