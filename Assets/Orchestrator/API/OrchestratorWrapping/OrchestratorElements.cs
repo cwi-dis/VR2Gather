@@ -151,9 +151,8 @@ namespace VRT.Orchestrator.Wrapping
         public string scenarioDescription;
 #if outdated_orchestrator
         public List<Room> scenarioRooms = new List<Room>();
-#endif
         public JsonData scenarioGltf;
-
+#endif
         public static Scenario ParseJsonData(JsonData data)
         {
             Scenario scenario = new Scenario();
@@ -164,8 +163,8 @@ namespace VRT.Orchestrator.Wrapping
 
             JsonData rooms = data["scenarioRooms"];
             scenario.scenarioRooms = Helper.ParseElementsList<Room>(rooms);
-#endif
             scenario.scenarioGltf = data["scenarioGltf"];
+#endif
             return scenario;
         }
 
