@@ -88,9 +88,11 @@ namespace VRT.Orchestrator.Wrapping
 
         void OnSendMessageResponse(ResponseStatus status);
         void OnSendMessageToAllResponse(ResponseStatus status);
+#if outdated_orchestrator
 
         void OnGetAvailableDataStreams(ResponseStatus status, List<DataStream> dataStreams);
         void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams);
+#endif
     }
 
     // interface to implement to be updated from messages exchanged on the socketio

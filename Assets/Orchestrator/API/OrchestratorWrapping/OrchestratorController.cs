@@ -967,9 +967,10 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
 #region Data bit-stream
+#if outdated_orchestrator
 
         public void GetAvailableDataStreams(string pDataStreamUserId) {
             OrchestratorWrapper.instance.GetAvailableDataStreams(pDataStreamUserId);
@@ -994,7 +995,7 @@ namespace VRT.Orchestrator.Wrapping
             }
             if (enableLogging) Debug.Log("OrchestratorController: OnGetRegisteredDataStreams: Registered DataStream list count: " + dataStreams.Count);
         }
-
+#endif
 #endregion
 
 #region Logics

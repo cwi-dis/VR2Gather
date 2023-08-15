@@ -1742,7 +1742,8 @@ namespace VRT.Pilots.LoginManager
 
         #endregion
 
-        #region Data Stream
+#region Data Stream
+#if outdated_orchestrator
 
         private void GetAvailableDataStreams()
         {
@@ -1753,8 +1754,8 @@ namespace VRT.Pilots.LoginManager
         {
             OrchestratorController.Instance.GetRegisteredDataStreams();
         }
-
-        #endregion
+#endif
+#endregion
 
         #region Errors
 

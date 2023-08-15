@@ -593,6 +593,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSendMessageToAllResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
+#if outdated_orchestrator
 
         public void GetAvailableDataStreams(string pDataStreamUserId)
         {
@@ -622,8 +623,8 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRegisteredDataStreams: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
         }
-
-        #endregion
+#endif
+#endregion
 
 #region commands - no Acks
 
@@ -671,13 +672,14 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
+#if outdated_orchestrator
 
         public void RemoveAllDataStreams()
         {
             OrchestratorCommand command = GetOrchestratorCommand("RemoveAllDataStreams");
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void RegisterForDataStream(string pDataStreamUserId, string pDataStreamType)
         {
             OrchestratorCommand command = GetOrchestratorCommand("RegisterForDataStream");
@@ -693,13 +695,14 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamKind;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
+#if outdated_orchestrator
 
         public void UnregisterFromAllDataStreams()
         {
             OrchestratorCommand command = GetOrchestratorCommand("UnregisterFromAllDataStreams");
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void SendData(string pDataStreamType, byte[] pDataStreamBytes)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendData");
@@ -963,7 +966,9 @@ namespace VRT.Orchestrator.Wrapping
                 {
                     new Parameter("dataStreamKind", typeof(string)),
                 }),
+#if outdated_orchestrator
                 new OrchestratorCommand("RemoveAllDataStreams", null),
+#endif
                 new OrchestratorCommand("RegisterForDataStream", new List<Parameter>
                 {
                     new Parameter("dataStreamUserId", typeof(string)),
@@ -974,6 +979,8 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("dataStreamUserId", typeof(string)),
                     new Parameter("dataStreamKind", typeof(string))
                 }),
+#if outdated_orchestrator
+
                 new OrchestratorCommand("UnregisterFromAllDataStreams", null),
                 new OrchestratorCommand("GetAvailableDataStreams", new List<Parameter>
                 {
@@ -981,6 +988,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnGetAvailableDataStreams),
                 new OrchestratorCommand("GetRegisteredDataStreams", null, OnGetRegisteredDataStreams),
+#endif
                 new OrchestratorCommand("SendData", new List<Parameter>
                 {
                     new Parameter("dataStreamKind", typeof(string)),
