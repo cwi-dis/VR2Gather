@@ -1565,7 +1565,16 @@ namespace VRT.Pilots.LoginManager
                 webcamName = (webcamDropdown.options.Count <= 0) ? "None" : webcamDropdown.options[webcamDropdown.value].text,
                 microphoneName = (microphoneDropdown.options.Count <= 0) ? "None" : microphoneDropdown.options[microphoneDropdown.value].text
             };
+            // Send new UserData to the orchestrator
             OrchestratorController.Instance.UpdateFullUserData(lUserData);
+            // And also save a local copy, if wanted
+            if (!String.IsNullOrEmpty(VRTConfig.Instance.LocalUser.orchestratorConfigFilename))
+            {
+                var configData = lUserData.AsJsonString();
+                var fullName = VRTConfig.ConfigFilename(VRTConfig.Instance.LocalUser.orchestratorConfigFilename);
+                System.IO.File.WriteAllText(fullName, configData);
+                Debug.Log($"OrchestratorLogin: saved UserData to {fullName}");
+            }
         }
 
         private void GetUserInfo()

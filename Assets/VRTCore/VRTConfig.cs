@@ -122,6 +122,8 @@ namespace VRT.Core
         [Serializable]
         public class _User
         {
+            [Tooltip("local filename where orchestrator config is stored")]
+            public string orchestratorConfigFilename;
             [Serializable]
             public class _PCSelfConfig
             {
@@ -284,13 +286,15 @@ namespace VRT.Core
 
         public static string ConfigFilename(string filename="config.json")
         {
-            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
-            if (clConfigFile != null)
+            if (filename == "config.json")
             {
-                clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                return clConfigFile;
+                string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+                if (clConfigFile != null)
+                {
+                    clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                    return clConfigFile;
+                }
             }
-
             string dataPath;
             if (Application.isEditor)
             {

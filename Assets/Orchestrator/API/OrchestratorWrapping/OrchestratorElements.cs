@@ -98,6 +98,16 @@ namespace VRT.Orchestrator.Wrapping
 
         // empty constructor callled by the JsonData parser
         public UserData() { }
+
+        public static UserData ParseJsonData(JsonData data)
+        {
+            return JsonMapper.ToObject<UserData>(data.ToJson());
+        }
+
+        public string AsJsonString()
+        {
+            return JsonMapper.ToJson(this);
+        }
     }
 
     public class SfuData : OrchestratorElement
