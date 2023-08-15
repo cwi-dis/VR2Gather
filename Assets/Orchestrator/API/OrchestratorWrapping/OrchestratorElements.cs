@@ -149,7 +149,9 @@ namespace VRT.Orchestrator.Wrapping
         public string scenarioId;
         public string scenarioName;
         public string scenarioDescription;
+#if outdated_orchestrator
         public List<Room> scenarioRooms = new List<Room>();
+#endif
         public JsonData scenarioGltf;
 
         public static Scenario ParseJsonData(JsonData data)
@@ -158,8 +160,11 @@ namespace VRT.Orchestrator.Wrapping
             scenario.scenarioId = data["scenarioId"].ToString();
             scenario.scenarioName = data["scenarioName"].ToString();
             scenario.scenarioDescription = data["scenarioDescription"].ToString();
+#if outdated_orchestrator
+
             JsonData rooms = data["scenarioRooms"];
             scenario.scenarioRooms = Helper.ParseElementsList<Room>(rooms);
+#endif
             scenario.scenarioGltf = data["scenarioGltf"];
             return scenario;
         }
@@ -194,6 +199,8 @@ namespace VRT.Orchestrator.Wrapping
             return scenarioName + " (" + scenarioDescription + ")";
         }
     }
+
+#if outdated_orchestrator
 
     public class Room : OrchestratorElement
     {
@@ -238,7 +245,7 @@ namespace VRT.Orchestrator.Wrapping
             return roomName + " (" + roomDescription + ")";
         }
     }
-
+#endif
     public class Session : OrchestratorElement
     {
         public string sessionId;

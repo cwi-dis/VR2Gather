@@ -158,10 +158,13 @@ namespace VRT.Orchestrator.Wrapping
         public Action<User> OnGetUserInfoEvent;
         public Action<User> OnAddUserEvent;
 
+#if outdated_orchestrator
+
         // Orchestrator Rooms Events
         public Action<RoomInstance[]> OnGetRoomsEvent;
         public Action<bool> OnJoinRoomEvent;
         public Action OnLeaveRoomEvent;
+#endif
 
         // Orchestrator User Messages Events
         public Action<UserMessage> OnUserMessageReceivedEvent;
