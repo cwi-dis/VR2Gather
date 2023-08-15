@@ -495,6 +495,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataJsonResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
+#if outdated_orchestrator
 
         public void ClearUserData()
         {
@@ -502,6 +503,7 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitCommand(command);
         }
         
+
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
@@ -523,7 +525,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
         }
 
-#if outdated_orchestrator
 
         public void GetRooms()
         {
@@ -898,6 +899,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userDataJson", typeof(string))
                 },
                 OnUpdateUserDataJsonResponse),
+#if outdated_orchestrator
                 new OrchestratorCommand("ClearUserData", null, OnClearUserDataResponse),
                 new OrchestratorCommand("DeleteUser", new List<Parameter>
                 {
@@ -905,7 +907,6 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnDeleteUserResponse),
 
-#if outdated_orchestrator
 
                 //rooms
                 new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),

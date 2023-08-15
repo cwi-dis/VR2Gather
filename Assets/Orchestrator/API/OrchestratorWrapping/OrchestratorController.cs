@@ -774,6 +774,7 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
             orchestratorWrapper.GetUserInfo();
         }
+#if outdated_orchestrator
 
         public void ClearUserData() {
             orchestratorWrapper.ClearUserData();
@@ -788,7 +789,7 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorController: OnClearUserDataResponse: User data successfully cleaned-up.");
             orchestratorWrapper.GetUserInfo();
         }
-
+#endif
         public void GetUserInfo(string pUserID) {
             orchestratorWrapper.GetUserInfo(pUserID);
         }
@@ -808,6 +809,7 @@ namespace VRT.Orchestrator.Wrapping
                 orchestratorWrapper.GetUsers();
             }
         }
+#if outdated_orchestrator
 
         public void DeleteUser(string pUserID) {
             orchestratorWrapper.DeleteUser(pUserID);
@@ -824,7 +826,7 @@ namespace VRT.Orchestrator.Wrapping
             // update the lists of user, anyway the result
             orchestratorWrapper.GetUsers();
         }
-
+#endif
 #endregion
 
 #if outdated_orchestrator
