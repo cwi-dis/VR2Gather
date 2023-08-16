@@ -26,7 +26,7 @@ public class VideoQualityRating : MonoBehaviour
         }
     }
 
-    private void OnRatingButtonClick(int rating)
+    public void OnRatingButtonClick(int rating)
     {
         selectedRating = rating;
         SaveUserResponseToFile();

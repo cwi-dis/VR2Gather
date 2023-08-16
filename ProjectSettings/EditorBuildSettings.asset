@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Pilots/vqeg/Scenes/Vqeg.unity
     guid: d248c82701da96344a41aae0afbdd0f4
+  - enabled: 1
+    path: Assets/Pilots/vqeg/Scenes/Scene2.unity
+    guid: cef84f407458fe444bf2dbe689eb9676
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: b916857db71260845a232a451a163c3b,
       type: 2}
