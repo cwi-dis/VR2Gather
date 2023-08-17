@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Management;
 using VRT.UserRepresentation.PointCloud;
 using VRT.UserRepresentation.WebCam;
 using VRT.Core;
@@ -34,7 +35,20 @@ public class VRTInitializer : MonoBehaviour
     private void Start()
     {
         Debug.Log("Initializer: Start");
+#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        if (XRGeneralSettings.Instance.Manager.activeLoader != null)
+        {
+            XRGeneralSettings.Instance.Manager.StopSubsystems();
+            XRGeneralSettings.Instance.Manager.DeinitializeLoader();
+            Debug.LogWarning("VRTInitializer: de-initialize XR on Mac to work around bug");
+        }
+        else
+        {
+            Debug.Log("VRTInitializer: XR was not enabled");
+        }
+#endif
     }
+
     // Update is called once per frame
     void Update()
     {
