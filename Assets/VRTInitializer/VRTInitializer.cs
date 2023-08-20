@@ -17,7 +17,7 @@ public class VRTInitializer : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-         Debug.Log("Initializer: Registering pipelines");
+         Debug.Log("VRTInitializer: Registering pipelines");
         PointCloudPipelineSelf.Register();
         PointCloudPipelineOther.Register();
         WebCamPipeline.Register();
@@ -34,7 +34,7 @@ public class VRTInitializer : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Initializer: Start");
+        Debug.Log("VRTInitializer: Start");
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         if (XRGeneralSettings.Instance.Manager.activeLoader != null)
         {
