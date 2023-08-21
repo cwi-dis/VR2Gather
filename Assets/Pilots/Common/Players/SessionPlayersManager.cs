@@ -174,7 +174,8 @@ namespace VRT.Pilots.Common
 				}
 			}
 
-			if (!OrchestratorController.Instance.UserIsMaster)
+
+            if (!OrchestratorController.Instance.UserIsMaster)
 			{
 				OrchestratorController.Instance.SendTypeEventToMaster(new PlayerLocationDataRequest());
 			}
@@ -220,6 +221,10 @@ namespace VRT.Pilots.Common
 				{
 					//No need to send anything if it's just us
 					SendPlayerLocationData();
+				}
+				else
+				{
+					Debug.Log($"SessionPlayersManager: single-user session, not forwarding location data");
 				}
 			}
 		}

@@ -467,13 +467,14 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-#if VRT_WITH_STATS
-            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
-#endif
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={connectedUsers.Count}");
+#endif
 
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
@@ -499,12 +500,12 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Get session info of " + session.sessionName + ".");
-
+           
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             OnSessionInfoEvent?.Invoke(session);
         }
@@ -555,12 +556,12 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnJoinSessionResponse: Session " + session.sessionName + " succesfully joined.");
-
+            
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
