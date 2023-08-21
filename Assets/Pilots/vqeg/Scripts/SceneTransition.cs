@@ -5,7 +5,7 @@ using VRT.Pilots.Common;
 public class SceneTransition : MonoBehaviour
 {
     [Tooltip("Scene to go to ")]
-    public string nextSceneName = "LoginManager";
+    public string nextSceneName = "ExerciseScene";
 
     public void GoToNextScene()
     {

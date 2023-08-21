@@ -47,12 +47,55 @@ MonoBehaviour:
   canvas1: {fileID: 2570509760925767703}
   canvas2: {fileID: 2570509762182310643}
   canvas1Buttons:
-  - {fileID: 2570509762366076739}
-  - {fileID: 5737346917450984312}
-  - {fileID: 5737346918783342790}
-  - {fileID: 5737346918300284793}
-  - {fileID: 5737346917536671442}
+  - {fileID: 3464238696264843278}
   canvas2Button: {fileID: 2570509760959730471}
+--- !u!1 &2132352637
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2132352639}
+  - component: {fileID: 2132352638}
+  m_Layer: 0
+  m_Name: RatingSave
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2132352639
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132352637}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.8004751, y: -0.47354996, z: 0.1000001}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2570509760925767700}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2132352638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132352637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f587a98800f02744aecc5a8bef46186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questionText: {fileID: 0}
+  ratingButtons:
+  - {fileID: 3464238696264843278}
 --- !u!1 &2570509760349020735
 GameObject:
   m_ObjectHideFlags: 0
@@ -97,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df620523c4a1ce4191fd755ecc7345e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextSceneName: LoginManager
+  nextSceneName: ExerciseScene
 --- !u!1 &2570509760495697076
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +392,7 @@ RectTransform:
   - {fileID: 5737346918300284548}
   - {fileID: 5737346917536671535}
   - {fileID: 3464238696264843763}
+  - {fileID: 2132352639}
   m_Father: {fileID: 2570509761947389151}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -437,6 +481,7 @@ MonoBehaviour:
   - {fileID: 5737346918783342790}
   - {fileID: 5737346918300284793}
   - {fileID: 5737346917536671442}
+  - {fileID: 3464238696264843278}
 --- !u!1 &2570509760959730473
 GameObject:
   m_ObjectHideFlags: 0
@@ -561,7 +606,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2570509760349020732}
         m_TargetAssemblyTypeName: SceneTransition, Assembly-CSharp
-        m_MethodName: 
+        m_MethodName: GoToNextScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -570,7 +615,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 0
+        m_CallState: 2
 --- !u!1 &2570509761929351960
 GameObject:
   m_ObjectHideFlags: 0
@@ -1697,7 +1742,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2570509760349020732}
+      objectReference: {fileID: 2132352638}
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
@@ -1706,12 +1751,12 @@ PrefabInstance:
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: GoToNextScene
+      value: SaveResponsesToFile
       objectReference: {fileID: 0}
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: SceneTransition, Assembly-CSharp
+      value: VideoQualityRating, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
         type: 3}
@@ -1845,6 +1890,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24b8626008a25e34db4e9abff54d379b, type: 3}
+--- !u!114 &3464238696264843278 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5737346916966454938, guid: 24b8626008a25e34db4e9abff54d379b,
+    type: 3}
+  m_PrefabInstance: {fileID: 9190813448436487828}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3464238696264843279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &3464238696264843279 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5737346916966454939, guid: 24b8626008a25e34db4e9abff54d379b,
+    type: 3}
+  m_PrefabInstance: {fileID: 9190813448436487828}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2570509760793989570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3464238696264843279}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f587a98800f02744aecc5a8bef46186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  questionText: {fileID: 0}
+  ratingButtons: []
 --- !u!224 &3464238696264843763 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5737346916966455143, guid: 24b8626008a25e34db4e9abff54d379b,

@@ -4,12 +4,15 @@ using UnityEngine.UI;
 using System.IO;
 using TMPro;
 using System;
+using System.Collections.Generic;
 
 public class VideoQualityRating : MonoBehaviour
 {
     public TextMeshProUGUI questionText;
     public Button[] ratingButtons;
     private int selectedRating = -1; // Default value to indicate no selection
+
+    private List<string> userResponses = new List<string>();
 
     private string filePath; // Path to save the user responses
 
@@ -29,34 +32,43 @@ public class VideoQualityRating : MonoBehaviour
     public void OnRatingButtonClick(int rating)
     {
         selectedRating = rating;
-        SaveUserResponseToFile();
+        SaveUserResponseToList();
         UpdateButtonHighlighting(rating);
     }
 
-    private void SaveUserResponseToFile()
+    private void SaveUserResponseToList()
     {
         if (selectedRating == -1)
         {
             Debug.LogWarning("No rating selected.");
             return;
         }
+
         var button = ratingButtons[selectedRating - 1];
         var comp = button.GetComponentInChildren<TextMeshProUGUI>();
         string ratingText = comp.text;
-        // string response = $"Video Quality Rating: {ratingText}";
-
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        string response1 = $"{timestamp} - Video Quality Rating: {ratingText}";
+        string response = $"{timestamp} - Video Quality Rating: {ratingText}";
 
+        userResponses.Add(response);
 
-        // Write the new response to the file, overwriting previous content
+        Debug.Log("User response added: " + response);
+    }
+
+    public void SaveResponsesToFile()
+    {
         using (StreamWriter writer = new StreamWriter(filePath, false))
         {
-            writer.WriteLine(response1);
+            foreach (string response in userResponses)
+            {
+                writer.WriteLine(response);
+            }
         }
 
-        Debug.Log("User response saved: " + response1);
+        Debug.Log("All user responses saved to file.");
     }
+
+
 
     private void UpdateButtonHighlighting(int selectedRating)
     {
