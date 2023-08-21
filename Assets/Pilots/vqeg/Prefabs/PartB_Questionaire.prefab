@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &784741104
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 784741106}
+  - component: {fileID: 784741105}
+  m_Layer: 0
+  m_Name: CanvasManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &784741106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784741104}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0.40047508, y: 0.026450038, z: -0.099999905}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2570509761947389151}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &784741105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784741104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b1b7e61553cf1f4b94af51471bc3c18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvas1: {fileID: 2570509760925767703}
+  canvas2: {fileID: 2570509762182310643}
+  canvas1Buttons:
+  - {fileID: 2570509762366076739}
+  - {fileID: 5737346917450984312}
+  - {fileID: 5737346918783342790}
+  - {fileID: 5737346918300284793}
+  - {fileID: 5737346917536671442}
+  canvas2Button: {fileID: 2570509760959730471}
 --- !u!1 &2570509760349020735
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +561,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2570509760349020732}
         m_TargetAssemblyTypeName: SceneTransition, Assembly-CSharp
-        m_MethodName: GoToNextScene
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -517,7 +570,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 0
 --- !u!1 &2570509761929351960
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,6 +634,7 @@ Transform:
   - {fileID: 2570509760925767700}
   - {fileID: 2570509760349020733}
   - {fileID: 2570509761929351961}
+  - {fileID: 784741106}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
