@@ -1,6 +1,6 @@
 {
-  "orchestratorURL" : "http://sap.local:8080/socket.io/",
-  "statsOutputFile" : "-",
+  "_orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "statsOutputFile" : "",
   "_unused_AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
@@ -19,7 +19,7 @@
   "LocalUser": {
     
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "synthetic",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
