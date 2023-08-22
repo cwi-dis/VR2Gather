@@ -786,7 +786,6 @@ namespace VRT.Orchestrator.Wrapping
                     break;
             }
         }
-#if outdated_orchestrator
 
         // events packets from master user through the orchestrator
         private void OnMasterEventReceived(Socket socket, Packet packet, params object[] args)
@@ -815,7 +814,6 @@ namespace VRT.Orchestrator.Wrapping
                 UserMessagesListener.OnUserEventReceived(lUserEvent);
             }
         }
-#endif
 #endregion
 
         #region grammar definition
@@ -1005,10 +1003,8 @@ namespace VRT.Orchestrator.Wrapping
                 //session update events
                 new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 //user events
-#if outdated_orchestrator
                 new OrchestratorMessageReceiver("SceneEventToMaster", OnMasterEventReceived),
                 new OrchestratorMessageReceiver("SceneEventToUser", OnUserEventReceived),
-#endif
                 //user bit-stream
                 new OrchestratorMessageReceiver("DataReceived", OnUserDataReceived)
             };
