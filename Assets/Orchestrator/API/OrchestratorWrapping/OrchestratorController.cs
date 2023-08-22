@@ -455,8 +455,8 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void AddSession(string pSessionID, string pSessionName, string pSessionDescription) {
-            orchestratorWrapper.AddSession(pSessionID, pSessionName, pSessionDescription);
+        public void AddSession(string pScenarioID, string pSessionName, string pSessionDescription, string pSessionProtocol) {
+            orchestratorWrapper.AddSession(pScenarioID, pSessionName, pSessionDescription, pSessionProtocol);
         }
 
         public void OnAddSessionResponse(ResponseStatus status, Session session) {

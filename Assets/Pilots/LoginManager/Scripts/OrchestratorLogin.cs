@@ -1346,9 +1346,23 @@ namespace VRT.Pilots.LoginManager
 
         private void AddSession()
         {
+            string protocol = "";
+            switch(SessionConfig.Instance.protocolType)
+            {
+                case SessionConfig.ProtocolType.SocketIO:
+                    protocol = "socketio";
+                    break;
+                case SessionConfig.ProtocolType.Dash:
+                    protocol = "dash";
+                    break;
+                case SessionConfig.ProtocolType.TCP:
+                    protocol = "tcp";
+                    break;
+            }
             OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
                                                         sessionNameIF.text,
-                                                        sessionDescriptionIF.text);
+                                                        sessionDescriptionIF.text,
+                                                        protocol);
         }
 
         private void OnAddSessionHandler(Session session)

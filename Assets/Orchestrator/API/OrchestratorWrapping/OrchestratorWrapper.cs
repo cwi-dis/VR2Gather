@@ -281,12 +281,13 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null)ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
-        public void AddSession(string scenarioId, string sessionName, string sessionDescription)
+        public void AddSession(string scenarioId, string sessionName, string sessionDescription, string sessionProtocol)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
             command.GetParameter("sessionName").ParamValue = sessionName;
             command.GetParameter("sessionDescription").ParamValue = sessionDescription;
+            command.GetParameter("sessionProtocol").ParamValue = sessionProtocol;
             OrchestrationSocketIoManager.EmitCommand(command);
         }
 
@@ -840,7 +841,8 @@ namespace VRT.Orchestrator.Wrapping
                 {
                     new Parameter("scenarioId", typeof(string)),
                     new Parameter("sessionName", typeof(string)),
-                    new Parameter("sessionDescription", typeof(string))
+                    new Parameter("sessionDescription", typeof(string)),
+                    new Parameter("sessionProtocol", typeof(string)),
                 },
                 OnAddSessionResponse),
                 new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
