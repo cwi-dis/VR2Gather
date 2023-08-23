@@ -39,7 +39,18 @@ namespace VRT.Pilots.LoginManager
         {
             yield return null;
             OrchestratorController.Instance.GetUsers();
-            yield return new WaitForSeconds(0.5f);
+            if (OrchestratorController.Instance.UserIsMaster)
+            {
+                // xxxjack this is a terrible hack to forestall the initial messages frmm the master to the
+                // other participants in the session getting lost: the master waits longer before transitioning to
+                // the new scene.
+                // This problem suddelny started appearing late August 2023. No idea why it was never a problem before.
+                yield return new WaitForSeconds(1.5f);
+            }
+            else
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
             LoadNewScene(scenary);
         }
 
