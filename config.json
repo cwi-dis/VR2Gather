@@ -1,5 +1,5 @@
 {
-  "orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "_orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
   "_unused_AutoStart" : {
   	"autoLogin" : true,
