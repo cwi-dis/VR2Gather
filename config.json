@@ -8,10 +8,10 @@
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "",
-  	"autoCreate" : true,
+  	"autoCreateForUser" : "topinambur",
+  	"autoCreate" : false,
   	"autoJoin" : false,
-  	"autoStartWith" : 1,
+  	"autoStartWith" : 2,
   	"autoDelay" : 1.5,
   	"autoLeaveAfter" : 0,
   	"autoStopAfterLeave" : false
