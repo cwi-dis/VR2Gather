@@ -55,7 +55,7 @@ namespace VRT.Pilots.LoginManager
             }
             message = message.Substring(6);
             SessionConfig.FromJson(message);
-            string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(SessionConfig.Instance.scenarioName, SessionConfig.Instance.scenarioVariant); ;
+            string sceneName = ScenarioRegistry.Instance.GetSceneNameForPilotName(SessionConfig.Instance.scenarioName, SessionConfig.Instance.scenarioVariant); ;
             if (sceneName == null)
             {
                 Debug.LogError($"{Name()}: Selected scenario \"{SessionConfig.Instance.scenarioName}\" not implemented in this player (unknown scene)");

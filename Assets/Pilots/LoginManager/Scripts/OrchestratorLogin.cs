@@ -350,7 +350,7 @@ namespace VRT.Pilots.LoginManager
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
+                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);
@@ -361,7 +361,7 @@ namespace VRT.Pilots.LoginManager
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
             {
 
-                if (PilotRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
+                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
                 {
                     options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
                     scenarioIDs.Add(scenario.scenarioId);

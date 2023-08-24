@@ -4,9 +4,9 @@ using VRT.Core;
 
 namespace VRT.Pilots.LoginManager
 {
-    public class PilotRegistry : MonoBehaviour
+    public class ScenarioRegistry : MonoBehaviour
     {
-        public static PilotRegistry Instance;
+        public static ScenarioRegistry Instance;
 
         private void Awake()
         {
