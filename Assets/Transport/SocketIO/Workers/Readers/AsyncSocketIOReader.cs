@@ -39,7 +39,7 @@ namespace VRT.Transport.SocketIO
                 for (int i = 0; i < this.descriptors.Length; ++i)
                 {
                     this.descriptors[i].name = $"{user.userId}.{remoteStream}.{fourcc}#{i}";
-                    Debug.Log($"[FPA] RegisterForDataStream userId {user.userId} StreamType {this.descriptors[i].name}");
+                    Debug.Log($"{Name()}:  RegisterForDataStream userId {user.userId} StreamName {this.descriptors[i].name}");
                     OrchestratorWrapper.instance.RegisterForDataStream(user.userId, this.descriptors[i].name);
                 }
                 OrchestratorWrapper.instance.OnDataStreamReceived += OnDataPacketReceived;
@@ -104,7 +104,10 @@ namespace VRT.Transport.SocketIO
                     bool didDrop = !descriptors[i].outQueue.Enqueue(chunk);
                     if (didDrop)
                     {
-                        // Debug.Log($"{Name()}: dropped packet, queuelength is {descriptors[i].outQueue.Count()}");
+                        Debug.Log($"{Name()}: dropped packet for {streamName}, ts={timestamp}, queuelength is {descriptors[i].outQueue.Count()}");
+                    } else
+                    {
+                        // Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
                     }
 #if VRT_WITH_STATS
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
