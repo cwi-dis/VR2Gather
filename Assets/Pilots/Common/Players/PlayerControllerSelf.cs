@@ -192,7 +192,7 @@ namespace VRT.Pilots.Common
         {
             if (userRepresentation == user.userData.userRepresentationType)
             {
-                SetRepresentation(UserRepresentationType.__NONE__);
+                SetRepresentation(UserRepresentationType.NoRepresentation);
             }
             else
             {

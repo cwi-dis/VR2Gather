@@ -22,14 +22,11 @@
 //  other intellectual property.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using LitJson;
-using BestHTTP;
 using BestHTTP.SocketIO;
-using BestHTTP.SocketIO.Events;
 using System.Text;
 using VRT.Orchestrator.WSManagement;
 
@@ -114,10 +111,6 @@ namespace VRT.Orchestrator.Wrapping
         }
     }
 
-    //class that overrides generic UnityEvent wwith string argument
-    public class UnityStringEvent : UnityEvent<string>
-    {
-    }
 
     // class that encapsulates the connection with the orchestrator, emitting and receiving the events
     // and converting and parsing the camands and the responses
@@ -164,6 +157,7 @@ namespace VRT.Orchestrator.Wrapping
 
             InitGrammar();
         }
+#if outdated_orchestrator
         public OrchestratorWrapper(string orchestratorSocketUrl, IOrchestratorResponsesListener responsesListener, IUserMessagesListener messagesFromOrchestratorListener) : this(orchestratorSocketUrl, responsesListener, null, messagesFromOrchestratorListener, null) { }
         public OrchestratorWrapper(string orchestratorSocketUrl) : this(orchestratorSocketUrl, null, null, null, null) { }
 
@@ -173,6 +167,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         public Action<UserAudioPacket> OnAudioSent;
+#endif
         public Action<UserDataStreamPacket> OnDataStreamReceived;
 
         private string myUserID = "";
@@ -286,12 +281,13 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null)ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
         }
 
-        public void AddSession(string scenarioId, string sessionName, string sessionDescription)
+        public void AddSession(string scenarioId, string sessionName, string sessionDescription, string sessionProtocol)
         {
             OrchestratorCommand command = GetOrchestratorCommand("AddSession");
             command.GetParameter("scenarioId").ParamValue = scenarioId;
             command.GetParameter("sessionName").ParamValue = sessionName;
             command.GetParameter("sessionDescription").ParamValue = sessionDescription;
+            command.GetParameter("sessionProtocol").ParamValue = sessionProtocol;
             OrchestrationSocketIoManager.EmitCommand(command);
         }
 
@@ -375,6 +371,8 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener != null) ResponsesListener.OnLeaveSessionResponse(status);
         }
 
+#if outdated_orchestrator
+
         public void GetLivePresenterData()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetLivePresenterData");
@@ -388,7 +386,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: GetLivePresenterDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetLivePresenterDataResponse(status, liveData);
         }
-
+#endif
         public void GetScenarios()
         {
             OrchestratorCommand command = GetOrchestratorCommand("GetScenarios");
@@ -463,7 +461,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetUserInfoResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetUserInfoResponse(status, user);
         }
-
         public void UpdateUserData(string userDataKey, string userDataValue)
         {
             OrchestratorCommand command = GetOrchestratorCommand("UpdateUserData");
@@ -478,7 +475,6 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataResponse(status);
         }
-
         public void UpdateUserDataJson(UserData userData)
         {
             JsonData json = JsonUtility.ToJson(userData);
@@ -493,6 +489,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnUpdateUserDataJsonResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnUpdateUserDataJsonResponse(status);
         }
+#if outdated_orchestrator
 
         public void ClearUserData()
         {
@@ -500,6 +497,7 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitCommand(command);
         }
         
+
         private void OnClearUserDataResponse(OrchestratorCommand command, OrchestratorResponse response)
         {
             ResponseStatus status = new ResponseStatus(response.error, response.message);
@@ -520,6 +518,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnDeleteUserResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnDeleteUserResponse(status);
         }
+
 
         public void GetRooms()
         {
@@ -561,7 +560,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnLeaveRoomResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnLeaveRoomResponse(status);
         }
-
+#endif
         public void SendMessage(string message, string userId)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendMessage");
@@ -590,6 +589,7 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSendMessageToAllResponse: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnSendMessageToAllResponse(status);
         }
+#if outdated_orchestrator
 
         public void GetAvailableDataStreams(string pDataStreamUserId)
         {
@@ -619,18 +619,19 @@ namespace VRT.Orchestrator.Wrapping
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnGetRegisteredDataStreams: no ResponsesListener");
             if (ResponsesListener != null) ResponsesListener.OnGetRegisteredDataStreams(status, lDataStreams);
         }
+#endif
+#endregion
 
-        #endregion
+#region commands - no Acks
 
-        #region commands - no Acks
-
+#if outdated_orchestrator
         public void PushAudioPacket(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("PushAudio");
             command.GetParameter("audiodata").ParamValue = pByteArray;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void SendSceneEventPacketToMaster(byte[] pByteArray)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendSceneEventToMaster");
@@ -667,13 +668,14 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamType;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
+#if outdated_orchestrator
 
         public void RemoveAllDataStreams()
         {
             OrchestratorCommand command = GetOrchestratorCommand("RemoveAllDataStreams");
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void RegisterForDataStream(string pDataStreamUserId, string pDataStreamType)
         {
             OrchestratorCommand command = GetOrchestratorCommand("RegisterForDataStream");
@@ -689,13 +691,14 @@ namespace VRT.Orchestrator.Wrapping
             command.GetParameter("dataStreamKind").ParamValue = pDataStreamKind;
             OrchestrationSocketIoManager.EmitPacket(command);
         }
+#if outdated_orchestrator
 
         public void UnregisterFromAllDataStreams()
         {
             OrchestratorCommand command = GetOrchestratorCommand("UnregisterFromAllDataStreams");
             OrchestrationSocketIoManager.EmitPacket(command);
         }
-
+#endif
         public void SendData(string pDataStreamType, byte[] pDataStreamBytes)
         {
             OrchestratorCommand command = GetOrchestratorCommand("SendData");
@@ -704,7 +707,7 @@ namespace VRT.Orchestrator.Wrapping
             OrchestrationSocketIoManager.EmitPacket(command);
         }
 
-        #endregion
+#endregion
 
         #region remote response
 
@@ -718,6 +721,7 @@ namespace VRT.Orchestrator.Wrapping
 
             if (UserMessagesListener != null) UserMessagesListener.OnUserMessageReceived(messageReceived);
         }
+#if outdated_orchestrator
 
         // audio packets from the orchestrator
         private void OnAudioSentFromOrchestrator(Socket socket, Packet packet, params object[] args)
@@ -731,6 +735,7 @@ namespace VRT.Orchestrator.Wrapping
                 OnAudioSent?.Invoke(packetReceived);
             }
         }
+#endif
 
         // bit-stream packets from the orchestrator
         private void OnUserDataReceived(Socket socket, Packet packet, params object[] args)
@@ -810,8 +815,7 @@ namespace VRT.Orchestrator.Wrapping
                 UserMessagesListener.OnUserEventReceived(lUserEvent);
             }
         }
-
-        #endregion
+#endregion
 
         #region grammar definition
         // declare te available commands, their parameters and the callbacks that should be used for the response of each command
@@ -837,7 +841,8 @@ namespace VRT.Orchestrator.Wrapping
                 {
                     new Parameter("scenarioId", typeof(string)),
                     new Parameter("sessionName", typeof(string)),
-                    new Parameter("sessionDescription", typeof(string))
+                    new Parameter("sessionDescription", typeof(string)),
+                    new Parameter("sessionProtocol", typeof(string)),
                 },
                 OnAddSessionResponse),
                 new OrchestratorCommand("GetSessions", null, OnGetSessionsResponse),
@@ -854,9 +859,11 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinSessionResponse),
                 new OrchestratorCommand("LeaveSession", null, OnLeaveSessionResponse),
+#if outdated_orchestrator
 
                 //live stream
                 new OrchestratorCommand("GetLivePresenterData", null, GetLivePresenterDataResponse),
+#endif
 
                 //scenarios
                 new OrchestratorCommand("GetScenarios", null, OnGetScenariosResponse),
@@ -881,6 +888,7 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userAdmin", typeof(bool))
                 },
                 OnAddUserResponse),
+
                 new OrchestratorCommand("UpdateUserData", new List<Parameter>
                 {
                     new Parameter("userDataKey", typeof(string)),
@@ -892,12 +900,14 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("userDataJson", typeof(string))
                 },
                 OnUpdateUserDataJsonResponse),
+#if outdated_orchestrator
                 new OrchestratorCommand("ClearUserData", null, OnClearUserDataResponse),
                 new OrchestratorCommand("DeleteUser", new List<Parameter>
                 {
                     new Parameter("userId", typeof(string))
                 },
                 OnDeleteUserResponse),
+
 
                 //rooms
                 new OrchestratorCommand("GetRooms", null, OnGetRoomsResponse),
@@ -907,7 +917,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnJoinRoomResponse),
                 new OrchestratorCommand("LeaveRoom", null, OnLeaveRoomResponse),
-
+#endif
                 //messages
                 new OrchestratorCommand("SendMessage", new List<Parameter>
                 {
@@ -920,12 +930,14 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("message", typeof(string))
                 },
                 OnSendMessageToAllResponse),
+#if outdated_orchestrator
 
                 //audio packets
                 new OrchestratorCommand("PushAudio", new List<Parameter>
                 {
                     new Parameter("audiodata", typeof(byte[]))
                 }),
+#endif
 
                 //user events
                 new OrchestratorCommand("SendSceneEventToMaster", new List<Parameter>
@@ -952,7 +964,9 @@ namespace VRT.Orchestrator.Wrapping
                 {
                     new Parameter("dataStreamKind", typeof(string)),
                 }),
+#if outdated_orchestrator
                 new OrchestratorCommand("RemoveAllDataStreams", null),
+#endif
                 new OrchestratorCommand("RegisterForDataStream", new List<Parameter>
                 {
                     new Parameter("dataStreamUserId", typeof(string)),
@@ -963,6 +977,8 @@ namespace VRT.Orchestrator.Wrapping
                     new Parameter("dataStreamUserId", typeof(string)),
                     new Parameter("dataStreamKind", typeof(string))
                 }),
+#if outdated_orchestrator
+
                 new OrchestratorCommand("UnregisterFromAllDataStreams", null),
                 new OrchestratorCommand("GetAvailableDataStreams", new List<Parameter>
                 {
@@ -970,6 +986,7 @@ namespace VRT.Orchestrator.Wrapping
                 },
                 OnGetAvailableDataStreams),
                 new OrchestratorCommand("GetRegisteredDataStreams", null, OnGetRegisteredDataStreams),
+#endif
                 new OrchestratorCommand("SendData", new List<Parameter>
                 {
                     new Parameter("dataStreamKind", typeof(string)),
@@ -982,7 +999,9 @@ namespace VRT.Orchestrator.Wrapping
                 //messages
                 new OrchestratorMessageReceiver("MessageSent", OnMessageSentFromOrchestrator),
                 //audio packets
+#if outdated_orchestrator
                 new OrchestratorMessageReceiver("AudioSent", OnAudioSentFromOrchestrator),
+#endif
                 //session update events
                 new OrchestratorMessageReceiver("SessionUpdated", OnSessionUpdated),
                 //user events
@@ -1005,6 +1024,6 @@ namespace VRT.Orchestrator.Wrapping
             }
             return null;
         }
-        #endregion
+#endregion
     }
 }
