@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -45,6 +46,8 @@ namespace VRT.Pilots.Common
 		public List<PlayerLocation> PlayerLocations;
 		[Tooltip("Location where no-representation players will be instantiated")]
 		public Transform NonPlayersLocation;
+		[Tooltip("Delay between Start() and InstantiatePlayers()")]
+		public float InstantiatePlayersDelay = 2.0f;
 
 		[Tooltip("If true, the players will be put on the available locations in order of appearance in the Player Locations list")]
 		public bool AutoSpawnOnLocation = false;
@@ -101,6 +104,12 @@ namespace VRT.Pilots.Common
 
 		public void Start()
 		{
+			StartCoroutine(InstantiatePlayersAfterDelay());
+		}
+
+		protected IEnumerator InstantiatePlayersAfterDelay()
+		{
+			yield return new WaitForSeconds(InstantiatePlayersDelay);
 			InstantiatePlayers();
 		}
 
@@ -174,7 +183,8 @@ namespace VRT.Pilots.Common
 				}
 			}
 
-			if (!OrchestratorController.Instance.UserIsMaster)
+
+            if (!OrchestratorController.Instance.UserIsMaster)
 			{
 				OrchestratorController.Instance.SendTypeEventToMaster(new PlayerLocationDataRequest());
 			}
@@ -220,6 +230,10 @@ namespace VRT.Pilots.Common
 				{
 					//No need to send anything if it's just us
 					SendPlayerLocationData();
+				}
+				else
+				{
+					Debug.Log($"SessionPlayersManager: single-user session, not forwarding location data");
 				}
 			}
 		}

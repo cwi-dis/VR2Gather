@@ -107,7 +107,7 @@ namespace VRT.Transport.SocketIO
                         Debug.Log($"{Name()}: dropped packet for {streamName}, ts={timestamp}, queuelength is {descriptors[i].outQueue.Count()}");
                     } else
                     {
-                        Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
+                        // Debug.Log($"{Name()}: Received packet for {streamName}, ts={timestamp}, size={chunk.length}");
                     }
 #if VRT_WITH_STATS
                     stats.statsUpdate(chunk.length, didDrop, timestamp, i);
