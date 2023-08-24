@@ -118,6 +118,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private GameObject joinPanel = null;
         [SerializeField] private Button backJoinButton = null;
         [SerializeField] private Dropdown sessionIdDrop = null;
+        [SerializeField] private Text sessionJoinMessage = null;
         [SerializeField] private int refreshTimer = 5;
 
         [Header("Lobby")]
