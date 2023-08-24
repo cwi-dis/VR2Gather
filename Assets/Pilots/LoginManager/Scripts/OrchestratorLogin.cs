@@ -1250,9 +1250,12 @@ namespace VRT.Pilots.LoginManager
                     {
                         Debug.Log($"OrchestratorLogin: load UserData from {fullName}");
                         var configData = System.IO.File.ReadAllText(fullName);
-                        // xxxjack UserData lUserData = UserData.ParseJsonData(configData);
+                        UserData lUserData = new UserData(); // = UserData.ParseJsonData(configData);
+                        JsonUtility.FromJsonOverwrite(configData, lUserData);
+                        OrchestratorController.Instance.UpdateFullUserData(lUserData);
+                        Debug.Log($"OrchesratorLogin: uploaded UserData to orchestrator");
                     }
-                 }
+                }
 
                 OrchestratorController.Instance.StartRetrievingData();
 

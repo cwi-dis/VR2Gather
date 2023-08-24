@@ -17,7 +17,7 @@
   	"autoStopAfterLeave" : false
   },
   "LocalUser": {
-    
+    "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
 	  "capturerTypeName" : "synthetic",
       "RS2ReaderConfig": {
