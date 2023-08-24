@@ -26,6 +26,12 @@ namespace VRT.Pilots.LoginManager
         [Tooltip("Scenarios supported by this VR2Gather player")]
         public List<ScenarioInfo> scenarios = new List<ScenarioInfo>();
 
+        public List<ScenarioInfo> Scenarios {
+            get
+            {
+                return scenarios;
+            }
+        }
       
         public static ScenarioRegistry Instance;
 
@@ -37,6 +43,30 @@ namespace VRT.Pilots.LoginManager
         public void Start()
         {
             
+        }
+
+        public ScenarioInfo GetScenarioByName(string name)
+        {
+            foreach (ScenarioInfo sc in scenarios)
+            {
+                if (name == sc.scenarioName)
+                {
+                    return sc;
+                }
+            }
+            return null;
+        }
+
+        public string GetSceneNameForSession(SessionConfig sessionConfig)
+        {
+            foreach(ScenarioInfo sc in scenarios)
+            {
+                if (sessionConfig.scenarioName == sc.scenarioName)
+                {
+                    return sc.scenarioSceneName;
+                }
+            }
+            return null;
         }
 
         public string GetSceneNameForPilotName(string pilotName, string pilotVariant)

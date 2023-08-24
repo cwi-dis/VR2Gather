@@ -40,7 +40,7 @@ namespace VRT.Pilots.LoginManager
 
         // Because we re-order the scenarios in the menu (to get usable ones near the top) we need to also keep
         // a list in order of the menu.
-        private List<string> scenarioIDs;
+        private List<ScenarioRegistry.ScenarioInfo> scenarioInfoList;
 
 
         [Header("Developer")]
@@ -107,6 +107,7 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private InputField sessionNameIF = null;
         [SerializeField] private InputField sessionDescriptionIF = null;
         [SerializeField] private Dropdown scenarioIdDrop = null;
+        [SerializeField] private Text scenarioDescription = null;
         [SerializeField] private Toggle socketProtocolToggle = null;
         [SerializeField] private Toggle dashProtocolToggle = null;
         [SerializeField] private Toggle tcpProtocolToggle = null;
@@ -345,6 +346,13 @@ namespace VRT.Pilots.LoginManager
             // update the dropdown
             dd.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+            scenarioInfoList = new List<ScenarioRegistry.ScenarioInfo>();
+            foreach (var sc in ScenarioRegistry.Instance.Scenarios)
+            {
+                options.Insert(0, new Dropdown.OptionData(sc.scenarioName));
+                scenarioInfoList.Insert(0, sc);
+            }
+#if old_scenarios
             // Add scenarios we have implemented first, others afterwards after a blank line
             scenarioIDs = new List<string>();
             foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
@@ -367,6 +375,7 @@ namespace VRT.Pilots.LoginManager
                     scenarioIDs.Add(scenario.scenarioId);
                 }
             }
+#endif
             dd.AddOptions(options);
         }
 
@@ -482,9 +491,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Unity
+#region Unity
 
         // Start is called before the first frame update
         void Start()
@@ -544,6 +553,15 @@ namespace VRT.Pilots.LoginManager
             webcamDropdown.onValueChanged.AddListener(delegate { PanelChanger(); });
             microphoneDropdown.onValueChanged.AddListener(delegate {
                 selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
+            });
+            scenarioIdDrop.onValueChanged.AddListener(delegate
+            {
+                var idx = scenarioIdDrop.value;
+                var sc = scenarioInfoList[idx];
+                if (scenarioDescription != null)
+                {
+                    scenarioDescription.text = sc.scenarioDescription;
+                }
             });
 
             InitialiseControllerEvents();
@@ -670,6 +688,13 @@ namespace VRT.Pilots.LoginManager
                     int idx = 0;
                     foreach (var entry in scenarioIdDrop.options)
                     {
+                        if (entry.text == config.sessionScenario)
+                        {
+                            scenarioIdDrop.value = idx;
+                        }
+                        idx++;
+                    }
+#if old_scenarios
                         if (entry.text.Contains(config.sessionScenario + " "))
                         {
                             if (found)
@@ -681,6 +706,7 @@ namespace VRT.Pilots.LoginManager
                         }
                         idx++;
                     }
+#endif
                     if (!found)
                     {
                         Debug.LogError($"OrchestratorLogin: AutoStart: No scenarios match {config.sessionScenario}");
@@ -826,9 +852,9 @@ namespace VRT.Pilots.LoginManager
             TerminateControllerEvents();
         }
 
-        #endregion
+#endregion
 
-        #region Input
+#region Input
 
         void SelectFirstIF()
         {
@@ -880,9 +906,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Buttons
+#region Buttons
 
         private void DeveloperModeButtonClicked()
         {
@@ -963,9 +989,9 @@ namespace VRT.Pilots.LoginManager
 
      
 
-        #endregion
+#endregion
 
-        #region Toggles 
+#region Toggles 
 
         private void AudioToggle()
         {
@@ -1035,9 +1061,9 @@ namespace VRT.Pilots.LoginManager
 
 
 
-        #endregion
+#endregion
 
-        #region Events listeners
+#region Events listeners
 
         // Subscribe to Orchestrator Wrapper Events
         private void InitialiseControllerEvents()
@@ -1118,9 +1144,9 @@ namespace VRT.Pilots.LoginManager
 
 #endregion
 
-        #region Commands
+#region Commands
 
-        #region Socket.io connect
+#region Socket.io connect
 
         public void SocketConnect()
         {
@@ -1181,10 +1207,10 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.GetNTPTime();
         }
 
-        #endregion
+#endregion
 
       
-        #region Login/Logout
+#region Login/Logout
 
         private void SignIn()
         {
@@ -1312,9 +1338,9 @@ namespace VRT.Pilots.LoginManager
             PanelChanger();
         }
 
-        #endregion
+#endregion
 
-        #region NTP clock
+#region NTP clock
 
         private void OnGetNTPTimeResponse(NtpClock ntpTime)
         {
@@ -1326,9 +1352,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Sessions
+#region Sessions
 
         private void GetSessions()
         {
@@ -1362,7 +1388,7 @@ namespace VRT.Pilots.LoginManager
                     protocol = "tcp";
                     break;
             }
-            OrchestratorController.Instance.AddSession(scenarioIDs[scenarioIdDrop.value],
+            OrchestratorController.Instance.AddSession(scenarioInfoList[scenarioIdDrop.value].scenarioName,
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text,
                                                         protocol);
@@ -1516,9 +1542,9 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
-        #region Scenarios
+#region Scenarios
 
         private void OnGetScenariosHandler(Scenario[] scenarios)
         {
@@ -1532,18 +1558,18 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        #endregion
+#endregion
 
 #if outdated_orchestrator
 
-        #region Live
+#region Live
 
         private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
         {
             //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
         }
 
-        #endregion
+#endregion
 #endif
 #region Users
 
@@ -1665,7 +1691,7 @@ namespace VRT.Pilots.LoginManager
 #endregion
 #if outdated_orchestrator
 
-        #region Rooms
+#region Rooms
 
         private void GetRooms()
         {
@@ -1699,7 +1725,7 @@ namespace VRT.Pilots.LoginManager
             Debug.LogError("OrchestratorLogin: OnLeaveRoomHandler: Not implemented");
         }
 
-        #endregion
+#endregion
 #endif
 #region Messages
 
@@ -1714,7 +1740,7 @@ namespace VRT.Pilots.LoginManager
             LoginController.Instance.OnUserMessageReceived(userMessage.message);
         }
 
-        #endregion
+#endregion
 
         private void OnMasterEventReceivedHandler(UserEvent pMasterEventData)
         {
