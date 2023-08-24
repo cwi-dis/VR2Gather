@@ -341,10 +341,10 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void UpdateScenarios(Dropdown dd)
+        private void UpdateScenarios()
         {
             // update the dropdown
-            dd.ClearOptions();
+            scenarioIdDrop.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             scenarioInfoList = new List<ScenarioRegistry.ScenarioInfo>();
             foreach (var sc in ScenarioRegistry.Instance.Scenarios)
@@ -376,7 +376,11 @@ namespace VRT.Pilots.LoginManager
                 }
             }
 #endif
-            dd.AddOptions(options);
+            scenarioIdDrop.AddOptions(options);
+            if (scenarioDescription != null)
+            {
+                scenarioDescription.text = scenarioInfoList[0].scenarioDescription;
+            }
         }
 
         private void UpdateRepresentations(Dropdown dd)
@@ -579,7 +583,7 @@ namespace VRT.Pilots.LoginManager
                 statusText.color = connectedCol;
                 FillSelfUserData();
                 UpdateSessions(orchestratorSessions, sessionIdDrop);
-                UpdateScenarios(scenarioIdDrop);
+                UpdateScenarios();
                 Debug.Log("OrchestratorLogin: Coming from another Scene");
 
                 OrchestratorController.Instance.OnLoginResponse(new ResponseStatus(), userId.text);
@@ -1388,7 +1392,7 @@ namespace VRT.Pilots.LoginManager
                     protocol = "tcp";
                     break;
             }
-            OrchestratorController.Instance.AddSession(scenarioInfoList[scenarioIdDrop.value].scenarioName,
+            OrchestratorController.Instance.AddSession(scenarioInfoList[scenarioIdDrop.value].scenarioId,
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text,
                                                         protocol);
@@ -1551,7 +1555,7 @@ namespace VRT.Pilots.LoginManager
             if (scenarios != null && scenarios.Length > 0)
             {
                 //update the data in the dropdown
-                UpdateScenarios(scenarioIdDrop);
+                UpdateScenarios();
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);

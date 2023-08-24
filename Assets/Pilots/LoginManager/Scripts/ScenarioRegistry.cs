@@ -19,11 +19,9 @@ namespace VRT.Pilots.LoginManager
             public string scenarioDescription;
             [Tooltip("The name of the scene that implements this scenario")]
             public string scenarioSceneName;
-            [Tooltip("Higher numbered scenarios will appear higher in the list")]
-            public int scenarioPriority;
-        }
+         }
 
-        [Tooltip("Scenarios supported by this VR2Gather player")]
+        [Tooltip("Scenarios supported by this VR2Gather player. Later scenarios show up earlier in creation popup.")]
         public List<ScenarioInfo> scenarios = new List<ScenarioInfo>();
 
         public List<ScenarioInfo> Scenarios {
