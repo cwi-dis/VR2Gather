@@ -127,12 +127,13 @@ namespace VRT.UserRepresentation.PointCloud
 
             dummyUser = new User();
             dummyUser.userData = new UserData();
-            dummyUser.userData.userRepresentationType = UserRepresentationType.__PCC_PRERECORDED__;
+            dummyUser.userData.userRepresentationType = UserRepresentationType.PointCloud;
 
             VRTConfig._User realUser = VRTConfig.Instance.LocalUser;
 
             cfg = new VRTConfig._User();
             cfg.PCSelfConfig = new VRTConfig._User._PCSelfConfig();
+            cfg.PCSelfConfig.capturerType = VRTConfig._User._PCSelfConfig.PCCapturerType.prerecorded;
             cfg.PCSelfConfig.PrerecordedReaderConfig = new VRTConfig._User._PCSelfConfig._PrerecordedReaderConfig();
             if (folder == null || folder == "")
             {

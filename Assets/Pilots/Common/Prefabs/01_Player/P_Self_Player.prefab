@@ -323,44 +323,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TrackingType: 0
   m_UpdateType: 0
+  m_IgnoreTrackingState: 0
   m_PositionInput:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
-      m_Name: Position
+      m_Name: 
       m_Type: 0
-      m_ExpectedControlType: Vector3
-      m_Id: 9806e770-f094-4dd7-b9f0-742dfae5a441
+      m_ExpectedControlType: 
+      m_Id: 6c1de195-dbed-4c04-a05f-b229cf891358
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 88a5fa0d-e9f1-40b6-89ba-8dccf46f0103
-        m_Path: <XRHMD>/centerEyePosition
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Position
-        m_Flags: 0
+      m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: 7862207684358717888, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   m_RotationInput:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
-      m_Name: Rotation
+      m_Name: 
       m_Type: 0
-      m_ExpectedControlType: Quaternion
-      m_Id: 51014511-65b1-43e9-a7f8-4417c8dc719e
+      m_ExpectedControlType: 
+      m_Id: 8bc01c78-c6bf-41dc-a529-1612480e489c
       m_Processors: 
       m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 7f0a974b-182c-44e5-9af2-0311b242237a
-        m_Path: <XRHMD>/centerEyeRotation
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Rotation
-        m_Flags: 0
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -530380113134220495, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
+  m_TrackingStateInput:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Tracking State Input
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 5a4ab819-3761-461d-8c35-9c05dcd3caee
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 0}
   m_PositionAction:
@@ -1097,6 +1096,7 @@ MonoBehaviour:
   m_RepeatDelay: 0.5
   m_RepeatRate: 0.1
   m_TrackedDeviceDragThresholdMultiplier: 1.4
+  m_TrackedScrollDeltaMultiplier: 5
   m_ActiveInputMode: 0
   m_MaxTrackedDeviceRaycastDistance: 1000
   m_EnableXRInput: 1
@@ -1806,6 +1806,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_currentRealController: 0
   m_currentVisibleController: 0
+  debug: 0
   directInteractionIsEnabled: 0
 --- !u!1 &7220790933353918533
 GameObject:

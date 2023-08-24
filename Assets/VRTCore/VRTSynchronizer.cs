@@ -86,7 +86,7 @@ namespace VRT.Core
         {
             if (audioTimestampRange != null)
             {
-                Debug.LogError($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call");
+                Debug.Log($"{Name()}: {caller}: Duplicate SetAudioTimestampRangeForCurrentFrame call, was {audioTimestampRange} now {earliestFrameTimestamp}..{latestFrameTimestamp}");
             }
             audioTimestampRange = new TimestampRange()
             {
