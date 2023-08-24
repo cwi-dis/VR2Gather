@@ -1253,7 +1253,7 @@ namespace VRT.Pilots.LoginManager
                         UserData lUserData = new UserData(); // = UserData.ParseJsonData(configData);
                         JsonUtility.FromJsonOverwrite(configData, lUserData);
                         OrchestratorController.Instance.UpdateFullUserData(lUserData);
-                        Debug.Log($"OrchesratorLogin: uploaded UserData to orchestrator");
+                        Debug.Log($"OrchestratorLogin: uploaded UserData to orchestrator");
                     }
                 }
 
@@ -1630,10 +1630,11 @@ namespace VRT.Pilots.LoginManager
 
                     SetUserRepresentationGUI(user.userData.userRepresentationType);
                     // Session name
-
-                    string time = DateTime.Now.ToString("hhmmss");
-                    sessionNameIF.text = $"{user.userName}_{time}";
-
+                    if (string.IsNullOrEmpty(sessionNameIF.text))
+                    {
+                        string time = DateTime.Now.ToString("hhmmss");
+                        sessionNameIF.text = $"{user.userName}_{time}";
+                    }
                 }
 
                 GetUsers(); // To update the user representation
