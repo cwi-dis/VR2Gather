@@ -311,7 +311,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        private void UpdateSessions(Transform container, Dropdown dd)
+        private void UpdateSessions(Transform container)
         {
             RemoveComponentsFromList(container.transform);
             foreach (var session in OrchestratorController.Instance.AvailableSessions)
@@ -321,25 +321,26 @@ namespace VRT.Pilots.LoginManager
 
             string selectedOption = "";
             // store selected option in dropdown
-            if (dd.options.Count > 0)
-                selectedOption = dd.options[dd.value].text;
+            if (sessionIdDrop.options.Count > 0)
+                selectedOption = sessionIdDrop.options[sessionIdDrop.value].text;
             // update the dropdown
-            dd.ClearOptions();
+            sessionIdDrop.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
             foreach (var sess in OrchestratorController.Instance.AvailableSessions)
             {
                 options.Add(new Dropdown.OptionData(sess.GetGuiRepresentation()));
             }
-            dd.AddOptions(options);
+            sessionIdDrop.AddOptions(options);
             // re-assign selected option in dropdown
-            if (dd.options.Count > 0)
+            if (sessionIdDrop.options.Count > 0)
             {
-                for (int i = 0; i < dd.options.Count; ++i)
+                for (int i = 0; i < sessionIdDrop.options.Count; ++i)
                 {
-                    if (dd.options[i].text == selectedOption)
-                        dd.value = i;
+                    if (sessionIdDrop.options[i].text == selectedOption)
+                        sessionIdDrop.value = i;
                 }
             }
+            SessionSelectionChanged();
         }
 
         private void UpdateScenarios()
@@ -568,6 +569,7 @@ namespace VRT.Pilots.LoginManager
                     scenarioDescription.text = sc.scenarioDescription;
                 }
             });
+            sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
 
@@ -583,7 +585,7 @@ namespace VRT.Pilots.LoginManager
                 statusText.text = OrchestratorController.Instance.ConnectionStatus.ToString();
                 statusText.color = connectedCol;
                 FillSelfUserData();
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
+                UpdateSessions(orchestratorSessions);
                 UpdateScenarios();
                 Debug.Log("OrchestratorLogin: Coming from another Scene");
 
@@ -1371,7 +1373,7 @@ namespace VRT.Pilots.LoginManager
             if (sessions != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
+                UpdateSessions(orchestratorSessions);
                 // We may be able to advance auto-connection
                 if (VRTConfig.Instance.AutoStart != null)
                     Invoke("AutoStateUpdate", VRTConfig.Instance.AutoStart.autoDelay);
@@ -1405,7 +1407,7 @@ namespace VRT.Pilots.LoginManager
             if (session != null)
             {
                 // update the list of available sessions
-                UpdateSessions(orchestratorSessions, sessionIdDrop);
+                UpdateSessions(orchestratorSessions);
 
                 // Update the info in LobbyPanel
                 isMaster = OrchestratorController.Instance.UserIsMaster;
@@ -1472,6 +1474,26 @@ namespace VRT.Pilots.LoginManager
         private void OnDeleteSessionHandler()
         {
             if (developerMode) Debug.Log("OrchestratorLogin: OnDeleteSessionHandler: Session deleted");
+        }
+
+        private void SessionSelectionChanged()
+        {
+            var idx = sessionIdDrop.value;
+            string description = "";
+            bool ok = idx >= 0 && idx < OrchestratorController.Instance.AvailableSessions.Length;
+            if (ok)
+            {
+                var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
+                var scenarioSelected = sessionSelected.scenarioId;
+                description = $"{sessionSelected.sessionName} by {sessionSelected.sessionMaster}\n{sessionSelected.sessionDescription}\n";
+                // xxxjack check whether we support this scenario.
+            }
+            else
+            {
+                description = "(no session selected)";
+            }
+            sessionJoinMessage.text = description;
+            doneJoinButton.interactable = ok;
         }
 
         private void JoinSession()
