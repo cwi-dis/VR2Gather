@@ -69,11 +69,13 @@ namespace VRT.Orchestrator.Wrapping
         private ScenarioInstance myScenario;
         private List<Scenario> availableScenarios;
 
+#if outdated_orchestrator
         //Rooms
         private List<RoomInstance> availableRoomInstances;
 
         //LivePresenter
         private LivePresenterData livePresenterData;
+#endif
 
         // user Login state
         private bool userIsLogged = false;
@@ -88,14 +90,12 @@ namespace VRT.Orchestrator.Wrapping
         // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
         private bool isAutoRetrievingData = false;
 
-        // Orchestrator Logs entry point where to find SFU logs of a running session.
-        private string orchestratorLogsDNS = "https://vrt-orch-sfu-logs.viaccess-orca.com/";
-
+       
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
 
         private bool autoStopOnLeave = false;
-        #endregion
+#endregion
 
         #region public
 
@@ -103,11 +103,13 @@ namespace VRT.Orchestrator.Wrapping
         public static OrchestratorController Instance {
             get {
                 if (instance is null) {
+                    Debug.Log("OrchestratorController.Instance: Creating GameObject");
                     instance = new GameObject("OrchestratorController").AddComponent<OrchestratorController>();
                 }
                 return instance;
             }
         }
+
 
         // Orchestrator Error Response Events
         public Action<ResponseStatus> OnErrorEvent;
@@ -144,18 +146,23 @@ namespace VRT.Orchestrator.Wrapping
         public Action<ScenarioInstance> OnGetScenarioEvent;
         public Action<Scenario[]> OnGetScenariosEvent;
 
+#if outdated_orchestrator
         // Orchestrator Live Events
         public Action<LivePresenterData> OnGetLiveDataEvent;
+#endif
 
         // Orchestrator User Events
         public Action<User[]> OnGetUsersEvent;
         public Action<User> OnGetUserInfoEvent;
         public Action<User> OnAddUserEvent;
 
+#if outdated_orchestrator
+
         // Orchestrator Rooms Events
         public Action<RoomInstance[]> OnGetRoomsEvent;
         public Action<bool> OnJoinRoomEvent;
         public Action OnLeaveRoomEvent;
+#endif
 
         // Orchestrator User Messages Events
         public Action<UserMessage> OnUserMessageReceivedEvent;
@@ -163,7 +170,6 @@ namespace VRT.Orchestrator.Wrapping
         // Orchestrator User Messages Events
         public Action<UserEvent> OnMasterEventReceivedEvent;
         public Action<UserEvent> OnUserEventReceivedEvent;
-
         // Orchestrator Accessors
         public void LocalUserSessionForDevelopmentTests()
         {
@@ -194,21 +200,24 @@ namespace VRT.Orchestrator.Wrapping
         public ScenarioInstance MyScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session MySession { get { return mySession; } }
-        public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
+#if outdated_orchestrator
+       public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
         public LivePresenterData LivePresenterData { get { return livePresenterData; } }
+#endif
         public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
 
-        #endregion
+#endregion
 
         #region Unity
 
         private void Awake() {
-            DontDestroyOnLoad(this);
-
+            
             if (instance == null) {
+                Debug.Log($"xxxjack OrchestratorController.Awake from {gameObject.name}");
+                DontDestroyOnLoad(this);
                 instance = this;
-            } else {
-                Debug.LogError("OrchestratorController: attempt to create second instance");
+            } else if (instance != this) {
+                Debug.LogWarning($"OrchestratorController: attempt to create second instance from GameObject {gameObject.name}. Keep first one, from {instance.gameObject.name}.");
                 Destroy(gameObject);
             }
         }
@@ -219,8 +228,9 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
+            Debug.Log($"xxxjack OrchestratorController.OnDestroy from {gameObject.name}");
+
             if (mySession != null) {
-                Collect_SFU_Logs(mySession.sessionId);
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
 #endif
@@ -278,11 +288,6 @@ namespace VRT.Orchestrator.Wrapping
             OnGetOrchestratorVersionEvent?.Invoke(version);
         }
 
-        // Disconnect from the orchestrator
-        public void socketDisconnect() {
-            orchestratorWrapper.Disconnect();
-        }
-
         // SockerDisconnect response callback
         public void OnDisconnect() {
             if (enableLogging) Debug.Log($"OrchestratorController: disconnected from orchestrator");
@@ -332,7 +337,7 @@ namespace VRT.Orchestrator.Wrapping
 
                     // Replaced by UpdateUserDataKey to update the IP adress field of the user on the Login.
                     //orchestratorWrapper.GetUserInfo();
-
+                    // xxxjack note: this has the side-effect that we get a callback with all the settings.
                     UpdateUserDataKey("userIP", GetIPAddress());
                 } else {
                     userIsLogged = false;
@@ -450,8 +455,8 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void AddSession(string pSessionID, string pSessionName, string pSessionDescription) {
-            orchestratorWrapper.AddSession(pSessionID, pSessionName, pSessionDescription);
+        public void AddSession(string pScenarioID, string pSessionName, string pSessionDescription, string pSessionProtocol) {
+            orchestratorWrapper.AddSession(pScenarioID, pSessionName, pSessionDescription, pSessionProtocol);
         }
 
         public void OnAddSessionResponse(ResponseStatus status, Session session) {
@@ -462,13 +467,14 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
-#if VRT_WITH_STATS
-            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}");
-#endif
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+
+#if VRT_WITH_STATS
+            Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={connectedUsers.Count}");
+#endif
 
             availableSessions.Add(session);
             OnAddSessionEvent?.Invoke(session);
@@ -494,12 +500,12 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetSessionInfoResponse: Get session info of " + session.sessionName + ".");
-
+           
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             OnSessionInfoEvent?.Invoke(session);
         }
@@ -511,9 +517,11 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnGetScenarioInstanceInfoResponse: Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
+#if outdated_orchestrator
 
             // now retrieve the url of the Live presenter stream
             orchestratorWrapper.GetLivePresenterData();
+#endif
             myScenario = scenario;
             OnGetScenarioEvent?.Invoke(myScenario);
         }
@@ -548,12 +556,12 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnJoinSessionResponse: Session " + session.sessionName + " succesfully joined.");
-
+            
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
             connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             // Simulate user join a session for each connected users
             foreach (string id in session.sessionUsers) {
@@ -588,8 +596,7 @@ namespace VRT.Orchestrator.Wrapping
             OnLeaveSessionEvent?.Invoke();
 
             if (mySession != null && me != null) {
-                Collect_SFU_Logs(mySession.sessionId);
-
+ 
                 // As the session creator, the session should be deleted when leaving.
                 if (mySession.sessionAdministrator == me.userId) {
                     if (enableLogging) Debug.Log("OrchestratorController: OnLeaveSessionResponse: As session creator, delete the current session when its empty.");
@@ -645,9 +652,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #region Scenarios
 
-        public void GetScenarios() {
-            orchestratorWrapper.GetScenarios();
-        }
 
         public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
             if (status.Error != 0) {
@@ -668,6 +672,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
+#if outdated_orchestrator
 
 #region Live
 
@@ -685,7 +690,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
-
+#endif
 #region Users
 
         public void GetUsers() {
@@ -709,9 +714,6 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-        public void AddUser(string pUserName, string pUserPassword, bool pAdmin = false) {
-            orchestratorWrapper.AddUser(pUserName, pUserPassword, pAdmin);
-        }
 
         public void OnAddUserResponse(ResponseStatus status, User user) {
             if (status.Error != 0) {
@@ -757,6 +759,7 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
             orchestratorWrapper.GetUserInfo();
         }
+#if outdated_orchestrator
 
         public void ClearUserData() {
             orchestratorWrapper.ClearUserData();
@@ -771,7 +774,7 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorController: OnClearUserDataResponse: User data successfully cleaned-up.");
             orchestratorWrapper.GetUserInfo();
         }
-
+#endif
         public void GetUserInfo(string pUserID) {
             orchestratorWrapper.GetUserInfo(pUserID);
         }
@@ -791,6 +794,7 @@ namespace VRT.Orchestrator.Wrapping
                 orchestratorWrapper.GetUsers();
             }
         }
+#if outdated_orchestrator
 
         public void DeleteUser(string pUserID) {
             orchestratorWrapper.DeleteUser(pUserID);
@@ -807,8 +811,10 @@ namespace VRT.Orchestrator.Wrapping
             // update the lists of user, anyway the result
             orchestratorWrapper.GetUsers();
         }
-
+#endif
 #endregion
+
+#if outdated_orchestrator
 
 #region Rooms
 
@@ -859,7 +865,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
-
+#endif
 #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
@@ -949,10 +955,10 @@ namespace VRT.Orchestrator.Wrapping
                 OnUserEventReceivedEvent?.Invoke(pUserEventData);
             }
         }
-
 #endregion
 
 #region Data bit-stream
+#if outdated_orchestrator
 
         public void GetAvailableDataStreams(string pDataStreamUserId) {
             OrchestratorWrapper.instance.GetAvailableDataStreams(pDataStreamUserId);
@@ -977,7 +983,7 @@ namespace VRT.Orchestrator.Wrapping
             }
             if (enableLogging) Debug.Log("OrchestratorController: OnGetRegisteredDataStreams: Registered DataStream list count: " + dataStreams.Count);
         }
-
+#endif
 #endregion
 
 #region Logics
@@ -1043,25 +1049,6 @@ namespace VRT.Orchestrator.Wrapping
 
 #endregion
 
-#region Logs
-
-        public void UpdateOrchestratorLogsDNS(string pDNS) {
-            if (!string.IsNullOrEmpty(pDNS)) {
-                orchestratorLogsDNS = pDNS;
-            }
-        }
-
-        private void Collect_SFU_Logs(string pSessionID) {
-            if (!collectSFULogs) {
-                return;
-            }
-
-            string requestURL = orchestratorLogsDNS + "?id=" + pSessionID + "&kind=sfu&download=1";
-            if (enableLogging) Debug.Log("OrchestratorController: Collect_SFU_Logs: SFU session terminated, retrieving logs from: " + requestURL);
-            Application.OpenURL(requestURL);
-        }
-
-#endregion
 
 #region Errors
 

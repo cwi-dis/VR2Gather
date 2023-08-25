@@ -23,7 +23,7 @@ namespace VRT.Pilots.Common
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
                         GrabbableObjectId = m_HeldGrabbable.NetworkId,
-                        UserId = _Player.UserId,
+                        UserId = _Player?.UserId,
                         Handedness = handHandedness,
                         EventType = HandInteractionEventType.Release
                     };
@@ -36,7 +36,7 @@ namespace VRT.Pilots.Common
                     HandGrabEvent handGrabEvent = new HandGrabEvent()
                     {
                         GrabbableObjectId = m_HeldGrabbable.NetworkId,
-                        UserId = _Player.UserId,
+                        UserId = _Player?.UserId,
                         Handedness = handHandedness,
                         EventType = HandInteractionEventType.Grab
                     };

@@ -96,8 +96,9 @@ namespace VRT.Pilots.Common
             
             SetRepresentation(user.userData.userRepresentationType);
 
-
-            if (user.userData.userRepresentationType != UserRepresentationType.__NONE__)
+            // xxxjack Don't like this special case here: it means that everyone except 
+            // NoRepresentation has audio (including the caermaman)
+            if (user.userData.userRepresentationType != UserRepresentationType.NoRepresentation)
             {
                 isAudible = true;
 
@@ -118,6 +119,17 @@ namespace VRT.Pilots.Common
 
         public virtual void SetRepresentation(UserRepresentationType type, bool onlyIfVisible = false, bool permanent = false)
         {
+            switch(type)
+            {
+                case UserRepresentationType.Deprecated__PCC_SYNTH__:
+                case UserRepresentationType.Deprecated__PCC_PRERECORDED__:
+                case UserRepresentationType.Deprecated__PCC_CWIK4A_:
+                case UserRepresentationType.Deprecated__PCC_PROXY__:
+                    Debug.LogWarning($"{Name()}: Deprecated type {type} changed to PointCloud");
+                    type = UserRepresentationType.PointCloud;
+                    break;
+
+            }
             if (isInitialized && type == userRepresentation) return;
             if (isInitialized && onlyIfVisible && !isVisible) return;
             isInitialized = true;
@@ -142,28 +154,24 @@ namespace VRT.Pilots.Common
             if (charControl != null) charControl.enabled = true;
             switch (userRepresentation)
             {
-                case UserRepresentationType.__NONE__:
+                case UserRepresentationType.NoRepresentation:
                     // disable character controller.
                     if (charControl != null)
                     {
                         charControl.enabled = false;
                     }
                     break;
-                case UserRepresentationType.__2D__:
+                case UserRepresentationType.VideoAvatar:
                     isVisible = true;
                     webcam.SetActive(true);
                     BasePipeline wcPipeline = BasePipeline.AddPipelineComponent(webcam, userRepresentation, isLocalPlayer);
                     wcPipeline?.Init(isLocalPlayer, user, userCfg, isPreviewPlayer);
                     break;
-                case UserRepresentationType.__AVATAR__:
+                case UserRepresentationType.SimpleAvatar:
                     isVisible = true;
                     avatar.SetActive(true);
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
-                case UserRepresentationType.__PCC_PRERECORDED__:
-                case UserRepresentationType.__PCC_CWIK4A_:
-                case UserRepresentationType.__PCC_PROXY__:
-                case UserRepresentationType.__PCC_CWI_: // PC
+                case UserRepresentationType.PointCloud: // PC
                     isVisible = true;
                     this.pointcloud.SetActive(true);
            
@@ -175,22 +183,23 @@ namespace VRT.Pilots.Common
                     catch (Exception e)
                     {
                         Debug.LogError($"Cannot set representation {userRepresentation}. Revert to avatar.");
-                        userRepresentation = UserRepresentationType.__AVATAR__;
+                        userRepresentation = UserRepresentationType.SimpleAvatar;
                         avatar.SetActive(true);
                         this.pointcloud.SetActive(false);
                         Destroy(pcPipeline);
                         throw;
                     }
                     break;
-                case UserRepresentationType.__ALT1__:
+                case UserRepresentationType.AppDefinedRepresentationOne:
                     altRepOne.SetActive(true);
                     isVisible = true;
                     break;
-                case UserRepresentationType.__ALT2__:
+                case UserRepresentationType.AppDefinedRepresentationTwo:
                     altRepTwo.SetActive(true);
                     isVisible = true;
                     break;
                 default:
+                    Debug.LogError($"{Name()}: Unknown UserRepresentationType {userRepresentation}");
                     isVisible = false;
                     break;
             }

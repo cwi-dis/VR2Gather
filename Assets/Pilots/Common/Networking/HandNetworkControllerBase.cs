@@ -51,17 +51,12 @@ namespace VRT.Pilots.Common
 
 		protected PlayerNetworkControllerBase _Player;
 
-		public void Awake()
-		{
-			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
-			OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
-		}
-
 		protected virtual void Start()
 		{
 			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
 
-			OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
+            OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
+            OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
 		}
 
 		private void OnDestroy()
