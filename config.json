@@ -19,7 +19,7 @@
   "LocalUser": {
     
     "PCSelfConfig": {
-	  "capturerTypeName" : "synthetic",
+	  "capturerTypeName" : "auto",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
