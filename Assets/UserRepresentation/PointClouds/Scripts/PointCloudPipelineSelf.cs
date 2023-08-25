@@ -22,11 +22,7 @@ namespace VRT.UserRepresentation.PointCloud
     {
         public static void Register()
         {
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWIK4A_, AddPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_CWI_, AddPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_PROXY__, AddPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_PRERECORDED__, AddPipelineComponent);
-            RegisterPipelineClass(true, UserRepresentationType.__PCC_SYNTH__, AddPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.PointCloud, AddPipelineComponent);
         }
 
         protected static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
@@ -125,30 +121,30 @@ namespace VRT.UserRepresentation.PointCloud
             //
             // Create reader
             //
+            pcReader = PointCloudCapturerFactory.Create(PCSelfConfig, selfPreparerQueue, encoderQueue);
+#if xxxjack_old
             switch (user.userData.userRepresentationType)
             {
-                case UserRepresentationType.__PCC_CWI_:
-                    var RS2ReaderConfig = PCSelfConfig.RS2ReaderConfig;
-                    if (RS2ReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
-                    pcReader = new AsyncRealsenseReader(RS2ReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
+                case UserRepresentationType.Old__PCC_CWI_:
                     break;
-                case UserRepresentationType.__PCC_CWIK4A_:
-                    var KinectReaderConfig = PCSelfConfig.RS2ReaderConfig; // Note: config shared with rs2
-                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.RS2ReaderConfig config");
+             
+                case UserRepresentationType.Old__PCC_CWIK4A_:
+                    var KinectReaderConfig = PCSelfConfig.CameraReaderConfig; // Note: config shared with rs2
+                    if (KinectReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.CameraReaderConfig config");
                     pcReader = new AsyncKinectReader(KinectReaderConfig.configFilename, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     break;
-                case UserRepresentationType.__PCC_PROXY__:
+                case UserRepresentationType.Old__PCC_PROXY__:
                     var ProxyReaderConfig = PCSelfConfig.ProxyReaderConfig;
                     if (ProxyReaderConfig == null) throw new System.Exception($"{Name()}: missing self-user PCSelfConfig.ProxyReaderConfig config");
                     pcReader = new ProxyReader(ProxyReaderConfig.localIP, ProxyReaderConfig.port, PCSelfConfig.voxelSize, PCSelfConfig.frameRate, selfPreparerQueue, encoderQueue);
                     break;
-                case UserRepresentationType.__PCC_SYNTH__:
+                case UserRepresentationType.Old__PCC_SYNTH__:
                     int nPoints = 0;
                     var SynthReaderConfig = PCSelfConfig.SynthReaderConfig;
                     if (SynthReaderConfig != null) nPoints = SynthReaderConfig.nPoints;
                     pcReader = new AsyncSyntheticReader(PCSelfConfig.frameRate, nPoints, selfPreparerQueue, encoderQueue);
                     break;
-                case UserRepresentationType.__PCC_PRERECORDED__:
+                case UserRepresentationType.Old__PCC_PRERECORDED__:
                     var prConfig = PCSelfConfig.PrerecordedReaderConfig;
                     if (prConfig.folder == null || prConfig.folder == "")
                     {
@@ -160,6 +156,7 @@ namespace VRT.UserRepresentation.PointCloud
                     throw new System.Exception($"{Name()}: Unknown representation {user.userData.userRepresentationType}");
 
             }
+#endif
 
             reader = pcReader;
 

@@ -8,7 +8,8 @@
         "PointClouds",
         "WebCam",
         "Pilots",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.XR.Management"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -129,6 +129,7 @@ namespace VRT.Pilots.Common
 		{
 			if (controller == null)
 			{
+				Debug.LogWarning("OrchestratorControllerExtensions: SendTypeEventToUser: controller==null");
 				return;
 			}
 			if (controller.SelfUser == null)

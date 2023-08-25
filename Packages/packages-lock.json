@@ -36,7 +36,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.6.1",
+      "version": "1.6.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -183,7 +183,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "1afcc3d5c8e9c08ce20ca58b66283b4e15702ad0"
+      "hash": "693b3baf13f488e6bedbe8e123f7aecac61b4ae4"
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",

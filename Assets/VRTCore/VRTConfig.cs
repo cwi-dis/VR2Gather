@@ -122,15 +122,39 @@ namespace VRT.Core
         [Serializable]
         public class _User
         {
+            [Tooltip("local filename where orchestrator config is stored")]
+            public string orchestratorConfigFilename;
             [Serializable]
             public class _PCSelfConfig
             {
                 [Serializable]
-                public class _RS2ReaderConfig
+                public enum PCCapturerType
+                {
+                    auto,
+                    none,
+                    realsense,
+                    kinect,
+                    synthetic,
+                    remote,
+                    proxy,
+                    prerecorded
+                };
+                public PCCapturerType capturerType;
+                [Tooltip("Override capturerType by name")]
+                public string capturerTypeName;
+                [Serializable]
+                public class _CameraReaderConfig
                 {
                     public string configFilename;
                 }
-                public _RS2ReaderConfig RS2ReaderConfig;
+                public _CameraReaderConfig CameraReaderConfig;
+                [Serializable]
+                public class _RemoteCameraReaderConfig
+                {
+                    public string url;
+                    public bool isCompressed;
+                }
+                public _RemoteCameraReaderConfig RemoteCameraReaderConfig;
                 [Serializable]
                 public class _ProxyReaderConfig
                 {
@@ -216,10 +240,20 @@ namespace VRT.Core
             {
                 Debug.LogWarning($"VRTConfig: override file not found: {file}");
             }
+            //
+            // Update various settings after reading configfile overrides
+            //
             if (targetFrameRate != 0)
             {
                 Application.targetFrameRate = this.targetFrameRate;
                 Debug.LogWarning($"VRTCore.Config: Application.targetFrameRate set to {Application.targetFrameRate}");
+            }
+            if (LocalUser.PCSelfConfig.capturerTypeName != null && LocalUser.PCSelfConfig.capturerTypeName != "") {
+                if (!Enum.TryParse(LocalUser.PCSelfConfig.capturerTypeName, out LocalUser.PCSelfConfig.capturerType))
+                {
+                    Debug.LogError($"VRTCore.Config: Unknown capturerTypeName \"{LocalUser.PCSelfConfig.capturerTypeName}\"");
+                    LocalUser.PCSelfConfig.capturerType = _User._PCSelfConfig.PCCapturerType.none;
+                }
             }
             // Initialize some other modules that have their own configuration.
 #if VRT_WITH_STATS
@@ -230,6 +264,7 @@ namespace VRT.Core
             DontDestroyOnLoad(this.gameObject);
         }
 
+#if xxxjack_unused
         public void WriteConfig(object toJson)
         {
             string file = ConfigFilename();
@@ -237,6 +272,7 @@ namespace VRT.Core
 
             //System.IO.File.WriteAllText(Application.streamingAssetsPath + "/ipScalable.json", JsonHelper.ToJson(playerConfig, true));
         }
+#endif
 
         static string _ConfigFilenameFromCommandLineArgs()
         {
@@ -250,13 +286,15 @@ namespace VRT.Core
 
         public static string ConfigFilename(string filename="config.json")
         {
-            string clConfigFile = _ConfigFilenameFromCommandLineArgs();
-            if (clConfigFile != null)
+            if (filename == "config.json")
             {
-                clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
-                return clConfigFile;
+                string clConfigFile = _ConfigFilenameFromCommandLineArgs();
+                if (clConfigFile != null)
+                {
+                    clConfigFile = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), clConfigFile);
+                    return clConfigFile;
+                }
             }
-
             string dataPath;
             if (Application.isEditor)
             {
