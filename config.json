@@ -5,9 +5,9 @@
   	"autoLogin" : true,
   	"sessionName" : "ashu-test",
   	"sessionScenario" : "Development",
-  	"sessionTransportProtocol" : "",
-  	"sessionUncompressed" : false,
-  	"sessionUncompressedAudio" : false,
+  	"sessionTransportProtocol" : "tcp",
+  	"sessionUncompressed" : true,
+  	"sessionUncompressedAudio" : true,
   	"autoCreateForUser" : "topinambur",
   	"autoCreate" : false,
   	"autoJoin" : false,
@@ -19,7 +19,7 @@
   "LocalUser": {
     
     "PCSelfConfig": {
-	  "capturerTypeName" : "synthetic",
+	  "capturerTypeName" : "auto",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
