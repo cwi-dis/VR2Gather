@@ -21,8 +21,8 @@ namespace VRT.Pilots.LoginManager
             public string scenarioSceneName;
          }
 
-        [Tooltip("Scenarios supported by this VR2Gather player. Later scenarios show up earlier in creation popup.")]
-        public List<ScenarioInfo> scenarios = new List<ScenarioInfo>();
+        [Tooltip("Scenarios supported by this VR2Gather player. Order them for the creation popup.")]
+        [SerializeField] protected List<ScenarioInfo> scenarios = new List<ScenarioInfo>();
 
         public List<ScenarioInfo> Scenarios {
             get
@@ -48,6 +48,17 @@ namespace VRT.Pilots.LoginManager
             foreach (ScenarioInfo sc in scenarios)
             {
                 if (name == sc.scenarioName)
+                {
+                    return sc;
+                }
+            }
+            return null;
+        }
+        public ScenarioInfo GetScenarioById(string id)
+        {
+            foreach (ScenarioInfo sc in scenarios)
+            {
+                if (id == sc.scenarioId)
                 {
                     return sc;
                 }

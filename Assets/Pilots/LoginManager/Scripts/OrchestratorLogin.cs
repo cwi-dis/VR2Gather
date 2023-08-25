@@ -38,11 +38,7 @@ namespace VRT.Pilots.LoginManager
         private State state = State.Offline;
         private AutoState autoState = AutoState.DidNone;
 
-        // Because we re-order the scenarios in the menu (to get usable ones near the top) we need to also keep
-        // a list in order of the menu.
-        private List<ScenarioRegistry.ScenarioInfo> scenarioInfoList;
-
-
+        
         [Header("Developer")]
         [SerializeField] private Toggle developerModeButton = null;
         [SerializeField] private GameObject developerPanel = null;
@@ -348,11 +344,9 @@ namespace VRT.Pilots.LoginManager
             // update the dropdown
             scenarioIdDrop.ClearOptions();
             List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-            scenarioInfoList = new List<ScenarioRegistry.ScenarioInfo>();
             foreach (var sc in ScenarioRegistry.Instance.Scenarios)
             {
-                options.Insert(0, new Dropdown.OptionData(sc.scenarioName));
-                scenarioInfoList.Insert(0, sc);
+                options.Add(new Dropdown.OptionData(sc.scenarioName));
             }
 #if old_scenarios
             // Add scenarios we have implemented first, others afterwards after a blank line
@@ -379,10 +373,31 @@ namespace VRT.Pilots.LoginManager
             }
 #endif
             scenarioIdDrop.AddOptions(options);
+            ScenarioSelectionChanged();
+        }
+
+        private void ScenarioSelectionChanged()
+        {
+            var idx = scenarioIdDrop.value;
+            bool ok = false;
+            string message = "(no scenario selected)";
+            var scenarios = ScenarioRegistry.Instance.Scenarios;
+            if (idx >= 0 && idx < scenarios.Count)
+            {
+                var sc = scenarios[idx];
+                // Empty entries can be used as separators
+                if (!string.IsNullOrEmpty(sc.scenarioId))
+                {
+                    ok = true;
+                    message = sc.scenarioDescription;
+
+                }
+            }
             if (scenarioDescription != null)
             {
-                scenarioDescription.text = scenarioInfoList[0].scenarioDescription;
+                scenarioDescription.text = message;
             }
+            doneCreateButton.interactable = ok;
         }
 
         private void UpdateRepresentations(Dropdown dd)
@@ -560,15 +575,8 @@ namespace VRT.Pilots.LoginManager
             microphoneDropdown.onValueChanged.AddListener(delegate {
                 selfRepresentationPreview.ChangeMicrophone(microphoneDropdown.options[microphoneDropdown.value].text);
             });
-            scenarioIdDrop.onValueChanged.AddListener(delegate
-            {
-                var idx = scenarioIdDrop.value;
-                var sc = scenarioInfoList[idx];
-                if (scenarioDescription != null)
-                {
-                    scenarioDescription.text = sc.scenarioDescription;
-                }
-            });
+            scenarioIdDrop.onValueChanged.AddListener(delegate { ScenarioSelectionChanged(); });
+
             sessionIdDrop.onValueChanged.AddListener(delegate { SessionSelectionChanged(); });
 
             InitialiseControllerEvents();
@@ -1395,7 +1403,7 @@ namespace VRT.Pilots.LoginManager
                     protocol = "tcp";
                     break;
             }
-            OrchestratorController.Instance.AddSession(scenarioInfoList[scenarioIdDrop.value].scenarioId,
+            OrchestratorController.Instance.AddSession(ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value].scenarioId,
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text,
                                                         protocol);
