@@ -8,6 +8,7 @@ using VRT.Orchestrator.Wrapping;
 using VRT.UserRepresentation.Voice;
 using VRT.Core;
 using VRT.Pilots.Common;
+using static System.Collections.Specialized.BitVector32;
 
 namespace VRT.Pilots.LoginManager
 {
@@ -1505,9 +1506,21 @@ namespace VRT.Pilots.LoginManager
             {
                 var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
                 var scenarioSelected = sessionSelected.scenarioId;
-                description = $"{sessionSelected.sessionName} by {sessionSelected.sessionMaster}\n{sessionSelected.sessionDescription}\n";
-                // xxxjack check whether we support this scenario.
-            }
+                var sessionMaster = sessionSelected.sessionMaster;
+                var masterUser = OrchestratorController.Instance.GetUser(sessionMaster);
+                var masterName = masterUser == null ? sessionMaster : masterUser.userName;
+                var scenarioInfo = ScenarioRegistry.Instance.GetScenarioById(scenarioSelected);
+                description = $"{sessionSelected.sessionName} by {masterName}\n{sessionSelected.sessionDescription}\n";
+                if (scenarioInfo == null)
+                {
+                    description += "Cannot join: not implemented in this VR2Gather player.";
+                    ok = false;
+                }
+                else
+                {
+                    description += scenarioInfo.scenarioDescription;
+                }
+          }
             else
             {
                 description = "(no session selected)";
