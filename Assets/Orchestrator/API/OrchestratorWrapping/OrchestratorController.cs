@@ -648,9 +648,18 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Scenarios
+        #region Scenarios
+
+        public void AddScenario(Scenario scOrch)
+        {
+            orchestratorWrapper.AddScenario(scOrch);
+        }
+
+        public void OnAddScenarioResponse(ResponseStatus status)
+        { 
+        }
 
 
         public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
@@ -1058,8 +1067,9 @@ namespace VRT.Orchestrator.Wrapping
             OnErrorEvent?.Invoke(status);
         }
 
-#endregion
 
-#endregion
+        #endregion
+
+        #endregion
     }
 }

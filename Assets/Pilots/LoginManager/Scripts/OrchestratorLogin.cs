@@ -1264,8 +1264,20 @@ namespace VRT.Pilots.LoginManager
                 VRTConfig.Instance.AutoStart.autoJoin = !isThisUser;
             }
             OrchestratorController.Instance.Login(userNameLoginIF.text, userPasswordLoginIF.text);
+            ForwardScenariosToOrchestrator();
         }
 
+        private void ForwardScenariosToOrchestrator()
+        {
+            foreach(var sc in ScenarioRegistry.Instance.Scenarios)
+            {
+                Scenario scOrch = new Scenario();
+                scOrch.scenarioId = sc.scenarioId;
+                scOrch.scenarioName = sc.scenarioName;
+                scOrch.scenarioDescription = sc.scenarioDescription;
+                OrchestratorController.Instance.AddScenario(scOrch);
+            }
+        }
         // Check saved used credentials.
         private void CheckRememberMe()
         {
