@@ -266,6 +266,14 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogWarning($"Environment variable SIGNALS_SMD_PATH not set, Dash modules may fail to load");
                 }
+                else if(!System.IO.Path.IsPathRooted(path))
+                {
+                    //
+                    // If this is a relative path we add our project directory to the front
+                    //
+                    path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), path);
+                }
+                Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={path}");
                 Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
 #if DOES_NOT_WORK
                 // Sigh: since MacOS 12 ~/lib is no longer on the default search path. So we have to add
