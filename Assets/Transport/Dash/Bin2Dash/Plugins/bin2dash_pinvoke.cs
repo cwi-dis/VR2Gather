@@ -28,7 +28,7 @@ namespace VRT.Transport.Dash
 
         private class _API
         {
-            const string myDllName = "bin2dash.so";
+            public const string myDllName = "bin2dash";
 
             // The BIN2DASH_API_VERSION must match with the DLL version. Copy from bin2dash.hpp
             // after matching the API used here with that in the C++ code.
@@ -109,7 +109,7 @@ namespace VRT.Transport.Dash
                 UnityEngine.Debug.LogError("bin2dash: Cannot load bin2dash.so dynamic library");
             }
         
-            sub.SetMSPaths("bin2dash.so");
+            sub.SetMSPaths(_API.myDllName);
             IntPtr obj = _API.vrt_create_ext(name, descriptors.Length, descriptors, publish_url, seg_dur_in_ms, timeshift_buffer_depth_in_ms);
             if (obj == IntPtr.Zero)
                 return null;

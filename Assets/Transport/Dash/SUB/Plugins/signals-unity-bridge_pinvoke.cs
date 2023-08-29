@@ -306,7 +306,12 @@ namespace VRT.Transport.Dash
             }
             string dirName = Path.GetDirectoryName(modPath.ToString());
             dirName = dirName.Replace("\\", "/");
-            dirName += "/";
+#if false
+            if (!dirName.EndsWith('/'))
+            {
+                dirName += "/";
+            }
+#endif
             UnityEngine.Debug.Log($"sub.SetMSPaths: xxxjack: SIGNALS_SMD_PATH={dirName}");
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
             lastMSpathInstalled = module_base;
