@@ -44,6 +44,7 @@ namespace VRT.Transport.Dash
             public int dsi_size;
         }
 
+        private delegate IntPtr delegate_sub_create(string pipeline, _API.MessageLogCallback callback, int maxLevel, long api_version);
 
         protected class _API
         {
@@ -219,7 +220,15 @@ namespace VRT.Transport.Dash
 
         public static connection create(string pipeline)
         {
-            IntPtr obj;
+            try
+            {
+                delegate_sub_create tmpDelegate = _API.sub_create;
+                IntPtr tmpPtr = Marshal.GetFunctionPointerForDelegate(tmpDelegate);
+            }
+            catch (System.DllNotFoundException)
+            {
+                UnityEngine.Debug.LogError("bin2dash: Cannot load bin2dash.so dynamic library");
+            }
             SetMSPaths();
             _API.MessageLogCallback errorCallback = (msg, level) =>
             {
@@ -239,7 +248,7 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
-            obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
+            IntPtr obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);
