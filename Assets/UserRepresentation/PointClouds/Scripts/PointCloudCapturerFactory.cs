@@ -42,6 +42,7 @@ namespace VRT.UserRepresentation.PointCloud
                     }
                     catch (Exception e)
                     {
+                        Debug.LogWarning("PointCloudCapturerFactory: fallback to synthetic capturer");
                         return new AsyncSyntheticReader(config.frameRate, config.SynthReaderConfig.nPoints, selfPreparerQueue, encoderQueue);
                     }
                 default:
