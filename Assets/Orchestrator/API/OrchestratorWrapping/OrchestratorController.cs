@@ -290,7 +290,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // SockerDisconnect response callback
         public void OnDisconnect() {
-            if (enableLogging) Debug.Log($"OrchestratorController: disconnected from orchestrator");
+            Debug.LogWarning($"OrchestratorController: disconnected from orchestrator");
             me = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
