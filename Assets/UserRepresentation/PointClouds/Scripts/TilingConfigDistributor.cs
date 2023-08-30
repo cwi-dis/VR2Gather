@@ -105,7 +105,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // Give reveicedData.data to that PointCloudPipeline.
             PointCloudNetworkTileDescription tilingConfig = receivedData.data;
-            if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
+            if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {receivedData.SenderId} with {tilingConfig.tiles.Length} tiles");
             pipeline.SetTilingConfig(tilingConfig);
         }
     }
