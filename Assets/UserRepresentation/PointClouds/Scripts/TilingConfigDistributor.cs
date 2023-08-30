@@ -24,6 +24,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public void Awake()
         {
+            if (debug) Debug.Log($"TilingConfigDistributor: Awake");
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
             OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
@@ -84,7 +85,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void OnTilingConfig(TilingConfigMessage receivedData)
         {
-            Debug.Log($"TilingConfigDistributor: xxxjack received {receivedData}");
+            Debug.Log($"TilingConfigDistributor: xxxjack received tiling info from {receivedData.SenderId}");
             if (!started)
             {
                 Debug.LogWarning($"TilingConfigDistributor: received tiling information before Start()ed");
@@ -92,13 +93,18 @@ namespace VRT.UserRepresentation.PointCloud
 
             if (OrchestratorController.Instance.UserIsMaster)
             {
+                Debug.Log($"TilingConfigDistributor: xxxjack forwarding because we are master");
                 //I'm the master, so besides handling the data, I should also make sure to forward it. 
                 //This is because the API, to ensure authoritative decisions, doesn't allow users to directly address others. 
                 //Same kind of call as usual, but with the extra "true" argument, which ensures we forward without overwriting the SenderId
                 OrchestratorController.Instance.SendTypeEventToAll(receivedData, true);
             }
             // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
-            if (receivedData.SenderId == selfUserId) return;
+            if (receivedData.SenderId == selfUserId)
+            {
+                Debug.Log($"TilingConfigDistributor: xxxjack ignoring because it is from self");
+                return;
+            }
             // Find PointCloudPipeline belonging to receivedData.SenderId.
             if (!pipelines.ContainsKey(receivedData.SenderId))
             {
