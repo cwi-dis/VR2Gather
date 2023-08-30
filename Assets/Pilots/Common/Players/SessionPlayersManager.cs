@@ -191,12 +191,9 @@ namespace VRT.Pilots.Common
 			}
 
 
-            if (!OrchestratorController.Instance.UserIsMaster)
+            if (OrchestratorController.Instance.UserIsMaster)
 			{
-				OrchestratorController.Instance.SendTypeEventToMaster(new PlayerLocationDataRequest());
-			}
-			else
-			{
+				if (debug) Debug.Log($"SessionPlayersManager: sending playerLocationData to all");
 				SendPlayerLocationData();
 			}
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
@@ -229,21 +226,13 @@ namespace VRT.Pilots.Common
 				{
 					if (location.IsEmpty)
 					{
-						location.SetPlayer(player);
+                        Debug.Log($"SessionPlayersManager: Initialize player {player.UserId} to location {location.NetworkId}.");
+
+                        location.SetPlayer(player);
 						_PlayerIdToLocation[player.UserId] = location;
 						_LocationToPlayerId[location] = player.UserId;
 						break;
 					}
-				}
-
-				if (Players.Count > 1)
-				{
-					//No need to send anything if it's just us
-					SendPlayerLocationData();
-				}
-				else
-				{
-					Debug.Log($"SessionPlayersManager: single-user session, not forwarding location data");
 				}
 			}
 		}
@@ -319,16 +308,20 @@ namespace VRT.Pilots.Common
                 Debug.LogWarning($"SessionPlayersManager: OnPlayerLocationData: we are not master");
                 return;
             }
-
+		
             for (int i = 0; i < playerLocationData.PlayerIds.Length; ++i)
 			{
 				string playerId = playerLocationData.PlayerIds[i];
 				if (Players.ContainsKey(playerId))
 				{
+					if (debug) Debug.Log($"SessionsPlayerManager: OnPlayerLocationData: set player {playerId} to location {i}");
                     PlayerNetworkControllerBase player = Players[playerId];
 					PlayerLocation location = PlayerLocations[playerLocationData.LocationIds[i]];
 
 					SetPlayerToLocation(player, location);
+				} else
+				{
+					Debug.LogWarning($"SessionsPlayersManager: OnPlayerLocationData: unknown player {playerId}");
 				}
 			}
 
