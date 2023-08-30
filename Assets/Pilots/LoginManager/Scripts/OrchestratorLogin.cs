@@ -765,7 +765,10 @@ namespace VRT.Pilots.LoginManager
 
         public void FillSelfUserData()
         {
-            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null) return;
+            if (OrchestratorController.Instance == null || OrchestratorController.Instance.SelfUser == null)
+            {
+                Debug.LogWarning($"OrchestratorLogin: FillSelfUserData: no SelfUser data yet");
+            }
             User user = OrchestratorController.Instance.SelfUser;
 
             // UserID & Name
@@ -1699,44 +1702,47 @@ namespace VRT.Pilots.LoginManager
 
         private void OnGetUserInfoHandler(User user)
         {
-            if (user != null)
+            if (user == null)
             {
-                if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
+                Debug.LogWarning($"OrchestratorLogin: OnGetUserInfoHander: null user");
+                return;
+            }
+            if (string.IsNullOrEmpty(userId.text) || user.userId == OrchestratorController.Instance.SelfUser.userId)
+            {
+                if (developerMode) Debug.Log($"OrchestratorLogin: OnGetUserInfoHandler: set SelfUser to {user.userId}");
+                OrchestratorController.Instance.SelfUser = user;
+
+                userId.text = user.userId;
+                userName.text = user.userName;
+                userNameVRTText.text = user.userName;
+
+                //UserData
+                tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
+                tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
+                representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
+
+                SetUserRepresentationGUI(user.userData.userRepresentationType);
+                // Session name
+                if (string.IsNullOrEmpty(sessionNameIF.text))
                 {
-                    OrchestratorController.Instance.SelfUser = user;
-
-                    userId.text = user.userId;
-                    userName.text = user.userName;
-                    userNameVRTText.text = user.userName;
-
-                    //UserData
-                    tcpPointcloudURLConfigIF.text = user.userData.userPCurl;
-                    tcpAudioURLConfigIF.text = user.userData.userAudioUrl;
-                    representationTypeConfigDropdown.value = (int)user.userData.userRepresentationType;
-
-                    SetUserRepresentationGUI(user.userData.userRepresentationType);
-                    // Session name
-                    if (string.IsNullOrEmpty(sessionNameIF.text))
-                    {
-                        string time = DateTime.Now.ToString("hhmmss");
-                        sessionNameIF.text = $"{user.userName}_{time}";
-                    }
+                    string time = DateTime.Now.ToString("hhmmss");
+                    sessionNameIF.text = $"{user.userName}_{time}";
                 }
+            }
 
-                GetUsers(); // To update the user representation
+            GetUsers(); // To update the user representation
 
-                // Update the sfuData and UserData if is in session.
-                if (OrchestratorController.Instance.ConnectedUsers != null)
+            // Update the sfuData and UserData if is in session.
+            if (OrchestratorController.Instance.ConnectedUsers != null)
+            {
+                for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
                 {
-                    for (int i = 0; i < OrchestratorController.Instance.ConnectedUsers.Length; ++i)
+                    if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
                     {
-                        if (OrchestratorController.Instance.ConnectedUsers[i].userId == user.userId)
-                        {
-                            // sfuData
-                            OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
-                            // UserData
-                            OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
-                        }
+                        // sfuData
+                        OrchestratorController.Instance.ConnectedUsers[i].sfuData = user.sfuData;
+                        // UserData
+                        OrchestratorController.Instance.ConnectedUsers[i].userData = user.userData;
                     }
                 }
             }
