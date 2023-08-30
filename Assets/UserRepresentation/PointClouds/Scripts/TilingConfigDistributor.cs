@@ -20,17 +20,19 @@ namespace VRT.UserRepresentation.PointCloud
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
         const bool debug = true;
+        bool started = false;
 
         public void Awake()
         {
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
+            OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
-       
+
         void Start()
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Started");
+            started = true;
             //Subscribe to incoming data of the type we're interested in. 
-            OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
 
         private void OnDestroy()
@@ -82,6 +84,11 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void OnTilingConfig(TilingConfigMessage receivedData)
         {
+            Debug.Log($"TilingConfigDistributor: xxxjack received {receivedData}");
+            if (!started)
+            {
+                Debug.LogWarning($"TilingConfigDistributor: received tiling information before Start()ed");
+            }
 
             if (OrchestratorController.Instance.UserIsMaster)
             {
