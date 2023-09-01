@@ -1,11 +1,11 @@
 {
   "_unused_orchestratorURL" : "http://www.jackjansen.nl:8080/socket.io/",
-  "statsOutputFile" : "-",
+  "statsOutputFile" : "",
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "ashu-test",
   	"sessionScenario" : "Development",
-  	"sessionTransportProtocol" : "socketio",
+  	"sessionTransportProtocol" : "tcp",
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : true,
   	"autoCreateForUser" : "topinambur",
