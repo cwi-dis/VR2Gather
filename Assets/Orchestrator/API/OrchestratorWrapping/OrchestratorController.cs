@@ -228,8 +228,8 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
-            Debug.Log($"xxxjack OrchestratorController.OnDestroy from {gameObject.name}");
-
+            Debug.Log($"{gameObject.name}: OrchestratorController.OnDestroy() called. Will close orchestrator connection. ");
+ 
             if (mySession != null) {
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
