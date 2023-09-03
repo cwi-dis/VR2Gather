@@ -95,6 +95,7 @@ namespace VRT.Orchestrator.WSManagement
             this.connectionListener = connectionListener;
             this.messagesListener = messagesListener;
         }
+
         public OrchestratorWSManager(string orchestratorUrl, IOrchestratorConnectionListener connectionListener) : this(orchestratorUrl, connectionListener, null)
         {
         }

@@ -88,8 +88,8 @@ namespace VRT.Pilots.Common
   
         private void OnErrorHandler(ResponseStatus status)
         {
-            Debug.LogWarning($"{Name()}: OnErrorHandler: {status.Error}, Error message: {status.Message}");
-            ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
+            Debug.LogError($"{Name()}: Orchestrator error {status.Error}, {status.Message}");
+            // ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
     }
 }
