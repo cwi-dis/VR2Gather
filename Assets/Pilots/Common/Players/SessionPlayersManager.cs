@@ -196,6 +196,11 @@ namespace VRT.Pilots.Common
 				if (debug) Debug.Log($"SessionPlayersManager: sending playerLocationData to all");
 				SendPlayerLocationData();
 			}
+			else
+			{
+                if (debug) Debug.Log($"SessionPlayersManager: ask master for playerLocationData");
+				RequestPlayerLocationData();
+            }
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
         }
 
@@ -296,6 +301,16 @@ namespace VRT.Pilots.Common
 			}
 		}
 
+		private void RequestPlayerLocationData()
+		{
+			if (OrchestratorController.Instance.UserIsMaster)
+			{
+				Debug.LogError($"SessionPlayersManager: master should not call RequestPlayerLocationData");
+			}
+			PlayerLocationDataRequest data = new PlayerLocationDataRequest();
+			OrchestratorController.Instance.SendTypeEventToMaster(data);
+		}
+
 		private void OnPlayerLocationData(PlayerLocationData playerLocationData)
 		{
             if (playerLocationData == null)
@@ -331,6 +346,7 @@ namespace VRT.Pilots.Common
 		{
 			if (OrchestratorController.Instance.UserIsMaster)
 			{
+				Debug.Log($"SessionPlayersManager: OnPlayerLocationDataRequest: reply to {request.SenderId}");
 				SendPlayerLocationData(request.SenderId);
 			}
 			else
