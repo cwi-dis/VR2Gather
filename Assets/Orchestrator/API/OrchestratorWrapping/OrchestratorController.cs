@@ -275,6 +275,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // Abort Socket connection
         public void Abort() {
+            Debug.Log("OrchestratorController: xxxjack Abort()");
             orchestratorWrapper.Disconnect();
             OnDisconnect();
         }
@@ -635,12 +636,12 @@ namespace VRT.Orchestrator.Wrapping
             if (!string.IsNullOrEmpty(userID)) {
                 // If the session creator left, I need to leave also.
                 if (mySession.sessionAdministrator == userID) {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " leaved the session.");
+                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " left the session. Also leaving.");
                     LeaveSession();
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " leaved the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " left the session.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);

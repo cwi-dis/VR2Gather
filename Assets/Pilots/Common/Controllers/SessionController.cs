@@ -10,8 +10,7 @@ namespace VRT.Pilots.Common
 {
     public class SessionController : MonoBehaviour
     {
-        public static SessionController Instance { get; private set; }
-
+        
         public string Name()
         {
             return $"{GetType().Name}";
@@ -20,11 +19,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-       
+         
             InitialiseControllerEvents();
         }
 

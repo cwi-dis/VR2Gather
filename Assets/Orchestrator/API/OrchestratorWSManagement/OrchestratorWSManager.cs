@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using VRT.Orchestrator.Wrapping;
+using UnityEngine;
 
 /** NOTES:
  * NOTE 1 CommandId:
@@ -131,6 +132,7 @@ namespace VRT.Orchestrator.WSManagement
         // Socket.io disconnection
         public void SocketDisconnect()
         {
+            UnityEngine.Debug.Log("OrchestratorWSManager: xxxjack SocketDisconnect()");
             Manager.Close();
         }
 

@@ -189,6 +189,7 @@ namespace VRT.Orchestrator.Wrapping
         {
             if ((OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected))
             {
+                Debug.LogWarning("OrchestratorWrapper: Connect: already connected, Disconnect() and reconnect");
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
             OrchestrationSocketIoManager.SocketConnect(orchestratorMessages);
@@ -210,6 +211,7 @@ namespace VRT.Orchestrator.Wrapping
         {
             if (OrchestrationSocketIoManager != null)
             {
+                Debug.Log("OrchestratorWrapper: xxxjack Disconnect()");
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
         }
