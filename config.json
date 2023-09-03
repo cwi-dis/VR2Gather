@@ -1,13 +1,13 @@
 {
-  "o_rchestratorURL" : "http://sap.local:8080/socket.io/",
+  "orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
   "_unused_AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
   	"sessionScenario" : "Technical Playground",
-  	"sessionTransportProtocol" : "",
-  	"sessionUncompressed" : false,
-  	"sessionUncompressedAudio" : false,
+  	"sessionTransportProtocol" : "tcp",
+  	"sessionUncompressed" : true,
+  	"sessionUncompressedAudio" : true,
   	"autoCreateForUser" : "sap",
   	"autoCreate" : false,
   	"autoJoin" : false,
