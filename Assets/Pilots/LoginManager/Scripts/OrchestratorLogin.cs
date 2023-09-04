@@ -707,22 +707,10 @@ namespace VRT.Pilots.LoginManager
                         if (entry.text == config.sessionScenario)
                         {
                             scenarioIdDrop.value = idx;
-                        }
-                        idx++;
-                    }
-#if old_scenarios
-                        if (entry.text.Contains(config.sessionScenario + " "))
-                        {
-                            if (found)
-                            {
-                                Debug.LogError($"OrchestratorLogin: AutoStart: Multiple scenarios match {config.sessionScenario}");
-                            }
                             found = true;
-                            scenarioIdDrop.value = idx;
                         }
                         idx++;
                     }
-#endif
                     if (!found)
                     {
                         Debug.LogError($"OrchestratorLogin: AutoStart: No scenarios match {config.sessionScenario}");
