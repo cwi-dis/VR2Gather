@@ -36,7 +36,7 @@ namespace VRT.Orchestrator.Wrapping
     public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
-        [SerializeField] private bool enableLogging = true;
+        [SerializeField] private bool enableLogging = false;
         #region enum
 
         public enum orchestratorConnectionStatus {
@@ -228,8 +228,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
         private void OnDestroy() {
-            Debug.Log($"xxxjack OrchestratorController.OnDestroy from {gameObject.name}");
-
+            Debug.Log($"{gameObject.name}: OrchestratorController.OnDestroy() called. Will close orchestrator connection. ");
             if (mySession != null) {
 #if VRT_WITH_STATS
                 Statistics.Output("OrchestratorController", $"stopping=1, sessionId={mySession.sessionId}");
@@ -275,6 +274,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // Abort Socket connection
         public void Abort() {
+            Debug.Log("OrchestratorController: xxxjack Abort()");
             orchestratorWrapper.Disconnect();
             OnDisconnect();
         }
@@ -290,7 +290,7 @@ namespace VRT.Orchestrator.Wrapping
 
         // SockerDisconnect response callback
         public void OnDisconnect() {
-            if (enableLogging) Debug.Log($"OrchestratorController: disconnected from orchestrator");
+            Debug.LogWarning($"OrchestratorController: disconnected from orchestrator");
             me = null;
             connectedToOrchestrator = false;
             connectionStatus = orchestratorConnectionStatus.__DISCONNECTED__;
@@ -635,12 +635,12 @@ namespace VRT.Orchestrator.Wrapping
             if (!string.IsNullOrEmpty(userID)) {
                 // If the session creator left, I need to leave also.
                 if (mySession.sessionAdministrator == userID) {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " leaved the session.");
+                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " left the session. Also leaving.");
                     LeaveSession();
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " leaved the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " left the session.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);
@@ -648,9 +648,18 @@ namespace VRT.Orchestrator.Wrapping
             }
         }
 
-#endregion
+        #endregion
 
-#region Scenarios
+        #region Scenarios
+
+        public void AddScenario(Scenario scOrch)
+        {
+            orchestratorWrapper.AddScenario(scOrch);
+        }
+
+        public void OnAddScenarioResponse(ResponseStatus status)
+        { 
+        }
 
 
         public void OnGetScenariosResponse(ResponseStatus status, List<Scenario> scenarios) {
@@ -1058,8 +1067,9 @@ namespace VRT.Orchestrator.Wrapping
             OnErrorEvent?.Invoke(status);
         }
 
-#endregion
 
-#endregion
+        #endregion
+
+        #endregion
     }
 }

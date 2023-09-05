@@ -50,7 +50,18 @@ namespace VRT.Pilots.Common
             }
             Instance = this;
             Debug.Log($"{Name()}: Awake.");
-       }
+        }
+
+        private void OnApplicationQuit()
+        {
+            SessionController ctrl = GetComponent<SessionController>();
+            if (ctrl != null)
+            {
+                Debug.Log($"{Name()}: OnApplicationQuit: Leaving session.");
+
+                ctrl.LeaveSession();
+            }
+        }
 
         /// <summary>
         /// Call this method to load a new scene (optionally after fading out the current scene).

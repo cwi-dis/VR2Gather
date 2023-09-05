@@ -44,6 +44,7 @@ namespace VRT.Transport.Dash
             public int dsi_size;
         }
 
+        private delegate IntPtr delegate_sub_create(string pipeline, _API.MessageLogCallback callback, int maxLevel, long api_version);
 
         protected class _API
         {
@@ -219,7 +220,15 @@ namespace VRT.Transport.Dash
 
         public static connection create(string pipeline)
         {
-            IntPtr obj;
+            try
+            {
+                delegate_sub_create tmpDelegate = _API.sub_create;
+                IntPtr tmpPtr = Marshal.GetFunctionPointerForDelegate(tmpDelegate);
+            }
+            catch (System.DllNotFoundException)
+            {
+                UnityEngine.Debug.LogError("bin2dash: Cannot load bin2dash.so dynamic library");
+            }
             SetMSPaths();
             _API.MessageLogCallback errorCallback = (msg, level) =>
             {
@@ -239,7 +248,7 @@ namespace VRT.Transport.Dash
                     UnityEngine.Debug.Log($"{_pipeline}: asynchronous message: {_msg}.");
                 }
             };
-            obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
+            IntPtr obj = _API.sub_create(pipeline, errorCallback, MAX_SUB_MESSAGE_LEVEL);
             if (obj == IntPtr.Zero)
                 return null;
             connection rv = new connection(obj);
@@ -266,6 +275,14 @@ namespace VRT.Transport.Dash
                 {
                     UnityEngine.Debug.LogWarning($"Environment variable SIGNALS_SMD_PATH not set, Dash modules may fail to load");
                 }
+                else if(!System.IO.Path.IsPathRooted(path))
+                {
+                    //
+                    // If this is a relative path we add our project directory to the front
+                    //
+                    path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), path);
+                }
+                Debug.Log($"sub.SetMSPaths: SIGNALS_SMD_PATH={path}");
                 Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", path);
 #if DOES_NOT_WORK
                 // Sigh: since MacOS 12 ~/lib is no longer on the default search path. So we have to add
@@ -292,8 +309,8 @@ namespace VRT.Transport.Dash
             IntPtr hMod = API_kernel.GetModuleHandle(module_base);
             if (hMod == IntPtr.Zero)
             {
-                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get handle on {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
-                UnityEngine.Debug.LogError("Internal error while creating receiver for other participant. Try re-installing the application");
+                UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get handle for {module_base}, GetModuleHandle returned NULL. PATH={Environment.GetEnvironmentVariable("PATH")}, SIGNALS_SMD_PATH={Environment.GetEnvironmentVariable("SIGNALS_SMD_PATH")} ");
+                UnityEngine.Debug.LogError($"Cannot GetModuleHandle({module_base}). Try re-installing the application");
                 return;
             }
             StringBuilder modPath = new StringBuilder(255);
@@ -301,12 +318,17 @@ namespace VRT.Transport.Dash
             if (rv < 0)
             {
                 UnityEngine.Debug.Log($"sub.SetMSPaths: Cannot get filename for {module_base}, handle={hMod}, GetModuleFileName returned " + rv);
-                UnityEngine.Debug.LogError("Internal error while creating receiver for other participant. Try re-installing the application");
+                UnityEngine.Debug.LogError($"Cannot get filename for {module_base} from handle. Try re-installing the application");
                 //return false;
             }
             string dirName = Path.GetDirectoryName(modPath.ToString());
             dirName = dirName.Replace("\\", "/");
-            dirName += "/";
+#if false
+            if (!dirName.EndsWith('/'))
+            {
+                dirName += "/";
+            }
+#endif
             UnityEngine.Debug.Log($"sub.SetMSPaths: xxxjack: SIGNALS_SMD_PATH={dirName}");
             Environment.SetEnvironmentVariable("SIGNALS_SMD_PATH", dirName);
             lastMSpathInstalled = module_base;
