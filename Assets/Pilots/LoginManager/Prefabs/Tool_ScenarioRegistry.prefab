@@ -45,6 +45,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scenarios:
+  - scenarioName: Mediascape
+    scenarioId: 7deb98ba-e37f-42cf-9fcb-32be9f73e728
+    scenarioDescription: Virtual visit to Sound&Vision Museum and Jerney Kaagman
+      experience
+    scenarioSceneName: MediaScape_Museum
+  - scenarioName: Mediascape Stage Only
+    scenarioId: 622a6710-cd24-4dca-8fb0-53bc1b660691
+    scenarioDescription: Go directly to the TopPop stage, skipping the museum
+    scenarioSceneName: MediaScape_Stage
   - scenarioName: Pilot 0
     scenarioId: 8aef4fbe-e8a9-4e70-b009-0633e50cf356
     scenarioDescription: Fairly empty test scenario
