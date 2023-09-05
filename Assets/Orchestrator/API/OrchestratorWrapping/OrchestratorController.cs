@@ -36,7 +36,7 @@ namespace VRT.Orchestrator.Wrapping
     public class OrchestratorController : MonoBehaviour, IOrchestratorMessagesListener, IOrchestratorResponsesListener, IUserMessagesListener, IUserSessionEventsListener
     {
         [Tooltip("Enable trace logging output")]
-        [SerializeField] private bool enableLogging = true;
+        [SerializeField] private bool enableLogging = false;
         #region enum
 
         public enum orchestratorConnectionStatus {
