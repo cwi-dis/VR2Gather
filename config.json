@@ -4,12 +4,11 @@
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "Medical Examination",
-  	"sessionScenario" : "MedicalExamination",
+  	"sessionScenario" : "Medical Examination",
   	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "topinambur",
-
+  	"autoCreateForUser" : "sap",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -18,9 +17,9 @@
   	"autoStopAfterLeave" : false
   },
   "LocalUser": {
-    
+    "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },

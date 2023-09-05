@@ -163,7 +163,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
             {
-                //Debug.Log($"{Name()}: xxxjack ignoring second tilingConfig");
+                Debug.LogWarning($"{Name()}: SetTilingConfig: ignoring second tilingConfig");
                 return;
             }
             networkTileDescription = config;

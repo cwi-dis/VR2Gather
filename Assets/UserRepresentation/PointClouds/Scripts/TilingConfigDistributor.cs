@@ -20,17 +20,20 @@ namespace VRT.UserRepresentation.PointCloud
         private int interval = 1;    // How many seconds between transmissions of the data
         private System.DateTime earliestNextTransmission;    // Earliest time we want to do the next transmission, if non-null.
         const bool debug = true;
+        bool started = false;
 
         public void Awake()
         {
+            if (debug) Debug.Log($"TilingConfigDistributor: Awake");
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_TilingConfigMessage, typeof(TilingConfigMessage));
+            OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
-       
+
         void Start()
         {
             if (debug) Debug.Log($"TilingConfigDistributor: Started");
+            started = true;
             //Subscribe to incoming data of the type we're interested in. 
-            OrchestratorController.Instance.Subscribe<TilingConfigMessage>(OnTilingConfig);
         }
 
         private void OnDestroy()
@@ -82,16 +85,26 @@ namespace VRT.UserRepresentation.PointCloud
 
         private void OnTilingConfig(TilingConfigMessage receivedData)
         {
+            Debug.Log($"TilingConfigDistributor: xxxjack received tiling info from {receivedData.SenderId}");
+            if (!started)
+            {
+                Debug.LogWarning($"TilingConfigDistributor: received tiling information before Start()ed");
+            }
 
             if (OrchestratorController.Instance.UserIsMaster)
             {
+                Debug.Log($"TilingConfigDistributor: xxxjack forwarding because we are master");
                 //I'm the master, so besides handling the data, I should also make sure to forward it. 
                 //This is because the API, to ensure authoritative decisions, doesn't allow users to directly address others. 
                 //Same kind of call as usual, but with the extra "true" argument, which ensures we forward without overwriting the SenderId
                 OrchestratorController.Instance.SendTypeEventToAll(receivedData, true);
             }
             // We need to check whether we're getting our own data back (due to forwarding by master). Drop if so.
-            if (receivedData.SenderId == selfUserId) return;
+            if (receivedData.SenderId == selfUserId)
+            {
+                Debug.Log($"TilingConfigDistributor: xxxjack ignoring because it is from self");
+                return;
+            }
             // Find PointCloudPipeline belonging to receivedData.SenderId.
             if (!pipelines.ContainsKey(receivedData.SenderId))
             {
@@ -105,7 +118,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // Give reveicedData.data to that PointCloudPipeline.
             PointCloudNetworkTileDescription tilingConfig = receivedData.data;
-            if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {selfUserId} with {tilingConfig.tiles.Length} tiles");
+            if (debug) Debug.Log($"TilingConfigDistributor: received tiling information from user {receivedData.SenderId} with {tilingConfig.tiles.Length} tiles");
             pipeline.SetTilingConfig(tilingConfig);
         }
     }

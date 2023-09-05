@@ -137,7 +137,8 @@ namespace VRT.Core
                     synthetic,
                     remote,
                     proxy,
-                    prerecorded
+                    prerecorded,
+                    developer
                 };
                 public PCCapturerType capturerType;
                 [Tooltip("Override capturerType by name")]

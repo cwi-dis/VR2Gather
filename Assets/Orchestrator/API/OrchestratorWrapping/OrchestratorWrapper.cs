@@ -189,6 +189,7 @@ namespace VRT.Orchestrator.Wrapping
         {
             if ((OrchestrationSocketIoManager != null) && (OrchestrationSocketIoManager.isSocketConnected))
             {
+                Debug.LogWarning("OrchestratorWrapper: Connect: already connected, Disconnect() and reconnect");
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
             OrchestrationSocketIoManager.SocketConnect(orchestratorMessages);
@@ -210,6 +211,7 @@ namespace VRT.Orchestrator.Wrapping
         {
             if (OrchestrationSocketIoManager != null)
             {
+                Debug.Log("OrchestratorWrapper: xxxjack Disconnect()");
                 OrchestrationSocketIoManager.SocketDisconnect();
             }
         }
@@ -279,6 +281,22 @@ namespace VRT.Orchestrator.Wrapping
             NtpClock ntpTime = NtpClock.ParseJsonData<NtpClock>(response.body);
             if (ResponsesListener == null) Debug.LogWarning($"OrchestratorWrapper: OnSocketConnect: no ResponsesListener");
             if (ResponsesListener != null)ResponsesListener.OnGetNTPTimeResponse(status, ntpTime);
+        }
+
+
+        internal void AddScenario(Scenario scOrch)
+        {
+            OrchestratorCommand command = GetOrchestratorCommand("AddScenario");
+            command.GetParameter("scenarioId").ParamValue = scOrch.scenarioId;
+            command.GetParameter("scenarioName").ParamValue = scOrch.scenarioName;
+            command.GetParameter("scenarioDescription").ParamValue = scOrch.scenarioDescription;
+            OrchestrationSocketIoManager.EmitCommand(command);
+        }
+
+        private void OnAddScenarioResponse(OrchestratorCommand command, OrchestratorResponse response)
+        {
+            ResponseStatus status = new ResponseStatus(response.error, response.message);
+            // Just ignore the response. We'll get another error later when we create a session.
         }
 
         public void AddSession(string scenarioId, string sessionName, string sessionDescription, string sessionProtocol)
@@ -836,6 +854,15 @@ namespace VRT.Orchestrator.Wrapping
                 //NTP
                 new OrchestratorCommand("GetNTPTime", null, OnGetNTPTimeResponse),
 
+                // scenarios
+                new OrchestratorCommand("AddScenario", new List<Parameter>
+                {
+                    new Parameter("scenarioId", typeof(string)),
+                    new Parameter("scenarioName", typeof(string)),
+                    new Parameter("scenarioDescription", typeof(string)),
+                },
+                OnAddScenarioResponse
+                ),
                 //sessions
                 new OrchestratorCommand("AddSession", new List<Parameter>
                 {
@@ -1024,6 +1051,7 @@ namespace VRT.Orchestrator.Wrapping
             }
             return null;
         }
-#endregion
+
+        #endregion
     }
 }
