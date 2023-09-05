@@ -51,16 +51,21 @@ namespace VRT.Pilots.Common
 
 		protected PlayerNetworkControllerBase _Player;
 
+		bool subscribed = false;
+
 		protected virtual void Start()
 		{
 			_Player = GetComponentInParent<PlayerNetworkControllerBase>();
 
             OrchestratorController.Instance.RegisterEventType(MessageTypeID.TID_HandControllerData, typeof(HandNetworkControllerBase.HandControllerData));
             OrchestratorController.Instance.Subscribe<HandControllerData>(OnHandControllerData);
+			subscribed = true;
 		}
 
 		private void OnDestroy()
 		{
+			if (!subscribed) return;
+			subscribed = false;
 			OrchestratorController.Instance.Unsubscribe<HandControllerData>(OnHandControllerData);
 		}
 

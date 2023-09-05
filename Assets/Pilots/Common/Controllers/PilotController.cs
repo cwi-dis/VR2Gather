@@ -49,7 +49,19 @@ namespace VRT.Pilots.Common
                 Debug.LogError("PilotController: multiple PilotController (subclass) instances in scene");
             }
             Instance = this;
-       }
+            Debug.Log($"{Name()}: Awake.");
+        }
+
+        private void OnApplicationQuit()
+        {
+            SessionController ctrl = GetComponent<SessionController>();
+            if (ctrl != null)
+            {
+                Debug.Log($"{Name()}: OnApplicationQuit: Leaving session.");
+
+                ctrl.LeaveSession();
+            }
+        }
 
         /// <summary>
         /// Call this method to load a new scene (optionally after fading out the current scene).
@@ -86,6 +98,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         public virtual void Start()
         {
+            Debug.Log($"{Name()}: Started.");
             if(CameraFader.Instance != null)
             {
                 CameraFader.Instance.StartFadeIn();
@@ -102,14 +115,16 @@ namespace VRT.Pilots.Common
             }
             else
             {
+                Debug.Log($"{Name()}: Loading new scene {newScene}");
                 SceneManager.LoadScene(newScene);
             }
         }
 
         protected IEnumerator LoadSceneAfterFade(float fadeDuration, string newScene)
         {
-
+            Debug.Log($"{Name()}: Fading out for transition to {newScene}");
             yield return new WaitForSeconds(fadeDuration + 0.2f);
+            Debug.Log($"{Name()}: Loading new scene {newScene}");
             SceneManager.LoadScene(newScene);
         }
 

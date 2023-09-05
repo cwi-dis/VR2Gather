@@ -26,11 +26,7 @@ namespace VRT.UserRepresentation.PointCloud
 
         public static void Register()
         {
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWIK4A_, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_CWI_, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PROXY__, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_PRERECORDED__, AddPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__PCC_SYNTH__, AddPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.PointCloud, AddPipelineComponent);
         }
 
         private static BasePipeline AddPipelineComponent(GameObject dst, UserRepresentationType i)
@@ -144,7 +140,7 @@ namespace VRT.UserRepresentation.PointCloud
                 case SessionConfig.ProtocolType.TCP:
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
-                case SessionConfig.ProtocolType.WEBRTC:
+                case SessionConfig.ProtocolType.WebRTC:
                     reader = new AsyncWebRTCPCReader("http://bad-webrtc-reader-url", pointcloudCodec, tilesToReceive);
                     break;
                 default:
@@ -170,7 +166,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             if (networkTileDescription.tiles != null && networkTileDescription.tiles.Length > 0)
             {
-                //Debug.Log($"{Name()}: xxxjack ignoring second tilingConfig");
+                Debug.LogWarning($"{Name()}: SetTilingConfig: ignoring second tilingConfig");
                 return;
             }
             networkTileDescription = config;

@@ -29,7 +29,7 @@ namespace VRT.Pilots.LoginManager
                 userData = new Orchestrator.Wrapping.UserData()
                 {
                     microphoneName = "None",
-                    userRepresentationType = UserRepresentationType.__AVATAR__ // xxxjack need correct one.
+                    userRepresentationType = UserRepresentationType.SimpleAvatar // xxxjack need correct one.
                 }
             };
             selfPlayer.SetUpPlayerController(true, user);
@@ -39,7 +39,10 @@ namespace VRT.Pilots.LoginManager
         {
             yield return null;
             OrchestratorController.Instance.GetUsers();
-            yield return new WaitForSeconds(0.5f);
+            // The OrchestratorController is in DontDestroyOnLoad, so we don't have to wait for the GetUsers
+            // response before loading the next scene (as long as we don't start acting on the data until the resonse has
+            // been received).
+            yield return null;
             LoadNewScene(scenary);
         }
 
@@ -52,7 +55,7 @@ namespace VRT.Pilots.LoginManager
             }
             message = message.Substring(6);
             SessionConfig.FromJson(message);
-            string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(SessionConfig.Instance.scenarioName, SessionConfig.Instance.scenarioVariant); ;
+            string sceneName = ScenarioRegistry.Instance.GetSceneNameForSession(SessionConfig.Instance);
             if (sceneName == null)
             {
                 Debug.LogError($"{Name()}: Selected scenario \"{SessionConfig.Instance.scenarioName}\" not implemented in this player (unknown scene)");
@@ -60,55 +63,7 @@ namespace VRT.Pilots.LoginManager
             }
 
             if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
-#if xxxjack_old
-           
-            string[] msg = message.Split(new char[] { '_' });
-            if (msg[0] == MessageType.START)
-            {
-                // Check Audio
-                switch (msg[2])
-                {
-                    case "0": // No Audio
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.None;
-                        break;
-                    case "1": // Socket Audio
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.SocketIO;
-                        break;
-                    case "2": // Dash Audio
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.Dash;
-                        break;
-                    case "3": // Raw TCP
-                        VRTConfig.Instance.protocolType = VRTConfig.ProtocolType.TCP;
-                        break;
-                    default:
-                        Debug.LogError($"{Name()}: received unknown START audio type {msg[2]}");
-                        break;
-                }
-                string pilotName = msg[1];
-                string pilotVariant = null;
-                if (msg.Length > 3 && msg[3] != "") pilotVariant = msg[3];
-                if (msg.Length > 4 && msg[4] != "")
-                {
-                    VRTConfig.Instance.PCs.Codec = msg[4];
-                }
-                if (msg.Length > 5 && msg[5] != "")
-                {
-                    VRTConfig.Instance.Voice.Codec = msg[5];
-                }
-                string sceneName = PilotRegistry.Instance.GetSceneNameForPilotName(pilotName, pilotVariant);
-                if (sceneName == null)
-                {
-                    Debug.LogError($"{Name()}: Selected scenario \"{pilotName}\" not implemented in this player (unknown scene)");
-                    return;
-                }
-                
-                if (loadCoroutine == null) loadCoroutine = StartCoroutine(RefreshAndLoad(sceneName));
-            }
-            else if (msg[0] == MessageType.READY)
-            {
-                // Do something to check if all the users are ready (future implementation)
-            }
-#endif
+
         }
     }
 

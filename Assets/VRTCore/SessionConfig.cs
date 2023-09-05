@@ -2,21 +2,46 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRT.Core;
+
 
 namespace VRT.Core
 {
+
+   
     /// <summary>
-	/// Per-session parameters that should be the same for all participants in the experience.
-	/// </summary>
+    /// Per-session parameters that should be the same for all participants in the experience.
+    /// </summary>
     public class SessionConfig
     {
+        public static SessionConfig.ProtocolType ProtocolFromString(string s)
+        {
+            switch (s.ToLower())
+            {
+                case "socketio":
+                    return SessionConfig.ProtocolType.SocketIO;
+                case "dash":
+                    return SessionConfig.ProtocolType.Dash;
+                case "tcp":
+                    return SessionConfig.ProtocolType.TCP;
+                case "webrtc":
+                    return SessionConfig.ProtocolType.WebRTC;
+            }
+            throw new System.Exception($"Unknown protocoltype \"{s}\"");
+        }
+
+        public static string ProtocolToString(SessionConfig.ProtocolType v)
+        {
+            return v.ToString().ToLower();
+        }
+
         public enum ProtocolType
         {
             None = 0,
             SocketIO = 1,
             Dash = 2,
             TCP = 3,
-            WEBRTC = 4,
+            WebRTC = 4,
         };
 
         /// <summary>

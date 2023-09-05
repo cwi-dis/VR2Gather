@@ -142,9 +142,13 @@ MonoBehaviour:
     acceptDesyncOnDataUnavailable: 0
   LocalUser:
     PCSelfConfig:
-      RS2ReaderConfig:
-        configFilename: ./cameraconfig.xml
-        wantedSkeleton: 0
+      capturerType: 0
+      capturerTypeName: 
+      CameraReaderConfig:
+        configFilename: 
+      RemoteCameraReaderConfig:
+        url: 
+        isCompressed: 0
       ProxyReaderConfig:
         localIP: 
         port: 9335
@@ -258,7 +262,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b345692cec56f8a4ca6d71758912a011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 6311498540185021984}
   playerManager: {fileID: 9162158745625746543}
   userRepresentation: 2
 --- !u!114 &2454423965594524020
@@ -512,6 +515,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7957250788412427323}
     m_Modifications:
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_PositionInput.m_Action.m_ExpectedControlType
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RotationInput.m_Action.m_ExpectedControlType
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_PositionInput.m_Action.m_SingletonActionBindings.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RotationInput.m_Action.m_SingletonActionBindings.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1246181775895122469, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: previewPlayer
@@ -606,18 +629,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 7957250789301915210}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6311498540185021984 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4177976052428464234, guid: fceec8934b5ae4fdaa36454e0b30346f,
-    type: 3}
-  m_PrefabInstance: {fileID: 7957250789301915210}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8410044713637561585}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54d3c1410d4ad4748bb28c8bd1a1b110, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &8410044713637561486 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1935332283100515012, guid: fceec8934b5ae4fdaa36454e0b30346f,

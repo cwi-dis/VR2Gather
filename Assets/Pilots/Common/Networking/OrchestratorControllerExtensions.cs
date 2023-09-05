@@ -51,7 +51,7 @@ namespace VRT.Pilots.Common
 			}
 			if (controller.SelfUser == null)
 			{
-				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
+				Debug.LogWarning("OrchestratorControllerExtensions: SendTypeEventToAll: controller.SelfUser is null");
 				return;
 			}
 
@@ -93,7 +93,7 @@ namespace VRT.Pilots.Common
 			}
 			if (controller.SelfUser == null)
 			{
-				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
+				Debug.LogWarning("OrchestratorControllerExtensions: SendTypeEventToMaster: controller.SelfUser is null");
 				return;
 			}
 
@@ -129,11 +129,12 @@ namespace VRT.Pilots.Common
 		{
 			if (controller == null)
 			{
+				Debug.LogWarning("OrchestratorControllerExtensions: SendTypeEventToUser: controller==null");
 				return;
 			}
 			if (controller.SelfUser == null)
 			{
-				Debug.LogWarning("OrchestratorControllerExtensions: controller.SelfUser is null");
+				Debug.LogWarning("OrchestratorControllerExtensions: SendTypeEventToUser: controller.SelfUser is null");
 				return;
 			}
 

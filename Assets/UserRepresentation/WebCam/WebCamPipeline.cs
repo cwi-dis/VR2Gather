@@ -44,8 +44,8 @@ namespace VRT.UserRepresentation.WebCam
 
         public static void Register()
         {
-            RegisterPipelineClass(true, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
-            RegisterPipelineClass(false, UserRepresentationType.__2D__, AddWebCamPipelineComponent);
+            RegisterPipelineClass(true, UserRepresentationType.VideoAvatar, AddWebCamPipelineComponent);
+            RegisterPipelineClass(false, UserRepresentationType.VideoAvatar, AddWebCamPipelineComponent);
         }
 
         public static BasePipeline AddWebCamPipelineComponent(GameObject dst, UserRepresentationType i)

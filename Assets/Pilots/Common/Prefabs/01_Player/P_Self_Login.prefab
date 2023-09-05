@@ -12,6 +12,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_PositionInput.m_Action.m_Id
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 364752266897929616, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: m_RotationInput.m_Action.m_Id
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 748432237038051979, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}
       propertyPath: m_Name
@@ -76,6 +86,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1246181775895122469, guid: fceec8934b5ae4fdaa36454e0b30346f,
+        type: 3}
+      propertyPath: previewPlayer
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1935332283100515003, guid: fceec8934b5ae4fdaa36454e0b30346f,
         type: 3}

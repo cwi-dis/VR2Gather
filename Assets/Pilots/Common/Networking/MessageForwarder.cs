@@ -108,6 +108,7 @@ namespace VRT.Pilots.Common
 		{
 			if (!MessageForwarders.TryGetValue(typeof(T), out IMessageForwarder forwarder))
 			{
+				Debug.LogWarning($"MessageForwarder: Unsubscribe() for unknown message type");
 				return;
 			}
 
@@ -119,6 +120,7 @@ namespace VRT.Pilots.Common
 			TypedMessage message = JsonUtility.FromJson<TypedMessage>(jsonMessage);
 			if (!TypeFromId.TryGetValue(message.TypeId, out Type messageType))
 			{
+				Debug.LogWarning($"MessageForwarder: Forward() for unkown message type {message.TypeId}");
 				return;
 			}
 
@@ -129,7 +131,11 @@ namespace VRT.Pilots.Common
 				{
 					forwarder.Forward(message.Data);
 				}
-			}
+				else
+				{
+                    Debug.LogWarning($"MessageForwarder: null forwarder for messageType {messageType.Name}");
+                }
+            }
 			else
             {
 				Debug.LogWarning($"MessageForwarder: no forwarder for messageType {messageType.Name}");
@@ -146,9 +152,14 @@ namespace VRT.Pilots.Common
 
 	{
 		event Action<T> _ev;
+		int nSubscribed = 0;
 
 		public void Forward(T message)
 		{
+			if (nSubscribed == 0)
+			{
+				Debug.LogWarning("MessageForwarder: Forward() but no-one subscribed");
+			}
 			_ev(message);
 		}
 
@@ -161,11 +172,13 @@ namespace VRT.Pilots.Common
 		public void Subscribe(Action<T> callback)
 		{
 			_ev += callback;
+			nSubscribed++;
 		}
 
 		public void Unsubscribe(Action<T> callback)
 		{
 			_ev -= callback;
+			nSubscribed--;
 		}
 	}
 }

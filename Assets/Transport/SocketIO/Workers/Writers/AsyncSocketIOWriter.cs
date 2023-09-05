@@ -82,7 +82,14 @@ namespace VRT.Transport.SocketIO
                 for (int i = 0; i < streams.Length; ++i)
                 {
                     BaseMemoryChunk chk = streams[i].inQueue.Dequeue();
-                    if (chk == null) continue; // xxxjack was return???
+                    if (chk == null) continue;
+                    if (chk.length > 1000000)
+                    {
+                        // Messages > 1MB case socket.io to hang up the connection. This will create very
+                        // weird errors with the current Orchestrator and BestHTTP implementations.
+                        Debug.LogError($"{Name()}: Message size {chk.length} exceeds SocketIO 1MByte maximum. Dropping. ");
+                        continue;
+                    }
                     var hdr_timestamp = BitConverter.GetBytes(chk.metadata.timestamp);
                     var buf = new byte[chk.length+sizeof(long)];
                     Array.Copy(hdr_timestamp, buf, sizeof(long));

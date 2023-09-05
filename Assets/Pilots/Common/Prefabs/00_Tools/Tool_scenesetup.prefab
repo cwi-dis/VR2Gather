@@ -112,6 +112,7 @@ MonoBehaviour:
   - {fileID: 6447309684348885663}
   - {fileID: 5706222702953903087}
   NonPlayersLocation: {fileID: 7520733603305954546}
+  InstantiatePlayersDelay: 0
   AutoSpawnOnLocation: 1
   localPlayer: {fileID: 0}
   AllUsers: []
