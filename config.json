@@ -8,7 +8,7 @@
   	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "sap",
+  	"autoCreateForUser" : "topinambur",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 3,
@@ -19,7 +19,7 @@
   "LocalUser": {
     "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "developer",
+	  "capturerTypeName" : "auto",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
