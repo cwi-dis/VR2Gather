@@ -45,6 +45,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scenarios:
+  - scenarioName: Traction Opera Experience
+    scenarioId: 15f36b04-2fa8-40d6-8640-31f9c7e94212
+    scenarioDescription: 'Opera experience for Traction EU project: cinema followed
+      by lobby'
+    scenarioSceneName: Cinema
+  - scenarioName: Traction Lobby Only
+    scenarioId: 390a5813-d1a4-4c75-88d8-aa87f6660d8a
+    scenarioDescription: Skip cinema, only the Lobby experience
+    scenarioSceneName: TractionLobby
   - scenarioName: Pilot 0
     scenarioId: 8aef4fbe-e8a9-4e70-b009-0633e50cf356
     scenarioDescription: Fairly empty test scenario
