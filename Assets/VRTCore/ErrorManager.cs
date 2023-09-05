@@ -22,6 +22,9 @@ namespace VRT.Core
         [Tooltip("GameObject where dialogs are instantiated (if no errorManagerSink registered), should contain overlay canvas")]
         public GameObject myCanvas;
 
+        [Tooltip("Hide BestHTTP errors")]
+        public bool hideBestHTTPErrors = false;
+
         ErrorManagerSink mySink = null;
 
         List<string[]> queue = new List<string[]>();
@@ -106,7 +109,7 @@ namespace VRT.Core
             {
                 error[0] = "Error";
                 // Don't show a popup for BestHTTP error messages
-                if (stackTrace.Contains("BestHTTP")) return;
+                if (hideBestHTTPErrors && stackTrace.Contains("BestHTTP")) return;
                 // Don't show a popup for Quest virtual keyboard not enabled.
                 if (condition.Contains("overlay keyboard is disabled")) return;
                 lock (thisLock)
