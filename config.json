@@ -8,7 +8,7 @@
   	"sessionTransportProtocol" : "tcp",
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : true,
-  	"autoCreateForUser" : "sap",
+  	"autoCreateForUser" : "topinambur",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,

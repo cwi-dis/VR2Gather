@@ -53,3 +53,7 @@ MonoBehaviour:
     scenarioId: fd170a0c-b52d-4541-af3d-5c18317e8f07
     scenarioDescription: Scenario for developers to test new things
     scenarioSceneName: TechnicalPlayground
+  - scenarioName: VQEG
+    scenarioId: 75f1a32b-dfb1-41e5-b14e-2eec2de9cf32
+    scenarioDescription: VQEG latency experiment
+    scenarioSceneName: Vqeg
