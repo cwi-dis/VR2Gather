@@ -162,7 +162,7 @@ MonoBehaviour:
   m_GravityApplicationMode: 0
   m_ForwardSource: {fileID: 7845086807825369409}
   m_LeftHandMoveAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Left Hand Move
       m_Type: 0
@@ -1720,7 +1720,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7004479241362984629}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0bf296fc962d7184ab14ad1841598d5f, type: 3}
   m_Name: 
@@ -1733,7 +1733,7 @@ MonoBehaviour:
   m_GravityApplicationMode: 0
   m_ForwardSource: {fileID: 7845086807825369409}
   m_LeftHandMoveAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Left Hand Move
       m_Type: 0
@@ -1743,7 +1743,8 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: 6972639530819350904, guid: 721820db5472c4cdb9e2c49de50d8533,
+      type: 3}
   m_RightHandMoveAction:
     m_UseReference: 1
     m_Action:
