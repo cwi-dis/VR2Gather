@@ -105,9 +105,10 @@ namespace VRT.Pilots.LoginManager
         [SerializeField] private InputField sessionDescriptionIF = null;
         [SerializeField] private Dropdown scenarioIdDrop = null;
         [SerializeField] private Text scenarioDescription = null;
-        [SerializeField] private Toggle socketProtocolToggle = null;
-        [SerializeField] private Toggle dashProtocolToggle = null;
-        [SerializeField] private Toggle tcpProtocolToggle = null;
+        [SerializeField] private Dropdown sessionProtocolDrop = null;
+//        [SerializeField] private Toggle socketProtocolToggle = null;
+//        [SerializeField] private Toggle dashProtocolToggle = null;
+//        [SerializeField] private Toggle tcpProtocolToggle = null;
         [SerializeField] private Toggle uncompressedPointcloudsToggle = null;
         [SerializeField] private Toggle uncompressedAudioToggle = null;
 
@@ -412,6 +413,18 @@ namespace VRT.Pilots.LoginManager
             
         }
 
+        private void UpdateProtocols()
+        {
+            sessionProtocolDrop.ClearOptions();
+            List<string> names = new List<string>();
+            foreach(string protocolName in Enum.GetNames(typeof(SessionConfig.ProtocolType))) {
+                if(protocolName == "None") continue;
+                names.Add(protocolName);
+            }
+            sessionProtocolDrop.AddOptions(names);
+            sessionProtocolDrop.value = 0;
+        }
+
         private void UpdateWebcams(Dropdown dd)
         {
             // Fill UserData representation dropdown according to UserRepresentationType enum declaration
@@ -582,9 +595,7 @@ namespace VRT.Pilots.LoginManager
 
             InitialiseControllerEvents();
 
-            socketProtocolToggle.isOn = true;
-            dashProtocolToggle.isOn = false;
-            tcpProtocolToggle.isOn = false;
+            UpdateProtocols();
             uncompressedPointcloudsToggle.isOn = SessionConfig.Instance.pointCloudCodec == "cwi0";
             uncompressedAudioToggle.isOn = SessionConfig.Instance.voiceCodec == "VR2a";
 
@@ -612,6 +623,7 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
+      
         // Update is called once per frame
         void Update()
         {
@@ -619,10 +631,7 @@ namespace VRT.Pilots.LoginManager
                 VUMeter.sizeDelta = new Vector2(355 * Mathf.Min(1, selfRepresentationPreview.MicrophoneLevel), 20);
 
             TabShortcut();
-            if (state == State.Create)
-            {
-                AudioToggle();
-            }
+          
             // Refresh Sessions
             if (state == State.Join)
             {
@@ -670,27 +679,11 @@ namespace VRT.Pilots.LoginManager
                     if (developerMode) Debug.Log($"OrchestratorLogin: AutoStart: autoCreate: sessionTransportProtocol={config.sessionTransportProtocol}");
                     // xxxjack I don't understand the intended logic behind the toggles. But turning everything
                     // on and then simulating a button callback works.
-                    switch (config.sessionTransportProtocol)
-                    {
-                        case "socketio":
-                            socketProtocolToggle.isOn = true;
-                            break;
-                        case "dash":
-                            dashProtocolToggle.isOn = true;
-                            break;
-                        case "tcp":
-                            tcpProtocolToggle.isOn = true;
-                            break;
-                        default:
-                            Debug.LogError($"OrchestratorLogin: AutoStart: Unknown sessionTransportProtocol {config.sessionTransportProtocol}");
-                            break;
-                    }
+                    
                     SetProtocol(config.sessionTransportProtocol);
                 }
                 else
                 {
-                    // No default set. Use socketio.
-                    socketProtocolToggle.isOn = true;
                     SetProtocol("socketio");
                 }
                 autoState = AutoState.DidPartialCreation;
@@ -1000,12 +993,7 @@ namespace VRT.Pilots.LoginManager
 
 #region Toggles 
 
-        private void AudioToggle()
-        {
-            socketProtocolToggle.interactable = !socketProtocolToggle.isOn;
-            dashProtocolToggle.interactable = !dashProtocolToggle.isOn;
-            tcpProtocolToggle.interactable = !tcpProtocolToggle.isOn;
-        }
+      
 
         public void SetCompression()
         {
@@ -1027,43 +1015,29 @@ namespace VRT.Pilots.LoginManager
             }
         }
 
-        public void SetProtocol(string proto)
+        public void SetProtocol(string protoString)
         {
-            switch (proto)
+            if (string.IsNullOrEmpty(protoString))
             {
-                case "socketio": // Socket
-                    if (socketProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.SocketIO;
-                        // Set Toggles
-                        dashProtocolToggle.isOn = false;
-                        tcpProtocolToggle.isOn = false;
-                    }
-                    break;
-                case "dash": // Dash
-                    if (dashProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.Dash;
-                        // Set Toggles
-                        socketProtocolToggle.isOn = false;
-                        tcpProtocolToggle.isOn = false;
-                    }
-                    break;
-                case "tcp": // Dash
-                    if (tcpProtocolToggle.isOn)
-                    {
-                        // Set AudioType
-                        SessionConfig.Instance.protocolType = SessionConfig.ProtocolType.TCP;
-                        // Set Toggles
-                        socketProtocolToggle.isOn = false;
-                        dashProtocolToggle.isOn = false;
-                    }
-                    break;
-                default:
-                    break;
+                // Empty string means we're called from the dropdown callback. Get the value from there.
+                protoString = sessionProtocolDrop.options[sessionProtocolDrop.value].text;
             }
+            SessionConfig.ProtocolType proto = SessionConfig.ProtocolFromString(protoString);
+            bool done = false;
+            for (int i = 0; i < sessionProtocolDrop.options.Count; i++)
+            {
+                if (protoString.ToLower() == sessionProtocolDrop.options[i].text.ToLower())
+                {
+                    done = true;
+                    sessionProtocolDrop.value = i;
+                }
+            }
+            if (!done)
+            {
+                Debug.LogError($"OrchestratorLogin: unknown protocol \"protoString\"");
+            }
+            
+            SessionConfig.Instance.protocolType = proto;
         }
 
 
@@ -1394,19 +1368,8 @@ namespace VRT.Pilots.LoginManager
 
         private void AddSession()
         {
-            string protocol = "";
-            switch(SessionConfig.Instance.protocolType)
-            {
-                case SessionConfig.ProtocolType.SocketIO:
-                    protocol = "socketio";
-                    break;
-                case SessionConfig.ProtocolType.Dash:
-                    protocol = "dash";
-                    break;
-                case SessionConfig.ProtocolType.TCP:
-                    protocol = "tcp";
-                    break;
-            }
+            string protocol = SessionConfig.ProtocolToString(SessionConfig.Instance.protocolType);
+
             OrchestratorController.Instance.AddSession(ScenarioRegistry.Instance.Scenarios[scenarioIdDrop.value].scenarioId,
                                                         sessionNameIF.text,
                                                         sessionDescriptionIF.text,
