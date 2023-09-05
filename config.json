@@ -1,14 +1,14 @@
 {
-  "_orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "orchestratorURL" : "http://sap.local:8080/socket.io/",
   "statsOutputFile" : "",
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "CWI 50th Anniversary Party",
-  	"sessionScenario" : "Development",
+  	"sessionScenario" : "CWI 50th Anniversary",
   	"sessionTransportProtocol" : "socketio",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "topinambur",
+  	"autoCreateForUser" : "sap",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 3,
@@ -19,7 +19,7 @@
   "LocalUser": {
     "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },
