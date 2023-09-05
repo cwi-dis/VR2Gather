@@ -4,11 +4,11 @@
    "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "Traction",
-  	"sessionScenario" : "Development",
+  	"sessionScenario" : "Traction Lobby Only",
   	"sessionTransportProtocol" : "",
   	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "topinambur",
+  	"autoCreateForUser" : "sap",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -17,9 +17,9 @@
   	"autoStopAfterLeave" : false
   },
   "LocalUser": {
-    
+    "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },

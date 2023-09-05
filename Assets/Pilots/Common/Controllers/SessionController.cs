@@ -10,8 +10,7 @@ namespace VRT.Pilots.Common
 {
     public class SessionController : MonoBehaviour
     {
-        public static SessionController Instance { get; private set; }
-
+        
         public string Name()
         {
             return $"{GetType().Name}";
@@ -20,11 +19,7 @@ namespace VRT.Pilots.Common
         // Start is called before the first frame update
         void Start()
         {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-       
+         
             InitialiseControllerEvents();
         }
 
@@ -40,6 +35,7 @@ namespace VRT.Pilots.Common
             OrchestratorController.Instance.OnUserJoinSessionEvent += OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnErrorEvent += OnErrorHandler;
+            OrchestratorController.Instance.OnConnectionEvent += OnConnectionEventHandler;
 
             OrchestratorController.Instance.RegisterMessageForwarder();
         }
@@ -51,7 +47,7 @@ namespace VRT.Pilots.Common
             OrchestratorController.Instance.OnUserJoinSessionEvent -= OnUserJoinedSessionHandler;
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnErrorEvent -= OnErrorHandler;
-
+            OrchestratorController.Instance.OnConnectionEvent -= OnConnectionEventHandler;
             OrchestratorController.Instance.UnregisterMessageForwarder();
         }
 
@@ -75,26 +71,25 @@ namespace VRT.Pilots.Common
         }
 
         private void OnUserJoinedSessionHandler(string userID)
-        {
-            if (!string.IsNullOrEmpty(userID))
-            {
-                Debug.Log($"{Name()}: user joined session: {userID}");
-            }
+        {            
+            Debug.LogWarning($"{Name()}: user joined session: {userID}");
         }
 
         private void OnUserLeftSessionHandler(string userID)
         {
-            if (!string.IsNullOrEmpty(userID))
-            {
-                Debug.Log($"{Name()}: user left session: {userID}");
-            }
+            Debug.Log($"{Name()}: user left session: {userID}");
+        }
+
+        private void OnConnectionEventHandler(bool connected)
+        {
+            Debug.LogWarning($"{Name()}: Unexpected Connection event, connected={connected}");
         }
 
   
         private void OnErrorHandler(ResponseStatus status)
         {
-            Debug.Log($"{Name()}: OnErrorHandler: {status.Error}, Error message: {status.Message}");
-            ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
+            Debug.LogError($"{Name()}: Orchestrator error {status.Error}, {status.Message}");
+            // ErrorManager.Instance.EnqueueOrchestratorError(status.Error, status.Message);
         }
     }
 }
