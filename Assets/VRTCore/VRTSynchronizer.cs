@@ -172,6 +172,7 @@ namespace VRT.Core
             }
             // If we managed to find a correctly synced timestamp for this frame
             // we check whether it is the first time we managed to do so.
+            // xxxjack this code incorrectly triggers after we have lost our connection to the orchestrator, for socketio.
             if (!currentFrameDesync && !stableStreamsDetected)
             {
                 Debug.Log($"{Name()}: First synchronized frame produced");

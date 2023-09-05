@@ -6,7 +6,7 @@
     "sessionName": "mediascape",
     "sessionScenario": "Mediascape",
     "sessionTransportProtocol": "tcp",
-    "autoCreateForUser": "topinambur",
+    "autoCreateForUser": "sap",
     "autoCreate": false,
     "autoJoin": false,
     "autoStartWith": 2,
@@ -21,9 +21,9 @@
   },
 
   "LocalUser": {
-    
+    "orchestratorConfigFilename" : "config-user.json",
     "PCSelfConfig": {
-	  "capturerTypeName" : "auto",
+	  "capturerTypeName" : "developer",
       "RS2ReaderConfig": {
         "configFilename": "./cameraconfig.json"
       },

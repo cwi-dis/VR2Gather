@@ -98,7 +98,7 @@ namespace VRT.UserRepresentation.PointCloud
             }
             // Give reveicedData.data to that PointCloudPipeline.
             SyncConfig syncConfig = receivedData.data;
-            if (debug) Debug.Log($"SyncConfigDistributor: received sync information from user {selfUserId}");
+            if (debug) Debug.Log($"SyncConfigDistributor: received sync information from user {receivedData.SenderId}");
             pipeline.SetSyncConfig(syncConfig);
         }
     }
