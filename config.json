@@ -1,5 +1,5 @@
 {
-  "_orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "orchestratorURL" : "http://flauwte.local:8080/socket.io/",
   "_statsOutputFile" : "-",
   "AutoStart" : {
   	"autoLogin" : true,
@@ -8,7 +8,7 @@
   	"sessionTransportProtocol" : "webrtc",
   	"sessionUncompressed" : true,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "vrtiny",
+  	"autoCreateForUser" : "jvdhooft",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,

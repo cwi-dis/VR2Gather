@@ -233,7 +233,7 @@ namespace VRT.UserRepresentation.PointCloud
                         writer = new AsyncSocketIOWriter(user, "pointcloud", pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     case SessionConfig.ProtocolType.WebRTC:
-                        writer = new AsyncWebRTCWriter("http://bad-webrtc-writer-url", pointcloudCodec, outgoingStreamDescriptions);
+                        writer = new AsyncWebRTCWriter(user.sfuData.url_gen, pointcloudCodec, outgoingStreamDescriptions);
                         break;
                     default:
                         throw new System.Exception($"{Name()}: Unknown protocolType {SessionConfig.Instance.protocolType}");
