@@ -193,6 +193,12 @@ namespace VRT.Core
                 }
                 public _Bin2Dash Bin2Dash;
                 public _Bin2Dash AudioBin2Dash;
+                [Serializable]
+                public class _WebRTC
+                {
+                    public string peerExecutablePath;
+                }
+                public _WebRTC WebRTC;
             }
             public _PCSelfConfig PCSelfConfig;
 

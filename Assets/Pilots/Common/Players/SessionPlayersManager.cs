@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 using VRT.Core;
+using Cwipc;
+using System.ComponentModel;
 #if VRT_WITH_STATS
 using Statistics = Cwipc.Statistics;
 #endif
@@ -38,6 +40,8 @@ namespace VRT.Pilots.Common
 			}
 		}
 
+		[Tooltip("WebRTCController (GO will be enabled for WebRTC sessions)")]
+		public WebRTCConnector webRTCConnector = null;
 		[Tooltip("Prefab used to create players")]
         public GameObject PlayerPrefab;
         [Tooltip("Prefab used to create self-player")]
@@ -135,8 +139,21 @@ namespace VRT.Pilots.Common
         public void InstantiatePlayers()
 		{
 			var me = OrchestratorController.Instance.SelfUser;
-
-			SetupConfigDistributors();
+			bool webRTCInitialized = false;
+            // Initialize WebRTC, if needed and not initialized already
+			if (SessionConfig.Instance.protocolType == SessionConfig.ProtocolType.WebRTC)
+			{
+				if (webRTCConnector == null)
+				{
+					throw new Exception($"SessionPlayersManager: No webRTCConnector but webRTC protocol requested");
+				}
+				webRTCConnector.enabled = true;
+				webRTCConnector.gameObject.SetActive(true);
+				string peerExecutablePath = VRTConfig.Instance.LocalUser.PCSelfConfig.WebRTC.peerExecutablePath;
+                webRTCConnector.Initialize(peerExecutablePath);
+				webRTCInitialized = true;
+			}
+            SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
 
             foreach (User user in OrchestratorController.Instance.ConnectedUsers)
@@ -168,6 +185,7 @@ namespace VRT.Pilots.Common
                 AllUsers.Add(networkPlayer);
 
 				var representationType = user.userData.userRepresentationType;
+				
 				switch(representationType)
 				{
 					case UserRepresentationType.NoRepresentation:
@@ -202,6 +220,10 @@ namespace VRT.Pilots.Common
 				RequestPlayerLocationData();
             }
             if (debug) Debug.Log($"SessionPlayersManager: All players instantiated");
+			if (webRTCInitialized)
+			{
+				webRTCConnector.AllConnectionsDone();
+			}
         }
 
         private void OnUserLeft(string userId)
