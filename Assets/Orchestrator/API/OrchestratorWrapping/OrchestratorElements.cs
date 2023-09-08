@@ -57,6 +57,7 @@ namespace VRT.Orchestrator.Wrapping
         public bool userAdmin = false;
         public UserData userData;
         public SfuData sfuData;
+        public int webRTCClientId = -1;
 
         // empty constructor callled by the JsonData parser
         public User()

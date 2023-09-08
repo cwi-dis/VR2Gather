@@ -149,16 +149,36 @@ namespace VRT.Pilots.Common
 				}
 				webRTCConnector.enabled = true;
 				webRTCConnector.gameObject.SetActive(true);
+                int indexWithinCurrentSession = 0;
+				int ourWebRTCClientId = -1;
+				foreach (User user in OrchestratorController.Instance.ConnectedUsers)
+				{
+					bool isLocalPlayer = me.userId == user.userId;
+					// This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+					// receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+					// users in this session. We also need our own client ID before we can initialize the webRTC peer process.
+					// This is a bit of a hack. We need a unique 1-based client ID for webRTC that is the same on the sender side and the
+					// receiver side. The only reassonable way we have to create this is to use the index of this user within the array of
+					// users in this session.
+					user.webRTCClientId = indexWithinCurrentSession + 1;
+					if (isLocalPlayer)
+					{
+						ourWebRTCClientId = user.webRTCClientId;
+					}
+					indexWithinCurrentSession++;
+				}
 				string peerExecutablePath = VRTConfig.Instance.LocalUser.PCSelfConfig.WebRTC.peerExecutablePath;
-                webRTCConnector.Initialize(peerExecutablePath);
+                webRTCConnector.Initialize(peerExecutablePath, ourWebRTCClientId);
 				webRTCInitialized = true;
 			}
+            if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
             SetupConfigDistributors();
             if (debug) Debug.Log($"SessionPlayersManager: Instantiating players");
-
-            foreach (User user in OrchestratorController.Instance.ConnectedUsers)
+			foreach (User user in OrchestratorController.Instance.ConnectedUsers)
 			{
 				bool isLocalPlayer = me.userId == user.userId;
+				
+
 				GameObject player = null;
 				if (isLocalPlayer)
 				{

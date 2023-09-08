@@ -11,6 +11,7 @@ using VRT.Transport.Dash;
 using VRT.Orchestrator.Wrapping;
 using Cwipc;
 using VRT.Pilots.Common;
+using UnityEngine.Assertions;
 
 namespace VRT.UserRepresentation.PointCloud
 {
@@ -141,7 +142,11 @@ namespace VRT.UserRepresentation.PointCloud
                     reader = new AsyncTCPPCReader(user.userData.userPCurl, pointcloudCodec, tilesToReceive);
                     break;
                 case SessionConfig.ProtocolType.WebRTC:
-                    reader = new AsyncWebRTCPCReader("http://bad-webrtc-reader-url", pointcloudCodec, tilesToReceive);
+                    if (user.webRTCClientId <= 0)
+                    {
+                        Debug.LogError($"{Name()}: WebRTC client id incorrect {user.webRTCClientId}");
+                    }
+                    reader = new AsyncWebRTCPCReader(user.sfuData.url_gen, user.webRTCClientId, pointcloudCodec, tilesToReceive);
                     break;
                 default:
                     throw new System.Exception($"{Name()}: unknown protocolType {SessionConfig.Instance.protocolType}");
