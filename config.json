@@ -24,7 +24,7 @@
         "configFilename": "./cameraconfig.json"
       },
       "SynthReaderConfig": {
-        "nPoints": 80000
+        "nPoints": 8000
       },
       "ProxyReaderConfig": {
         "localIP": "",
