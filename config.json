@@ -1,5 +1,5 @@
 {
-  "orchestratorURL" : "http://flauwte.local:8080/socket.io/",
+  "orchestratorURL" : "http://beignet.local:8080/socket.io/",
   "_statsOutputFile" : "-",
   "AutoStart" : {
   	"autoLogin" : true,
