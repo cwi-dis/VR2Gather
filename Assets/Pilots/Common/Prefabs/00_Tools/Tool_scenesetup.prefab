@@ -443,9 +443,10 @@ MonoBehaviour:
   peerWindowDontClose: 1
   peerUDPPort: 8000
   logFileDirectory: 
-  debug: 0
+  debug: 1
   peerConnected: 0
   peerSFUAddress: 
+  clientId: 1
 --- !u!1 &7353836897957631147
 GameObject:
   m_ObjectHideFlags: 0
