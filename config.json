@@ -1,5 +1,5 @@
 {
-  "orchestratorURL" : "http://beignet.local:8080/socket.io/",
+  "orchestratorURL" : "http://192.168.37.30:8080/socket.io/",
   "_statsOutputFile" : "-",
   "AutoStart" : {
   	"autoLogin" : true,
