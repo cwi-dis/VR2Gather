@@ -442,7 +442,7 @@ MonoBehaviour:
   peerInWindow: 1
   peerWindowDontClose: 1
   peerUDPPort: 8000
-  logFileDirectory: 
+  logFileDirectory: Logs
   debug: 1
   peerConnected: 0
   peerSFUAddress: 
