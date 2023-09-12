@@ -1045,14 +1045,22 @@ namespace VRT.Orchestrator.Wrapping
 #region Utils
 
         public string GetIPAddress() {
-            var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
-            foreach (var ip in host.AddressList) {
-                if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
-                    if (enableLogging) Debug.Log("OrchestratorController: GetIPAdress: IPv4 adress: " + ip.ToString());
-                    return ip.ToString();
+            try
+            {
+                var host = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName());
+                foreach (var ip in host.AddressList)
+                {
+                    if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        if (enableLogging) Debug.Log("OrchestratorController: GetIPAdress: IPv4 adress: " + ip.ToString());
+                        return ip.ToString();
+                    }
                 }
             }
-            Debug.LogError("OrchestratorController: GetIPAdress: Cannot retrieve IPv4 adress of the network adapater.");
+            catch(Exception)
+            {
+            }
+            Debug.LogWarning("OrchestratorController: GetIPAdress: Cannot retrieve IPv4 adress of the network adapater.");
             return "";
         }
 
