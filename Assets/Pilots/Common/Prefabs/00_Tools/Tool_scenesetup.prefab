@@ -442,8 +442,9 @@ MonoBehaviour:
   peerInWindow: 1
   peerWindowDontClose: 1
   peerUDPPort: 8000
+  peerIPAddress: 127.0.0.1
   logFileDirectory: Logs
-  debug: 1
+  debug: 2
   peerConnected: 0
   peerSFUAddress: 
   clientId: 1
