@@ -1,5 +1,5 @@
 {
-  "_unused_orchestratorURL" : "http://192.168.37.30:8080/socket.io/",
+  "_unused_orchestratorURL" : "http://beignet.local:8080/socket.io/",
   "_statsOutputFile" : "-",
   "AutoStart" : {
   	"autoLogin" : true,
@@ -50,6 +50,11 @@
       "AudioBin2Dash": {
         "segmentSize": 1000,
         "segmentLife": 16000
+      },
+      "WebRTC" : {
+      	"_enable_for_silicon_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-arm64.exe",
+      	"_enable_for_intel_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-i386.exe",
+      	"_enable_for_linux_peerExecutablePath" : "../WebRTCSFU/peer-Linux-x86_64.exe"
       }
     }
   }
