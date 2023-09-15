@@ -1,14 +1,15 @@
 {
-  "_unused_orchestratorURL" : "http://beignet.local:8080/socket.io/",
-  "_statsOutputFile" : "-",
+  "orchestratorURL" : "http://sap.local:8080/socket.io/",
+  "statsOutputFile" : "",
+  "statsInterval" : 0,
   "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "webrtctest",
   	"sessionScenario" : "Pilot 0",
   	"sessionTransportProtocol" : "webrtc",
-  	"sessionUncompressed" : true,
+  	"sessionUncompressed" : false,
   	"sessionUncompressedAudio" : false,
-  	"autoCreateForUser" : "jvdhooft",
+  	"autoCreateForUser" : "sap",
   	"autoCreate" : false,
   	"autoJoin" : false,
   	"autoStartWith" : 2,
@@ -52,7 +53,7 @@
         "segmentLife": 16000
       },
       "WebRTC" : {
-      	"_enable_for_silicon_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-arm64.exe",
+      	"peerExecutablePath" : "../WebRTCSFU/peer-Darwin-arm64.exe",
       	"_enable_for_intel_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-i386.exe",
       	"_enable_for_linux_peerExecutablePath" : "../WebRTCSFU/peer-Linux-x86_64.exe"
       }
