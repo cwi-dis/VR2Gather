@@ -53,7 +53,7 @@
         "segmentLife": 16000
       },
       "WebRTC" : {
-      	"peerExecutablePath" : "../WebRTCSFU/peer-Darwin-arm64.exe",
+      	"_enable_for_m1_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-arm64.exe",
       	"_enable_for_intel_mac_peerExecutablePath" : "../WebRTCSFU/peer-Darwin-i386.exe",
       	"_enable_for_linux_peerExecutablePath" : "../WebRTCSFU/peer-Linux-x86_64.exe"
       }
