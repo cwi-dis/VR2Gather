@@ -69,14 +69,6 @@ namespace VRT.Orchestrator.Wrapping
         private ScenarioInstance myScenario;
         private List<Scenario> availableScenarios;
 
-#if outdated_orchestrator
-        //Rooms
-        private List<RoomInstance> availableRoomInstances;
-
-        //LivePresenter
-        private LivePresenterData livePresenterData;
-#endif
-
         // user Login state
         private bool userIsLogged = false;
 
@@ -146,23 +138,10 @@ namespace VRT.Orchestrator.Wrapping
         public Action<ScenarioInstance> OnGetScenarioEvent;
         public Action<Scenario[]> OnGetScenariosEvent;
 
-#if outdated_orchestrator
-        // Orchestrator Live Events
-        public Action<LivePresenterData> OnGetLiveDataEvent;
-#endif
-
         // Orchestrator User Events
         public Action<User[]> OnGetUsersEvent;
         public Action<User> OnGetUserInfoEvent;
         public Action<User> OnAddUserEvent;
-
-#if outdated_orchestrator
-
-        // Orchestrator Rooms Events
-        public Action<RoomInstance[]> OnGetRoomsEvent;
-        public Action<bool> OnJoinRoomEvent;
-        public Action OnLeaveRoomEvent;
-#endif
 
         // Orchestrator User Messages Events
         public Action<UserMessage> OnUserMessageReceivedEvent;
@@ -200,10 +179,7 @@ namespace VRT.Orchestrator.Wrapping
         public ScenarioInstance MyScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
         public Session MySession { get { return mySession; } }
-#if outdated_orchestrator
-       public RoomInstance[] AvailableRooms { get { return availableRoomInstances?.ToArray(); } }
-        public LivePresenterData LivePresenterData { get { return livePresenterData; } }
-#endif
+
         public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
 
 #endregion
@@ -517,11 +493,7 @@ namespace VRT.Orchestrator.Wrapping
             }
 
             if (enableLogging) Debug.Log("OrchestratorController: OnGetScenarioInstanceInfoResponse: Scenario instance succesfully retrieved: " + scenario.scenarioName + ".");
-#if outdated_orchestrator
 
-            // now retrieve the url of the Live presenter stream
-            orchestratorWrapper.GetLivePresenterData();
-#endif
             myScenario = scenario;
             OnGetScenarioEvent?.Invoke(myScenario);
         }
@@ -681,25 +653,7 @@ namespace VRT.Orchestrator.Wrapping
         }
 
 #endregion
-#if outdated_orchestrator
 
-#region Live
-
-        public void OnGetLivePresenterDataResponse(ResponseStatus status, LivePresenterData liveData) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            //Debug.Log("[OrchestratorController][OnGetLivePresenterDataResponse] Live stream url: " + liveData.liveAddress);
-            livePresenterData = liveData;
-
-            OnGetLiveDataEvent?.Invoke(liveData);
-            orchestratorWrapper.GetRooms();
-        }
-
-#endregion
-#endif
 #region Users
 
         public void GetUsers() {
@@ -768,22 +722,7 @@ namespace VRT.Orchestrator.Wrapping
             if (enableLogging) Debug.Log("OrchestratorControler: OnUpdateUserDataJsonResponse: User data fully updated.");
             orchestratorWrapper.GetUserInfo();
         }
-#if outdated_orchestrator
 
-        public void ClearUserData() {
-            orchestratorWrapper.ClearUserData();
-        }
-
-        public void OnClearUserDataResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnClearUserDataResponse: User data successfully cleaned-up.");
-            orchestratorWrapper.GetUserInfo();
-        }
-#endif
         public void GetUserInfo(string pUserID) {
             orchestratorWrapper.GetUserInfo(pUserID);
         }
@@ -803,78 +742,10 @@ namespace VRT.Orchestrator.Wrapping
                 orchestratorWrapper.GetUsers();
             }
         }
-#if outdated_orchestrator
-
-        public void DeleteUser(string pUserID) {
-            orchestratorWrapper.DeleteUser(pUserID);
-        }
-
-        public void OnDeleteUserResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnDeleteUserResponse");
-
-            // update the lists of user, anyway the result
-            orchestratorWrapper.GetUsers();
-        }
-#endif
-#endregion
-
-#if outdated_orchestrator
-
-#region Rooms
-
-        public void GetRooms() {
-            orchestratorWrapper.GetRooms();
-        }
-
-        public void OnGetRoomsResponse(ResponseStatus status, List<RoomInstance> rooms) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetRoomsResponse: Rooms count:" + rooms.Count);
-
-            // update the list of available rooms
-            availableRoomInstances = rooms;
-            OnGetRoomsEvent?.Invoke(rooms.ToArray());
-        }
-
-        public void JoinRoom(string pRoomID) {
-            orchestratorWrapper.JoinRoom(pRoomID);
-        }
-
-        public void OnJoinRoomResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnJoinRoomResponse: Room joined.");
-
-            OnJoinRoomEvent?.Invoke(status.Error == 0);
-        }
-
-        public void LeaveRoom() {
-            orchestratorWrapper.LeaveRoom();
-        }
-
-        public void OnLeaveRoomResponse(ResponseStatus status) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-
-            if (enableLogging) Debug.Log("OrchestratorController: OnLeaveRoomResponse: Room leaved.");
-
-            OnLeaveRoomEvent?.Invoke();
-        }
 
 #endregion
-#endif
+
+
 #region Messages
 
         public void SendMessage(string pMessage, string pUserID) {
@@ -966,34 +837,6 @@ namespace VRT.Orchestrator.Wrapping
         }
 #endregion
 
-#region Data bit-stream
-#if outdated_orchestrator
-
-        public void GetAvailableDataStreams(string pDataStreamUserId) {
-            OrchestratorWrapper.instance.GetAvailableDataStreams(pDataStreamUserId);
-        }
-
-        public void OnGetAvailableDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetAvailableDataStreams: Available DataStream list count: " + dataStreams.Count);
-        }
-
-        public void GetRegisteredDataStreams() {
-            OrchestratorWrapper.instance.GetRegisteredDataStreams();
-        }
-
-        public void OnGetRegisteredDataStreams(ResponseStatus status, List<DataStream> dataStreams) {
-            if (status.Error != 0) {
-                OnErrorEvent?.Invoke(status);
-                return;
-            }
-            if (enableLogging) Debug.Log("OrchestratorController: OnGetRegisteredDataStreams: Registered DataStream list count: " + dataStreams.Count);
-        }
-#endif
-#endregion
 
 #region Logics
 

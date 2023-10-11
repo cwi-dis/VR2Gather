@@ -350,30 +350,7 @@ namespace VRT.Pilots.LoginManager
             {
                 options.Add(new Dropdown.OptionData(sc.scenarioName));
             }
-#if old_scenarios
-            // Add scenarios we have implemented first, others afterwards after a blank line
-            scenarioIDs = new List<string>();
-            foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
-            {
 
-                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") != null)
-                {
-                    options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-                    scenarioIDs.Add(scenario.scenarioId);
-                }
-            }
-            options.Add(new Dropdown.OptionData(""));
-            scenarioIDs.Add("");
-            foreach (var scenario in OrchestratorController.Instance.AvailableScenarios)
-            {
-
-                if (ScenarioRegistry.Instance.GetSceneNameForPilotName(scenario.scenarioName, "") == null)
-                {
-                    options.Add(new Dropdown.OptionData(scenario.GetGuiRepresentation()));
-                    scenarioIDs.Add(scenario.scenarioId);
-                }
-            }
-#endif
             scenarioIdDrop.AddOptions(options);
             ScenarioSelectionChanged();
         }
@@ -1067,17 +1044,11 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent += OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent += OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent += OnGetScenariosHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetLiveDataEvent += OnGetLivePresenterDataHandler;
-#endif
+
             OrchestratorController.Instance.OnGetUsersEvent += OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent += OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent += OnGetUserInfoHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetRoomsEvent += OnGetRoomsHandler;
-            OrchestratorController.Instance.OnJoinRoomEvent += OnJoinRoomHandler;
-            OrchestratorController.Instance.OnLeaveRoomEvent += OnLeaveRoomHandler;
-#endif
+
             OrchestratorController.Instance.OnUserMessageReceivedEvent += OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent += OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent += OnUserEventReceivedHandler;
@@ -1105,18 +1076,11 @@ namespace VRT.Pilots.LoginManager
             OrchestratorController.Instance.OnUserLeaveSessionEvent -= OnUserLeftSessionHandler;
             OrchestratorController.Instance.OnGetScenarioEvent -= OnGetScenarioInstanceInfoHandler;
             OrchestratorController.Instance.OnGetScenariosEvent -= OnGetScenariosHandler;
-#if outdated_orchestrator
-            OrchestratorController.Instance.OnGetLiveDataEvent -= OnGetLivePresenterDataHandler;
-#endif
+
             OrchestratorController.Instance.OnGetUsersEvent -= OnGetUsersHandler;
             OrchestratorController.Instance.OnAddUserEvent -= OnAddUserHandler;
             OrchestratorController.Instance.OnGetUserInfoEvent -= OnGetUserInfoHandler;
-#if outdated_orchestrator
 
-            OrchestratorController.Instance.OnGetRoomsEvent -= OnGetRoomsHandler;
-            OrchestratorController.Instance.OnJoinRoomEvent -= OnJoinRoomHandler;
-            OrchestratorController.Instance.OnLeaveRoomEvent -= OnLeaveRoomHandler;
-#endif
             OrchestratorController.Instance.OnUserMessageReceivedEvent -= OnUserMessageReceivedHandler;
             OrchestratorController.Instance.OnMasterEventReceivedEvent -= OnMasterEventReceivedHandler;
             OrchestratorController.Instance.OnUserEventReceivedEvent -= OnUserEventReceivedHandler;
@@ -1574,17 +1538,7 @@ namespace VRT.Pilots.LoginManager
 
 #endregion
 
-#if outdated_orchestrator
 
-#region Live
-
-        private void OnGetLivePresenterDataHandler(LivePresenterData liveData)
-        {
-            //Debug.Log("[OrchestratorLogin][OnGetLivePresenterDataHandler] Not implemented");
-        }
-
-#endregion
-#endif
 #region Users
 
         private void GetUsers()
@@ -1698,52 +1652,9 @@ namespace VRT.Pilots.LoginManager
                 }
             }
         }
-#if outdated_orchestrator
-
-        private void DeleteUser()
-        {
-            Debug.LogError("OrchestratorLogin: DeleteUser: Not implemented");
-        }
-#endif
-#endregion
-#if outdated_orchestrator
-
-#region Rooms
-
-        private void GetRooms()
-        {
-            OrchestratorController.Instance.GetRooms();
-        }
-
-        private void OnGetRoomsHandler(RoomInstance[] rooms)
-        {
-            if (developerMode) Debug.Log("OrchestratorLogin: OnGetRoomsHandler: Send GetUsers command");
-
-            OrchestratorController.Instance.GetUsers();
-        }
-
-        private void JoinRoom()
-        {
-            Debug.LogError("OrchestratorLogin: JoinRoom: Not implemented");
-        }
-
-        private void OnJoinRoomHandler(bool hasJoined)
-        {
-            Debug.LogError("OrchestratorLogin: OnJoinRoomHandler: Not implemented");
-        }
-
-        private void LeaveRoom()
-        {
-            OrchestratorController.Instance.LeaveRoom();
-        }
-
-        private void OnLeaveRoomHandler()
-        {
-            Debug.LogError("OrchestratorLogin: OnLeaveRoomHandler: Not implemented");
-        }
 
 #endregion
-#endif
+
 #region Messages
 
 
@@ -1770,20 +1681,6 @@ namespace VRT.Pilots.LoginManager
         }
 #endregion
 
-#region Data Stream
-#if outdated_orchestrator
-
-        private void GetAvailableDataStreams()
-        {
-            Debug.Log("[OrchestratorLogin][GetAvailableDataStreams] Not implemented");
-        }
-
-        private void GetRegisteredDataStreams()
-        {
-            OrchestratorController.Instance.GetRegisteredDataStreams();
-        }
-#endif
-#endregion
 
 #region Errors
 
