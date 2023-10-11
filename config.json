@@ -1,7 +1,7 @@
 {
   "orchestratorURL" : "http://flauwte.local:8080/socket.io/",
   "statsOutputFile" : "",
-  "_AutoStart" : {
+  "AutoStart" : {
   	"autoLogin" : true,
   	"sessionName" : "jack-grab",
   	"sessionScenario" : "Technical Playground",
