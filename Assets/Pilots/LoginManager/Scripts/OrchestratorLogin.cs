@@ -959,7 +959,7 @@ namespace VRT.Pilots.LoginManager
         public void ReadyButton()
         {
             SessionConfig cfg = SessionConfig.Instance;
-            cfg.scenarioName = OrchestratorController.Instance.MyScenario.scenarioName;
+            cfg.scenarioName = OrchestratorController.Instance.CurrentScenario.scenarioName;
             cfg.scenarioVariant = null;
             // protocolType already set
             // pointCloudCodec, voiceCodec and videoCodec already set

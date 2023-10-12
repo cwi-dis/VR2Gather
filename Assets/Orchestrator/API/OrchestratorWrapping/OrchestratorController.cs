@@ -84,9 +84,10 @@ namespace VRT.Orchestrator.Wrapping
         // auto retrieving data on login: is used on login to chain the commands that allow to get the items available for the user (list of sessions, users, scenarios).
         private bool isAutoRetrievingData = false;
 
-       
+#if orch_removed_2
         // Enable or disable SFU logs collection (disabled by default).
         private bool collectSFULogs = false;
+#endif
 
         private bool autoStopOnLeave = false;
 #endregion
@@ -177,16 +178,16 @@ namespace VRT.Orchestrator.Wrapping
         public User SelfUser { get { return me; } set { me = value; } }
 #if orch_removed_2
         public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
-#endif
         public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
-#if orch_removed_2
         public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
 #endif
-        public Scenario MyScenario { get { return myScenario; } }
+        public Scenario CurrentScenario { get { return myScenario; } }
         public Session[] AvailableSessions { get { return availableSessions?.ToArray(); } }
-        public Session MySession { get { return mySession; } }
+        public Session CurrentSession { get { return mySession; } }
 
+#if orch_removed_2
         public bool CollectSFULogs { get { return collectSFULogs; } set { collectSFULogs = value; } }
+#endif
 
 #endregion
 
