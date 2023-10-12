@@ -23,6 +23,7 @@
 
 using LitJson;
 using VRT.Core;
+using System.Collections.Generic;
 
 namespace VRT.Orchestrator.Wrapping
 {
@@ -194,10 +195,16 @@ namespace VRT.Orchestrator.Wrapping
         public string sessionMaster;
         public string scenarioId; // the scenario ID
         public string[] sessionUsers;
+        public List<User> sessionUserDefinitions;
+
+        public Session()
+        {
+        }
 
         public static Session ParseJsonData(JsonData data)
         {
-            return JsonMapper.ToObject<Session>(data.ToJson());
+            Session rv = JsonMapper.ToObject<Session>(data.ToJson());
+            return rv;
         }
 
         public override string GetId()
@@ -208,6 +215,23 @@ namespace VRT.Orchestrator.Wrapping
         public override string GetGuiRepresentation()
         {
             return sessionName + " (" + sessionDescription + ")";
+        }
+
+        public User[] GetUsers()
+        {
+            return sessionUserDefinitions.ToArray();
+        }
+
+        public User GetUser(string userID)
+        {
+            foreach(var userDefinition in sessionUserDefinitions)
+            {
+                if (userDefinition.userId == userID)
+                {
+                    return userDefinition;
+                }
+            }
+            return null;
         }
     }
 }

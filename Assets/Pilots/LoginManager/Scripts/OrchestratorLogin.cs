@@ -1366,7 +1366,7 @@ namespace VRT.Pilots.LoginManager
                 isMaster = OrchestratorController.Instance.UserIsMaster;
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
+                sessionMasterID = session.GetUser(session.sessionMaster).userName;
 
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
@@ -1398,7 +1398,7 @@ namespace VRT.Pilots.LoginManager
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
                 if (session.sessionMaster != "")
-                    sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
+                    sessionMasterID = session.GetUser(session.sessionMaster).userName;
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
             }
@@ -1439,7 +1439,7 @@ namespace VRT.Pilots.LoginManager
                 var sessionSelected = OrchestratorController.Instance.AvailableSessions[idx];
                 var scenarioSelected = sessionSelected.scenarioId;
                 var sessionMaster = sessionSelected.sessionMaster;
-                var masterUser = OrchestratorController.Instance.GetUser(sessionMaster);
+                var masterUser = sessionSelected.GetUser(sessionMaster);
                 var masterName = masterUser == null ? sessionMaster : masterUser.userName;
                 var scenarioInfo = ScenarioRegistry.Instance.GetScenarioById(scenarioSelected);
                 description = $"{sessionSelected.sessionName} by {masterName}\n{sessionSelected.sessionDescription}\n";
@@ -1480,7 +1480,7 @@ namespace VRT.Pilots.LoginManager
                 // Update the info in LobbyPanel
                 sessionNameText.text = session.sessionName;
                 sessionDescriptionText.text = session.sessionDescription;
-                sessionMasterID = OrchestratorController.Instance.GetUser(session.sessionMaster).userName;
+                sessionMasterID = session.GetUser(session.sessionMaster).userName;
 
                 // Update the list of session users
                 UpdateUsersSession(usersSession);
@@ -1520,21 +1520,27 @@ namespace VRT.Pilots.LoginManager
 
         private void OnUserJoinedSessionHandler(string userID)
         {
+#if orch_removed_2
+
             if (!string.IsNullOrEmpty(userID))
             {
                 OrchestratorController.Instance.GetUsers();
             }
+#endif
+            Debug.Log($"xxxjack OnUserJoinedSession({userID}), should get user record");
         }
 
         private void OnUserLeftSessionHandler(string userID)
         {
+#if orch_removed_2
             if (!string.IsNullOrEmpty(userID))
             {
                 OrchestratorController.Instance.GetUsers();
             }
+#endif
         }
 
-        #endregion
+#endregion
 
 #region Scenarios
 #if orch_removed_2
@@ -1556,9 +1562,11 @@ namespace VRT.Pilots.LoginManager
 
 #region Users
 
-        private void GetUsers()
+        private void _xxxjack_GetUsers()
         {
+#if orch_removed_2
             OrchestratorController.Instance.GetUsers();
+#endif
         }
 
         private void OnGetUsersHandler(User[] users)
@@ -1650,6 +1658,7 @@ namespace VRT.Pilots.LoginManager
                 }
             }
 
+#if orch_removed_2
             GetUsers(); // To update the user representation
 
             // Update the sfuData and UserData if is in session.
@@ -1666,6 +1675,8 @@ namespace VRT.Pilots.LoginManager
                     }
                 }
             }
+#endif
+            Debug.Log($"xxxjack OnGetUserInfoHandler: should update user info");
         }
 
 #endregion

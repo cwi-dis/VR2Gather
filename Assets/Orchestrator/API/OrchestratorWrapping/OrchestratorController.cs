@@ -175,7 +175,9 @@ namespace VRT.Orchestrator.Wrapping
         public bool UserIsLogged { get { return userIsLogged; } }
         public bool UserIsMaster { get { return userIsMaster; } }
         public User SelfUser { get { return me; } set { me = value; } }
+#if orch_removed_2
         public User[] AvailableUserAccounts { get { return availableUserAccounts?.ToArray(); } }
+#endif
         public User[] ConnectedUsers { get { return connectedUsers?.ToArray(); } }
 #if orch_removed_2
         public Scenario[] AvailableScenarios { get { return availableScenarios?.ToArray(); } }
@@ -447,11 +449,11 @@ namespace VRT.Orchestrator.Wrapping
                 return;
             }
 
-            if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + GetUser(session.sessionAdministrator).userName + ".");
+            if (enableLogging) Debug.Log("OrchestratorController: OnAddSessionResponse: Session " + session.sessionName + " successfully created by " + session.GetUser(session.sessionAdministrator).userName + ".");
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
 
 #if VRT_WITH_STATS
             Statistics.Output("OrchestratorController", $"created=1, sessionId={session.sessionId}, sessionName={session.sessionName}, isMaster={(userIsMaster?1:0)}, nUser={connectedUsers.Count}");
@@ -487,7 +489,7 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
             if (enableLogging) Debug.Log($"OrchestratorController: OnGetSessionInfoResponse: Get session info of {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             OnSessionInfoEvent?.Invoke(session);
@@ -540,7 +542,7 @@ namespace VRT.Orchestrator.Wrapping
             // success
             mySession = session;
             userIsMaster = session.sessionMaster == me.userId;
-            connectedUsers = ExtractConnectedUsers(session.sessionUsers);
+            connectedUsers = GetUsersForCurrentSession(session.sessionUsers);
             if (enableLogging) Debug.Log($"OrchestratorController: OnJoinSessionResponse: Session {session.sessionName}, isMaster={(userIsMaster)}, nUser={connectedUsers.Count}");
 
             // Simulate user join a session for each connected users
@@ -611,7 +613,7 @@ namespace VRT.Orchestrator.Wrapping
             }
             if (user == null)
             {
-                user = GetUser(userID);
+                user = mySession.GetUser(userID);
                 if (user == null)
                 {
                     Debug.LogError($"OrchestratorController: OnUserJoinedSession: userID {userID} unknown");
@@ -628,12 +630,12 @@ namespace VRT.Orchestrator.Wrapping
             if (!string.IsNullOrEmpty(userID)) {
                 // If the session creator left, I need to leave also.
                 if (mySession.sessionAdministrator == userID) {
-                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + GetUser(userID).userName + " left the session. Also leaving.");
+                    Debug.Log("OrchestratorController: OnUserLeftSession: Session creator " + mySession.GetUser(userID).userName + " left the session. Also leaving.");
                     LeaveSession();
                 }
                 // Otherwise, just proceed to the common user left event.
                 else {
-                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + GetUser(userID).userName + " left the session.");
+                    if (enableLogging) Debug.Log("OrchestratorController: OnUserLeftSession: User " + mySession.GetUser(userID).userName + " left the session.");
                     // Required to update the list of connect users.
                     orchestratorWrapper.GetSessionInfo();
                     OnUserLeaveSessionEvent?.Invoke(userID);
@@ -677,7 +679,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #region Users
 
-        public void GetUsers() {
+        private void GetUsers() {
             orchestratorWrapper.GetUsers();
         }
 
@@ -862,7 +864,7 @@ namespace VRT.Orchestrator.Wrapping
 
 #region Logics
 
-        public User GetUser(string masterUuid) {
+        public User _xxxjack_GetUser(string masterUuid) {
             if (availableUserAccounts != null) {
                 for (int i = 0; i < availableUserAccounts.Count; i++) {
                     if (availableUserAccounts[i].userId == masterUuid)
@@ -872,7 +874,7 @@ namespace VRT.Orchestrator.Wrapping
             return null;
         }
 
-        private List<User> ExtractConnectedUsers(string[] UserUUIDs) {
+        private List<User> GetUsersForCurrentSession(string[] UserUUIDs) {
             List<User> users = new List<User>();
 
             for (int i = 0; i < UserUUIDs.Length; i++) {
